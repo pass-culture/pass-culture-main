@@ -2,7 +2,7 @@ import datetime
 
 import pytest
 
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -118,14 +118,14 @@ class OfferMetadataTest:
             assert metadata["@type"] == "Event"
 
         def should_describe_an_event_for_a_concert(self):
-            offer = offers_factories.OfferFactory(subcategoryId=subcategories_v2.CONCERT.id)
+            offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id)
 
             metadata = get_metadata_from_offer(offer)
 
             assert metadata["@type"] == "Event"
 
         def should_describe_an_event_for_a_festival(self):
-            offer = offers_factories.OfferFactory(subcategoryId=subcategories_v2.FESTIVAL_MUSIQUE.id)
+            offer = offers_factories.OfferFactory(subcategoryId=subcategories.FESTIVAL_MUSIQUE.id)
 
             metadata = get_metadata_from_offer(offer)
 
@@ -264,10 +264,10 @@ class OfferMetadataTest:
         @pytest.mark.parametrize(
             "subcategoryId",
             [
-                subcategories_v2.LIVRE_PAPIER.id,
-                subcategories_v2.LIVRE_AUDIO_PHYSIQUE.id,
-                subcategories_v2.TELECHARGEMENT_LIVRE_AUDIO.id,
-                subcategories_v2.LIVRE_NUMERIQUE.id,
+                subcategories.LIVRE_PAPIER.id,
+                subcategories.LIVRE_AUDIO_PHYSIQUE.id,
+                subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
+                subcategories.LIVRE_NUMERIQUE.id,
             ],
         )
         def should_describe_a_book(self, subcategoryId):
@@ -278,7 +278,7 @@ class OfferMetadataTest:
             assert metadata["@type"] == ["Product", "Book"]
 
         def should_define_an_id_and_url(self):
-            offer = offers_factories.OfferFactory(id=12345, subcategoryId=subcategories_v2.LIVRE_PAPIER.id)
+            offer = offers_factories.OfferFactory(id=12345, subcategoryId=subcategories.LIVRE_PAPIER.id)
 
             metadata = get_metadata_from_offer(offer)
 
@@ -286,14 +286,14 @@ class OfferMetadataTest:
             assert metadata["url"] == "https://webapp-v2.example.com/offre/12345"
 
         def should_define_family_friendliness(self):
-            stock = offers_factories.StockFactory(offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id)
+            stock = offers_factories.StockFactory(offer__subcategoryId=subcategories.LIVRE_PAPIER.id)
 
             metadata = get_metadata_from_offer(stock.offer)
 
             assert metadata["isFamilyFriendly"] == True
 
         def should_not_be_family_friendly_when_book_is_forbidden_for_underage(self):
-            offer = offers_factories.OfferFactory(subcategoryId=subcategories_v2.LIVRE_PAPIER.id)
+            offer = offers_factories.OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
 
             metadata = get_metadata_from_offer(offer)
 
@@ -301,7 +301,7 @@ class OfferMetadataTest:
 
         def should_define_an_author(self):
             offer = offers_factories.OfferFactory(
-                subcategoryId=subcategories_v2.LIVRE_PAPIER.id, extraData={"author": "John Doe"}
+                subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"author": "John Doe"}
             )
 
             metadata = get_metadata_from_offer(offer)
@@ -311,7 +311,7 @@ class OfferMetadataTest:
         class WorkExampleTest:
             def should_describe_a_book(self):
                 offer = offers_factories.OfferFactory(
-                    subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+                    subcategoryId=subcategories.LIVRE_PAPIER.id,
                 )
 
                 metadata = get_metadata_from_offer(offer)
@@ -321,7 +321,7 @@ class OfferMetadataTest:
             def should_define_an_id(self):
                 offer = offers_factories.OfferFactory(
                     id="1234567",
-                    subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+                    subcategoryId=subcategories.LIVRE_PAPIER.id,
                 )
 
                 metadata = get_metadata_from_offer(offer)
@@ -330,7 +330,7 @@ class OfferMetadataTest:
 
             def should_define_a_language(self):
                 offer = offers_factories.OfferFactory(
-                    subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+                    subcategoryId=subcategories.LIVRE_PAPIER.id,
                 )
 
                 metadata = get_metadata_from_offer(offer)
@@ -339,7 +339,7 @@ class OfferMetadataTest:
 
             def should_define_an_isbn(self):
                 offer = offers_factories.OfferFactory(
-                    subcategoryId=subcategories_v2.LIVRE_PAPIER.id, extraData={"ean": 9782371266124}
+                    subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": 9782371266124}
                 )
 
                 metadata = get_metadata_from_offer(offer)
@@ -350,10 +350,10 @@ class OfferMetadataTest:
             @pytest.mark.parametrize(
                 ("subcategoryId", "expectedFormat"),
                 [
-                    (subcategories_v2.LIVRE_PAPIER.id, "Hardcover"),
-                    (subcategories_v2.LIVRE_AUDIO_PHYSIQUE.id, "AudiobookFormat"),
-                    (subcategories_v2.TELECHARGEMENT_LIVRE_AUDIO.id, "AudiobookFormat"),
-                    (subcategories_v2.LIVRE_NUMERIQUE.id, "EBook"),
+                    (subcategories.LIVRE_PAPIER.id, "Hardcover"),
+                    (subcategories.LIVRE_AUDIO_PHYSIQUE.id, "AudiobookFormat"),
+                    (subcategories.TELECHARGEMENT_LIVRE_AUDIO.id, "AudiobookFormat"),
+                    (subcategories.LIVRE_NUMERIQUE.id, "EBook"),
                 ],
             )
             def should_define_a_book_format(self, subcategoryId, expectedFormat):
@@ -367,7 +367,7 @@ class OfferMetadataTest:
 
             def should_define_a_book_format_for_paperback_book(self):
                 offer = offers_factories.OfferFactory(
-                    subcategoryId=subcategories_v2.LIVRE_PAPIER.id, extraData={"bookFormat": BookFormat.POCHE}
+                    subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"bookFormat": BookFormat.POCHE}
                 )
 
                 metadata = get_metadata_from_offer(offer)

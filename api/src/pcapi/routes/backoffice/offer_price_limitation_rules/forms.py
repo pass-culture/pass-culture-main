@@ -3,8 +3,8 @@ import typing
 from flask_wtf import FlaskForm
 import wtforms
 
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories import subcategories
 
 from ..forms import fields
 from ..forms import utils
@@ -15,12 +15,12 @@ class SearchRuleForm(FlaskForm):
         csrf = False
 
     category = fields.PCSelectMultipleField(
-        "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
+        "Catégories", choices=utils.choices_from_enum(pro_categories.CategoryIdLabelEnum)
     )
     subcategory = fields.PCSelectMultipleField(
         "Sous-catégories",
         choices=sorted(
-            [(s.id, s.pro_label) for s in subcategories_v2.ALL_SUBCATEGORIES if not s.is_event], key=lambda x: x[1]
+            [(s.id, s.pro_label) for s in subcategories.ALL_SUBCATEGORIES if not s.is_event], key=lambda x: x[1]
         ),
     )
 
@@ -48,7 +48,7 @@ class CreateOfferPriceLimitationRuleForm(EditOfferPriceLimitationRuleForm):
     subcategory = fields.PCSelectField(
         "Sous-catégorie",
         choices=sorted(
-            [(s.id, s.pro_label) for s in subcategories_v2.ALL_SUBCATEGORIES if not s.is_event], key=lambda x: x[1]
+            [(s.id, s.pro_label) for s in subcategories.ALL_SUBCATEGORIES if not s.is_event], key=lambda x: x[1]
         ),
     )
 

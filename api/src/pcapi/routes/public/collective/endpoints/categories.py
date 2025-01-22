@@ -1,7 +1,7 @@
 from collections import defaultdict
 
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories import subcategories
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
@@ -39,7 +39,7 @@ def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResp
     return offers_serialization.CollectiveOffersListCategoriesResponseModel(
         __root__=[
             offers_serialization.CollectiveOffersCategoryResponseModel(id=category.id, name=category.pro_label)
-            for category in categories.ALL_CATEGORIES
+            for category in pro_categories.ALL_CATEGORIES
             if category.is_selectable
         ]
     )
@@ -70,7 +70,7 @@ def list_subcategories() -> offers_serialization.CollectiveOffersListSubCategori
     Return subcategories for collective offers.
     """
     result_dict = defaultdict(list)
-    for _, subcategory in subcategories_v2.COLLECTIVE_SUBCATEGORIES.items():
+    for _, subcategory in subcategories.COLLECTIVE_SUBCATEGORIES.items():
         if not subcategory.is_selectable:
             continue
         result_dict[subcategory.category.pro_label].append(

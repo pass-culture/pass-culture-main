@@ -5,8 +5,8 @@ from flask import flash
 from flask_wtf import FlaskForm
 import wtforms
 
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories import subcategories
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
 
@@ -39,11 +39,11 @@ class GetCustomReimbursementRulesListForm(FlaskForm):
     )
     categories = fields.PCSelectMultipleField(
         "Catégories",
-        choices=utils.choices_from_enum(categories.CategoryIdLabelEnum),
+        choices=utils.choices_from_enum(pro_categories.CategoryIdLabelEnum),
         field_list_compatibility=True,
     )
     subcategories = fields.PCSelectMultipleField(
-        "Sous-catégories", choices=[(s.id, s.pro_label) for s in subcategories_v2.ALL_SUBCATEGORIES]
+        "Sous-catégories", choices=[(s.id, s.pro_label) for s in subcategories.ALL_SUBCATEGORIES]
     )
 
     def is_empty(self) -> bool:
@@ -77,7 +77,7 @@ class CreateCustomReimbursementRuleForm(FlaskForm):
         endpoint="backoffice_web.autocomplete_pricing_points",
     )
     subcategories = fields.PCSelectMultipleField(
-        "Sous-catégories", choices=[(s.id, s.pro_label) for s in subcategories_v2.ALL_SUBCATEGORIES]
+        "Sous-catégories", choices=[(s.id, s.pro_label) for s in subcategories.ALL_SUBCATEGORIES]
     )
 
     rate = fields.PCDecimalField(

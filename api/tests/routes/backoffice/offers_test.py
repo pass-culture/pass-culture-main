@@ -14,8 +14,8 @@ import pytest
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories import subcategories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import factories as finance_factories
@@ -481,7 +481,7 @@ class ListOffersTest(GetEndpointHelper):
         query_args = {
             "search-3-search_field": "CATEGORY",
             "search-3-operator": "IN",
-            "search-3-category": categories.LIVRE.id,
+            "search-3-category": pro_categories.LIVRE.id,
         }
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -721,7 +721,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-criteria": criterion_id,
             "search-1-search_field": "CATEGORY",
             "search-1-operator": "IN",
-            "search-1-category": categories.LIVRE.id,
+            "search-1-category": pro_categories.LIVRE.id,
             "search-2-search_field": "DEPARTMENT",
             "search-2-operator": "IN",
             "search-2-department": "74",
@@ -953,7 +953,7 @@ class ListOffersTest(GetEndpointHelper):
         query_args = {
             "search-0-search_field": "CATEGRY",
             "search-0-operator": "IN",
-            "search-0-category": categories.LIVRE.id,
+            "search-0-category": pro_categories.LIVRE.id,
         }
         with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -985,7 +985,7 @@ class ListOffersTest(GetEndpointHelper):
         query_args = {
             "search-0-search_field": "CATEGORY",
             "search-0-operator": "IN",
-            "search-0-category": categories.LIVRE.id,
+            "search-0-category": pro_categories.LIVRE.id,
             "search-2-search_field": "CREATION_DATE",
             "search-2-operator": "DATE_FROM",
             "search-4-search_field": "BOOKING_LIMIT_DATE",
@@ -1135,7 +1135,7 @@ class ListOffersTest(GetEndpointHelper):
         query_args = {
             "search-0-search_field": "CATEGORY",
             "search-0-operator": "IN",
-            "search-0-category": categories.FILM.id,
+            "search-0-category": pro_categories.FILM.id,
         }
 
         client = client.with_bo_session_auth(support_pro_n2_admin)

@@ -19,7 +19,7 @@ from pcapi.core.bookings.models import BookingStatusFilter
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import get_bookings_from_deposit
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories

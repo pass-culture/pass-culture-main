@@ -8,7 +8,7 @@ import pytest
 import time_machine
 
 from pcapi import settings
-import pcapi.core.categories.subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import testing as educational_testing

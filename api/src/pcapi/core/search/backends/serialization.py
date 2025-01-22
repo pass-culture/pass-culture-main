@@ -9,8 +9,12 @@ import urllib.parse
 import sqlalchemy as sa
 
 from pcapi import settings
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories.app_search_tree import NATIVE_CATEGORIES
+from pcapi.core.categories.app_search_tree import SEARCH_GROUPS
+from pcapi.core.categories.genres.music import MUSIC_TYPES_LABEL_BY_CODE
+from pcapi.core.categories.genres.music import TITELIVE_MUSIC_TYPES
+from pcapi.core.categories.models import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.core.educational.academies import get_academy_from_department
 import pcapi.core.educational.api.offer as educational_api_offer
 import pcapi.core.educational.models as educational_models
@@ -20,8 +24,6 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.utils import get_offer_address
 from pcapi.core.providers import titelive_gtl
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
-from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
-from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
 import pcapi.utils.date as date_utils
 from pcapi.utils.regions import get_department_code_from_city_code
 from pcapi.utils.stopwords import STOPWORDS
@@ -189,11 +191,17 @@ class AlgoliaSerializationMixin:
         department_code = offer_address.departmentCode
         postal_code = offer_address.postalCode
 
-        search_groups = (
-            offer.subcategory.native_category.parents
-            if offer.subcategory.native_category != subcategories_v2.NATIVE_CATEGORY_NONE
-            else [offer.subcategory.search_group_name]
-        )
+        search_groups = [
+            search_group.search_value
+            for search_group in SEARCH_GROUPS
+            if offer.subcategory.id in search_group.included_subcategories
+        ]
+
+        native_categories = [
+            native_category.search_value
+            for native_category in NATIVE_CATEGORIES
+            if offer.subcategory.id in native_category.included_subcategories
+        ]
 
         headline_offer = next(
             (headline_offer for headline_offer in offer.headlineOffers if headline_offer.isActive), None
@@ -229,7 +237,7 @@ class AlgoliaSerializationMixin:
                 "movieGenres": extra_data.get("genres"),
                 "musicType": music_type_labels,
                 "name": offer.name,
-                "nativeCategoryId": offer.subcategory.native_category_id,
+                "nativeCategoryId": native_categories,
                 "prices": sorted(prices),
                 "publicationDate": (
                     offer.publicationDate.timestamp() if offer.publicationDate and not offer.isReleased else None
@@ -271,17 +279,17 @@ class AlgoliaSerializationMixin:
             "_geoloc": position(venue, offer),
         }
 
-        if offer.subcategory.category.id == categories.LIVRE.id and gtl:
+        if offer.subcategory.category.id == pro_categories.LIVRE.id and gtl:
             object_to_index["offer"]["gtl_level1"] = gtl.get("level_01_label")
             object_to_index["offer"]["gtl_level2"] = gtl.get("level_02_label")
             object_to_index["offer"]["gtl_level3"] = gtl.get("level_03_label")
             object_to_index["offer"]["gtl_level4"] = gtl.get("level_04_label")
         elif gtl_id and offer.subcategory.category.id in (
-            categories.MUSIQUE_ENREGISTREE.id,
-            categories.MUSIQUE_LIVE.id,
+            pro_categories.MUSIQUE_ENREGISTREE.id,
+            pro_categories.MUSIQUE_LIVE.id,
         ):
             gtl_label = next(
-                (music_type.label for music_type in categories.TITELIVE_MUSIC_TYPES if music_type.gtl_id == gtl_id),
+                (music_type.label for music_type in TITELIVE_MUSIC_TYPES if music_type.gtl_id == gtl_id),
                 None,
             )
             object_to_index["offer"]["gtl_level1"] = gtl_label

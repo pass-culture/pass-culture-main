@@ -5,7 +5,7 @@ import pytest
 
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_beneficiary import (
     send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary,

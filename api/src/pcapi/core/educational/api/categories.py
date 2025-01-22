@@ -1,5 +1,5 @@
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories import subcategories
 
 
 def get_educational_categories() -> dict:
@@ -8,7 +8,7 @@ def get_educational_categories() -> dict:
     ]
     educational_categories_ids = list(set(subcategory.category.id for subcategory in educational_subcategories))
     educational_categories = [
-        category for category in categories.ALL_CATEGORIES if category.id in educational_categories_ids
+        category for category in pro_categories.ALL_CATEGORIES if category.id in educational_categories_ids
     ]
 
     return {"subcategories": educational_subcategories, "categories": educational_categories}

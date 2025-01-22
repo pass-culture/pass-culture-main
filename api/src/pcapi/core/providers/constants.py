@@ -1,7 +1,7 @@
+from dataclasses import dataclass
 import enum
 import typing
 
-from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
 from pcapi.models.feature import FeatureToggle
 
 
@@ -58,6 +58,36 @@ TITELIVE_MUSIC_GENRES_BY_GTL_ID: dict[str, str] = {
     "18000000": "ENFANTS",
     "19000000": "AUTRES",
 }
+
+
+@dataclass
+class TiteliveMusicType:
+    gtl_id: str
+    label: str
+    can_be_event: bool = True
+
+
+TITELIVE_MUSIC_TYPES = (
+    TiteliveMusicType(gtl_id="01000000", label="Musique Classique"),
+    TiteliveMusicType(gtl_id="02000000", label="Jazz / Blues"),
+    TiteliveMusicType(gtl_id="03000000", label="Bandes originales", can_be_event=False),
+    TiteliveMusicType(gtl_id="04000000", label="Electro"),
+    TiteliveMusicType(gtl_id="05000000", label="Pop"),
+    TiteliveMusicType(gtl_id="06000000", label="Rock"),
+    TiteliveMusicType(gtl_id="07000000", label="Metal"),
+    TiteliveMusicType(gtl_id="08000000", label="Alternatif"),
+    TiteliveMusicType(gtl_id="09000000", label="Variétés"),
+    TiteliveMusicType(gtl_id="10000000", label="Funk / Soul / RnB / Disco"),
+    TiteliveMusicType(gtl_id="11000000", label="Rap / Hip Hop"),
+    TiteliveMusicType(gtl_id="12000000", label="Reggae / Ragga"),
+    TiteliveMusicType(gtl_id="13000000", label="Musique du monde"),
+    TiteliveMusicType(gtl_id="14000000", label="Country / Folk"),
+    TiteliveMusicType(gtl_id="15000000", label="Vidéos musicales", can_be_event=False),
+    TiteliveMusicType(gtl_id="16000000", label="Compilations", can_be_event=False),
+    TiteliveMusicType(gtl_id="17000000", label="Ambiance"),
+    TiteliveMusicType(gtl_id="18000000", label="Enfants", can_be_event=False),
+    TiteliveMusicType(gtl_id="19000000", label="Autre"),
+)
 
 TITELIVE_MUSIC_LABELS_BY_GTL_ID: dict[str, str] = {
     music_type.gtl_id: music_type.label for music_type in TITELIVE_MUSIC_TYPES

@@ -2,7 +2,7 @@ import datetime
 from decimal import Decimal
 
 from pcapi.core.bookings.models import Booking
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.finance import utils as finance_utils
 import pcapi.core.finance.api as finance_api

@@ -7,7 +7,7 @@ import time_machine
 
 import pcapi.core.artist.factories as artists_factories
 import pcapi.core.artist.models as artists_models
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import OfferAddressType
@@ -102,7 +102,7 @@ def test_serialize_offer():
             "last30DaysBookingsRange": serialization.Last30DaysBookingsRange.VERY_LOW.value,
             "musicType": [],
             "name": "Titre formidable",
-            "nativeCategoryId": offer.subcategory.native_category_id,
+            "nativeCategoryId": ["LIVRES_PAPIER"],
             "prices": [decimal.Decimal("10.00")],
             "rankingWeight": 2,
             "searchGroups": ["LIVRES"],
@@ -197,7 +197,7 @@ def test_serialize_offer_legacy():
             "last30DaysBookingsRange": serialization.Last30DaysBookingsRange.VERY_LOW.value,
             "musicType": [],
             "name": "Titre formidable",
-            "nativeCategoryId": offer.subcategory.native_category_id,
+            "nativeCategoryId": ["LIVRES_PAPIER"],
             "prices": [decimal.Decimal("10.00")],
             "rankingWeight": 2,
             "searchGroups": ["LIVRES"],

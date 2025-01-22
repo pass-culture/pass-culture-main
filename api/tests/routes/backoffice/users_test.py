@@ -5,7 +5,7 @@ import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
@@ -116,7 +116,7 @@ class SuspendUserTest(PostEndpointHelper):
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=user)
         event_booking = bookings_factories.BookingFactory(
             user=user,
-            stock__offer__subcategoryId=subcategories_v2.CINE_PLEIN_AIR.id,
+            stock__offer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
         )
 
         response = self.post_to_endpoint(

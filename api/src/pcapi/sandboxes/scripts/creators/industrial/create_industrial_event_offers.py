@@ -1,6 +1,6 @@
 import logging
 
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
@@ -25,7 +25,7 @@ def create_industrial_event_offers(
     event_index = 0
     offer_index = 0
 
-    event_subcategories = [s for s in subcategories_v2.ALL_SUBCATEGORIES if s.is_event and s.is_offline_only]
+    event_subcategories = [s for s in subcategories.ALL_SUBCATEGORIES if s.is_event and s.is_offline_only]
 
     for offerer in offerers_by_name.values():
         event_venues = [venue for venue in offerer.managedVenues if not venue.isVirtual]

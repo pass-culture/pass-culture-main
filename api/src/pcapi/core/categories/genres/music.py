@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.constants import TITELIVE_MUSIC_LABELS_BY_GTL_ID
+from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 
 
 @dataclass
@@ -326,6 +326,7 @@ OLD_MUSIC_TYPES = [
         children=[OldMusicSubType(code=-1, label="Autre", slug=OTHER_SHOW_TYPE_SLUG)],
     ),
 ]
+
 
 MUSIC_TYPES = [
     MusicType(

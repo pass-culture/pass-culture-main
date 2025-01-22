@@ -1,6 +1,6 @@
 import datetime
 
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 
@@ -8,7 +8,7 @@ from pcapi.core.offers import factories as offers_factories
 def create_complex_offers(offerers_by_name: dict[str, offerers_models.Offerer]) -> None:
     offerers_iterator = iter(offerers_by_name.values())
     movie_product = offers_factories.ProductFactory(
-        subcategoryId=subcategories_v2.SEANCE_CINE.id,
+        subcategoryId=subcategories.SEANCE_CINE.id,
         name="good movie",
         description="""
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sed mi consectetur, sodales dolor ut, sollicitudin justo. Duis bibendum ligula luctus, sodales nunc at, lobortis arcu. In malesuada magna et magna sagittis, sit amet posuere nunc condimentum. Integer commodo dictum mi, at pellentesque dui. Nam vitae sollicitudin elit. Nullam interdum felis nisi, quis maximus ipsum volutpat sit amet. Duis commodo dolor quis dolor gravida imperdiet.
@@ -80,7 +80,7 @@ Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus
     offers_factories.StockFactory(offer=movie_offer, bookingLimitDatetime=datetime.datetime.utcnow())
 
     book_product = offers_factories.ProductFactory(
-        subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
         name="good book",
         description="""
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sed mi consectetur, sodales dolor ut, sollicitudin justo. Duis bibendum ligula luctus, sodales nunc at, lobortis arcu. In malesuada magna et magna sagittis, sit amet posuere nunc condimentum. Integer commodo dictum mi, at pellentesque dui. Nam vitae sollicitudin elit. Nullam interdum felis nisi, quis maximus ipsum volutpat sit amet. Duis commodo dolor quis dolor gravida imperdiet.
@@ -121,7 +121,7 @@ Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus
     electro_cd_offer = offers_factories.ThingOfferFactory(
         venue=next(offerers_iterator).managedVenues[0],
         name="Un super CD d'électro",
-        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+        subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         extraData={"gtl_id": "04000000"},
     )
     offers_factories.StockFactory(offer=electro_cd_offer)
@@ -129,7 +129,7 @@ Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus
     classical_cd_offer = offers_factories.ThingOfferFactory(
         venue=next(offerers_iterator).managedVenues[0],
         name="Un CD de musique classique incroyable",
-        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+        subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         extraData={"gtl_id": "01000000"},
     )
     offers_factories.StockFactory(offer=classical_cd_offer)
@@ -137,7 +137,7 @@ Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus
     electro_event_offer = offers_factories.EventOfferFactory(
         venue=next(offerers_iterator).managedVenues[0],
         name="Un concert d'electro inoubliable",
-        subcategoryId=subcategories_v2.CONCERT.id,
+        subcategoryId=subcategories.CONCERT.id,
         extraData={"gtl_id": "04000000"},
     )
     offers_factories.StockFactory(offer=electro_event_offer)
@@ -145,7 +145,7 @@ Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus
     rock_event_offer = offers_factories.EventOfferFactory(
         venue=next(offerers_iterator).managedVenues[0],
         name="Un concert de rock un peu nul",
-        subcategoryId=subcategories_v2.CONCERT.id,
+        subcategoryId=subcategories.CONCERT.id,
         extraData={"gtl_id": "06000000"},
     )
     offers_factories.StockFactory(offer=rock_event_offer)

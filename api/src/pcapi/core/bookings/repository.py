@@ -35,7 +35,7 @@ from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.bookings.utils import convert_date_period_to_utc_datetime_period
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.finance.models import BookingFinanceIncident
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers.models import Offerer

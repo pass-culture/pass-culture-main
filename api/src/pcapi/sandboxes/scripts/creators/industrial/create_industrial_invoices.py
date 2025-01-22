@@ -13,7 +13,7 @@ from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTE
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import models as bookings_models
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models

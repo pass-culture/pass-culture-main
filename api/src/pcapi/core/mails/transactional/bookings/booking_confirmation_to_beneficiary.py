@@ -2,7 +2,7 @@ from pcapi.core import mails
 from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.models import Booking
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.bookings import common as bookings_common
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail

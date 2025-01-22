@@ -1,6 +1,6 @@
 import logging
 
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.factories import EventOfferFactory

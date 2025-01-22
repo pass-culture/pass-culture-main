@@ -13,8 +13,10 @@ import flask
 from pydantic.v1 import HttpUrl
 import sqlalchemy as sqla
 
-from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.categories.subcategories_v2 import ExtraDataFieldEnum
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.genres import music
+from pcapi.core.categories.genres import show
+from pcapi.core.categories.subcategories import ExtraDataFieldEnum
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.api.national_program as np_api
 from pcapi.core.finance import repository as finance_repository
@@ -24,8 +26,6 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
 from pcapi.core.providers import models as providers_models
-from pcapi.domain import music_types
-from pcapi.domain import show_types
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
@@ -633,10 +633,10 @@ def check_offer_extra_data(
         errors.add_client_error(e)
 
     try:
-        _check_value_is_allowed(extra_data, ExtraDataFieldEnum.MUSIC_TYPE, music_types.MUSIC_TYPES_LABEL_BY_CODE)
-        _check_value_is_allowed(extra_data, ExtraDataFieldEnum.MUSIC_SUB_TYPE, music_types.MUSIC_SUB_TYPES_BY_CODE)
-        _check_value_is_allowed(extra_data, ExtraDataFieldEnum.SHOW_TYPE, show_types.SHOW_TYPES_LABEL_BY_CODE)
-        _check_value_is_allowed(extra_data, ExtraDataFieldEnum.SHOW_SUB_TYPE, show_types.SHOW_SUB_TYPES_BY_CODE)
+        _check_value_is_allowed(extra_data, ExtraDataFieldEnum.MUSIC_TYPE, music.MUSIC_TYPES_LABEL_BY_CODE)
+        _check_value_is_allowed(extra_data, ExtraDataFieldEnum.MUSIC_SUB_TYPE, music.MUSIC_SUB_TYPES_BY_CODE)
+        _check_value_is_allowed(extra_data, ExtraDataFieldEnum.SHOW_TYPE, show.SHOW_TYPES_LABEL_BY_CODE)
+        _check_value_is_allowed(extra_data, ExtraDataFieldEnum.SHOW_SUB_TYPE, show.SHOW_SUB_TYPES_BY_CODE)
     except exceptions.ExtraDataValueNotAllowed as e:
         errors.add_client_error(e)
 

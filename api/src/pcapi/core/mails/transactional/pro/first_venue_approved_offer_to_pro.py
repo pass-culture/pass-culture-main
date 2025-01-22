@@ -4,7 +4,7 @@ import sqlalchemy as sa
 
 from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail

@@ -5,7 +5,7 @@ from flask import url_for
 import pytest
 import time_machine
 
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveLocationType

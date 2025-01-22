@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories

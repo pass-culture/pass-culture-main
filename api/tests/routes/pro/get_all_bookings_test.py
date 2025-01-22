@@ -8,7 +8,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories

@@ -10,7 +10,7 @@ from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.connectors.serialization import acceslibre_serializers
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -335,8 +335,8 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
     @validator("collectiveSubCategoryId")
     @classmethod
     def validate_subcategory_id(cls, subcategory_id: str | None) -> str | None:
-        if subcategory_id and not subcategory_id in subcategories_v2.COLLECTIVE_SUBCATEGORIES:
-            raise ValueError(f"Must be one of [{list(subcategories_v2.COLLECTIVE_SUBCATEGORIES)}]")
+        if subcategory_id and not subcategory_id in subcategories.COLLECTIVE_SUBCATEGORIES:
+            raise ValueError(f"Must be one of [{list(subcategories.COLLECTIVE_SUBCATEGORIES)}]")
         return subcategory_id
 
 

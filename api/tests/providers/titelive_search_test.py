@@ -9,7 +9,8 @@ import time_machine
 from pcapi.connectors import titelive
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.genres import music
 from pcapi.core.fraud.factories import ProductWhitelistFactory
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
@@ -23,7 +24,6 @@ from pcapi.core.providers.titelive_book_search import extract_eans_from_titelive
 from pcapi.core.providers.titelive_music_search import TiteliveMusicSearch
 from pcapi.core.users.factories import FavoriteFactory
 from pcapi.core.users.models import Favorite
-from pcapi.domain import music_types
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils import requests
@@ -82,11 +82,9 @@ class TiteliveSearchTest:
         assert cd_product.extraData["nb_galettes"] == "1"
         assert cd_product.extraData["performer"] == "Gims"
         assert cd_product.extraData["prix_musique"] == "14.99"
-        assert cd_product.extraData["musicType"] == str(
-            music_types.MUSIC_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
-        )
+        assert cd_product.extraData["musicType"] == str(music.MUSIC_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code)
         assert cd_product.extraData["musicSubType"] == str(
-            music_types.MUSIC_SUB_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
+            music.MUSIC_SUB_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
         )
 
         shared_gtl_product = offers_models.Product.query.filter(
@@ -114,10 +112,10 @@ class TiteliveSearchTest:
         assert shared_gtl_product.extraData["performer"] == "Gims"
         assert shared_gtl_product.extraData["prix_musique"] == "14.99"
         assert shared_gtl_product.extraData["musicType"] == str(
-            music_types.MUSIC_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
+            music.MUSIC_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
         )
         assert shared_gtl_product.extraData["musicSubType"] == str(
-            music_types.MUSIC_SUB_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
+            music.MUSIC_SUB_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
         )
 
         vinyle_product = offers_models.Product.query.filter(
@@ -143,8 +141,8 @@ class TiteliveSearchTest:
         assert vinyle_product.extraData["music_label"] == "WARNER MUSIC UK"
         assert vinyle_product.extraData["nb_galettes"] == "1"
         assert vinyle_product.extraData["performer"] == "Gorillaz"
-        assert vinyle_product.extraData["musicType"] == str(music_types.MUSIC_TYPES_BY_SLUG["POP-BRITPOP"].code)
-        assert vinyle_product.extraData["musicSubType"] == str(music_types.MUSIC_SUB_TYPES_BY_SLUG["POP-BRITPOP"].code)
+        assert vinyle_product.extraData["musicType"] == str(music.MUSIC_TYPES_BY_SLUG["POP-BRITPOP"].code)
+        assert vinyle_product.extraData["musicSubType"] == str(music.MUSIC_SUB_TYPES_BY_SLUG["POP-BRITPOP"].code)
         assert "prix_musique" not in vinyle_product.extraData
 
     @time_machine.travel("2023-01-01", tick=False)

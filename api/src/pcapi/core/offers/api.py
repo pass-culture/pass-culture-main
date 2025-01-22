@@ -27,8 +27,8 @@ import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.bookings.repository as bookings_repository
-from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.categories.subcategories_v2 import ExtraDataFieldEnum
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.genres import music
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
@@ -59,7 +59,6 @@ import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.core.users.models as users_models
-from pcapi.domain import music_types
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
@@ -148,8 +147,8 @@ def deserialize_extra_data(initial_extra_data: typing.Any, subcategoryId: str) -
         # FIXME (ghaliela, 2024-02-16): If gtl id is sent in the extra data, musicType and musicSubType are not sent
         gtl_id = extra_data.get("gtl_id")
         if gtl_id and gtl_id in TITELIVE_MUSIC_GENRES_BY_GTL_ID:
-            extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[gtl_id]].code)
-            extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[gtl_id]].code)
+            extra_data["musicType"] = str(music.MUSIC_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[gtl_id]].code)
+            extra_data["musicSubType"] = str(music.MUSIC_SUB_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[gtl_id]].code)
         # FIXME (ghaliela, 2024-02-16): If musicType is sent in the extra data, gtl id is not sent
         elif extra_data.get("musicType"):
             extra_data["gtl_id"] = GTL_IDS_BY_MUSIC_GENRE_CODE[int(extra_data["musicType"])]
@@ -1093,7 +1092,7 @@ def publish_offer(
     validation.check_publication_date(offer, publication_date)
 
     if offer.extraData:
-        if ean := offer.extraData.get(ExtraDataFieldEnum.EAN.value):
+        if ean := offer.extraData.get(subcategories.ExtraDataFieldEnum.EAN.value):
             validation.check_other_offer_with_ean_does_not_exist(ean, offer.venue, offer.id)
 
     update_offer_fraud_information(offer, user)

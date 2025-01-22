@@ -4,7 +4,7 @@ from flask import url_for
 import pytest
 import time_machine
 
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.testing import assert_num_queries
