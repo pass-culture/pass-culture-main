@@ -73,6 +73,10 @@ describe('App', () => {
   beforeEach(() => {
     vi.spyOn(window, 'scrollTo')
     vi.spyOn(api, 'listFeatures').mockResolvedValue([])
+
+    vi.mock('commons/hooks/useHasAccessToDidacticOnboarding', () => ({
+      useHasAccessToDidacticOnboarding: () => true,
+    }))
   })
 
   it('should render App and children components when isMaintenanceActivated is false', async () => {
