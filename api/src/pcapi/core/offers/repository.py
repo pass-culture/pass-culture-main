@@ -263,6 +263,7 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
                 models.Offer.venueId,
                 models.Offer.isDuo,
                 models.Offer.externalTicketOfficeUrl,
+                models.Offer.productId,
             )
         )
         .options(
