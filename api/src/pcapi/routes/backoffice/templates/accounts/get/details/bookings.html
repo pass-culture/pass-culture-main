@@ -18,7 +18,7 @@
         <tr>
           <th scope="row">{{ build_booking_toggle_extra_row_button(booking) }}</th>
           <td>{{ booking.offerer.name | escape }}</td>
-          <td>{{ links.build_offer_name_to_pc_pro_link(booking.stock.offer) }}</td>
+          <td>{{ links.build_offer_name_to_details_link(booking.stock.offer) }}</td>
           <td>
             {{ booking.amount | format_amount(target=booking.user) }}
             {% if booking.stock.offer.isDuo and booking.quantity == 2 %}(Duo){% endif %}
