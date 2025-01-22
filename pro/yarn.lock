@@ -2095,10 +2095,10 @@
   resolved "https://registry.yarnpkg.com/@storybook/theming/-/theming-8.5.0.tgz#c51c938ae6d695ecb73604e46d19d9db33859408"
   integrity sha512-591LbOj/HMmHYUfLgrMerxhF1A9mY61HWKxcRpB6xxalc1Xw1kRtQ49DcwuTXnUu9ktBB3nuOzPNPQPFSh/7PQ==
 
-"@testing-library/cypress@^10.0.2":
-  version "10.0.2"
-  resolved "https://registry.yarnpkg.com/@testing-library/cypress/-/cypress-10.0.2.tgz#5d360f2aa43708c6c92e24765f892b09f3a58912"
-  integrity sha512-dKv95Bre5fDmNb9tOIuWedhGUryxGu1GWYWtXDqUsDPcr9Ekld0fiTb+pcBvSsFpYXAZSpmyEjhoXzLbhh06yQ==
+"@testing-library/cypress@^10.0.3":
+  version "10.0.3"
+  resolved "https://registry.yarnpkg.com/@testing-library/cypress/-/cypress-10.0.3.tgz#4514b1bcace4f28acab7ba7db6b8f5c017f0bfd1"
+  integrity sha512-TeZJMCNtiS59cPWalra7LgADuufO5FtbqQBYxuAgdX6ZFAR2D9CtQwAG8VbgvFcchW3K414va/+7P4OkQ80UVg==
   dependencies:
     "@babel/runtime" "^7.14.6"
     "@testing-library/dom" "^10.1.0"
