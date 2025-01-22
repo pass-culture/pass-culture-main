@@ -46,13 +46,13 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
     .slice(0, MAX_DRAFT_TO_DISPLAY)
 
   const offerer = selectedOffererQuery.data
-  const venue = offerer?.managedVenues?.filter(
-    ({ isPermanent }) => isPermanent
+  const physicalVenue = offerer?.managedVenues?.filter(
+    ({ isVirtual }) => !isVirtual
   )[0]
 
   // Assumed choice to redirect offerers without permanent venues (old cases) to /accueil
-  const synchronizedLink = venue
-    ? `/structures/${selectedOffererId}/lieux/${venue.id}/parametres`
+  const synchronizedLink = physicalVenue
+    ? `/structures/${selectedOffererId}/lieux/${physicalVenue.id}/parametres`
     : '/accueil'
 
   return (
