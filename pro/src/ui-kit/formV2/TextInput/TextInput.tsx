@@ -19,11 +19,6 @@ import styles from './TextInput.module.scss'
  */
 type TextInputProps = FieldLayoutBaseProps &
   BaseInputProps & {
-    /**
-     * A flag to make the input read-only.
-     * It becomes a span element with the value displayed.
-     * Only FieldLayout props, refForInput & value will then be used.
-     */
     readOnly?: boolean
     /**
      * Allows decimal numbers in the input.
@@ -78,7 +73,6 @@ type TextInputProps = FieldLayoutBaseProps &
  * - **Do not use the `placeholder` to indicate the format**: Placeholders are not always announced by screen readers and disappear once the user starts typing. Use `label` or `description` to provide information about the expected format.
  * - **Labels and ARIA**: Always provide the `label` prop so the field is correctly identified by assistive technologies. The component uses `aria-required` to indicate if the field is optional or required.
  * - **Descriptions**: If you use the `description` prop, it will be linked to the input via `aria-describedby`, providing additional information to users.
- * - **Character Counting**: When `countCharacters` is enabled, the number of characters entered is displayed, and a description is added for assistive technologies.
  * - **Error Handling**: Error messages are handled and displayed in an accessible manner, informing users of issues with their input.
  * - **Keyboard Navigation**: Users can navigate and interact with the field using the keyboard, in compliance with accessibility standards.
  */
@@ -160,9 +154,12 @@ export const TextInput = React.forwardRef(
           }
         }}
         // Disable changing input value on scroll over a number input
+        /* istanbul ignore next */
         onWheel={(event) => {
+          /* istanbul ignore next */
           if (type === 'number') {
             // Blur the input to prevent value change on scroll
+            /* istanbul ignore next */
             event.currentTarget.blur()
           }
         }}

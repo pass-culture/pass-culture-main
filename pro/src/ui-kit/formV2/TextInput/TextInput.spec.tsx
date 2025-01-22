@@ -78,4 +78,14 @@ describe('TextInput', () => {
 
     expect(screen.getByText('My error on my input')).toBeInTheDocument()
   })
+
+  it('should ignore onKeyDown event for type number', async () => {
+    render(<TextInput type="number" label="Input" name="test1" />)
+
+    const input = screen.getByLabelText('Input *')
+    await userEvent.type(input, '1000')
+    await userEvent.keyboard('ArrowUp')
+
+    expect(input).toHaveValue(1000)
+  })
 })
