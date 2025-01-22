@@ -12,6 +12,10 @@
 
   @include formsM.input-theme-nested;
 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
   &.filter-variant {
     border-radius: rem.torem(4px);
     padding: 0 size.$input-filter-variant-horizontal-padding;

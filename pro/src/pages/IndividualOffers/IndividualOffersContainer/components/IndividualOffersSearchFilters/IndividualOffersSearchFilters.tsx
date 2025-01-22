@@ -12,6 +12,7 @@ import {
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OffersTableSearch } from 'components/OffersTable/OffersTableSearch/OffersTableSearch'
 import styles from 'components/OffersTable/OffersTableSearch/OffersTableSearch.module.scss'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
@@ -140,7 +141,7 @@ export const IndividualOffersSearchFilters = ({
 
   return (
     <OffersTableSearch
-      type='individual'
+      type="individual"
       hasActiveFilters={hasFilters}
       onSubmit={requestFilteredOffers}
       isDisabled={disableAllFilters}
@@ -152,77 +153,76 @@ export const IndividualOffersSearchFilters = ({
       }}
       onResetFilters={requestAllOffers}
     >
-      {isOfferAddressEnabled ? (
-        <FieldLayout label="Localisation" name="address" isOptional>
+      <FormLayout.Row inline>
+        <FieldLayout label="Statut" name="status" isOptional>
           <SelectInput
-            defaultOption={ALL_OFFERER_ADDRESS_OPTION}
-            onChange={storeSelectedOfferAddress}
-            disabled={offererAddresses.length === 0 || disableAllFilters}
-            name="address"
-            options={offererAddresses}
-            data-testid="address-select"
-            value={selectedFilters.offererAddressId}
+            value={selectedFilters.status as OfferStatus}
+            name="status"
+            onChange={storeOfferStatus}
+            disabled={disableAllFilters || isRestrictedAsAdmin}
+            options={statusFilterOptions}
           />
         </FieldLayout>
-      ) : (
-        <FieldLayout label="Lieu" name="lieu" isOptional>
+        {isOfferAddressEnabled ? (
+          <FieldLayout label="Localisation" name="address" isOptional>
+            <SelectInput
+              defaultOption={ALL_OFFERER_ADDRESS_OPTION}
+              onChange={storeSelectedOfferAddress}
+              disabled={offererAddresses.length === 0 || disableAllFilters}
+              name="address"
+              options={offererAddresses}
+              data-testid="address-select"
+              value={selectedFilters.offererAddressId}
+            />
+          </FieldLayout>
+        ) : (
+          <FieldLayout label="Lieu" name="lieu" isOptional>
+            <SelectInput
+              defaultOption={ALL_VENUES_OPTION}
+              onChange={storeSelectedVenue}
+              disabled={disableAllFilters}
+              name="lieu"
+              options={venues}
+              value={selectedFilters.venueId}
+            />
+          </FieldLayout>
+        )}
+        {categories && (
+          <FieldLayout label="Catégorie" name="categorie" isOptional>
+            <SelectInput
+              defaultOption={ALL_CATEGORIES_OPTION}
+              onChange={storeSelectedCategory}
+              disabled={disableAllFilters}
+              name="categorie"
+              options={categories}
+              value={selectedFilters.categoryId}
+            />
+          </FieldLayout>
+        )}
+        <FieldLayout label="Mode de création" name="creationMode" isOptional>
           <SelectInput
-            defaultOption={ALL_VENUES_OPTION}
-            onChange={storeSelectedVenue}
+            onChange={storeCreationMode}
             disabled={disableAllFilters}
-            name="lieu"
-            options={venues}
-            value={selectedFilters.venueId}
+            name="creationMode"
+            options={CREATION_MODES_OPTIONS}
+            value={selectedFilters.creationMode}
           />
         </FieldLayout>
-      )}
-      {categories && (
-        <FieldLayout label="Catégorie" name="categorie" isOptional>
-          <SelectInput
-            defaultOption={ALL_CATEGORIES_OPTION}
-            onChange={storeSelectedCategory}
-            disabled={disableAllFilters}
-            name="categorie"
-            options={categories}
-            value={selectedFilters.categoryId}
+        <FieldLayout
+          label="Période de l’évènement"
+          name="period"
+          isOptional
+          className={styles['offers-table-search-filter-full-width']}
+        >
+          <PeriodSelector
+            onBeginningDateChange={onBeginningDateChange}
+            onEndingDateChange={onEndingDateChange}
+            isDisabled={disableAllFilters}
+            periodBeginningDate={selectedFilters.periodBeginningDate}
+            periodEndingDate={selectedFilters.periodEndingDate}
           />
         </FieldLayout>
-      )}
-      <FieldLayout
-        label="Mode de création"
-        name="creationMode"
-        isOptional
-      >
-        <SelectInput
-          onChange={storeCreationMode}
-          disabled={disableAllFilters}
-          name="creationMode"
-          options={CREATION_MODES_OPTIONS}
-          value={selectedFilters.creationMode}
-        />
-      </FieldLayout>
-      <FieldLayout
-        label="Statut"
-        name="status"
-        isOptional
-      >
-        <SelectInput
-          value={selectedFilters.status as OfferStatus}
-          name="status"
-          onChange={storeOfferStatus}
-          disabled={disableAllFilters || isRestrictedAsAdmin}
-          options={statusFilterOptions}
-        />
-      </FieldLayout>
-      <FieldLayout label="Période de l’évènement" name="period" isOptional className={styles['offers-table-search-filter-full-width']}>
-        <PeriodSelector
-          onBeginningDateChange={onBeginningDateChange}
-          onEndingDateChange={onEndingDateChange}
-          isDisabled={disableAllFilters}
-          periodBeginningDate={selectedFilters.periodBeginningDate}
-          periodEndingDate={selectedFilters.periodEndingDate}
-        />
-      </FieldLayout>
+      </FormLayout.Row>
     </OffersTableSearch>
   )
 }

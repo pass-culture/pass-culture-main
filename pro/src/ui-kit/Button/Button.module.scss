@@ -205,16 +205,6 @@
         var(--color-medium-shadow);
     }
 
-    .button-icon {
-      &:not(.button-icon-arrow) {
-        color: var(--color-primary);
-      }
-
-      &.button-icon-arrow {
-        color: var(--color-black);
-      }
-    }
-
     &:disabled,
     &.button-disabled {
       background: var(--color-grey-light);

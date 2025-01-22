@@ -2,8 +2,11 @@ import cn from 'classnames'
 import { useState } from 'react'
 
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { FilterConfigType, getStoredFilterConfig, useStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
+import {
+  FilterConfigType,
+  getStoredFilterConfig,
+  useStoredFilterConfig,
+} from 'components/OffersTable/OffersTableSearch/utils'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeDownIcon from 'icons/stroke-down.svg'
 import strokeUpIcon from 'icons/stroke-up.svg'
@@ -39,11 +42,13 @@ export const OffersTableSearch = ({
   children,
 }: OffersTableSearchProps) => {
   const { onFiltersToggle } = useStoredFilterConfig(type)
-  const isStoreAndToggleFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
+  const isStoreAndToggleFiltersEnabled = useActiveFeature(
+    'WIP_COLLAPSED_MEMORIZED_FILTERS'
+  )
   const [filtersVisibility, setFiltersVisibility] = useState(
-    isStoreAndToggleFiltersEnabled ?
-      getStoredFilterConfig(type).filtersVisibility :
-      true
+    isStoreAndToggleFiltersEnabled
+      ? getStoredFilterConfig(type).filtersVisibility
+      : true
   )
 
   const toggleFiltersVisibility = () => {
@@ -54,16 +59,9 @@ export const OffersTableSearch = ({
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className={styles['offers-table-search']}
-    >
-      <FormLayout.Row
-        className={styles['offers-table-search-name-and-toggle-row']}
-        inline
-      >
+    <form onSubmit={onSubmit} className={styles['offers-table-search']}>
+      <div className={styles['offers-table-search-name-and-toggle-row']}>
         <FieldLayout
-          className={styles['offers-table-search-name-input']}
           label={nameInputProps.label}
           name="offre"
           isOptional
@@ -80,9 +78,9 @@ export const OffersTableSearch = ({
         {isStoreAndToggleFiltersEnabled && (
           <Button
             className={cn(styles['offers-table-search-toggle-button'], {
-                [styles['offers-table-search-toggle-button-active']]: hasActiveFilters
-              }
-            )}
+              [styles['offers-table-search-toggle-button-active']]:
+                hasActiveFilters,
+            })}
             icon={filtersVisibility ? strokeUpIcon : strokeDownIcon}
             iconPosition={IconPositionEnum.RIGHT}
             variant={ButtonVariant.BOX}
@@ -91,20 +89,20 @@ export const OffersTableSearch = ({
             aria-expanded="false"
           >
             Filtres
-            {hasActiveFilters && <span className={styles['visually-hidden']}>actifs</span>}
+            {hasActiveFilters && (
+              <span className={styles['visually-hidden']}>actifs</span>
+            )}
           </Button>
         )}
-      </FormLayout.Row>
+      </div>
       <div
         id="offers-filter"
         data-testid="offers-filter"
         className={cn(styles['offers-table-search-filters'], {
-          [styles['offers-table-search-filters-collapsed']]: !filtersVisibility
+          [styles['offers-table-search-filters-collapsed']]: !filtersVisibility,
         })}
       >
-        <FormLayout.Row inline className={styles['offers-table-search-filters-row']}>
-          {children}
-        </FormLayout.Row>
+        {children}
         <div className={styles['offers-table-search-reset-wrapper']}>
           <Button
             icon={fullRefreshIcon}
