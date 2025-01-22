@@ -1011,12 +1011,16 @@ def edit_stock(
     return stock, "beginningDatetime" in modifications
 
 
+def handle_stock_edition(stock: models.Stock, is_beginning_datetime_updated: bool) -> None:
+    if is_beginning_datetime_updated:
+        bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
+        _notify_pro_upon_stock_edit_for_event_offer(stock, bookings)
+        _notify_beneficiaries_upon_stock_edit(stock, bookings)
+
+
 def handle_stocks_edition(edited_stocks: list[tuple[models.Stock, bool]]) -> None:
     for stock, is_beginning_datetime_updated in edited_stocks:
-        if is_beginning_datetime_updated:
-            bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
-            _notify_pro_upon_stock_edit_for_event_offer(stock, bookings)
-            _notify_beneficiaries_upon_stock_edit(stock, bookings)
+        handle_stock_edition(stock, is_beginning_datetime_updated)
 
 
 def _format_publication_date(publication_date: datetime.datetime | None, timezone: str) -> datetime.datetime | None:

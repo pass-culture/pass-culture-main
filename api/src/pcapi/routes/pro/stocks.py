@@ -1,4 +1,5 @@
 import logging
+from typing import Collection
 
 from flask_login import current_user
 from flask_login import login_required
@@ -73,6 +74,116 @@ def _get_existing_stocks_by_id(
     return {existing_stocks.id: existing_stocks for existing_stocks in existing_stocks}
 
 
+def _edit_stocks(
+    stocks: Collection[offers_models.Stock],
+    offer: offers_models.Offer,
+    price_categories: Collection[offers_models.PriceCategory],
+) -> Collection[tuple[offers_models.Stock, bool]]:
+    edited_stocks_with_update_info = []
+    if not stocks:
+        return edited_stocks_with_update_info
+
+    existing_stocks = _get_existing_stocks_by_id(offer.id, stocks)
+    for stock in stocks:
+        if stock.id not in existing_stocks:
+            raise ApiErrors(
+                {"stock_id": ["Le stock avec l'id %s n'existe pas" % stock.id]},
+                status_code=400,
+            )
+
+        edited_stock, is_beginning_updated = _edit_stock(
+            stock=stock, existing_stocks=existing_stocks, offer=offer, price_categories=price_categories
+        )
+
+        if edited_stock:
+            edited_stocks_with_update_info.append(edited_stock, is_beginning_updated)
+
+    return edited_stocks_with_update_info
+
+
+def _edit_stock(
+    stock: offers_models.Stock,
+    existing_stocks: Collection[offers_models.Stock],
+    offer: offers_models.Offer,
+    price_categories: Collection[offers_models.PriceCategory],
+) -> tuple[offers_models.Stock, bool] | tuple[None, None]:
+    offers_validation.check_stock_has_price_or_price_category(offer, stock, price_categories)
+
+    try:
+        edited_stock, is_beginning_updated = offers_api.edit_stock(
+            existing_stocks[stock.id],
+            price=stock.price,
+            quantity=stock.quantity,
+            beginning_datetime=(
+                serialization_utils.as_utc_without_timezone(stock.beginning_datetime)
+                if stock.beginning_datetime
+                else None
+            ),
+            booking_limit_datetime=(
+                serialization_utils.as_utc_without_timezone(stock.booking_limit_datetime)
+                if stock.booking_limit_datetime
+                else None
+            ),
+            price_category=price_categories.get(stock.price_category_id, None),
+        )
+    except offers_exceptions.BookingLimitDatetimeTooLate:
+        errors = {
+            "stocks": {
+                stock.id: "La date limite de réservation ne peut être postérieure à la date de début de l'évènement",
+            }
+        }
+        raise ApiErrors(errors, status_code=400)
+    except offers_exceptions.OfferEditionBaseException as error:
+        raise ApiErrors(error.errors, status_code=400)
+
+    if edited_stock:
+        return edited_stock, is_beginning_updated
+    return None, None
+    # upserted_stocks.append(edited_stock)
+    # edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
+
+
+def _create_stocks(
+    stocks: Collection[offers_models.Stock],
+    offer: offers_models.Offer,
+    price_categories: Collection[offers_models.PriceCategory],
+) -> Collection[offers_models.Stock]:
+    upserted_stocks = []
+
+    for stock_to_create in stocks:
+        created_stock = _create_stock(stock_to_create, offer, price_categories)
+        upserted_stocks.append(created_stock)
+
+    return upserted_stocks
+
+
+def _create_stock(
+    stock: offers_models.Stock, offer: offers_models.Offer, price_categories: Collection[offers_models.PriceCategory]
+) -> offers_models.Stock:
+    offers_validation.check_stock_has_price_or_price_category(offer, stock, price_categories)
+
+    try:
+        created_stock = offers_api.create_stock(
+            offer,
+            price=stock.price,
+            activation_codes=stock.activation_codes,
+            activation_codes_expiration_datetime=stock.activation_codes_expiration_datetime,
+            quantity=stock.quantity,
+            beginning_datetime=stock.beginning_datetime,
+            booking_limit_datetime=stock.booking_limit_datetime,
+            price_category=price_categories.get(stock.price_category_id, None),
+        )
+    except offers_exceptions.BookingLimitDatetimeTooLate:
+        errors = {
+            "stocks": {
+                stock.id: "La date limite de réservation ne peut être postérieure à la date de début de l'évènement",
+            }
+        }
+        raise ApiErrors(errors, status_code=400)
+
+    return created_stock
+
+
 @private_api.route("/stocks/bulk", methods=["POST"])
 @login_required
 @spectree_serialize(
@@ -118,72 +229,28 @@ def upsert_stocks(body: stock_serialize.StocksUpsertBodyModel) -> stock_serializ
 
     upserted_stocks = []
     edited_stocks_with_update_info: list[tuple[offers_models.Stock, bool]] = []
-    try:
-        with transaction():
-            if stocks_to_edit:
-                existing_stocks = _get_existing_stocks_by_id(body.offer_id, stocks_to_edit)
-                for stock_to_edit in stocks_to_edit:
-                    if stock_to_edit.id not in existing_stocks:
-                        raise ApiErrors(
-                            {"stock_id": ["Le stock avec l'id %s n'existe pas" % stock_to_edit.id]},
-                            status_code=400,
-                        )
 
-                    offers_validation.check_stock_has_price_or_price_category(offer, stock_to_edit, price_categories)
+    with transaction():
+        edited_stocks_info = _edit_stocks(stocks_to_edit, offer, price_categories)
+        if edited_stocks_info:
+            upserted_stocks.extend([row[0] for row in edited_stocks_info])
+            edited_stocks_with_update_info.extend(edited_stocks_info)
 
-                    edited_stock, is_beginning_updated = offers_api.edit_stock(
-                        existing_stocks[stock_to_edit.id],
-                        price=stock_to_edit.price,
-                        quantity=stock_to_edit.quantity,
-                        beginning_datetime=(
-                            serialization_utils.as_utc_without_timezone(stock_to_edit.beginning_datetime)
-                            if stock_to_edit.beginning_datetime
-                            else None
-                        ),
-                        booking_limit_datetime=(
-                            serialization_utils.as_utc_without_timezone(stock_to_edit.booking_limit_datetime)
-                            if stock_to_edit.booking_limit_datetime
-                            else None
-                        ),
-                        price_category=price_categories.get(stock_to_edit.price_category_id, None),
-                    )
-                    if edited_stock:
-                        upserted_stocks.append(edited_stock)
-                        edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
+        upserted_stocks.extend(_create_stocks(stocks_to_create, offer, price_categories))
 
-            for stock_to_create in stocks_to_create:
-                offers_validation.check_stock_has_price_or_price_category(offer, stock_to_create, price_categories)
-
-                created_stock = offers_api.create_stock(
-                    offer,
-                    price=stock_to_create.price,
-                    activation_codes=stock_to_create.activation_codes,
-                    activation_codes_expiration_datetime=stock_to_create.activation_codes_expiration_datetime,
-                    quantity=stock_to_create.quantity,
-                    beginning_datetime=stock_to_create.beginning_datetime,
-                    booking_limit_datetime=stock_to_create.booking_limit_datetime,
-                    price_category=price_categories.get(stock_to_create.price_category_id, None),
-                )
-                upserted_stocks.append(created_stock)
-
-    except offers_exceptions.BookingLimitDatetimeTooLate:
-        raise ApiErrors(
-            {"stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]},
-            status_code=400,
-        )
-    except offers_exceptions.OfferEditionBaseException as error:
-        raise ApiErrors(error.errors, status_code=400)
-
-    try:
-        offers_api.handle_stocks_edition(edited_stocks_with_update_info)
-    except booking_exceptions.BookingIsAlreadyCancelled:
-        raise ResourceGoneError({"booking": ["Cette réservation a été annulée"]})
-    except booking_exceptions.BookingIsAlreadyRefunded:
-        raise ResourceGoneError({"payment": ["Le remboursement est en cours de traitement"]})
-    except booking_exceptions.BookingHasActivationCode:
-        raise ForbiddenError({"booking": ["Cette réservation ne peut pas être marquée comme inutilisée"]})
-    except booking_exceptions.BookingIsNotUsed:
-        raise ResourceGoneError({"booking": ["Cette contremarque n'a pas encore été validée"]})
+    for stock, is_beginning_datetime_updated in edited_stocks_with_update_info:
+        try:
+            offers_api.handle_stock_edition(stock, is_beginning_datetime_updated)
+        except booking_exceptions.BookingIsAlreadyCancelled:
+            raise ResourceGoneError({"booking": {stock.id: ["Cette réservation a été annulée"]}})
+        except booking_exceptions.BookingIsAlreadyRefunded:
+            raise ResourceGoneError({"payment": {stock.id: ["Le remboursement est en cours de traitement"]}})
+        except booking_exceptions.BookingHasActivationCode:
+            raise ForbiddenError(
+                {"booking": {stock.id: ["Cette réservation ne peut pas être marquée comme inutilisée"]}}
+            )
+        except booking_exceptions.BookingIsNotUsed:
+            raise ResourceGoneError({"booking": {stock.id: ["Cette contremarque n'a pas encore été validée"]}})
 
     return stock_serialize.StocksResponseModel(stocks_count=len(upserted_stocks))
 
