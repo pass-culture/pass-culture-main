@@ -17,7 +17,7 @@ import {
   GET_DATA_ERROR_MESSAGE,
   SAVED_OFFERER_ID_KEY,
 } from 'commons/core/shared/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { useNotification } from 'commons/hooks/useNotification'
 import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
 import { selecteOffererIsOnboarded } from 'commons/store/offerer/selectors'
@@ -45,9 +45,7 @@ export const App = (): JSX.Element | null => {
   const isOffererOnboarded = useSelector(selecteOffererIsOnboarded)
   const dispatch = useDispatch()
   const notify = useNotification()
-  const isDidacticOnboardingEnabled = useActiveFeature(
-    'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING'
-  )
+  const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
 
   // Main hooks
   useLoadFeatureFlags()
