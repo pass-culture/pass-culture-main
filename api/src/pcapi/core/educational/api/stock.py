@@ -4,7 +4,6 @@ import logging
 
 import sqlalchemy as sa
 
-from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
@@ -39,7 +38,7 @@ def create_collective_stock(
     educational_price_detail = stock_data.educational_price_detail
 
     if end:
-        _check_start_and_end_dates_in_same_educational_year(start, end)
+        validation.check_start_and_end_dates_in_same_educational_year(start, end)
     else:
         end = start
 
@@ -104,7 +103,9 @@ def edit_collective_stock(
         after_update_start_datetime = start_datetime or stock.startDatetime
         after_update_end_datetime = end_datetime or stock.endDatetime
 
-        _check_start_and_end_dates_in_same_educational_year(after_update_end_datetime, after_update_start_datetime)
+        validation.check_start_and_end_dates_in_same_educational_year(
+            after_update_start_datetime, after_update_end_datetime
+        )
 
     booking_limit = stock_data.get("bookingLimitDatetime")
     booking_limit = serialization_utils.as_utc_without_timezone(booking_limit) if booking_limit else None
@@ -204,21 +205,6 @@ def edit_collective_stock(
 
 def get_collective_stock(collective_stock_id: int) -> educational_models.CollectiveStock | None:
     return educational_repository.get_collective_stock(collective_stock_id)
-
-
-def _check_start_and_end_dates_in_same_educational_year(
-    end_datetime: datetime.datetime, start_datetime: datetime.datetime
-) -> None:
-    start_year = educational_repository.find_educational_year_by_date(start_datetime)
-    if not start_year:
-        raise exceptions.StartEducationalYearMissing()
-
-    end_year = educational_repository.find_educational_year_by_date(end_datetime)
-    if not end_year:
-        raise exceptions.EndEducationalYearMissing()
-
-    if start_year.id != end_year.id:
-        raise exceptions.StartAndEndEducationalYearDifferent()
 
 
 def _extract_updatable_fields_from_stock_data(
