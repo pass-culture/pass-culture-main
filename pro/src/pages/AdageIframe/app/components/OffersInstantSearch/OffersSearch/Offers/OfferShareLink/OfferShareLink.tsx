@@ -45,6 +45,7 @@ Bonjour, \n\nJe partage avec vous l’offre pass Culture “${offer.name}”. \n
       onClick={handleShareButtonClicked}
       tooltipContentClassName={tooltipContentClassName}
       variant={ListIconButtonVariant.PRIMARY}
+      target="_blank"
     >
       Partager par email
     </ListIconButton>

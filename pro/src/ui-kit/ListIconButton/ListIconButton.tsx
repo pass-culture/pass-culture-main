@@ -52,6 +52,10 @@ interface ListIconButtonProps extends React.HTMLProps<HTMLButtonElement> {
    * Custom test ID for targeting the component in tests.
    */
   dataTestid?: string
+  /**
+   * Target attribute for the <a> tag
+   */
+  target?: string
 }
 
 const LIST_ICON_SIZE = '16'
@@ -90,6 +94,7 @@ export const ListIconButton = forwardRef(
       url,
       isExternal = true,
       dataTestid,
+      target,
       ...buttonAttrs
     }: ListIconButtonProps,
     forwadedRef: ForwardedRef<HTMLButtonElement>
@@ -144,6 +149,8 @@ export const ListIconButton = forwardRef(
         )}
         href={url}
         onClick={onClick}
+        target={target}
+        rel={target === '_blank' ? 'noreferrer' : undefined}
         {...tooltipProps}
       >
         {content}

@@ -130,6 +130,8 @@ export const RequestFormDialog = ({
         <a
           href={`mailto:${value}`}
           className={styles['form-description-text-contact']}
+          target="_blank"
+          rel="noreferrer"
         >
           {value}
         </a>
@@ -156,6 +158,8 @@ export const RequestFormDialog = ({
             <a
               href={`mailto:${contactEmail}`}
               className={styles['form-description-text-value']}
+              target="_blank"
+              rel="noreferrer"
             >
               {contactEmail}
             </a>
