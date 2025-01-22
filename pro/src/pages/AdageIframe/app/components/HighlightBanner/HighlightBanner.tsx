@@ -6,17 +6,16 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './HighlightBanner.module.scss'
 import { storageAvailable } from 'commons/utils/storageAvailable'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import fullLinkIcon from 'icons/full-link.svg'
+
 
 interface HighlightBannerProps {
   title: string
   description: string
   localStorageKey: string
-  img: JSX.Element
-  primaryButton?: JSX.Element | undefined
-  secondaryButton?: JSX.Element | undefined
+  img?: JSX.Element
+  primaryButton?: JSX.Element
+  secondaryButton?: JSX.Element
+  queryId?: string
 }
 
 export const HighlightBanner = ({
@@ -25,7 +24,7 @@ export const HighlightBanner = ({
   localStorageKey,
   img,
   primaryButton,
-  secondaryButton
+  secondaryButton,
 }: HighlightBannerProps) => {
   const isLocalStorageAvailable = storageAvailable('localStorage')
   const [shouldHideHighlightBanner, setShouldHideHighlightBanner] = useState(
@@ -37,7 +36,9 @@ export const HighlightBanner = ({
     setShouldHideHighlightBanner(true)
   }
 
-  if (shouldHideHighlightBanner) return null
+  if (shouldHideHighlightBanner) { 
+    return null
+  }
 
   return (
     <div
@@ -45,22 +46,21 @@ export const HighlightBanner = ({
         [styles['highlight-banner-closed']]: shouldHideHighlightBanner,
       })}
     >
-        <div className={styles['highlight-banner-container']}>
-          <div className={styles['highlight-banner-title']}>{title}</div>
-          <p className={styles['highlight-banner-description']}>{description}</p>
-          {secondaryButton}
-          {primaryButton}
-        </div>
-        <div className={styles['highlight-banner-img']}>{img}</div>
-        <button
-            onClick={onCloseHighlightBanner}
-            title="Masquer le bandeau"
-            type="button"
-            className={styles['highlight-banner-close']}
-            data-testid="close-highlight-banner"
-          >
-            <SvgIcon src={fullClearIcon} alt="" width="24" />
-          </button>
+      <div className={styles['highlight-banner-container']}>
+        <div className={styles['highlight-banner-title']}>{title}</div>
+        <p className={styles['highlight-banner-description']}>{description}</p>
+        {secondaryButton}
+        {primaryButton}
+      </div>
+      {img && <div className={styles['highlight-banner-img']}>{img}</div>}
+      <button
+        onClick={onCloseHighlightBanner}
+        aria-label="Masquer le bandeau"
+        type="button"
+        className={styles['highlight-banner-close']}
+      >
+        <SvgIcon src={fullClearIcon} alt="" width="24" />
+      </button>
     </div>
   )
 }

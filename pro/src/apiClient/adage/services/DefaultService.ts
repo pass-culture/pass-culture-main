@@ -17,6 +17,7 @@ import type { CollectiveRequestResponseModel } from '../models/CollectiveRequest
 import type { EacFormatsResponseModel } from '../models/EacFormatsResponseModel';
 import type { EducationalInstitutionWithBudgetResponseModel } from '../models/EducationalInstitutionWithBudgetResponseModel';
 import type { FavoritesResponseModel } from '../models/FavoritesResponseModel';
+import type { HighlightBannerBody } from '../models/HighlightBannerBody';
 import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
 import type { ListCollectiveOfferTemplateResponseModel } from '../models/ListCollectiveOfferTemplateResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
@@ -485,6 +486,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/header-link-click/',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * log_open_highlight_banner <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logOpenHighlightBanner(
+    requestBody?: HighlightBannerBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/highlight-banner',
       body: requestBody,
       mediaType: 'application/json',
       errors: {

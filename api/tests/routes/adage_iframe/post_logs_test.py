@@ -521,3 +521,22 @@ class LogsTest:
             "user_role": AdageFrontRoles.READONLY,
             "isFromNoResult": None,
         }
+
+    def test_log_open_highlight_banner(self, test_client, caplog):
+        with caplog.at_level(logging.INFO):
+            response = test_client.post(
+                url_for("adage_iframe.log_open_highlight_banner"),
+                json={"iframeFrom": "search", "banner": "TFMAC-2025", "queryId": "1234a"},
+            )
+
+        assert response.status_code == 204
+        assert caplog.records[0].message == "OpenHighlightBanner"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "adage",
+            "queryId": "1234a",
+            "from": "search",
+            "userId": get_hashed_user_id(EMAIL),
+            "uai": UAI,
+            "user_role": AdageFrontRoles.READONLY,
+            "banner": "TFMAC-2025",
+        }
