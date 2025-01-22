@@ -331,7 +331,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
 
     @property
     def age(self) -> int | None:
-        return users_utils.get_age_from_birth_date(self.birth_date) if self.birth_date else None
+        return users_utils.get_age_from_birth_date(self.birth_date, self.departementCode) if self.birth_date else None
 
     @hybrid_property
     def birth_date(self) -> date | None:
