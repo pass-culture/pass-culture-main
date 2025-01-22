@@ -162,6 +162,7 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
         sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
             offerers_models.OffererConfidenceRule.confidenceLevel
         ),
+        sa.orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
     )
 
     venue = venue_query.one_or_none()
@@ -184,26 +185,29 @@ def render_venue_details(
                 phone_number=venue.contact.phone_number if venue.contact else None,
             )
         else:
+            assert venue.offererAddress  # physical venues should have an address
             edit_venue_form = forms.EditVenueForm(
                 venue=venue,
                 name=venue.name,
                 public_name=venue.publicName,
                 siret=venue.siret,
-                city=venue.city,
+                city=venue.offererAddress.address.city,
                 postal_address_autocomplete=(
-                    f"{venue.street}, {venue.postalCode} {venue.city}"
-                    if venue.street is not None and venue.city is not None and venue.postalCode is not None
+                    f"{venue.offererAddress.address.street}, {venue.offererAddress.address.postalCode} {venue.offererAddress.address.city}"
+                    if venue.offererAddress.address.street is not None
+                    and venue.offererAddress.address.city is not None
+                    and venue.offererAddress.address.postalCode is not None
                     else None
                 ),
-                postal_code=venue.postalCode,
-                street=venue.street,
-                ban_id=venue.banId,
+                postal_code=venue.offererAddress.address.postalCode,
+                street=venue.offererAddress.address.street,
+                ban_id=venue.offererAddress.address.banId,
                 acceslibre_url=venue.external_accessibility_url,
                 booking_email=venue.bookingEmail,
                 phone_number=venue.contact.phone_number if venue.contact else None,
                 is_permanent=venue.isPermanent,
-                latitude=venue.latitude,
-                longitude=venue.longitude,
+                latitude=venue.offererAddress.address.latitude,
+                longitude=venue.offererAddress.address.longitude,
                 venue_type_code=venue.venueTypeCode.name,
             )
             edit_venue_form.siret.flags.disabled = not _can_edit_siret()
