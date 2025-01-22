@@ -31,7 +31,7 @@ import { OfferCardComponent } from '../../../AdageDiscovery/OfferCard/OfferCard'
 import { CustomPagination } from '../../../Pagination/Pagination'
 import { AdageSkeleton } from '../../../Skeleton/AdageSkeleton'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
-import TFMAC2025 from 'pages/AdageIframe/app/components/DiffuseHelp/assets/TFMAC-2025.png'
+import TFMAC2025 from 'pages/AdageIframe/app/components/HighlightBanner/assets/TFMAC-2025.png'
 import fullLinkIcon from 'icons/full-link.svg'
 import {
   ToggleButtonGroup,
@@ -43,7 +43,7 @@ import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import styles from './Offers.module.scss'
 import { offerIsBookable } from './utils/offerIsBookable'
 import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
-import { HighlightBanner } from '../../../DiffuseHelp/HighlightBanner'
+import { HighlightBanner } from '../../../HighlightBanner/HighlightBanner'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -80,8 +80,8 @@ export const Offers = ({
     ? scopedResults.find((res) => res.indexId === indexId)?.results
     : nonScopedResult
 
-  const targetDate = new Date('2025-02-03')
-  const currentDate = new Date()
+  const targetDate = new Date('2025-02-03').getTime()
+  const currentDate = Date.now()
 
   const showDiffuseHelp = (submitCount ?? 0) > 0 && currentDate >= targetDate
 
@@ -175,6 +175,15 @@ export const Offers = ({
     })
   }
 
+
+  const logOpenHighlightBanner = (bannerName: string) => {
+    apiAdage.logOpenHighlightBanner({
+      iframeFrom: location.pathname,
+      queryId: results.queryID,
+      banner: bannerName,
+    })
+  }
+
   return (
     <>
       <div className={styles['offers-view']}>
@@ -239,10 +248,10 @@ export const Offers = ({
                 localStorageKey={'DIFFUSE_HELP_ADAGE_SEEN'}
                 img={<ShadowTipsHelpIcon className={styles['highlight-banner-icon']} />}
               />
-            ) : (
+            ) : adageViewType === 'list' && index === 0 && currentDate < targetDate && (
               <HighlightBanner
                 title={
-                  'Permettre aux jeunes de découvrir les métiers de la culture'
+                  'Permettre aux jeunes de découvrir les métiers de la culture !'
                 }
                 description={
                   'Du 24 janvier au 2 février 2025, le pass Culture propose aux jeunes de 15 à 20 ans une multitude de rencontres avec les métiers des arts et de la culture sur leur application pass Culture.'
@@ -252,8 +261,7 @@ export const Offers = ({
                   <img
                     src={TFMAC2025}
                     className={styles['banner']}
-                    role="presentation"
-                    alt=""
+                    alt="La culture en vrai, métiers des arts et de la culture"
                   />
                 }
                 primaryButton={
@@ -264,9 +272,7 @@ export const Offers = ({
                     opensInNewTab
                     icon={fullLinkIcon}
                     className={styles['highlight-banner-button']}
-                    onClick={() => {
-                      console.log('tracker')
-                    }}
+                    onClick={() => logOpenHighlightBanner('TFMAC-2025')}
                   >
                     en savoir plus
                   </ButtonLink>

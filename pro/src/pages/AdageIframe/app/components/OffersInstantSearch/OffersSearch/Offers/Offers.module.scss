@@ -99,6 +99,25 @@
   margin: rem.torem(24px) 0;
 }
 
+.banner {
+  position: absolute;
+  height: rem.torem(216px);
+  bottom: 0;
+  right: 15%;
+}
+
+
+.highlight-banner-button {
+  background-color: var(--color-secondary-light);
+  border-color: var(--color-secondary-light);
+
+  &:hover,
+  &:focus {
+    background-color: var(--color-secondary-light);
+    border-color: var(--color-secondary-light);
+  }
+}
+
 .offer-type-vue {
   display: none;
 

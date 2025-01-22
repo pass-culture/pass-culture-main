@@ -427,3 +427,20 @@ def log_contact_url_click(
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
+
+
+@blueprint.adage_iframe.route("/logs/highlight-banner", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
+def log_open_highlight_banner(
+    authenticated_information: AuthenticatedInformation,
+    body: serialization.HighlightBannerBody,
+) -> None:
+    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    educational_utils.log_information_for_data_purpose(
+        event_name="OpenHighlightBanner",
+        extra_data={"from": body.iframeFrom, "queryId": body.queryId, "banner": body.banner},
+        uai=authenticated_information.uai,
+        user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
+        user_email=authenticated_information.email,
+    )

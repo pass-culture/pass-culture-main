@@ -38,6 +38,7 @@ export type { FavoritesResponseModel } from './models/FavoritesResponseModel';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export type { GetRelativeVenuesQueryModel } from './models/GetRelativeVenuesQueryModel';
 export type { GetTemplateIdsModel } from './models/GetTemplateIdsModel';
+export type { HighlightBannerBody } from './models/HighlightBannerBody';
 export { InstitutionRuralLevel } from './models/InstitutionRuralLevel';
 export type { ListCollectiveOffersResponseModel } from './models/ListCollectiveOffersResponseModel';
 export type { ListCollectiveOfferTemplateResponseModel } from './models/ListCollectiveOfferTemplateResponseModel';

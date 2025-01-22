@@ -103,3 +103,7 @@ class TrackingShowMoreBody(AdageBaseModel):
 class TrackingCTAShareBody(AdageBaseModel, VueTypeMixin):
     source: str
     offerId: int
+
+
+class HighlightBannerBody(AdageBaseModel):
+    banner: str
