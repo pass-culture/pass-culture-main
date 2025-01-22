@@ -4,7 +4,7 @@ import { useRemoteConfigParams } from 'app/App/analytics/firebase'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 
 export const useHasAccessToDidacticOnboarding = () => {
-  const [hasAccess, setHasAccess] = useState(false)
+  const [hasAccess, setHasAccess] = useState<boolean | undefined>()
   const isDidacticOnboardingEnabled = useActiveFeature(
     'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING'
   )

@@ -8,6 +8,7 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import * as orejime from 'app/App/analytics/orejime'
 import { App } from 'app/App/App'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import * as useHasAccessToDidacticOnboarding from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { RootState } from 'commons/store/rootReducer'
 import {
   sharedCurrentUserFactory,
@@ -68,15 +69,17 @@ Object.defineProperty(window, 'location', {
   },
   writable: true,
 })
+vi.mock('commons/hooks/useHasAccessToDidacticOnboarding')
 
 describe('App', () => {
   beforeEach(() => {
     vi.spyOn(window, 'scrollTo')
     vi.spyOn(api, 'listFeatures').mockResolvedValue([])
 
-    vi.mock('commons/hooks/useHasAccessToDidacticOnboarding', () => ({
-      useHasAccessToDidacticOnboarding: () => true,
-    }))
+    vi.spyOn(
+      useHasAccessToDidacticOnboarding,
+      'useHasAccessToDidacticOnboarding'
+    ).mockResolvedValue(true)
   })
 
   it('should render App and children components when isMaintenanceActivated is false', async () => {

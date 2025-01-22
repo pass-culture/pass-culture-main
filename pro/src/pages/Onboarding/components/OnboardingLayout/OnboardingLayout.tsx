@@ -1,7 +1,9 @@
 import cn from 'classnames'
 import { type ReactNode } from 'react'
+import { Navigate } from 'react-router'
 
 import { Layout } from 'app/App/layout/Layout'
+import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
 
 import styles from './OnboardingLayout.module.scss'
 
@@ -18,6 +20,12 @@ export const OnboardingLayout = ({
   verticallyCentered = false,
   stickyActionsAndFooter = true,
 }: OnboardingLayoutProps): JSX.Element => {
+  const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
+
+  if (isDidacticOnboardingEnabled === false) {
+    return <Navigate to="/accueil" />
+  }
+
   return (
     <Layout
       layout={stickyActionsAndFooter ? 'sticky-onboarding' : 'onboarding'}
