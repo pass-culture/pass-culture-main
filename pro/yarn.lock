@@ -1911,10 +1911,19 @@
   dependencies:
     "@storybook/global" "^5.0.0"
 
-"@storybook/blocks@8.5.0", "@storybook/blocks@^8.5.0":
+"@storybook/blocks@8.5.0":
   version "8.5.0"
   resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-8.5.0.tgz#6994c44bab2df46cbe925f18a064a6433bd66eff"
   integrity sha512-2sTOgjH/JFOgWnpqkKjpKVvKAgUaC9ZBjH1gnCoA5dne/SDafYaCAYfv6yZn7g2Xm1sTxWCAmMIUkYSALeWr+w==
+  dependencies:
+    "@storybook/csf" "0.1.12"
+    "@storybook/icons" "^1.2.12"
+    ts-dedent "^2.0.0"
+
+"@storybook/blocks@^8.5.1":
+  version "8.5.1"
+  resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-8.5.1.tgz#9e274d605e57390483007a9ed8b6cb073a8889f6"
+  integrity sha512-xUjnOa9udmHhlBTZ+bmMHeU1M9a5OnvnX8urQ0TrNpSyHH7HoPd3xZC4fzz73nSJNMVHIYMZYsz2pj/WfeA/hg==
   dependencies:
     "@storybook/csf" "0.1.12"
     "@storybook/icons" "^1.2.12"
