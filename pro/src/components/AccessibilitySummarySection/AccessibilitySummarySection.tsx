@@ -7,7 +7,6 @@ import { AccessibilityLabel } from 'ui-kit/AccessibilityLabel/AccessibilityLabel
 
 import styles from './AccessibilitySummarySection.module.scss'
 
-// This interface is verified by both collective/individual offers and venues
 interface AccessibleItem {
   audioDisabilityCompliant?: boolean | null
   mentalDisabilityCompliant?: boolean | null
