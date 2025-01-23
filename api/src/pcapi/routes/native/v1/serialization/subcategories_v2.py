@@ -1,4 +1,3 @@
-from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
 from pcapi.domain.book_types import BookType
 from pcapi.domain.movie_types import MovieType
@@ -10,12 +9,12 @@ from pcapi.serialization.utils import to_camel
 
 
 class SubcategoryResponseModelv2(BaseModel):
-    id: subcategories_v2.SubcategoryIdEnumv2
-    category_id: categories.CategoryIdEnum
-    native_category_id: subcategories_v2.NativeCategoryIdEnumv2
+    id: str
+    category_id: str
+    native_category_id: str
     app_label: str
-    search_group_name: subcategories_v2.SearchGroupNameEnumv2
-    homepage_label_name: subcategories_v2.HomepageLabelNameEnumv2
+    search_group_name: str
+    homepage_label_name: str
     is_event: bool
     online_offline_platform: subcategories_v2.OnlineOfflinePlatformChoicesEnumv2
 
@@ -26,7 +25,7 @@ class SubcategoryResponseModelv2(BaseModel):
 
 
 class SearchGroupResponseModelv2(BaseModel):
-    name: subcategories_v2.SearchGroupNameEnumv2
+    name: str
     value: str | None
 
     class Config:
@@ -36,7 +35,7 @@ class SearchGroupResponseModelv2(BaseModel):
 
 
 class HomepageLabelResponseModelv2(BaseModel):
-    name: subcategories_v2.HomepageLabelNameEnumv2
+    name: str
     value: str | None
 
     class Config:
@@ -46,10 +45,10 @@ class HomepageLabelResponseModelv2(BaseModel):
 
 
 class NativeCategoryResponseModelv2(BaseModel):
-    name: subcategories_v2.NativeCategoryIdEnumv2
+    name: str
     value: str | None
     genre_type: subcategories_v2.GenreType | None
-    parents: list[subcategories_v2.SearchGroupNameEnumv2]
+    parents: list[str]
     positions: dict[str, int] | None
 
     class Config:
