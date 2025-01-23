@@ -898,7 +898,11 @@ class GetPublicAccountTest(GetEndpointHelper):
     def test_get_beneficiary_bookings(self, authenticated_client, user_factory, expected_price_1, expected_price_2):
         user = user_factory()
         b1 = bookings_factories.CancelledBookingFactory(
-            user=user, amount=12.5, dateCreated=datetime.date.today() - relativedelta(days=2)
+            user=user,
+            amount=12.5,
+            dateCreated=datetime.date.today() - relativedelta(days=2),
+            stock__offer__bookingContact="contact.offer@example.com",
+            stock__offer__bookingEmail="booking.offer@example.com",
         )
         b2 = bookings_factories.UsedBookingFactory(user=user, amount=20)
         bookings_factories.UsedBookingFactory()
@@ -927,12 +931,23 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert bookings[1]["État"] == "L'offre n'a pas eu lieu"
         assert bookings[1]["Contremarque"] == b1.token
 
-        text = html_parser.content_as_text(response.data)
-        assert f"Utilisée le : {datetime.date.today().strftime('%d/%m/%Y')}" in text
-        assert f"Annulée le : {datetime.date.today().strftime('%d/%m/%Y')}" in text
-        assert "Motif d'annulation : Annulée par le bénéficiaire" in text
-        assert f"Email du pro : {b1.venue.bookingEmail}" in text  # extra row for bookings[1]
-        assert f"Email du pro : {b2.venue.bookingEmail}" in text  # extra row for bookings[0]
+        extra_rows = html_parser.extract(response.data, "tr", class_="accordion-collapse")
+        assert len(extra_rows) == 2
+        print(extra_rows)
+
+        assert f"Utilisée le : {datetime.date.today().strftime('%d/%m/%Y')}" in extra_rows[0]
+        assert "Annulée le" not in extra_rows[0]
+        assert "Motif d'annulation" not in extra_rows[0]
+        assert f"Contact du partenaire culturel : {b2.venue.contact.email}" in extra_rows[0]
+        assert f"Notification du partenaire culturel : {b2.venue.bookingEmail}" in extra_rows[0]
+
+        assert "Utilisée le" not in extra_rows[1]
+        assert f"Annulée le : {datetime.date.today().strftime('%d/%m/%Y')}" in extra_rows[1]
+        assert "Motif d'annulation : Annulée par le bénéficiaire" in extra_rows[1]
+        assert f"Contact du partenaire culturel : {b1.venue.contact.email}" in extra_rows[1]
+        assert "Contact pour cette offre : contact.offer@example.com" in extra_rows[1]
+        assert f"Notification du partenaire culturel : {b1.venue.bookingEmail}" in extra_rows[1]
+        assert "Notification pour cette offre : booking.offer@example.com" in extra_rows[1]
 
     def test_get_beneficiary_bookings_empty(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()

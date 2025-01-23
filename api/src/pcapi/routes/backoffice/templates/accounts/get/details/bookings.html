@@ -34,52 +34,87 @@
         <tr class="collapse accordion-collapse pc-booking-{{ booking.id }}"
             data-bs-parent=".table">
           <td colspan="8">
-            <div class="card shadow-sm p-3">
-              {% if booking.stock.beginningDatetime %}
-                <p class="mb-1">
-                  <span class="fw-bold">Date de l'évènement :</span>
-                  {{ booking.stock.beginningDatetime | format_date_time }}
-                </p>
-              {% endif %}
-              {% if booking.is_used_or_reimbursed %}
-                <p class="mb-1">
-                  <span class="fw-bold">Utilisée le :</span>
-                  {{ booking.dateUsed | format_date_time }}
-                </p>
-              {% elif booking.isCancelled %}
-                <p class="mb-1">
-                  <span class="fw-bold">Annulée le :</span>
-                  {{ booking.cancellationDate | format_date_time }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Motif d'annulation :</span>
-                  {{ booking.cancellationReason | format_booking_cancellation(booking.cancellationUser) }}
-                </p>
-              {% endif %}
-              <p class="mb-1">
-                <span class="fw-bold">Type d'offre :</span>
-                {% if booking.stock.offer.isDigital %}
-                  Numérique
-                {% else %}
-                  Physique
+            <div class="card shadow-sm p-3 d-flex flex-row justify-content-between">
+              <div class="align-top">
+                {% if booking.stock.beginningDatetime %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Date de l'évènement :</span>
+                    {{ booking.stock.beginningDatetime | format_date_time }}
+                  </p>
                 {% endif %}
-              </p>
-              <p class="mb-1">
-                <span class="fw-bold">Catégorie :</span>
-                {{ booking.stock.offer.subcategoryId | format_offer_category }}
-              </p>
-              <p class="mb-1">
-                <span class="fw-bold">Sous-catégorie :</span>
-                {{ booking.stock.offer.subcategoryId | format_offer_subcategory }}
-              </p>
-              <p class="mb-1">
-                <span class="fw-bold">Crédit utilisé par le jeune :</span>
-                {{ booking.deposit.type | format_deposit_type }}
-              </p>
-              <p class="mb-1">
-                <span class="fw-bold">Email du pro :</span>
-                {{ booking.venue.bookingEmail | empty_string_if_null }}
-              </p>
+                {% if booking.is_used_or_reimbursed %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Utilisée le :</span>
+                    {{ booking.dateUsed | format_date_time }}
+                  </p>
+                {% elif booking.isCancelled %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Annulée le :</span>
+                    {{ booking.cancellationDate | format_date_time }}
+                  </p>
+                  <p class="mb-1">
+                    <span class="fw-bold">Motif d'annulation :</span>
+                    {{ booking.cancellationReason | format_booking_cancellation(booking.cancellationUser) }}
+                  </p>
+                {% endif %}
+                <p class="mb-1">
+                  <span class="fw-bold">Type d'offre :</span>
+                  {% if booking.stock.offer.isDigital %}
+                    Numérique
+                  {% else %}
+                    Physique
+                  {% endif %}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Catégorie :</span>
+                  {{ booking.stock.offer.subcategoryId | format_offer_category }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Sous-catégorie :</span>
+                  {{ booking.stock.offer.subcategoryId | format_offer_subcategory }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Crédit utilisé par le jeune :</span>
+                  {{ booking.deposit.type | format_deposit_type }}
+                </p>
+              </div>
+              <div class="ps-5 pe-5 align-top">
+                {% if has_permission("READ_PRO_ENTITY") %}
+                  {# not shown to support_n1 #}
+                  {% if booking.venue.contact.email %}
+                    <p class="mb-1">
+                      <span class="fw-bold">Contact du partenaire culturel :</span>
+                      {{ booking.venue.contact.email }}
+                    </p>
+                  {% endif %}
+                  {% if booking.stock.offer.bookingContact %}
+                    <p class="mb-1">
+                      <span class="fw-bold">Contact pour cette offre :</span>
+                      {{ booking.stock.offer.bookingContact }}
+                    </p>
+                  {% endif %}
+                  {% if booking.venue.bookingEmail %}
+                    <p class="mb-1">
+                      <span class="fw-bold">Notification du partenaire culturel :</span>
+                      {{ booking.venue.bookingEmail | empty_string_if_null }}
+                    </p>
+                  {% endif %}
+                  {% if booking.stock.offer.bookingEmail %}
+                    <p class="mb-1">
+                      <span class="fw-bold">Notification pour cette offre :</span>
+                      {{ booking.stock.offer.bookingEmail }}
+                    </p>
+                  {% endif %}
+                {% else %}
+                  {% set contact_email = booking.stock.offer.bookingContact or booking.venue.contact.email %}
+                  {% if contact_email %}
+                    <p class="mb-1">
+                      <span class="fw-bold">Contact de l'organisateur :</span>
+                      {{ contact_email }}
+                    </p>
+                  {% endif %}
+                {% endif %}
+              </div>
             </div>
           </td>
         </tr>
