@@ -1669,6 +1669,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["pc_backoffice_public_account_link_in_comment"] = (
         urls.build_backoffice_public_account_link_in_comment
     )
+    app.jinja_env.filters["webapp_offer_link"] = lambda offer: urls.offer_app_link(offer.id)
     app.jinja_env.filters["format_gdpr_date_processed"] = format_gdpr_date_processed
     app.jinja_env.filters["format_finance_incident_nature_badge"] = format_finance_incident_nature_badge
     app.jinja_env.filters["format_finance_incident_status_badge"] = format_finance_incident_status_badge
