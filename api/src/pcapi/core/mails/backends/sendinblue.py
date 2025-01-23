@@ -57,9 +57,15 @@ class SendinblueBackend(BaseBackend):
                 use_pro_subaccount=data.template.use_pro_subaccount,
             )
             if data.template.use_priority_queue:
-                send_transactional_email_primary_task_cloud_tasks.delay(payload)
+                if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS.is_active():
+                    send_transactional_email_primary_task_celery.delay(payload)
+                else:
+                    send_transactional_email_primary_task_cloud_tasks.delay(payload)
             else:
-                send_transactional_email_secondary_task_cloud_tasks.delay(payload)
+                if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS.is_active():
+                    send_transactional_email_secondary_task_celery.delay(payload)
+                else:
+                    send_transactional_email_secondary_task_cloud_tasks.delay(payload)
 
         elif isinstance(data, models.TransactionalWithoutTemplateEmailData):
             payload = serializers.SendTransactionalEmailRequest(
@@ -74,7 +80,10 @@ class SendinblueBackend(BaseBackend):
                 params=None,
                 tags=None,
             )
-            send_transactional_email_secondary_task_cloud_tasks.delay(payload)
+            if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS.is_active():
+                send_transactional_email_secondary_task_celery.delay(payload)
+            else:
+                send_transactional_email_secondary_task_cloud_tasks.delay(payload)
 
         else:
             raise ValueError(f"Tried sending an email via sendinblue, but received incorrectly formatted data: {data}")

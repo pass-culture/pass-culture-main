@@ -23,7 +23,7 @@ def update_contact_attributes_task_cloud_tasks(payload: UpdateSendinblueContactR
 
 
 @task(SENDINBLUE_TRANSACTIONAL_EMAILS_PRIMARY_QUEUE_NAME, "/sendinblue/send-transactional-email-primary")  # type: ignore[arg-type]
-def send_transactional_email_primary_cloud_tasks(payload: SendTransactionalEmailRequest) -> None:
+def send_transactional_email_primary_task_cloud_tasks(payload: SendTransactionalEmailRequest) -> None:
     send_transactional_email(payload)
 
 

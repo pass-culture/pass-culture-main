@@ -106,6 +106,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_PRO_FEEDBACK = "Activer l'envoi des commentaires du portail pro vers Harvestr"
     ENABLE_MOVIE_FESTIVAL_RATE = "Activer les tarifs spéciaux pour un festival cinéma"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
+    WIP_ASYNCHRONOUS_CELERY_TASKS = "Activer le backend de tâches asynchrone Celery pour les tâches qui le supporte"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
     WIP_ENABLE_NEW_FINANCE_WORKFLOW = "Active le nouveau workflow finance"
     WIP_ENABLE_MARSEILLE = "Activer Marseille en grand"
@@ -202,6 +203,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
     FeatureToggle.WIP_2025_SIGN_UP,
+    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS,
     FeatureToggle.WIP_COLLAPSED_MEMORIZED_FILTERS,
     FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION,
     FeatureToggle.WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED,
