@@ -567,12 +567,27 @@ def edit_collective_offer_public(
 
     start_datetime = new_values.get("startDatetime")
     end_datetime = new_values.get("endDatetime")
-    if start_datetime or end_datetime:
-        after_update_start_datetime = start_datetime or offer.collectiveStock.startDatetime
-        after_update_end_datetime = end_datetime or offer.collectiveStock.endDatetime
+    booking_limit_datetime = new_values.get("bookingLimitDatetime")
 
+    # we need to compare the input dates with the current stock dates if we only receive some dates
+    after_update_start_datetime = start_datetime or offer.collectiveStock.startDatetime
+    after_update_end_datetime = end_datetime or offer.collectiveStock.endDatetime
+    after_update_booking_limit_datetime = booking_limit_datetime or offer.collectiveStock.bookingLimitDatetime
+
+    if start_datetime or end_datetime:
         validation.check_start_and_end_dates_in_same_educational_year(
-            after_update_start_datetime, after_update_end_datetime
+            start_datetime=after_update_start_datetime, end_datetime=after_update_end_datetime
+        )
+
+        validation.check_start_is_before_end(
+            start_datetime=after_update_start_datetime, end_datetime=after_update_end_datetime
+        )
+
+    if start_datetime or booking_limit_datetime:
+        offer_validation.check_booking_limit_datetime(
+            stock=offer.collectiveStock,
+            beginning=after_update_start_datetime,
+            booking_limit_datetime=after_update_booking_limit_datetime,
         )
 
     # This variable is meant for Adage mailing
