@@ -5,7 +5,6 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel } from 'apiClient/v1'
 import {
-  GET_CULTURAL_PARTNERS_QUERY_KEY,
   GET_EDUCATIONAL_DOMAINS_QUERY_KEY,
   GET_EDUCATIONAL_STATUSES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
@@ -40,9 +39,7 @@ export const CollectiveDataEdition = ({
     [GET_EDUCATIONAL_STATUSES_QUERY_KEY],
     () => api.getVenuesEducationalStatuses()
   )
-  const culturalPartnersQuery = useSWR([GET_CULTURAL_PARTNERS_QUERY_KEY], () =>
-    api.getEducationalPartners()
-  )
+
   const domains: SelectOption[] =
     domainsQuery.data?.map((domain) => ({
       value: domain.id.toString(),
@@ -52,11 +49,6 @@ export const CollectiveDataEdition = ({
     educationalStatusesQuery.data?.statuses.map((status) => ({
       value: status.id,
       label: status.name,
-    })) ?? []
-  const culturalPartners: SelectOption[] =
-    culturalPartnersQuery.data?.partners.map((culturalPartner) => ({
-      value: culturalPartner.id.toString(),
-      label: culturalPartner.libelle,
     })) ?? []
 
   const canCreateCollectiveOffer = venue?.managingOfferer.allowedOnAdage
@@ -68,8 +60,7 @@ export const CollectiveDataEdition = ({
     !offererId ||
     !venue ||
     domainsQuery.isLoading ||
-    educationalStatusesQuery.isLoading ||
-    culturalPartnersQuery.isLoading
+    educationalStatusesQuery.isLoading
   ) {
     return <Spinner className={styles.spinner} />
   }
@@ -123,14 +114,10 @@ export const CollectiveDataEdition = ({
             <CollectiveDataForm
               statuses={statuses}
               domains={domains}
-              culturalPartners={culturalPartners}
               venue={venue}
             />
           ) : (
-            <CollectiveDataEditionReadOnly
-              venue={venue}
-              culturalPartners={culturalPartners}
-            />
+            <CollectiveDataEditionReadOnly venue={venue} />
           )}
         </>
       )}

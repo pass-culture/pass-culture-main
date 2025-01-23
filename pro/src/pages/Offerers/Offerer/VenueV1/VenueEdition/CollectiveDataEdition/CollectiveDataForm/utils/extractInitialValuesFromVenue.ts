@@ -15,11 +15,9 @@ export const extractInitialValuesFromVenue = (
     collectiveDomains: venue.collectiveDomains.map((domain) =>
       domain.id.toString()
     ),
-    collectiveNetwork: venue.collectiveNetwork ?? [],
     collectiveInterventionArea: venue.collectiveInterventionArea ?? [],
     'search-collectiveStudents': '',
     'search-collectiveDomains': '',
-    'search-collectiveNetwork': '',
     'search-collectiveInterventionArea': '',
   }
 }

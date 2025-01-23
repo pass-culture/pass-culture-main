@@ -159,9 +159,6 @@ describe('CollectiveDataEdition', () => {
       )
       const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
       const statusField = screen.getByLabelText(/Statut/)
-      const culturalPartnersField = screen.getByLabelText(
-        /Réseaux partenaires EAC/
-      )
 
       expect(descriptionField).toBeInTheDocument()
       expect(studentsField).toBeInTheDocument()
@@ -171,7 +168,6 @@ describe('CollectiveDataEdition', () => {
       expect(domainsField).toBeInTheDocument()
       expect(interventionAreaField).toBeInTheDocument()
       expect(statusField).toBeInTheDocument()
-      expect(culturalPartnersField).toBeInTheDocument()
     })
 
     it('should display dms timeline if venue has dms application and ff active', async () => {
@@ -439,7 +435,6 @@ describe('CollectiveDataEdition', () => {
           collectiveEmail: 'toto@domain.com',
           collectiveInterventionArea: [],
           collectiveLegalStatus: { id: 1, name: 'statut 1' },
-          collectiveNetwork: [],
           collectivePhone: '',
           collectiveStudents: [],
           collectiveWebsite: '',

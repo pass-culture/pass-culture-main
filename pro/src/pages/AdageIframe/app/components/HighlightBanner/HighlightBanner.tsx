@@ -1,11 +1,11 @@
 import cn from 'classnames'
 import { useState } from 'react'
 
+import { storageAvailable } from 'commons/utils/storageAvailable'
 import fullClearIcon from 'icons/full-clear.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './HighlightBanner.module.scss'
-import { storageAvailable } from 'commons/utils/storageAvailable'
 
 
 interface HighlightBannerProps {

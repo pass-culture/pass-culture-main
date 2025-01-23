@@ -13,7 +13,6 @@ describe('extractInitialValuesFromVenue', () => {
       collectiveEmail: null,
       collectiveInterventionArea: null,
       collectiveLegalStatus: { id: 2, name: 'Entreprise' },
-      collectiveNetwork: null,
       collectivePhone: null,
       collectiveStudents: [
         StudentLevels.CAP_1RE_ANN_E,
@@ -33,12 +32,10 @@ describe('extractInitialValuesFromVenue', () => {
       collectiveEmail: COLLECTIVE_DATA_FORM_INITIAL_VALUES.collectiveEmail,
       collectiveLegalStatus: '2',
       collectiveDomains: ['1'],
-      collectiveNetwork: [],
       collectiveInterventionArea:
         COLLECTIVE_DATA_FORM_INITIAL_VALUES.collectiveInterventionArea,
       'search-collectiveDomains': '',
       'search-collectiveInterventionArea': '',
-      'search-collectiveNetwork': '',
       'search-collectiveStudents': '',
     })
   })

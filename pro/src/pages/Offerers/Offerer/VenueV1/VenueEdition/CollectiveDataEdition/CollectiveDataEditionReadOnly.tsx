@@ -1,6 +1,4 @@
-
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
@@ -9,12 +7,10 @@ import { getInterventionAreaLabels } from 'pages/AdageIframe/app/components/Offe
 
 interface CollectiveDataEditionReadOnlyProps {
   venue: GetVenueResponseModel
-  culturalPartners: SelectOption[]
 }
 
 export const CollectiveDataEditionReadOnly = ({
   venue,
-  culturalPartners,
 }: CollectiveDataEditionReadOnlyProps) => {
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   return (
@@ -68,18 +64,6 @@ export const CollectiveDataEditionReadOnly = ({
             {
               title: 'Statut',
               text: venue.collectiveLegalStatus?.name ?? 'Non renseigné',
-            },
-            {
-              title: 'Réseaux partenaires EAC',
-              text:
-                venue.collectiveNetwork
-                  ?.map(
-                    (network) =>
-                      culturalPartners.find(
-                        (partner) => partner.value === network
-                      )?.label
-                  )
-                  .join(', ') ?? 'Non renseigné',
             },
           ]}
         />

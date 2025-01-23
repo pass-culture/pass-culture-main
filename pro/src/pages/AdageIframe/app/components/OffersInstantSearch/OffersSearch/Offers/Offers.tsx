@@ -22,17 +22,21 @@ import { adageSearchViewSelector } from 'commons/store/adageFilter/selectors'
 import { LOGS_DATA } from 'commons/utils/config'
 import fullGoTop from 'icons/full-go-top.svg'
 import fullGrid from 'icons/full-grid.svg'
+import fullLinkIcon from 'icons/full-link.svg'
 import fullList from 'icons/full-list.svg'
+import TFMAC2025 from 'pages/AdageIframe/app/components/HighlightBanner/assets/TFMAC-2025.png'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonVariant } from 'ui-kit/Button/types'
+import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { OfferCardComponent } from '../../../AdageDiscovery/OfferCard/OfferCard'
+import { HighlightBanner } from '../../../HighlightBanner/HighlightBanner'
 import { CustomPagination } from '../../../Pagination/Pagination'
 import { AdageSkeleton } from '../../../Skeleton/AdageSkeleton'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
-import TFMAC2025 from 'pages/AdageIframe/app/components/HighlightBanner/assets/TFMAC-2025.png'
-import fullLinkIcon from 'icons/full-link.svg'
 import {
   ToggleButtonGroup,
   ToggleButton,
@@ -42,10 +46,9 @@ import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import styles from './Offers.module.scss'
 import { offerIsBookable } from './utils/offerIsBookable'
-import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
-import { HighlightBanner } from '../../../HighlightBanner/HighlightBanner'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
+
+
+
 
 export interface OffersProps {
   displayStats?: boolean
