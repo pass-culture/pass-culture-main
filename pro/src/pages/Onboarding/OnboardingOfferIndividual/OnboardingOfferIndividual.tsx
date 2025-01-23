@@ -53,7 +53,7 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
   // Assumed choice to redirect offerers without permanent venues (old cases) to /accueil
   const synchronizedLink = physicalVenue
     ? `/structures/${selectedOffererId}/lieux/${physicalVenue.id}/parametres`
-    : '/accueil'
+    : '/onboarding'
 
   return (
     <OnboardingLayout verticallyCentered={draftOffers.length <= 1}>
