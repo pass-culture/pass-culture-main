@@ -190,3 +190,20 @@ def check_start_and_end_dates_in_same_educational_year(
 
     if start_year.id != end_year.id:
         raise exceptions.StartAndEndEducationalYearDifferent()
+
+
+def check_start_is_before_end(start_datetime: datetime.datetime, end_datetime: datetime.datetime) -> None:
+    # each date may have a timezone (if coming e.g from a route input) or not (if coming from the DB)
+    # so we need to set a timezone to each date in order to compare them
+
+    # if start or end datetime does not have a timezone, it is assumed to be UTC
+    check_start = start_datetime
+    if check_start.tzinfo is None:
+        check_start = check_start.replace(tzinfo=datetime.timezone.utc)
+
+    check_end = end_datetime
+    if check_end.tzinfo is None:
+        check_end = check_end.replace(tzinfo=datetime.timezone.utc)
+
+    if check_end < check_start:
+        raise exceptions.EndDatetimeBeforeStartDatetime()
