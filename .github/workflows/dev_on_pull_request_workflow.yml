@@ -243,12 +243,12 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  merge-allure-reports-units:
-    name: "Merge Allure Reports and Push to Allure Repository units tests"
+  download-allure-pro-unit:
+    name: "Download Allure results artifacts for pro unit"
     needs: [pcapi-init-job, test-pro]
     runs-on: ubuntu-22.04
     if: |
-      always() &&
+      always() && 
       !cancelled() && needs.test-pro.result != 'skipped'
     steps:
       - name: "Install Allure CLI via Yarn"
@@ -260,36 +260,13 @@ jobs:
           name: allure-results-pro-unit
           path: allure-results/pro-unit
 
-      - name: "Merge Allure Results"
-        run: |
-          mkdir -p allure-results
-          cp -r allure-results/pro-unit/* allure-results/
-
-      - name: "Clone Allure Report Repository to Retrieve History"
-        env:
-          TOKEN: ${{ secrets.PAT_ALLURE_REPORTS_TEMP }}
-        run: |
-          git clone https://x-access-token:${TOKEN}@github.com/fseguin-pass/allure-reports-temp.git allure-report-temp
-          mkdir -p allure-results/history
-          if [ -d "allure-report-temp/history" ]; then
-            cp -r allure-report-temp/history/* allure-results/history/
-          fi
-
-      - name: "Generate Allure Report with History"
-        run: allure generate allure-results --single-file --clean -o allure-report
-
-      - name: "Upload Allure Report as artifact"
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: allure-report/index.html
-
-  merge-allure-reports-e2e:
-    name: "Merge Allure Reports and Push to Allure Repository e2e"
+  download-allure-pro-e2e:
+    name: "Download Allure results artifacts for pro E2E"
     needs: [pcapi-init-job, test-pro-e2e]
     runs-on: ubuntu-22.04
     if: |
-      always() && !cancelled()
+      always() && 
+      !cancelled() && needs.test-pro-e2e.result != 'skipped'
     steps:
       - name: "Install Allure CLI via Yarn"
         run: yarn global add allure-commandline
@@ -300,10 +277,19 @@ jobs:
           name: allure-results-pro-e2e
           path: allure-results/pro-e2e
 
+  merge-allure-reports:
+    name: "Merge Allure Reports and Push to Allure Repository"
+    needs: [pcapi-init-job, test-pro, test-pro-e2e]
+    runs-on: ubuntu-22.04
+    if: |
+      always() && 
+      !cancelled() && needs.test-pro.result != 'skipped' 
+      && needs.test-pro-e2e.result != 'skipped'
+    steps:
       - name: "Merge Allure Results"
         run: |
           mkdir -p allure-results
-          cp -r allure-results/pro-e2e/* allure-results/
+          cp -r allure-results/pro-unit/* allure-results/pro-e2e/* allure-results/
 
       - name: "Clone Allure Report Repository to Retrieve History"
         env:
@@ -315,14 +301,19 @@ jobs:
             cp -r allure-report-temp/history/* allure-results/history/
           fi
 
-      - name: "Generate Allure Report with History"
-        run: allure generate allure-results --single-file --clean -o allure-report
+      - name: "Generate Allure Report with Updated History"
+        run: allure generate allure-results --clean -o allure-report
 
-      - name: "Upload Allure Report as artifact"
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: allure-report/index.html
+      - name: "Push Updated Allure Report with History to Repository"
+        run: |
+          cd allure-report-temp
+          rm -rf *
+          cp -r ../allure-report/* .
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Update Allure Report with history"
+          git push origin main
 
   dependabot-auto-merge:
     name: "Dependabot"

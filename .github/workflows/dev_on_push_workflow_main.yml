@@ -241,12 +241,12 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  merge-allure-reports:
-    name: "Merge Allure Reports and Push to Allure Repository"
-    needs: [test-pro]
+  download-allure-pro-unit:
+    name: "Download Allure results artifacts for pro unit"
+    needs: [pcapi-init-job, test-pro]
     runs-on: ubuntu-22.04
     if: |
-      always() &&
+      always() && 
       !cancelled() && needs.test-pro.result != 'skipped'
     steps:
       - name: "Install Allure CLI via Yarn"
@@ -258,16 +258,36 @@ jobs:
           name: allure-results-pro-unit
           path: allure-results/pro-unit
 
+  download-allure-pro-e2e:
+    name: "Download Allure results artifacts for pro E2E"
+    needs: [pcapi-init-job, test-pro-e2e]
+    runs-on: ubuntu-22.04
+    if: |
+      always() && 
+      !cancelled() && needs.test-pro-e2e.result != 'skipped'
+    steps:
+      - name: "Install Allure CLI via Yarn"
+        run: yarn global add allure-commandline
+
       - name: "Download Allure results artifacts for pro E2E"
         uses: actions/download-artifact@v4
         with:
           name: allure-results-pro-e2e
           path: allure-results/pro-e2e
 
+  merge-allure-reports:
+    name: "Merge Allure Reports and Push to Allure Repository"
+    needs: [pcapi-init-job, test-pro, test-pro-e2e]
+    runs-on: ubuntu-22.04
+    if: |
+      always() && 
+      !cancelled() && needs.test-pro.result != 'skipped' 
+      && needs.test-pro-e2e.result != 'skipped'
+    steps:
       - name: "Merge Allure Results"
         run: |
           mkdir -p allure-results
-          cp -r allure-results/pro-unit/* allure-results/
+          cp -r allure-results/pro-unit/* allure-results/pro-e2e/* allure-results/
 
       - name: "Clone Allure Report Repository to Retrieve History"
         env:

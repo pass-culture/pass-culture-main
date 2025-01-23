@@ -157,6 +157,7 @@ jobs:
 
       - name: "Upload Allure results for pro E2E tests"
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: allure-results-pro-e2e
           path: allure-results

@@ -102,6 +102,7 @@
     "@vitest/runner": "^2.1.7",
     "allure-js-commons": "^3.0.8",
     "allure-vitest": "^3.0.9",
+    "allure-cypress": "^3.0.9",
     "cypress": "^13.17.0",
     "cypress-fail-fast": "^7.1.1",
     "eslint": "9.18.0",
