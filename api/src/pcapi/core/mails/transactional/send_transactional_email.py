@@ -58,7 +58,6 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> None:
 
     try:
         configuration = brevo_python.Configuration()
-        configuration = sib_api_v3_sdk.Configuration()
         if settings.PROXY_CERT_BUNDLE is not None:
             configuration.ssl_ca_cert = settings.PROXY_CERT_BUNDLE
         if payload.use_pro_subaccount:
