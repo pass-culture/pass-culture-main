@@ -193,9 +193,22 @@ class TransactionalEmailWithTemplateTest:
         assert mock_send_transac_email.call_args[0][0].headers == {"X-List-Unsub": "disabled"}
 
     @pytest.mark.settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_primary_task.delay")
+    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_primary_task_cloud_tasks.delay")
     def test_to_dev_send_email_confirmation_email(self, mock_send_transactional_email_task, db_session):
         user = users_factories.UserFactory(email="john.stiles@gmail.com")
+        token = token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_VALIDATION,
+            ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        )
+        send_email_confirmation_email(user.email, token=token)
+        mock_send_transactional_email_task.assert_called_once()
+
+    @pytest.mark.settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
+    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_TASKS=True)
+    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_primary_task_celery.delay")
+    def test_to_dev_send_email_confirmation_email_through_celery(self, mock_send_transactional_email_task, db_session):
+        user = users_factories.UserFactory(email="john.celery@gmail.com")
         token = token_utils.Token.create(
             type_=token_utils.TokenType.EMAIL_VALIDATION,
             ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
