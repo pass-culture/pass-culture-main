@@ -27,12 +27,6 @@ function renderCollectiveDataForm(options?: RenderWithProvidersOptions) {
         { value: 1, label: 'domain 1' },
         { value: 2, label: 'domain 2' },
       ]}
-      culturalPartners={[
-        {
-          value: 'culturalPartner',
-          label: 'Dans mon lieu',
-        },
-      ]}
       venue={defaultGetVenue}
     />,
     options

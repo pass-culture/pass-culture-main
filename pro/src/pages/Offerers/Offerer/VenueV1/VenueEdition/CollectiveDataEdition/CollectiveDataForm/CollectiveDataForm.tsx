@@ -34,7 +34,6 @@ import { validationSchema } from './validationSchema'
 type CollectiveDataFormProps = {
   statuses: SelectOption[]
   domains: SelectOption[]
-  culturalPartners: SelectOption[]
   venue: GetVenueResponseModel
 }
 
@@ -46,7 +45,6 @@ const studentLevels = Object.entries(StudentLevels).map(([, value]) => ({
 export const CollectiveDataForm = ({
   statuses,
   domains,
-  culturalPartners,
   venue,
 }: CollectiveDataFormProps): JSX.Element | null => {
   const notify = useNotification()
@@ -193,19 +191,6 @@ export const CollectiveDataForm = ({
                     name="collectiveLegalStatus"
                     label="Statut"
                     isOptional
-                  />
-                </FormLayout.Row>
-
-                <FormLayout.Row>
-                  <SelectAutocomplete
-                    multi
-                    options={culturalPartners}
-                    name="collectiveNetwork"
-                    label="Réseaux partenaires EAC"
-                    placeholder="Sélectionner un ou plusieurs réseau(x) partenaire(s)"
-                    isOptional
-                    hideTags
-                    maxDisplayedOptions={100}
                   />
                 </FormLayout.Row>
               </FormLayout.SubSection>

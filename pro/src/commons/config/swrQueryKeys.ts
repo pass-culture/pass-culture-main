@@ -20,7 +20,6 @@ export const GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY =
 export const GET_COLLECTIVE_OFFERS_QUERY_KEY = 'getCollectiveOffers'
 export const GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY =
   'getCollectiveOfferRequestInformations'
-export const GET_CULTURAL_PARTNERS_QUERY_KEY = 'getEducationalPartners'
 export const GET_EDUCATIONAL_DOMAINS_QUERY_KEY = 'listEducationalDomains'
 export const GET_EDUCATIONAL_OFFERERS_QUERY_KEY = 'listEducationalOfferers'
 export const GET_EDUCATIONAL_STATUSES_QUERY_KEY = 'getVenuesEducationalStatuses'
