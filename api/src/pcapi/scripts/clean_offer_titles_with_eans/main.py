@@ -55,6 +55,8 @@ BOOKS_CDS_VINYLES_QUERY = """
                 'SUPPORT_PHYSIQUE_MUSIQUE_CD',
                 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE'
             )
+        LIMIT
+            1000
     ) offer_sub_query
     LEFT JOIN
         product on product."jsonData"->>'ean' = offer_sub_query.ean
@@ -100,16 +102,21 @@ def get_offers_with_ean_inside_title() -> Collection[OfferEanQueryRow]:
 
 
 def run() -> None:
+    count = 0
+
     while True:
+        print(f"start loop #{count}...")
         rows = get_offers_with_ean_inside_title()
         if not rows:
             break
 
         parse_offers(rows)
+        count += 1
 
 
 def parse_offers(rows: Collection[OfferEanQueryRow]) -> None:
-    for chunk in get_chunks(rows, chunk_size=100):
+    for idx, chunk in enumerate(get_chunks(rows, chunk_size=100)):
+        print(f"[parse offers][{idx}]...")
 
         unknown_offer_rows = []
         gcu_incompatible_offer_rows = []
@@ -126,6 +133,8 @@ def parse_offers(rows: Collection[OfferEanQueryRow]) -> None:
         reject_offers(unknown_offer_rows)
         reject_offers(gcu_incompatible_offer_rows)
         update_legit_offers(legit_offer_rows)
+
+        print(f"[parse offers][{idx}]...done: {len(chunk)} offers.")
 
 
 @atomic()
