@@ -12,12 +12,12 @@ export const SignupJourneyRoutes = () => {
   const currentUser = useSelector(selectCurrentUser)
 
   useEffect(() => {
-    if (window.Beamer !== undefined) {
+    if (window.Beamer?.config) {
       window.Beamer.hide()
     }
 
     return () => {
-      if (window.Beamer !== undefined) {
+      if (window.Beamer?.config) {
         window.Beamer.show()
       }
     }

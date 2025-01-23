@@ -15,6 +15,7 @@ declare global {
       destroy: () => void
       hide: () => void
       show: () => void
+      config?: Record<string, unknown>
     }
 
     grecaptcha?: {
