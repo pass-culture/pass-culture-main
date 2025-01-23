@@ -1848,6 +1848,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(
             description="Une offre pour tester",
             withdrawalDetails="Demander à la caisse",
+            bookingContact="contact@example.com",
             bookingEmail="offre@example.com",
             extraData={"ean": "1234567891234", "author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
         )
@@ -1885,6 +1886,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Éditeur : Editor" in content
         assert "Description : Une offre pour tester " in content
         assert "Informations de retrait : Demander à la caisse " in content
+        assert "Email de contact : contact@example.com " in content
         assert "Email auquel envoyer les notifications : offre@example.com " in content
 
         assert html_parser.count_table_rows(response.data) == 0

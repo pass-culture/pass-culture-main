@@ -364,6 +364,11 @@
                       <span class="fw-bold">Informations de retrait :</span> {{ offer.withdrawalDetails | empty_string_if_null | nl2br }}
                     </p>
                   </div>
+                  <div class="fs-6">
+                    <p class="mb-1">
+                      <span class="fw-bold">Email de contact :</span> {{ offer.bookingContact | empty_string_if_null | nl2br }}
+                    </p>
+                  </div>
                   <h3 class="mt-4">Accessibilité</h3>
                   <div class="fs-6">
                     <p class="mb-1">
