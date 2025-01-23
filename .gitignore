@@ -6,6 +6,7 @@ development_env_file
 *.pgsql
 *.pgdump
 *.iml
+*.egg-info
 
 infra/artillery/reports/*
 infra/artillery/*.retry
@@ -59,3 +60,6 @@ docs-build/
 
 allure-results/
 allure-report/
+
+# proxy environement management
+/proxy/build
