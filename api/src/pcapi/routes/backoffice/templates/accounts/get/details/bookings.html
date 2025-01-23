@@ -7,6 +7,7 @@
         <th scope="col"></th>
         <th scope="col">Offreur</th>
         <th scope="col">Nom de l'offre</th>
+        <th scope="col">Vue app</th>
         <th scope="col">Prix</th>
         <th scope="col">Date de résa</th>
         <th scope="col">État</th>
@@ -19,6 +20,7 @@
           <th scope="row">{{ build_booking_toggle_extra_row_button(booking) }}</th>
           <td>{{ booking.offerer.name | escape }}</td>
           <td>{{ links.build_offer_name_to_details_link(booking.stock.offer) }}</td>
+          <td>{{ links.build_offer_webapp_link(booking.stock.offer) }}</td>
           <td>
             {{ booking.amount | format_amount(target=booking.user) }}
             {% if booking.stock.offer.isDuo and booking.quantity == 2 %}(Duo){% endif %}
@@ -31,7 +33,7 @@
         </tr>
         <tr class="collapse accordion-collapse pc-booking-{{ booking.id }}"
             data-bs-parent=".table">
-          <td colspan="7">
+          <td colspan="8">
             <div class="card shadow-sm p-3">
               {% if booking.stock.beginningDatetime %}
                 <p class="mb-1">
