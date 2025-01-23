@@ -252,3 +252,7 @@ class StartEducationalYearMissing(Exception):
 class EndEducationalYearMissing(Exception):
     field = "dates.end"
     msg = "no educational year/budget for the given end date"
+
+
+class EndDatetimeBeforeStartDatetime(Exception):
+    pass

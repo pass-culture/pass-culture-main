@@ -539,6 +539,16 @@ def patch_collective_offer_public(
         raise ApiErrors(errors={"startDatetime": ["Année scolaire manquante pour la date de début."]}, status_code=400)
     except educational_exceptions.EndEducationalYearMissing:
         raise ApiErrors(errors={"endDatetime": ["Année scolaire manquante pour la date de fin."]}, status_code=400)
+    except offers_exceptions.BookingLimitDatetimeTooLate:
+        raise ApiErrors(
+            errors={"global": ["La date limite de confirmation ne peut être fixée après la date de l évènement."]},
+            status_code=400,
+        )
+    except educational_exceptions.EndDatetimeBeforeStartDatetime:
+        raise ApiErrors(
+            errors={"global": ["La date de fin de l évènement ne peut être fixée après la date de début."]},
+            status_code=400,
+        )
     except offers_validation.OfferValidationError as err:
         raise ApiErrors(errors={err.field: err.msg}, status_code=400)
 

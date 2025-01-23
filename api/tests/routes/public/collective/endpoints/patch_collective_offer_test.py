@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 from decimal import Decimal
 from pathlib import Path
 from unittest.mock import patch
@@ -1103,6 +1104,110 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert response.json == {"endDatetime": ["Année scolaire manquante pour la date de fin."]}
+
+    @time_machine.travel(time_travel_str)
+    @pytest.mark.parametrize("with_timezone", [True, False])
+    def test_end_before_stock_start(self, client, with_timezone):
+        key, venue_provider = self.setup_active_venue_provider()
+        client_with_token = client.with_explicit_token(key)
+
+        educational_factories.EducationalCurrentYearFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        start = datetime.utcnow() + timedelta(days=5)
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer, startDatetime=start)
+
+        input_end = start - timedelta(days=1)
+        if with_timezone:
+            input_end = date_utils.utc_datetime_to_department_timezone(input_end, None)
+
+        payload = {"endDatetime": input_end.isoformat()}
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"global": ["La date de fin de l évènement ne peut être fixée après la date de début."]}
+
+    @time_machine.travel(time_travel_str)
+    @pytest.mark.parametrize("with_timezone", [True, False])
+    def test_start_after_stock_end(self, client, with_timezone):
+        key, venue_provider = self.setup_active_venue_provider()
+        client_with_token = client.with_explicit_token(key)
+
+        educational_factories.EducationalCurrentYearFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        end = datetime.utcnow() + timedelta(days=5)
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer=offer, startDatetime=end - timedelta(days=1), endDatetime=end
+        )
+
+        input_start = end + timedelta(days=1)
+        if with_timezone:
+            input_start = date_utils.utc_datetime_to_department_timezone(input_start, None)
+
+        payload = {"startDatetime": input_start.isoformat()}
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"global": ["La date de fin de l évènement ne peut être fixée après la date de début."]}
+
+    @time_machine.travel(time_travel_str)
+    @pytest.mark.parametrize("with_timezone", [True, False])
+    def test_start_before_stock_booking_limit(self, client, with_timezone):
+        key, venue_provider = self.setup_active_venue_provider()
+        client_with_token = client.with_explicit_token(key)
+
+        educational_factories.EducationalCurrentYearFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        start = datetime.utcnow() + timedelta(days=5)
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer=offer, startDatetime=start, bookingLimitDatetime=start - timedelta(days=2)
+        )
+
+        input_start = start - timedelta(days=3)
+        if with_timezone:
+            input_start = date_utils.utc_datetime_to_department_timezone(input_start, None)
+
+        payload = {"startDatetime": input_start.isoformat()}
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "global": ["La date limite de confirmation ne peut être fixée après la date de l évènement."]
+        }
+
+    @time_machine.travel(time_travel_str)
+    @pytest.mark.parametrize("with_timezone", [True, False])
+    def test_booking_limit_after_stock_start(self, client, with_timezone):
+        key, venue_provider = self.setup_active_venue_provider()
+        client_with_token = client.with_explicit_token(key)
+
+        educational_factories.EducationalCurrentYearFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        start = datetime.utcnow() + timedelta(days=5)
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer, startDatetime=start)
+
+        input_limit = start + timedelta(days=3)
+        if with_timezone:
+            input_limit = date_utils.utc_datetime_to_department_timezone(input_limit, None)
+
+        payload = {"bookingLimitDatetime": input_limit.isoformat()}
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "global": ["La date limite de confirmation ne peut être fixée après la date de l évènement."]
+        }
 
 
 @pytest.mark.usefixtures("db_session")
