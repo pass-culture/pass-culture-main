@@ -243,12 +243,11 @@ jobs:
 
   merge-allure-reports:
     name: "Merge Allure Reports and Push to Allure Repository"
-    needs: [test-pro, test-pro-e2e]
+    needs: [test-pro]
     runs-on: ubuntu-22.04
     if: |
       always() &&
-      !cancelled() &&
-      (needs.test-pro.result == 'success' || needs.test-pro-e2e.result == 'success')
+      !cancelled() && needs.test-pro.result != 'skipped'
     steps:
       - name: "Install Allure CLI via Yarn"
         run: yarn global add allure-commandline
