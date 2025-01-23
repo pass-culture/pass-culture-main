@@ -90,6 +90,7 @@ jobs:
 
       - name: "Upload Allure results for pro tests"
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: allure-results-pro-unit
           path: allure-results
