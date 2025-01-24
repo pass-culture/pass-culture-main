@@ -66,24 +66,10 @@ class VenueValidationTest:
 
 
 class OfferValidationTest:
-    def test_digital_offer_with_non_virtual_venue(self):
-        venue = offerers_factories.VenueFactory.build()
-        offer = offers_factories.DigitalOfferFactory.build(venue=venue)
-        api_errors = validate(offer)
-        assert api_errors.errors == {
-            "venue": ['Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"']
-        }
-
     def test_digital_offer_with_virtual_venue(self):
         offer = offers_factories.DigitalOfferFactory.build()
         api_errors = validate(offer)
         assert not api_errors.errors
-
-    def test_physical_offer_with_virtual_venue(self):
-        venue = offerers_factories.VirtualVenueFactory.build()
-        offer = offers_factories.OfferFactory.build(venue=venue)
-        api_errors = validate(offer)
-        assert api_errors.errors == {"venue": ['Une offre physique ne peut être associée au lieu "Offre numérique"']}
 
     def test_physical_offer_with_non_virtual_venue(self):
         offer = offers_factories.OfferFactory.build()

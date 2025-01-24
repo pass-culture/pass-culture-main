@@ -312,11 +312,15 @@ def create_offer(
 
     fields = body.dict(by_alias=True)
 
+    offerer_address = offerer_address or venue.offererAddress
+
+    if body.url:  # i.e. it is a digital offer
+        offerer_address = None
+
     offer = models.Offer(
         **fields,
         venue=venue,
-        # WARNING: quid des offres numériques ici ?
-        offererAddress=offerer_address or venue.offererAddress,
+        offererAddress=offerer_address,
         lastProvider=provider,
         isActive=False,
         validation=models.OfferValidationStatus.DRAFT,

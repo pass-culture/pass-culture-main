@@ -418,11 +418,6 @@ def check_digital_offer_fields(offer: models.Offer) -> None:
     errors = api_errors.ApiErrors()
 
     if offer.isDigital:
-        if not venue.isVirtual:
-            errors.add_error(
-                "venue", 'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"'
-            )
-
         if offer.subcategory.is_offline_only:
             errors.add_error(
                 "url", f"Une offre de sous-catégorie {offer.subcategory.pro_label} ne peut pas être numérique"
@@ -432,9 +427,6 @@ def check_digital_offer_fields(offer: models.Offer) -> None:
             errors.add_error("offererAddress", "Une offre numérique ne peut pas avoir d'adresse")
             raise errors
     else:
-        if venue.isVirtual:
-            errors.add_error("venue", 'Une offre physique ne peut être associée au lieu "Offre numérique"')
-
         if offer.subcategory.is_online_only:
             errors.add_error("url", f'Une offre de catégorie {offer.subcategory.id} doit contenir un champ "url"')
         if offer.offererAddress is None and FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
