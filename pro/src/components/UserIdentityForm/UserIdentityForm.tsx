@@ -76,6 +76,7 @@ export const UserIdentityForm = ({
               <TextInput
                 label="Prénom"
                 error={errors.firstName?.message}
+                required={true}
                 {...register('firstName')}
               />
             </FormLayout.Row>
@@ -83,6 +84,7 @@ export const UserIdentityForm = ({
               <TextInput
                 label="Nom"
                 error={errors.lastName?.message}
+                required={true}
                 {...register('lastName')}
               />
             </FormLayout.Row>

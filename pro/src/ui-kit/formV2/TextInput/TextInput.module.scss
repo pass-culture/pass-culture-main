@@ -1,4 +1,8 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 .text-input {
   &-readonly {
@@ -16,4 +20,49 @@
       margin-left: rem.torem(16px);
     }
   }
+}
+
+.input-layout {
+  width: 100%;
+  margin-bottom: rem.torem(8px);
+
+  &-label {
+    @include fonts.body;
+
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+
+    &-container {
+      margin-bottom: rem.torem(forms.$label-space-before-input);
+    }
+
+    &-asterisk {
+      margin-left: rem.torem(8px);
+    }
+  }
+
+  &-footer {
+    @include formsM.field-layout-footer;
+  }
+
+  &-error {
+    flex: 1;
+
+    svg {
+      flex: 0 0 15px;
+    }
+  }
+
+  &-input-description {
+    @include fonts.body-xs;
+
+    display: block;
+    color: var(--color-grey-dark);
+    margin-top: rem.torem(4px);
+  }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }
