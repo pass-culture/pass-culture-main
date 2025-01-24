@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import { removeQuotes } from 'commons/utils/removeQuotes'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 
@@ -38,6 +39,8 @@ export const OffererAuthentication = (): JSX.Element => {
   ) => {
     setOfferer({
       ...formValues,
+      city: removeQuotes(formValues.city),
+      street: removeQuotes(formValues.street),
       hasVenueWithSiret: false,
       legalCategoryCode: offerer?.legalCategoryCode,
     })
