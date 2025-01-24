@@ -185,14 +185,14 @@ WHERE "actionType" IN (
 
 UPDATE collective_offer
 SET
-  "bookingEmails" = '{}',
+  "bookingEmails" = ARRAY['offer-' || id || '-booking-email@anonymized.email'],
   "contactEmail" = 'offer-' || id || '-contact-email@anonymized.email',
   "contactPhone" = pg_temp.fake_phone_number_from_id(id)
 ;
 
 UPDATE collective_offer_template
 SET
-  "bookingEmails" = '{}',
+  "bookingEmails" = ARRAY['template-' || id || '-booking-email@anonymized.email'],
   "contactEmail" = 'template-' || id || '-contact-email@anonymized.email',
   "contactPhone" = pg_temp.fake_phone_number_from_id(id)
 ;
