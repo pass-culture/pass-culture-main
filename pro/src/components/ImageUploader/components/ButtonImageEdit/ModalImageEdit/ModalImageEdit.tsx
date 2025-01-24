@@ -26,7 +26,7 @@ export interface OnImageUploadArgs {
 interface ModalImageEditProps {
   mode: UploaderModeEnum
   onImageUpload: (values: OnImageUploadArgs) => void
-  onImageDelete: () => void
+  onImageDelete?: () => void
   initialValues?: UploadImageValues
 }
 
@@ -108,7 +108,7 @@ export const ModalImageEdit = ({
     if (!initialImageUrl && !initialOriginalImageUrl) {
       setImage(undefined)
     } else {
-      onImageDelete()
+      onImageDelete && onImageDelete()
     }
   }
 
@@ -141,14 +141,11 @@ export const ModalImageEdit = ({
     }
   }
 
-  if (!isReady) {
-    return null
-  }
-
   return !image ? (
     <ModalImageUploadBrowser
       onImageClientUpload={onImageClientUpload}
       mode={mode}
+      isReady={isReady}
     />
   ) : !croppingRect || !editedImageDataUrl ? (
     <ModalImageCrop
