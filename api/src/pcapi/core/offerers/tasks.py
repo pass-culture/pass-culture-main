@@ -1,5 +1,6 @@
 import datetime
 import logging
+import time
 
 import sqlalchemy as sa
 
@@ -150,6 +151,15 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
                 "Failed to add rows in CODIR offerers report",
                 extra={"expected_rows": len(new_rows), "added_rows": added_rows, "offerer_id": offerer.id},
             )
+    else:
+        # FIXME (prouzet, 2025-01-24) remove this when cloud tasks are replaced:
+        # First tasks in the queue every night cause HTTP error 429 on Sirene API because of rate limit (max 30 per minute).
+        # https://sentry.passculture.team/organizations/sentry/issues/1616522/
+        # The problem only concern the first tasks, before continuous processing on the rate defined on GCP is reached.
+        # It does not happen when Codir report is enabled, which takes time to call several APIs.
+        # Since cloud tasks will be replaced by something else in a near future, let's try to sleep 2 seconds
+        # to ensure that all requested offerers are checked.
+        time.sleep(2)
 
 
 def _get_total_offers_count(offerer_id: int) -> int | str:
