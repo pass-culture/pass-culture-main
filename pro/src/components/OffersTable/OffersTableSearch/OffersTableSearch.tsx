@@ -8,10 +8,9 @@ import {
   useStoredFilterConfig,
 } from 'components/OffersTable/OffersTableSearch/utils'
 import fullRefreshIcon from 'icons/full-refresh.svg'
-import strokeDownIcon from 'icons/stroke-down.svg'
-import strokeUpIcon from 'icons/stroke-up.svg'
 import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { ButtonVariant } from 'ui-kit/Button/types'
+import { ButtonFilter } from 'ui-kit/ButtonFilter/ButtonFilter'
 import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
@@ -62,6 +61,7 @@ export const OffersTableSearch = ({
     <form onSubmit={onSubmit} className={styles['offers-table-search']}>
       <div className={styles['offers-table-search-name-and-toggle-row']}>
         <FieldLayout
+          className={styles['offers-table-search-input-wrapper']}
           label={nameInputProps.label}
           name="offre"
           isOptional
@@ -76,23 +76,19 @@ export const OffersTableSearch = ({
           />
         </FieldLayout>
         {isStoreAndToggleFiltersEnabled && (
-          <Button
-            className={cn(styles['offers-table-search-toggle-button'], {
-              [styles['offers-table-search-toggle-button-active']]:
-                hasActiveFilters,
-            })}
-            icon={filtersVisibility ? strokeUpIcon : strokeDownIcon}
-            iconPosition={IconPositionEnum.RIGHT}
-            variant={ButtonVariant.BOX}
+          <ButtonFilter
+            className={styles['offers-table-search-toggle-button']}
+            isActive={hasActiveFilters}
+            isOpen={filtersVisibility}
             onClick={toggleFiltersVisibility}
             aria-controls="offers-filter"
-            aria-expanded="false"
+            aria-expanded={filtersVisibility}
           >
-            Filtres
+            Filtrer
             {hasActiveFilters && (
               <span className={styles['visually-hidden']}>actifs</span>
             )}
-          </Button>
+          </ButtonFilter>
         )}
       </div>
       <div

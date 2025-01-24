@@ -1,0 +1,52 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+
+.button-filter {
+  @include fonts.body;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;    
+  width: auto;
+  background-color: var(--color-white);
+  padding: rem.torem(6px) rem.torem(8px);
+  border: rem.torem(1px) solid var(--color-grey-dark);
+  border-radius: rem.torem(8px);
+  max-width: rem.torem(400px);
+
+  &-icon {
+    height: size.$button-icon-size;
+    width: size.$button-icon-size;
+    flex-shrink: 0;
+    vertical-align: text-bottom;
+    margin: rem.torem(2px) 0 0 rem.torem(8px);
+  }
+
+  &-active {
+    @include fonts.button;
+
+    &::before {
+      content: "";
+      display: block;
+      width: rem.torem(8px);
+      height: rem.torem(8px);
+      border-radius: 50%;
+      margin-right: rem.torem(8px);
+      background-color: var(--color-secondary-light);
+    }
+  }
+
+  &-open {
+    border: rem.torem(2px) solid var(--color-primary);
+  }
+
+  &:focus-visible {
+    outline: rem.torem(1px) solid var(--color-input-text-color);
+    outline-offset: rem.torem(2px);
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
