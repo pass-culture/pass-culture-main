@@ -1,6 +1,5 @@
 class PcDisplaySelector extends PcAddOn {
   static CONTAINER_SELECTOR = '.pc-display-selector'
-  
 
   get $selectors() {
     return document.querySelectorAll(PcDisplaySelector.CONTAINER_SELECTOR)
@@ -57,20 +56,33 @@ class PcDisplaySelector extends PcAddOn {
       localStorage.removeItem($selector.dataset.pcInputName)
     }
   }
+
   #saveConfiguration = ($selector) => {
     if($selector.dataset.pcSaveState === "true") {
       localStorage.setItem($selector.dataset.pcInputName, this.#getSelectedValue($selector))
     }
   }
 
+  #ignoreConfiguration = ($selector) => {
+    return $selector.dataset.pcIgnoreIfQueryArgs === "true" && (window.location.search.length > 2)
+  }
+
+  initialize = () => {
+    this.$selectors.forEach(($selector) => {
+      if(!this.#ignoreConfiguration($selector)) {
+        this.#loadConfiguration($selector)
+      } else {
+        this.#saveConfiguration($selector)
+      }
+      this.#manageDisplay($selector)
+    })
+  }
 
   bindEvents = () => {
     this.$selectors.forEach(($selector) => {
-      this.#loadConfiguration($selector)
       this.#inputInSelector($selector).forEach(($input) => {
           $input.addEventListener("change", this.#change)
         })
-      this.#manageDisplay($selector)
       })
   }
 

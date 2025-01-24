@@ -495,6 +495,7 @@ def _render_offer_list(
     advanced_form: forms.GetOfferAdvancedSearchForm | None = None,
     algolia_form: forms.GetOfferAlgoliaSearchForm | None = None,
     code: int = 200,
+    page: str = "offer",
 ) -> utils.BackofficeResponse:
     date_created_sort_url = None
     if advanced_form is not None and advanced_form.sort.data:
@@ -519,6 +520,7 @@ def _render_offer_list(
             algolia_form=algolia_form or forms.GetOfferAlgoliaSearchForm(),
             algolia_dst=url_for(".list_algolia_offers"),
             date_created_sort_url=date_created_sort_url,
+            page=page,
         ),
         code,
     )
@@ -533,13 +535,14 @@ def list_offers() -> utils.BackofficeResponse:
         return _render_offer_list(
             advanced_form=form,
             code=400,
+            page="offer",
         )
 
     if form.is_empty():
         form_data = MultiDict(utils.get_query_params())
         form_data.update({"search-0-search_field": "ID", "search-0-operator": "IN"})
         form = forms.GetOfferAdvancedSearchForm(formdata=form_data)
-        return _render_offer_list(advanced_form=form)
+        return _render_offer_list(advanced_form=form, page="offer")
 
     offers = _get_offers_by_ids(
         offer_ids=_get_offer_ids_query(form),
@@ -551,6 +554,7 @@ def list_offers() -> utils.BackofficeResponse:
     return _render_offer_list(
         rows=offers,
         advanced_form=form,
+        page="offer",
     )
 
 
@@ -563,6 +567,7 @@ def list_algolia_offers() -> utils.BackofficeResponse:
         return _render_offer_list(
             algolia_form=form,
             code=400,
+            page="algolia",
         )
 
     offer_ids = _get_offer_ids_algolia(form)
@@ -578,6 +583,7 @@ def list_algolia_offers() -> utils.BackofficeResponse:
     return _render_offer_list(
         rows=offers,
         algolia_form=form,
+        page="algolia",
     )
 
 
