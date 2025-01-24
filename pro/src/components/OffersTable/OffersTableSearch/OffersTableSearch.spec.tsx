@@ -11,7 +11,7 @@ const LABELS = {
   nameInput: /Nom/,
   resetButton: /Réinitialiser/,
   searchButton: /Rechercher/,
-  filterToggleButton: /Filtres/,
+  filterToggleButton: /Filtrer/,
 }
 
 type OffersTableSearchTableTestProps = OffersTableSearchTestProps & {
