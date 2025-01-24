@@ -1,4 +1,3 @@
-
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { Callout } from 'ui-kit/Callout/Callout'
@@ -104,8 +103,10 @@ export const OffererBanners = ({
         ]}
       >
         <p>
-          Nous vous invitons à créer un lieu, cela vous permettra ensuite de
-          créer des offres physiques ou des évènements qui seront réservables.
+          Nous vous invitons à créer{' '}
+          {isOfferAddressEnabled ? 'une structure' : 'un lieu'}, cela vous
+          permettra ensuite de créer des offres physiques ou des évènements qui
+          seront réservables.
         </p>
         <br />
         <p>

@@ -159,8 +159,7 @@ export const DetailsForm = ({
               ]}
               variant={CalloutVariant.ERROR}
             >
-              Pour créer une offre dans cette catégorie, ajoutez d’abord une
-              structure.
+              Pour créer une offre, vous devez d’abord créer une structure.
             </Callout>
           </FormLayout.Row>
         )}
@@ -252,8 +251,7 @@ export const DetailsForm = ({
                 ]}
                 variant={CalloutVariant.ERROR}
               >
-                Pour créer une offre dans cette catégorie, ajoutez d’abord une
-                structure.
+                Pour créer une offre, vous devez d’abord créer une structure.
               </Callout>
             </FormLayout.Row>
           ) : (

@@ -679,7 +679,7 @@ describe('IndividualOfferDetails', () => {
     })
     expect(
       screen.getByText(
-        'Pour créer une offre dans cette catégorie, ajoutez d’abord une structure.'
+        'Pour créer une offre, vous devez d’abord créer une structure.'
       )
     ).toBeInTheDocument()
   })
@@ -707,7 +707,7 @@ describe('IndividualOfferDetails', () => {
 
     expect(
       screen.getByText(
-        'Pour créer une offre dans cette catégorie, ajoutez d’abord une structure.'
+        'Pour créer une offre, vous devez d’abord créer une structure.'
       )
     ).toBeInTheDocument()
     expect(screen.queryByText('Image de l’offre')).not.toBeInTheDocument()
