@@ -4762,6 +4762,105 @@ class GetExcelReportTest:
         # Duo
         assert sheet.cell(row=2, column=18).value == "Non"
 
+    def test_location_column_is_included_in_the_bookings_excel(self, app: fixture):
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        offerer_address_1 = offerers_factories.OffererAddressFactory(address__street="1 Boulevard Poissonnière")
+        offerer_address_2 = offerers_factories.OffererAddressFactory(address__street="2 Boulevard Poissonnière")
+        offerer_address_3 = offerers_factories.OffererAddressFactory(address__street="3 Boulevard Poissonnière")
+
+        venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address_1)
+        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address_2)
+        venue3 = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address_3)
+        offer1 = offers_factories.ThingOfferFactory(venue=venue1, offererAddress=offerer_address_1)
+        offer2 = offers_factories.ThingOfferFactory(venue=venue2, offererAddress=offerer_address_2)
+        offer3 = offers_factories.ThingOfferFactory(venue=venue3, offererAddress=offerer_address_3)
+        stock1 = offers_factories.ThingStockFactory(offer=offer1, price=10)
+        stock2 = offers_factories.ThingStockFactory(offer=offer2, price=10)
+        stock3 = offers_factories.ThingStockFactory(offer=offer3, price=10)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0)
+        booking1 = bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock1,
+            dateCreated=booking_date - timedelta(days=1),
+            token="ABCDEF",
+            amount=10,
+        )
+        booking2 = bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock2,
+            dateCreated=booking_date - timedelta(days=2),
+            token="GHIJKL",
+            amount=10,
+        )
+        booking3 = bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock3,
+            dateCreated=booking_date - timedelta(days=3),
+            token="MNOPQR",
+            amount=10,
+        )
+
+        bookings_excel = booking_repository.get_export(
+            user=pro,
+            booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365)),
+            offerer_address_id=offerer_address_3.id,
+            export_type=BookingExportType.EXCEL,
+        )
+
+        headers = booking_repository.BOOKING_EXPORT_HEADER
+        wb = openpyxl.load_workbook(BytesIO(bookings_excel))
+        sheet = wb.active
+
+        # Headers
+        for i in range(1, len(headers)):
+            assert sheet.cell(row=1, column=i).value == headers[i - 1]
+        # Lieu
+        assert sheet.cell(row=2, column=1).value == venue3.name
+        # Nom de l’offre
+        assert sheet.cell(row=2, column=2).value == offer3.name
+
+        assert (
+            sheet.cell(row=2, column=3).value
+            == f"{offerer_address_3.label} - {offerer_address_3.address.street} {offerer_address_3.address.postalCode} {offerer_address_3.address.city}"
+        )
+        # Date de l'évènement
+        assert sheet.cell(row=2, column=4).value == "None"
+        # EAN
+        assert sheet.cell(row=2, column=5).value == ((offer3.extraData or {}).get("ean") or None)
+        # Nom et prénom du bénéficiaire
+        assert sheet.cell(row=2, column=6).value == beneficiary.firstName
+        assert sheet.cell(row=2, column=7).value == beneficiary.lastName
+        # Email du bénéficiaire
+        assert sheet.cell(row=2, column=8).value == beneficiary.email
+        # Téléphone du bénéficiaire
+        assert sheet.cell(row=2, column=9).value == (beneficiary.phoneNumber or None)
+        # Date et heure de réservation
+        assert sheet.cell(row=2, column=10).value == str(booking3.dateCreated.astimezone(tz.gettz("Europe/Paris")))
+        # Date et heure de validation
+        assert sheet.cell(row=2, column=11).value == str(booking3.dateUsed.astimezone(tz.gettz("Europe/Paris")))
+        # Contremarque
+        assert sheet.cell(row=2, column=12).value == booking3.token
+        # Intitulé du tarif
+        assert sheet.cell(row=2, column=13).value is None
+        # Prix de la réservation
+        assert sheet.cell(row=2, column=14).value == booking3.amount
+        # Statut de la contremarque
+        assert sheet.cell(row=2, column=15).value == booking_repository.BOOKING_STATUS_LABELS[booking3.status]
+        # Date et heure de remboursement
+        assert sheet.cell(row=2, column=16).value == "None"
+        # Type d'offre
+        assert sheet.cell(row=2, column=17).value == "offre grand public"
+        # Code postal du bénéficiaire
+        assert sheet.cell(row=2, column=18).value == beneficiary.postalCode
+        # Duo
+        assert sheet.cell(row=2, column=19).value == "Non"
+
     def test_should_return_excel_export_according_to_booking_attributes_with_offerer_address_as_data_source(self):
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -4800,37 +4899,41 @@ class GetExcelReportTest:
         assert sheet.cell(row=2, column=1).value == venue.name
         # Nom de l’offre
         assert sheet.cell(row=2, column=2).value == offer.name
+        assert (
+            sheet.cell(row=2, column=3).value
+            == f"{venue.common_name} - {offer.offererAddress.address.street} {offer.offererAddress.address.postalCode} {offer.offererAddress.address.city}"
+        )
         # Date de l'évènement
-        assert sheet.cell(row=2, column=3).value == "None"
+        assert sheet.cell(row=2, column=4).value == "None"
         # EAN
-        assert sheet.cell(row=2, column=4).value == ((offer.extraData or {}).get("ean") or None)
+        assert sheet.cell(row=2, column=5).value == ((offer.extraData or {}).get("ean") or None)
         # Nom et prénom du bénéficiaire
-        assert sheet.cell(row=2, column=5).value == beneficiary.firstName
-        assert sheet.cell(row=2, column=6).value == beneficiary.lastName
+        assert sheet.cell(row=2, column=6).value == beneficiary.firstName
+        assert sheet.cell(row=2, column=7).value == beneficiary.lastName
         # Email du bénéficiaire
-        assert sheet.cell(row=2, column=7).value == beneficiary.email
+        assert sheet.cell(row=2, column=8).value == beneficiary.email
         # Téléphone du bénéficiaire
-        assert sheet.cell(row=2, column=8).value == (beneficiary.phoneNumber or None)
+        assert sheet.cell(row=2, column=9).value == (beneficiary.phoneNumber or None)
         # Date et heure de réservation
-        assert sheet.cell(row=2, column=9).value == str(booking.dateCreated.astimezone(tz.gettz("Europe/Paris")))
+        assert sheet.cell(row=2, column=10).value == str(booking.dateCreated.astimezone(tz.gettz("Europe/Paris")))
         # Date et heure de validation
-        assert sheet.cell(row=2, column=10).value == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
+        assert sheet.cell(row=2, column=11).value == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
         # Contremarque
-        assert sheet.cell(row=2, column=11).value == booking.token
+        assert sheet.cell(row=2, column=12).value == booking.token
         # Intitulé du tarif
-        assert sheet.cell(row=2, column=12).value is None
+        assert sheet.cell(row=2, column=13).value is None
         # Prix de la réservation
-        assert sheet.cell(row=2, column=13).value == booking.amount
+        assert sheet.cell(row=2, column=14).value == booking.amount
         # Statut de la contremarque
-        assert sheet.cell(row=2, column=14).value == booking_repository.BOOKING_STATUS_LABELS[booking.status]
+        assert sheet.cell(row=2, column=15).value == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         # Date et heure de remboursement
-        assert sheet.cell(row=2, column=15).value == "None"
+        assert sheet.cell(row=2, column=16).value == "None"
         # Type d'offre
-        assert sheet.cell(row=2, column=16).value == "offre grand public"
+        assert sheet.cell(row=2, column=17).value == "offre grand public"
         # Code postal du bénéficiaire
-        assert sheet.cell(row=2, column=17).value == beneficiary.postalCode
+        assert sheet.cell(row=2, column=18).value == beneficiary.postalCode
         # Duo
-        assert sheet.cell(row=2, column=18).value == "Non"
+        assert sheet.cell(row=2, column=19).value == "Non"
 
 
 class FindSoonToBeExpiredBookingsTest:
