@@ -1,4 +1,3 @@
-
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { Callout } from 'ui-kit/Callout/Callout'
@@ -96,7 +95,7 @@ export const OffererBanners = ({
         links={[
           {
             href: `https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-`,
-            label: 'En savoir plus sur la création d’un lieu',
+            label: `En savoir plus sur la création d’${isOfferAddressEnabled ? 'une structure' : 'un lieu'}`,
             'aria-label':
               'Acteurs Culturels: Comment ajouter de nouveaux lieux sur votre espace et les paramétrer ? (Nouvelle fenêtre, site https://aide.passculture.app)',
             isExternal: true,
@@ -104,8 +103,10 @@ export const OffererBanners = ({
         ]}
       >
         <p>
-          Nous vous invitons à créer un lieu, cela vous permettra ensuite de
-          créer des offres physiques ou des évènements qui seront réservables.
+          Nous vous invitons à créer{' '}
+          {isOfferAddressEnabled ? 'une structure' : 'un lieu'}, cela vous
+          permettra ensuite de créer des offres physiques ou des évènements qui
+          seront réservables.
         </p>
         <br />
         <p>
