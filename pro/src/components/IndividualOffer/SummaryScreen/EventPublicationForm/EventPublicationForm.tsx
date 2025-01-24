@@ -102,6 +102,7 @@ export const EventPublicationForm = () => {
                 label="Heure de publication"
                 name="publicationTime"
                 options={getPublicationHoursOptions()}
+                defaultOption={{ label: 'HH:MM', value: '' }}
               />
             </FormLayout.Row>
           )}
