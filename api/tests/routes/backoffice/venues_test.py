@@ -1251,6 +1251,49 @@ class UpdateVenueTest(PostEndpointHelper):
             street="unused",
         ),
     )
+    def test_update_venue_with_address_manual_edition_clear_field_street(
+        self, mock_get_municipality_centroid, authenticated_client
+    ):
+        venue = offerers_factories.VenueFactory(
+            street="1 Rue Poivre",
+            postalCode="97400",
+            city="97411",
+            latitude=-20.88756,
+            longitude=55.451442,
+            banId="97411_1120_00001",
+        )
+        original_offerer_address_id = venue.offererAddressId
+        original_address_id = venue.offererAddress.addressId
+
+        data = self._get_current_data(venue)
+        data["is_manual_address"] = "on"
+        data["street"] = None
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+        assert response.status_code == 303
+
+        db.session.refresh(venue)
+
+        assert venue.offererAddressId != original_offerer_address_id
+        assert venue.offererAddress.addressId != original_address_id
+        assert venue.offererAddress.address.isManualEdition is True
+        assert venue.offererAddress.address.street is None
+        assert venue.offererAddress.address.banId is None
+
+    @patch(
+        "pcapi.connectors.api_adresse.get_municipality_centroid",
+        return_value=api_adresse.AddressInfo(
+            id="unused",
+            label="unused",
+            postcode="unused",
+            citycode="97411",
+            latitude=1,
+            longitude=1,
+            score=1,
+            city="Saint-Denis",
+            street="unused",
+        ),
+    )
     def test_update_venue_manual_address_reuses_existing_manual_edited_address_even_with_sending_old_ban_id(
         self, mock_get_municipality_centroid, authenticated_client
     ):
