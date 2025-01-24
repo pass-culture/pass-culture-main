@@ -119,3 +119,12 @@ export enum BankAccountEvents {
   CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP = 'HasClickedBankDetailsRecordFollowUp',
   CLICKED_SAVE_VENUE_TO_BANK_ACCOUNT = 'HasClickedSaveVenueToBankAccount',
 }
+
+export const OnboardingDidacticEvents = {
+  HAS_CLICKED_START_COLLECTIVE_DIDACTIC_ONBOARDING:
+    'hasClickedStartCollectiveDidacticOnboarding',
+  HAS_CLICKED_ALREADY_SUBMITTED_COLLECTIVE_CASE_DIDACTIC_ONBOARDING:
+    'hasClickedAlreadySubmittedCollectiveCaseDidacticOnboarding',
+  HAS_CLICKED_SUBMIT_COLLECTIVE_CASE_DIDACTIC_ONBOARDING:
+    'hasClickedSubmitCollectiveCaseDidacticOnboarding',
+}

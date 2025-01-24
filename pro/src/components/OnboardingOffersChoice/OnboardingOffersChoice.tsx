@@ -1,5 +1,7 @@
 import { ReactNode, useState } from 'react'
 
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { OnboardingDidacticEvents } from 'commons/core/FirebaseEvents/constants'
 import { Dialog } from 'components/Dialog/Dialog'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -34,6 +36,7 @@ const Card = ({ imageSrc, title, children, actions }: CardProps) => {
 
 export const OnboardingOffersChoice = () => {
   const [showModal, setShowModal] = useState(false)
+  const { logEvent } = useAnalytics()
 
   return (
     <div className={styles['card-container']}>
@@ -69,7 +72,12 @@ export const OnboardingOffersChoice = () => {
               <Button
                 type="submit"
                 title="Commencer la création d’offre sur ADAGE"
-                onClick={() => setShowModal(true)}
+                onClick={() => {
+                  logEvent(
+                    OnboardingDidacticEvents.HAS_CLICKED_START_COLLECTIVE_DIDACTIC_ONBOARDING
+                  )
+                  setShowModal(true)
+                }}
               >
                 Commencer
               </Button>
