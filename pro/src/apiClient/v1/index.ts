@@ -98,6 +98,7 @@ export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export type { FinanceBankAccountListResponseModel } from './models/FinanceBankAccountListResponseModel';
 export type { FinanceBankAccountResponseModel } from './models/FinanceBankAccountResponseModel';
 export { GenderEnum } from './models/GenderEnum';
+export type { GetActiveEANOfferResponseModel } from './models/GetActiveEANOfferResponseModel';
 export type { GetCollectiveOfferCollectiveStockResponseModel } from './models/GetCollectiveOfferCollectiveStockResponseModel';
 export type { GetCollectiveOfferManagingOffererResponseModel } from './models/GetCollectiveOfferManagingOffererResponseModel';
 export type { GetCollectiveOfferProviderResponseModel } from './models/GetCollectiveOfferProviderResponseModel';

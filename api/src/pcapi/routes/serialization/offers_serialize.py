@@ -455,6 +455,22 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
         getter_dict = IndividualOfferResponseGetterDict
 
 
+class GetActiveEANOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
+    dateCreated: datetime.datetime
+    isActive: bool
+    id: int
+    name: str
+    subcategoryId: SubcategoryIdEnum
+    productId: int | None
+    status: OfferStatus
+
+    class Config:
+        orm_mode = True
+        json_encoders = {datetime.datetime: format_into_utc_date}
+        use_enum_values = True
+        getter_dict = IndividualOfferResponseGetterDict
+
+
 class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
     address: AddressResponseIsLinkedToVenueModel | None
     hasPendingBookings: bool

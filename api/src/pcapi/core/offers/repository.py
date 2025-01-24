@@ -1245,6 +1245,18 @@ def get_product_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
     )
 
 
+def get_active_offer_by_venue_id_and_ean(venue_id: int, ean: str) -> models.Offer:
+    return models.Offer.query.filter(
+        models.Offer.venueId == venue_id,
+        models.Offer.isActive.is_(True),
+        sa.or_(
+            models.Offer.ean == ean,
+            # TODO: Remove when ean is migrated out of extraData
+            models.Offer.extraData["ean"].astext == ean,
+        ),
+    ).one()
+
+
 def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> models.Offer:
     try:
         query = models.Offer.query.filter(models.Offer.id == offer_id)
