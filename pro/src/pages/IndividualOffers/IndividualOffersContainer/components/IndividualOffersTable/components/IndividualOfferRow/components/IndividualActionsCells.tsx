@@ -35,6 +35,7 @@ import { DeleteDraftCell } from './DeleteDraftCell'
 import { EditOfferCell } from './EditOfferCell'
 import { EditStocksCell } from './EditStocksCell'
 import { HeadlineOfferCell } from './HeadlineOfferCell/HeadlineOfferCell'
+import { HeadlineOfferImageDialogs } from './HeadlineOfferImageDialogs'
 
 interface IndividualActionsCellsProps {
   rowId: string
@@ -75,6 +76,10 @@ export const IndividualActionsCells = ({
   const [
     isConfirmDialogReplaceHeadlineOfferOpen,
     setIsConfirmDialogReplaceHeadlineOfferOpen,
+  ] = useState(false)
+  const [
+    isDialogForHeadlineOfferWithoutImageOpen,
+    setIsDialogForHeadlineOfferWithoutImageOpen,
   ] = useState(false)
   const { logEvent } = useAnalytics()
   const notification = useNotification()
@@ -156,8 +161,11 @@ export const IndividualActionsCells = ({
                   <HeadlineOfferCell
                     offer={offer}
                     isRestrictedAsAdmin={isRestrictedAsAdmin}
-                    setIsConfirmDialogOpen={
+                    setIsConfirmReplacementDialogOpen={
                       setIsConfirmDialogReplaceHeadlineOfferOpen
+                    }
+                    setIsOfferWithoutImageDialogOpen={
+                      setIsDialogForHeadlineOfferWithoutImageOpen
                     }
                   />
                 )}
@@ -184,6 +192,12 @@ export const IndividualActionsCells = ({
           'Vous êtes sur le point de remplacer votre offre à la une par une nouvelle offre.'
         }
         open={isConfirmDialogReplaceHeadlineOfferOpen}
+      />
+      <HeadlineOfferImageDialogs
+        offer={offer}
+        isFirstDialogOpen={isDialogForHeadlineOfferWithoutImageOpen}
+        setIsFirstDialogOpen={setIsDialogForHeadlineOfferWithoutImageOpen}
+        isRestrictedAsAdmin={isRestrictedAsAdmin}
       />
     </>
   )
