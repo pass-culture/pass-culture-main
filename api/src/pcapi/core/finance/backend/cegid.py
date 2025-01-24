@@ -1,5 +1,4 @@
 import datetime
-import json
 import logging
 import typing
 
@@ -15,8 +14,8 @@ from pcapi.utils import requests
 
 logger = logging.getLogger(__name__)
 
-COOKIES_CACHE_DURATION = 900  # in seconds = 15min
-REDIS_COOKIES_CACHE_KEY = "cache:cegid:cookies"
+TOKEN_CACHE_DURATION = 3600  # in seconds = 1h
+REDIS_TOKEN_CACHE_KEY = "cache:cegid:token"
 
 INVENTORY_IDS = {
     "ORINDGRANT_18": "ORIND18P0000",
@@ -44,39 +43,51 @@ class CegidFinanceBackend(BaseFinanceBackend):
     def __init__(self) -> None:
         self.base_url = settings.CEGID_URL
         self._interface = "entity/INTERFACES/23.200.001"
-        self._cookies: dict = {}
 
     def _authenticate(self) -> str:
         username = settings.CEGID_USERNAME
         password = settings.CEGID_PASSWORD
-        company = settings.CEGID_COMPANY
+        client_id = settings.CEGID_CLIENT_ID
+        client_secret = settings.CEGID_CLIENT_SECRET
 
         response = requests.post(
-            f"{self.base_url}/entity/auth/login",
-            json={
-                "name": username,
+            f"{self.base_url}/identity/connect/token",
+            headers={
+                "cache-control": "no-cache",
+                "content-type": "application/x-www-form-urlencoded",
+            },
+            data={
+                "username": username,
                 "password": password,
-                "company": company,
+                "grant_type": "password",
+                "scope": "api",
+                "client_id": client_id,
+                "client_secret": client_secret,
             },
         )
-        if self._get_exception_type(response) in ("PX.Data.PXException", "PX.Data.PXUndefinedCompanyException"):
-            raise exceptions.FinanceBackendInvalidCredentials(response, "Invalid credentials")
 
-        if response.status_code != 204:
-            raise exceptions.FinanceBackendUnexpectedResponse(response, "Couldn't authenticate")
+        if response.status_code != 200:
+            raise exceptions.FinanceBackendInvalidCredentials(response, "Couldn't authenticate")
 
-        return json.dumps(response.cookies.get_dict())
+        response_json = response.json()
+        if response_json.get("token_type") != "Bearer" or not response_json.get("access_token"):
+            raise exceptions.FinanceBackendInvalidCredentials(response, "Unexpected authentication response")
+
+        return response_json["access_token"]
 
     def _request(self, method: str, url: str, *args: typing.Any, **kwargs: typing.Any) -> requests.Response:
         """
         Private method to operate requests:
-        - Automatically reconnects in case of cookies/token expiration
+        - Automatically reconnects in case of token expiration
         - Use previously fetched cookies to authenticate requests
         """
         force_cache_update = False
-        for _ in range(2):  # In case the cookies expire, delete the stored one and re-authenticate
+        for _ in range(2):  # In case the token expires, delete the stored one and re-authenticate
             try:
-                response = requests.request(method, url, *args, cookies=self._get_cookies(force_cache_update), **kwargs)
+                headers = kwargs.pop("headers", {})
+                token = self._get_token(force_cache_update)
+                headers["Authorization"] = f"Bearer {token}"
+                response = requests.request(method, url, *args, headers=headers, **kwargs)
             except requests.exceptions.RequestException as exc:
                 raise exceptions.FinanceBackendApiError(f"Network error on Cegid API: {url}") from exc
             if response.status_code == 422:
@@ -87,15 +98,14 @@ class CegidFinanceBackend(BaseFinanceBackend):
 
         raise exceptions.FinanceBackendUnauthorized(response, "Unauthorized request")
 
-    def _get_cookies(self, force_cache_update: bool) -> dict:
-        cached_cookies = cache_utils.get_from_cache(
+    def _get_token(self, force_cache_update: bool) -> str:
+        token = cache_utils.get_from_cache(
             retriever=self._authenticate,
-            key_template=REDIS_COOKIES_CACHE_KEY,
-            expire=COOKIES_CACHE_DURATION,
+            key_template=REDIS_TOKEN_CACHE_KEY,
+            expire=TOKEN_CACHE_DURATION,
             force_update=force_cache_update,
         )
-        self._cookies = json.loads(str(cached_cookies))
-        return self._cookies
+        return str(token)  # Cast as string here to help mypy
 
     def get_bank_account(self, bank_account_id: int) -> dict:
         url = f"{self.base_url}/{self._interface}/Vendor/{bank_account_id}"
@@ -362,7 +372,13 @@ class CegidFinanceBackend(BaseFinanceBackend):
     def is_configured(self) -> bool:
         return all(
             bool(e)
-            for e in (settings.CEGID_URL, settings.CEGID_USERNAME, settings.CEGID_PASSWORD, settings.CEGID_COMPANY)
+            for e in (
+                settings.CEGID_URL,
+                settings.CEGID_USERNAME,
+                settings.CEGID_PASSWORD,
+                settings.CEGID_CLIENT_ID,
+                settings.CEGID_CLIENT_SECRET,
+            )
         )
 
     def _get_exception_type(self, response: requests.Response) -> str | None:
