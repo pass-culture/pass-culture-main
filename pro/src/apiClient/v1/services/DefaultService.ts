@@ -36,6 +36,7 @@ import type { EducationalInstitutionsResponseModel } from '../models/Educational
 import type { EducationalRedactors } from '../models/EducationalRedactors';
 import type { EventDatesInfos } from '../models/EventDatesInfos';
 import type { FinanceBankAccountListResponseModel } from '../models/FinanceBankAccountListResponseModel';
+import type { GetActiveEANOfferResponseModel } from '../models/GetActiveEANOfferResponseModel';
 import type { GetCollectiveOfferRequestResponseModel } from '../models/GetCollectiveOfferRequestResponseModel';
 import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
 import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetCollectiveOfferTemplateResponseModel';
@@ -2122,6 +2123,30 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_active_venue_offer_by_ean <GET>
+   * @param venueId
+   * @param ean
+   * @returns GetActiveEANOfferResponseModel OK
+   * @throws ApiError
+   */
+  public getActiveVenueOfferByEan(
+    venueId: number,
+    ean: string,
+  ): CancelablePromise<GetActiveEANOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offers/{venue_id}/ean/{ean}',
+      path: {
+        'venue_id': venueId,
+        'ean': ean,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

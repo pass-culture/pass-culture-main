@@ -6,6 +6,7 @@ from flask_login import login_required
 import sqlalchemy as sqla
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
+import sqlalchemy.orm.exc as sa_exceptions
 
 from pcapi import repository
 from pcapi.core.categories import categories
@@ -645,6 +646,29 @@ def delete_price_category(offer_id: int, price_category_id: int) -> None:
 
     price_category = models.PriceCategory.query.get_or_404(price_category_id)
     offers_api.delete_price_category(offer, price_category)
+
+
+@private_api.route("/offers/<int:venue_id>/ean/<string:ean>", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.GetActiveEANOfferResponseModel,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
+def get_active_venue_offer_by_ean(venue_id: int, ean: str) -> offers_serialize.GetActiveEANOfferResponseModel:
+    try:
+        venue = offerers_repository.get_venue_by_id(venue_id)
+        rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+        offer = offers_repository.get_active_offer_by_venue_id_and_ean(venue_id, ean)
+    except sa_exceptions.NoResultFound:
+        raise api_errors.ApiErrors(
+            errors={
+                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
+            },
+            status_code=404,
+        )
+
+    return offers_serialize.GetActiveEANOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/get_product_by_ean/<string:ean>/<int:offerer_id>", methods=["GET"])
