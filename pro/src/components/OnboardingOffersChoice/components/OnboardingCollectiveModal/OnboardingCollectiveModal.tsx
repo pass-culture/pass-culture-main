@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -16,6 +17,8 @@ import calendarIcon from './assets/calendrier.svg'
 import offerCreationIcon from './assets/creation_offre.svg'
 import fileSubmissionIcon from './assets/depot_dossier.svg'
 import styles from './OnboardingCollectiveModal.module.scss'
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { OnboardingDidacticEvents } from 'commons/core/FirebaseEvents/constants'
 
 interface OnboardingCollectiveModalProps {
   className?: string
@@ -28,12 +31,16 @@ export const OnboardingCollectiveModal = ({
   const [isLoading, setIsLoading] = useState(false)
   const currentOffererId = useSelector(selectCurrentOffererId)
   const navigate = useNavigate()
+  const { logEvent } = useAnalytics()
 
   if (currentOffererId === null) {
     return <Spinner />
   }
 
   const checkEligibility = async () => {
+    logEvent(
+      OnboardingDidacticEvents.HAS_CLICKED_ALREADY_SUBMITTED_COLLECTIVE_CASE_DIDACTIC_ONBOARDING
+    )
     try {
       setErrorMessage(null)
       setIsLoading(true)
@@ -88,6 +95,11 @@ export const OnboardingCollectiveModal = ({
           opensInNewTab
           className={styles['onboarding-collective-button']}
           variant={ButtonVariant.PRIMARY}
+          onClick={() =>
+            logEvent(
+              OnboardingDidacticEvents.HAS_CLICKED_SUBMIT_COLLECTIVE_CASE_DIDACTIC_ONBOARDING
+            )
+          }
           to="https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage"
         >
           Déposer un dossier

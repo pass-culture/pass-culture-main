@@ -1,9 +1,12 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import * as router from 'react-router-dom'
+import { beforeEach, expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import { api } from 'apiClient/api'
+import * as useAnalytics from 'app/App/analytics/firebase'
+import { OnboardingDidacticEvents } from 'commons/core/FirebaseEvents/constants'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
@@ -11,6 +14,7 @@ import {
 } from 'commons/utils/renderWithProviders'
 
 import { OnboardingCollectiveModal } from './OnboardingCollectiveModal'
+
 
 const renderOnboardingCollectiveModal = (
   options?: RenderWithProvidersOptions
@@ -24,8 +28,14 @@ const renderOnboardingCollectiveModal = (
     ...options,
   })
 }
-
+const mockLogEvent = vi.fn()
 describe('<OnboardingCollectiveModal />', () => {
+  beforeEach(() => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+  })
+
   it('should render correctly', async () => {
     renderOnboardingCollectiveModal()
 
@@ -118,6 +128,32 @@ describe('<OnboardingCollectiveModal />', () => {
       expect(
         await screen.findByText('Un problème est survenu, veuillez réessayer.')
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('trackers', () => {
+    it('should track submitting a case', async () => {
+      renderOnboardingCollectiveModal()
+
+      await userEvent.click(
+        await screen.findByRole('link', { name: /Déposer un dossier/ })
+      )
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        OnboardingDidacticEvents.HAS_CLICKED_SUBMIT_COLLECTIVE_CASE_DIDACTIC_ONBOARDING
+      )
+    })
+
+    it('should track already submitted a case', async () => {
+      renderOnboardingCollectiveModal()
+
+      await userEvent.click(
+        await screen.findByRole('button', { name: /J’ai déposé un dossier/ })
+      )
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        OnboardingDidacticEvents.HAS_CLICKED_ALREADY_SUBMITTED_COLLECTIVE_CASE_DIDACTIC_ONBOARDING
+      )
     })
   })
 })

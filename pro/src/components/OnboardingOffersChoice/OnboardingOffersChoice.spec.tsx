@@ -1,16 +1,24 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { beforeEach } from 'vitest'
 import { axe } from 'vitest-axe'
 
+import * as useAnalytics from 'app/App/analytics/firebase'
+import { OnboardingDidacticEvents } from 'commons/core/FirebaseEvents/constants'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { OnboardingOffersChoice } from './OnboardingOffersChoice'
 
+const mockLogEvent = vi.fn()
+
 describe('OnboardingOffersChoice Component', () => {
   beforeEach(() => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
     renderWithProviders(<OnboardingOffersChoice />, {
       storeOverrides: {
-        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: false, },
+        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: false },
       },
     })
   })
@@ -53,5 +61,19 @@ describe('OnboardingOffersChoice Component', () => {
     expect(
       await screen.findByTestId('onboarding-collective-modal')
     ).toBeInTheDocument()
+  })
+
+  describe('trackers', () => {
+    it('should track choosing collective offers', async () => {
+      await userEvent.click(
+        screen.getByTitle('Commencer la création d’offre sur ADAGE')
+      )
+
+      await waitFor(() => {
+        expect(mockLogEvent).toHaveBeenCalledWith(
+          OnboardingDidacticEvents.HAS_CLICKED_START_COLLECTIVE_DIDACTIC_ONBOARDING
+        )
+      })
+    })
   })
 })
