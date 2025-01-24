@@ -21,7 +21,8 @@ export const downloadIndividualBookingsXLSFile = async (
     isDateValid(filters.bookingBeginningDate)
       ? filters.bookingBeginningDate
       : null,
-    isDateValid(filters.bookingEndingDate) ? filters.bookingEndingDate : null
+    isDateValid(filters.bookingEndingDate) ? filters.bookingEndingDate : null,
+    filters.offererAddressId !== DEFAULT_PRE_FILTERS.offererAddressId ? Number(filters.offererAddressId) : null
   )
   const date = new Date().toISOString()
   downloadFile(bookingsXLSText, `reservations_pass_culture-${date}.xlsx`)
