@@ -115,14 +115,14 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
     @pytest.mark.usefixtures("db_session")
     def test_product_creation_with_full_body(self, client, clear_tests_assets_bucket):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        response = client.with_explicit_token(plain_api_key).post(
             "/public/offers/v1/products",
             json={
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "enableDoubleBookings": False,
                 "bookingContact": "contact@example.com",
                 "bookingEmail": "spam@example.com",
@@ -157,10 +157,10 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
         created_offer = offers_models.Offer.query.one()
         assert created_offer.name == "Le champ des possibles"
-        assert created_offer.venue == venue
+        assert created_offer.venue == venue_provider.venue
         assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_FILM"
         assert created_offer.audioDisabilityCompliant is True
-        assert created_offer.lastProvider.name == "Technical provider"
+        assert created_offer.lastProvider == venue_provider.provider
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is False
         assert created_offer.visualDisabilityCompliant is False
@@ -171,7 +171,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
         assert created_offer.status == offer_mixin.OfferStatus.ACTIVE
         assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
-        assert created_offer.offererAddress.id == venue.offererAddress.id
+        assert created_offer.offererAddress.id == venue_provider.venue.offererAddress.id
 
         created_stock = offers_models.Stock.query.one()
         assert created_stock.price == decimal.Decimal("12.34")
@@ -210,7 +210,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
                 "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(created_mediation.id)}",
             },
             "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
-            "location": {"type": "physical", "venueId": venue.id},
+            "location": {"type": "physical", "venueId": venue_provider.venue.id},
             "name": "Le champ des possibles",
             "status": "ACTIVE",
             "stock": {
@@ -223,12 +223,12 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
     @pytest.mark.usefixtures("db_session")
     def test_unlimited_quantity(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        response = client.with_explicit_token(plain_api_key).post(
             "/public/offers/v1/products",
             json={
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_FILM",
                     "ean": "1234567891234",
@@ -277,12 +277,12 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
     @pytest.mark.usefixtures("db_session")
     def test_is_duo_not_applicable(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        response = client.with_explicit_token(plain_api_key).post(
             "/public/offers/v1/products",
             json={
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "enableDoubleBookings": True,
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_FILM",
@@ -298,12 +298,12 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
     @pytest.mark.usefixtures("db_session")
     def test_extra_data_deserialization(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        response = client.with_explicit_token(plain_api_key).post(
             "/public/offers/v1/products",
             json={
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_FILM",
                     "ean": "1234567891234",
@@ -317,31 +317,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.json["categoryRelatedFields"] == {"category": "SUPPORT_PHYSIQUE_FILM", "ean": "1234567891234"}
         created_offer = offers_models.Offer.query.one()
         assert created_offer.extraData == {"ean": "1234567891234"}
-
-    @pytest.mark.usefixtures("db_session")
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
-    def test_physical_product_attached_to_digital_venue(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(is_virtual=True)
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products",
-            json={
-                "location": {"type": "physical", "venueId": venue.id},
-                "categoryRelatedFields": {
-                    "category": "SUPPORT_PHYSIQUE_FILM",
-                    "ean": "1234567891234",
-                },
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "name": "Le champ des possibles",
-            },
-        )
-
-        assert response.status_code == 400
-        assert response.json == {
-            "venue": ['Une offre physique ne peut être associée au lieu "Offre numérique"'],
-            "offererAddress": ["Une offre physique doit avoir une adresse"],
-        }
-        assert offers_models.Offer.query.first() is None
 
     @pytest.mark.usefixtures("db_session")
     def test_event_with_custom_address(self, client):
@@ -412,12 +387,12 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
     @pytest.mark.usefixtures("db_session")
     def test_event_category_not_accepted(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        response = client.with_explicit_token(plain_api_key).post(
             "/public/offers/v1/products",
             json={
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "categoryRelatedFields": {"category": "EVENEMENT_JEU"},
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "name": "Le champ des possibles",
@@ -432,8 +407,9 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
     def test_venue_allowed(self, client):
         utils.create_offerer_provider_linked_to_venue()
         not_allowed_venue = offerers_factories.VenueFactory()
+        plain_api_key, _ = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        response = client.with_explicit_token(plain_api_key).post(
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": not_allowed_venue.id},
@@ -454,12 +430,12 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
     @mock.patch("pcapi.core.offers.api.create_thumb", side_effect=Exception)
     # this test needs "clean_database" instead of "db_session" fixture because with the latter, the mediation would still be present in databse
     def test_no_objects_saved_on_image_error(self, create_thumb_mock, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        response = client.with_explicit_token(plain_api_key).post(
             "/public/offers/v1/products",
             json={
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "stock": {"quantity": 1, "price": 100},
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_FILM",
@@ -479,12 +455,12 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
     @pytest.mark.usefixtures("clean_database")
     def test_image_too_small(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        response = client.with_explicit_token(plain_api_key).post(
             "/public/offers/v1/products",
             json={
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_FILM",
                     "ean": "1234567891234",
@@ -504,15 +480,15 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
     @pytest.mark.usefixtures("clean_database")
     def test_bad_image_ratio(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         image_bytes = (pathlib.Path(tests.__path__[0]) / "files" / "mouette_square.jpg").read_bytes()
         encoded_bytes = base64.b64encode(image_bytes)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        response = client.with_explicit_token(plain_api_key).post(
             "/public/offers/v1/products",
             json={
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_FILM",
                     "ean": "1234567891234",
@@ -532,12 +508,12 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
     @pytest.mark.usefixtures("db_session")
     def test_stock_booking_limit_without_timezone(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        response = client.with_explicit_token(plain_api_key).post(
             "/public/offers/v1/products",
             json={
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_FILM",
                     "ean": "1234567891234",
@@ -556,12 +532,16 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
     @pytest.mark.usefixtures("db_session")
     def test_not_allowed_categories(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(is_virtual=True)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        response = client.with_explicit_token(plain_api_key).post(
             "/public/offers/v1/products",
             json={
-                "location": {"type": "digital", "url": "https://la-flute-en-chantier.fr", "venue_id": venue.id},
+                "location": {
+                    "type": "digital",
+                    "url": "https://la-flute-en-chantier.fr",
+                    "venue_id": venue_provider.id,
+                },
                 "categoryRelatedFields": {"category": "CARTE_CINE_ILLIMITE", "showType": "OPERA-GRAND_OPERA"},
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "name": "La flûte en chantier",
@@ -612,12 +592,12 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
     @pytest.mark.usefixtures("db_session")
     def test_books_are_not_allowed(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        response = client.with_explicit_token(plain_api_key).post(
             "/public/offers/v1/products",
             json={
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "categoryRelatedFields": {
                     "category": "LIVRE_PAPIER",
                     "ean": "1234567890123",
@@ -633,12 +613,16 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
     @pytest.mark.usefixtures("db_session")
     def test_create_allowed_product(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(is_virtual=True)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
             json={
-                "location": {"type": "digital", "url": "https://la-flute-en-chantier.fr", "venue_id": venue.id},
+                "location": {
+                    "type": "digital",
+                    "url": "https://la-flute-en-chantier.fr",
+                    "venue_id": venue_provider.venue.id,
+                },
                 "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "OPERA-GRAND_OPERA"},
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "name": "La flûte en chantier",
@@ -649,23 +633,32 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert offers_models.Offer.query.count() == 1
 
     @pytest.mark.usefixtures("db_session")
-    def test_returns_404_for_inactive_venue_provider(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+    def test_unique_venue_and_id_at_provider_violation(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products",
-            json={
-                "location": {"type": "physical", "venueId": venue.id},
-                "categoryRelatedFields": {
-                    "category": "SUPPORT_PHYSIQUE_FILM",
-                    "ean": "1234567891234",
-                },
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "name": "Le champ des possibles",
-            },
-        )
+        offer = offers_factories.OfferFactory(venue=venue_provider.venue, idAtProvider="some_id")
 
-        assert response.status_code == 404
+        payload = build_base_payload(venue_provider.venue, idAtProvider=offer.idAtProvider)
+        response = auth_client.post(self.endpoint_url, json=payload)
+
+        assert response.status_code == 400
+
+    @pytest.mark.usefixtures("db_session")
+    def test_db_error(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        patch_path = "pcapi.routes.public.individual_offers.v1.products.db"
+        with mock.patch(patch_path) as mocked_db:
+            orig = mock.MagicMock()
+            err = sqla_exc.IntegrityError(statement="oops", params="none", orig=orig)
+            mocked_db.session.flush.side_effect = err
+
+            payload = build_base_payload(venue_provider.venue)
+            response = auth_client.post(self.endpoint_url, json=payload)
+
+            assert response.status_code == 400
 
 
 def build_base_payload(venue, **extra):
@@ -679,34 +672,3 @@ def build_base_payload(venue, **extra):
         "name": "Le champ des possibles",
         **extra,
     }
-
-
-@pytest.mark.usefixtures("db_session")
-class CreateProductDbErrorsHandlingTest:
-    product_url = "/public/offers/v1/products"
-
-    def test_unique_venue_and_id_at_provider_violation(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        auth_client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
-
-        offer = offers_factories.OfferFactory(venue=venue, idAtProvider="some_id")
-
-        payload = build_base_payload(venue, idAtProvider=offer.idAtProvider)
-        response = auth_client.post(self.product_url, json=payload)
-
-        assert response.status_code == 400
-
-    def test_db_error(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        auth_client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
-
-        patch_path = "pcapi.routes.public.individual_offers.v1.products.db"
-        with mock.patch(patch_path) as mocked_db:
-            orig = mock.MagicMock()
-            err = sqla_exc.IntegrityError(statement="oops", params="none", orig=orig)
-            mocked_db.session.flush.side_effect = err
-
-            payload = build_base_payload(venue)
-            response = auth_client.post(self.product_url, json=payload)
-
-            assert response.status_code == 400

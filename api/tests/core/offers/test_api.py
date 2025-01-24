@@ -1493,23 +1493,23 @@ class CreateOfferTest:
     def test_create_digital_offer_from_scratch_with_offerer_address(
         self,
     ):
-
         venue = offerers_factories.VenueFactory(isVirtual=True, offererAddress=None, siret=None)
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
 
-        with pytest.raises(api_errors.ApiErrors) as error:
-            body = offers_schemas.CreateOffer(
-                name="A pretty good offer",
-                externalTicketOfficeUrl="http://example.net",
-                audioDisabilityCompliant=True,
-                mentalDisabilityCompliant=True,
-                motorDisabilityCompliant=True,
-                visualDisabilityCompliant=True,
-                url="http://example.com",
-                subcategoryId=subcategories.VOD.id,
-            )
-            api.create_offer(body=body, venue=venue, offerer_address=offerer_address)
-        assert error.value.errors["offererAddress"] == ["Une offre numérique ne peut pas avoir d'adresse"]
+        body = offers_schemas.CreateOffer(
+            name="A pretty good offer",
+            externalTicketOfficeUrl="http://example.net",
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+            url="http://example.com",
+            subcategoryId=subcategories.VOD.id,
+        )
+
+        offer = api.create_offer(body=body, venue=venue, offerer_address=offerer_address)
+
+        assert offer.offererAddressId == None
 
     def test_create_offer_from_scratch_with_offerer_address(self):
         venue = offerers_factories.VenueFactory()
