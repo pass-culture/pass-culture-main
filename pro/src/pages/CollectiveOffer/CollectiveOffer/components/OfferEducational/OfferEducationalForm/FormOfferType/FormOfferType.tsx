@@ -124,6 +124,7 @@ export const FormOfferType = ({
             disabled={disableForm}
             hasTemplateButton={isTemplate}
             wordingTemplate={modelTemplate}
+            hasDefaultPlaceholder
           />
         </FormLayout.Row>
         {isTemplate && (
