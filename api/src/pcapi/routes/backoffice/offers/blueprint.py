@@ -127,6 +127,13 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "column": offers_models.Offer.id,
         "special": lambda q: [int(id_) for id_ in re.findall(r"\d+", q or "")],
     },
+    "PRODUCT": {
+        "field": "integer",
+        "column": offers_models.Offer.productId,
+        "special": lambda i: db.session.query(offers_models.Offer.productId)
+        .filter(offers_models.Offer.id == i)
+        .scalar_subquery(),
+    },
     "NAME": {
         "field": "string",
         "column": offers_models.Offer.name,
