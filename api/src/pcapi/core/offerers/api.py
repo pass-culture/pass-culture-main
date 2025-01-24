@@ -268,19 +268,20 @@ def update_venue_location(  # pylint: disable=too-many-positional-arguments
     for the API.
     """
     assert venue.offererAddress is not None
-    street = location_modifications.get("street") or venue.offererAddress.address.street
-    city = location_modifications.get("city") or venue.offererAddress.address.city
-    postal_code = location_modifications.get("postalCode") or venue.offererAddress.address.postalCode
-    latitude = location_modifications.get("latitude") or venue.offererAddress.address.latitude
-    longitude = location_modifications.get("longitude") or venue.offererAddress.address.longitude
-    ban_id = location_modifications.get("banId") or venue.offererAddress.address.banId
+    # When street is cleared from the BO, location_modifications contains: {'street': None}
+    street = location_modifications.get("street", venue.offererAddress.address.street)
+    city = location_modifications.get("city", venue.offererAddress.address.city)
+    postal_code = location_modifications.get("postalCode", venue.offererAddress.address.postalCode)
+    latitude = location_modifications.get("latitude", venue.offererAddress.address.latitude)
+    longitude = location_modifications.get("longitude", venue.offererAddress.address.longitude)
+    ban_id = location_modifications.get("banId", venue.offererAddress.address.banId)
     logger.info(
         "Updating venue location",
         extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postal_code},
     )
 
     if not is_manual_edition:
-        address_info = api_adresse.get_address(address=street, postcode=postal_code, city=city)  # type: ignore[arg-type]
+        address_info = api_adresse.get_address(address=street, postcode=postal_code, city=city)
         location_data = LocationData(
             city=address_info.city,
             postal_code=address_info.postcode,
