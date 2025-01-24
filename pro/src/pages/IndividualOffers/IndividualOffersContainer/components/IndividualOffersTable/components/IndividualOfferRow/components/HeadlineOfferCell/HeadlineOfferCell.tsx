@@ -11,12 +11,14 @@ import styles from './HeadlineOfferCell.module.scss'
 type HeadlineOfferCellProps = {
   offer: ListOffersOfferResponseModel
   isRestrictedAsAdmin: boolean
-  setIsConfirmDialogOpen: (state: boolean) => void
+  setIsConfirmReplacementDialogOpen: (state: boolean) => void
+  setIsOfferWithoutImageDialogOpen: (state: boolean) => void
 }
 
 export function HeadlineOfferCell({
   offer,
-  setIsConfirmDialogOpen,
+  setIsConfirmReplacementDialogOpen,
+  setIsOfferWithoutImageDialogOpen,
 }: HeadlineOfferCellProps) {
   const { headlineOffer, upsertHeadlineOffer, removeHeadlineOffer } =
     useIndividualOffersContext()
@@ -25,10 +27,14 @@ export function HeadlineOfferCell({
     if (offer.id === headlineOffer?.id) {
       await removeHeadlineOffer()
     } else {
-      if (!headlineOffer?.id) {
-        await upsertHeadlineOffer(offer.id)
+      if (!offer.thumbUrl) {
+        setIsOfferWithoutImageDialogOpen(true)
       } else {
-        setIsConfirmDialogOpen(true)
+        if (!headlineOffer?.id) {
+          await upsertHeadlineOffer(offer.id)
+        } else {
+          setIsConfirmReplacementDialogOpen(true)
+        }
       }
     }
   }

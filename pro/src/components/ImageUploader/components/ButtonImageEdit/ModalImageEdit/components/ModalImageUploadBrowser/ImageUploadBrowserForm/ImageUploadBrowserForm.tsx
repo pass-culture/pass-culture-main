@@ -19,12 +19,14 @@ import { getValidationSchema } from './validationSchema'
 interface ImageUploadBrowserFormProps {
   onSubmit: (values: ImageUploadBrowserFormValues) => void
   mode: UploaderModeEnum
+  isReady: boolean
   children?: never
 }
 
 export const ImageUploadBrowserForm = ({
   onSubmit,
   mode,
+  isReady,
 }: ImageUploadBrowserFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
 
@@ -87,6 +89,7 @@ export const ImageUploadBrowserForm = ({
         orientation={orientation}
       />
       <BaseFileInput
+        isDisabled={!isReady}
         label="Importer une image depuis l’ordinateur"
         fileTypes={['image/png', 'image/jpeg']}
         isValid={errors.length === 0}

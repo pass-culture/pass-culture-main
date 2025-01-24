@@ -130,6 +130,7 @@ import strokeValidIcon from 'icons/stroke-valid.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
 import strokeVirtualEventIcon from 'icons/stroke-virtual-event.svg'
 import strokeVirtualThingIcon from 'icons/stroke-virtual-thing.svg'
+import strokeVisualArtIcon from 'icons/stroke-visual-art.svg'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
 import strokeWipIcon from 'icons/stroke-wip.svg'
 import strokeWrongIcon from 'icons/stroke-wrong.svg'
@@ -276,6 +277,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeBarcodeIcon },
   { src: strokePageNotFoundIcon, viewBox: '0 0 130 100' },
   { src: strokeBoostIcon },
+  { src: strokeVisualArtIcon },
 ]
 
 export const otherIcons: IconListItem[] = [

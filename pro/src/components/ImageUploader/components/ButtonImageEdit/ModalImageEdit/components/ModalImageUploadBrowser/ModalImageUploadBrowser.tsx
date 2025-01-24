@@ -9,18 +9,24 @@ import style from './ModalImageUploadBrowser.module.scss'
 interface ModalImageUploadBrowserProps {
   onImageClientUpload: (values: ImageUploadBrowserFormValues) => void
   mode: UploaderModeEnum
+  isReady: boolean
 }
 
 export const ModalImageUploadBrowser = ({
   onImageClientUpload,
   mode,
+  isReady,
 }: ModalImageUploadBrowserProps) => {
   return (
     <section className={style['modal-upload-browser']}>
       <Dialog.Title asChild>
         <h1 className={style['header']}>Ajouter une image</h1>
       </Dialog.Title>
-      <ImageUploadBrowserForm onSubmit={onImageClientUpload} mode={mode} />
+      <ImageUploadBrowserForm
+        isReady={isReady}
+        onSubmit={onImageClientUpload}
+        mode={mode}
+      />
     </section>
   )
 }
