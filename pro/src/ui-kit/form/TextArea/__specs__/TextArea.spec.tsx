@@ -6,6 +6,8 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 
 import { TextArea } from '../TextArea'
 
+const mockOnPressTemplateButton = vi.fn()
+
 describe('TextArea', () => {
   const inputName = 'test'
   const inputLabel = 'Ceci est un champ texte'
@@ -46,6 +48,7 @@ describe('TextArea', () => {
           isOptional={true}
           wordingTemplate={wordingTemplate}
           hasTemplateButton={true}
+          onPressTemplateButton={mockOnPressTemplateButton}
         />
       </Formik>
     )
@@ -57,5 +60,31 @@ describe('TextArea', () => {
 
     const textarea = screen.getByRole('textbox', { name: inputLabel })
     expect(textarea).toHaveValue(wordingTemplate)
+  })
+
+  it('should call tracker when clicking on template button', async () => {
+    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+      AB_COLLECTIVE_DESCRIPTION_TEMPLATE: 'true',
+    })
+
+    render(
+      <Formik initialValues={{ test1: '', test2: '' }} onSubmit={() => {}}>
+        <TextArea
+          label={inputLabel}
+          name={inputName}
+          isOptional={true}
+          wordingTemplate={wordingTemplate}
+          hasTemplateButton={true}
+          onPressTemplateButton={mockOnPressTemplateButton}
+        />
+      </Formik>
+    )
+
+    const templateButton = screen.getByRole('button', {
+      name: 'Générer un exemple',
+    })
+    await userEvent.click(templateButton)
+
+    expect(mockOnPressTemplateButton).toHaveBeenCalledTimes(1)
   })
 })

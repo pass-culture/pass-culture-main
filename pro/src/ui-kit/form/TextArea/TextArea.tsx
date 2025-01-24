@@ -58,16 +58,19 @@ type TextAreaProps = FieldLayoutBaseProps &
      * Whether the textarea is disabled.
      */
     disabled?: boolean
-    /**
-     * Whether to display a button to insert a predefined template into the textarea.
-     */
-    hasTemplateButton?: boolean
-    /**
-     * The text or content of the template to be inserted when the template button is clicked.
-     */
-    wordingTemplate?: string
     hasDefaultPlaceholder?: boolean
-  }
+  } & (
+    | {
+        hasTemplateButton: boolean
+        wordingTemplate: string
+        onPressTemplateButton:() => void
+      }
+    | {
+        hasTemplateButton?: false | undefined
+        wordingTemplate?: never
+        onPressTemplateButton?: never
+      }
+  )
 
 /**
  * The TextArea component is a customizable textarea field that integrates with Formik for form state management.
@@ -105,6 +108,7 @@ export const TextArea = ({
   hasTemplateButton = false,
   wordingTemplate,
   hasDefaultPlaceholder,
+  onPressTemplateButton,
   ...props
 }: TextAreaProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name })
@@ -149,6 +153,7 @@ export const TextArea = ({
       textAreaRef.current.focus()
       textAreaRef.current.setSelectionRange(128, 128)
     }
+    onPressTemplateButton && onPressTemplateButton()
   }
 
   return (
