@@ -1,3 +1,5 @@
+from hashlib import sha1
+
 import factory
 
 from pcapi.core.factories import BaseFactory
@@ -11,4 +13,4 @@ class ChronicleFactory(BaseFactory):
 
     content = "A small chronicle content."
     email = factory.Sequence("chronicle-{}@example.com".format)
-    formId = "54c77f43519a"
+    formId = factory.Sequence(lambda x: sha1(bytes(x)).hexdigest()[0:12])
