@@ -236,6 +236,26 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[1]["ID"] == str(offers[2].id)
         assert rows[1]["Nom de l'offre"] == offers[2].name
 
+    def test_list_offers_by_product(self, authenticated_client):
+        product = offers_factories.ProductFactory()
+        offer1 = offers_factories.OfferFactory(product=product)
+        offer2 = offers_factories.OfferFactory(product=product)
+        offers_factories.OfferFactory(product=offers_factories.ProductFactory())
+        offers_factories.OfferFactory()
+        query_args = {
+            "search-0-search_field": "PRODUCT",
+            "search-0-operator": "EQUALS",
+            "search-0-integer": offer1.id,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert int(rows[0]["ID"]) in {offer1.id, offer2.id}
+        assert int(rows[1]["ID"]) in {offer1.id, offer2.id}
+
     @pytest.mark.parametrize("ean", ["9781234567890", " 978-1234567890", "978 1234567890\t"])
     def test_list_offers_by_ean(self, authenticated_client, offers, ean):
         query_args = {

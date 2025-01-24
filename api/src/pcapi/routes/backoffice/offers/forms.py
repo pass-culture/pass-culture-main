@@ -37,6 +37,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     EAN = "EAN-13"
     VALIDATION = "État"
     ID = "ID de l'offre"
+    PRODUCT = "ID d'une offre sur le même produit"
     MEDIATION = "Image"
     VENUE = forms_utils.VenueRenaming("Lieu", "Partenaire culturel")
     ADDRESS = "Adresse de l'offre"
@@ -78,6 +79,7 @@ form_field_configuration = {
     "MEDIATION": {"field": "boolean", "operator": ["NULLABLE"]},
     "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "NAME_EQUALS", "NAME_NOT_EQUALS"]},
     "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
+    "PRODUCT": {"field": "integer", "operator": ["EQUALS", "NOT_EQUALS"]},
     "STATUS": {"field": "status", "operator": ["IN", "NOT_IN"]},
     "SUBCATEGORY": {"field": "subcategory", "operator": ["IN", "NOT_IN"]},
     "TAG": {"field": "criteria", "operator": ["IN", "NOT_IN", "NOT_EXIST"]},
