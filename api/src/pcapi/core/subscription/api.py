@@ -23,6 +23,7 @@ from pcapi.core.subscription.educonnect import api as educonnect_subscription_ap
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
+from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users import young_status as young_status_module
@@ -140,21 +141,13 @@ def get_declared_names(user: users_models.User) -> tuple[str, str] | None:
     return None
 
 
-def is_eligibility_activable(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
-    return (
-        user.eligibility == eligibility
-        and users_api.is_eligible_for_beneficiary_upgrade(user, eligibility)
-        and users_api.is_user_age_compatible_with_eligibility(user.age, eligibility)
-    )
-
-
 def get_email_validation_subscription_item(
     user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
     if user.isEmailValidated:
         status = models.SubscriptionItemStatus.OK
     else:
-        if is_eligibility_activable(user, eligibility):
+        if eligibility_api.is_eligibility_activable(user, eligibility):
             status = models.SubscriptionItemStatus.TODO
         else:
             status = models.SubscriptionItemStatus.VOID
@@ -174,7 +167,7 @@ def get_phone_validation_subscription_item(
             status = models.SubscriptionItemStatus.SKIPPED
         elif fraud_repository.has_failed_phone_validation(user):
             status = models.SubscriptionItemStatus.KO
-        elif is_eligibility_activable(user, eligibility):
+        elif eligibility_api.is_eligibility_activable(user, eligibility):
             has_user_filled_phone = user.phoneNumber is not None
             if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active() and has_user_filled_phone:
                 status = models.SubscriptionItemStatus.OK
@@ -191,7 +184,7 @@ def get_profile_completion_subscription_item(
 ) -> models.SubscriptionItem:
     if has_completed_profile_for_given_eligibility(user, eligibility):
         status = models.SubscriptionItemStatus.OK
-    elif is_eligibility_activable(user, eligibility):
+    elif eligibility_api.is_eligibility_activable(user, eligibility):
         status = models.SubscriptionItemStatus.TODO
     else:
         status = models.SubscriptionItemStatus.VOID
@@ -221,7 +214,7 @@ def get_identity_check_fraud_status(
         return models.SubscriptionItemStatus.VOID
 
     if not fraud_check:
-        if is_eligibility_activable(user, eligibility):
+        if eligibility_api.is_eligibility_activable(user, eligibility):
             return models.SubscriptionItemStatus.TODO
         return models.SubscriptionItemStatus.VOID
 
@@ -329,7 +322,7 @@ def get_honor_statement_subscription_item(
     if fraud_api.has_performed_honor_statement(user, eligibility):  # type: ignore[arg-type]
         status = models.SubscriptionItemStatus.OK
     else:
-        if is_eligibility_activable(user, eligibility):
+        if eligibility_api.is_eligibility_activable(user, eligibility):
             status = models.SubscriptionItemStatus.TODO
         else:
             status = models.SubscriptionItemStatus.VOID
@@ -349,7 +342,7 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
         )
 
     # Early return if user is beneficiary
-    if user.is_beneficiary and not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
+    if user.is_beneficiary and not eligibility_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
         if user.has_active_deposit:
             return subscription_models.UserSubscriptionState(
                 fraud_status=models.SubscriptionItemStatus.OK,
@@ -513,7 +506,7 @@ def requires_manual_review_before_activation(
     return (
         identity_fraud_check.type == fraud_models.FraudCheckType.DMS
         and identity_fraud_check.status == fraud_models.FraudCheckStatus.OK
-        and not users_api.get_eligibility_at_date(
+        and not eligibility_api.get_eligibility_at_date(
             user.birth_date, identity_fraud_check.get_min_date_between_creation_and_registration(), user.departementCode
         )
     )
@@ -698,7 +691,7 @@ def _update_fraud_check_eligibility_with_history(
 def get_id_provider_detected_eligibility(
     user: users_models.User, identity_content: common_fraud_models.IdentityCheckContent
 ) -> users_models.EligibilityType | None:
-    return fraud_api.decide_eligibility(
+    return eligibility_api.decide_eligibility(
         user, identity_content.get_birth_date(), identity_content.get_registration_datetime()
     )
 
@@ -748,7 +741,7 @@ def update_user_birth_date_if_not_beneficiary(user: users_models.User, birth_dat
     if (
         birth_date
         and user.validatedBirthDate != birth_date
-        and (users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility) or not user.validatedBirthDate)
+        and (eligibility_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility) or not user.validatedBirthDate)
     ):
         user.validatedBirthDate = birth_date
         pcapi_repository.repository.save(user)
@@ -767,7 +760,7 @@ def get_first_registration_date(
         fraud_check.get_min_date_between_creation_and_registration()
         for fraud_check in fraud_checks
         if fraud_check.eligibilityType == eligibility
-        and users_api.is_user_age_compatible_with_eligibility(
+        and eligibility_api.is_user_age_compatible_with_eligibility(
             users_utils.get_age_at_date(
                 birth_date, fraud_check.get_min_date_between_creation_and_registration(), user.departementCode
             ),

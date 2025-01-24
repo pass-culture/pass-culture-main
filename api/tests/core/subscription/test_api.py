@@ -555,7 +555,7 @@ class OverflowSubscriptionLimitationTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class CommonSubscritpionTest:
+class CommonSubscriptionTest:
     def test_handle_eligibility_difference_between_declaration_and_identity_provider_no_difference(self):
         user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(

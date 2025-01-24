@@ -38,6 +38,7 @@ from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
+from pcapi.core.users import eligibility_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -332,7 +333,7 @@ def render_public_account_details(
     history = get_public_account_history(user)
     duplicate_user_id = None
     eligibility_history = get_eligibility_history(user)
-    user_current_eligibility = users_api.get_eligibility_at_date(user.birth_date, datetime.datetime.utcnow())
+    user_current_eligibility = eligibility_api.get_eligibility_at_date(user.birth_date, datetime.datetime.utcnow())
 
     if (
         user_current_eligibility is not None and user_current_eligibility.value in eligibility_history
