@@ -3,6 +3,7 @@ import logging
 from re import search
 
 from dateutil.relativedelta import relativedelta
+import sqlalchemy as sa
 from sqlalchemy import orm as sa_orm
 
 from pcapi.connectors import typeform
@@ -10,6 +11,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 
 from . import constants
 from . import models
@@ -104,41 +106,45 @@ def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
     if ean:
         products = offers_models.Product.query.filter(offers_models.Product.extraData["ean"].astext == ean).all()
 
-    if all((content, ean, form.email)):
-        chronicle = models.Chronicle(
-            age=age,
-            city=answer_dict.get(constants.BookClub.CITY_ID.value, EMPTY_ANSWER).text,
-            content=content,
-            dateCreated=form.date_submitted,
-            ean=ean,
-            eanChoiceId=ean_choice_id,
-            email=form.email,
-            firstName=answer_dict.get(constants.BookClub.NAME_ID.value, EMPTY_ANSWER).text,
-            formId=form.response_id,
-            isIdentityDiffusible=is_identity_diffusible,
-            isSocialMediaDiffusible=is_social_media_diffusible,
-            products=products,
-            userId=user_id,
-            isActive=False,
-        )
-        db.session.add(chronicle)
-        db.session.flush()
-        logger.info(
-            "Import chronicle for book club: success",
-            extra={
-                "response_id": form.response_id,
-            },
-        )
-    else:
-        logger.info(
-            "Import chronicle for book club: ignored",
-            extra={
-                "response_id": form.response_id,
-                "has_ean": bool(ean),
-                "has_content": bool(content),
-                "has_email": bool(form.email),
-            },
-        )
+    try:
+        if all((content, ean, form.email)):
+            chronicle = models.Chronicle(
+                age=age,
+                city=answer_dict.get(constants.BookClub.CITY_ID.value, EMPTY_ANSWER).text,
+                content=content,
+                dateCreated=form.date_submitted,
+                ean=ean,
+                eanChoiceId=ean_choice_id,
+                email=form.email,
+                firstName=answer_dict.get(constants.BookClub.NAME_ID.value, EMPTY_ANSWER).text,
+                formId=form.response_id,
+                isIdentityDiffusible=is_identity_diffusible,
+                isSocialMediaDiffusible=is_social_media_diffusible,
+                products=products,
+                userId=user_id,
+                isActive=False,
+            )
+            db.session.add(chronicle)
+            db.session.flush()
+            logger.info(
+                "Import chronicle for book club: success",
+                extra={
+                    "response_id": form.response_id,
+                },
+            )
+        else:
+            logger.info(
+                "Import chronicle for book club: ignored",
+                extra={
+                    "response_id": form.response_id,
+                    "has_ean": bool(ean),
+                    "has_content": bool(content),
+                    "has_email": bool(form.email),
+                },
+            )
+    except sa.exc.IntegrityError:
+        # the chronicle is already in db
+        mark_transaction_as_invalid()
 
 
 def get_offer_published_chronicles(offer: offers_models.Offer) -> list[models.Chronicle]:

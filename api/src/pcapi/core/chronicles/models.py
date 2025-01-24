@@ -34,7 +34,7 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
     eanChoiceId = sa.Column(sa.Text(), nullable=True)
     email = sa.Column(sa.Text(), nullable=False)
     firstName = sa.Column(sa.Text(), nullable=True)
-    formId = sa.Column(sa.Text(), nullable=False)
+    formId = sa.Column(sa.Text(), nullable=False, unique=True)
     isIdentityDiffusible = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
