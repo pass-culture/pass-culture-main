@@ -264,6 +264,13 @@ jobs:
       contents: read
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v4.2.2
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
       - name: "Get secrets (github)"
         id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
