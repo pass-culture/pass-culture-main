@@ -446,9 +446,11 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
-    expect(
-      screen.getByText('This is the read only route content')
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.getByText('This is the read only route content')
+      ).toBeInTheDocument()
+    })
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
   })
 
@@ -510,9 +512,11 @@ describe('screens:StocksEventEdition', () => {
 
     await userEvent.click(screen.getByText('Annuler et quitter'))
 
-    expect(
-      screen.getByText('This is the read only route content')
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.getByText('This is the read only route content')
+      ).toBeInTheDocument()
+    })
   })
 
   it('should not block when going outside and form is not touched', async () => {

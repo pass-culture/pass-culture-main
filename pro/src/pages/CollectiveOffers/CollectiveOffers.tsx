@@ -72,6 +72,7 @@ export const CollectiveOffers = (): JSX.Element => {
   const redirectWithUrlFilters = (
     filters: Partial<CollectiveSearchFiltersParams>
   ) => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(computeCollectiveOffersUrl(filters, defaultCollectiveFilters), {
       replace: true,
     })
