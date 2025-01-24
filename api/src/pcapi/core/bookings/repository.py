@@ -972,6 +972,7 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
     bold = workbook.add_format({"bold": 1})
     currency_format = workbook.add_format({"num_format": "###0.00[$€-fr-FR]"})
     col_width = 18
+    should_add_location = FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active()
 
     worksheet = workbook.add_worksheet()
     row = 0
@@ -980,40 +981,35 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
         worksheet.write(row, col_num, title, bold)
         worksheet.set_column(col_num, col_num, col_width)
     row = 1
+    data: tuple[typing.Any, ...]
     for booking in query.yield_per(1000):
-        worksheet.write(row, 0, booking.venueName)
-        worksheet.write(row, 1, booking.offerName)
-        worksheet.write(
-            row, 2, str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking))
-        )
-        worksheet.write(row, 3, booking.ean)
-        worksheet.write(row, 4, booking.beneficiaryFirstName)
-        worksheet.write(row, 5, booking.beneficiaryLastName)
-        worksheet.write(row, 6, booking.beneficiaryEmail)
-        worksheet.write(row, 7, booking.beneficiaryPhoneNumber)
-        worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
-        worksheet.write(row, 9, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
-        worksheet.write(
-            row,
-            10,
+        data = (booking.venueName, booking.offerName)
+        if should_add_location:
+            data += (
+                f"{booking.locationName} - {booking.locationStreet} {booking.locationPostalCode} {booking.locationCity}",
+            )
+        data += (
+            str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking)),
+            booking.ean,
+            booking.beneficiaryFirstName,
+            booking.beneficiaryLastName,
+            booking.beneficiaryEmail,
+            booking.beneficiaryPhoneNumber,
+            str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)),
+            str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)),
             booking_recap_utils.get_booking_token(
-                booking.token,
-                booking.status,
-                booking.isExternal,
-                booking.stockBeginningDatetime,
+                booking.token, booking.status, booking.isExternal, booking.stockBeginningDatetime
             ),
-        )
-        worksheet.write(row, 11, booking.priceCategoryLabel)
-        worksheet.write(row, 12, booking.amount, currency_format)
-        worksheet.write(row, 13, _get_booking_status(booking.status, booking.isConfirmed))
-        worksheet.write(row, 14, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
-        worksheet.write(row, 15, serialize_offer_type_educational_or_individual(offer_is_educational=False))
-        worksheet.write(row, 16, booking.beneficiaryPostalCode)
-        worksheet.write(
-            row,
-            17,
+            booking.priceCategoryLabel,
+            booking.amount,
+            _get_booking_status(booking.status, booking.isConfirmed),
+            str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)),
+            serialize_offer_type_educational_or_individual(offer_is_educational=False),
+            booking.beneficiaryPostalCode,
             "Oui" if booking.quantity == DUO_QUANTITY else "Non",
         )
+        worksheet.write_row(row, 0, data)
+        worksheet.set_column(13, 13, cell_format=currency_format)
         row += 1
 
     workbook.close()
