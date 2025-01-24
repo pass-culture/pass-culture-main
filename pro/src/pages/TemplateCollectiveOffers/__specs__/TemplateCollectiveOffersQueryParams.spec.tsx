@@ -128,6 +128,10 @@ describe('route TemplateCollectiveOffers', () => {
     it('should have offer name value when name search value is not an empty string', async () => {
       await renderOffers()
 
+      await waitFor(() => {
+        expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
+      })
+
       await userEvent.type(
         screen.getByRole('searchbox', {
           name: 'Nom de l’offre',

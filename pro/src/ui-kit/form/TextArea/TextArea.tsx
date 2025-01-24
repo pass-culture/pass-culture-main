@@ -66,6 +66,7 @@ type TextAreaProps = FieldLayoutBaseProps &
      * The text or content of the template to be inserted when the template button is clicked.
      */
     wordingTemplate?: string
+    hasDefaultPlaceholder?: boolean
   }
 
 /**
@@ -103,6 +104,7 @@ export const TextArea = ({
   rows = 7,
   hasTemplateButton = false,
   wordingTemplate,
+  hasDefaultPlaceholder,
   ...props
 }: TextAreaProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name })
@@ -177,6 +179,7 @@ export const TextArea = ({
         aria-controls={props['aria-controls']}
         ref={textAreaRef}
         {...field}
+        placeholder={hasDefaultPlaceholder ? 'Écrivez ici...' : undefined}
         onChange={(event) => {
           field.onChange(event)
           props.onChange?.(event)

@@ -35,13 +35,6 @@ type TextInputProps = FieldLayoutBaseProps &
      */
     error?: string
     /**
-     * The placeholder text for the input field.
-     *
-     * **Important: Do not use the `placeholder` to indicate the format of the field.**
-     * Use the `label` or `description` props instead to provide instructions on the expected format.
-     */
-    placeholder?: string
-    /**
      * A custom component to be displayed next to the input.
      * It can be used to display additional information or related actions like
      * a checkbox to reset the input value.
@@ -91,7 +84,6 @@ export const TextInput = React.forwardRef(
       hideFooter,
       label,
       isLabelHidden = false,
-      placeholder,
       maxLength = 255,
       smallLabel,
       isOptional = false,
@@ -130,7 +122,6 @@ export const TextInput = React.forwardRef(
         disabled={disabled}
         hasError={showError}
         maxLength={maxLength}
-        placeholder={placeholder}
         step={step}
         type={type}
         ref={ref}
