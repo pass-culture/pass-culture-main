@@ -348,22 +348,26 @@ export const MultiyearScheme = () => {
         <li className={styles['list-item']}>
           Mise en place d’un partenariat avec le site accesslibre - Réalisé
         </li>
-        <li className={styles['downlist-item']}>
-          pour mettre à disposition des acteurs culturels et des jeunes
-          bénéficiaires les données d’accessibilité des lieux
-        </li>
-        <li className={styles['downlist-item']}>
-          pour mettre aux acteurs culturels de compléter directement les
-          informations d’accessibilité de leur établissement dans acceslibre
-          afin d’en mutualiser l’usage
-        </li>
+        <ul>
+          <li className={styles['downlist-item']}>
+            pour mettre à disposition des acteurs culturels et des jeunes
+            bénéficiaires les données d’accessibilité des lieux
+          </li>
+          <li className={styles['downlist-item']}>
+            pour mettre aux acteurs culturels de compléter directement les
+            informations d’accessibilité de leur établissement dans acceslibre
+            afin d’en mutualiser l’usage
+          </li>
+        </ul>
         <li className={styles['list-item']}>
           Réalisation d’un audit externe par la DINUM - Réalisé
         </li>
-        <li className={styles['downlist-item']}>
-          les améliorations suite à l’audit porteront sur les erreurs bloquantes
-          ou majeures - En cours
-        </li>
+        <ul>
+          <li className={styles['downlist-item']}>
+            les améliorations suite à l’audit porteront sur les erreurs
+            bloquantes ou majeures - Réalisé
+          </li>
+        </ul>
         <li className={styles['list-item']}>
           Publication de la déclaration d’accessibilité - Réalisé
         </li>
@@ -373,18 +377,18 @@ export const MultiyearScheme = () => {
         </li>
         <li className={styles['list-item']}>
           Modification de l’ensemble des pages du site pour qu’elles s’adaptent
-          à la taille de l’écran (responsivité) - En cours
+          à la taille de l’écran (responsivité) - Réalisé
         </li>
         <li className={styles['list-item']}>
-          Mise en place d’un design système respectant le RGAA avec un objectif
-          AAA - En cours
+          Mise en place d’un design système respectant le RGAA et avec un
+          objectif de conformité aux critères AAA des WCAG - En cours
         </li>
         <li className={styles['list-item']}>
           Reprise de l’ensemble des composants pour les rendre accessibles - En
           cours
         </li>
         <li className={styles['list-item']}>
-          Formation continue des équipes techniques et produit - En cours{' '}
+          Formation continue des équipes techniques et produit - En cours
         </li>
         <li className={styles['list-item']}>
           Mise en place d’un standard de développement visant à ne développer
@@ -399,16 +403,49 @@ export const MultiyearScheme = () => {
       <h3 className={styles['heading3']}>Plan annuel 2025</h3>
       <ul>
         <li className={styles['list-item']}>
-          Mise en place de modalités d’accessibilité au niveau des offres afin
-          que les partenaires culturels puissent indiquer les moyens mis en
-          oeuvre pour rendre leurs propositions accessibles
+          Mettre en place une formation obligatoire pour les nouveaux
+          développeurs
         </li>
         <li className={styles['list-item']}>
-          Résolution des derniers critères non respectés selon l’audit réalisé
-          en 2024
+          Revoir l’accessibilité de tous les mails transactionnels
         </li>
         <li className={styles['list-item']}>
-          Réalisation d’un nouvel audit d’accessibilité
+          Renforcer la visibilité sur le pass d’offres accessibles auprès des
+          publics concernés (partenariats et inscriptions d’AC spécialisées…)
+        </li>
+
+        <li className={styles['list-item']}>
+          Ouvrir un poste de Quality Analyst pour valider l’accessibilité des
+          développements et faire monter en compétence les équipes Produit &
+          Tech
+        </li>
+
+        <li className={styles['list-item']}>
+          Donner la possibilité aux acteurs culturels d’indiquer une alternative
+          textuelle aux images
+        </li>
+
+        <li className={styles['list-item']}>
+          Décorreler les modalités d’accessibilité des offres et des lieux
+        </li>
+
+        <li className={styles['list-item']}>
+          Renforcer l’information sur les projections accessibles des grands
+          réseaux de cinéma
+        </li>
+
+        <li className={styles['list-item']}>
+          Mettre en place un design system 100% accessible
+        </li>
+
+        <li className={styles['list-item']}>
+          Atteindre un taux de conformité globale au RGAA de 65% sur la base
+          d’un audit plus large que celui réalisé en 2024
+        </li>
+
+        <li className={styles['list-item']}>
+          Permettre aux acteurs culturels d’indiquer des modalités de mises en
+          accessibilité des offres
         </li>
       </ul>
     </AccessibilityLayout>
