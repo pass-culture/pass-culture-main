@@ -1127,7 +1127,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"global": ["La date de fin de l évènement ne peut être fixée après la date de début."]}
+        assert response.json == {"global": ["La date de fin de l'évènement ne peut précéder la date de début."]}
 
     @time_machine.travel(time_travel_str)
     @pytest.mark.parametrize("with_timezone", [True, False])
@@ -1153,7 +1153,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"global": ["La date de fin de l évènement ne peut être fixée après la date de début."]}
+        assert response.json == {"global": ["La date de fin de l'évènement ne peut précéder la date de début."]}
 
     @time_machine.travel(time_travel_str)
     @pytest.mark.parametrize("with_timezone", [True, False])
@@ -1180,7 +1180,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert response.json == {
-            "global": ["La date limite de confirmation ne peut être fixée après la date de l évènement."]
+            "global": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]
         }
 
     @time_machine.travel(time_travel_str)
@@ -1206,7 +1206,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert response.json == {
-            "global": ["La date limite de confirmation ne peut être fixée après la date de l évènement."]
+            "global": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]
         }
 
 
