@@ -142,6 +142,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_CLICKHOUSE_IN_BO = "Utiliser Clickhouse pour les statistiques des acteurs culturels dans le BO"
     WIP_HEADLINE_OFFER = "Activer l'offre à la une"
     WIP_IS_OPEN_TO_PUBLIC = "Activer l'utilisation du critère 'ouvert au public' pour les synchro"
+    WIP_2025_SIGN_UP = "Activer le nouveau parcours d’inscription au portail pro"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -198,6 +199,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
+    FeatureToggle.WIP_2025_SIGN_UP,
     FeatureToggle.WIP_COLLAPSED_MEMORIZED_FILTERS,
     FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION,
     FeatureToggle.WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED,
