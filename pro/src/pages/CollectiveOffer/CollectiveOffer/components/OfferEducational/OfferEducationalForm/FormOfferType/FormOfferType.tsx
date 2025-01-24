@@ -1,6 +1,9 @@
 import { useFormikContext } from 'formik'
 
 import { EacFormat } from 'apiClient/adage'
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { useFunctionOnce } from 'app/App/hook/useFunctionOnce'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_PRICE_DETAILS_LENGTH,
@@ -31,6 +34,7 @@ export const FormOfferType = ({
   isTemplate,
 }: FormTypeProps): JSX.Element => {
   const { values } = useFormikContext<OfferEducationalFormValues>()
+  const { logEvent } = useAnalytics()
 
   const eacFormatOptions = Object.entries(EacFormat).map(([, value]) => ({
     value: value,
@@ -40,6 +44,16 @@ export const FormOfferType = ({
   const nationalProgramsForDomains = nationalPrograms.filter((program) =>
     getNationalProgramsForDomains(values.domains).includes(program.value)
   )
+
+  const logHasClickedGenerateTemplateDescription = useFunctionOnce(() => {
+    logEvent(Events.CLICKED_GENERATE_TEMPLATE_DESCRIPTION, {
+      venueId: values.venueId,
+      offererId: values.offererId,
+      ...(values.domains.length > 0 && {
+        domainIds: values.domains.map((id) => Number(id)),
+      }),
+    })
+  })
 
   return (
     <>
@@ -123,8 +137,9 @@ export const FormOfferType = ({
             name="description"
             disabled={disableForm}
             hasTemplateButton={isTemplate}
-            wordingTemplate={modelTemplate}
             hasDefaultPlaceholder
+            wordingTemplate={modelTemplate}
+            onPressTemplateButton={logHasClickedGenerateTemplateDescription}
           />
         </FormLayout.Row>
         {isTemplate && (
