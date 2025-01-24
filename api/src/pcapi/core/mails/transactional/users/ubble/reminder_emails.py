@@ -11,7 +11,7 @@ from pcapi.core.mails.transactional import send_subscription_document_error_emai
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
 import pcapi.core.subscription.ubble.api as ubble_subscription
-import pcapi.core.users.api as users_api
+from pcapi.core.users import eligibility_api
 import pcapi.core.users.models as users_models
 
 
@@ -60,7 +60,7 @@ def _find_users_to_remind(
     users_with_reasons: list[tuple[users_models.User, fraud_models.FraudReasonCode]] = []
     for user in users:
         if not (
-            users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
+            eligibility_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
             and subscription_api.get_user_subscription_state(user).fraud_status
             == subscription_models.SubscriptionItemStatus.TODO
         ):

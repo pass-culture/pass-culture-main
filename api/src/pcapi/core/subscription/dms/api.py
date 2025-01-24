@@ -16,6 +16,7 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.dms import messages
+from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.demarches_simplifiees import update_demarches_simplifiees_text_annotations
@@ -65,7 +66,7 @@ def _update_fraud_check_with_new_content(
     fraud_check.reason = None
     fraud_check.reasonCodes = []
     fraud_check.resultContent = new_content.dict()
-    new_eligibility = fraud_api.decide_eligibility(
+    new_eligibility = eligibility_api.decide_eligibility(
         fraud_check.user, new_content.get_birth_date(), new_content.get_registration_datetime()
     )
     if new_eligibility != fraud_check.eligibilityType:
@@ -172,7 +173,7 @@ def handle_dms_application(
     fraud_check = fraud_dms_api.get_fraud_check(user, application_number)
     if fraud_check is None:
         eligibility_type = (
-            fraud_api.decide_eligibility(
+            eligibility_api.decide_eligibility(
                 user, application_content.get_birth_date(), application_content.get_registration_datetime()
             )
             if application_content

@@ -50,7 +50,7 @@ class IdentityCheckContent(pydantic_v1.BaseModel):
         return None
 
     def get_eligibility_type_at_registration(self) -> users_models.EligibilityType | None:
-        from pcapi.core.users import api as users_api
+        from pcapi.core.users import eligibility_api
 
         registration_datetime = self.get_registration_datetime()  # pylint: disable=assignment-from-none
         birth_date = self.get_birth_date()
@@ -60,6 +60,8 @@ class IdentityCheckContent(pydantic_v1.BaseModel):
 
         postal_code = self.get_postal_code()  # pylint: disable=assignment-from-none
         department = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
-        eligibility_at_registration = users_api.get_eligibility_at_date(birth_date, registration_datetime, department)
+        eligibility_at_registration = eligibility_api.get_eligibility_at_date(
+            birth_date, registration_datetime, department
+        )
 
         return eligibility_at_registration

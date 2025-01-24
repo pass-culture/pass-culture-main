@@ -19,6 +19,7 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import profile_options
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
+from pcapi.core.users import eligibility_api
 from pcapi.core.users import young_status
 import pcapi.core.users.models as users_models
 from pcapi.core.users.utils import decode_jwt_token
@@ -149,9 +150,9 @@ class UserProfileGetterDict(GetterDict):
         if key == "domainsCredit":
             return users_api.get_domains_credit(user)
         if key == "eligibilityEndDatetime":
-            return users_api.get_eligibility_end_datetime(user.birth_date)
+            return eligibility_api.get_eligibility_end_datetime(user.birth_date)
         if key == "eligibilityStartDatetime":
-            return users_api.get_eligibility_start_datetime(user.birth_date)
+            return eligibility_api.get_eligibility_start_datetime(user.birth_date)
         if key == "firstDepositActivationDate":
             return user.first_deposit_activation_date
         if key == "firstName":
@@ -161,7 +162,7 @@ class UserProfileGetterDict(GetterDict):
         if key == "isBeneficiary":
             return user.is_beneficiary
         if key == "isEligibleForBeneficiaryUpgrade":
-            return users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
+            return eligibility_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
         if key == "needsToFillCulturalSurvey":
             return user.needsToFillCulturalSurvey and user.is_eligible and _is_cultural_survey_active()
         if key == "requiresIdCheck":
