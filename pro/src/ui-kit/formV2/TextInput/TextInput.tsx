@@ -1,13 +1,12 @@
+import cn from 'classnames'
 import React, { ForwardedRef } from 'react'
 
 import {
   BaseInput,
   BaseInputProps,
 } from 'ui-kit/form/shared/BaseInput/BaseInput'
-import {
-  FieldLayout,
-  FieldLayoutBaseProps,
-} from 'ui-kit/form/shared/FieldLayout/FieldLayout'
+import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
+import { FieldLayoutBaseProps } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import styles from './TextInput.module.scss'
 
@@ -29,9 +28,7 @@ type TextInputProps = FieldLayoutBaseProps &
     hasDecimal?: boolean
     /**
      * A custom error message to be displayed.
-     * If this prop is provided, the error message will be displayed
-     * and the field will be marked as errored regardless of the field's Formik state.
-     * Used for `error` & `showError` `FieldLayout` props.
+     * If this prop is provided, the error message will be displayed and the field will be marked as errored
      */
     error?: string
     /**
@@ -59,7 +56,7 @@ type TextInputProps = FieldLayoutBaseProps &
  *   name="email"
  *   label="Email Address"
  *   description="Please enter a valid email address."
- *   isOptional
+ *   required={true}
  * />
  *
  * @accessibility
@@ -75,29 +72,19 @@ export const TextInput = React.forwardRef(
     {
       name,
       type = 'text',
-      className,
-      classNameFooter,
-      classNameLabel,
-      classNameInput,
       disabled,
       readOnly,
-      hideFooter,
       label,
+      className,
       isLabelHidden = false,
       maxLength = 255,
-      smallLabel,
-      isOptional = false,
+      required = false,
       leftIcon,
       rightButton,
       rightIcon,
-      step,
       hasDecimal = true,
-      inline = false,
       description,
-      clearButtonProps,
-      hasLabelLineBreak = true,
       error,
-      showMandatoryAsterisk,
       InputExtension,
       ...props
     }: TextInputProps,
@@ -107,29 +94,20 @@ export const TextInput = React.forwardRef(
     const regexHasDecimal = /[0-9,.]/
     const regexHasNotDecimal = /[0-9]/
     const regexIsNavigationKey = /Tab|Backspace|Enter/
-    const showError = !!error
-
-    // Constructing aria-describedby attribute
-    const describedBy = []
-
-    if (description) {
-      describedBy.push(`description-${name}`)
-    }
 
     const input = (
       <BaseInput
         name={name}
         disabled={disabled}
-        hasError={showError}
+        hasError={!!error}
         maxLength={maxLength}
-        step={step}
         type={type}
         ref={ref}
         rightButton={rightButton}
         rightIcon={rightIcon}
         leftIcon={leftIcon}
-        aria-required={!isOptional}
-        aria-describedby={describedBy.join(' ') || undefined}
+        aria-required={required}
+        aria-describedby={description ? `description-${name}` : undefined}
         onKeyDown={(event) => {
           // Restrict input for number types
           if (type === 'number') {
@@ -159,39 +137,59 @@ export const TextInput = React.forwardRef(
     )
 
     return (
-      <FieldLayout
-        className={className}
-        classNameLabel={classNameLabel}
-        classNameFooter={classNameFooter}
-        classNameInput={classNameInput}
-        error={error}
-        isOptional={isOptional}
-        showMandatoryAsterisk={showMandatoryAsterisk}
-        label={label}
-        isLabelHidden={isLabelHidden}
-        maxLength={maxLength}
-        name={name}
-        showError={showError}
-        smallLabel={smallLabel}
-        inline={inline}
-        hideFooter={hideFooter}
-        description={description}
-        clearButtonProps={clearButtonProps}
-        hasLabelLineBreak={hasLabelLineBreak}
+      <div
+        className={cn(styles['input-layout'], className)}
+        data-testid={`wrapper-${name}`}
       >
-        {readOnly ? (
-          <span className={styles['text-input-readonly']}>{props.value}</span>
-        ) : InputExtension ? (
-          <div className={styles['text-input-group']} role="group">
-            {input}
-            <div className={styles['text-input-group-extension']}>
-              {InputExtension}
-            </div>
+        <div
+          className={cn(styles['input-layout-label-container'], {
+            [styles['visually-hidden']]: isLabelHidden,
+          })}
+        >
+          <label className={styles['input-layout-label']} htmlFor={name}>
+            {label} {required && '*'}
+          </label>
+          {description && (
+            <span
+              id={`description-${name}`}
+              data-testid={`description-${name}`}
+              className={styles['input-layout-input-description']}
+            >
+              {description}
+            </span>
+          )}
+        </div>
+
+        <div className={styles['input-layout-content']}>
+          <div className={cn(styles['input-wrapper'])}>
+            {readOnly ? (
+              <span className={styles['text-input-readonly']}>
+                {props.value}
+              </span>
+            ) : InputExtension ? (
+              <div className={styles['text-input-group']} role="group">
+                {input}
+                <div className={styles['text-input-group-extension']}>
+                  {InputExtension}
+                </div>
+              </div>
+            ) : (
+              input
+            )}
           </div>
-        ) : (
-          input
-        )}
-      </FieldLayout>
+          <div className={styles['input-layout-footer']}>
+            {error && (
+              <div
+                role="alert"
+                className={styles['input-layout-error']}
+                id={`error-details-${name}`}
+              >
+                <FieldError name={name}>{error}</FieldError>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     )
   }
 )
