@@ -1,7 +1,6 @@
 import datetime
 import json
 from typing import NamedTuple
-import uuid
 
 import pytest
 import time_machine
@@ -24,42 +23,43 @@ pytestmark = [
 ]
 
 
-@pytest.fixture(name="cegid_cookies")
-def cegid_cookies_fixture(faker, cegid_config):
+@pytest.fixture(name="cegid_auth_token")
+def cegid_auth_token_fixture(faker):
     return {
-        ".ASPXAUTH": faker.binary(180).hex().upper(),
-        "ASP.NET_SessionId": faker.binary(12).hex(),
-        "CompanyID": cegid_config.CEGID_COMPANY,
-        "Locale": "Culture=fr-FR&TimeZone=GMTE0000U",
-        "UserBranch": "1",
-        "requestid": faker.binary(16).hex().upper(),
+        "access_token": faker.pystr(min_chars=43, max_chars=43),
+        "expires_in": 3600,
+        "token_type": "Bearer",
+        "scope": "api",
     }
 
 
 @pytest.fixture(name="cegid_config")
 def cegid_config_fixture(faker, settings):
+    client_id = faker.uuid4().upper()
+
     class Config(NamedTuple):
         CEGID_URL: str = faker.uri()
         CEGID_USERNAME: str = faker.user_name()
         CEGID_PASSWORD: str = faker.password()
-        CEGID_COMPANY: str = "passculture"
+        CEGID_CLIENT_ID: str = f"{client_id}@PASS_CULTURE_TEST"
+        CEGID_CLIENT_SECRET: str = faker.pystr(min_chars=22, max_chars=22)
 
     config = Config()
     settings.CEGID_URL = config.CEGID_URL
     settings.CEGID_USERNAME = config.CEGID_USERNAME
     settings.CEGID_PASSWORD = config.CEGID_PASSWORD
-    settings.CEGID_COMPANY = config.CEGID_COMPANY
+    settings.CEGID_CLIENT_ID = config.CEGID_CLIENT_ID
+    settings.CEGID_CLIENT_SECRET = config.CEGID_CLIENT_SECRET
     yield config
 
 
 @pytest.fixture(name="mock_cegid_auth")
-def mock_cegid_auth_fixture(cegid_config, requests_mock, cegid_cookies):
+def mock_cegid_auth_fixture(cegid_config, requests_mock, cegid_auth_token):
     yield requests_mock.register_uri(
         "POST",
-        f"{cegid_config.CEGID_URL}/entity/auth/login",
-        cookies=cegid_cookies,
-        text="",
-        status_code=204,
+        f"{cegid_config.CEGID_URL}/identity/connect/token",
+        json=cegid_auth_token,
+        status_code=200,
     )
 
 
@@ -373,7 +373,8 @@ class BaseBackendTest:
     CEGID_URL="",
     CEGID_USERNAME="",
     CEGID_PASSWORD="",
-    CEGID_COMPANY="",
+    CEGID_CLIENT_ID="",
+    CEGID_CLIENT_SECRET="",
     FINANCE_BACKEND="pcapi.core.finance.backend.cegid.CegidFinanceBackend",
 )
 class CegidFinanceBackendTest:
@@ -661,19 +662,18 @@ class CegidFinanceBackendTest:
 
         assert request_matcher.call_count == 1
 
-    def test_cache_cookies(self, app, requests_mock, cegid_config, cegid_cookies):
+    def test_cache_token(self, app, requests_mock, cegid_config, cegid_auth_token):
         redis = app.redis_client
-        cache_key = "cache:cegid:cookies"
-        cookies = redis.get(cache_key)
+        cache_key = "cache:cegid:token"
+        token = redis.get(cache_key)
 
-        assert cookies is None
+        assert token is None
 
         request_matcher_auth = requests_mock.register_uri(
             "POST",
-            f"{cegid_config.CEGID_URL}/entity/auth/login",
-            text="",
-            cookies=cegid_cookies,
-            status_code=204,
+            f"{cegid_config.CEGID_URL}/identity/connect/token",
+            json=cegid_auth_token,
+            status_code=200,
         )
 
         request_matcher_get_vendor_location = requests_mock.register_uri(
@@ -689,18 +689,17 @@ class CegidFinanceBackendTest:
         assert vendor_location == {}
         assert request_matcher_auth.call_count == 1
         assert request_matcher_get_vendor_location.call_count == 1
-        cookies = redis.get(cache_key)
-        assert cookies is not None
-        assert json.loads(cookies) == cegid_cookies
+        token = redis.get(cache_key)
+        assert token == cegid_auth_token["access_token"]
 
         vendor_location = backend._get_vendor_location(1)
         assert vendor_location == {}
         assert request_matcher_auth.call_count == 1
         assert request_matcher_get_vendor_location.call_count == 2
 
-    def test_refresh_cookies(self, app, requests_mock, cegid_config, cegid_cookies, mock_cegid_auth):
+    def test_refresh_token(self, app, requests_mock, cegid_config, cegid_auth_token, mock_cegid_auth):
         redis = app.redis_client
-        cache_key = "cache:cegid:cookies"
+        cache_key = "cache:cegid:token"
         backend = finance_backend.CegidFinanceBackend()
         url = f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/VendorLocation?$expand=RIB&$filter=VendorID%20eq%20'1'"
 
@@ -713,8 +712,8 @@ class CegidFinanceBackendTest:
         )
         vendor_location = backend._get_vendor_location(1)
         assert vendor_location == {}
-        cookies = redis.get(cache_key)
-        assert json.loads(cookies) == cegid_cookies
+        token = redis.get(cache_key)
+        assert token == cegid_auth_token["access_token"]
         assert request_matcher_get_vendor_location.call_count == 1
         requests_mock.reset()
         response_error = requests_mock.register_uri(
@@ -742,12 +741,12 @@ class CegidFinanceBackendTest:
         assert request_matcher.call_count == 2
         assert mock_cegid_auth.call_count == 2
 
-    def test_push_bank_account(self, cegid_config, requests_mock, mock_cegid_auth):
+    def test_push_bank_account(self, cegid_config, requests_mock, mock_cegid_auth, faker):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
-        vendor_uuid = str(uuid.uuid4())
-        vendor_location_uuid = str(uuid.uuid4())
-        main_contact_uuid = str(uuid.uuid4())
+        vendor_uuid = str(faker.uuid4())
+        vendor_location_uuid = str(faker.uuid4())
+        main_contact_uuid = str(faker.uuid4())
 
         iso_now = f"{datetime.datetime.utcnow().isoformat()}+00"
 
@@ -901,11 +900,11 @@ class CegidFinanceBackendTest:
         assert request_matcher_get_vendor_location.call_count == 1
 
     @pytest.mark.usefixtures("mock_cegid_auth")
-    def test_get_bank_account(self, requests_mock, cegid_config):
+    def test_get_bank_account(self, requests_mock, cegid_config, faker):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
-        vendor_uuid = str(uuid.uuid4())
-        iban_uuid = str(uuid.uuid4())
+        vendor_uuid = str(faker.uuid4())
+        iban_uuid = str(faker.uuid4())
         iso_now = f"{datetime.datetime.utcnow().isoformat()}+00"
 
         response_vendor_location_data = [
