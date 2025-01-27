@@ -12,6 +12,8 @@ import fullInfoIcon from 'icons/full-info.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import engagementsImage from './assets/engagements.svg'
+import macStudioImage from './assets/mac-studio.svg'
 import { LateralPanel } from './LateralPanel/LateralPanel'
 import styles from './Layout.module.scss'
 
@@ -29,6 +31,7 @@ export interface LayoutProps {
     | 'sticky-actions'
     | 'sticky-onboarding'
     | 'logged-out'
+    | 'sign-up'
   showFooter?: boolean
   mainBanner?: React.ReactNode
 }
@@ -128,11 +131,12 @@ export const Layout = ({
           <div
             id="content-wrapper"
             className={cn(styles['content-wrapper'], {
-              [styles['content-wrapper-side']]: layout === 'logged-out',
+              [styles['content-wrapper-left-side']]: layout === 'logged-out',
+              [styles['content-wrapper-right-side']]: layout === 'sign-up',
             })}
           >
             {layout === 'logged-out' && (
-              <header className={styles['content-wrapper-side-logo']}>
+              <header className={styles['content-wrapper-left-side-logo']}>
                 <SvgIcon
                   className={styles['logo-unlogged']}
                   viewBox="0 0 282 120"
@@ -142,12 +146,35 @@ export const Layout = ({
                 />
               </header>
             )}
+            {layout === 'sign-up' && (
+              <header className={styles['content-wrapper-right-side-logo']}>
+                <img
+                  src={engagementsImage}
+                  alt=""
+                  className={styles['image-engagements']}
+                />
+                <img
+                  src={macStudioImage}
+                  alt=""
+                  className={styles['image-laptop']}
+                />
+              </header>
+            )}
             <div
               className={cn(
                 styles['content-container'],
                 styles[`content-container-${layout}`]
               )}
             >
+              {layout === 'sign-up' && (
+                <SvgIcon
+                  className={styles['logo-sign-up']}
+                  viewBox="0 0 282 120"
+                  alt="Pass Culture pro, l’espace des acteurs culturels"
+                  src={logoPassCultureProFullIcon}
+                  width="135"
+                />
+              )}
               <main id="content">
                 {layout === 'funnel' || layout === 'onboarding' ? (
                   <>
