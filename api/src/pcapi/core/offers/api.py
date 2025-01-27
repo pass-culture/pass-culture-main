@@ -1352,7 +1352,7 @@ def reject_inappropriate_products(
     offers_query = models.Offer.query.filter(
         sa.or_(
             models.Offer.productId.in_(product_ids),
-            models.Offer.extraData["ean"].astext.in_(eans),
+            models.Offer.ean.astext.in_(eans),
         ),
         models.Offer.validation != models.OfferValidationStatus.REJECTED,
     )

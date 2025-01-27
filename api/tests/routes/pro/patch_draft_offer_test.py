@@ -68,7 +68,6 @@ class Returns200Test:
         assert response.json["id"] == offer.id
 
         updated_offer = Offer.query.get(offer.id)
-        assert updated_offer.extraData["ean"] == "2222222222222"
         assert updated_offer.ean == "2222222222222"
 
     @pytest.mark.features(WIP_EAN_CREATION=True)

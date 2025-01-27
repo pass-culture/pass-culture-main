@@ -390,8 +390,8 @@ def _create_or_update_ean_offers(
     offer_to_update_by_ean = {}
     ean_list_to_update = set()
     for offer in offers_to_update:
-        ean_list_to_update.add(offer.extraData["ean"])  # type: ignore[index]
-        offer_to_update_by_ean[offer.extraData["ean"]] = offer  # type: ignore[index]
+        ean_list_to_update.add(offer.ean)
+        offer_to_update_by_ean[offer.ean] = offer
 
     ean_list_to_create = ean_to_create_or_update - ean_list_to_update
     offers_to_index = []
@@ -447,7 +447,7 @@ def _create_or_update_ean_offers(
             reloaded_offers = _get_existing_offers(ean_list_to_create, venue)
             for offer in reloaded_offers:
                 try:
-                    ean = offer.extraData["ean"]  # type: ignore[index]
+                    ean = offer.ean
                     stock_data = serialized_products_stocks[ean]
                     # FIXME (mageoffray, 2023-05-26): stock saving optimisation
                     # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
@@ -478,7 +478,7 @@ def _create_or_update_ean_offers(
                 offer.lastProvider = provider
                 offer.isActive = True
 
-                ean = offer.extraData["ean"]  # type: ignore[index]
+                ean = offer.ean
                 stock_data = serialized_products_stocks[ean]
                 # FIXME (mageoffray, 2023-05-26): stock upserting optimisation
                 # Stocks are edited one by one for now, we need to improve edit_stock to remove the repository.session.add()
@@ -536,8 +536,8 @@ def _get_existing_offers(
         )
         .filter(offers_models.Offer.isEvent == False)
         .filter(offers_models.Offer.venue == venue)
-        .filter(offers_models.Offer.extraData["ean"].astext.in_(ean_to_create_or_update))
-        .group_by(offers_models.Offer.extraData["ean"], offers_models.Offer.venueId)
+        .filter(offers_models.Offer.ean.in_(ean_to_create_or_update))
+        .group_by(offers_models.Offer.ean, offers_models.Offer.venueId)
         .subquery()
     )
 
@@ -741,7 +741,7 @@ def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Que
     return (
         utils._retrieve_offer_tied_to_user_query()
         .filter(
-            offers_models.Offer.extraData["ean"].astext.in_(eans),
+            offers_models.Offer.ean.in_(eans),
             offers_models.Offer.venueId == venueId,
         )
         .order_by(offers_models.Offer.id.desc())
