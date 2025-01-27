@@ -186,7 +186,7 @@ def _serialize_offer_paginated(
     return CollectiveOfferResponseModel(  # type: ignore[call-arg]
         hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
         id=offer.id,
-        isActive=False if offer.status == CollectiveOfferStatus.INACTIVE else offer.isActive,
+        isActive=offer.isActive,
         isEditable=offer.isEditable,
         isEditableByPcPro=offer.isEditableByPcPro,
         isEducational=True,
@@ -423,9 +423,6 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     def from_orm(cls, offer: educational_models.CollectiveOffer) -> "GetCollectiveOfferResponseModel":
         result = super().from_orm(offer)
         result.formats = offer.get_formats()
-
-        if result.status == CollectiveOfferStatus.INACTIVE.name:
-            result.isActive = False
 
         return result
 

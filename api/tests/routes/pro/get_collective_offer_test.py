@@ -43,7 +43,6 @@ class Returns200Test:
         assert response.json[0]["id"] == offer.id
 
     def test_basics(self, client):
-        # Given
         template = educational_factories.CollectiveOfferTemplateFactory()
         stock = educational_factories.CollectiveStockFactory()
         national_program = educational_factories.NationalProgramFactory()
@@ -59,7 +58,6 @@ class Returns200Test:
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        # When
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
         expected_num_queries = self.num_queries
@@ -69,7 +67,6 @@ class Returns200Test:
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
-        # Then
         response_json = response.json
         assert "iban" not in response_json["venue"]
         assert "bic" not in response_json["venue"]
@@ -97,6 +94,7 @@ class Returns200Test:
         assert response_json["provider"]["name"] == provider.name
         assert response_json["displayedStatus"] == "ACTIVE"
         assert not response_json["isTemplate"]
+        assert response_json["isActive"] is True
 
     def test_sold_out(self, client):
         # Given
@@ -197,31 +195,6 @@ class Returns200Test:
         response_json = response.json
         assert response_json["lastBookingId"] == booking.id
         assert response_json["lastBookingStatus"] == booking.status.value
-
-    def test_inactive_offer(self, client):
-        stock = educational_factories.CollectiveStockFactory(
-            startDatetime=datetime.utcnow() + timedelta(days=125),
-            bookingLimitDatetime=datetime.utcnow() - timedelta(days=125),
-        )
-        offer = educational_factories.CollectiveOfferFactory(
-            collectiveStock=stock,
-            teacher=educational_factories.EducationalRedactorFactory(),
-            isActive=True,
-        )
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        # When
-        client = client.with_session_auth(email="user@example.com")
-        offer_id = offer.id
-        expected_num_queries = self.num_queries
-        expected_num_queries += 1  # educational_redactor
-        with assert_num_queries(expected_num_queries):
-            response = client.get(f"/collective/offers/{offer_id}")
-            assert response.status_code == 200
-
-        # Then
-        assert response.json["status"] == "INACTIVE"
-        assert response.json["isActive"] is False
 
     def test_offer_venue_has_an_empty_string_venue_id(self, client):
         # TODO(jeremieb): remove this test once there is no empty

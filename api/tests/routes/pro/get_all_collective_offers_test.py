@@ -26,7 +26,6 @@ class Returns200Test:
     expected_num_queries = 5
 
     def test_one_simple_collective_offer(self, client):
-        # Given
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
@@ -38,13 +37,11 @@ class Returns200Test:
         )
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
-        # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers")
             assert response.status_code == 200
 
-        # Then
         response_json = response.json
         assert isinstance(response_json, list)
         assert len(response_json) == 1
@@ -56,6 +53,7 @@ class Returns200Test:
         assert response_json[0]["imageCredit"] is None
         assert response_json[0]["imageUrl"] is None
         assert response_json[0]["displayedStatus"] == "ACTIVE"
+        assert response_json[0]["isActive"] is True
         assert response_json[0]["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
 
     @time_machine.travel("2024-06-1")
@@ -110,7 +108,6 @@ class Returns200Test:
             assert end == datetime.date(2024, 6, 15)
 
     def test_one_inactive_offer(self, client):
-        # Given
         user = users_factories.UserFactory()
 
         stock = educational_factories.CollectiveStockFactory(
@@ -120,17 +117,15 @@ class Returns200Test:
         offer = educational_factories.CollectiveOfferFactory(
             collectiveStock=stock,
             teacher=educational_factories.EducationalRedactorFactory(),
-            isActive=True,
+            isActive=False,
         )
         offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
 
-        # When
         client = client.with_session_auth(email=user.email)
         with assert_num_queries(self.expected_num_queries - 1):  # - national_program
             response = client.get("/collective/offers")
             assert response.status_code == 200
 
-        # Then
         response_json = response.json
         assert isinstance(response_json, list)
         assert len(response_json) == 1
