@@ -10,7 +10,7 @@ from pcapi.core.achievements import models as achievements_models
 from pcapi.core.artist import factories as artist_factories
 from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -81,7 +81,7 @@ def create_artists() -> None:
         image_license_url="https://creativecommons.org/licenses/by-sa/3.0",
     )
     for _ in range(10):
-        product = offers_factories.ProductFactory(subcategoryId=subcategories_v2.LIVRE_PAPIER.id)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         offers_factories.ArtistProductLinkFactory(
             artist_id=artist_1.id, product_id=product.id, artist_type=ArtistType.AUTHOR
         )
@@ -96,7 +96,7 @@ def create_artists() -> None:
         image_license_url="https://creativecommons.org/licenses/by/2.0",
     )
     for _ in range(10):
-        product = offers_factories.ProductFactory(subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
         offers_factories.ArtistProductLinkFactory(
             artist_id=artist_2.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
@@ -111,7 +111,7 @@ def create_artists() -> None:
         image_license_url="https://creativecommons.org/licenses/by-sa/2.0",
     )
     for _ in range(10):
-        product = offers_factories.ProductFactory(subcategoryId=subcategories_v2.SEANCE_CINE.id)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
         offers_factories.ArtistProductLinkFactory(
             artist_id=artist_3.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
@@ -166,7 +166,7 @@ def create_offers_for_each_gtl_level_1(size_per_gtl_level_1: int, venue: offerer
 def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_models.Venue) -> None:
     ean = Fake.ean13()
     product = offers_factories.ProductFactory(
-        subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
         lastProvider=providers_factories.PublicApiProviderFactory(name="BookProvider"),
         idAtProviders=ean,
         extraData={"gtl_id": gtl_id, "author": Fake.name(), "ean": ean},
@@ -184,14 +184,14 @@ def create_offers_with_same_ean() -> None:
     offers = []
     product = offers_factories.ProductFactory(
         name="Le livre du pass Culture",
-        subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
         lastProvider=providers_factories.PublicApiProviderFactory(name="BookProvider"),
     )
     for venue_data in venues_mock.venues:
         offers.append(
             offers_factories.OfferFactory(
                 product=product,
-                subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+                subcategoryId=subcategories.LIVRE_PAPIER.id,
                 venue=offerers_factories.VenueFactory(
                     name=venue_data["name"],
                     venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
@@ -215,7 +215,7 @@ def create_offers_with_same_ean() -> None:
 
 def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -> None:
     product = offers_factories.ProductFactory(
-        subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
         lastProvider=providers_factories.PublicApiProviderFactory(name="BookProvider"),
         idAtProviders=ean,
         extraData={"ean": ean, "author": author},
@@ -237,7 +237,7 @@ def create_offer_and_stocks_for_cinemas(
             movie_offer = offers_factories.OfferFactory(
                 name=product.name,
                 product=product,
-                subcategoryId=subcategories_v2.SEANCE_CINE.id,
+                subcategoryId=subcategories.SEANCE_CINE.id,
                 venue=venue,
                 extraData=product.extraData,
             )
@@ -278,7 +278,7 @@ def create_cinema_data() -> None:
 def create_movie_products(offset: int = 0) -> list[offers_models.Product]:
     return [
         offers_factories.ProductFactory(
-            subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            subcategoryId=subcategories.SEANCE_CINE.id,
             description=f"Description du film {i}",
             name=f"Film {i}",
             extraData={"allocineId": 100_000 + i},
@@ -344,7 +344,7 @@ def create_venues_across_cities() -> None:
                 offer = offers_factories.OfferFactory(
                     venue=venue,
                     product=None,
-                    subcategoryId=random.choice(subcategories_v2.ALL_SUBCATEGORIES).id,
+                    subcategoryId=random.choice(subcategories.ALL_SUBCATEGORIES).id,
                     name=Fake.sentence(nb_words=3, variable_nb_words=True)[:-1],
                     description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
                     url=None,
@@ -356,7 +356,7 @@ def create_venues_across_cities() -> None:
                 event_offer = offers_factories.EventOfferFactory(
                     venue=venue,
                     product=None,
-                    subcategoryId=random.choice(list(subcategories_v2.EVENT_SUBCATEGORIES)),
+                    subcategoryId=random.choice(list(subcategories.EVENT_SUBCATEGORIES)),
                     name=Fake.sentence(nb_words=3, variable_nb_words=True)[:-1],
                     description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
                     url=None,
@@ -376,11 +376,11 @@ def create_venues_across_cities() -> None:
 
 
 def create_offers_for_each_subcategory() -> None:
-    for subcategory in subcategories_v2.ALL_SUBCATEGORIES:
+    for subcategory in subcategories.ALL_SUBCATEGORIES:
         for i in range(1, 11):
             is_free = i % 2
             is_in_Paris = i < 6  # else it will be Marseille
-            if subcategory.id in subcategories_v2.EVENT_SUBCATEGORIES:
+            if subcategory.id in subcategories.EVENT_SUBCATEGORIES:
                 stock = offers_factories.EventStockFactory(
                     offer__product=None,
                     offer__subcategoryId=subcategory.id,
@@ -444,7 +444,7 @@ def create_single_book_author(venues: list[offerers_models.Venue]) -> None:
 def create_book_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
     # an author with 1 book in multiple venues
     product = offers_factories.ProductFactory(
-        subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
     for venue in venues[:3]:
         offer = offers_factories.OfferFactory(
@@ -461,7 +461,7 @@ def create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list
         ean = Fake.ean13()
         product = offers_factories.ProductFactory(
             name="One Piece tome " + str(tome),
-            subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": ean, "author": author},
         )
         for venue in venues:
@@ -475,7 +475,7 @@ def create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list
         ean = Fake.ean13()
         product = offers_factories.ProductFactory(
             name="One Piece tome " + str(tome),
-            subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": ean, "author": author},
         )
         offer = offers_factories.OfferFactory(
@@ -491,7 +491,7 @@ def create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
     ean = Fake.ean13()
     product = offers_factories.ProductFactory(
         name="multiauth",
-        subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
         extraData={"ean": ean, "author": ", ".join(authors)},
     )
     offer = offers_factories.OfferFactory(
@@ -540,7 +540,7 @@ def create_venues_with_gmaps_image() -> None:
         offer=offers_factories.OfferFactory(
             venue=venue_with_user_image_and_gmaps_image,
             product=None,
-            subcategoryId=random.choice(subcategories_v2.ALL_SUBCATEGORIES).id,
+            subcategoryId=random.choice(subcategories.ALL_SUBCATEGORIES).id,
             name=Fake.sentence(nb_words=3, variable_nb_words=True)[:-1],
             description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
             url=None,
@@ -550,7 +550,7 @@ def create_venues_with_gmaps_image() -> None:
         offer=offers_factories.OfferFactory(
             venue=venue_without_user_image_and_with_gmaps_image,
             product=None,
-            subcategoryId=random.choice(subcategories_v2.ALL_SUBCATEGORIES).id,
+            subcategoryId=random.choice(subcategories.ALL_SUBCATEGORIES).id,
             name=Fake.sentence(nb_words=3, variable_nb_words=True)[:-1],
             description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
             url=None,
@@ -560,7 +560,7 @@ def create_venues_with_gmaps_image() -> None:
         offer=offers_factories.OfferFactory(
             venue=venue_with_no_images,
             product=None,
-            subcategoryId=random.choice(subcategories_v2.ALL_SUBCATEGORIES).id,
+            subcategoryId=random.choice(subcategories.ALL_SUBCATEGORIES).id,
             name=Fake.sentence(nb_words=3, variable_nb_words=True)[:-1],
             description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
             url=None,
@@ -717,7 +717,7 @@ def create_institutional_website_offer_playlist() -> None:
 def create_product_with_multiple_images() -> None:
     product = offers_factories.ProductFactory(
         name="multiple thumbs",
-        subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
         extraData={"ean": "9999999999999"},
     )
     offer = offers_factories.OfferFactory(product=product, name=product.name, subcategoryId=product.subcategoryId)
@@ -768,7 +768,7 @@ def create_users_with_reactions() -> None:
 def create_user_that_booked_some_cinema() -> None:
     seance_cine_start = datetime.datetime.utcnow() - datetime.timedelta(hours=25)
     stock = offers_factories.StockFactory(
-        beginningDatetime=seance_cine_start, quantity=100, offer__subcategoryId=subcategories_v2.SEANCE_CINE.id
+        beginningDatetime=seance_cine_start, quantity=100, offer__subcategoryId=subcategories.SEANCE_CINE.id
     )
     for i in range(10):
         user_email = f"ella-reserveducine-{i}@example.com"

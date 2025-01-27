@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core import testing
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import GcuCompatibilityType
@@ -20,7 +20,7 @@ class Returns200Test:
         product = offers_factories.ProductFactory(
             description="Product description",
             name="Product name",
-            subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={
                 "ean": "1234567891011",
                 "author": "Martin Dupont",
@@ -60,7 +60,7 @@ class Returns200Test:
         product = offers_factories.ProductFactory(
             description=None,
             name="Product name",
-            subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": "1234567891011", "author": "Martin Dupont"},
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )
@@ -84,7 +84,7 @@ class Returns200Test:
         product = offers_factories.ProductFactory(
             description="Product description",
             name="Product name",
-            subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={
                 "ean": "1234567891011",
                 "author": "Martin Dupont",
@@ -115,7 +115,7 @@ class Returns422Test:
         offers_factories.ProductFactory(
             description="Product description",
             name="Product name",
-            subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": "EANDUPRODUIT", "author": "Martin Dupont"},
             gcuCompatibilityType=GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
@@ -159,7 +159,7 @@ class Returns422Test:
         product = offers_factories.ProductFactory(
             description="Product description",
             name="Product name",
-            subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": "EANDUPRODUIT", "author": "Martin Dupont"},
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )
@@ -184,7 +184,7 @@ class Returns422Test:
         offers_factories.ProductFactory(
             description="Product description",
             name="Product name",
-            subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": "EANDUPRODUIT", "author": "Martin Dupont"},
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )

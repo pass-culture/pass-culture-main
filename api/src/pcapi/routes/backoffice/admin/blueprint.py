@@ -9,7 +9,7 @@ import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
 from pcapi import settings
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.history import models as history_models
 from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import models as perm_models
@@ -171,6 +171,6 @@ def toggle_feature_flag(feature_flag_id: int, set_to_active: bool) -> utils.Back
 @utils.custom_login_required(redirect_to=".home")
 def get_subcategories() -> utils.BackofficeResponse:
 
-    all_subcategories = subcategories_v2.ALL_SUBCATEGORIES_DICT.values()
+    all_subcategories = subcategories.ALL_SUBCATEGORIES_DICT.values()
 
     return render_template("admin/subcategories.html", rows=all_subcategories)

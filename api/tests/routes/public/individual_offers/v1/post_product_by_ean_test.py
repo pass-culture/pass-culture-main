@@ -6,7 +6,7 @@ from unittest import mock
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories

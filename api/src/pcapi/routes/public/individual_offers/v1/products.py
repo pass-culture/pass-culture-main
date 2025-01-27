@@ -9,8 +9,9 @@ import sqlalchemy.exc as sqla_exc
 
 from pcapi import repository
 from pcapi.core import search
-from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.genres import music
+from pcapi.core.categories.genres import show
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
@@ -21,8 +22,7 @@ from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
-from pcapi.domain import music_types
-from pcapi.domain import show_types
+from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
@@ -73,7 +73,7 @@ def get_show_types() -> serialization.GetShowTypesResponse:
     return serialization.GetShowTypesResponse(
         __root__=[
             serialization.ShowTypeResponse(id=show_type_slug, label=show_type.label)
-            for show_type_slug, show_type in show_types.SHOW_SUB_TYPES_BY_SLUG.items()
+            for show_type_slug, show_type in show.SHOW_SUB_TYPES_BY_SLUG.items()
         ]
     )
 
@@ -105,7 +105,7 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
     return serialization.GetMusicTypesResponse(
         __root__=[
             serialization.MusicTypeResponse(id=music_type_slug, label=music_type.label)
-            for music_type_slug, music_type in music_types.MUSIC_SUB_TYPES_BY_SLUG.items()
+            for music_type_slug, music_type in music.MUSIC_SUB_TYPES_BY_SLUG.items()
         ]
     )
 

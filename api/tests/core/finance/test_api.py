@@ -16,7 +16,7 @@ import time_machine
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models

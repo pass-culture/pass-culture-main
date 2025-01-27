@@ -9,7 +9,7 @@ import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.core import search
-from pcapi.core.categories.subcategories_v2 import EacFormat
+from pcapi.core.categories.subcategories import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import factories as finance_factories

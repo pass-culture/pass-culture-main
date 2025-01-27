@@ -4,7 +4,7 @@ from datetime import timedelta
 import decimal
 import logging
 
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models

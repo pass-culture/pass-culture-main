@@ -6,10 +6,10 @@ from unittest.mock import patch
 from flask import url_for
 import pytest
 
-from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational import models as educational_models
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import testing as educational_testing
+import pcapi.core.educational.factories as educational_factories
+import pcapi.core.educational.models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import OfferValidationStatus

@@ -8,7 +8,9 @@ import factory
 from factory.faker import faker
 
 import pcapi.core.artist.models as artist_models
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.genres import music
+from pcapi.core.categories.genres import show
 from pcapi.core.factories import BaseFactory
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.schemas import VenueTypeCode
@@ -16,8 +18,6 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.titelive_gtl import GTLS
 import pcapi.core.users.factories as users_factories
-from pcapi.domain import music_types
-from pcapi.domain import show_types
 from pcapi.models.offer_mixin import OfferValidationType
 
 from . import models
@@ -133,19 +133,19 @@ def build_extra_data_from_subcategory(
             case subcategories.ExtraDataFieldEnum.VISA.value:
                 extradata[field] = fake.ean()
             case subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value:
-                extradata[field] = str(random.choice(music_types.OLD_MUSIC_TYPES).code)
+                extradata[field] = str(random.choice(music.OLD_MUSIC_TYPES).code)
             case subcategories.ExtraDataFieldEnum.MUSIC_SUB_TYPE.value:
                 music_type_code = extradata.get(subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value)
                 assert music_type_code
-                music_type = music_types.MUSIC_TYPES_BY_CODE.get(int(music_type_code))
+                music_type = music.MUSIC_TYPES_BY_CODE.get(int(music_type_code))
                 assert music_type
                 extradata[field] = str(random.choice(music_type.children).code)
             case subcategories.ExtraDataFieldEnum.SHOW_TYPE.value:
-                extradata[field] = str(random.choice(show_types.SHOW_TYPES).code)
+                extradata[field] = str(random.choice(show.SHOW_TYPES).code)
             case subcategories.ExtraDataFieldEnum.SHOW_SUB_TYPE.value:
                 show_type_code = extradata.get(subcategories.ExtraDataFieldEnum.SHOW_TYPE.value)
                 assert show_type_code
-                show_type = show_types.SHOW_TYPES_BY_CODE.get(int(show_type_code))
+                show_type = show.SHOW_TYPES_BY_CODE.get(int(show_type_code))
                 assert show_type
                 extradata[field] = str(random.choice(show_type.children).code)
 

@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 from shutil import copyfile
 
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.repository import repository

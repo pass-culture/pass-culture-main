@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
 import pcapi.core.educational.exceptions as educational_exceptions

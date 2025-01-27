@@ -8,7 +8,7 @@ from flask_sqlalchemy import BaseQuery
 
 from pcapi import settings
 from pcapi.core import search
-import pcapi.core.categories.subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models

@@ -11,7 +11,7 @@ from dateutil import tz
 import pytz
 
 from pcapi import settings
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.models.feature import FeatureToggle
 import pcapi.utils.date as date_utils
 import pcapi.utils.postal_code as postal_code_utils

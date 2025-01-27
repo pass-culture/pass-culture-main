@@ -6,7 +6,7 @@ from pcapi.core.artist import commands
 from pcapi.core.artist.factories import ArtistFactory
 from pcapi.core.artist.models import Artist
 from pcapi.core.artist.models import ArtistAlias
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import ProductFactory
 
 from . import fixtures
@@ -58,9 +58,9 @@ class ImportAllArtistsTest:
         get_all_artists_product_links_mock,
     ):
         albums_by_same_artist = ProductFactory.create_batch(
-            size=4, subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id
+            size=4, subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id
         )
-        books_by_same_artist = ProductFactory.create_batch(size=4, subcategoryId=subcategories_v2.LIVRE_PAPIER.id)
+        books_by_same_artist = ProductFactory.create_batch(size=4, subcategoryId=subcategories.LIVRE_PAPIER.id)
         author = ArtistFactory()
         performer = ArtistFactory()
 

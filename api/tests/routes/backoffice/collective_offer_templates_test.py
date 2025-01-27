@@ -4,8 +4,8 @@ import datetime
 from flask import url_for
 import pytest
 
-from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.categories.subcategories_v2 import EacFormat
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.subcategories import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.mails import testing as mails_testing

@@ -5,7 +5,7 @@ from decimal import Decimal
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries

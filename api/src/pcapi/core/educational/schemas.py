@@ -3,7 +3,7 @@ import decimal
 
 from pydantic.v1.fields import Field
 
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel

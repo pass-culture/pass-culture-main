@@ -6,7 +6,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 import pcapi.core.external_bookings.factories as external_bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -98,7 +98,7 @@ class Returns204Test:
         providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             lastProvider=provider,
-            offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
             idAtProviders="",
             quantity=20,
@@ -143,7 +143,7 @@ class Returns204Test:
         providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             lastProvider=provider,
-            offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
             idAtProviders="",
             quantity=20,
@@ -183,7 +183,7 @@ class Returns204Test:
         providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             lastProvider=provider,
-            offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
             idAtProviders="",
             quantity=10,
@@ -226,7 +226,7 @@ class Returns204Test:
         providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             lastProvider=provider,
-            offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
             idAtProviders="",
             dnBookedQuantity=4,
@@ -357,7 +357,7 @@ class Returns400Test:
         providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             lastProvider=provider,
-            offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
             idAtProviders="",
             dnBookedQuantity=4,

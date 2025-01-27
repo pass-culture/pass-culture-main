@@ -8,7 +8,7 @@ import time_machine
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.external.attributes.api import TRACKED_PRODUCT_IDS
 from pcapi.core.external.attributes.api import get_bookings_categories_and_subcategories
 from pcapi.core.external.attributes.api import get_most_favorite_subcategories

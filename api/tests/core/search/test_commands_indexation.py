@@ -5,7 +5,7 @@ import pytest
 
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.categories.subcategories_v2 import ALL_SUBCATEGORIES
+from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories

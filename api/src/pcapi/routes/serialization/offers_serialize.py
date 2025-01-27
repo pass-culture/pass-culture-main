@@ -11,7 +11,7 @@ from pydantic.v1 import constr
 from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
-from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
+from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
@@ -42,7 +42,6 @@ class SubcategoryResponseModel(BaseModel):
     category_id: str
     pro_label: str
     app_label: str
-    search_group_name: str | None
     is_event: bool
     conditional_fields: list[str]
     can_expire: bool

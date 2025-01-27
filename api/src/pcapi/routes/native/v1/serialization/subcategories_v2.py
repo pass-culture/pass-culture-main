@@ -1,23 +1,25 @@
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2
-from pcapi.domain.book_types import BookType
-from pcapi.domain.movie_types import MovieType
-from pcapi.domain.music_types import MusicType
-from pcapi.domain.show_types import ShowType
+from typing import Any
+
+from pydantic.v1.utils import GetterDict
+
+from pcapi.core.categories import models as categories_models
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.genres.book import BookType
+from pcapi.core.categories.genres.movie import MovieType
+from pcapi.core.categories.genres.music import MusicType
+from pcapi.core.categories.genres.show import ShowType
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.serialization.utils import to_camel
 
 
 class SubcategoryResponseModelv2(BaseModel):
-    id: subcategories_v2.SubcategoryIdEnumv2
-    category_id: categories.CategoryIdEnum
-    native_category_id: subcategories_v2.NativeCategoryIdEnumv2
+    id: str
+    category_id: str
     app_label: str
-    search_group_name: subcategories_v2.SearchGroupNameEnumv2
-    homepage_label_name: subcategories_v2.HomepageLabelNameEnumv2
+    homepage_label_name: str
     is_event: bool
-    online_offline_platform: subcategories_v2.OnlineOfflinePlatformChoicesEnumv2
+    online_offline_platform: subcategories.OnlineOfflinePlatformChoicesEnum
 
     class Config:
         alias_generator = to_camel
@@ -26,7 +28,7 @@ class SubcategoryResponseModelv2(BaseModel):
 
 
 class SearchGroupResponseModelv2(BaseModel):
-    name: subcategories_v2.SearchGroupNameEnumv2
+    name: str
     value: str | None
 
     class Config:
@@ -36,7 +38,7 @@ class SearchGroupResponseModelv2(BaseModel):
 
 
 class HomepageLabelResponseModelv2(BaseModel):
-    name: subcategories_v2.HomepageLabelNameEnumv2
+    name: str
     value: str | None
 
     class Config:
@@ -45,16 +47,24 @@ class HomepageLabelResponseModelv2(BaseModel):
         orm_mode = True
 
 
+class CategoryGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        if key == "parents":
+            return [parent.name for parent in self._obj.parents]
+        return super().get(key, default)
+
+
 class NativeCategoryResponseModelv2(BaseModel):
-    name: subcategories_v2.NativeCategoryIdEnumv2
+    name: str
     value: str | None
-    genre_type: subcategories_v2.GenreType | None
-    parents: list[subcategories_v2.SearchGroupNameEnumv2]
+    genre_type: categories_models.GenreType | None
+    parents: list[str]
     positions: dict[str, int] | None
 
     class Config:
         alias_generator = to_camel
         allow_population_by_field_name = True
+        getter_dict = CategoryGetterDict
         orm_mode = True
 
 
@@ -68,7 +78,7 @@ class GenreTypeContentModel(BaseModel):
 
 
 class GenreTypeModel(BaseModel):
-    name: subcategories_v2.GenreType
+    name: categories_models.GenreType
     values: list[GenreTypeContentModel]
     trees: list[BookType] | list[MusicType] | list[ShowType] | list[MovieType]
 
@@ -87,12 +97,15 @@ class SubcategoriesResponseModelv2(BaseModel):
 
 
 class CategoryResponseModel(ConfiguredBaseModel):
-    id: str
+    name: str
     label: str
     parents: list[str]
     gtls: list[str] | None = None
     positions: dict[str, int] | None
     search_filter: str | None = None
+
+    class Config:
+        getter_dict = CategoryGetterDict
 
 
 class CategoriesResponseModel(ConfiguredBaseModel):
