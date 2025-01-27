@@ -8,10 +8,10 @@ from typing import Callable
 from typing import Iterable
 import urllib.parse
 
-import sib_api_v3_sdk
-from sib_api_v3_sdk.api.contacts_api import ContactsApi
-from sib_api_v3_sdk.models.created_process_id import CreatedProcessId
-from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
+import brevo_python
+from brevo_python.api.contacts_api import ContactsApi
+from brevo_python.models.created_process_id import CreatedProcessId
+from brevo_python.rest import ApiException as SendinblueApiException
 
 from pcapi import settings
 from pcapi.core import mails as mails_api
@@ -304,7 +304,7 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> None:
 def send_import_contacts_request(
     api_instance: ContactsApi, file_body: str, list_ids: list[int] | None, email_blacklist: bool = False
 ) -> None:
-    request_contact_import = sib_api_v3_sdk.RequestContactImport(
+    request_contact_import = brevo_python.RequestContactImport(
         email_blacklist=email_blacklist,
         sms_blacklist=False,
         update_existing_contacts=True,
@@ -361,9 +361,9 @@ def import_contacts_in_sendinblue(
 
     # send pro users request
     if pro_users:
-        configuration = sib_api_v3_sdk.Configuration()
+        configuration = brevo_python.Configuration()
         configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
-        api_instance = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
+        api_instance = brevo_python.ContactsApi(brevo_python.ApiClient(configuration))
 
         pro_users_file_body = build_file_body(pro_users)
         send_import_contacts_request(
@@ -374,9 +374,9 @@ def import_contacts_in_sendinblue(
         )
     # send young users request
     if young_users:
-        configuration = sib_api_v3_sdk.Configuration()
+        configuration = brevo_python.Configuration()
         configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
-        api_instance = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
+        api_instance = brevo_python.ContactsApi(brevo_python.ApiClient(configuration))
 
         young_users_file_body = build_file_body(young_users)
         send_import_contacts_request(
@@ -390,7 +390,7 @@ def import_contacts_in_sendinblue(
 def _send_import_request(
     api_instance: ContactsApi, sib_list_id: int, iteration: int, count: int, file_body: str
 ) -> int:
-    request_contact_import = sib_api_v3_sdk.RequestContactImport()
+    request_contact_import = brevo_python.RequestContactImport()
     request_contact_import.file_body = file_body
     request_contact_import.list_ids = [sib_list_id]
     request_contact_import.notify_url = urllib.parse.urljoin(
@@ -429,12 +429,12 @@ def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, use_pro_s
         bool: True when successful, False otherwise
     """
 
-    configuration = sib_api_v3_sdk.Configuration()
+    configuration = brevo_python.Configuration()
     if use_pro_subaccount:
         configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
     else:
         configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
-    contacts_api_instance: ContactsApi = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
+    contacts_api_instance: ContactsApi = brevo_python.ContactsApi(brevo_python.ApiClient(configuration))
 
     iteration = 1
 

@@ -15,6 +15,7 @@ dependencies = [
 "beautifulsoup4==4.12.3",
 "boto3==1.36.6",
 "boussole==2.1.3",
+"brevo-python==1.1.2",
 "click-option-group==0.5.6",
 "click==8.1.8",
 "clickhouse-sqlalchemy==0.2.7",
@@ -67,7 +68,6 @@ dependencies = [
 "schwifty==2025.1.0",
 "semver==3.0.4",
 "sentry-sdk[flask]==2.20.0",
-"sib-api-v3-sdk>=7.6.0",
 "slack-sdk==3.34.0",
 "spectree==1.2.1",
 # Do not use 1.4.46 that has a new
@@ -256,8 +256,6 @@ filterwarnings = [
     #  is in a release, we'll be able to bump weasyprint and remove these 2 filters.
     "ignore:transform is deprecated, use set_matrix instead.:DeprecationWarning",
     "ignore:text_matrix is deprecated, use set_text_matrix instead.:DeprecationWarning",
-    # FIXME (prouzet, 2024-11-29): sib-api-v3-sdk latest version is still 7.6.0 (March 2023)
-    "ignore:HTTPResponse.getheaders\\(\\) is deprecated and will be removed in urllib3 v2.1.0. Instead access HTTPResponse.headers directly.:DeprecationWarning",
 ]
 testpaths = ["tests"]
 norecursedirs = [".git", "venv", ".pytest_cache"]

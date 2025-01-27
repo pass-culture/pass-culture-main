@@ -1,8 +1,8 @@
 import json
 import logging
 
-import sib_api_v3_sdk
-from sib_api_v3_sdk.rest import ApiException
+import brevo_python
+from brevo_python.rest import ApiException
 
 from pcapi import settings
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
@@ -32,7 +32,7 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> None:
         "reply_to": payload.reply_to,
     }
 
-    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(to=to, bcc=bcc, sender=sender, reply_to=reply_to, headers=headers)
+    send_smtp_email = brevo_python.SendSmtpEmail(to=to, bcc=bcc, sender=sender, reply_to=reply_to, headers=headers)
 
     # Can send email with: to, sender, template_id, tags, params
 
@@ -57,12 +57,12 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> None:
         return
 
     try:
-        configuration = sib_api_v3_sdk.Configuration()
+        configuration = brevo_python.Configuration()
         if payload.use_pro_subaccount:
             configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
         else:
             configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
-        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+        api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(configuration))
         api_instance.send_transac_email(send_smtp_email)
 
     except ApiException as exception:

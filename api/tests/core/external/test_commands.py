@@ -14,7 +14,7 @@ def test_update_sendinblue_batch_users(app):
     users_factories.BeneficiaryGrant18Factory.create_batch(2)
 
     with patch(
-        "pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts"
+        "pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts"
     ) as mock_import_contacts:
         result = run_command(app, "update_sendinblue_batch_users", "--sync-sendinblue")
 

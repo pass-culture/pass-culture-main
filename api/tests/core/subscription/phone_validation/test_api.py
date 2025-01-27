@@ -1,8 +1,8 @@
 from ssl import SSLError
 from unittest.mock import patch
 
+from brevo_python.rest import ApiException
 import pytest
-from sib_api_v3_sdk.rest import ApiException
 
 from pcapi.core import token as token_utils
 from pcapi.core.fraud import models as fraud_models
@@ -29,7 +29,7 @@ class EnsurePhoneNumberUnicityTest:
         token_utils.Token.token_exists(token_utils.TokenType.PHONE_VALIDATION, in_validation_user.id)
 
     @patch(
-        "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
+        "pcapi.notifications.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
     )
     @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
     def test_send_phone_code_success_if_validated_by_not_beneficiary(self, send_sms_mock):
@@ -85,7 +85,7 @@ class EnsurePhoneNumberUnicityTest:
 @pytest.mark.usefixtures("db_session")
 class SendSMSTest:
     @patch(
-        "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
+        "pcapi.notifications.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
     )
     @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
     def test_send_sms_success(self, mock, app):
@@ -96,7 +96,7 @@ class SendSMSTest:
         assert app.redis_client.get(f"sent_SMS_counter_user_{user.id}") == "1"
 
     @patch(
-        "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
+        "pcapi.notifications.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
     )
     @patch("secrets.randbelow")
     @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
@@ -117,7 +117,7 @@ class SendSMSTest:
         assert user.phoneNumber == "+33600000000"
 
     @patch(
-        "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
+        "pcapi.notifications.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
     )
     @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
     def test_send_sms_bad_request(self, send_sms_mock, caplog, app):
@@ -134,7 +134,7 @@ class SendSMSTest:
         assert caplog.records[0].levelname == "ERROR"
 
     @patch(
-        "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
+        "pcapi.notifications.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
     )
     @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
     def test_retry_success(self, send_sms_mock, caplog, app):
