@@ -9,7 +9,7 @@ import { SummaryScreen } from 'components/IndividualOffer/SummaryScreen/SummaryS
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 const Summary = (): JSX.Element | null => {
-  const { offer } = useIndividualOfferContext()
+  const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()
 
   const mode = useOfferWizardMode()
 
@@ -27,7 +27,12 @@ const Summary = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout title={title} offer={offer} mode={mode}>
+    <IndivualOfferLayout
+      title={title}
+      offer={offer}
+      mode={mode}
+      venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
+    >
       <SummaryScreen />
     </IndivualOfferLayout>
   )

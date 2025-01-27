@@ -39,6 +39,8 @@ export const GET_MUSIC_TYPES_QUERY_KEY = 'getMusicTypes'
 export const GET_NATIONAL_PROGRAMS_QUERY_KEY = 'getNationalPrograms'
 export const GET_NEW_OFFERERS_PLAYLIST_QUERY_KEY = 'getNewOfferersPlaylist'
 export const GET_OFFER_QUERY_KEY = 'getOffer'
+export const GET_ACTIVE_VENUE_OFFER_BY_EAN_QUERY_KEY =
+  'getActiveVenueOfferByEan'
 export const GET_OFFERS_QUERY_KEY = 'listOffers'
 export const GET_OFFERER_ADDRESS_QUERY_KEY = 'getoffererAddresses'
 export const GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY =

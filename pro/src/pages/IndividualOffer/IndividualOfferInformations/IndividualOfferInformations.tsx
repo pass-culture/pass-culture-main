@@ -8,14 +8,19 @@ import { IndividualOfferInformationsScreen } from './components/IndividualOfferI
 
 const IndividualOfferInformations = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
-  const { offer } = useIndividualOfferContext()
+  const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()
 
   if (!offer) {
     return <Spinner />
   }
 
   return (
-    <IndivualOfferLayout offer={offer} title={getTitle(mode)} mode={mode}>
+    <IndivualOfferLayout
+      offer={offer}
+      title={getTitle(mode)}
+      mode={mode}
+      venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
+    >
       <IndividualOfferInformationsScreen offer={offer} />
     </IndivualOfferLayout>
   )

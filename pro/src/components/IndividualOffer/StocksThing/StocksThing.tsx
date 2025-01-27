@@ -65,7 +65,8 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const notify = useNotification()
-  const { subCategories } = useIndividualOfferContext()
+  const { subCategories, publishedOfferWithSameEAN } =
+    useIndividualOfferContext()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
 
@@ -327,7 +328,9 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     setIsActivationCodeFormVisible(false)
   }
 
-  const readOnlyFields = setFormReadOnlyFields(offer, stocks, formik.values)
+  const readOnlyFields = publishedOfferWithSameEAN
+    ? Object.keys(STOCK_THING_FORM_DEFAULT_VALUES)
+    : setFormReadOnlyFields(offer, stocks, formik.values)
   const showExpirationDate =
     formik.values.activationCodesExpirationDatetime !== ''
 
@@ -460,7 +463,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   />
                 </>
               )}
-              {actions.length > 0 && (
+              {!publishedOfferWithSameEAN && actions.length > 0 && (
                 <StockThingFormActions actions={actions} />
               )}
             </div>
@@ -494,7 +497,11 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         <ActionBar
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
           step={OFFER_WIZARD_STEP_IDS.STOCKS}
-          isDisabled={formik.isSubmitting || isDisabled}
+          isDisabled={
+            formik.isSubmitting ||
+            isDisabled ||
+            Boolean(publishedOfferWithSameEAN)
+          }
           dirtyForm={formik.dirty}
         />
       </form>
