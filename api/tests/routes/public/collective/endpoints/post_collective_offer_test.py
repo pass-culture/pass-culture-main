@@ -13,6 +13,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
 from pcapi.core.testing import assert_num_queries
@@ -194,7 +195,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_post_offers_without_end_datetime(self, public_client, payload):
         del payload["endDatetime"]
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 200
@@ -211,7 +212,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         payload["educationalInstitution"] = institution.institutionId
         del payload["educationalInstitutionId"]
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 200
@@ -238,7 +239,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         payload["educationalInstitution"] = institution.institutionId
         payload["educationalInstitutionId"] = institution.id
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
@@ -253,7 +254,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     @time_machine.travel(time_travel_str)
     def test_user_cannot_create_collective_offer(self, public_client, payload):
         with patch(
-            "pcapi.core.offerers.api.can_offerer_create_educational_offer",
+            educational_testing.PATCH_CAN_CREATE_OFFER_PATH,
             side_effect=educational_exceptions.CulturalPartnerNotFoundException,
         ):
             response = public_client.post("/v2/collective/offers/", json=payload)
@@ -264,7 +265,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_bad_educational_institution(self, public_client, payload):
         payload["educationalInstitutionId"] = -1
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
@@ -273,7 +274,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_unlinked_venue(self, public_client, payload):
         payload["venueId"] = offerers_factories.VenueFactory().id
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
@@ -289,7 +290,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_invalid_image_size(self, public_client, payload):
         payload["imageFile"] = image_data.WRONG_IMAGE_SIZE
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
@@ -299,7 +300,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_invalid_image_type(self, public_client, payload):
         payload["imageFile"] = image_data.WRONG_IMAGE_TYPE
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
@@ -312,7 +313,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         payload["startDatetime"] = start_datetime.isoformat(timespec="seconds")
         payload["endDatetime"] = end_datetime.isoformat(timespec="seconds")
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
@@ -323,7 +324,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         institution = educational_factories.EducationalInstitutionFactory(isActive=False)
         payload["educationalInstitutionId"] = institution.id
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 403
@@ -333,7 +334,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         payload["nationalProgramId"] = None
         payload["domains"] = [-1]
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
@@ -343,7 +344,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_national_program_not_linked_to_domains(self, public_client, payload):
         payload["nationalProgramId"] = educational_factories.NationalProgramFactory().id
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
@@ -357,7 +358,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
             "otherAddress": "",
         }
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
@@ -367,7 +368,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_missing_formats(self, public_client, payload):
         del payload["formats"]
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
@@ -377,7 +378,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_description_invalid(self, public_client, payload):
         payload["description"] = "too_long" * 200
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
@@ -387,7 +388,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_missing_start_datetime(self, public_client, payload):
         del payload["startDatetime"]
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
@@ -399,7 +400,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
             datetime.fromisoformat(payload["startDatetime"]) + timedelta(days=1)
         ).isoformat(timespec="seconds")
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
@@ -417,7 +418,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
 
         minimal_payload["endDatetime"] = end.isoformat()
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=minimal_payload)
 
         assert response.status_code == 400
@@ -428,7 +429,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         start = datetime.fromisoformat(minimal_payload["startDatetime"])
         minimal_payload["startDatetime"] = start.replace(year=start.year + 1).isoformat()
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=minimal_payload)
 
         assert response.status_code == 400
@@ -439,7 +440,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         start = datetime.fromisoformat(minimal_payload["startDatetime"])
         minimal_payload["endDatetime"] = start.replace(year=start.year + 1).isoformat()
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=minimal_payload)
 
         assert response.status_code == 400

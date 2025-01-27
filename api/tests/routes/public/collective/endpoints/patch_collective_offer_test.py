@@ -11,6 +11,7 @@ from pcapi import settings
 import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
 from pcapi.models import db
@@ -108,7 +109,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "educationalInstitutionId": educational_institution.id,
         }
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -174,7 +175,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -208,7 +209,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -239,7 +240,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -270,7 +271,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -308,7 +309,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "endDatetime": stringified_next_month,
         }
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -342,7 +343,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -369,7 +370,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "bookingLimitDatetime": date_utils.utc_datetime_to_department_timezone(new_limit, None).isoformat(),
         }
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -402,7 +403,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -453,7 +454,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "educationalInstitutionId": educational_institution.id,
         }
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -500,7 +501,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -544,7 +545,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "educationalInstitutionId": educational_institution.id,
         }
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -571,7 +572,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -625,7 +626,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "educationalInstitutionId": educational_institution.id,
         }
         # when
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -648,7 +649,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         payload = {"imageCredit": "a great artist", "imageFile": image_data.GOOD_IMAGE}
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -675,7 +676,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         payload = {"name": "pouet", "imageCredit": "a great artist", "imageFile": image_data.WRONG_IMAGE_SIZE}
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -702,7 +703,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         payload = {"name": "pouet", "imageCredit": "a great artist", "imageFile": image_data.WRONG_IMAGE_TYPE}
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -728,7 +729,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         payload = {"imageCredit": "a great artist", "imageFile": image_data.GOOD_IMAGE}
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -741,7 +742,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         # actual test
         payload = {"imageFile": None}
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -772,7 +773,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -805,7 +806,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -828,7 +829,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         ).collectiveOffer
 
         payload = {institution_field: None}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{offer.id}", json=payload
             )
@@ -890,7 +891,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "nationalProgramId": 0,
         }
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -910,7 +911,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.nationalProgramId is not None
 
         payload = {"nationalProgramId": None}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(f"/v2/collective/offers/{offer.id}", json=payload)
 
         assert response.status_code == 200
@@ -938,7 +939,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         )
 
         new_limit = now + timedelta(days=1)
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(
                 self.endpoint_url.format(offer_id=offer.id), json={"bookingLimitDatetime": new_limit.isoformat()}
             )
@@ -974,7 +975,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         )
 
         new_limit = now + timedelta(days=1)
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(
                 self.endpoint_url.format(offer_id=offer.id), json={"bookingLimitDatetime": new_limit.isoformat()}
             )
@@ -995,7 +996,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             venue=venue_provider.venue, provider=venue_provider.provider
         )
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(
                 self.endpoint_url.format(offer_id=offer.id), json={"description": "too_long" * 200}
             )
@@ -1032,7 +1033,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         payload = {
             "endDatetime": date_utils.utc_datetime_to_department_timezone(datetime(2023, 10, 5), None).isoformat()
         }
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
 
         assert response.status_code == 400
@@ -1045,7 +1046,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         payload = {
             "startDatetime": date_utils.utc_datetime_to_department_timezone(datetime(2021, 10, 5), None).isoformat()
         }
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
 
         assert response.status_code == 400
@@ -1059,7 +1060,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "startDatetime": date_utils.utc_datetime_to_department_timezone(datetime(2021, 10, 5), None).isoformat(),
             "endDatetime": date_utils.utc_datetime_to_department_timezone(datetime(2022, 10, 5), None).isoformat(),
         }
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
 
         assert response.status_code == 400
@@ -1080,7 +1081,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         payload = {"startDatetime": stock.startDatetime.replace(stock.startDatetime.year + 1).isoformat()}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
 
         assert response.status_code == 400
@@ -1098,7 +1099,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         payload = {"endDatetime": stock.endDatetime.replace(stock.endDatetime.year + 1).isoformat()}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
 
         assert response.status_code == 400
@@ -1122,7 +1123,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             input_end = date_utils.utc_datetime_to_department_timezone(input_end, None)
 
         payload = {"endDatetime": input_end.isoformat()}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
 
         assert response.status_code == 400
@@ -1148,7 +1149,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             input_start = date_utils.utc_datetime_to_department_timezone(input_start, None)
 
         payload = {"startDatetime": input_start.isoformat()}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
 
         assert response.status_code == 400
@@ -1174,7 +1175,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             input_start = date_utils.utc_datetime_to_department_timezone(input_start, None)
 
         payload = {"startDatetime": input_start.isoformat()}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
 
         assert response.status_code == 400
@@ -1200,7 +1201,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             input_limit = date_utils.utc_datetime_to_department_timezone(input_limit, None)
 
         payload = {"bookingLimitDatetime": input_limit.isoformat()}
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
 
         assert response.status_code == 400
@@ -1332,7 +1333,7 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_active_venue_provider()
         offer = educational_factories.CollectiveStockFactory().collectiveOffer
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(plain_api_key).patch(
                 f"/v2/collective/offers/{offer.id}", json={"offerVenue": self.offer_venue_school()}
             )
@@ -1353,7 +1354,7 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
             collectiveOffer__provider=venue_provider.provider,
         ).collectiveOffer
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(api_key).patch(
                 f"/v2/collective/offers/{offer.id}", json={"offerVenue": payload}
             )
@@ -1441,7 +1442,7 @@ class UpdatePriceTest(PublicAPIVenueEndpointHelper):
         )
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, price=200)
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(self.endpoint_url.format(offer_id=offer.id), json={"totalPrice": 250})
 
         assert response.status_code == 200
@@ -1456,7 +1457,7 @@ class UpdatePriceTest(PublicAPIVenueEndpointHelper):
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, price=200)
         educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(f"/v2/collective/offers/{offer.id}", json={"totalPrice": 250})
 
         assert response.status_code == 200
@@ -1471,7 +1472,7 @@ class UpdatePriceTest(PublicAPIVenueEndpointHelper):
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, price=200)
         educational_factories.CancelledCollectiveBookingFactory(collectiveStock=stock)
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(f"/v2/collective/offers/{offer.id}", json={"totalPrice": 250})
 
         assert response.status_code == 200
@@ -1486,7 +1487,7 @@ class UpdatePriceTest(PublicAPIVenueEndpointHelper):
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, price=200)
         educational_factories.UsedCollectiveBookingFactory(collectiveStock=stock)
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(f"/v2/collective/offers/{offer.id}", json={"totalPrice": 150})
 
         assert response.status_code == 422
@@ -1502,7 +1503,7 @@ class UpdatePriceTest(PublicAPIVenueEndpointHelper):
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, price=200)
         educational_factories.ReimbursedCollectiveBookingFactory(collectiveStock=stock)
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(f"/v2/collective/offers/{offer.id}", json={"totalPrice": 150})
 
         assert response.status_code == 422
@@ -1519,7 +1520,7 @@ class UpdatePriceTest(PublicAPIVenueEndpointHelper):
         educational_factories.ConfirmedCollectiveBookingFactory(collectiveStock=stock)
 
         new_tickets = stock.numberOfTickets + 10
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(
                 f"/v2/collective/offers/{offer.id}",
                 json={"totalPrice": 150, "educationalPriceDetail": "hello", "numberOfTickets": new_tickets},
@@ -1539,7 +1540,7 @@ class UpdatePriceTest(PublicAPIVenueEndpointHelper):
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, price=200)
         educational_factories.ConfirmedCollectiveBookingFactory(collectiveStock=stock)
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(f"/v2/collective/offers/{offer.id}", json={"totalPrice": 250})
 
         assert response.status_code == 400
@@ -1556,7 +1557,7 @@ class UpdatePriceTest(PublicAPIVenueEndpointHelper):
         educational_factories.ConfirmedCollectiveBookingFactory(collectiveStock=stock)
 
         limit = stock.bookingLimitDatetime
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client_with_token.patch(
                 f"/v2/collective/offers/{offer.id}",
                 json={"bookingLimitDatetime": (limit + timedelta(days=1)).isoformat()},

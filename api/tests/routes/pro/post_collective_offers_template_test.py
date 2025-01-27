@@ -8,14 +8,12 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
+from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.utils.date import format_into_utc_date
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
-
-
-PATCH_CAN_CREATE_OFFER_PATH = "pcapi.core.offerers.api.can_offerer_create_educational_offer"
 
 
 @pytest.fixture(name="venue")
@@ -111,7 +109,7 @@ class Returns200Test:
         # When
         data = {**payload, "nationalProgramId": national_program.id}
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         # Then
@@ -152,7 +150,7 @@ class Returns200Test:
             "contactEmail": None,
         }
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 201
@@ -170,7 +168,7 @@ class Returns200Test:
             "interventionArea": [],
         }
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 201
@@ -184,7 +182,7 @@ class Returns200Test:
             },
         }
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 201
@@ -193,7 +191,7 @@ class Returns200Test:
         now = datetime.utcnow()
         data = {**payload, "dates": {"start": format_into_utc_date(now), "end": format_into_utc_date(now)}}
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 201
@@ -204,7 +202,7 @@ class Returns200Test:
     def test_offerer_address_venue(self, pro_client, payload, venue):
         data = {**payload, "offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}}
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 201
@@ -215,7 +213,7 @@ class Returns200Test:
     def test_offerer_address_school(self, pro_client, payload):
         data = {**payload, "offerVenue": {"addressType": "school", "otherAddress": "", "venueId": None}}
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 201
@@ -226,7 +224,7 @@ class Returns200Test:
     def test_offerer_address_other(self, pro_client, payload):
         data = {**payload, "offerVenue": {"addressType": "other", "otherAddress": "In Paris", "venueId": None}}
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 201
@@ -239,7 +237,7 @@ class Returns403Test:
     def test_random_user(self, client, payload):
         user = offerers_factories.UserOffererFactory().user
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers-template", json=payload)
 
         assert response.status_code == 403
@@ -249,7 +247,7 @@ class Returns403Test:
         def raise_ac(*args, **kwargs):
             raise educational_exceptions.CulturalPartnerNotFoundException("pouet")
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH, side_effect=raise_ac):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH, side_effect=raise_ac):
             response = pro_client.post("/collective/offers-template", json=payload)
 
         assert response.status_code == 403
@@ -259,7 +257,7 @@ class Returns403Test:
         venue = offerers_factories.VenueFactory()
         data = {**payload, "offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}}
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 403
@@ -272,7 +270,7 @@ class Returns400Test:
     def test_unselectable_category(self, pro_client, payload):
         data = {**payload, "subcategoryId": subcategories.OEUVRE_ART.id}
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
@@ -285,7 +283,7 @@ class Returns400Test:
     def test_no_collective_category(self, pro_client, payload):
         data = {**payload, "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id}
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
@@ -296,7 +294,7 @@ class Returns400Test:
     def test_empty_domains(self, pro_client, payload):
         data = {**payload, "domains": []}
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
@@ -307,7 +305,7 @@ class Returns400Test:
     def test_too_long_price_details(self, pro_client, payload):
         data = {**payload, "priceDetail": "a" * 1001}
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
@@ -324,7 +322,7 @@ class Returns400Test:
             "contactForm": None,
         }
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
@@ -339,7 +337,7 @@ class Returns400Test:
             "contactForm": "form",
         }
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
@@ -347,7 +345,7 @@ class Returns400Test:
 
     def test_booking_emails_invalid(self, pro_client, payload):
         data = {**payload, "bookingEmails": ["test@testmail.com", "test@test", "test"]}
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
@@ -358,7 +356,7 @@ class Returns400Test:
 
     def test_description_invalid(self, pro_client, payload):
         data = {**payload, "description": "too_long" * 200}
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
@@ -402,7 +400,7 @@ class InvalidDatesTest:
 
     def send_request(self, pro_client, payload, dates_extra):
         data = {**payload, "dates": {**dates_extra}}
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             return pro_client.post("/collective/offers-template", json=data)
 
 
@@ -410,7 +408,7 @@ class Returns404Test:
     def test_unknown_domain(self, pro_client, payload):
         data = {**payload, "domains": [0]}
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 404
@@ -419,7 +417,7 @@ class Returns404Test:
     def test_unknown_national_program(self, pro_client, payload):
         data = {**payload, "nationalProgramId": -1}
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400

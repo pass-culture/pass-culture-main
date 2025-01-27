@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core import testing
+from pcapi.core.educational import testing as educational_testing
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.offerers import factories as offerers_factories
@@ -22,7 +23,7 @@ class Returns204Test:
 
         data = {"ids": [offer1.id, offer2.id], "isActive": True}
 
-        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("pro@example.com").patch("/collective/offers/active-status", json=data)
 
         assert response.status_code == 204
@@ -60,7 +61,7 @@ class Returns204Test:
             "isActive": True,
         }
 
-        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             client = client.with_session_auth("pro@example.com")
             response = client.patch("/collective/offers/active-status", json=data)
 
@@ -85,10 +86,7 @@ class Returns403Test:
         client = client.with_session_auth("pro@example.com")
         data = {"ids": [offer1.id, offer2.id], "isActive": True}
 
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-            return_value=False,
-        ):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH, return_value=False):
             response = client.patch("/collective/offers/active-status", json=data)
 
         # Then
@@ -103,7 +101,7 @@ class Returns403Test:
 
         client = client.with_session_auth("pro@example.com")
         data = {"ids": [offer.id], "isActive": False}
-        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch("/collective/offers/active-status", json=data)
 
         assert response.status_code == 403
@@ -112,7 +110,7 @@ class Returns403Test:
 
         offer.isActive = False
         data = {"ids": [offer.id], "isActive": True}
-        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch("/collective/offers/active-status", json=data)
 
         assert response.status_code == 403
