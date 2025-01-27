@@ -205,6 +205,7 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
     )
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 def test_get_user_attributes_ex_beneficiary_because_of_expiration():
     with time_machine.travel(datetime.utcnow() - relativedelta(years=2, days=2)):
         user = BeneficiaryGrant18Factory(
@@ -370,6 +371,7 @@ def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18
     assert attributes.deposits_count == 1
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18_on_time():
     # At 17 years old
     with time_machine.travel(datetime.utcnow() - relativedelta(years=2)):

@@ -3095,7 +3095,7 @@ def _has_celebrated_birthday_since_credit_or_registration(user: users_models.Use
     if user.deposit and user.deposit.dateCreated and (user.deposit.dateCreated.date() < latest_birthday_date):
         return True
 
-    first_registration_datetime = subscription_api.get_first_registration_date(
+    first_registration_datetime = subscription_api.get_first_registration_date_with_eligibility(
         user, user.validatedBirthDate, users_models.EligibilityType.UNDERAGE
     )
     if first_registration_datetime is None:
@@ -3153,7 +3153,7 @@ def _get_known_age_at_deposit(user: users_models.User) -> int | None:
     if known_birthday_at_deposit is None:
         return None
 
-    first_registration_date = subscription_api.get_first_registration_date(
+    first_registration_date = subscription_api.get_first_registration_date_with_eligibility(
         user, known_birthday_at_deposit, users_models.EligibilityType.UNDERAGE
     )
     if first_registration_date is not None:

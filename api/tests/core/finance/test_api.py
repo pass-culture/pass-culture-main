@@ -3301,8 +3301,8 @@ class GenerateInvoicesTest:
 
 class GenerateInvoiceTest:
     EXPECTED_NUM_QUERIES = (
-        1  # select feature flag WIP_ENABLE_NEW_FINANCE_WORKFLOW
-        + 1  # lock reimbursement point
+        # 1   # feature flags are already cached by BeneficiaryGrant18Factory.beneficiaryImports
+        1  # lock reimbursement point
         + 1  # select cashflows, pricings, pricing_lines, and custom_reimbursement_rules
         + 1  # select and lock ReferenceScheme
         + 1  # update ReferenceScheme

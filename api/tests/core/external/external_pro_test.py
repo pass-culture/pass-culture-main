@@ -268,6 +268,8 @@ def test_update_external_pro_user_attributes(
     )
 
     num_queries = EXPECTED_PRO_ATTR_NUM_QUERIES
+    if create_booking:
+        num_queries -= 1  # feature flags are already cached by BeneficiaryGrant18Factory.beneficiaryImports
 
     with assert_num_queries(num_queries):
         attributes = get_pro_attributes(email)

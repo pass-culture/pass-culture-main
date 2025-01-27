@@ -405,7 +405,11 @@ class RunIntegrationTest:
 
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
-                application_number=123, state="accepte", email=user.email, birth_date=self.BENEFICIARY_BIRTH_DATE
+                application_number=123,
+                state="accepte",
+                email=user.email,
+                birth_date=self.BENEFICIARY_BIRTH_DATE,
+                construction_datetime=datetime.utcnow().isoformat(),
             )
         ]
         import_all_updated_dms_applications(6712558)

@@ -31,6 +31,7 @@ from pcapi.models import db
 from pcapi.notifications import push as push_notifications
 import pcapi.notifications.push.testing as push_testing
 from pcapi.utils import requests as requests_utils
+from pcapi.utils.date import DATE_ISO_FORMAT
 from pcapi.utils.string import u_nbsp
 
 import tests
@@ -340,7 +341,7 @@ class UbbleWorkflowV2Test:
         )
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
-            json=build_ubble_identification_v2_response(birth_date=datetime.date.today() - relativedelta(years=18)),
+            json=build_ubble_identification_v2_response(age_at_registration=18),
         )
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
@@ -386,15 +387,16 @@ class UbbleWorkflowV2Test:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        eighteen_years_and_a_month_ago = datetime.date.today() - relativedelta(years=18, months=1)
+        registration_date = datetime.datetime.strptime(UBBLE_IDENTIFICATION_V2_RESPONSE["created_on"], DATE_ISO_FORMAT)
+        eighteen_years_and_a_month_ago = registration_date - relativedelta(years=18, months=1)
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
-            json=build_ubble_identification_v2_response(birth_date=eighteen_years_and_a_month_ago),
+            json=build_ubble_identification_v2_response(birth_date=eighteen_years_and_a_month_ago.date()),
         )
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
 
-        assert user.validatedBirthDate == eighteen_years_and_a_month_ago
+        assert user.validatedBirthDate == eighteen_years_and_a_month_ago.date()
         assert user.has_beneficiary_role
 
     def test_ubble_workflow_with_eligibility_change_17_18(self, requests_mock):
@@ -409,10 +411,9 @@ class UbbleWorkflowV2Test:
         )
         original_third_party_id = fraud_check.thirdPartyId
 
-        eighteen_years_ago = datetime.date.today() - relativedelta(years=18, months=1)
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
-            json=build_ubble_identification_v2_response(birth_date=eighteen_years_ago),
+            json=build_ubble_identification_v2_response(age_at_registration=18),
         )
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
@@ -456,17 +457,18 @@ class UbbleWorkflowV2Test:
         assert ko_fraud_check.eligibilityType == users_models.EligibilityType.AGE18
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.AGE_TOO_OLD]
 
-    def test_ubble_workflow_with_eligibility_change_18_19_with_first_attempt_at_18(self, requests_mock):
-        nineteen_years_ago = datetime.date.today() - relativedelta(years=19, months=1)
-        user = users_factories.UserFactory(dateOfBirth=nineteen_years_ago)
-        last_year = datetime.datetime.utcnow() - relativedelta(years=1)
+    @pytest.mark.parametrize("age", [19, 20])
+    def test_ubble_workflow_with_eligibility_change_with_first_attempt_at_18(self, requests_mock, age):
+        years_ago = datetime.date.today() - relativedelta(years=age, months=1)
+        user = users_factories.UserFactory(dateOfBirth=years_ago)
+        year_when_user_was_eighteen = datetime.datetime.utcnow() - relativedelta(years=age - 18)
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.KO,
             user=user,
             thirdPartyId="idv_qwerty1234",
             eligibilityType=users_models.EligibilityType.AGE18,
-            dateCreated=last_year,
+            dateCreated=year_when_user_was_eighteen,
         )
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
@@ -478,7 +480,7 @@ class UbbleWorkflowV2Test:
         )
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
-            json=build_ubble_identification_v2_response(birth_date=nineteen_years_ago),
+            json=build_ubble_identification_v2_response(age_at_registration=age),
         )
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
@@ -488,17 +490,17 @@ class UbbleWorkflowV2Test:
         assert ok_fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert ok_fraud_check.eligibilityType == users_models.EligibilityType.AGE18
 
-    def test_ubble_workflow_with_eligibility_change_18_20_with_first_attempt_at_18(self, requests_mock):
-        twenty_years_ago = datetime.date.today() - relativedelta(years=20, months=1)
-        user = users_factories.UserFactory(dateOfBirth=twenty_years_ago)
-        two_years_ago = datetime.datetime.utcnow() - relativedelta(years=2)
+    def test_ubble_workflow_with_eligibility_change_at_21_with_first_attempt_at_18(self, requests_mock):
+        twenty_one_years_ago = datetime.date.today() - relativedelta(years=21, months=1)
+        user = users_factories.UserFactory(dateOfBirth=twenty_one_years_ago)
+        year_when_user_was_eighteen = datetime.datetime.utcnow() - relativedelta(years=3)
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.KO,
             user=user,
             thirdPartyId="idv_qwerty1234",
             eligibilityType=users_models.EligibilityType.AGE18,
-            dateCreated=two_years_ago,
+            dateCreated=year_when_user_was_eighteen,
         )
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
@@ -510,9 +512,7 @@ class UbbleWorkflowV2Test:
         )
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
-            json=build_ubble_identification_v2_response(
-                birth_date=twenty_years_ago, created_on=datetime.datetime.utcnow()
-            ),
+            json=build_ubble_identification_v2_response(age_at_registration=21),
         )
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
@@ -521,7 +521,7 @@ class UbbleWorkflowV2Test:
         assert ko_fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert ko_fraud_check.status == fraud_models.FraudCheckStatus.KO
         assert ko_fraud_check.eligibilityType == users_models.EligibilityType.AGE18
-        assert ko_fraud_check.reason == "L'utilisateur a dépassé l'âge maximum (20 ans)"
+        assert ko_fraud_check.reason == "L'utilisateur a dépassé l'âge maximum (21 ans)"
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.AGE_TOO_OLD]
 
 
@@ -532,6 +532,7 @@ def build_ubble_identification_v2_response(
     documents: list[dict] | None = None,
     birth_date: datetime.date | None = None,
     created_on: datetime.datetime | None = None,
+    age_at_registration: int | None = None,
 ) -> dict:
     identification_response = copy.deepcopy(UBBLE_IDENTIFICATION_V2_RESPONSE)
     if status is not None:
@@ -546,6 +547,10 @@ def build_ubble_identification_v2_response(
         identification_response["documents"][0]["birth_date"] = birth_date.isoformat()
     if created_on is not None:
         identification_response["created_on"] = created_on.isoformat() + "Z"
+    if age_at_registration is not None and birth_date is None:
+        registration_date = datetime.datetime.strptime(identification_response["created_on"], DATE_ISO_FORMAT)
+        years_before_registration = registration_date - relativedelta(years=age_at_registration, months=1)
+        identification_response["documents"][0]["birth_date"] = years_before_registration.date().isoformat()
     return identification_response
 
 
@@ -896,7 +901,7 @@ class UbbleWorkflowV1Test:
         assert fraud_check.thirdPartyId == fraud_check.thirdPartyId
 
     @time_machine.travel("2020-05-05")
-    def test_ubble_workflow_started_at_20_with_previous_attempt_at_18(self, ubble_mocker, db_session):
+    def test_ubble_workflow_started_at_21_with_previous_attempt_at_18(self, ubble_mocker, db_session):
         # Given
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2000, month=5, day=1))
         # User started a ubble workflow at 18 years old and was rejected
@@ -907,13 +912,13 @@ class UbbleWorkflowV1Test:
             eligibilityType=users_models.EligibilityType.AGE18,
             dateCreated=datetime.datetime(year=2018, month=5, day=4),
         )
-        # User started a new ubble workflow at 19 years old
+        # User started a new ubble workflow at 21 years old
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.OK,
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
-            dateCreated=datetime.datetime(year=2020, month=5, day=4),
+            dateCreated=datetime.datetime(year=2021, month=5, day=4),
         )
 
         # When
@@ -922,7 +927,7 @@ class UbbleWorkflowV1Test:
             data__attributes__identification_id=str(fraud_check.thirdPartyId),
             included=[
                 UbbleIdentificationIncludedDocumentsFactory(
-                    attributes__birth_date=datetime.datetime(year=2000, month=5, day=1).date().isoformat()
+                    attributes__birth_date=datetime.datetime(year=1999, month=5, day=1).date().isoformat()
                 ),
             ],
         )
@@ -939,7 +944,7 @@ class UbbleWorkflowV1Test:
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
         assert fraud_check.thirdPartyId == fraud_check.thirdPartyId
-        assert fraud_check.reason == "L'utilisateur a dépassé l'âge maximum (20 ans)"
+        assert fraud_check.reason == "L'utilisateur a dépassé l'âge maximum (21 ans)"
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.AGE_TOO_OLD]
 
 

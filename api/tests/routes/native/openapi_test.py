@@ -799,7 +799,7 @@ def test_public_api(client):
                 },
                 "EligibilityType": {
                     "description": "An enumeration.",
-                    "enum": ["underage", "age-18"],
+                    "enum": ["age-17-18", "underage", "age-18"],
                     "title": "EligibilityType",
                 },
                 "EmailChangeConfirmationResponse": {
