@@ -139,6 +139,7 @@ class HandleDmsApplicationTest:
             state=dms_models.GraphQLApplicationStates.accepted,
             email=beneficiary.email,
             birth_date=sixteen_years_ago,
+            construction_datetime=datetime.datetime.utcnow().isoformat(),
             first_name="little",
             last_name="sister",
         )
@@ -459,7 +460,7 @@ class HandleDmsApplicationTest:
             state=dms_models.GraphQLApplicationStates.draft,
             email="john.stiles@example.com",
             last_modification_date="2022-05-15T09:09:46.000+02:00",
-            birth_date=datetime.datetime(2004, 1, 1),
+            birth_date=datetime.datetime(2007, 1, 1),
         )
 
         dms_subscription_api.handle_dms_application(dms_response)

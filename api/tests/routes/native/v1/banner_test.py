@@ -50,7 +50,7 @@ class BannerTest:
         user = users_factories.UserFactory()
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_without_subscription_check):
+        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # credit v3 FF
             response = client.get("/native/v1/banner")
             assert response.status_code == 200
 
@@ -58,7 +58,7 @@ class BannerTest:
         user = users_factories.UserFactory()
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_without_subscription_check):
+        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # credit v3 FF
             response = client.get("/native/v1/banner?isGeolocated=false")
             assert response.status_code == 200
 
@@ -82,7 +82,7 @@ class BannerTest:
         )
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_without_subscription_check):
+        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # credit v3 FF
             response = client.get("/native/v1/banner?isGeolocated=false")
             assert response.status_code == 200
 
@@ -98,7 +98,7 @@ class BannerTest:
         )
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_with_subscription_check):
+        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # credit v3 FF
             response = client.get("/native/v1/banner?isGeolocated=false")
             assert response.status_code == 200
 
@@ -127,7 +127,7 @@ class BannerTest:
         user = users_factories.BeneficiaryGrant18Factory()
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_without_subscription_check):
+        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # credit v3 FF
             response = client.get("/native/v1/banner?isGeolocated=true")
             assert response.status_code == 200
 
@@ -139,8 +139,8 @@ class BannerTest:
 
         client.with_token(email=user.email)
 
-        # authenticated user + joined user
-        with assert_num_queries(2):
+        # authenticated user + joined user + credit v3 FF
+        with assert_num_queries(3):
             response = client.get("/native/v1/banner?isGeolocated=false")
             assert response.status_code == 200
 

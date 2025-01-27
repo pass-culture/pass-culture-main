@@ -1155,7 +1155,10 @@ class EmailValidationTest:
         fraud_factories.OrphanDmsApplicationFactory(email=email, application_id=application_number)
 
         execute_query.return_value = make_single_application(
-            application_number, dms_models.GraphQLApplicationStates.accepted, email=email
+            application_number,
+            dms_models.GraphQLApplicationStates.accepted,
+            email=email,
+            construction_datetime=datetime.utcnow().isoformat(),
         )
         response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
 

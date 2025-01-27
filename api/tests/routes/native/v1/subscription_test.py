@@ -70,6 +70,7 @@ class NextStepTest:
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=False,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=True,
+        WIP_ENABLE_CREDIT_V3=False,
     )
     @time_machine.travel("2022-09-08 11:54:22")
     def test_next_subscription_maintenance_page(self, client):
@@ -427,6 +428,7 @@ class NextStepTest:
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=False,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=False,
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
+        WIP_ENABLE_CREDIT_V3=False,
     )
     @pytest.mark.parametrize("age", [15, 16, 17, 18])
     @time_machine.travel("2022-09-08 12:45:13")
@@ -849,6 +851,7 @@ class StepperTest:
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=False,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=True,
+        WIP_ENABLE_CREDIT_V3=False,
     )
     @time_machine.travel("2022-09-08 11:54:22")
     def test_next_subscription_maintenance_page(self, client):
@@ -1210,6 +1213,7 @@ class StepperTest:
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=False,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=False,
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
+        WIP_ENABLE_CREDIT_V3=False,
     )
     @pytest.mark.parametrize("age", [15, 16, 17, 18])
     @time_machine.travel("2022-09-08 12:45:13")
@@ -1651,7 +1655,7 @@ class ActivityTypesTest:
     def test_get_activity_types(self, client, age):
         user = users_factories.BaseUserFactory(age=age)
         client.with_token(user.email)
-        with assert_num_queries(1):  # user
+        with assert_num_queries(2):  # user + credit v3 FF
             response = client.get("/native/v1/subscription/activity_types")
             assert response.status_code == 200
 

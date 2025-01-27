@@ -68,6 +68,8 @@ class UserRole(enum.Enum):
 
 
 class EligibilityType(enum.Enum):
+    AGE17_18 = "age-17-18"
+    # legacy eligibilities that are present in the database
     UNDERAGE = "underage"
     AGE18 = "age-18"
 
