@@ -499,7 +499,7 @@ describe('IndividualOfferRow', () => {
   })
 
   it('should display the ean when given', () => {
-    props.offer = listOffersOfferFactory({ productIsbn: '123456789' })
+    props.offer = listOffersOfferFactory({ ean: '123456789' })
 
     renderOfferItem({ props })
 

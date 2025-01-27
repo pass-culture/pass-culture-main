@@ -376,7 +376,7 @@ def get_offers_by_filters(
         query = query.filter(models.Offer.subcategoryId.in_(requested_subcategories))
     if name_keywords_or_ean is not None:
         if string_utils.is_ean_valid(name_keywords_or_ean):
-            query = query.filter(models.Offer.extraData["ean"].astext == name_keywords_or_ean)
+            query = query.filter(models.Offer.ean == name_keywords_or_ean)
         else:
             search = name_keywords_or_ean
             if len(name_keywords_or_ean) > 3:
@@ -1251,8 +1251,6 @@ def get_active_offer_by_venue_id_and_ean(venue_id: int, ean: str) -> models.Offe
         models.Offer.isActive.is_(True),
         sa.or_(
             models.Offer.ean == ean,
-            # TODO: Remove when ean is migrated out of extraData
-            models.Offer.extraData["ean"].astext == ean,
         ),
     ).one()
 
@@ -1521,7 +1519,7 @@ def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue) -> 
         logger.error("Could not search for an offer without ean")
     return db.session.query(
         models.Offer.query.filter(
-            models.Offer.venue == venue, models.Offer.isActive.is_(True), models.Offer.extraData["ean"].astext == ean
+            models.Offer.venue == venue, models.Offer.isActive.is_(True), models.Offer.ean == ean
         ).exists()
     ).scalar()
 

@@ -20,7 +20,7 @@ export type ListOffersOfferResponseModel = {
   isShowcase?: boolean | null;
   isThing: boolean;
   name: string;
-  productIsbn?: string | null;
+  ean?: string | null;
   status: OfferStatus;
   stocks: Array<ListOffersStockResponseModel>;
   subcategoryId: SubcategoryIdEnum;

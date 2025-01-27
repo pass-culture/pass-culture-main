@@ -158,10 +158,10 @@ def check_stock_price(
     offer_price_limitation_rule = models.OfferPriceLimitationRule.query.filter(
         models.OfferPriceLimitationRule.subcategoryId == offer.subcategoryId
     ).one_or_none()
-    if (  # pylint: disable=too-many-boolean-expressions
+    if (
         offer_price_limitation_rule
         and offer.validation is not OfferValidationStatus.DRAFT
-        and (offer.extraData is not None and not offer.extraData.get("ean"))
+        and (offer.ean is not None)
         and (offer.lastValidationPrice is not None or offer.stocks)
     ):
         reference_price = (
