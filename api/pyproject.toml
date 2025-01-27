@@ -55,7 +55,7 @@ dependencies = [
 "pycountry==24.6.1",
 "pydantic[email]==2.*",
 "pyjwt[crypto]==2.10.1",
-"pypdf>=5.1.0",
+"pypdf>=5.2.0",
 "pyproj>=3.7.0",
 "pysaml2>=7.5.0",
 "python-dateutil==2.9.0.post0",
