@@ -9,6 +9,7 @@ from factory.faker import faker
 
 import pcapi.core.artist.models as artist_models
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.criteria import models as criteria_models
 from pcapi.core.factories import BaseFactory
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.schemas import VenueTypeCode
@@ -217,6 +218,17 @@ class OfferFactory(BaseFactory):
                 kwargs["offererAddress"] = venue.offererAddress
 
         return super()._create(model_class, *args, **kwargs)
+
+    @factory.post_generation
+    def criteria(
+        self, create: bool, extracted: list[criteria_models.Criterion] | None, **kwargs: typing.Any
+    ) -> list[criteria_models.Criterion] | None:
+        if not create or not extracted:
+            return None
+        for criterion in extracted:
+            self.criteria.append(criterion)
+
+        return extracted
 
 
 class ArtistProductLinkFactory(BaseFactory):

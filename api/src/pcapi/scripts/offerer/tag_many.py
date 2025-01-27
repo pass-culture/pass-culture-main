@@ -12,7 +12,6 @@ Ids = typing.Collection[int]
 
 Offerers = typing.Collection[models.Offerer]
 OffererTags = typing.Collection[models.OffererTag]
-OfferersTagsMappings = typing.Collection[models.OffererTagMapping]
 
 
 def load_offerers(offerer_ids: Ids) -> Offerers:
@@ -28,14 +27,12 @@ def load_tags(tag_names: TagNames) -> OffererTags:
     return models.OffererTag.query.filter(models.OffererTag.name.in_(tag_names)).all()
 
 
-def find_offerer_missing_tags(offerer: models.Offerer, tags: OffererTags) -> OfferersTagsMappings:
+def find_offerer_missing_tags(offerer: models.Offerer, tags: OffererTags) -> OffererTags:
     offerer_tag_names = {tag.name for tag in offerer.tags}
     tag_names = {tag.name for tag in tags}
 
     missing_tag_names = tag_names - offerer_tag_names
-    missing_offerer_tags = [tag for tag in tags if tag.name in missing_tag_names]
-
-    return [models.OffererTagMapping(offererId=offerer.id, tagId=tag.id) for tag in missing_offerer_tags]
+    return [tag for tag in tags if tag.name in missing_tag_names]
 
 
 def create_missing_mappings(offerer_ids: Ids, tag_names: TagNames, dry_run: bool = False) -> None:
@@ -47,11 +44,13 @@ def create_missing_mappings(offerer_ids: Ids, tag_names: TagNames, dry_run: bool
     tags = load_tags(tag_names)
 
     for offerer in offerers:
-        missing_offerer_tags_mapping = find_offerer_missing_tags(offerer, tags)
-        print(f"offerer: {offerer.name}, found {len(missing_offerer_tags_mapping)} missing tag(s)")
+        missing_offerer_tags = find_offerer_missing_tags(offerer, tags)
+        print(f"offerer: {offerer.name}, found {len(missing_offerer_tags)} missing tag(s)")
 
-        for mapping in missing_offerer_tags_mapping:
-            db.session.add(mapping)
+        if missing_offerer_tags:
+            for tag in missing_offerer_tags:
+                offerer.tags.append(tag)
+            db.session.add(offerer)
 
     if not dry_run:
         db.session.commit()

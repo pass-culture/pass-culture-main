@@ -14,7 +14,6 @@ Ids = typing.Collection[int]
 
 Offers = typing.Collection[models.Offer]
 Criteria = typing.Collection[criteria_models.Criterion]
-OffersCriteria = typing.Collection[criteria_models.OfferCriterion]
 
 
 def load_offers(offer_ids: Ids) -> Offers:
@@ -30,17 +29,12 @@ def load_criteria(criterion_names: CriterionNames) -> Criteria:
     return criteria_models.Criterion.query.filter(criteria_models.Criterion.name.in_(criterion_names)).all()
 
 
-def find_offer_missing_criteria(offer: models.Offer, criteria: Criteria) -> OffersCriteria:
+def find_offer_missing_criteria(offer: models.Offer, criteria: Criteria) -> Criteria:
     offer_criterion_names = {criterion.name for criterion in offer.criteria}
     criterion_names = {criterion.name for criterion in criteria}
 
     missing_criterion_names = criterion_names - offer_criterion_names
-    missing_offer_criteria = [criterion for criterion in criteria if criterion.name in missing_criterion_names]
-
-    return [
-        criteria_models.OfferCriterion(offerId=offer.id, criterionId=criterion.id)
-        for criterion in missing_offer_criteria
-    ]
+    return [criterion for criterion in criteria if criterion.name in missing_criterion_names]
 
 
 def create_missing_mappings(offer_ids: Ids, criterion_names: CriterionNames, dry_run: bool = False) -> None:
@@ -52,11 +46,14 @@ def create_missing_mappings(offer_ids: Ids, criterion_names: CriterionNames, dry
     criteria = load_criteria(criterion_names)
 
     for offer in offers:
-        missing_offer_criteria_mapping = find_offer_missing_criteria(offer, criteria)
-        print(f"offer: {offer.name}, found {len(missing_offer_criteria_mapping)} missing criterion(s)")
+        missing_offer_criteria = find_offer_missing_criteria(offer, criteria)
+        print(f"offer: {offer.name}, found {len(missing_offer_criteria)} missing criterion(s)")
 
-        for mapping in missing_offer_criteria_mapping:
-            db.session.add(mapping)
+        if missing_offer_criteria:
+            for criterion in missing_offer_criteria:
+                offer.criteria.append(criterion)
+
+            db.session.add(offer)
 
     if not dry_run:
         db.session.commit()

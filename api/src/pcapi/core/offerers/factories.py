@@ -40,6 +40,17 @@ class OffererFactory(BaseFactory):
     validationStatus = ValidationStatus.VALIDATED
     allowedOnAdage = True
 
+    @factory.post_generation
+    def tags(
+        self, create: bool, extracted: list[models.OffererTag] | None, **kwargs: typing.Any
+    ) -> list[models.OffererTag] | None:
+        if not create or not extracted:
+            return None
+        for tag in extracted:
+            self.tags.append(tag)
+
+        return extracted
+
 
 class NotValidatedOffererFactory(OffererFactory):
     validationStatus = ValidationStatus.NEW
@@ -391,11 +402,6 @@ class OffererTagCategoryFactory(BaseFactory):
 class OffererTagCategoryMappingFactory(BaseFactory):
     class Meta:
         model = models.OffererTagCategoryMapping
-
-
-class OffererTagMappingFactory(BaseFactory):
-    class Meta:
-        model = models.OffererTagMapping
 
 
 class VenueEducationalStatusFactory(BaseFactory):

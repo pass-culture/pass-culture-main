@@ -1,7 +1,7 @@
 import enum
 from unittest.mock import patch
 
-import flask
+from flask.globals import _cv_request
 import pytest
 
 from pcapi.core.testing import assert_num_queries
@@ -54,10 +54,12 @@ class FeatureToggleTest:
             FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
     def test_is_active_query_count_outside_request_context(self, app):
+
         feature = Feature.query.filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = True
         repository.save(feature)
-        context = flask.g.pop()
+        context_request = _cv_request.get()
+        _cv_request.set(None)
 
         # we don't cache yet outside the scope of a request so it'll be 3 DB queries
         try:
@@ -67,7 +69,9 @@ class FeatureToggleTest:
                 FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
         finally:
-            flask.g.push(context)
+            _cv_request.set(context_request)
+
+        assert _cv_request.get(None) is not None
 
     def test_one_request_for_all_flags(self):
         with assert_num_queries(1):

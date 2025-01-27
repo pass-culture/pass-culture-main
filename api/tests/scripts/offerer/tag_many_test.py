@@ -23,13 +23,9 @@ def test_create_missing_mappings():
 
 
 def test_create_missing_mappings_when_some_tags_exists():
-    offerers = factories.OffererFactory.create_batch(3)
     tags = factories.OffererTagFactory.create_batch(2)
-
     # all offerers will have one tag (the same)
-    factories.OffererTagMappingFactory(offererId=offerers[0].id, tagId=tags[0].id)
-    factories.OffererTagMappingFactory(offererId=offerers[1].id, tagId=tags[0].id)
-    factories.OffererTagMappingFactory(offererId=offerers[2].id, tagId=tags[0].id)
+    offerers = factories.OffererFactory.create_batch(3, tags=[tags[0]])
 
     tag_names = {tag.name for tag in tags}
     offerer_ids = {offerer.id for offerer in offerers}

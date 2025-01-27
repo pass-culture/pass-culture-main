@@ -24,13 +24,9 @@ def test_create_missing_mappings():
 
 
 def test_create_missing_mappings_when_some_criteria_exists():
-    offers = factories.OfferFactory.create_batch(3)
     criteria = criteria_factories.CriterionFactory.create_batch(2)
-
     # all offers will have one criterion (the same)
-    criteria_factories.OfferCriterionFactory(offerId=offers[0].id, criterionId=criteria[0].id)
-    criteria_factories.OfferCriterionFactory(offerId=offers[1].id, criterionId=criteria[0].id)
-    criteria_factories.OfferCriterionFactory(offerId=offers[2].id, criterionId=criteria[0].id)
+    offers = factories.OfferFactory.create_batch(3, criteria=[criteria[0]])
 
     criterion_names = {criterion.name for criterion in criteria}
     offer_ids = {offer.id for offer in offers}
