@@ -258,7 +258,7 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
     "cutoff,fortnight",
     [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],
 )
-def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnight):
+def test_with_reimbursement_period_filter_with_pricings_using_oa(client, cutoff, fortnight):
     beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
     ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
     offerer = offerers_factories.OffererFactory()

@@ -70,25 +70,6 @@ class AchievementUnlockTest:
         assert achievement.name == achievements_models.AchievementEnum.FIRST_SHOW_BOOKING
 
     @pytest.mark.parametrize(
-        "show_subcategory_id",
-        [
-            subcategories_v2.SPECTACLE_REPRESENTATION.id,
-            subcategories_v2.SPECTACLE_VENTE_DISTANCE.id,
-            subcategories_v2.ABO_SPECTACLE.id,
-            subcategories_v2.FESTIVAL_SPECTACLE.id,
-        ],
-    )
-    def test_show_booking_achievement_unlock(self, show_subcategory_id):
-        user = users_factories.BeneficiaryGrant18Factory()
-        show_booking = bookings_factories.BookingFactory(user=user, stock__offer__subcategoryId=show_subcategory_id)
-
-        achievements_api.unlock_achievement(show_booking)
-
-        (achievement,) = user.achievements
-        assert achievement.booking == show_booking
-        assert achievement.name == achievements_models.AchievementEnum.FIRST_SHOW_BOOKING
-
-    @pytest.mark.parametrize(
         "museum_subcategory_id",
         [
             subcategories_v2.VISITE.id,

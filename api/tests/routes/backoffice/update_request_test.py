@@ -441,7 +441,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
             ),
         ),
     )
-    def test_list_filter_by_status(self, authenticated_client, flags, expected_count, expected_application_ids):
+    def test_list_filter_by_error_status(self, authenticated_client, flags, expected_count, expected_application_ids):
         users_factories.EmailUpdateRequestFactory(
             dsApplicationId=100001,
             flags=[

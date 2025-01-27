@@ -2135,16 +2135,6 @@ class HeadlineOfferTest:
             api.make_offer_headline(offer=offer)
             assert error.value.errors["headlineOffer"] == ["This offer is already an active headline offer"]
 
-    def test_create_offer_headline_when_another_is_still_active_should_fail(self):
-        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
-        offer = factories.OfferFactory(isActive=True, venue=venue)
-        factories.StockFactory(offer=offer)
-        factories.MediationFactory(offer=offer)
-        api.make_offer_headline(offer=offer)
-        with pytest.raises(exceptions.OfferHasAlreadyAnActiveHeadlineOffer) as error:
-            api.make_offer_headline(offer=offer)
-            assert error.value.errors["headlineOffer"] == ["This offer is already an active headline offer"]
-
     def test_remove_headline_offer(self):
         offer = factories.OfferFactory(isActive=True)
         headline_offer = factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
@@ -2302,16 +2292,6 @@ class HeadlineOfferTest:
         api.set_upper_timespan_of_inactive_headline_offers()
         assert old_headline_offer.timespan.lower.date() == creation_time.date()
         assert old_headline_offer.timespan.upper.date() == (creation_time + timedelta(days=10)).date()
-
-    def test_set_upper_timespan_of_inactive_headline_offers_without_image(self):
-        headline_offer = factories.HeadlineOfferFactory(create_mediation=False)
-
-        assert headline_offer.isActive
-
-        api.set_upper_timespan_of_inactive_headline_offers()
-
-        assert not headline_offer.isActive
-        assert headline_offer.timespan.upper is not None
 
     def test_should_not_change_upper_timespan_of_already_deactivated_offers(self):
         creation_time_1 = datetime.utcnow() - timedelta(days=3)
