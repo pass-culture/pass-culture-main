@@ -43,6 +43,12 @@ DS_CHOICE_TO_UPDATE_TYPE = {
     "compte a les mêmes informations": users_models.UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO,
 }
 
+CORRECTION_MESSAGE = """Nous avons bien reçu ta demande, mais nous n'avons pas pu la finaliser car la photo que tu nous as envoyée a été refusée.
+            Pour que nous puissions valider ton authentification, il faudrait renvoyer une nouvelle photo qui respecte ces critères : 
+            Une photo de toi tenant ta carte d'identité (un selfie).
+            
+            Assure-toi d'être dans un endroit bien éclairé, et que ton visage ainsi que ta pièce d'identité soient bien visibles."""
+
 
 def sync_instructor_ids(procedure_number: int) -> None:
     logger.info("[DS] Sync instructor ids from DS procedure %s", procedure_number)
@@ -400,4 +406,27 @@ def archive(user_request: users_models.UserAccountUpdateRequest, *, motivation: 
     )
 
     db.session.delete(user_request)
+    db.session.flush()
+
+
+def send_user_message_with_correction(
+    update_request: users_models.UserAccountUpdateRequest, instructor: users_models.User
+) -> None:
+    client = ds_api.DMSGraphQLClient()
+
+    node = client.send_user_message(
+        application_scalar_id=update_request.dsTechnicalId,
+        instructeur_techid=instructor.backoffice_profile.dsInstructorId,
+        body=CORRECTION_MESSAGE,
+        with_correction=True,
+    )
+    update_request.lastInstructor = instructor
+    update_request.status = dms_models.GraphQLApplicationStates.draft
+    update_request.flags = [
+        flag for flag in update_request.flags if flag != users_models.UserAccountUpdateFlag.CORRECTION_RESOLVED
+    ] + [users_models.UserAccountUpdateFlag.WAITING_FOR_CORRECTION]
+    update_request.dateLastStatusUpdate = _from_ds_date(node["dossierEnvoyerMessage"]["message"]["createdAt"])
+    update_request.dateLastInstructorMessage = _from_ds_date(node["dossierEnvoyerMessage"]["message"]["createdAt"])
+
+    db.session.add(update_request)
     db.session.flush()
