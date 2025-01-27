@@ -94,7 +94,7 @@ describe('OfferNameCell', () => {
   it('should show the isbn when the offer has one', () => {
     const eventOffer = listOffersOfferFactory({
       status: OfferStatus.ACTIVE,
-      productIsbn: '1234',
+      ean: '1234',
       stocks: [listOffersStockFactory({ remainingQuantity: 0 })],
     })
 

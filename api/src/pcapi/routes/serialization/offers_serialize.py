@@ -214,8 +214,8 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
         if key == "stocks":
             # TODO: front pro doesn't need the soft deleted stocks but maybe this could be handled in the request directly
             return [_serialize_stock(stock) for stock in self._obj.stocks if not stock.isSoftDeleted]
-        if key == "productIsbn":
-            return self._obj.extraData.get("ean") if self._obj.extraData else None
+        if key == "ean":
+            return self._obj.ean
         if key == "venue":
             return _serialize_venue(self._obj.venue)
         if key == "isShowcase":
@@ -239,7 +239,7 @@ class ListOffersOfferResponseModel(BaseModel):
     name: str
     stocks: list[ListOffersStockResponseModel]
     thumbUrl: str | None
-    productIsbn: str | None
+    ean: str | None
     subcategoryId: SubcategoryIdEnum
     venue: base_serializers.ListOffersVenueResponseModel
     status: OfferStatus
