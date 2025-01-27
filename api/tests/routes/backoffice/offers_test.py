@@ -80,7 +80,7 @@ def offers_fixture(criteria) -> tuple:
         venue__postalCode="74000",
         venue__departementCode="74",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
-        extraData={"ean": "9781234567890"},
+        ean="9781234567890",
     )
     offer_with_a_lot_of_types = offers_factories.OfferFactory(
         criteria=[criteria[3]],
@@ -1850,7 +1850,8 @@ class GetOfferDetailsTest(GetEndpointHelper):
             withdrawalDetails="Demander à la caisse",
             bookingContact="contact@example.com",
             bookingEmail="offre@example.com",
-            extraData={"ean": "1234567891234", "author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
+            ean="1234567891234",
+            extraData={"author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
         )
         offers_factories.OfferComplianceFactory(
             offer=offer,

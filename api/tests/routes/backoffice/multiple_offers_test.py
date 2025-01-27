@@ -99,8 +99,8 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         )
         offers_factories.ThingOfferFactory(product=product)
 
-        offers_factories.ThingOfferFactory(extraData={"ean": "9783161484100"})
-        offers_factories.ThingOfferFactory(extraData={"ean": "9783161484100"})
+        offers_factories.ThingOfferFactory(ean="9783161484100")
+        offers_factories.ThingOfferFactory(ean="9783161484100")
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, ean="978-3-16-148410-0"))
