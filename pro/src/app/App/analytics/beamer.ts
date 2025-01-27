@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentUser } from 'commons/store/user/selectors'

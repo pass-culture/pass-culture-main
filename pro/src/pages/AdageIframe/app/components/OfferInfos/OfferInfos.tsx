@@ -1,4 +1,4 @@
-import { useLocation, useParams, useSearchParams } from 'react-router-dom'
+import { useLocation, useParams, useSearchParams } from 'react-router'
 import useSWR from 'swr'
 
 import { AdageFrontRoles } from 'apiClient/adage'

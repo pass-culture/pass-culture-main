@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -65,6 +65,7 @@ export const Offerers = (): JSX.Element => {
 
   useEffect(() => {
     if (venuesOfOffererError) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/parcours-inscription/structure')
     }
   }, [isLoadingVenues])
@@ -85,6 +86,7 @@ export const Offerers = (): JSX.Element => {
       categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
     })
     setOfferer(newOfferer)
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/parcours-inscription/identification')
   }
 
@@ -107,6 +109,7 @@ export const Offerers = (): JSX.Element => {
       }
       await api.createOfferer(request)
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/parcours-inscription/structure/rattachement/confirmation')
     } catch (e) {
       notify.error(
@@ -198,6 +201,7 @@ export const Offerers = (): JSX.Element => {
         hideRightButton
         onClickPrevious={() => {
           setOfferer(null)
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           navigate('/parcours-inscription/structure')
         }}
         previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}

@@ -1,4 +1,4 @@
-import { matchPath, Location } from 'react-router-dom'
+import { matchPath, Location } from 'react-router'
 
 import { RouteConfig, routes } from 'app/AppRouter/routesMap'
 import {

@@ -1,5 +1,5 @@
 import { Form, FormikProvider, useFormik } from 'formik'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -142,6 +142,7 @@ export const IndividualOfferDetailsScreen = ({
       }
 
       // replace url to fix back button
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           step: OFFER_WIZARD_STEP_IDS.DETAILS,
@@ -164,6 +165,7 @@ export const IndividualOfferDetailsScreen = ({
         subcategoryId: formik.values.subcategoryId,
         choosenSuggestedSubcategory: formik.values.suggestedSubcategory,
       })
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: receivedOfferId,
@@ -194,8 +196,10 @@ export const IndividualOfferDetailsScreen = ({
   })
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(`${isOnboarding ? '/onboarding' : ''}/offre/creation`)
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: offer?.id,

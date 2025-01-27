@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 import { Layout } from 'app/App/layout/Layout'
 import { Audience } from 'commons/core/shared/types'
@@ -22,6 +22,6 @@ export const Bookings = (): JSX.Element => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = Bookings

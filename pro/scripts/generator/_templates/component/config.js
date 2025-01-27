@@ -23,7 +23,7 @@ export default {
       varName: 'story',
     },
     {
-      question: 'Will this component be lazy-loaded by react-router-dom?',
+      question: 'Will this component be lazy-loaded by react-router?',
       varName: 'lazy',
     },
   ],

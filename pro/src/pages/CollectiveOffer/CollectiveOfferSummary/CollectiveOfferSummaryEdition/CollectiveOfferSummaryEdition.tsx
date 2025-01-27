@@ -80,7 +80,7 @@ export const CollectiveOfferSummaryEdition = ({
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = withCollectiveOfferFromParams(
   CollectiveOfferSummaryEdition

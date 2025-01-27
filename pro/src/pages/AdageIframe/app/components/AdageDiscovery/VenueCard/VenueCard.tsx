@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router'
 
 import { LocalOfferersPlaylistOffer } from 'apiClient/adage'
 import strokeInstitutionIcon from 'icons/stroke-institution.svg'

@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { isError } from 'apiClient/helpers'
@@ -127,9 +127,11 @@ export const Offerer = (): JSX.Element => {
       let to
       if (offerer.hasVenueWithSiret) {
         to = SIGNUP_JOURNEY_STEP_IDS.OFFERERS
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate('/parcours-inscription/structure/rattachement')
       } else {
         to = SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate('/parcours-inscription/identification')
       }
       logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {

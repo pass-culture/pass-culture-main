@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
-import { useBlocker } from 'react-router-dom'
-import type { Location } from 'react-router-dom'
+import { useBlocker } from 'react-router'
+import type { Location } from 'react-router'
 
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 

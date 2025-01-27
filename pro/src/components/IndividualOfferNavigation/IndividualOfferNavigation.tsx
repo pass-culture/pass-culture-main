@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { generatePath, useLocation } from 'react-router-dom'
+import { generatePath, useLocation } from 'react-router'
 
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'

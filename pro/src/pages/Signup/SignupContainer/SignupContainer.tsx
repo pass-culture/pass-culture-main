@@ -1,6 +1,6 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import { useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
@@ -49,6 +49,7 @@ export const SignupContainer = (): JSX.Element => {
 
   const onHandleSuccess = () => {
     logEvent(Events.SIGNUP_FORM_SUCCESS, {})
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/inscription/confirmation', { replace: true })
   }
 

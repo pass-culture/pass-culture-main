@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { IndividualOfferWizard } from 'pages/IndividualOfferWizard/IndividualOfferWizard'

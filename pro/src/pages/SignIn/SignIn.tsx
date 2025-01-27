@@ -1,7 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Navigate, useSearchParams } from 'react-router-dom'
+import { Navigate, useSearchParams } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
@@ -45,7 +45,7 @@ export const SignIn = (): JSX.Element => {
   const notify = useNotification()
   const dispatch = useDispatch()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [shouldRedirect, setshouldRedirect] = React.useState(false)
+  const [shouldRedirect, setshouldRedirect] = useState(false)
   useInitReCaptcha()
 
   useEffect(() => {
@@ -155,6 +155,6 @@ export const SignIn = (): JSX.Element => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = SignIn

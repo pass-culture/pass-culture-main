@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -118,6 +118,7 @@ export const VenueSettingsScreen = ({
       )
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}`)
 
       if (currentUser.isAdmin) {
@@ -189,7 +190,10 @@ export const VenueSettingsScreen = ({
       <Button
         variant={ButtonVariant.TERNARYPINK}
         icon={fullBackIcon}
-        onClick={() => navigate(-1)}
+        onClick={() =>
+           
+          navigate(-1)
+        }
       >
         Retour vers la page précédente
       </Button>

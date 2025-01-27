@@ -1,7 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
-import { generatePath, Route, Routes } from 'react-router-dom'
+import { generatePath, Route, Routes } from 'react-router'
 import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'

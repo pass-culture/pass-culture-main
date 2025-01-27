@@ -1,6 +1,5 @@
 import cn from 'classnames'
-import React from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router'
 
 import {
   GetCollectiveOfferResponseModel,

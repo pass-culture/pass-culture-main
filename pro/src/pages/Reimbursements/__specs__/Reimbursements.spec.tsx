@@ -3,7 +3,7 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { routesReimbursements } from 'app/AppRouter/subroutesReimbursements'
@@ -22,8 +22,8 @@ import { Reimbursements, ReimbursementsContextProps } from '../Reimbursements'
 const contextData: ReimbursementsContextProps = {
   selectedOfferer: defaultGetOffererResponseModel,
 }
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useOutletContext: () => contextData,
 }))
 

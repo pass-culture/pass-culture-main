@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
@@ -21,6 +21,7 @@ export const useRedirectLoggedUser = () => {
       ? searchParams.get('de')
       : `/accueil?${searchParams}`
     if (redirectUrl) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(redirectUrl)
     }
   }
@@ -29,6 +30,7 @@ export const useRedirectLoggedUser = () => {
     async function fetchOfferersNames() {
       const { offerersNames } = await api.listOfferersNames()
       if (offerersNames.length === 0) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate('/parcours-inscription')
       } else {
         redirectToUrl()

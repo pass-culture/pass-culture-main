@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -72,6 +72,7 @@ export const CollectiveOffers = (): JSX.Element => {
   const redirectWithUrlFilters = (
     filters: Partial<CollectiveSearchFiltersParams>
   ) => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(computeCollectiveOffersUrl(filters, defaultCollectiveFilters), {
       replace: true,
     })
@@ -158,6 +159,6 @@ export const CollectiveOffers = (): JSX.Element => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = CollectiveOffers

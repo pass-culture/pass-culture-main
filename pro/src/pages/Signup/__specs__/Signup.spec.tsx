@@ -1,5 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { routesSignup } from 'app/AppRouter/subroutesSignupMap'

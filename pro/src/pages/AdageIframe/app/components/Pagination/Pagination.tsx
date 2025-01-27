@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { usePagination } from 'react-instantsearch'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useParams } from 'react-router'
 
 import { PaginationType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'

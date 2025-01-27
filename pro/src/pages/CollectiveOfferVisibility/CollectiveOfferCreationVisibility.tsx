@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
@@ -50,6 +50,7 @@ export const CollectiveOfferVisibility = ({
       revalidate: false,
     })
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(`/offre/${offerId}/collectif/creation/recapitulatif`)
   }
 
@@ -85,7 +86,7 @@ export const CollectiveOfferVisibility = ({
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = withCollectiveOfferFromParams(
   CollectiveOfferVisibility

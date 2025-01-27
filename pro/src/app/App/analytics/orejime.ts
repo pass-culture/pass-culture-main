@@ -1,7 +1,7 @@
 // @ts-expect-error no types for this lib yet
 import * as Orejime from 'orejime'
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 import { v4 as uuidv4 } from 'uuid'
 
 import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'

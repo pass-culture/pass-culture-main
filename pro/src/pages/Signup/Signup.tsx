@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router'
 
 import { Layout } from 'app/App/layout/Layout'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
@@ -16,6 +16,6 @@ export const Signup = () => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = Signup

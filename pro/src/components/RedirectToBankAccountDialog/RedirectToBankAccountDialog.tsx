@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events, VenueEvents } from 'commons/core/FirebaseEvents/constants'
@@ -30,6 +30,7 @@ export const RedirectToBankAccountDialog = ({
         logEvent(Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL, {
           from: OFFER_WIZARD_STEP_IDS.SUMMARY,
         })
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate(cancelRedirectUrl)
       }}
       title="Félicitations, vous avez créé votre offre !"

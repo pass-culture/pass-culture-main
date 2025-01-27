@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
@@ -118,6 +118,7 @@ export const PriceCategoriesScreen = ({
     // Return when saving in edition with an empty form
     const isFormEmpty = formik.values === formik.initialValues
     if (isFormEmpty && mode === OFFER_WIZARD_MODE.EDITION) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
       return
@@ -142,6 +143,7 @@ export const PriceCategoriesScreen = ({
       return
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(nextStepUrl)
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       notify.success(getSuccessMessage(mode))
@@ -158,6 +160,7 @@ export const PriceCategoriesScreen = ({
   })
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.EDITION) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
@@ -167,6 +170,7 @@ export const PriceCategoriesScreen = ({
         })
       )
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
