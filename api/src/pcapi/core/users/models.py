@@ -845,8 +845,8 @@ class UserEmailHistory(PcObject, Base, Model):
     oldUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False)
     oldDomainEmail: str = sa.Column(sa.String(120), nullable=False, unique=False)
 
-    newUserEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False)
-    newDomainEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False)
+    newUserEmail: sa.orm.Mapped[str | None] = sa.Column(sa.String(120), nullable=True, unique=False)
+    newDomainEmail: sa.orm.Mapped[str | None] = sa.Column(sa.String(120), nullable=True, unique=False)
 
     creationDate: datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
