@@ -415,6 +415,7 @@ class BaseOfferResponse(ConfiguredBaseModel):
     last30DaysBookings: int | None
     metadata: offer_metadata.Metadata
     name: str
+    publicationDate: datetime | None
     reactions_count: ReactionCount
     stocks: list[OfferStockResponse]
     subcategoryId: subcategories.SubcategoryIdEnum
