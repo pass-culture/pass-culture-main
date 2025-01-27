@@ -53,7 +53,7 @@ export const Callout = ({
       break
   }
 
-  const hasNoBottomSpace = (!children || !title) && !links
+  const hasNoBottomSpace = !links
   return (
     <div
       className={cn(

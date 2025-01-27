@@ -1,10 +1,7 @@
 import { useField, useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
-import {
-  GetIndividualOfferWithAddressResponseModel,
-  VenueListItemResponseModel,
-} from 'apiClient/v1'
+import { VenueListItemResponseModel } from 'apiClient/v1'
 import { resetAddressFields } from 'commons/utils/resetAddressFields'
 import { AddressSelect } from 'components/Address/Address'
 import { AddressManual } from 'components/AddressManual/AddressManual'
@@ -20,18 +17,16 @@ import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
-import { setFormReadOnlyFields } from '../../commons/utils'
-
 import styles from './OfferLocation.module.scss'
 
 interface OfferLocationProps {
   venue: VenueListItemResponseModel | undefined
-  offer: GetIndividualOfferWithAddressResponseModel
+  readOnlyFields: string[]
 }
 
 export const OfferLocation = ({
   venue,
-  offer,
+  readOnlyFields,
 }: OfferLocationProps): JSX.Element => {
   const formik = useFormikContext<IndividualOfferFormValues>()
 
@@ -88,13 +83,10 @@ export const OfferLocation = ({
     }
   }
 
-  const readOnlyFields = setFormReadOnlyFields(offer)
-
   const venueAddress = venue?.address
     ? computeAddressDisplayName(venue.address, false)
     : ''
   const venueFullText = `${venue?.publicName || venue?.name} – ${venueAddress}`
-
   return (
     <FormLayout.Section
       title="Localisation de l’offre"
@@ -125,7 +117,6 @@ export const OfferLocation = ({
           disabled={readOnlyFields.includes('offerLocation')}
         />
       </FormLayout.Row>
-
       {showOtherAddress && (
         <div className={styles['other-address-wrapper']}>
           <FormLayout.Row className={styles['location-row']}>
