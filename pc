@@ -350,7 +350,6 @@ elif [[ "$CMD" == "psql" ]]; then
   COLUMNS=${COLUMNS:-''}
   if [[ "$ENV" == "development" ]]; then
     RUN='docker exec -it pc-postgres bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
-  f
   elif [[ "$ENV" == "production" ]]; then
     echo $CONSOLE_PRODUCTION_ERROR
     exit 1
