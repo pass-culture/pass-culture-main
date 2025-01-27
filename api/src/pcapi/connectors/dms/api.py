@@ -116,14 +116,14 @@ class DMSGraphQLClient:
         if dms_response.page_info.has_next_page:
             yield from self.get_deleted_applications(procedure_id, dms_response.page_info.end_cursor, deletedSince)
 
-    def send_user_message(self, application_scalar_id: str, instructeur_techid: str, body: str) -> Any:
+    def send_user_message(
+        self, application_scalar_id: str, instructeur_techid: str, body: str, with_correction: bool = False
+    ) -> Any:
+        variables = {"input": {"dossierId": application_scalar_id, "instructeurId": instructeur_techid, "body": body}}
+        if with_correction:
+            variables["input"]["correction"] = "incorrect"
         try:
-            return self.execute_query(
-                SEND_USER_MESSAGE_QUERY_NAME,
-                variables={
-                    "input": {"dossierId": application_scalar_id, "instructeurId": instructeur_techid, "body": body}
-                },
-            )
+            return self.execute_query(SEND_USER_MESSAGE_QUERY_NAME, variables)
         except Exception:  # pylint: disable=broad-except
             logger.exception(
                 "DMS : unexpected error when sending message", extra={"application_scalar_id": application_scalar_id}
