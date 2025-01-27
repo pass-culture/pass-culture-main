@@ -302,7 +302,7 @@
             <div class="container">
               <div class="d-flex justify-content-between">
                 <div class="p-2 flex-shrink-1">
-                  {% if offer.idAtProvider or extra_data.ean %}
+                  {% if offer.idAtProvider or offer.ean %}
                     <h3 class="mt-4">Informations techniques</h3>
                     <div class="fs-6">
                       {% if offer.idAtProvider %}
@@ -310,9 +310,9 @@
                           <span class="fw-bold">Identifiant chez le fournisseur :</span> {{ offer.idAtProvider }}
                         </p>
                       {% endif %}
-                      {% if extra_data.ean %}
+                      {% if offer.ean %}
                         <p class="mb-1">
-                          <span class="fw-bold">EAN :</span> {{ extra_data.ean }}
+                          <span class="fw-bold">EAN :</span> {{ offer.ean }}
                         </p>
                       {% endif %}
                     </div>
