@@ -2,7 +2,7 @@ name: "2 [on_schedule] Delete pullrequest deployments"
 
 on:
   schedule:
-    - cron: "0 */1 * * *"
+    - cron: "0 9-20 * * *"
 
 permissions: write-all
 
