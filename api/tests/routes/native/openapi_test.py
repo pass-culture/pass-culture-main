@@ -1503,6 +1503,12 @@ def test_public_api(client):
                         "last30DaysBookings": {"nullable": True, "title": "Last30Daysbookings", "type": "integer"},
                         "metadata": {"title": "Metadata", "type": "object"},
                         "name": {"title": "Name", "type": "string"},
+                        "publicationDate": {
+                            "title": "Publicationdate",
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": True,
+                        },
                         "reactionsCount": {"$ref": "#/components/schemas/ReactionCount"},
                         "stocks": {
                             "items": {"$ref": "#/components/schemas/OfferStockResponse"},
@@ -1579,6 +1585,12 @@ def test_public_api(client):
                         "last30DaysBookings": {"nullable": True, "title": "Last30Daysbookings", "type": "integer"},
                         "metadata": {"title": "Metadata", "type": "object"},
                         "name": {"title": "Name", "type": "string"},
+                        "publicationDate": {
+                            "title": "Publicationdate",
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": True,
+                        },
                         "reactionsCount": {"$ref": "#/components/schemas/ReactionCount"},
                         "stocks": {
                             "items": {"$ref": "#/components/schemas/OfferStockResponse"},
