@@ -2717,3 +2717,25 @@ class GetHeadlineOfferFiltersTest:
 
         headline_offer_query_result = repository.get_inactive_headline_offers()
         assert headline_offer_query_result == [headline_offer_without_mediation]
+
+    def test_get_offerer_active_headline_offer_even_not_yet_disabled_by_cron_for_active_offer(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer)
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, venue=venue)
+        headline_offer_query_result = repository.get_offerer_active_headline_offer_even_not_yet_disabled_by_cron(
+            user_offerer.offerer.id
+        )
+        assert headline_offer_query_result == headline_offer
+
+    def test_get_offerer_active_headline_offer_even_not_yet_disabled_by_cron_for_inactive_offer(self):
+        offer = factories.OfferFactory(isActive=True)
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        factories.StockFactory(offer=offer)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, venue=venue, create_mediation=False)
+        headline_offer_query_result = repository.get_offerer_active_headline_offer_even_not_yet_disabled_by_cron(
+            user_offerer.offerer.id
+        )
+        assert headline_offer_query_result == headline_offer

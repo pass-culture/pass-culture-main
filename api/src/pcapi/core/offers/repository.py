@@ -1194,15 +1194,11 @@ def get_active_headline_offer(offer_id: int) -> models.HeadlineOffer | None:
     )
 
 
-def get_offerers_active_headline_offer(offerer_id: int) -> models.HeadlineOffer | None:
-    managed_venue_ids_subquery = (
-        sa.select(offerers_models.Venue.id).filter(offerers_models.Venue.managingOffererId == offerer_id).subquery()
-    )
+def get_offerer_active_headline_offer_even_not_yet_disabled_by_cron(offerer_id: int) -> models.HeadlineOffer | None:
     return (
-        models.HeadlineOffer.query.join(models.Offer)
+        models.HeadlineOffer.query.join(offerers_models.Venue)
         .filter(
-            models.HeadlineOffer.venueId.in_(managed_venue_ids_subquery),
-            models.HeadlineOffer.isActive == True,
+            models.HeadlineOffer.isActiveOrNotYetDisabled == True, offerers_models.Venue.managingOffererId == offerer_id
         )
         .one_or_none()
     )

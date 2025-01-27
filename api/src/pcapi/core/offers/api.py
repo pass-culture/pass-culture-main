@@ -788,9 +788,9 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
 
 def upsert_headline_offer(offer: models.Offer) -> models.HeadlineOffer:
     offerer_id = offer.venue.managingOffererId
-    headline_offer = offers_repository.get_offerers_active_headline_offer(offerer_id)
+    headline_offer = offers_repository.get_offerer_active_headline_offer_even_not_yet_disabled_by_cron(offerer_id)
     if headline_offer and headline_offer.offerId != offer.id:
-        remove_headline_offer(headline_offer)
+        remove_headline_offer(offerer_id)
         logger.info(
             "Headline Offer Deactivation",
             extra={
@@ -828,7 +828,9 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
 
 
 def remove_headline_offer(offerer_id: int) -> None:
-    if active_headline_offer := offers_repository.get_offerers_active_headline_offer(offerer_id):
+    if active_headline_offer := offers_repository.get_offerer_active_headline_offer_even_not_yet_disabled_by_cron(
+        offerer_id
+    ):
         try:
             active_headline_offer.timespan = db_utils.make_timerange(
                 active_headline_offer.timespan.lower, datetime.datetime.utcnow()
