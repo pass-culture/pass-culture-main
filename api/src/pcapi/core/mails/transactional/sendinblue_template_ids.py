@@ -18,18 +18,12 @@ class TransactionalEmail(Enum):
     BOOKING_CONFIRMATION_BY_BENEFICIARY = models.Template(
         id_prod=725, id_not_prod=96, tags=["jeunes_reservation_confirmee_v3"]
     )
-    BOOKING_EVENT_REMINDER_TO_BENEFICIARY = models.Template(
-        id_prod=665, id_not_prod=82, tags=["jeunes_rappel_evenement_j-1"]
-    )
-    BOOKING_EVENT_REMINDER_TO_BENEFICIARY_WITH_METADATA = models.Template(
-        id_prod=1127, id_not_prod=124, tags=["jeunes_rappel_evenement_j-1"]
-    )
+    BOOKING_EVENT_REMINDER_TO_BENEFICIARY = models.Template(id_prod=665, id_not_prod=82)
+    BOOKING_EVENT_REMINDER_TO_BENEFICIARY_WITH_METADATA = models.Template(id_prod=1127, id_not_prod=124)
     BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY = models.Template(
         id_prod=224, id_not_prod=36, tags=["jeunes_offre_reportee_pro"], send_to_ehp=False
     )
-    BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY = models.Template(
-        id_prod=144, id_not_prod=42, send_to_ehp=False, tags=["jeunes_reservation_bientot_expiree"]
-    )
+    BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY = models.Template(id_prod=144, id_not_prod=42, send_to_ehp=False)
     COMPLETE_SUBSCRIPTION_AFTER_DMS = models.Template(
         id_prod=679, id_not_prod=84, tags=["jeunes_complete_inscription_apres_dms"]
     )
@@ -38,9 +32,7 @@ class TransactionalEmail(Enum):
     EMAIL_CHANGE_CONFIRMATION = models.Template(
         id_prod=253, id_not_prod=134, tags=["changement_email_confirmation"], use_priority_queue=True
     )
-    EMAIL_CHANGE_CANCELLATION = models.Template(
-        id_prod=1001, id_not_prod=136, tags=["demande_suspension_compte_jeune"], use_priority_queue=True
-    )
+    EMAIL_CHANGE_CANCELLATION = models.Template(id_prod=1001, id_not_prod=136, use_priority_queue=True)
     EMAIL_CHANGE_REQUEST = models.Template(
         id_prod=142, id_not_prod=133, tags=["changement_email_demande"], use_priority_queue=True
     )
@@ -51,42 +43,30 @@ class TransactionalEmail(Enum):
         id_prod=201, id_not_prod=15, tags=["jeunes_confirmation_mail"], use_priority_queue=True
     )
     ONLINE_EVENT_REMINDER = models.Template(id_prod=1092, id_not_prod=154, send_to_ehp=False)
-    EXPIRED_BOOKING_TO_BENEFICIARY = models.Template(
-        id_prod=145, id_not_prod=34, send_to_ehp=False, tags=["jeunes_resa_expiree"]
-    )
-    FRAUD_SUSPICION = models.Template(id_prod=82, id_not_prod=24, tags=["jeunes_compte_en_cours_d_analyse"])
-    NEW_PASSWORD_REQUEST = models.Template(
-        id_prod=141, id_not_prod=26, tags=["jeunes_nouveau_mdp"], use_priority_queue=True
-    )
+    EXPIRED_BOOKING_TO_BENEFICIARY = models.Template(id_prod=145, id_not_prod=34, send_to_ehp=False)
+    FRAUD_SUSPICION = models.Template(id_prod=82, id_not_prod=24)
+    NEW_PASSWORD_REQUEST = models.Template(id_prod=141, id_not_prod=26, use_priority_queue=True)
     NEW_PASSWORD_REQUEST_FOR_SUSPICIOUS_LOGIN = models.Template(
         id_prod=1108, id_not_prod=155, tags=["jeunes_nouveau_mdp_connexion_suspicieuse"], use_priority_queue=True
     )
     OFFER_WEBAPP_LINK_TO_IOS_USER = models.Template(
         id_prod=476, id_not_prod=45, tags=["redirect_ios"], use_priority_queue=True
     )
-    OFFER_WITHDRAWAL_UPDATED_BY_PRO = models.Template(
-        id_prod=868, id_not_prod=121, tags=["changement_modalites_retrait"]
-    )
+    OFFER_WITHDRAWAL_UPDATED_BY_PRO = models.Template(id_prod=868, id_not_prod=121)
     PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY = models.Template(
         id_prod=510, id_not_prod=53, tags=["jeunes_erreur_importation_dms"]
     )
     RECREDIT_TO_UNDERAGE_BENEFICIARY = models.Template(
         id_prod=303, id_not_prod=31, tags=["anniversaire_16_17_ans"], send_to_ehp=False
     )
-    REPORTED_OFFER_BY_USER = models.Template(id_prod=589, id_not_prod=70, tags=["interne_offre_signale"])
+    REPORTED_OFFER_BY_USER = models.Template(id_prod=589, id_not_prod=70)
     SUBSCRIPTION_FOREIGN_DOCUMENT_ERROR = models.Template(
         id_prod=385, id_not_prod=40, tags=["jeunes_document_etranger"]
     )
-    SUBSCRIPTION_INFORMATION_ERROR = models.Template(id_prod=410, id_not_prod=43, tags=["jeunes_infos_erronees"])
-    SUBSCRIPTION_INVALID_DOCUMENT_ERROR = models.Template(
-        id_prod=384, id_not_prod=39, tags=["jeunes_document_invalide"]
-    )
-    SUBSCRIPTION_NOT_AUTHENTIC_DOCUMENT_ERROR = models.Template(
-        id_prod=760, id_not_prod=101, tags=["jeunes_document_non_authentique"]
-    )
-    SUBCRIPTION_REJECTED_FOR_DUPLICATE_BENEFICIARY = models.Template(
-        id_prod=80, id_not_prod=77, tags=["jeunes_compte_refuse_doublon"]
-    )
+    SUBSCRIPTION_INFORMATION_ERROR = models.Template(id_prod=410, id_not_prod=43)
+    SUBSCRIPTION_INVALID_DOCUMENT_ERROR = models.Template(id_prod=384, id_not_prod=39)
+    SUBSCRIPTION_NOT_AUTHENTIC_DOCUMENT_ERROR = models.Template(id_prod=760, id_not_prod=101)
+    SUBCRIPTION_REJECTED_FOR_DUPLICATE_BENEFICIARY = models.Template(id_prod=80, id_not_prod=77)
     SUBSCRIPTION_UNREADABLE_DOCUMENT_ERROR = models.Template(
         id_prod=304, id_not_prod=38, tags=["jeunes_document_illisible"]
     )
