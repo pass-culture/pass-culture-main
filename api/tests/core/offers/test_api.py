@@ -2139,7 +2139,7 @@ class HeadlineOfferTest:
         offer = factories.OfferFactory(isActive=True)
         headline_offer = factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
 
-        api.remove_headline_offer(headline_offer)
+        api.remove_headline_offer(offer.venue.managingOffererId)
         db.session.commit()  # see comment in make_offer_headline()
 
         assert headline_offer.timespan.upper
@@ -2322,11 +2322,14 @@ class HeadlineOfferTest:
         assert headline_offer.timespan.upper is not None
 
     def test_upsert_headline_offer_on_another_offer(self):
-        offer = factories.OfferFactory()
+        offer = factories.OfferFactory(venue__venueTypeCode=VenueTypeCode.LIBRARY)
         another_offer = factories.OfferFactory(venue=offer.venue)
+        api.create_stock(offer=another_offer, price=10, quantity=7)
+        factories.MediationFactory(offer=another_offer)
         headline_offer = factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
 
         new_headline_offer = api.upsert_headline_offer(another_offer)
+        db.session.commit()  # see comment in make_offer_headline()
 
         assert not offer.is_headline_offer
         assert another_offer.is_headline_offer
@@ -2336,12 +2339,12 @@ class HeadlineOfferTest:
         assert new_headline_offer.timespan.upper is None
 
     def test_upsert_headline_offer_on_same_offer(self):
-        offer = factories.OfferFactory()
+        offer = factories.OfferFactory(venue__venueTypeCode=VenueTypeCode.LIBRARY)
         creation_time = datetime.utcnow() - timedelta(days=20)
         finished_timespan = (creation_time, creation_time + timedelta(days=10))
         headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan, create_mediation=True)
-
         new_headline_offer = api.upsert_headline_offer(offer)
+        db.session.commit()  # see comment in make_offer_headline()
 
         assert not headline_offer.isActive
         assert headline_offer.timespan.upper is not None

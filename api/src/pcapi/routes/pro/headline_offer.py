@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 @atomic()
 def upsert_headline_offer(body: headline_offer_serialize.HeadlineOfferCreationBodyModel) -> None:
 
-    offer = offers_repository.get_offer_by_id(body.offer_id, load_options=["headline_offer"])
+    offer = offers_repository.get_offer_by_id(body.offer_id, load_options=["headline_offer", "venue"])
 
     if not offer:
         raise api_errors.ResourceNotFoundError
