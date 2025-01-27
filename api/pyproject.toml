@@ -65,7 +65,7 @@ dependencies = [
 "requests==2.32.3",
 "rq==2.0.0",
 "schwifty==2025.1.0",
-"semver==3.0.2",
+"semver==3.0.4",
 "sentry-sdk[flask]==2.19.2",
 "sib-api-v3-sdk>=7.6.0",
 "slack-sdk==3.34.0",
