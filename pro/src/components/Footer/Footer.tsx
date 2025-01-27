@@ -18,6 +18,7 @@ type FooterProps = {
     | 'sticky-actions'
     | 'sticky-onboarding'
     | 'logged-out'
+    | 'sign-up'
 }
 export const Footer = ({ layout }: FooterProps) => {
   const currentUser = useSelector(selectCurrentUser)

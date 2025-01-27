@@ -11,13 +11,14 @@ import {
   RECAPTCHA_ERROR_MESSAGE,
   SAVED_OFFERER_ID_KEY,
 } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import {
+  updateOffererIsOnboarded,
   updateOffererNames,
   updateSelectedOffererId,
-  updateOffererIsOnboarded,
 } from 'commons/store/offerer/reducer'
 import { updateUser } from 'commons/store/user/reducer'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
@@ -135,22 +136,22 @@ export const SignIn = (): JSX.Element => {
     }
   }
 
+  const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
+
   return shouldRedirect ? (
     <Navigate to="/" replace />
   ) : (
-    <Layout layout="logged-out">
-      <section className={styles['content']}>
-        <h1 className={styles['title']}>
-          Bienvenue sur l’espace dédié aux acteurs culturels
-        </h1>
+    <Layout layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}>
+      <h1 className={styles['title']}>
+        Bienvenue sur l’espace dédié aux acteurs culturels
+      </h1>
 
-        <div className={styles['mandatory']}>
-          Tous les champs suivis d’un * sont obligatoires.
-        </div>
-        <FormikProvider value={formik}>
-          <SigninForm />
-        </FormikProvider>
-      </section>
+      <div className={styles['mandatory']}>
+        Tous les champs suivis d’un * sont obligatoires.
+      </div>
+      <FormikProvider value={formik}>
+        <SigninForm />
+      </FormikProvider>
     </Layout>
   )
 }
