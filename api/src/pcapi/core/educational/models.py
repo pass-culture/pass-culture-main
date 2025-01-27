@@ -2236,7 +2236,6 @@ EducationalInstitutionProgramAssociation = sa.Table(
     # EducationalInstitutionProgram (many-to-many)
     "educational_institution_program_association",
     Base.metadata,
-    sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
     sa.Column(
         "institutionId",
         sa.ForeignKey(EducationalInstitution.id, ondelete="CASCADE"),

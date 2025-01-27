@@ -143,14 +143,14 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "column": criteria_models.Criterion.id,
         "inner_join": "criterion",
         "outer_join": "offer_criterion",
-        "outer_join_column": criteria_models.OfferCriterion.offerId,
+        "outer_join_column": criteria_models.OfferCriterion.c.offerId,
         "custom_filters": {
             "NOT_IN": lambda values: (
                 sa.exists()
                 .where(
                     sa.and_(
-                        criteria_models.OfferCriterion.offerId == offers_models.Offer.id,
-                        criteria_models.OfferCriterion.criterionId.in_(values),
+                        criteria_models.OfferCriterion.c.offerId == offers_models.Offer.id,
+                        criteria_models.OfferCriterion.c.criterionId.in_(values),
                     )
                 )
                 .is_(False)
@@ -227,7 +227,10 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
     "offer_criterion": [
         {
             "name": "offer_criterion",
-            "args": (criteria_models.OfferCriterion, offers_models.Offer.id == criteria_models.OfferCriterion.offerId),
+            "args": (
+                criteria_models.OfferCriterion,
+                offers_models.Offer.id == criteria_models.OfferCriterion.c.offerId,
+            ),
         }
     ],
     "offerer_address": [
@@ -306,7 +309,7 @@ def _get_offers_by_ids(
             sa.select(sa.func.array_agg(offers_models.OfferValidationRule.name))
             .select_from(offers_models.OfferValidationRule)
             .join(offers_models.ValidationRuleOfferLink)
-            .filter(offers_models.ValidationRuleOfferLink.offerId == offers_models.Offer.id)
+            .filter(offers_models.ValidationRuleOfferLink.c.offerId == offers_models.Offer.id)
             .correlate(offers_models.Offer)
             .scalar_subquery()
         )
@@ -407,7 +410,7 @@ def _get_offers_by_ids(
             sa.select(sa.func.array_agg(criteria_models.Criterion.name))
             .select_from(criteria_models.Criterion)
             .join(criteria_models.OfferCriterion)
-            .filter(criteria_models.OfferCriterion.offerId == offers_models.Offer.id)
+            .filter(criteria_models.OfferCriterion.c.offerId == offers_models.Offer.id)
             .correlate(offers_models.Offer)
             .scalar_subquery()
         )
