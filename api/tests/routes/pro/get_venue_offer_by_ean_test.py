@@ -20,7 +20,7 @@ class Returns403Test:
 
         auth_client = client.with_session_auth(email=beneficiary.email)
         venue_id = offer.venueId
-        ean = offer.extraData["ean"]
+        ean = offer.ean
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{venue_id}/ean/{ean}")
             assert response.status_code == 403
@@ -31,7 +31,7 @@ class Returns403Test:
 
         auth_client = client.with_session_auth(email=pro_user.email)
         venue_id = offer.venueId
-        ean = offer.extraData["ean"]
+        ean = offer.ean
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{venue_id}/ean/{ean}")
             assert response.status_code == 403
@@ -59,7 +59,7 @@ class Returns200Test:
 
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         venue_id = offer.venueId
-        ean = offer.extraData["ean"]
+        ean = offer.ean
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{venue_id}/ean/{ean}")
             assert response.status_code == 200
@@ -112,7 +112,7 @@ class Returns404Test:
 
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         venue_id = offer.venueId
-        ean = offer.extraData["ean"]
+        ean = offer.ean
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{venue_id}/ean/{ean}")
             assert response.status_code == 404

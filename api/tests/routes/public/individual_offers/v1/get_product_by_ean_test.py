@@ -28,7 +28,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
         )
-        ean = product_offer.extraData["ean"]
+        ean = product_offer.ean
         with testing.assert_num_queries(self.num_queries_404):
             response = client.with_explicit_token(plain_api_key).get(
                 f"{self.endpoint_url}?eans={ean}&venueId={venue_id}"
@@ -46,7 +46,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
         )
-        ean = product_offer.extraData["ean"]
+        ean = product_offer.ean
         with testing.assert_num_queries(self.num_queries_404):
             response = client.with_explicit_token(plain_api_key).get(
                 f"{self.endpoint_url}?eans={ean}&venueId={venue_id}"
@@ -64,7 +64,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
         )
-        ean = product_offer.extraData["ean"]
+        ean = product_offer.ean
         with testing.assert_num_queries(self.num_queries_success):
             response = client.with_explicit_token(plain_api_key).get(
                 f"/public/offers/v1/products/ean?eans={ean}&venueId={venue_id}"
@@ -76,10 +76,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
                 {
                     "bookingContact": None,
                     "bookingEmail": None,
-                    "categoryRelatedFields": {
-                        "category": "SUPPORT_PHYSIQUE_FILM",
-                        "ean": product_offer.extraData["ean"],
-                    },
+                    "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": product_offer.ean},
                     "description": "Un livre de contrepèterie",
                     "accessibility": {
                         "audioDisabilityCompliant": False,
@@ -129,9 +126,9 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             extraData={"ean": "2345678901234"},
         )
 
-        ean_1 = product_offer.extraData["ean"]
-        ean_2 = product_offer_2.extraData["ean"]
-        ean_3 = product_offer_3.extraData["ean"]
+        ean_1 = product_offer.ean
+        ean_2 = product_offer_2.ean
+        ean_3 = product_offer_3.ean
 
         with testing.assert_num_queries(self.num_queries_success):
             response = client.with_explicit_token(plain_api_key).get(
@@ -146,7 +143,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
                     "bookingEmail": None,
                     "categoryRelatedFields": {
                         "category": "SUPPORT_PHYSIQUE_FILM",
-                        "ean": product_offer_3.extraData["ean"],
+                        "ean": product_offer_3.ean,
                     },
                     "description": "Un CD",
                     "accessibility": {
@@ -171,7 +168,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
                     "bookingEmail": None,
                     "categoryRelatedFields": {
                         "category": "SUPPORT_PHYSIQUE_FILM",
-                        "ean": product_offer_2.extraData["ean"],
+                        "ean": product_offer_2.ean,
                     },
                     "description": "Un livre de poterie",
                     "accessibility": {
@@ -194,10 +191,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
                 {
                     "bookingContact": None,
                     "bookingEmail": None,
-                    "categoryRelatedFields": {
-                        "category": "SUPPORT_PHYSIQUE_FILM",
-                        "ean": product_offer.extraData["ean"],
-                    },
+                    "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": product_offer.ean},
                     "description": "Un livre de contrepèterie",
                     "accessibility": {
                         "audioDisabilityCompliant": False,
@@ -227,7 +221,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         newest_product_offer = offers_factories.ThingOfferFactory(
             venue=venue, extraData={"ean": "1234567890123"}, isActive=False
         )
-        ean = newest_product_offer.extraData["ean"]
+        ean = newest_product_offer.ean
 
         with testing.assert_num_queries(self.num_queries_success):
             response = client.with_explicit_token(plain_api_key).get(
@@ -242,7 +236,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         venue = venue_provider.venue
         venue_id = venue.id
         product_offer = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "123456789"})
-        ean = product_offer.extraData["ean"]
+        ean = product_offer.ean
 
         with testing.assert_num_queries(self.num_queries_400):
             response = client.with_explicit_token(plain_api_key).get(
@@ -261,10 +255,10 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         product_offer_2 = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "0123456789123"})
         product_offer_3 = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "123455678"})
         product_offer_4 = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "0987654321123"})
-        ean_1 = product_offer.extraData["ean"]
-        ean_2 = product_offer_2.extraData["ean"]
-        ean_3 = product_offer_3.extraData["ean"]
-        ean_4 = product_offer_4.extraData["ean"]
+        ean_1 = product_offer.ean
+        ean_2 = product_offer_2.ean
+        ean_3 = product_offer_3.ean
+        ean_4 = product_offer_4.ean
 
         with testing.assert_num_queries(self.num_queries_400):
             response = client.with_explicit_token(plain_api_key).get(
@@ -278,7 +272,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
         product_offer = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "1234567891234"})
-        ean = product_offer.extraData["ean"]
+        ean = product_offer.ean
 
         with testing.assert_num_queries(self.num_queries_400):
             response = client.with_explicit_token(plain_api_key).get(f"/public/offers/v1/products/ean?eans={ean}")
@@ -317,7 +311,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
         )
-        ean = product_offer.extraData["ean"]
+        ean = product_offer.ean
 
         with testing.assert_num_queries(self.num_queries_success):
             response = client.with_explicit_token(plain_api_key).get(
@@ -330,10 +324,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
                 {
                     "bookingContact": None,
                     "bookingEmail": None,
-                    "categoryRelatedFields": {
-                        "category": "SUPPORT_PHYSIQUE_FILM",
-                        "ean": product_offer.extraData["ean"],
-                    },
+                    "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": product_offer.ean},
                     "description": "Un livre de contrepèterie",
                     "accessibility": {
                         "audioDisabilityCompliant": False,
@@ -368,7 +359,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             visualDisabilityCompliant=None,
             extraData={"ean": "1234567890123"},
         )
-        ean = product_offer.extraData["ean"]
+        ean = product_offer.ean
 
         with testing.assert_num_queries(self.num_queries_success):
             response = client.with_explicit_token(plain_api_key).get(
