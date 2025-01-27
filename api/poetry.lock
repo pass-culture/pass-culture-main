@@ -5076,14 +5076,14 @@ crt = ["botocore[crt] (>=1.36.0,<2.0a.0)"]
 
 [[package]]
 name = "schwifty"
-version = "2024.11.0"
+version = "2025.1.0"
 description = ""
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "schwifty-2024.11.0-py3-none-any.whl", hash = "sha256:743bb6ae91f1cded149b3842f9becf795f19641d75755f73eaf921524b1ba8f9"},
-    {file = "schwifty-2024.11.0.tar.gz", hash = "sha256:d0aaed03168403b433de515d663df09516941ae70152850da3afe3c242255f6a"},
+    {file = "schwifty-2025.1.0-py3-none-any.whl", hash = "sha256:dca8abc9db4b7fc7f3b73a1f581ac1c3cc226a0902257275a3b08bd8275170ed"},
+    {file = "schwifty-2025.1.0.tar.gz", hash = "sha256:f492f3cbea3beb1fe0bf11a89075e6e413a5f500ee1afdb29a124a9a89b1a2ca"},
 ]
 
 [package.dependencies]
@@ -6391,4 +6391,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "7ef71dbf5a27b082b1dc611f318198546ec84570c1e6aceb7b5f210530689778"
+content-hash = "485cf6d01d310e5c94d9def982799e8a70f30c87b2037ec7c407d292722bcc3c"
