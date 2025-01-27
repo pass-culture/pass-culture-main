@@ -303,6 +303,7 @@ class BaseOfferResponseGetterDict(GetterDict):
             extra_data = OfferExtraDataResponse.parse_obj(raw_extra_data)
 
             extra_data.durationMinutes = offer.durationMinutes
+            extra_data.ean = offer.ean
 
             gtl_id = raw_extra_data.get("gtl_id")
             if gtl_id is not None:

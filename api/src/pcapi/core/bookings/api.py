@@ -121,6 +121,7 @@ def get_individual_bookings(user: User) -> list[Booking]:
                 Offer.withdrawalType,
                 Offer.withdrawalDelay,
                 Offer.extraData,
+                Offer.ean,
             )
             .joinedload(Offer.product)
             .load_only(

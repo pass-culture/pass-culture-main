@@ -94,6 +94,9 @@ class BookingOfferResponseGetterDict(GetterDict):
                 timezone=address.timezone,
             )
 
+        if key == "extraData":
+            return BookingOfferExtraData(ean=self._obj.ean)
+
         return super().get(key, default)
 
 
