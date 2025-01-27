@@ -847,8 +847,12 @@ class CheckBookingLimitDatetimeTest:
         beginning_date = datetime.datetime(2024, 7, 19, 8, tzinfo=datetime.timezone.utc)
         booking_limit_date = beginning_date - datetime.timedelta(hours=1)
 
-        beginning, booking_limit_datetime = validation.check_booking_limit_datetime(
-            stock, beginning=beginning_date, booking_limit_datetime=booking_limit_date
+        # It's ok to ignore the tuple unpacking warning here because we are testing the value of beginning
+        # and it should fails if check_booking_limit_datetime returns an empty list
+        beginning, booking_limit_datetime = (  # pylint: disable=unbalanced-tuple-unpacking
+            validation.check_booking_limit_datetime(
+                stock, beginning=beginning_date, booking_limit_datetime=booking_limit_date
+            )
         )
         assert beginning.tzinfo == booking_limit_datetime.tzinfo == time_zone_expected
 
