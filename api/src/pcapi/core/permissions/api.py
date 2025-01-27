@@ -66,4 +66,5 @@ def get_concrete_roles(roles: typing.Collection[perm_models.Roles]) -> typing.Co
 def create_backoffice_profile(user: users_models.User, roles: list[perm_models.Role] | None = None) -> None:
     backoffice_profile = perm_models.BackOfficeUserProfile(user=user, roles=roles or [])
     db.session.add(backoffice_profile)
+    db.session.flush()
     user.backoffice_profile = backoffice_profile

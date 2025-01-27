@@ -245,7 +245,6 @@ class BackOfficeUserProfile(Base, Model):
 RoleBackofficeProfile = sa.Table(
     "role_backoffice_profile",
     Base.metadata,
-    sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
     sa.Column("roleId", sa.ForeignKey(Role.id, ondelete="CASCADE"), nullable=False, primary_key=True),
     sa.Column(
         "profileId", sa.ForeignKey(BackOfficeUserProfile.id, ondelete="CASCADE"), nullable=False, primary_key=True
