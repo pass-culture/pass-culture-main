@@ -1185,7 +1185,6 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                     .load_only(
                         educational_models.CollectiveOffer.id,
                         educational_models.CollectiveOffer.name,
-                        educational_models.CollectiveOffer.subcategoryId,
                         educational_models.CollectiveOffer.formats,
                     ),
                     sa.orm.joinedload(educational_models.CollectiveBooking.pricings).load_only(
