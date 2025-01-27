@@ -20,6 +20,9 @@ from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.users.personal_data_updated import send_beneficiary_personal_data_updated
+from pcapi.core.mails.transactional.users.update_request_ask_for_correction import (
+    send_beneficiary_update_request_ask_for_correction,
+)
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import api as users_api
@@ -35,6 +38,7 @@ from pcapi.repository import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number as phone_number_utils
@@ -433,5 +437,73 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
             ds_status=update_request.status,
         )
         db.session.flush()
+
+    return _refresh_list()
+
+
+@account_update_blueprint.route("<int:ds_application_id>/ask-for-correction", methods=["GET"])
+@atomic()
+def get_ask_for_correction_form(ds_application_id: int) -> utils.BackofficeResponse:
+    if not current_user.backoffice_profile.dsInstructorId:
+        raise Forbidden()
+
+    update_request = users_models.UserAccountUpdateRequest.query.filter_by(
+        dsApplicationId=ds_application_id
+    ).one_or_none()
+    if not update_request:
+        raise NotFound()
+
+    form = empty_forms.EmptyForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for(".ask_for_correction", ds_application_id=ds_application_id),
+        div_id=f"ask-for-correction-{ds_application_id}",
+        title="Demander une correction",
+        information="Ce message sera envoyé au jeune: <br>" + users_ds.CORRECTION_MESSAGE,
+        button_text="Faire une demande de correction",
+    )
+
+
+@account_update_blueprint.route("<int:ds_application_id>/ask-for-correction", methods=["POST"])
+@atomic()
+def ask_for_correction(ds_application_id: int) -> utils.BackofficeResponse:
+    if not current_user.backoffice_profile.dsInstructorId:
+        raise Forbidden()
+
+    update_request: users_models.UserAccountUpdateRequest = (
+        users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=ds_application_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not update_request:
+        raise NotFound()
+
+    on_commit(
+        partial(
+            send_beneficiary_update_request_ask_for_correction,
+            update_request,
+        ),
+    )
+
+    try:
+        users_ds.send_user_message_with_correction(update_request, current_user)
+    except dms_exceptions.DmsGraphQLApiError as err:
+        mark_transaction_as_invalid()
+        flash(
+            Markup(
+                "Le dossier <b>{ds_application_id}</b> ne peut pas recevoir de demande de correction : {message}"
+            ).format(
+                ds_application_id=ds_application_id,
+                message="dossier non trouvé" if err.is_not_found else err.message,
+            ),
+            "warning",
+        )
+    except sa.exc.IntegrityError as exc:
+        mark_transaction_as_invalid()
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
+        return _refresh_list()
 
     return _refresh_list()
