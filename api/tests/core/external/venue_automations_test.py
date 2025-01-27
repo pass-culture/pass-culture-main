@@ -1,9 +1,9 @@
 from datetime import datetime
 from unittest.mock import patch
 
+from brevo_python import RequestContactImport
 from dateutil.relativedelta import relativedelta
 import pytest
-from sib_api_v3_sdk import RequestContactImport
 
 from pcapi import settings
 import pcapi.core.bookings.factories as bookings_factories
@@ -92,7 +92,7 @@ class VenueAutomationsTest:
 
         assert set(results) == {venue_no_booking.bookingEmail, venue_old_booking.bookingEmail}
 
-    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
     def test_pro_inactive_venues_automation(self, mock_import_contacts):
         offerer = offerers_factories.OffererFactory(dateValidated=datetime.utcnow() - relativedelta(days=100))
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)

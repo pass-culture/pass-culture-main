@@ -1,7 +1,7 @@
 import logging
 
-import sib_api_v3_sdk
-from sib_api_v3_sdk.rest import ApiException
+import brevo_python
+from brevo_python.rest import ApiException
 
 from pcapi import settings
 from pcapi.core import mails
@@ -15,12 +15,12 @@ logger = logging.getLogger(__name__)
 
 class SendinblueBackend:
     def __init__(self) -> None:
-        configuration = sib_api_v3_sdk.Configuration()
+        configuration = brevo_python.Configuration()
         configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
-        self.api_instance = sib_api_v3_sdk.TransactionalSMSApi(sib_api_v3_sdk.ApiClient(configuration))
+        self.api_instance = brevo_python.TransactionalSMSApi(brevo_python.ApiClient(configuration))
 
     def send_transactional_sms(self, recipient: str, content: str) -> None:
-        send_transac_sms = sib_api_v3_sdk.SendTransacSms(
+        send_transac_sms = brevo_python.SendTransacSms(
             sender="PassCulture",
             recipient=self._format_recipient(recipient),
             content=content,

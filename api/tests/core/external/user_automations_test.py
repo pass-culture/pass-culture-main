@@ -2,9 +2,9 @@ from datetime import date
 from datetime import datetime
 from unittest.mock import patch
 
+from brevo_python import RequestContactImport
 from dateutil.relativedelta import relativedelta
 import pytest
-from sib_api_v3_sdk import RequestContactImport
 import time_machine
 
 from pcapi import settings
@@ -49,7 +49,7 @@ class UserAutomationsTest:
         assert sorted(result) == ["fabien+test@example.net", "gerard+test@example.net"]
         assert len(User.query.all()) == 6
 
-    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
     def test_user_turned_eighteen_automation(self, mock_import_contacts):
         self._create_users_around_18()
 
@@ -153,7 +153,7 @@ class UserAutomationsTest:
             results = user_automations.get_users_beneficiary_credit_expiration_within_next_3_months()
             assert sorted([user.email for user in results]) == [user.email for user in users[4:7]]
 
-    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
     def test_users_beneficiary_credit_expiration_within_next_3_months_automation(self, mock_import_contacts):
         users = self._create_users_with_deposits()
 
@@ -194,7 +194,7 @@ class UserAutomationsTest:
             results = user_automations.get_users_ex_beneficiary()
             assert sorted([user.email for user in results]) == [user.email for user in users[1:4] + [users[6]]]
 
-    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
     def test_user_ex_beneficiary_automation(self, mock_import_contacts):
         users = self._create_users_with_deposits()
 
@@ -240,7 +240,7 @@ class UserAutomationsTest:
             results = user_automations.get_email_for_inactive_user_since_thirty_days()
             assert sorted(results) == sorted([beneficiary.email, not_beneficiary.email])
 
-    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
     def test_users_inactive_since_30_days_automation(self, mock_import_contacts):
         with time_machine.travel("2033-08-01 15:00:00") as frozen_time:
             users_factories.BeneficiaryGrant18Factory(
@@ -271,7 +271,7 @@ class UserAutomationsTest:
 
             assert result is True
 
-    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
     def test_users_inactive_since_30_days_automation_no_result(self, mock_import_contacts):
         with time_machine.travel("2033-08-01 15:00:00") as frozen_time:
             users_factories.BeneficiaryGrant18Factory(
@@ -311,7 +311,7 @@ class UserAutomationsTest:
             results = user_automations.get_email_for_users_created_one_year_ago_per_month()
             assert sorted(results) == sorted([user.email for user in matching_users])
 
-    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
     def test_users_nearly_one_year_with_pass_automation(self, mock_import_contacts):
         users_factories.UserFactory(email="fabien+test@example.net", dateCreated=datetime(2033, 8, 31))
         users_factories.UserFactory(email="pierre+test@example.net", dateCreated=datetime(2033, 9, 1))

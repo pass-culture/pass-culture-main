@@ -3,8 +3,8 @@ import json
 import logging
 from typing import Iterable
 
-import sib_api_v3_sdk
-from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
+import brevo_python
+from brevo_python.rest import ApiException as SendinblueApiException
 
 from pcapi import settings
 from pcapi.core.users.repository import find_user_by_email
@@ -25,12 +25,12 @@ logger = logging.getLogger(__name__)
 class SendinblueBackend(BaseBackend):
     def __init__(self, use_pro_subaccount: bool) -> None:
         super().__init__()
-        configuration = sib_api_v3_sdk.Configuration()
+        configuration = brevo_python.Configuration()
         if use_pro_subaccount:
             configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
         else:
             configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
-        self.contacts_api = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
+        self.contacts_api = brevo_python.ContactsApi(brevo_python.ApiClient(configuration))
 
     def send_mail(
         self,
@@ -81,7 +81,7 @@ class SendinblueBackend(BaseBackend):
         Creates or updates a contact in Brevo (previously Sendinblue).
         """
 
-        contact = sib_api_v3_sdk.CreateContact(
+        contact = brevo_python.CreateContact(
             email=payload.email,
             attributes=payload.attributes,
             list_ids=payload.contact_list_ids,

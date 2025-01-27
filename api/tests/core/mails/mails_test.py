@@ -1,8 +1,8 @@
 import logging
 from unittest.mock import patch
 
+from brevo_python.rest import ApiException as SendinblueApiException
 import pytest
-from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
 from urllib3.response import HTTPResponse
 
 from pcapi.core.mails import models
@@ -97,8 +97,8 @@ class SendinblueBackendTest:
         assert task_param.reply_to == expected_sent_data.reply_to
         assert task_param.enable_unsubscribe == self.expected_sent_data.enable_unsubscribe
 
-    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.delete_contact")
-    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.create_contact")
+    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.delete_contact")
+    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.create_contact")
     def test_create_contact(self, mock_create_contact, mock_delete_contact):
         payload = sendinblue_tasks.UpdateSendinblueContactRequest(
             email="old.email@example.com",
@@ -114,8 +114,8 @@ class SendinblueBackendTest:
         mock_create_contact.assert_called_once()
         mock_delete_contact.assert_not_called()
 
-    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.delete_contact")
-    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.create_contact")
+    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.delete_contact")
+    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.create_contact")
     def test_create_contact_duplicate_email(self, mock_create_contact, mock_delete_contact):
         payload = sendinblue_tasks.UpdateSendinblueContactRequest(
             email="old.email@example.com",

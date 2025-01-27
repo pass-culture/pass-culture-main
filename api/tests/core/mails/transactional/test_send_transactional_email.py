@@ -1,8 +1,8 @@
 import dataclasses
 from unittest.mock import patch
 
+from brevo_python.rest import ApiException
 import pytest
-from sib_api_v3_sdk.rest import ApiException
 from urllib3.response import HTTPResponse
 
 from pcapi.core import token as token_utils
@@ -17,7 +17,7 @@ from pcapi.utils import requests
 
 
 class TransactionalEmailWithTemplateTest:
-    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
     def test_bad_request(self, mock, caplog):
         mock.side_effect = ApiException(
             http_resp=HTTPResponse(
@@ -43,7 +43,7 @@ class TransactionalEmailWithTemplateTest:
         )
         assert len(caplog.records) == 1
 
-    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
     def test_error_not_json(self, mock, caplog):
         mock.side_effect = ApiException(
             http_resp=HTTPResponse(
@@ -69,7 +69,7 @@ class TransactionalEmailWithTemplateTest:
         )
         assert len(caplog.records) == 1
 
-    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
     def test_email_not_valid(self, mock, caplog):
         mock.side_effect = ApiException(
             http_resp=HTTPResponse(
@@ -99,7 +99,7 @@ class TransactionalEmailWithTemplateTest:
         assert len(caplog.records) == 1
 
     @patch(
-        "sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email",
+        "brevo_python.api.TransactionalEmailsApi.send_transac_email",
         side_effect=ApiException(status=524, reason="Bad Request"),
     )
     def test_external_api_unavailable(self, mock, caplog):
@@ -115,7 +115,7 @@ class TransactionalEmailWithTemplateTest:
 
         assert len(caplog.records) == 0
 
-    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_with_template_id_success(self, mock_send_transac_email):
         payload = SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
@@ -142,7 +142,7 @@ class TransactionalEmailWithTemplateTest:
         }
         assert mock_send_transac_email.call_args[0][0].headers == {"X-List-Unsub": "disabled"}
 
-    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_with_reply_to_success(self, mock_send_transac_email):
         payload = SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
@@ -166,7 +166,7 @@ class TransactionalEmailWithTemplateTest:
         assert mock_send_transac_email.call_args[0][0].reply_to == {"email": "reply@example.com", "name": "reply"}
         assert mock_send_transac_email.call_args[0][0].headers is None
 
-    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_with_template_id_success_empty_params(self, mock_send_transac_email):
         payload = SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
@@ -213,7 +213,7 @@ class TransactionalEmailWithoutTemplateTest:
         reply_to=None,
     )
 
-    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_success(self, mock_send_transac_email):
         payload = SendTransactionalEmailRequest(
             sender=dataclasses.asdict(self.data.sender.value),
@@ -239,7 +239,7 @@ class TransactionalEmailWithoutTemplateTest:
             "name": "pass Culture",
         }
 
-    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_success_empty_attachement(self, mock_send_transac_email):
         payload = SendTransactionalEmailRequest(
             sender=dataclasses.asdict(self.data.sender.value),

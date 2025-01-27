@@ -4,8 +4,8 @@ from unittest.mock import call
 from unittest.mock import patch
 import warnings
 
+from brevo_python.models.request_contact_import import RequestContactImport
 import pytest
-from sib_api_v3_sdk.models.request_contact_import import RequestContactImport
 
 from pcapi import settings
 from pcapi.core.cultural_survey import models as cultural_survey_models
@@ -272,7 +272,7 @@ class BulkImportUsersDataTest:
         result = build_file_body(self.users_data)
         assert result == expected
 
-    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
     def test_import_contacts_in_sendinblue(self, mock_import_contacts):
         import_contacts_in_sendinblue(self.users_data)
 
@@ -304,7 +304,7 @@ class BulkImportUsersDataTest:
         mock_import_contacts.assert_has_calls([call(expected_young_call), call(expected_pro_call)], any_order=True)
 
     @pytest.mark.parametrize("use_pro_subaccount", [True, False])
-    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
     def test_add_contacts_to_list(self, mock_import_contacts, use_pro_subaccount):
         result = add_contacts_to_list(
             ["eren.yeager@shinganshina.paradis", "armin.arlert@shinganshina.paradis"],

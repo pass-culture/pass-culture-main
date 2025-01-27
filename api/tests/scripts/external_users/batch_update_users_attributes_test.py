@@ -37,7 +37,7 @@ def test_get_users_chunks():
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+@patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
 def test_run(mock_import_contacts):
     """
     Test that two chunks of users are used and therefore two requests are sent.
@@ -61,7 +61,7 @@ def test_run_batch_only():
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+@patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
 def test_run_sendinblue_only(mock_import_contacts):
     """
     Test that two chunks of users are used and therefore two requests are sent.
