@@ -1193,7 +1193,6 @@ class UpdateVenueTest(PostEndpointHelper):
         self, mock_get_municipality_centroid, authenticated_client
     ):
         venue = offerers_factories.VenueFactory()
-        offerer_address_id = venue.offererAddressId
         other_venue = offerers_factories.VenueFactory(
             street="1 Rue Poivre",
             postalCode="97400",
