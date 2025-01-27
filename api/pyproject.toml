@@ -30,7 +30,7 @@ dependencies = [
 "flask-sqlalchemy==2.5.*",
 "flask-wtf==1.2.2",
 "flask==2.0.*",
-"geoalchemy2>=0.16.0",
+"geoalchemy2>=0.17.0",
 "google-api-python-client==2.159.0",
 "google-auth==2.38.0",
 "google-cloud-bigquery==3.29.0",
