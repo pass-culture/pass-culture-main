@@ -1,7 +1,7 @@
 from flask import url_for
 import pytest
 
-from pcapi.core.categories.subcategories_v2 import EacFormat
+from pcapi.core.categories.subcategories import EacFormat
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core import testing
-from pcapi.domain import show_types
+from pcapi.core.categories.genres import show
 
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
@@ -22,7 +22,7 @@ class GetShowTypesTest(PublicAPIEndpointBaseHelper):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
             assert response.status_code == 200
 
-        assert set(show_type["id"] for show_type in response.json) == set(show_types.SHOW_SUB_TYPES_BY_SLUG)
+        assert set(show_type["id"] for show_type in response.json) == set(show.SHOW_SUB_TYPES_BY_SLUG)
 
     def test_show_type_serialization(self, client):
         plain_api_key, _ = self.setup_provider()

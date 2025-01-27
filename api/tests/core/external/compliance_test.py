@@ -4,7 +4,7 @@ from unittest import mock
 import pytest
 import sqlalchemy as sa
 
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.external import compliance
 from pcapi.core.external.compliance_backends.compliance import ComplianceBackend
 from pcapi.core.offers import factories as offers_factories

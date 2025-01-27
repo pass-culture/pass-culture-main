@@ -30,8 +30,8 @@ from sqlalchemy.sql.sqltypes import Numeric
 
 from pcapi import settings
 from pcapi.core.bookings import exceptions as booking_exceptions
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 import pcapi.core.finance.models as finance_models
 from pcapi.core.object_storage import delete_public_object
@@ -973,7 +973,7 @@ class CollectiveOffer(
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
     @property
-    def category(self) -> categories.Category | None:
+    def category(self) -> pro_categories.Category | None:
         if not self.subcategory:
             return None
         return self.subcategory.category

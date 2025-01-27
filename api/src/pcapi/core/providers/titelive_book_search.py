@@ -7,7 +7,7 @@ from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookArti
 from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookWork
 from pcapi.connectors.titelive import TiteliveBase
 from pcapi.connectors.titelive import get_by_ean_list
-from pcapi.core.categories.subcategories_v2 import LIVRE_PAPIER
+from pcapi.core.categories.subcategories import LIVRE_PAPIER
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import constants

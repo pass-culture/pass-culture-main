@@ -7,9 +7,9 @@ from pcapi.connectors.serialization.titelive_serializers import GenreTitelive
 from pcapi.connectors.serialization.titelive_serializers import TiteliveMusicArticle
 from pcapi.connectors.serialization.titelive_serializers import TiteliveMusicWork
 from pcapi.connectors.titelive import TiteliveBase
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.genres import music
 from pcapi.core.offers import models as offers_models
-from pcapi.domain import music_types
 
 from .constants import MUSIC_SLUG_BY_GTL_ID
 from .constants import NOT_CD_LIBELLES
@@ -164,15 +164,11 @@ def build_music_extra_data(
     )
 
 
-def parse_titelive_music_genre(gtl_id: str | None) -> tuple[music_types.OldMusicType, music_types.OldMusicSubType]:
-    music_slug = (
-        MUSIC_SLUG_BY_GTL_ID.get(gtl_id, music_types.OTHER_SHOW_TYPE_SLUG)
-        if gtl_id
-        else music_types.OTHER_SHOW_TYPE_SLUG
-    )
+def parse_titelive_music_genre(gtl_id: str | None) -> tuple[music.OldMusicType, music.OldMusicSubType]:
+    music_slug = MUSIC_SLUG_BY_GTL_ID.get(gtl_id, music.OTHER_SHOW_TYPE_SLUG) if gtl_id else music.OTHER_SHOW_TYPE_SLUG
     return (
-        music_types.MUSIC_TYPES_BY_SLUG[music_slug],
-        music_types.MUSIC_SUB_TYPES_BY_SLUG[music_slug],
+        music.MUSIC_TYPES_BY_SLUG[music_slug],
+        music.MUSIC_SUB_TYPES_BY_SLUG[music_slug],
     )
 
 

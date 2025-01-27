@@ -5,7 +5,7 @@ import pytest
 
 from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.utils import human_ids
 

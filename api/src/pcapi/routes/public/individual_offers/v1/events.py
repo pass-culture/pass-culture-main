@@ -4,7 +4,7 @@ import sqlalchemy as sqla
 
 from pcapi import repository
 from pcapi.core.bookings import exceptions as booking_exceptions
-from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offers import api as offers_api

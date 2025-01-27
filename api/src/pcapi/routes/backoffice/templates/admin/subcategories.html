@@ -12,8 +12,6 @@
             <th scope="col">app_label</th>
             <th scope="col">Nom tech de la sous-catégorie</th>
             <th scope="col">Nom tech de la catégorie</th>
-            <th scope="col">native_category</th>
-            <th scope="col">search_group_name</th>
             <th scope="col">homepage_label_name</th>
             <th scope="col">is_event</th>
             <th scope="col">conditional_fields</th>
@@ -36,8 +34,6 @@
                 <td>{{ subcategory.app_label }}</td>
                 <td>{{ subcategory.id }}</td>
                 <td>{{ subcategory.category.id }}</td>
-                <td>{{ subcategory.native_category.name }}</td>
-                <td>{{ subcategory.search_group_name }}</td>
                 <td>{{ subcategory.homepage_label_name }}</td>
                 <td>{{ subcategory.is_event | format_bool_badge }}</td>
                 <td>{{ subcategory.conditional_fields }}</td>

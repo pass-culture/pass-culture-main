@@ -3,7 +3,7 @@ import datetime
 from pcapi.core.achievements import exceptions as achievements_exceptions
 from pcapi.core.achievements import models as achievements_models
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 
@@ -40,47 +40,47 @@ def unlock_achievement(booking: bookings_models.Booking) -> achievements_models.
 
 ACHIEVEMENT_NAME_TO_SUBCATEGORY_IDS = {
     achievements_models.AchievementEnum.FIRST_MOVIE_BOOKING: [
-        subcategories_v2.SEANCE_CINE.id,
-        subcategories_v2.CINE_PLEIN_AIR.id,
+        subcategories.SEANCE_CINE.id,
+        subcategories.CINE_PLEIN_AIR.id,
     ],
-    achievements_models.AchievementEnum.FIRST_BOOK_BOOKING: [subcategories_v2.LIVRE_PAPIER.id],
+    achievements_models.AchievementEnum.FIRST_BOOK_BOOKING: [subcategories.LIVRE_PAPIER.id],
     achievements_models.AchievementEnum.FIRST_RECORDED_MUSIC_BOOKING: [
-        subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-        subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
+        subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+        subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
     ],
     achievements_models.AchievementEnum.FIRST_SHOW_BOOKING: [
-        subcategories_v2.SPECTACLE_REPRESENTATION.id,
-        subcategories_v2.SPECTACLE_VENTE_DISTANCE.id,
-        subcategories_v2.ABO_SPECTACLE.id,
-        subcategories_v2.FESTIVAL_SPECTACLE.id,
+        subcategories.SPECTACLE_REPRESENTATION.id,
+        subcategories.SPECTACLE_VENTE_DISTANCE.id,
+        subcategories.ABO_SPECTACLE.id,
+        subcategories.FESTIVAL_SPECTACLE.id,
     ],
     achievements_models.AchievementEnum.FIRST_MUSEUM_BOOKING: [
-        subcategories_v2.VISITE.id,
-        subcategories_v2.CARTE_MUSEE.id,
-        subcategories_v2.MUSEE_VENTE_DISTANCE.id,
-        subcategories_v2.VISITE_GUIDEE.id,
-        subcategories_v2.CONFERENCE.id,
-        subcategories_v2.EVENEMENT_PATRIMOINE.id,
+        subcategories.VISITE.id,
+        subcategories.CARTE_MUSEE.id,
+        subcategories.MUSEE_VENTE_DISTANCE.id,
+        subcategories.VISITE_GUIDEE.id,
+        subcategories.CONFERENCE.id,
+        subcategories.EVENEMENT_PATRIMOINE.id,
     ],
     achievements_models.AchievementEnum.FIRST_LIVE_MUSIC_BOOKING: [
-        subcategories_v2.CONCERT.id,
-        subcategories_v2.FESTIVAL_MUSIQUE.id,
-        subcategories_v2.ABO_CONCERT.id,
-        subcategories_v2.EVENEMENT_MUSIQUE.id,
+        subcategories.CONCERT.id,
+        subcategories.FESTIVAL_MUSIQUE.id,
+        subcategories.ABO_CONCERT.id,
+        subcategories.EVENEMENT_MUSIQUE.id,
     ],
-    achievements_models.AchievementEnum.FIRST_NEWS_BOOKING: [subcategories_v2.ABO_PRESSE_EN_LIGNE.id],
+    achievements_models.AchievementEnum.FIRST_NEWS_BOOKING: [subcategories.ABO_PRESSE_EN_LIGNE.id],
     achievements_models.AchievementEnum.FIRST_INSTRUMENT_BOOKING: [
-        subcategories_v2.ACHAT_INSTRUMENT.id,
-        subcategories_v2.BON_ACHAT_INSTRUMENT.id,
-        subcategories_v2.PARTITION.id,
-        subcategories_v2.MATERIEL_ART_CREATIF.id,
+        subcategories.ACHAT_INSTRUMENT.id,
+        subcategories.BON_ACHAT_INSTRUMENT.id,
+        subcategories.PARTITION.id,
+        subcategories.MATERIEL_ART_CREATIF.id,
     ],
     achievements_models.AchievementEnum.FIRST_ART_LESSON_BOOKING: [
-        subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
-        subcategories_v2.ATELIER_PRATIQUE_ART.id,
-        subcategories_v2.PLATEFORME_PRATIQUE_ARTISTIQUE.id,
-        subcategories_v2.ABO_PRATIQUE_ART.id,
-        subcategories_v2.PRATIQUE_ART_VENTE_DISTANCE.id,
+        subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+        subcategories.ATELIER_PRATIQUE_ART.id,
+        subcategories.PLATEFORME_PRATIQUE_ARTISTIQUE.id,
+        subcategories.ABO_PRATIQUE_ART.id,
+        subcategories.PRATIQUE_ART_VENTE_DISTANCE.id,
     ],
 }
 

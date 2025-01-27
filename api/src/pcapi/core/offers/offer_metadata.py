@@ -1,7 +1,7 @@
 import datetime
 import typing
 
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.utils import get_offer_address
 from pcapi.core.offers.utils import offer_app_link
@@ -10,10 +10,10 @@ from pcapi.core.providers import constants as providers_constants
 
 Metadata = dict[str, typing.Any]
 book_subcategories = {
-    subcategories_v2.LIVRE_AUDIO_PHYSIQUE.id: "https://schema.org/AudiobookFormat",
-    subcategories_v2.TELECHARGEMENT_LIVRE_AUDIO.id: "https://schema.org/AudiobookFormat",
-    subcategories_v2.LIVRE_NUMERIQUE.id: "https://schema.org/EBook",
-    subcategories_v2.LIVRE_PAPIER.id: "https://schema.org/Hardcover",
+    subcategories.LIVRE_AUDIO_PHYSIQUE.id: "https://schema.org/AudiobookFormat",
+    subcategories.TELECHARGEMENT_LIVRE_AUDIO.id: "https://schema.org/AudiobookFormat",
+    subcategories.LIVRE_NUMERIQUE.id: "https://schema.org/EBook",
+    subcategories.LIVRE_PAPIER.id: "https://schema.org/Hardcover",
 }
 
 

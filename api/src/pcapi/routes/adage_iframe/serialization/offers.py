@@ -8,8 +8,8 @@ from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1.class_validators import validator
 
-import pcapi.core.categories.subcategories_v2 as subcategories
-from pcapi.core.categories.subcategories_v2 import EacFormat
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.subcategories import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.offerers import models as offerers_models

@@ -11,7 +11,7 @@ import pytest
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional import sendinblue_template_ids
 import pcapi.core.offerers.factories as offerers_factories
@@ -1198,11 +1198,11 @@ class Returns400Test:
 
     def test_cannot_update_stock_with_price_outside_of_price_limitation_rule(self, client):
         offers_factories.OfferPriceLimitationRuleFactory(
-            subcategoryId=subcategories_v2.ACHAT_INSTRUMENT.id, rate=Decimal("0.5")
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=Decimal("0.5")
         )
         offer = offers_factories.OfferFactory(
             isActive=False,
-            subcategoryId=subcategories_v2.ACHAT_INSTRUMENT.id,
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
             lastValidationPrice=Decimal("100"),
         )
         existing_stock = offers_factories.StockFactory(offer=offer, price=120)

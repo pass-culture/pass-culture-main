@@ -5,7 +5,7 @@ from typing import Mapping
 from sqlalchemy import exc as sa_exc
 from sqlalchemy.orm import exc as orm_exc
 
-import pcapi.core.categories.subcategories_v2 as subcategories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api.categories import get_educational_categories

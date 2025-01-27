@@ -5,7 +5,7 @@ from enum import Enum
 import pydantic.v1 as pydantic_v1
 
 from pcapi.core.bookings.models import Booking
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -53,11 +53,11 @@ class GetBookingResponse(BaseModel):
 
 
 def get_booking_response(booking: Booking) -> GetBookingResponse:
-    if booking.stock.offer.subcategoryId == subcategories_v2.SEANCE_CINE.id:
+    if booking.stock.offer.subcategoryId == subcategories.SEANCE_CINE.id:
         formula = BookingFormula.PLACE
     elif booking.stock.offer.subcategoryId in (
-        subcategories_v2.CARTE_CINE_ILLIMITE.id,
-        subcategories_v2.CARTE_CINE_MULTISEANCES.id,
+        subcategories.CARTE_CINE_ILLIMITE.id,
+        subcategories.CARTE_CINE_MULTISEANCES.id,
     ):
         formula = BookingFormula.ABO
     else:

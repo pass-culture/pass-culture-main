@@ -4,7 +4,7 @@ from decimal import Decimal
 from flask import url_for
 import pytest
 
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
@@ -85,7 +85,7 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         assert rows[2]["Offre"] == ""
         assert rows[2]["Taux de remboursement"] == "50,00 %"
         assert rows[2]["Montant remboursé"] == ""
-        assert rows[2]["Sous-catégories"] == subcategories_v2.FESTIVAL_LIVRE.pro_label
+        assert rows[2]["Sous-catégories"] == subcategories.FESTIVAL_LIVRE.pro_label
         assert rows[2]["Date d'application"] == start.strftime("%d/%m/%Y") + " → " + end.strftime("%d/%m/%Y")
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
