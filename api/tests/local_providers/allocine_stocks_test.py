@@ -160,7 +160,7 @@ class UpdateObjectsTest:
     @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_create_one_offer_with_movie_info(
+    def test_should_create_one_offer_and_stocks_with_movie_info(
         self, mock_call_allocine_api, mock_api_poster, mock_should_apply_movie_festival_rate
     ):
         # Given

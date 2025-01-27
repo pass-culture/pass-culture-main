@@ -183,6 +183,6 @@ class ComponentsTest(GetEndpointWithoutPermissionHelper):
         assert response.status_code == 200
 
     @pytest.mark.settings(ENABLE_BO_COMPONENT_PAGE=0)
-    def test_returns_user_data(self, authenticated_client):
+    def test_returns_user_data_without_bo_component_page(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint))
         assert response.status_code == 404
