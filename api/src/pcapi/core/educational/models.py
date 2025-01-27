@@ -1474,6 +1474,7 @@ class CollectiveStock(PcObject, Base, Model):
 
     startDatetime: datetime = sa.Column(sa.DateTime, nullable=False)
     endDatetime: datetime = sa.Column(sa.DateTime, nullable=False)
+    sa.Index("ix_collective_stock_startDatetime_endDatetime", startDatetime, endDatetime)
 
     collectiveOfferId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False, unique=True
