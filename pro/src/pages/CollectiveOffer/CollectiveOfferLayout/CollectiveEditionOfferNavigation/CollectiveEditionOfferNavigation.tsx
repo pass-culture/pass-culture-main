@@ -38,7 +38,7 @@ import fullCopyIcon from 'icons/full-duplicate.svg'
 import fullPlusIcon from 'icons/full-plus.svg'
 import fullShowIcon from 'icons/full-show.svg'
 import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Tab, Tabs } from 'ui-kit/Tabs/Tabs'
 

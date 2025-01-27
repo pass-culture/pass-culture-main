@@ -14,7 +14,7 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './CollectiveActionButtons.module.scss'

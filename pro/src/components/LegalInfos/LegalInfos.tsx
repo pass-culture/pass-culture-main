@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import fullMailIcon from 'icons/full-mail.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

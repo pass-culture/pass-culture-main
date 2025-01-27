@@ -12,7 +12,7 @@ import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
 import { Breadcrumb, Crumb } from 'ui-kit/Breadcrumb/Breadcrumb'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

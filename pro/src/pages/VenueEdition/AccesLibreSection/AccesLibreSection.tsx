@@ -1,4 +1,3 @@
-
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -6,7 +5,7 @@ import strokeAccessibilityBrain from 'icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEar from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLeg from 'icons/stroke-accessibility-leg.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { AccesLibreCollapse } from './AccesLibreCollapse'

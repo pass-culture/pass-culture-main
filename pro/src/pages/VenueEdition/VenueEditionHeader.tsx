@@ -21,7 +21,7 @@ import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import fullParametersIcon from 'icons/full-parameters.svg'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './VenueEditionHeader.module.scss'

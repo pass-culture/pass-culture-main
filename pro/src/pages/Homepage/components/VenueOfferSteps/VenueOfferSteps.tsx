@@ -15,7 +15,7 @@ import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
 import { Card } from 'components/Card/Card'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullNextIcon from 'icons/full-next.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import {

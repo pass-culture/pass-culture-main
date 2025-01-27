@@ -1,5 +1,5 @@
 import penIcon from 'icons/full-edit.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { DropdownItem } from 'ui-kit/DropdownMenuWrapper/DropdownItem'
 
 interface EditOfferCellProps {

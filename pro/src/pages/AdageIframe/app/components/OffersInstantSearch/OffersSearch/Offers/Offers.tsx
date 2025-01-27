@@ -27,7 +27,7 @@ import fullList from 'icons/full-list.svg'
 import TFMAC2025 from 'pages/AdageIframe/app/components/HighlightBanner/assets/TFMAC-2025.png'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -46,9 +46,6 @@ import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import styles from './Offers.module.scss'
 import { offerIsBookable } from './utils/offerIsBookable'
-
-
-
 
 export interface OffersProps {
   displayStats?: boolean
@@ -178,7 +175,6 @@ export const Offers = ({
     })
   }
 
-
   const logOpenHighlightBanner = (bannerName: string) => {
     apiAdage.logOpenHighlightBanner({
       iframeFrom: location.pathname,
@@ -249,38 +245,46 @@ export const Offers = ({
                   "Pour certaines offres, le pass Culture peut prendre en charge certains coûts accessoires nécessaires à la réalisation d'activités d'éducation artistique et culturelle menées en classe ou hors les murs. Cela peut inclure par exemple les frais de transport d’un intervenant ou le matériel consommable d’un atelier artistique. Cette prise en charge doit bien sûr faire l’objet d’un accord entre vous et le partenaire qui porte le projet. Il n’est en revanche pas possible d'acheter des livres ou des équipements pérennes avec les crédits pass Culture ou de financer le transport des élèves."
                 }
                 localStorageKey={'DIFFUSE_HELP_ADAGE_SEEN'}
-                img={<ShadowTipsHelpIcon className={styles['highlight-banner-icon']} />}
-              />
-            ) : adageViewType === 'list' && index === 0 && currentDate < targetDate && (
-              <HighlightBanner
-                title={
-                  'Permettre aux jeunes de découvrir les métiers de la culture !'
-                }
-                description={
-                  'Du 24 janvier au 2 février 2025, le pass Culture propose aux jeunes de 15 à 20 ans une multitude de rencontres avec les métiers des arts et de la culture sur leur application pass Culture.'
-                }
-                localStorageKey={'TFMAC_2025_ADAGE_SEEN'}
                 img={
-                  <img
-                    src={TFMAC2025}
-                    className={styles['banner']}
-                    alt="La culture en vrai, métiers des arts et de la culture"
+                  <ShadowTipsHelpIcon
+                    className={styles['highlight-banner-icon']}
                   />
                 }
-                primaryButton={
-                  <ButtonLink
-                    variant={ButtonVariant.PRIMARY}
-                    to="https://pass.culture.fr/TFMAC-2025"
-                    isExternal
-                    opensInNewTab
-                    icon={fullLinkIcon}
-                    className={styles['highlight-banner-button']}
-                    onClick={() => logOpenHighlightBanner('TFMAC-2025')}
-                  >
-                    en savoir plus
-                  </ButtonLink>
-                }
               />
+            ) : (
+              adageViewType === 'list' &&
+              index === 0 &&
+              currentDate < targetDate && (
+                <HighlightBanner
+                  title={
+                    'Permettre aux jeunes de découvrir les métiers de la culture !'
+                  }
+                  description={
+                    'Du 24 janvier au 2 février 2025, le pass Culture propose aux jeunes de 15 à 20 ans une multitude de rencontres avec les métiers des arts et de la culture sur leur application pass Culture.'
+                  }
+                  localStorageKey={'TFMAC_2025_ADAGE_SEEN'}
+                  img={
+                    <img
+                      src={TFMAC2025}
+                      className={styles['banner']}
+                      alt="La culture en vrai, métiers des arts et de la culture"
+                    />
+                  }
+                  primaryButton={
+                    <ButtonLink
+                      variant={ButtonVariant.PRIMARY}
+                      to="https://pass.culture.fr/TFMAC-2025"
+                      isExternal
+                      opensInNewTab
+                      icon={fullLinkIcon}
+                      className={styles['highlight-banner-button']}
+                      onClick={() => logOpenHighlightBanner('TFMAC-2025')}
+                    >
+                      en savoir plus
+                    </ButtonLink>
+                  }
+                />
+              )
             )}
             {adageViewType === 'list' &&
               index === 1 &&

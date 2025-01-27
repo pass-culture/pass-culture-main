@@ -36,7 +36,7 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { Notification } from 'components/Notification/Notification'
 import { STOCKS_PER_PAGE } from 'components/StocksEventList/StocksEventList'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 
 vi.mock('commons/utils/date', async () => {
   return {

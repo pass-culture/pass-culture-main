@@ -37,7 +37,7 @@ import fullHideIcon from 'icons/full-hide.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
 import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 import style from './OfferEducationalActions.module.scss'

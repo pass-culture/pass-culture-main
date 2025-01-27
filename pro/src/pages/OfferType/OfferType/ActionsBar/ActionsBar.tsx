@@ -6,7 +6,7 @@ import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeInd
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import fullRightIcon from 'icons/full-right.svg'
 import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 interface ActionsBarProps {

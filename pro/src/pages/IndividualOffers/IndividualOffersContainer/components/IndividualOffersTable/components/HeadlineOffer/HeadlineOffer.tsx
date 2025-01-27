@@ -1,7 +1,7 @@
 import { WEBAPP_URL } from 'commons/utils/config'
 import fullLinkIcon from 'icons/full-link.svg'
 import { useIndividualOffersContext } from 'pages/IndividualOffers/context/IndividualOffersContext'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 

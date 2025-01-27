@@ -52,7 +52,7 @@ import strokeCheckIcon from 'icons/stroke-check.svg'
 import strokeThingIcon from 'icons/stroke-thing.svg'
 import styles from 'styles/components/Cells.module.scss'
 import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DropdownMenuWrapper } from 'ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
 

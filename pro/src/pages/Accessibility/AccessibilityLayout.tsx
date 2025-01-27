@@ -1,7 +1,7 @@
 import { Layout, LayoutProps } from 'app/App/layout/Layout'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import fullBackIcon from 'icons/full-back.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 
 import styles from './AccessibilityLayout.module.scss'
 

@@ -1,0 +1,234 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+
+.button {
+  @include fonts.button;
+
+  margin: 0;
+  border: rem.torem(2px) solid;
+  border-radius: rem.torem(24px);
+  display: inline-flex;
+  justify-content: center;
+  padding: 0 rem.torem(16px);
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:disabled,
+  &.button-disabled {
+    cursor: default;
+  }
+
+  &.button-disabled {
+    pointer-events: none;
+  }
+
+  &-icon {
+    height: size.$button-icon-size;
+    width: size.$button-icon-size;
+    flex-shrink: 0;
+    vertical-align: text-bottom;
+  }
+
+  &-center {
+    padding: 0 rem.torem(8px);
+  }
+
+  &.button-left {
+    .button-icon:not(.button-icon-arrow, .has-tooltip) {
+      margin-right: rem.torem(8px);
+    }
+  }
+
+  &.button-right {
+    .button-icon:not(.button-icon-arrow, .has-tooltip) {
+      margin-left: rem.torem(8px);
+    }
+  }
+
+  &:focus-visible {
+    outline: rem.torem(1px) solid var(--color-input-text-color);
+    outline-offset: rem.torem(2px);
+  }
+
+  &-primary {
+    min-height: rem.torem(40px);
+    align-items: center;
+    color: var(--color-white);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+
+    &:hover {
+      background-color: var(--color-primary-dark);
+      border-color: var(--color-primary-dark);
+    }
+
+    &:disabled,
+    &.button-disabled {
+      background-color: var(--color-grey-light);
+      color: var(--color-grey-dark);
+      border-color: var(--color-grey-light);
+
+      .button-icon {
+        color: var(--color-grey-semi-dark);
+      }
+    }
+
+    .button-icon {
+      color: var(--color-white);
+    }
+  }
+
+  &-secondary {
+    min-height: rem.torem(40px);
+    align-items: center;
+    color: var(--color-primary);
+    background-color: var(--color-white);
+    border-color: var(--color-primary);
+
+    &:hover {
+      color: var(--color-white);
+      background-color: var(--color-primary-dark);
+      border-color: var(--color-primary-dark);
+
+      .button-icon {
+        color: var(--color-white);
+      }
+    }
+
+    &:disabled,
+    &.button-disabled {
+      background-color: var(--color-grey-light);
+      color: var(--color-grey-dark);
+      border-color: var(--color-grey-light);
+    }
+
+    &:disabled .button-icon,
+    &.button-disabled .button-icon {
+      color: var(--color-grey-medium);
+    }
+
+    .button-icon {
+      color: var(--color-primary);
+    }
+  }
+
+  &-ternary,
+  &-quaternary,
+  &-ternary-pink,
+  &-quaternary-pink {
+    color: var(--color-black);
+    align-items: flex-start;
+    justify-content: flex-start;
+    background-color: transparent;
+    border-radius: rem.torem(4px);
+    padding: 0;
+    border: none;
+    height: auto;
+
+    &-pink {
+      color: var(--color-primary);
+    }
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+
+    &:disabled,
+    &.button-disabled {
+      text-decoration: none;
+      color: var(--color-grey-dark);
+    }
+
+    &:disabled .button-icon,
+    &.button-disabled .button-icon {
+      color: var(--color-grey-semi-dark);
+    }
+
+    .button-icon:not(.has-tooltip) {
+      height: var(--typography-body-line-height);
+      width: rem.torem(20px);
+      margin-right: rem.torem(8px);
+    }
+
+    &.button-center {
+      .button-icon {
+        margin-right: 0;
+      }
+    }
+  }
+
+  &-quaternary {
+    @include fonts.body-accent-xs;
+
+    margin-top: rem.torem(6px);
+    margin-bottom: rem.torem(6px);
+    color: var(--color-black);
+
+    .button-icon:not(.has-tooltip) {
+      height: var(--typography-body-xs-line-height);
+      width: rem.torem(16px);
+      margin-right: rem.torem(4px);
+    }
+
+    &.button-left {
+      .button-icon:not(.button-icon-arrow, .has-tooltip) {
+        margin-right: rem.torem(4px);
+      }
+    }
+
+    &.button-right {
+      .button-icon:not(.button-icon-arrow, .has-tooltip) {
+        margin-left: rem.torem(4px);
+      }
+    }
+
+    &:focus-visible {
+      padding: rem.torem(2px) rem.torem(4px);
+    }
+  }
+
+  &-filter {
+    @include fonts.body;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+    width: auto;
+    background-color: var(--color-white);
+    padding: rem.torem(6px) rem.torem(8px);
+    border: rem.torem(1px) solid var(--color-grey-dark);
+    border-radius: rem.torem(8px);
+    max-width: rem.torem(400px);
+  }
+}
+
+.spinner-icon {
+  height: rem.torem(20px);
+  width: rem.torem(20px);
+}
+
+.loading-spinner {
+  @media screen and (prefers-reduced-motion: reduce) {
+    svg {
+      animation: none;
+    }
+  }
+
+  svg {
+    animation: rotation 3s infinite linear;
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}

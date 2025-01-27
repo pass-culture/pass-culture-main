@@ -11,7 +11,7 @@ import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
 import fullMoreIcon from 'icons/full-more.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

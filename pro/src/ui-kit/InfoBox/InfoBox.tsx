@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { ReactNode } from 'react'
 
 import fullLinkIcon from 'icons/full-link.svg'
-import { ButtonLink, LinkProps } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink, LinkProps } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
 

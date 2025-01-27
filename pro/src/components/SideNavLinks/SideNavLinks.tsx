@@ -32,7 +32,7 @@ import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokePieIcon from 'icons/stroke-pie.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
 import { getSavedVenueId } from 'pages/Homepage/components/Offerers/components/PartnerPages/PartnerPages'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

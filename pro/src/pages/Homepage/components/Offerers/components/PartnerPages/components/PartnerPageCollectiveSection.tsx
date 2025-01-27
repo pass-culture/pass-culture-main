@@ -5,7 +5,7 @@ import { getLastCollectiveDmsApplication } from 'commons/utils/getLastCollective
 import fullInfoIcon from 'icons/full-info.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullNextIcon from 'icons/full-next.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 

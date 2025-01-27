@@ -12,7 +12,7 @@ import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
 import { getDateToFrenchText } from 'commons/utils/date'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullLinkIcon from 'icons/full-link.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import {
   Timeline,

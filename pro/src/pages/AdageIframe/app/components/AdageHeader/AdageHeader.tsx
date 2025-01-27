@@ -7,7 +7,7 @@ import { apiAdage } from 'apiClient/api'
 import { GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import fullDownloadIcon from 'icons/full-download.svg'
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import fullLinkIcon from 'icons/full-link.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import styles from './Button.module.scss'
+import styles from './ButtonLink.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
 /**

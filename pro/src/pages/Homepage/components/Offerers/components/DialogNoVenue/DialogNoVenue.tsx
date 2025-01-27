@@ -2,7 +2,7 @@ import { DialogTitle } from '@radix-ui/react-dialog'
 import cn from 'classnames'
 
 import { useMediaQuery } from 'commons/hooks/useMediaQuery'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 

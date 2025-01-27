@@ -25,7 +25,7 @@ import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offere
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import fullEditIcon from 'icons/full-edit.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'

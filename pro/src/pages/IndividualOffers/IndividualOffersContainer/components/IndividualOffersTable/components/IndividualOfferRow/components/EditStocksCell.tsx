@@ -1,6 +1,6 @@
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import fullStockIcon from 'icons/full-stock.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { DropdownItem } from 'ui-kit/DropdownMenuWrapper/DropdownItem'
 
 interface EditStocksCellProps {

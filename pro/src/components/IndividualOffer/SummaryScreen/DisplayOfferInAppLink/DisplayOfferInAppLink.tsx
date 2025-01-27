@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 
 import { WEBAPP_URL } from 'commons/utils/config'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { SharedButtonProps } from 'ui-kit/Button/types'
 
 interface DisplayOfferInAppLinkProps extends SharedButtonProps {

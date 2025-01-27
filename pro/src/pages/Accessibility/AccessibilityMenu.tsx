@@ -1,5 +1,5 @@
 import strokeRigthIcon from 'icons/stroke-right.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 import { AccessibilityLayout } from './AccessibilityLayout'

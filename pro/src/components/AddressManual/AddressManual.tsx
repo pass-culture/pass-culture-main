@@ -3,7 +3,7 @@ import React from 'react'
 
 import { getCoordsType, parseDms } from 'commons/utils/coords'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'

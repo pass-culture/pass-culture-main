@@ -10,7 +10,7 @@ import {
   getVirtualVenueFromOfferer,
 } from 'pages/Homepage/components/Offerers/components/VenueList/venueUtils'
 import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 

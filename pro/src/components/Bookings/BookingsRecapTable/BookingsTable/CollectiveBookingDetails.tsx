@@ -13,7 +13,7 @@ import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { CollectiveActionButtons } from './CollectiveActionButtons'

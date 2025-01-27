@@ -14,7 +14,7 @@ import { OfferEducationalActions } from 'components/OfferEducationalActions/Offe
 import { withCollectiveOfferFromParams } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 import { CollectiveOfferSummary } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/CollectiveOfferSummary'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './CollectiveOfferSummaryEdition.module.scss'

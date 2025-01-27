@@ -12,7 +12,7 @@ import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualO
 import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 
 import {
   PriceCategoriesScreen,

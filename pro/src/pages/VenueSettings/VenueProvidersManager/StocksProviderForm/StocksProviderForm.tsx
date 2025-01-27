@@ -7,7 +7,7 @@ import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeConnectIcon from 'icons/stroke-connect.svg'
 import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

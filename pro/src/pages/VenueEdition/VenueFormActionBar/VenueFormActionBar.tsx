@@ -3,7 +3,7 @@ import { useFormikContext } from 'formik'
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { VenueSettingsFormValues } from 'pages/VenueSettings/types'
 import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { VenueEditionFormValues } from '../types'

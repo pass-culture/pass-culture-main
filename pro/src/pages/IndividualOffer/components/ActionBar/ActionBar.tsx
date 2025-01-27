@@ -10,7 +10,7 @@ import fullLeftIcon from 'icons/full-left.svg'
 import fullRightIcon from 'icons/full-right.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink } from 'ui-kit/ButtonLink/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
