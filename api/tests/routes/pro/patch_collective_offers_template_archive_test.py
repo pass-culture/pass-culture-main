@@ -25,9 +25,7 @@ class Returns204Test:
         # When
         data = {"ids": [offer1.id, offer2.id]}
 
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             # 1. authentication
             # 2. load current_user
             # 3. feature flag
@@ -88,9 +86,7 @@ class Returns204Test:
         # When
         data = {"ids": [draft_template_offer.id, other_template_offer.id]}
 
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             # 1. authentication
             # 2. load current_user
             # 3. feature flag
@@ -119,9 +115,7 @@ class Returns204Test:
 
         data = {"ids": [rejected_template_offer.id, other_template_offer.id]}
 
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             # 1. authentication
             # 2. load current_user
             # 3. feature flag

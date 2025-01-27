@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core import testing
+from pcapi.core.educational import testing as educational_testing
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.models import CollectiveOfferTemplate
@@ -23,9 +24,7 @@ class Returns204Test:
         # When
         data = {"ids": [offer1.id, offer2.id], "isActive": True}
 
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             client = client.with_session_auth("pro@example.com")
             response = client.patch("/collective/offers-template/active-status", json=data)
 
@@ -67,9 +66,7 @@ class Returns204Test:
             "isActive": True,
         }
 
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             client = client.with_session_auth("pro@example.com")
             response = client.patch("/collective/offers-template/active-status", json=data)
 
@@ -92,10 +89,7 @@ class Returns403Test:
         client = client.with_session_auth("pro@example.com")
         data = {"ids": [offer1.id, offer2.id], "isActive": True}
 
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-            return_value=False,
-        ):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH, return_value=False):
             response = client.patch("/collective/offers-template/active-status", json=data)
 
         # Then
@@ -116,9 +110,7 @@ class Returns403Test:
             "isActive": False,
         }
 
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             client = client.with_session_auth("pro@example.com")
             response = client.patch("/collective/offers-template/active-status", json=data)
 

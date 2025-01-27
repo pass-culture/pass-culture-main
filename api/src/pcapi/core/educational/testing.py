@@ -16,6 +16,8 @@ def reset_requests() -> None:
     adage_requests = []
 
 
+PATCH_CAN_CREATE_OFFER_PATH = "pcapi.core.offerers.api.can_offerer_create_educational_offer"
+
 STATUSES_ALLOWING_EDIT_DETAILS = (
     models.CollectiveOfferDisplayedStatus.DRAFT,
     models.CollectiveOfferDisplayedStatus.ACTIVE,

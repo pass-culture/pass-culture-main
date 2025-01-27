@@ -12,9 +12,6 @@ from pcapi.core.users import testing as sendinblue_testing
 import pcapi.core.users.factories as users_factories
 
 
-PATCH_CAN_CREATE_OFFER_PATH = "pcapi.core.offerers.api.can_offerer_create_educational_offer"
-
-
 def base_offer_payload(
     venue, domains=None, subcategory_id=None, template_id=None, national_program_id=None, formats=None
 ) -> dict:
@@ -99,7 +96,7 @@ class Returns200Test:
         data = base_offer_payload(venue=venue)
 
         # When
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
@@ -121,7 +118,7 @@ class Returns200Test:
 
         # When
         data = {**base_offer_payload(venue=venue), "students": ["Collège - 6e"]}
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
@@ -146,7 +143,7 @@ class Returns200Test:
         data["interventionArea"] = []
         data["offerVenue"] = {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
@@ -159,7 +156,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "students": ["Écoles Marseille - Maternelle"]}
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
@@ -174,7 +171,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "students": ["Écoles Marseille - Maternelle"]}
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
@@ -192,7 +189,7 @@ class Returns200Test:
 
         data = base_offer_payload(venue=venue, template_id=collective_offer_template.id)
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
@@ -206,7 +203,7 @@ class Returns200Test:
             "offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id},
         }
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
@@ -223,7 +220,7 @@ class Returns200Test:
             "offerVenue": {"addressType": "school", "otherAddress": "", "venueId": None},
         }
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
@@ -240,7 +237,7 @@ class Returns200Test:
             "offerVenue": {"addressType": "other", "otherAddress": "In Paris", "venueId": None},
         }
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
@@ -260,7 +257,7 @@ class Returns403Test:
 
         # When
         data = base_offer_payload(venue=venue)
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         # Then
@@ -278,7 +275,7 @@ class Returns403Test:
 
         # When
         data = base_offer_payload(venue=venue)
-        with patch(PATCH_CAN_CREATE_OFFER_PATH, side_effect=raise_ac):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH, side_effect=raise_ac):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
@@ -294,7 +291,7 @@ class Returns403Test:
             **base_offer_payload(venue=venue),
             "offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": other_venue.id},
         }
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 403
@@ -314,7 +311,7 @@ class Returns400Test:
 
         # When
         data = base_offer_payload(venue=venue, subcategory_id="pouet")
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         # Then
@@ -330,7 +327,7 @@ class Returns400Test:
 
         # When
         data = base_offer_payload(venue=venue, subcategory_id=subcategories.OEUVRE_ART.id)
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         # Then
@@ -346,7 +343,7 @@ class Returns400Test:
 
         # When
         data = base_offer_payload(venue=venue, subcategory_id=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         # Then
@@ -362,7 +359,7 @@ class Returns400Test:
 
         # When
         data = base_offer_payload(venue=venue, domains=[])
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         # Then
@@ -376,7 +373,7 @@ class Returns400Test:
 
         data = base_offer_payload(venue=venue)
         data["bookingEmails"] = ["test@testmail.com", "test@test", "test"]
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         assert response.status_code == 400
@@ -391,7 +388,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "bookingEmails": []}
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
@@ -403,7 +400,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "interventionArea": []}
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
@@ -415,7 +412,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "domains": []}
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
@@ -427,7 +424,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "description": "too_long" * 200}
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
@@ -447,7 +444,7 @@ class Returns404Test:
         # When
         data = base_offer_payload(venue=venue, domains=[0, domain.id])
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
@@ -463,7 +460,7 @@ class Returns404Test:
         # When
         data = base_offer_payload(venue=venue, national_program_id=-1)
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
@@ -479,7 +476,7 @@ class Returns404Test:
         # When
         data = base_offer_payload(venue=venue, template_id=1234567890)
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
@@ -498,7 +495,7 @@ class Returns404Test:
 
         data = base_offer_payload(venue=venue, template_id=collective_offer_template.id)
 
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 403
