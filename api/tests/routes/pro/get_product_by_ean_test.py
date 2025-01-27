@@ -57,7 +57,7 @@ class Returns200Test:
         offerer_id = offerer.id
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ProductFactory(
+        offers_factories.ProductFactory(
             description=None,
             name="Product name",
             subcategoryId=subcategories_v2.LIVRE_PAPIER.id,

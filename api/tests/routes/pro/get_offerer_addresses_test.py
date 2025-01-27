@@ -104,7 +104,7 @@ class Return200Test:
             address__city="Paris",
             address__banId="75107_7560_00001",
         )
-        offer = offers_factories.OfferFactory(
+        offers_factories.OfferFactory(
             venue__managingOfferer=offerer,
             offererAddress=offerer_address_1,
             venue__offererAddress=offerer_address_1,

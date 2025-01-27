@@ -2641,22 +2641,23 @@ class GetHeadlineOfferFiltersTest:
 
         active_offer = factories.OfferFactory(isActive=True)
         factories.StockFactory(offer=active_offer)
-        active_offer_headline_offer = factories.HeadlineOfferFactory(offer=active_offer, create_mediation=True)
+        # active offer headline offer:
+        factories.HeadlineOfferFactory(offer=active_offer, create_mediation=True)
 
         finished_timespan = (
             datetime.datetime.utcnow() - datetime.timedelta(days=20),
             datetime.datetime.utcnow() - datetime.timedelta(days=10),
         )
-        already_inactive_offer_headline_offer = factories.HeadlineOfferFactory(
-            offer=active_offer, timespan=finished_timespan, create_mediation=True
-        )
+        # alreeady inactive offer headline offer:
+        factories.HeadlineOfferFactory(offer=active_offer, timespan=finished_timespan, create_mediation=True)
 
         another_active_offer = factories.OfferFactory(isActive=True)
         timespan_finishing_in_the_future = (
             datetime.datetime.utcnow() - datetime.timedelta(days=3),
             datetime.datetime.utcnow() + datetime.timedelta(days=3),
         )
-        soon_to_be_inactive_timespan = factories.HeadlineOfferFactory(
+        # soon to be inactive offer headline offer:
+        factories.HeadlineOfferFactory(
             offer=another_active_offer, timespan=timespan_finishing_in_the_future, create_mediation=True
         )
 
@@ -2679,9 +2680,8 @@ class GetHeadlineOfferFiltersTest:
             datetime.datetime.utcnow() - datetime.timedelta(days=20),
             datetime.datetime.utcnow() - datetime.timedelta(days=10),
         )
-        already_inactive_offer_headline_offer = factories.HeadlineOfferFactory(
-            offer=inactive_offer, timespan=finished_timespan, create_mediation=True
-        )
+        # already inactive headline offer
+        factories.HeadlineOfferFactory(offer=inactive_offer, timespan=finished_timespan, create_mediation=True)
 
         another_inactive_offer = factories.OfferFactory(isActive=False)
         timespan_finishing_in_the_future = (
@@ -2712,9 +2712,8 @@ class GetHeadlineOfferFiltersTest:
             datetime.datetime.utcnow() - datetime.timedelta(days=20),
             datetime.datetime.utcnow() - datetime.timedelta(days=10),
         )
-        already_inactive_headline_offer_without_mediation = factories.HeadlineOfferFactory(
-            offer=offer, timespan=finished_timespan, create_mediation=False
-        )
+        # already inactive headline offer without mediation
+        factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan, create_mediation=False)
 
         headline_offer_query_result = repository.get_inactive_headline_offers()
         assert headline_offer_query_result == [headline_offer_without_mediation]

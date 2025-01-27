@@ -186,8 +186,10 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_offer = offers_models.Offer.query.one()
+        created_offer = offers_models.Offer.query.first()
         created_stocks = offers_models.Stock.query.all()
+
+        assert created_offer, "No offer created"
 
         for created_stock in created_stocks:
             assert created_stock.price == decimal.Decimal("4.0")

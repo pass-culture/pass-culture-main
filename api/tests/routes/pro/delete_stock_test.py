@@ -52,7 +52,7 @@ class Returns200Test:
             offerer=offer.venue.managingOfferer,
         )
         stock = offers_factories.StockFactory(offer=offer)
-        booking = BookingFactory(stock=stock)
+        BookingFactory(stock=stock)
 
         # when
         response = client.with_session_auth("pro@example.com").delete(f"/stocks/{stock.id}")
