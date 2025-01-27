@@ -52,6 +52,8 @@ import {
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { getValidationSchema } from 'pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 
+import { DEFAULT_DETAILS_FORM_VALUES } from '../commons/constants'
+
 import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm/DetailsForm'
 import { EanSearchCallout } from './EanSearchCallout/EanSearchCallout'
@@ -85,7 +87,8 @@ export const IndividualOfferDetailsScreen = ({
   const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
-  const { categories, subCategories, offer } = useIndividualOfferContext()
+  const { categories, subCategories, offer, publishedOfferWithSameEAN } =
+    useIndividualOfferContext()
   const isDirtyDraftOffer = !offer
 
   const [filteredCategories, filteredSubcategories] = filterCategories(
@@ -214,7 +217,9 @@ export const IndividualOfferDetailsScreen = ({
     !isDirtyDraftOffer && !isOfferProductBased(offer)
   const isProductBased = !!formik.values.productId
 
-  const readOnlyFields = setFormReadOnlyFields(offer, isProductBased)
+  const readOnlyFields = publishedOfferWithSameEAN
+    ? Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+    : setFormReadOnlyFields(offer, isProductBased)
   const isEanSearchAvailable =
     isSearchByEanEnabled &&
     isRecordStore(filteredVenues) &&
@@ -332,7 +337,8 @@ export const IndividualOfferDetailsScreen = ({
             step={OFFER_WIZARD_STEP_IDS.DETAILS}
             isDisabled={
               formik.isSubmitting ||
-              Boolean(offer && isOfferDisabled(offer.status))
+              Boolean(offer && isOfferDisabled(offer.status)) ||
+              Boolean(publishedOfferWithSameEAN)
             }
             dirtyForm={formik.dirty || offer === null}
           />

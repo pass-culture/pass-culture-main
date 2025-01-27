@@ -15,7 +15,7 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 const IndividualOfferDetails = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { currentUser } = useCurrentUser()
-  const { offer } = useIndividualOfferContext()
+  const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()
 
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
@@ -36,7 +36,12 @@ const IndividualOfferDetails = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout offer={offer} title={getTitle(mode)} mode={mode}>
+    <IndivualOfferLayout
+      offer={offer}
+      title={getTitle(mode)}
+      mode={mode}
+      venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
+    >
       <IndividualOfferDetailsScreen venues={venuesQuery.data.venues} />
     </IndivualOfferLayout>
   )

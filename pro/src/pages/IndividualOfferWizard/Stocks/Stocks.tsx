@@ -9,7 +9,7 @@ import { StocksThing } from 'components/IndividualOffer/StocksThing/StocksThing'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const Stocks = (): JSX.Element | null => {
-  const { offer } = useIndividualOfferContext()
+  const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
 
   // Here we display a spinner because when the router transitions from
@@ -22,7 +22,12 @@ export const Stocks = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout offer={offer} title={getTitle(mode)} mode={mode}>
+    <IndivualOfferLayout
+      offer={offer}
+      title={getTitle(mode)}
+      mode={mode}
+      venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
+    >
       {offer.isEvent ? (
         mode === OFFER_WIZARD_MODE.CREATION ? (
           <StocksEventCreation offer={offer} />

@@ -60,7 +60,8 @@ export const IndividualOfferInformationsScreen = ({
   const notify = useNotification()
   const mode = useOfferWizardMode()
   const { mutate } = useSWRConfig()
-  const { subCategories } = useIndividualOfferContext()
+  const { subCategories, publishedOfferWithSameEAN } =
+    useIndividualOfferContext()
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
 
@@ -79,7 +80,10 @@ export const IndividualOfferInformationsScreen = ({
 
   const addToLocalStorage = () => {
     const keyName = getLocalStorageKeyName(offer)
-    if (storageAvailable('localStorage') && localStorage.getItem(keyName) === null) {
+    if (
+      storageAvailable('localStorage') &&
+      localStorage.getItem(keyName) === null
+    ) {
       localStorage.setItem(keyName, true.toString())
     }
   }
@@ -246,12 +250,17 @@ export const IndividualOfferInformationsScreen = ({
             offer={offer}
             selectedVenue={selectedVenue}
             conditionalFields={conditionalFields}
+            publishedOfferWithSameEAN={publishedOfferWithSameEAN}
           />
         </FormLayout>
         <ActionBar
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
           step={OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS}
-          isDisabled={formik.isSubmitting || isOfferDisabled(offer.status)}
+          isDisabled={
+            formik.isSubmitting ||
+            isOfferDisabled(offer.status) ||
+            Boolean(publishedOfferWithSameEAN)
+          }
           dirtyForm={formik.dirty}
         />
       </Form>
