@@ -31,6 +31,12 @@ jobs:
             DEPLOYMENT_SA:passculture-metier-ehp/pcapi-testing_deploy-service-account
             DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
 
+      # Set up Cloud SDK
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          version: '>= 363.0.0'
+    
       # Checkout rendered-manifests repository
       - uses: actions/checkout@v4.2.1
         with:
@@ -74,6 +80,9 @@ jobs:
             git push
           fi
 
+          #Set active project for DNS entry deletion
+          gcloud config set project passculture-metier-ehp
+
           for id in $pullrequests_ids; do
             while true; do
               kubectl get application -n argocd | grep $id
@@ -82,4 +91,6 @@ jobs:
             # Check for PR namespace and delete it
             kubectl get ns pcapi-pr-$id
             [[ $? -eq 0 ]] && kubectl delete ns pcapi-pr-$id || echo "namespace pcapi-pr-$id does not exist"
+            # Delete DNS entry
+            gcloud dns record-sets delete a-backend-$id.testing.passculture.team. --type=TXT --zone=testing-passculture-team
           done
