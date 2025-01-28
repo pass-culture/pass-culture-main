@@ -80,7 +80,9 @@ export function UsefulInformationsSummaryScreen({
                   },
                   {
                     title: 'Adresse',
-                    text: computeAddressDisplayName(offer.address!, false),
+                    text: offer.address
+                      ? computeAddressDisplayName(offer.address, false)
+                      : '-',
                   },
                 ]}
               />
