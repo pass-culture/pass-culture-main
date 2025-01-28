@@ -125,22 +125,17 @@ def update_venue(
                 "street",
                 "city",
                 "postalCode",
+                "latitude",
+                "longitude",
             )
         )
-        coordinates_updated = any(field in modifications for field in ("latitude", "longitude"))
-        is_manual_edition_updated = is_manual_edition != venue.offererAddress.address.isManualEdition
-        if coordinates_updated and not is_manual_edition and not is_venue_location_updated:
-            if "latitude" in modifications:
-                del modifications["latitude"]
-            if "longitude" in modifications:
-                del modifications["longitude"]
-            coordinates_updated = False
-            is_manual_edition_updated = False
-            logger.error("Coordinates updated without manual edition or location update, ignoring them")
+        is_manual_edition_updated = is_venue_location_updated and (
+            is_manual_edition != venue.offererAddress.address.isManualEdition
+        )
 
         old_oa = venue.offererAddress
         new_oa = models.OffererAddress(offerer=venue.managingOfferer)
-        if is_venue_location_updated or coordinates_updated:
+        if is_venue_location_updated:
             update_venue_location(
                 venue,
                 modifications,
@@ -157,7 +152,7 @@ def update_venue(
                 is_manual_edition=is_manual_edition,
                 venue_snapshot=venue_snapshot,
             )
-        if is_manual_edition_updated or is_venue_location_updated or coordinates_updated:
+        if is_manual_edition_updated or is_venue_location_updated:
             switch_old_oa_label(old_oa=old_oa, label=venue.common_name, venue_snapshot=venue_snapshot)
 
     if contact_data:

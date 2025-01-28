@@ -37,10 +37,17 @@ class Address(PcObject, Base, Model):
         return f"{self.street} {self.postalCode} {self.city}" if self.street else f"{self.postalCode} {self.city}"
 
     def field_exists_and_has_changed(self, field: str, value: typing.Any) -> typing.Any:
+        if field in ("latitude", "longitude"):
+            # Rounding to five digits to keep consistency with the columns definitions
+            # We don’t want to consider coordinates has changed if actually the rounded value is the same
+            # that the one we already have
+            if isinstance(value, str):
+                value = Decimal(value)
+            value = round(value, 5)
         if field not in type(self).__table__.columns:
             raise ValueError(f"Unknown field {field} for model {type(self)}")
         if isinstance(getattr(self, field), Decimal):
-            return str(getattr(self, field)) != value
+            return str(getattr(self, field)) != str(value)
         return getattr(self, field) != value
 
     __table_args__ = (

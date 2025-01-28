@@ -18,6 +18,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
@@ -25,6 +26,7 @@ from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
@@ -1008,6 +1010,113 @@ class UpdateVenueTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
         assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.common_name
         assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
+
+    @pytest.mark.parametrize("venue_metadata", [{"public_name": "New public name"}, {"is_permanent": False}])
+    def test_updating_venue_metadata_shouldnt_create_offerer_address_unnecessarily(
+        self, venue_metadata, authenticated_client
+    ) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        address = geography_factories.AddressFactory(
+            street="2 Rue de Valois", postalCode="75000", city="Paris", latitude=48.870, longitude=2.307
+        )
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            street=address.street,
+            postalCode=address.postalCode,
+            city=address.city,
+            offererAddress=offerer_address,
+            isPermanent=True,
+        )
+        OfferFactory(venue=venue)
+        old_venue_name = venue.publicName
+        venue_id = venue.id
+
+        venue_data = {
+            **self._get_current_data(venue),
+            **{
+                # Updating venue.offererAddress.address to manually edited address
+                "street": "3 Rue de Valois",
+                "city": "Paris",
+                "latitude": 48.87171,
+                "longitude": 2.308289,
+                "postal_code": "75001",
+                "is_manual_address": "on",
+                "ban_id": None,
+            },
+        }
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=venue_data)
+        assert response.status_code == 303
+        offerers_models.Venue.query.one()
+        assert len(offerers_models.OffererAddress.query.order_by(offerers_models.OffererAddress.id.desc()).all()) == 2
+
+        venue_data = {
+            **self._get_current_data(venue),
+            # Then updating anything else that the location
+            # We shouldn't unnecessarily create an offererAddress
+            **venue_metadata,
+        }
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=venue_data)
+        assert response.status_code == 303
+
+        venue = offerers_models.Venue.query.one()
+        offerer_addresses = offerers_models.OffererAddress.query.order_by(
+            offerers_models.OffererAddress.id.desc()
+        ).all()
+        # We should still have only 2 offerer_addresses:
+        #   - The first one created along side the venue
+        #   - The second one created manually along side an edition
+        # The bug this test tries to prevent regression was creating
+        # a duplicate every time a venue was updated with anything else
+        # that the location
+        assert len(offerer_addresses) == 2
+        new_offerer_address = offerer_addresses[0]
+        new_address = new_offerer_address.address
+        assert len(offerer_addresses) == 2
+        assert venue.offererAddressId == new_offerer_address.id
+        assert new_address.street == "3 Rue de Valois"
+        assert new_address.city == "Paris"
+        assert new_address.postalCode == "75001"
+        assert new_address.longitude == Decimal("2.30829")
+        assert new_address.latitude == Decimal("48.87171")
+        assert new_address.isManualEdition
+        assert new_offerer_address.addressId == new_address.id
+        assert new_offerer_address.label is None
+
+        actions_history = sorted([action_history for action_history in venue.action_history], key=lambda ac: ac.id)
+        # Patching to manually edited address
+        assert actions_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert actions_history[0].venueId == venue_id
+        assert actions_history[0].extraData["modified_info"]["street"] == {
+            "new_info": "3 Rue de Valois",
+            "old_info": "2 Rue de Valois",
+        }
+        assert actions_history[0].extraData["modified_info"]["latitude"] == {
+            "new_info": "48.87171",
+            "old_info": "48.87004",
+        }
+        assert actions_history[0].extraData["modified_info"]["longitude"] == {
+            "new_info": "2.30829",
+            "old_info": "2.3785",
+        }
+        assert actions_history[0].extraData["modified_info"]["postalCode"] == {
+            "new_info": "75001",
+            "old_info": "75000",
+        }
+        # Changed the metadata
+        if venue_metadata.get("is_permament"):
+            assert venue.isPermanent is False
+            assert actions_history[2].extraData["modified_info"]["isPermanent"] == {
+                "new_info": False,
+                "old_info": True,
+            }
+        elif venue_metadata.get("public_name"):
+            assert actions_history[2].extraData["modified_info"]["publicName"] == {
+                "new_info": venue_metadata["public_name"],
+                "old_info": old_venue_name,
+            }
 
     def test_update_venue_location_with_offerer_address_not_manual(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
