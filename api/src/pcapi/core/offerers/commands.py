@@ -4,6 +4,8 @@ import logging
 import click
 import sqlalchemy as sa
 
+from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
+from pcapi.connectors.entreprise import sirene
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places as banner_url_synchronizations
@@ -28,6 +30,7 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
     # This command is called from a cron running every day, so that any active offerer is checked every month.
     # Split into 28 blocks to avoid spamming Sirene API for all offerers the same day. Nothing done on 29, 30, 31.
     # Use --day to replay or troubleshooting.
+    codir_report_is_enabled = FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT.is_active()
 
     if day is None:
         day = datetime.date.today().day
@@ -47,7 +50,7 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
         sa.not_(offerers_models.Offerer.siren.like(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}%")),
     ).options(sa.orm.load_only(offerers_models.Offerer.siren))
 
-    if not FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT.is_active():
+    if not codir_report_is_enabled:
         # When FF is disabled, we only have to check if siren-caduc tag has to be applied, skip already tagged
         offerers_query = offerers_query.outerjoin(
             offerers_models.OffererTagMapping,
@@ -59,12 +62,60 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
 
     offerers = offerers_query.all()
 
-    logger.info("check_offerers_alive will check %s offerers in cloud tasks today", len(offerers))
+    logger.info("check_active_offerers will check %s offerers in cloud tasks today", len(offerers))
 
     for offerer in offerers:
         # Do not flood Sirene API (max. 30 per minute for the whole product)
         offerers_tasks.check_offerer_siren_task.delay(
-            offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, tag_when_inactive=not dry_run)
+            offerers_tasks.CheckOffererSirenRequest(
+                siren=offerer.siren,
+                tag_when_inactive=not dry_run,
+                fill_in_codir_report=codir_report_is_enabled,
+            )
+        )
+
+
+@blueprint.cli.command("check_closed_offerers")
+@click.option("--dry-run", type=bool, default=False)
+@click.option("--date-closed", type=str, required=False, default=None)
+def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None) -> None:
+    if date_closed:
+        query_date = datetime.date.fromisoformat(date_closed)
+    else:
+        # Check closures registered two days before to ensure that the API database has already been updated.
+        query_date = datetime.date.today() - datetime.timedelta(days=2)
+
+    try:
+        siren_list = sirene.get_siren_closed_at_date(query_date)
+    except entreprise_exceptions.SireneException as exc:
+        logger.error("Could not fetch closed SIREN from Sirene API", extra={"date": query_date.isoformat(), "exc": exc})
+        return
+
+    known_siren_list = [
+        siren
+        for siren, in offerers_models.Offerer.query.filter(
+            offerers_models.Offerer.siren.in_(siren_list),
+            offerers_models.Offerer.isActive,
+            sa.not_(offerers_models.Offerer.isRejected),
+        )
+        .with_entities(offerers_models.Offerer.siren)
+        .all()
+    ]
+
+    logger.info(
+        "check_closed_offerers found %s active offerers which SIREN closed on %s",
+        len(known_siren_list),
+        query_date,
+        extra={"siren": known_siren_list},
+    )
+
+    for siren in known_siren_list:
+        # Do not flood Sirene API (max. 30 per minute for the whole product)
+        offerers_tasks.check_offerer_siren_task.delay(
+            offerers_tasks.CheckOffererSirenRequest(
+                siren=siren,
+                tag_when_inactive=not dry_run,
+            )
         )
 
 

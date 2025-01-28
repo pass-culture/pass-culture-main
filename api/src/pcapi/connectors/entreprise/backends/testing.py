@@ -92,6 +92,12 @@ class TestingBackend(BaseBackend):
         return siren_or_siret[4:6] != "99"
 
     @classmethod
+    def _get_closure_date(cls, siren: str) -> datetime.date | None:
+        if cls._is_active(siren):
+            return None
+        return datetime.date.today() - datetime.timedelta(days=5)
+
+    @classmethod
     def _get_urssaf_dates(cls) -> tuple[datetime.date, datetime.date]:
         today = datetime.date.today()
         return today - datetime.timedelta(days=31), today + datetime.timedelta(days=151)
@@ -115,6 +121,7 @@ class TestingBackend(BaseBackend):
                 active=self._is_active(siren),
                 diffusible=False,
                 creation_date=datetime.date(year_created, 1, 1),
+                closure_date=self._get_closure_date(siren),
             )
 
         ape_code, ape_label = self._ape_code_and_label(siren)
@@ -130,6 +137,7 @@ class TestingBackend(BaseBackend):
             active=self._is_active(siren),
             diffusible=True,
             creation_date=datetime.date(year_created, 1, 1),
+            closure_date=self._get_closure_date(siren),
         )
 
     def get_siret(self, siret: str, raise_if_non_public: bool = False) -> models.SiretInfo:
@@ -218,3 +226,6 @@ class TestingBackend(BaseBackend):
             attestation_date=datetime.date.today(),
             verified_date=datetime.date.today() - datetime.timedelta(days=10),
         )
+
+    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
+        return ["000099002", "900099003", "109599001"]

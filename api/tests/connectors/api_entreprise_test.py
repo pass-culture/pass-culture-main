@@ -32,6 +32,7 @@ def test_get_siren_without_address():
         assert siren_info.active is True
         assert siren_info.diffusible is True
         assert siren_info.creation_date == datetime.date(2019, 7, 23)
+        assert siren_info.closure_date is None
 
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
@@ -55,6 +56,7 @@ def test_get_siren_with_address():
         assert siren_info.active is True
         assert siren_info.diffusible is True
         assert siren_info.creation_date == datetime.date(2019, 7, 23)
+        assert siren_info.closure_date is None
 
     # Test cache, no HTTP request
     siren_info = api.get_siren(siren)
@@ -82,6 +84,7 @@ def test_get_siren_of_entreprise_individuelle():
         assert siren_info.active is True
         assert siren_info.diffusible is True
         assert siren_info.creation_date == datetime.date(2024, 1, 1)
+        assert siren_info.closure_date is None
 
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
@@ -117,6 +120,7 @@ def test_get_siren_with_non_public_data_do_not_raise():
         assert siren_info.active is True
         assert siren_info.diffusible is False
         assert siren_info.creation_date == datetime.date(2021, 4, 12)
+        assert siren_info.closure_date is None
 
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
@@ -138,6 +142,7 @@ def test_get_siren_of_inactive_company():
         assert siren_info.active is False
         assert siren_info.diffusible is True
         assert siren_info.creation_date == datetime.date(2010, 1, 1)
+        assert siren_info.closure_date == datetime.date(2023, 12, 31)
 
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")

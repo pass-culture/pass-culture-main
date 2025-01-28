@@ -63,6 +63,11 @@
               <p class="mb-1">
                 <span class="fw-bold">Date de création :</span> {{ siren_info.creation_date | format_date }}
               </p>
+              {% if siren_info.closure_date %}
+                <p class="mb-1">
+                  <span class="fw-bold">Date de fermeture :</span> {{ siren_info.closure_date | format_date }}
+                </p>
+              {% endif %}
             </div>
           </div>
         {% else %}

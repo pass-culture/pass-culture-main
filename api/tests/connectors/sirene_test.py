@@ -1,3 +1,4 @@
+import copy
 import datetime
 
 import pytest
@@ -33,6 +34,7 @@ def test_get_siren():
         assert siren_info.active
         assert siren_info.diffusible
         assert siren_info.creation_date == datetime.date(2022, 5, 24)
+        assert siren_info.closure_date is None
 
     # Test cache, no HTTP request
     siren_info = sirene.get_siren(siren)
@@ -118,6 +120,49 @@ def test_get_siren_without_ape():
         assert siren_info.siren == siren
         assert siren_info.name == "LYCEE D'ENSEIGNEMENT PROFESSIONNEL"
         assert siren_info.ape_code is None
+
+
+@pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+def test_get_siren_closed():
+    siren = "111111118"
+    with requests_mock.Mocker() as mock:
+        mock.get(
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siren/{siren}",
+            json=sirene_test_data.RESPONSE_SIREN_CLOSED,
+        )
+        mock.get(
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siren}00019",
+            json=sirene_test_data.RESPONSE_SIRET_CLOSED,
+        )
+        siren_info = sirene.get_siren(siren)
+        assert siren_info.siren == siren
+        assert siren_info.name == "ENTREPRISE FERMEE"
+        assert siren_info.active is False
+        assert siren_info.creation_date == datetime.date(2001, 1, 2)
+        assert siren_info.closure_date == datetime.date(2025, 1, 24)
+
+
+@pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+def test_get_siren_closing_soon():
+    siren = "111111118"
+    closure_date = datetime.date.today() + datetime.timedelta(days=15)
+    siren_response = copy.deepcopy(sirene_test_data.RESPONSE_SIREN_CLOSED)
+    siren_response["uniteLegale"]["periodesUniteLegale"][1]["dateFin"] = (
+        closure_date - datetime.timedelta(days=1)
+    ).isoformat()
+    siren_response["uniteLegale"]["periodesUniteLegale"][0]["dateDebut"] = closure_date.isoformat()
+
+    with requests_mock.Mocker() as mock:
+        mock.get(f"https://api.insee.fr/entreprises/sirene/V3.11/siren/{siren}", json=siren_response)
+        mock.get(
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siren}00019",
+            json=sirene_test_data.RESPONSE_SIRET_CLOSED,
+        )
+        siren_info = sirene.get_siren(siren)
+        assert siren_info.siren == siren
+        assert siren_info.active is True
+        assert siren_info.creation_date == datetime.date(2001, 1, 2)
+        assert siren_info.closure_date == closure_date
 
 
 @pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
@@ -230,3 +275,21 @@ def test_error_handling_on_non_json_response():
         )
         with pytest.raises(exceptions.ApiException):
             sirene.get_siret(siret)
+
+
+@pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+def test_get_siren_closed_at_date():
+    with requests_mock.Mocker() as mock:
+        mock.get(
+            "https://api.insee.fr/entreprises/sirene/V3.11/siren?q=dateDernierTraitementUniteLegale:2025-01-21+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true)&champs=siren,dateDebut,dateFin,etatAdministratifUniteLegale&debut=0&nombre=1000",
+            status_code=200,
+            json=sirene_test_data.RESPONSE_CLOSED_SIREN_PAGE1,
+        )
+        mock.get(
+            "https://api.insee.fr/entreprises/sirene/V3.11/siren?q=dateDernierTraitementUniteLegale:2025-01-21+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true)&champs=siren,dateDebut,dateFin,etatAdministratifUniteLegale&debut=3&nombre=1000",
+            status_code=200,
+            json=sirene_test_data.RESPONSE_CLOSED_SIREN_PAGE2,
+        )
+        siren_list = sirene.get_siren_closed_at_date(datetime.date(2025, 1, 21))
+
+    assert siren_list == ["111111118", "222222226", "444444442", "555555556"]

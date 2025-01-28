@@ -1,3 +1,4 @@
+import datetime
 import logging
 from unittest.mock import patch
 
@@ -33,6 +34,40 @@ class CheckActiveOfferersTest:
 
         # Only check that the task is called; its behavior is tested in offerers/test_task.py
         mock_get_siren.assert_called_once_with(offerer.siren, with_address=False, raise_if_non_public=False)
+
+
+class CheckClosedOfferersTest:
+    @patch(
+        "pcapi.connectors.entreprise.sirene.get_siren_closed_at_date",
+        return_value=["222222226", "333333334", "444444442", "666666664"],
+    )
+    @patch("pcapi.connectors.entreprise.sirene.get_siren")
+    def test_check_closed_offerers(self, mock_get_siren, mock_get_siren_closed_at_date, app):
+        offerers_factories.OffererFactory(siren="111111118")
+        offerers_factories.OffererFactory(siren="222222226")
+        offerers_factories.OffererFactory(siren="333333334", isActive=False)
+        offerers_factories.RejectedOffererFactory(siren="555555556")
+        offerers_factories.NotValidatedOffererFactory(siren="666666664")
+
+        run_command(app, "check_closed_offerers")
+
+        mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
+
+        # Only check that the task is called; its behavior is tested in offerers/test_task.py
+        mock_get_siren.assert_called()
+        assert mock_get_siren.call_count == 2
+        assert {item.args[0] for item in mock_get_siren.call_args_list} == {"222222226", "666666664"}
+        assert mock_get_siren.call_args.kwargs == {"raise_if_non_public": False, "with_address": False}
+
+    @patch(
+        "pcapi.connectors.entreprise.sirene.get_siren_closed_at_date",
+        return_value=["222222226", "333333334"],
+    )
+    @patch("pcapi.connectors.entreprise.sirene.get_siren")
+    def test_no_known_siren(self, mock_get_siren, mock_get_siren_closed_at_date, app):
+        run_command(app, "check_closed_offerers")
+        mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
+        mock_get_siren.assert_not_called()
 
 
 class SynchronizeVenuesBannerWithGooglePlacesTest:

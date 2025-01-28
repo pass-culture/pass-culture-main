@@ -5,6 +5,8 @@ Not through API Entreprise. No protected data.
 Can be used to retrieve information for autocomplete features in PC Pro.
 """
 
+import datetime
+
 from pcapi import settings
 from pcapi.models import feature
 
@@ -34,6 +36,11 @@ def siret_is_active(siret: str, raise_if_non_public: bool = True) -> bool:
     """Return whether the requested SIRET is active."""
     siret_info = get_siret(siret, raise_if_non_public)
     return siret_info.active
+
+
+def get_siren_closed_at_date(date_closed: datetime.date) -> list[str]:
+    """Returns the list of SIREN which have been closed exactly on the given date."""
+    return get_backend(settings.SIRENE_BACKEND).get_siren_closed_at_date(date_closed)
 
 
 def _check_feature_flag() -> None:
