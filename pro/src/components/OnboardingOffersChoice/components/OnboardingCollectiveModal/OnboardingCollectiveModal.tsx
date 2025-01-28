@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -25,11 +24,10 @@ interface OnboardingCollectiveModalProps {
 export const OnboardingCollectiveModal = ({
   className,
 }: OnboardingCollectiveModalProps): JSX.Element => {
-  const [error, setError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<null | string>(null)
   const [isLoading, setIsLoading] = useState(false)
   const currentOffererId = useSelector(selectCurrentOffererId)
   const navigate = useNavigate()
-  const notify = useNotification()
 
   if (currentOffererId === null) {
     return <Spinner />
@@ -37,19 +35,19 @@ export const OnboardingCollectiveModal = ({
 
   const checkEligibility = async () => {
     try {
-      setError(false)
+      setErrorMessage(null)
       setIsLoading(true)
       const eligibility = await api.getOffererEligibility(currentOffererId)
       if (eligibility.isOnboarded) {
-        notify.success('Example message : Bravo ! Vous avez été activé !')
         return navigate('/accueil')
       }
+
       // In any other case, it's an error
       setIsLoading(false)
-      setError(true)
+      setErrorMessage('Aucun dossier n’a été déposé par votre structure.')
     } catch {
       setIsLoading(false)
-      setError(true)
+      setErrorMessage('Un problème est survenu, veuillez réessayer.')
     }
   }
 
@@ -108,10 +106,8 @@ export const OnboardingCollectiveModal = ({
           )}
         </Button>
       </div>
-      {error && (
-        <div className={styles['error-message']}>
-          Un problème est survenu, veuillez réessayer
-        </div>
+      {errorMessage && (
+        <div className={styles['error-message']}>{errorMessage}</div>
       )}
     </div>
   )
