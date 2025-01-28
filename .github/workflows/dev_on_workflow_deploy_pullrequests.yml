@@ -35,7 +35,7 @@ jobs:
     name: "Deploy pullrequest"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: ${{ github.actor != 'dependabot[bot]' }} || ${{ inputs.deploy == 'true' }}
+    if: ${{ github.actor != 'dependabot[bot]' }} && ${{ inputs.deploy == 'true' }}
     permissions:
       id-token: write
       contents: read
