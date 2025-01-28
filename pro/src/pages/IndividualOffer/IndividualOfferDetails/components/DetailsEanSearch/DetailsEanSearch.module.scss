@@ -17,7 +17,6 @@
   }
 
   &-tag {
-    width: fit-content;
     margin-bottom: rem.torem(8px);
   }
 
@@ -33,6 +32,7 @@
   @media (min-width: size.$tablet) {
     &-form {
       flex-direction: row;
+      align-items: center;
     }
 
     &-label {
