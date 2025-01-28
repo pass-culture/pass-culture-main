@@ -112,6 +112,13 @@ describe('Layout', () => {
     ).toBeInTheDocument()
   })
 
+  it('should render sign up banners', () => {
+    renderLayout({ layout: 'sign-up' })
+
+    expect(screen.getByTestId('sign-up-header')).toBeInTheDocument()
+    expect(screen.getByTestId('sign-up-logo')).toBeInTheDocument()
+  })
+
   describe('showFooter', () => {
     it('should display footer by default', () => {
       renderLayout()

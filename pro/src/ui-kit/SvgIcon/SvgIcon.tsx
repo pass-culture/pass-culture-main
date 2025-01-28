@@ -1,4 +1,3 @@
-
 /**
  * Props for the SvgIcon component.
  */
@@ -35,6 +34,10 @@ export interface SvgIconProps {
    * Inline styles for the SVG icon.
    */
   style?: React.CSSProperties
+  /**
+   * The test id of the SVG icon.
+   */
+  'data-testid'?: string
 }
 
 /**
@@ -65,6 +68,7 @@ export const SvgIcon = ({
   viewBox = '0 0 48 48',
   width,
   style,
+  'data-testid': dataTestid,
 }: SvgIconProps) => {
   return (
     <svg
@@ -72,6 +76,7 @@ export const SvgIcon = ({
       viewBox={viewBox}
       {...(alt ? { 'aria-label': alt, role: 'img' } : { 'aria-hidden': true })}
       {...(width ? { width } : {})}
+      {...(dataTestid ? { 'data-testid': dataTestid } : {})}
       style={style}
     >
       <use xlinkHref={`${src}#icon`} />

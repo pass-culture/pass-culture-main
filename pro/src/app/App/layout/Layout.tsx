@@ -147,7 +147,10 @@ export const Layout = ({
               </header>
             )}
             {layout === 'sign-up' && (
-              <header className={styles['content-wrapper-right-side-logo']}>
+              <header
+                className={styles['content-wrapper-right-side-logo']}
+                data-testid="sign-up-header"
+              >
                 <img
                   src={engagementsImage}
                   alt=""
@@ -173,6 +176,7 @@ export const Layout = ({
                   alt="Pass Culture pro, l’espace des acteurs culturels"
                   src={logoPassCultureProFullIcon}
                   width="135"
+                  data-testid="sign-up-logo"
                 />
               )}
               <main id="content">
