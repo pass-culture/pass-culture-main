@@ -303,6 +303,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     description: offerers_schemas.VenueDescription | None
     contact: offerers_schemas.VenueContactModel | None
     openingHours: list[base.OpeningHoursModel] | None
+    isOpenToPublic: bool | None
 
 
 class EditVenueCollectiveDataBodyModel(BaseModel):

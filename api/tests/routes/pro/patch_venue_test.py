@@ -196,6 +196,22 @@ class Returns200Test:
         assert offerer_address.addressId == address.id
         assert offerer_address.label is None
 
+    def test_should_update_venue_is_open_to_public(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__lastConnectionDate=datetime.utcnow(),
+        )
+        venue = offerers_factories.VenueFactory(
+            name="old name", managingOfferer=user_offerer.offerer, isOpenToPublic=None
+        )
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue.id
+
+        response = auth_request.patch(f"/venues/{venue.id}", {"isOpenToPublic": True})
+
+        assert response.status_code == 200
+        new_venue = offerers_models.Venue.query.get(venue_id)
+        assert new_venue.isOpenToPublic is True
+
     @patch(
         "pcapi.connectors.api_adresse.get_address",
         return_value=AddressInfo(
