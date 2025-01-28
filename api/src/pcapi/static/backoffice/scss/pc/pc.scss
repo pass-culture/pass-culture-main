@@ -1,16 +1,10 @@
-@import "../bootstrap/bootstrap";
-
 // Utilities
-@import "./variables";
+@import "./_variables";
 @import "./_utilities";
 
 // Base css
 @import "./_base";
 @import "./_forms";
-
-// Modules css
-@import "./_collapse";
-@import "./_nav";
 
 // Templates css
 @import "./templates/_login";
@@ -20,3 +14,9 @@
 // Addons css
 @import "./addons/_personal_information_registration_steps";
 @import "./addons/_display_switch";
+
+@import "../bootstrap/bootstrap";
+
+// Modules css
+@import "./_collapse";
+@import "./_nav";
