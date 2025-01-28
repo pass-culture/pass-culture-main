@@ -110,6 +110,25 @@ Ces utilisateurs existent également pour le 97, en remplaçant `93` par `97`.
 
 D'autres informations sont disponibles sur le [README de Pro](./pro/README.md)
 
+### Lancer les tests sur VSCode
+
+#### Tests back
+
+Il est possible de lancer / débugger les tests python directement depuis VSCode. Pour cela il faut avoir installé les extensions `ms-python.python` et `ms-python.debugpy`.
+
+On peut voir la liste des tests dans l'onglet Testing, où l'on peut lancer les tests par fonction / classe / fichier / dossier. Lorsqu'on est dans un fichier de test, on peut également utiliser les icones placées directement à côté de chaque fonction.
+
+Quelques commandes VSCode utiles lorsqu'on est dans un fichier de test, avec leur équivalent `Debug Test` :
+- `Test: Run Test in Current File`
+- `Test: Run Test at Cursor`
+- `Test: Rerun Last Run`
+- `Test: Rerun Failed Tests`
+
+Voir https://code.visualstudio.com/docs/python/testing pour plus d'informations.
+
+#### Tests front
+
+Pour lancer / débugger un test front, on peut utiliser la commande de launch `Debug current spec test file`. Lorsqu'on est dans un fichier `*.spec.tsx`, on peut lancer la commande depuis l'onglet `Run and Debug` et les tests du fichier seront exécutés.
 
 ### Commandes utiles
 

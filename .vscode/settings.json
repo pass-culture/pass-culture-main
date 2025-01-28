@@ -1,3 +1,5 @@
 {
-  "python.formatting.provider": "black"
+  "python.formatting.provider": "black",
+  "python.testing.cwd": "${workspaceFolder}/api",
+  "python.testing.pytestEnabled": true
 }
