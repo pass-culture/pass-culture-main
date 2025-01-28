@@ -6,7 +6,7 @@ import { defaultGetOffererResponseModel } from 'commons/utils/factories/individu
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { Layout, LayoutProps } from '../Layout'
+import { Layout, LayoutProps } from './Layout'
 
 const LABELS = {
   backToNavLink: /Revenir à la barre de navigation/,
@@ -22,11 +22,16 @@ const renderLayout = ({
   isConnected = true,
   ...props
 }: LayoutTestProps = {}) => {
-  renderWithProviders(<Layout {...props} />, isConnected ? {
-    user: sharedCurrentUserFactory({
-      isImpersonated,
-    }),
-  }: {})
+  renderWithProviders(
+    <Layout {...props} />,
+    isConnected
+      ? {
+          user: sharedCurrentUserFactory({
+            isImpersonated,
+          }),
+        }
+      : {}
+  )
 }
 
 describe('Layout', () => {
@@ -77,19 +82,25 @@ describe('Layout', () => {
       const mainHeading = 'Home'
       renderLayout({ mainHeading })
 
-      expect(screen.getByRole('heading', { name: mainHeading })).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', { name: mainHeading })
+      ).toBeInTheDocument()
     })
 
     it('should render a back to nav link when a main heading is provided and when user is connected', () => {
       renderLayout({ mainHeading: 'Home', isConnected: true })
 
-      expect(screen.getByRole('link', { name: LABELS.backToNavLink })).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: LABELS.backToNavLink })
+      ).toBeInTheDocument()
     })
 
     it('should not render a back to nav link when not connected', () => {
-      renderLayout({  mainHeading: 'Home', isConnected: false })
+      renderLayout({ mainHeading: 'Home', isConnected: false })
 
-      expect(screen.queryByRole('link', { name: LABELS.backToNavLink })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', { name: LABELS.backToNavLink })
+      ).not.toBeInTheDocument()
     })
   })
 

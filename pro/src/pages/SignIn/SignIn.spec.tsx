@@ -11,8 +11,8 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
-  getOffererNameFactory,
   defaultGetOffererResponseModel,
+  getOffererNameFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import * as utils from 'commons/utils/recaptcha'
@@ -23,7 +23,7 @@ import {
 import * as storageAvailable from 'commons/utils/storageAvailable'
 import { Notification } from 'components/Notification/Notification'
 
-import { SignIn } from '../SignIn'
+import { SignIn } from './SignIn'
 
 vi.mock('apiClient/api', () => ({
   api: {
