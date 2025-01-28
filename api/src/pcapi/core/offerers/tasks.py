@@ -16,7 +16,6 @@ from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
@@ -32,6 +31,7 @@ CLOSED_OFFERER_TAG_NAME = "siren-caduc"
 class CheckOffererSirenRequest(BaseModel):
     siren: str
     tag_when_inactive: bool
+    fill_in_codir_report: bool = False
 
 
 @task(settings.GCP_CHECK_OFFERER_SIREN_QUEUE_NAME, "/offerers/check_offerer", task_request_timeout=3 * 60)  # type: ignore[arg-type]
@@ -49,9 +49,19 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
             logger.info("Could not fetch info from Sirene API", extra={"siren": payload.siren, "exc": exc})
             return
 
-    if siren_info.active and not FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT.is_active():
-        # Nothing to do
-        return
+    if siren_info.active:
+        if siren_info.closure_date:
+            # TODO (prouzet, 2025-01-28) When siren_info.closure_date is set in the future (still active), we may want
+            # to run a scheduled task on the day after to tag as 'SIREN caduc'. Let's check this when new async tasks
+            # have been designed. Waiting for this implementation, consider that this offerer will be checked monthly
+            # and marked at least one month after closure.
+            logger.warning(
+                "Sirene API reports an offerer closed in the future",
+                extra={"siren": siren_info.siren, "closure_date": siren_info.closure_date},
+            )
+        if not payload.fill_in_codir_report:
+            # Nothing to do
+            return
 
     offerer = (
         offerers_models.Offerer.query.filter_by(siren=payload.siren)
@@ -73,11 +83,16 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
 
             with transaction():
                 db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
+                comment = (
+                    "L'entité juridique est détectée comme fermée "
+                    + (siren_info.closure_date.strftime("le %d/%m/%Y ") if siren_info.closure_date else "")
+                    + "via l'API Sirene (INSEE)"
+                )
                 if offerer.isWaitingForValidation:
                     offerers_api.reject_offerer(
                         offerer=offerer,
                         author_user=None,
-                        comment="L'entité juridique est détectée comme inactive via l'API Sirene (INSEE)",
+                        comment=comment,
                         modified_info={"tags": {"new_info": tag.label}},
                         rejection_reason=offerers_models.OffererRejectionReason.CLOSED_BUSINESS,
                     )
@@ -86,11 +101,11 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
                         history_models.ActionType.INFO_MODIFIED,
                         author=None,
                         offerer=offerer,
-                        comment="L'entité juridique est détectée comme inactive via l'API Sirene (INSEE)",
+                        comment=comment,
                         modified_info={"tags": {"new_info": tag.label}},
                     )
 
-    if offerer.isValidated and FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT.is_active():
+    if offerer.isValidated and payload.fill_in_codir_report:
         # check attestations
         try:
             urssaf_status = "OK" if entreprise_api.get_urssaf(payload.siren).attestation_delivered else "REFUS"

@@ -34,6 +34,7 @@ CACHE_DURATION = datetime.timedelta(hours=6)
 PASS_CULTURE_CONTEXT = "Vérification des acteurs culturels inscrits sur le pass Culture"
 
 
+# pylint: disable=abstract-method
 class EntrepriseBackend(BaseBackend):
     # less than 1-minute nginx timeout
     timeout = 50
@@ -214,6 +215,15 @@ class EntrepriseBackend(BaseBackend):
             insee_code=data["code_commune"] or "",
         )
 
+    def _convert_timestamp_to_date(self, timestamp: int | None) -> datetime.date | None:
+        if not timestamp:
+            return None
+        return date_utils.utc_datetime_to_department_timezone(
+            # API Entreprise dates are timestamped at 0:00 Metropolitan French time
+            datetime.datetime.fromtimestamp(timestamp),
+            departement_code=None,
+        ).date()
+
     def get_siren(self, siren: str, with_address: bool = True, raise_if_non_public: bool = True) -> models.SirenInfo:
         """
         Documentation: https://entreprise.api.gouv.fr/catalogue/insee/unites_legales
@@ -244,15 +254,10 @@ class EntrepriseBackend(BaseBackend):
             diffusible=is_diffusible,
             legal_category_code=siren_data["forme_juridique"]["code"],
             address=address,
-            creation_date=(
-                date_utils.utc_datetime_to_department_timezone(
-                    # API Entreprise dates are timestamped at 0:00 Metropolitan French time
-                    datetime.datetime.fromtimestamp(siren_data["date_creation"]),
-                    departement_code=None,
-                ).date()
-                if siren_data["date_creation"]
-                else None
-            ),
+            creation_date=self._convert_timestamp_to_date(siren_data.get("date_creation")),
+            # Unfortunately, date_cessation is part of unites_legales/{siren} response.
+            # Information in /siege_social ("date_fermeture") may not be the same as the company closure date
+            closure_date=self._convert_timestamp_to_date(siren_data.get("date_cessation")),
         )
 
     def get_siret(self, siret: str, raise_if_non_public: bool = False) -> models.SiretInfo:

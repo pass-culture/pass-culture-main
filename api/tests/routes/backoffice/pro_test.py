@@ -938,6 +938,7 @@ class CreateOffererTest(PostEndpointHelper):
                 "ape_code": "90.01Z",
                 "ape_label": "Arts du spectacle vivant",
                 "creation_date": f"{datetime.date.today().year}-01-01",
+                "closure_date": None,
                 "diffusible": False,
                 "head_office_siret": "90000000100017",
                 "legal_category_code": "1000",

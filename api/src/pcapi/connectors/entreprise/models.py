@@ -32,6 +32,7 @@ class SirenInfo(pydantic_v1.BaseModel):
     legal_category_code: str
     address: SireneAddress | None
     creation_date: datetime.date | None
+    closure_date: datetime.date | None = None
 
 
 class SiretInfo(pydantic_v1.BaseModel):

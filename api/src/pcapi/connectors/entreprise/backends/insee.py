@@ -86,6 +86,11 @@ class InseeBackend(BaseBackend):
         _check_values(info.dict().values())
 
     def _get_head_office(self, siren_data: dict) -> dict:
+        today = datetime.date.today().isoformat()
+        for periode in siren_data["periodesUniteLegale"]:
+            if periode["dateDebut"] <= today and (not periode["dateFin"] or periode["dateFin"] >= today):
+                return periode
+        # In case all "periodes" are in the future (does this happen when company is declared before start date?):
         return [_b for _b in siren_data["periodesUniteLegale"] if not _b["dateFin"]][0]
 
     def _get_name_from_siren_data(self, data: dict) -> str:
@@ -96,6 +101,19 @@ class InseeBackend(BaseBackend):
             return head_office["denominationUniteLegale"]
         # "Entreprise individuelle" or similar
         return " ".join((data["prenom1UniteLegale"], head_office["nomUniteLegale"]))
+
+    def _get_closure_date_from_siren_data(self, siren_data: dict) -> datetime.date | None:
+        # Several "periodesUniteLegale" can be closed.
+        # This method may return a date in the future, when active is still True.
+        closure_date = None
+        sorted_periodes = sorted(
+            siren_data["periodesUniteLegale"], key=lambda periode: periode["dateDebut"], reverse=True
+        )
+        for periode in sorted_periodes:
+            if periode["etatAdministratifUniteLegale"] != "C":
+                break
+            closure_date = periode["dateDebut"]
+        return datetime.date.fromisoformat(closure_date) if closure_date else None
 
     def _get_name_from_siret_data(self, data: dict) -> str:
         # /!\ Keep in sync with `_get_name_from_siren_data()` above.
@@ -151,6 +169,7 @@ class InseeBackend(BaseBackend):
             active=head_office["etatAdministratifUniteLegale"] == "A",
             diffusible=data["statutDiffusionUniteLegale"] == "O",
             creation_date=datetime.date.fromisoformat(data["dateCreationUniteLegale"]),
+            closure_date=self._get_closure_date_from_siren_data(data),
         )
         if raise_if_non_public:
             self._check_non_public_data(info)
@@ -177,3 +196,23 @@ class InseeBackend(BaseBackend):
         if raise_if_non_public:
             self._check_non_public_data(info)
         return info
+
+    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
+        results = []
+        offset: int = 0
+        total: int = 1
+        while offset < total:
+            subpath = (
+                f"/siren?q=dateDernierTraitementUniteLegale:{date_closed.isoformat()}"
+                "+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true)"
+                "&champs=siren,dateDebut,dateFin,etatAdministratifUniteLegale"
+                f"&debut={offset}&nombre=1000"
+            )
+            data = self._cached_get(subpath)
+            offset += data["header"]["nombre"]
+            total = data["header"]["total"]
+            for item in data["unitesLegales"]:
+                closure_date = self._get_closure_date_from_siren_data(item)
+                if closure_date is not None and closure_date <= datetime.date.today():
+                    results.append(item["siren"])
+        return results
