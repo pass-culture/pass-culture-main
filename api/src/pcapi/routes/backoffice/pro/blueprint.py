@@ -37,6 +37,7 @@ from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
+from pcapi.utils import string as string_utils
 from pcapi.utils import urls
 
 
@@ -211,7 +212,7 @@ def create_offerer() -> utils.BackofficeResponse:
     pro_user = form.user
     address = form.siret_info.address
     # When non-diffusible, postal code is often [ND] but city and INSEE code are public
-    postal_code = address.postal_code if address.postal_code.isnumeric() else None
+    postal_code = address.postal_code if string_utils.is_numeric(address.postal_code) else None
 
     try:
         city_info = api_adresse.get_municipality_centroid(

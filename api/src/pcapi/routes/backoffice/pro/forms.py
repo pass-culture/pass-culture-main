@@ -19,6 +19,7 @@ from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.routes.backoffice.forms import utils
 from pcapi.routes.backoffice.forms.constants import area_choices
 from pcapi.utils import siren as siren_utils
+from pcapi.utils import string as string_utils
 
 
 DIGITS_AND_WHITESPACES_REGEX = re.compile(r"^[\d\s]+$")
@@ -118,7 +119,7 @@ class CreateOffererForm(FlaskForm):
         return email
 
     def validate_siret(self, siret: fields.PCSiretField) -> fields.PCSiretField:
-        if siret.data and len(siret.data) == siren_utils.SIRET_LENGTH and siret.data.isnumeric():
+        if siret.data and len(siret.data) == siren_utils.SIRET_LENGTH and string_utils.is_numeric(siret.data):
             siren = siret.data[:9]
             if find_offerer_by_siren(siren):
                 raise wtforms.validators.ValidationError(f"Une entité juridique existe déjà avec le SIREN {siren}")

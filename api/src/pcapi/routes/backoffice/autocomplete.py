@@ -16,6 +16,7 @@ from pcapi.repository import atomic
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import siren as siren_utils
+from pcapi.utils import string as string_utils
 from pcapi.utils.clean_accents import clean_accents
 
 from . import blueprint
@@ -65,7 +66,7 @@ def prefill_offerers_choices(autocomplete_field: fields.PCTomSelectField) -> Non
 def autocomplete_offerers() -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
 
-    is_numeric_query = query_string.isnumeric()
+    is_numeric_query = string_utils.is_numeric(query_string)
     if not is_numeric_query and len(query_string) < 2:
         return AutocompleteResponse(items=[])
 
@@ -129,7 +130,7 @@ def prefill_institutions_choices(autocomplete_field: fields.PCTomSelectField) ->
 def autocomplete_institutions() -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
 
-    is_numeric_query = query_string.isnumeric()
+    is_numeric_query = string_utils.is_numeric(query_string)
     if not is_numeric_query and len(query_string) < 2:
         return AutocompleteResponse(items=[])
 
@@ -201,7 +202,7 @@ def prefill_venues_choices(autocomplete_field: fields.PCTomSelectField, only_wit
 def _autocomplete_venues(only_with_siret: bool = False) -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
 
-    is_numeric_query = query_string.isnumeric()
+    is_numeric_query = string_utils.is_numeric(query_string)
     if not is_numeric_query and len(query_string) < 2:
         return AutocompleteResponse(items=[])
 
@@ -256,7 +257,7 @@ def autocomplete_providers() -> AutocompleteResponse:
     query = providers_models.Provider.query.filter(providers_models.Provider.isActive).options(
         sa.orm.load_only(providers_models.Provider.id, providers_models.Provider.name)
     )
-    if query_string.isnumeric():
+    if string_utils.is_numeric(query_string):
         query = query.filter(providers_models.Provider.id == int(query_string))
     elif query_string:
         query = query.filter(sa.func.unaccent(providers_models.Provider.name).ilike(f"%{clean_accents(query_string)}%"))
@@ -308,10 +309,11 @@ def prefill_criteria_choices(autocomplete_field: fields.PCTomSelectField) -> Non
 def autocomplete_criteria() -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
 
-    if not query_string.isnumeric() and len(query_string) < 2:
+    is_numeric_query = string_utils.is_numeric(query_string)
+    if not is_numeric_query and len(query_string) < 2:
         return AutocompleteResponse(items=[])
 
-    if query_string.isnumeric():
+    if is_numeric_query:
         criteria = _get_criteria_base_query().filter(criteria_models.Criterion.id == int(query_string)).all()
     else:
         criteria = (
@@ -387,7 +389,7 @@ def prefill_bo_users_choices(autocomplete_field: fields.PCTomSelectField) -> Non
 def autocomplete_bo_users() -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
 
-    is_numeric_query = query_string.isnumeric()
+    is_numeric_query = string_utils.is_numeric(query_string)
     if not is_numeric_query and len(query_string) < 2:
         return AutocompleteResponse(items=[])
 

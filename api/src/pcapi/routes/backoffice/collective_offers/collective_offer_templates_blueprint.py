@@ -27,6 +27,7 @@ from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils import date as date_utils
+from pcapi.utils import string as string_utils
 
 from . import forms as collective_offer_forms
 
@@ -119,7 +120,7 @@ def _get_collective_offer_templates(
     if form.q.data:
         search_query = form.q.data
 
-        if search_query.isnumeric():
+        if string_utils.is_numeric(search_query):
             base_query = base_query.filter(educational_models.CollectiveOfferTemplate.id == int(search_query))
         else:
             name_query = "%{}%".format(search_query)

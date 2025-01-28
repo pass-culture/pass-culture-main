@@ -207,6 +207,10 @@ class AutocompleteCriteriaTest(AutocompleteTestBase):
 
         self._test_autocomplete(authenticated_client, search_query, expected_texts)
 
+    def test_autocomplete_with_square_numeric_character(self, authenticated_client):
+        criteria_factories.CriterionFactory(name="3²+4²=5²")
+        self._test_autocomplete(authenticated_client, "3²", {"3²+4²=5²"})
+
 
 class AutocompleteBoUserTest(AutocompleteTestBase):
     endpoint = "backoffice_web.autocomplete_bo_users"

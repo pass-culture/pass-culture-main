@@ -19,4 +19,11 @@ def format_ean_or_visa(ean: str) -> str:
     return ean.replace("-", "").replace(" ", "")
 
 
+def is_numeric(value: str) -> bool:
+    # str.isnumeric() and str.isdigit() also accept some characters like '²',
+    # str.isdecimal() is more restrictive but accepts unicode characters like '\u0660' (included in r"\d").
+    # Regex ensures that value only contains basic digits, so can be a valid integers in database (id, siren, siret...)
+    return re.fullmatch(r"[0-9]+", value) is not None
+
+
 u_nbsp = "\u00A0"

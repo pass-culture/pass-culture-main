@@ -18,6 +18,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import email as email_utils
 from pcapi.utils import siren as siren_utils
+from pcapi.utils import string as string_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.regions import get_department_codes_for_region
 
@@ -92,7 +93,7 @@ def _apply_query_filters(
     if q:
         sanitized_q = email_utils.sanitize_email(q)
 
-        if sanitized_q.isnumeric():
+        if string_utils.is_numeric(sanitized_q):
             num_digits = len(sanitized_q)
             # for dmsToken containing digits only
             if num_digits == 12:

@@ -9,6 +9,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
+from pcapi.utils import string as string_utils
 from pcapi.utils.clean_accents import clean_accents
 
 from .. import forms
@@ -32,7 +33,7 @@ class AllocineContext(PivotContext):
             )
         )
         if query_string:
-            if query_string.isnumeric():
+            if string_utils.is_numeric(query_string):
                 query = query.filter(providers_models.AllocinePivot.venueId == int(query_string))
             else:
                 query = query.join(providers_models.AllocinePivot.venue).filter(

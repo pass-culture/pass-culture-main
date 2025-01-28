@@ -14,6 +14,7 @@ from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
 from pcapi.routes.backoffice.utils import get_regions_choices
 from pcapi.utils import siren as siren_utils
+from pcapi.utils import string as string_utils
 
 
 TAG_NAME_REGEX = r"^[^\s]+$"
@@ -156,7 +157,7 @@ class OffererValidationListForm(utils.PCForm):
             # Remove spaces from SIREN, IDs, postal code
             if DIGITS_AND_WHITESPACES_REGEX.match(q.data):
                 q.data = re.sub(r"\s+", "", q.data)
-            if q.data.isnumeric() and len(q.data) not in (
+            if string_utils.is_numeric(q.data) and len(q.data) not in (
                 2,  # department
                 3,  # department
                 5,  # postal code
@@ -223,7 +224,13 @@ class UserOffererValidationListForm(utils.PCForm):
             # Remove spaces from SIREN, IDs, postal code
             if DIGITS_AND_WHITESPACES_REGEX.match(q.data):
                 q.data = re.sub(r"\s+", "", q.data)
-            if q.data.isnumeric() and len(q.data) not in (2, 3, 5, siren_utils.RID7_LENGTH, siren_utils.SIREN_LENGTH):
+            if string_utils.is_numeric(q.data) and len(q.data) not in (
+                2,
+                3,
+                5,
+                siren_utils.RID7_LENGTH,
+                siren_utils.SIREN_LENGTH,
+            ):
                 raise wtforms.validators.ValidationError(
                     "Le nombre de chiffres ne correspond pas à un SIREN, RID7, code postal ou département"
                 )
