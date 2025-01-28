@@ -96,6 +96,6 @@ describe('OfferStats', () => {
 
     renderOfferStats()
 
-    expect(await screen.findByText('500+')).toBeInTheDocument()
+    expect(await screen.findByText('100+')).toBeInTheDocument()
   })
 })

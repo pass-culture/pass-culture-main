@@ -120,7 +120,7 @@ describe('ActionsBar', () => {
 
     renderActionsBar(props)
 
-    expect(screen.queryByText('500+ offres sélectionnées')).toBeInTheDocument()
+    expect(screen.queryByText('100+ offres sélectionnées')).toBeInTheDocument()
   })
 
   it('should activate selected offers upon publication', async () => {

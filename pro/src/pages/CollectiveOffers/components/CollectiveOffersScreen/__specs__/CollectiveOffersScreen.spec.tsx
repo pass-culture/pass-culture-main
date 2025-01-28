@@ -183,7 +183,7 @@ describe('CollectiveOffersScreen', () => {
     expect(await screen.findByText('1 offre')).toBeInTheDocument()
   })
 
-  it('should display 500+ for total number of offers if more than 500 offers are fetched', async () => {
+  it('should display 100+ for total number of offers if more than 500 offers are fetched', async () => {
     offersRecap = Array.from({ length: 501 }, () => collectiveOfferFactory())
 
     renderOffers({
@@ -192,7 +192,7 @@ describe('CollectiveOffersScreen', () => {
     })
 
     screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
-    expect(await screen.findByText('500+ offres')).toBeInTheDocument()
+    expect(await screen.findByText('100+ offres')).toBeInTheDocument()
   })
 
   it('should render venue filter with default option selected and given venues as options', () => {

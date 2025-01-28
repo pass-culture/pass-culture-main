@@ -388,37 +388,37 @@ describe('route CollectiveOffers', () => {
       ).not.toBeInTheDocument()
     })
 
-    describe('when 501 offers are fetched', () => {
+    describe('when 101 offers are fetched', () => {
       beforeEach(() => {
-        offersRecap = Array.from({ length: 501 }, () =>
+        offersRecap = Array.from({ length: 101 }, () =>
           collectiveOfferFactory({ stocks })
         )
       })
 
-      it('should have max number page of 50', async () => {
+      it('should have max number page of 10', async () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
 
         await renderOffers()
 
-        expect(screen.getByText('Page 1/50')).toBeInTheDocument()
+        expect(screen.getByText('Page 1/10')).toBeInTheDocument()
       })
 
-      it('should not display the 501st offer', async () => {
+      it('should not display the 101st offer', async () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
         await renderOffers()
         const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
 
-        for (let i = 1; i < 51; i++) {
+        for (let i = 1; i < 11; i++) {
           await userEvent.click(nextIcon)
         }
 
         expect(
           screen.getByLabelText(
-            `Sélectionner l'offre "${offersRecap[499].name}"`
+            `Sélectionner l'offre "${offersRecap[99].name}"`
           )
         ).toBeInTheDocument()
         expect(
-          screen.queryByText(`Sélectionner l'offre "${offersRecap[500].name}"`)
+          screen.queryByText(`Sélectionner l'offre "${offersRecap[100].name}"`)
         ).not.toBeInTheDocument()
       })
     })

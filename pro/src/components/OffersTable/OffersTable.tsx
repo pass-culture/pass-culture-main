@@ -34,7 +34,7 @@ export const OffersTable = ({
             variant={CalloutVariant.INFO}
             className={styles['offers-table-callout']}
           >
-            L’affichage est limité à 500 offres. Modifiez les filtres pour
+            L’affichage est limité à {MAX_OFFERS_TO_DISPLAY} offres. Modifiez les filtres pour
             affiner votre recherche.
           </Callout>
         )}
