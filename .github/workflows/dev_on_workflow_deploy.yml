@@ -212,7 +212,7 @@ jobs:
           entryPoint: "${{ inputs.doc-api-entrypoint }}"
           channelId: "live"
 
-  deploy-pro-on-testing-on-firebase:
+  deploy-pro-on-firebase-testing:
     name: "Deploy pro on testing live channel"
     concurrency:
       group: deploy-pro-${{ inputs.environment }}
@@ -220,7 +220,6 @@ jobs:
     needs: deploy-api
     if: |
       always() &&
-      (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
       inputs.environment == 'testing' &&
       inputs.deploy_pro == true
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml

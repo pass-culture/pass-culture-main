@@ -320,7 +320,6 @@ jobs:
     needs: [pcapi-init-job, test-pro]
     if: |
       always() && 
-      (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped') &&
       needs.pcapi-init-job.outputs.api-changed == 'false'
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
