@@ -1,8 +1,10 @@
 import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 import { Route } from 'react-router'
 import { Routes } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import * as useHasAccessToDidacticOnboarding from 'commons/hooks/useHasAccessToDidacticOnboarding'
@@ -11,6 +13,7 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { Notification } from 'components/Notification/Notification'
 
 import {
   IndivualOfferLayout,
@@ -24,37 +27,40 @@ const renderIndivualOfferLayout = (
   }
 ) => {
   renderWithProviders(
-    <Routes>
-      <Route
-        path="/offre/creation"
-        element={
-          <IndivualOfferLayout
-            title="layout title"
-            withStepper
-            offer={getIndividualOfferFactory()}
-            mode={OFFER_WIZARD_MODE.EDITION}
-            {...props}
-          >
-            <div>Template child</div>
-          </IndivualOfferLayout>
-        }
-      />
-      <Route
-        path="/onboarding/offre/creation"
-        element={
-          <IndivualOfferLayout
-            title="layout title"
-            withStepper
-            offer={getIndividualOfferFactory()}
-            mode={OFFER_WIZARD_MODE.EDITION}
-            {...props}
-          >
-            <div>Template child</div>
-          </IndivualOfferLayout>
-        }
-      />
-      <Route path="/accueil" element={<div>Accueil</div>} />
-    </Routes>,
+    <>
+      <Notification />
+      <Routes>
+        <Route
+          path="/offre/creation"
+          element={
+            <IndivualOfferLayout
+              title="layout title"
+              withStepper
+              offer={getIndividualOfferFactory()}
+              mode={OFFER_WIZARD_MODE.EDITION}
+              {...props}
+            >
+              <div>Template child</div>
+            </IndivualOfferLayout>
+          }
+        />
+        <Route
+          path="/onboarding/offre/creation"
+          element={
+            <IndivualOfferLayout
+              title="layout title"
+              withStepper
+              offer={getIndividualOfferFactory()}
+              mode={OFFER_WIZARD_MODE.EDITION}
+              {...props}
+            >
+              <div>Template child</div>
+            </IndivualOfferLayout>
+          }
+        />
+        <Route path="/accueil" element={<div>Accueil</div>} />
+      </Routes>
+    </>,
     options
   )
 }
@@ -281,5 +287,67 @@ describe('IndivualOfferLayout', () => {
         expect(screen.getByText('Template child')).toBeInTheDocument()
       })
     })
+  })
+
+  it('should display an error callout if another offer exists with the same EAN', () => {
+    renderIndivualOfferLayout({
+      venueHasPublishedOfferWithSameEan: true,
+    })
+
+    expect(
+      screen.getByRole('button', { name: 'Supprimer ce brouillon' })
+    ).toBeInTheDocument()
+  })
+
+  it('should remove the draft offer if the user clicks on "Supprimer ce brouillon"', async () => {
+    const offer = getIndividualOfferFactory({ status: OfferStatus.DRAFT })
+
+    const spy = vi.spyOn(api, 'deleteDraftOffers').mockResolvedValueOnce()
+
+    renderIndivualOfferLayout({
+      offer,
+      venueHasPublishedOfferWithSameEan: true,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Supprimer ce brouillon' })
+    )
+
+    expect(spy).toHaveBeenCalledWith({ ids: [offer.id] })
+
+    expect(
+      await screen.findByText('Votre brouillon a bien été supprimé')
+    ).toBeInTheDocument()
+  })
+
+  it('should not remove the draft offer if the offer does not exist', async () => {
+    const spy = vi.spyOn(api, 'deleteDraftOffers').mockResolvedValueOnce()
+
+    renderIndivualOfferLayout({
+      offer: null,
+      venueHasPublishedOfferWithSameEan: true,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Supprimer ce brouillon' })
+    )
+    expect(spy).not.toHaveBeenCalled()
+  })
+
+  it('should show an error message if the deletion failed', async () => {
+    vi.spyOn(api, 'deleteDraftOffers').mockRejectedValueOnce(new Error('error'))
+
+    renderIndivualOfferLayout({
+      venueHasPublishedOfferWithSameEan: true,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Supprimer ce brouillon' })
+    )
+    expect(
+      await screen.findByText(
+        'Une erreur s’est produite lors de la suppression de l’offre'
+      )
+    ).toBeInTheDocument()
   })
 })
