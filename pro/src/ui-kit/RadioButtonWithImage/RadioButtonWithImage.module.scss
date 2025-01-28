@@ -95,16 +95,12 @@ $radio-size: rem.torem(16px);
 }
 
 .layout-row {
-  padding: rem.torem(16px);
+  $padding: rem.torem(16px);
+
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
-
-  &.is-selected {
-    $padding: rem.torem(16px);
-
-    padding: calc($padding - $border-size-selected);
-  }
+  padding: calc($padding - $border-size-selected);
 
   .button-icon {
     margin-left: rem.torem(12px);
