@@ -6,6 +6,7 @@ import { beforeEach } from 'vitest'
 
 import { api } from 'apiClient/api'
 import {
+  OfferStatus,
   SubcategoryIdEnum,
   SubcategoryResponseModel,
   VenueTypeCode,
@@ -50,6 +51,7 @@ vi.mock('apiClient/api', () => ({
     patchDraftOffer: vi.fn(),
     getSuggestedSubcategories: vi.fn(),
     getProductByEan: vi.fn(),
+    getActiveVenueOfferByEan: vi.fn(),
   },
 }))
 
@@ -900,6 +902,53 @@ describe('IndividualOfferDetails', () => {
           const image = screen.queryByTestId('image-preview')
           expect(inputName).toHaveValue('')
           expect(image).not.toBeInTheDocument()
+        })
+
+        it('should disabled all fields if another offer with the same EAN is already published', () => {
+          vi.spyOn(api, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
+            id: 1,
+            dateCreated: '',
+            isActive: true,
+            name: 'test',
+            status: OfferStatus.DRAFT,
+            subcategoryId: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
+          })
+
+          const context = individualOfferContextValuesFactory({
+            categories: MOCK_DATA.categories,
+            subCategories: MOCK_DATA.subCategories,
+            publishedOfferWithSameEAN: getIndividualOfferFactory({
+              subcategoryId: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
+            }),
+            offer: getIndividualOfferFactory({
+              subcategoryId:
+                'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE' as SubcategoryIdEnum,
+              productId: 1,
+            }),
+          })
+
+          renderDetailsScreen({
+            props: {
+              venues: [
+                venueListItemFactory({
+                  venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                }),
+              ],
+            },
+            contextValue: context,
+            options: { features: ['WIP_EAN_CREATION'] },
+            initialRoute:
+              getIndividualOfferPath({
+                step: OFFER_WIZARD_STEP_IDS.DETAILS,
+                mode: OFFER_WIZARD_MODE.CREATION,
+              }) + '?offer-type=PHYSICAL_GOOD',
+          })
+
+          const inputName = screen.getByRole('textbox', {
+            name: 'Titre de l’offre *',
+          })
+
+          expect(inputName).toBeDisabled()
         })
       })
 

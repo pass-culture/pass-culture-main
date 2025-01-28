@@ -73,21 +73,20 @@ export const IndivualOfferLayout = ({
     return <Navigate to="/accueil" />
   }
 
-  function onDeleteOfferWithAlreadyExistingEan() {
-    return async () => {
-      if (!offer) {
-        return
-      }
-      try {
-        await api.deleteDraftOffers({ ids: [offer.id] })
-        notify.success('Votre brouillon a bien été supprimé')
-        navigate('/offres')
-      } catch {
-        notify.error(
-          'Une erreur s’est produite pendant la suppression de l’offre'
-        )
-      }
+  const onDeleteOfferWithAlreadyExistingEan = async () => {
+    if (!offer) {
+      return
     }
+    try {
+      await api.deleteDraftOffers({ ids: [offer.id] })
+    } catch {
+      notify.error(
+        'Une erreur s’est produite lors de la suppression de l’offre'
+      )
+      return
+    }
+    notify.success('Votre brouillon a bien été supprimé')
+    navigate('/offres')
   }
 
   return (
@@ -143,7 +142,7 @@ export const IndivualOfferLayout = ({
             Vous ne pouvez pas publier 2 offres avec un EAN similaire.
           </p>
           <Button
-            onClick={onDeleteOfferWithAlreadyExistingEan()}
+            onClick={onDeleteOfferWithAlreadyExistingEan}
             variant={ButtonVariant.TERNARY}
             icon={fullTrashIcon}
             className={styles['ean-already-exists-callout-button']}

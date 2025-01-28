@@ -273,6 +273,21 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     )
   })
 
+  it('should disabled all fields if another offer with the same EAN is already published', async () => {
+    renderUsefulInformationScreen(
+      props,
+      individualOfferContextValuesFactory({
+        publishedOfferWithSameEAN: getIndividualOfferFactory(),
+      })
+    )
+
+    const withdrawalField = await screen.findByRole('textbox', {
+      name: 'Informations de retrait',
+    })
+
+    expect(withdrawalField).toBeDisabled()
+  })
+
   describe('ConfirmDialog', () => {
     beforeEach(() => {
       // Should appear only in edition mode, and if offer has pending bookings
