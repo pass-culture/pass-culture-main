@@ -24,6 +24,15 @@ export const Checked: StoryObj<typeof BaseCheckbox> = {
   },
 }
 
+export const Disabled: StoryObj<typeof BaseCheckbox> = {
+  args: {
+    label: 'Checkbox checked',
+    checked: true,
+    disabled: true,
+    onChange: () => {},
+  },
+}
+
 export const PartialCheck: StoryObj<typeof BaseCheckbox> = {
   args: {
     label: 'Checkbox with partial check',
