@@ -452,4 +452,11 @@ describe('SignIn', () => {
 
     expect(getItemSpy).not.toHaveBeenLastCalledWith('homepageSelectedOffererId')
   })
+
+  it('should have the sign up layout if FF WIP_2025_SIGN_UP is enabled', () => {
+    renderSignIn({ features: ['API_SIRENE_AVAILABLE', 'WIP_2025_SIGN_UP'] })
+
+    expect(screen.getByTestId('sign-up-header')).toBeInTheDocument()
+    expect(screen.getByTestId('sign-up-logo')).toBeInTheDocument()
+  })
 })
