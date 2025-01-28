@@ -18,7 +18,7 @@ const renderOnboardingCollectiveModal = (
   return renderWithProviders(<OnboardingCollectiveModal />, {
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
-      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: false, },
+      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: false },
     },
     user: sharedCurrentUserFactory(),
     ...options,
@@ -100,7 +100,23 @@ describe('<OnboardingCollectiveModal />', () => {
       )
 
       expect(
-        await screen.findByText('Un problème est survenu, veuillez réessayer')
+        await screen.findByText(
+          'Aucun dossier n’a été déposé par votre structure.'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should show an error message if server responded with an error', async () => {
+      vi.spyOn(api, 'getOffererEligibility').mockRejectedValue({})
+
+      renderOnboardingCollectiveModal()
+
+      await userEvent.click(
+        await screen.findByRole('button', { name: /J’ai déposé un dossier/ })
+      )
+
+      expect(
+        await screen.findByText('Un problème est survenu, veuillez réessayer.')
       ).toBeInTheDocument()
     })
   })
