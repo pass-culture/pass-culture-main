@@ -38,6 +38,7 @@ from pcapi.routes.backoffice import utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils import string as string_utils
 from pcapi.utils.clean_accents import clean_accents
 
 from . import forms as account_forms
@@ -105,7 +106,7 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
             )
 
         # numeric
-        if search_query.isnumeric():
+        if string_utils.is_numeric(search_query):
             term_filters.append(
                 sa.or_(
                     users_models.UserAccountUpdateRequest.userId == search_query,

@@ -49,6 +49,7 @@ from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import utils as forms_utils
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.utils import regions as regions_utils
+from pcapi.utils import string as string_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.siren import is_valid_siret
 from pcapi.utils.string import to_camelcase
@@ -88,7 +89,7 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
         search_query = form.q.data
         terms = search_utils.split_terms(search_query)
 
-        if all(term.isnumeric() for term in terms):
+        if all(string_utils.is_numeric(term) for term in terms):
             base_query = base_query.filter(offerers_models.Venue.id.in_([int(term) for term in terms]))
         else:
             name_query = f"%{clean_accents(search_query)}%"

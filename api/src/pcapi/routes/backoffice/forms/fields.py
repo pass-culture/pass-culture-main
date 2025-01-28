@@ -14,6 +14,7 @@ import wtforms_sqlalchemy.fields
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.utils import phone_number
 from pcapi.utils import siren as siren_utils
+from pcapi.utils import string as string_utils
 
 
 class PhoneNumberValidator:
@@ -60,7 +61,7 @@ class PostalCodeValidator:
         self.message = message
 
     def __call__(self, form: wtforms.Form, postal_code: wtforms.Field) -> None:
-        if not postal_code.data.isnumeric() or len(postal_code.data) != 5:
+        if not string_utils.is_numeric(postal_code.data) or len(postal_code.data) != 5:
             raise validators.ValidationError(self.message)
 
 
@@ -391,7 +392,7 @@ class PCTomSelectField(PCSelectMultipleField):
             # We must ensure that object ids are numeric, to avoid potential SQL injection (only when modified in URL).
             unacceptable = []
             for value in self.data:
-                if isinstance(value, str) and not value.isnumeric():
+                if isinstance(value, str) and not string_utils.is_numeric(value):
                     unacceptable.append(value)
             if unacceptable:
                 raise ValidationError("ID invalide pour %s : %s" % (self.name, ", ".join(unacceptable)))

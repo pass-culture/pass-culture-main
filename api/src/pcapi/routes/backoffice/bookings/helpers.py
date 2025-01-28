@@ -16,6 +16,7 @@ from pcapi.routes.backoffice.bookings.forms import BaseBookingListForm
 from pcapi.routes.backoffice.bookings.forms import BookingStatus
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
+from pcapi.utils import string as string_utils
 
 
 def get_bookings(
@@ -122,7 +123,7 @@ def get_bookings(
     if form.q.data:
         search_query = form.q.data
 
-        if search_query.isnumeric() and id_filters:
+        if string_utils.is_numeric(search_query) and id_filters:
             for id_filter in id_filters:
                 or_filters.append(id_filter == int(search_query))
         elif search_by_email:

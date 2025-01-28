@@ -26,6 +26,7 @@ from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
 from pcapi.utils import date as date_utils
+from pcapi.utils import string as string_utils
 
 from . import forms as custom_reimbursement_rule_forms
 
@@ -141,7 +142,7 @@ def _get_custom_reimbursement_rules(
     if form.q.data:
         search_query = form.q.data
 
-        if search_query.isnumeric():
+        if string_utils.is_numeric(search_query):
             query = base_query.filter(offers_models.Offer.id == int(search_query))
 
         else:

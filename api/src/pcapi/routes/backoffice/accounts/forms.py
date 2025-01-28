@@ -12,6 +12,7 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import search
 from pcapi.routes.backoffice.forms import utils
+from pcapi.utils import string as string_utils
 
 
 class AccountSearchFilter(enum.Enum):
@@ -27,7 +28,7 @@ class AccountSearchForm(search.SearchForm):
     def validate_q(self, q: fields.PCSearchField) -> fields.PCSearchField:
         q = super().validate_q(q)
         data = q.data.strip(" \t,;")
-        if len(data) < 3 and not data.isnumeric():
+        if len(data) < 3 and not string_utils.is_numeric(data):
             raise wtforms.validators.ValidationError("Attention, la recherche doit contenir au moins 3 lettres.")
         split_data = data.split()
         if len(split_data) > 1 and all(len(item) <= 3 for item in split_data):

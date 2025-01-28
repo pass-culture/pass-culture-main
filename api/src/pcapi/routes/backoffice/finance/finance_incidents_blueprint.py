@@ -38,6 +38,7 @@ from pcapi.routes.backoffice.finance import validation
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.offerers import forms as offerer_forms
 from pcapi.utils import date as date_utils
+from pcapi.utils import string as string_utils
 
 
 TOKEN_LENGTH = 6
@@ -97,7 +98,7 @@ def _get_incidents(
         search_query = form.q.data
         or_filters = []
 
-        if search_query.isnumeric():
+        if string_utils.is_numeric(search_query):
             integer_query = int(search_query)
             or_filters.extend(
                 [
