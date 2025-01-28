@@ -34,21 +34,30 @@ class ListChroniclesTest(GetEndpointHelper):
 
     def test_without_filters(self, authenticated_client):
         product = offers_factories.ProductFactory()
-        chronicle_with_product = chronicles_factories.ChronicleFactory(products=[product])
-        chronicle_without_product = chronicles_factories.ChronicleFactory()
+        chronicle_1 = chronicles_factories.ChronicleFactory(
+            products=[product],
+            isActive=True,
+            isSocialMediaDiffusible=True,
+        )
+        chronicle_2 = chronicles_factories.ChronicleFactory(isActive=False)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["ID"] == str(chronicle_without_product.id)
+        assert rows[0]["ID"] == str(chronicle_2.id)
         assert rows[0]["Titres des œuvres"] == ""
-        assert rows[0]["Contenu"] == chronicle_without_product.content
-        assert rows[0]["Date de création"] == chronicle_without_product.dateCreated.strftime("%d/%m/%Y")
-        assert rows[1]["ID"] == str(chronicle_with_product.id)
+        assert rows[0]["Contenu"] == chronicle_2.content
+        assert rows[0]["Date de création"] == chronicle_2.dateCreated.strftime("%d/%m/%Y")
+        assert rows[0]["Publiée"] == "Non"
+        assert rows[0]["Diffusibilité RS"] == "Non"
+
+        assert rows[1]["ID"] == str(chronicle_1.id)
         assert rows[1]["Titres des œuvres"] == product.name
-        assert rows[1]["Contenu"] == chronicle_with_product.content
-        assert rows[1]["Date de création"] == chronicle_with_product.dateCreated.strftime("%d/%m/%Y")
+        assert rows[1]["Contenu"] == chronicle_1.content
+        assert rows[1]["Date de création"] == chronicle_1.dateCreated.strftime("%d/%m/%Y")
+        assert rows[1]["Publiée"] == "Oui"
+        assert rows[1]["Diffusibilité RS"] == "Oui"
 
     def test_search_by_ean(self, authenticated_client):
         ean = "1234567890123"
@@ -108,6 +117,19 @@ class ListChroniclesTest(GetEndpointHelper):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, date_range="01/01/2000 - 18/01/2038"),
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(chronicle_to_find.id)
+
+    def test_search_by_social_media_diffusible(self, authenticated_client):
+        chronicle_to_find = chronicles_factories.ChronicleFactory(isSocialMediaDiffusible=True)
+        chronicles_factories.ChronicleFactory()
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, social_media_diffusible="yes"),
             )
             assert response.status_code == 200
 

@@ -59,6 +59,7 @@ def list_chronicles() -> utils.BackofficeResponse:
         sa.func.left(chronicles_models.Chronicle.content, 150).label("short_content"),
         chronicles_models.Chronicle.dateCreated,
         chronicles_models.Chronicle.isActive,
+        chronicles_models.Chronicle.isSocialMediaDiffusible,
         product_subquery.label("products"),
     )
     q_filters = []
@@ -90,7 +91,10 @@ def list_chronicles() -> utils.BackofficeResponse:
         if form.date_range.to_date is not None:
             to_date = datetime.datetime.combine(form.date_range.to_date, datetime.time.max)
             query = query.filter(chronicles_models.Chronicle.dateCreated < to_date)
-
+    if form.social_media_diffusible.data and len(form.social_media_diffusible.data) == 1:
+        query = query.filter(
+            chronicles_models.Chronicle.isSocialMediaDiffusible.is_(form.social_media_diffusible.data[0] == "yes"),
+        )
     query = query.order_by(chronicles_models.Chronicle.id.desc())
 
     paginated_chronicles = query.paginate(
