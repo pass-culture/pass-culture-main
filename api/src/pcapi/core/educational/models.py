@@ -762,14 +762,6 @@ class CollectiveOffer(
             return None
         return {"start": self.start, "end": self.end}
 
-    @property
-    def is_two_days_past_end(self) -> bool:
-        end = self.end
-        if end is None:
-            return False
-
-        return end + timedelta(days=2) < datetime.utcnow()
-
     @hybrid_property
     def hasStartDatetimePassed(self) -> bool:
         if not self.collectiveStock:
@@ -945,7 +937,7 @@ class CollectiveOffer(
         not_allowed: set[CollectiveOfferAllowedAction] = set()
 
         # an offer that has ended more than 48 hours ago cannot have its price edited or be canceled
-        if displayed_status == CollectiveOfferDisplayedStatus.ENDED and self.is_two_days_past_end:
+        if displayed_status == CollectiveOfferDisplayedStatus.ENDED and self.is_two_days_past_end():
             not_allowed = not_allowed.union(
                 {
                     CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
@@ -1035,6 +1027,12 @@ class CollectiveOffer(
     @is_expired.expression  # type: ignore[no-redef]
     def is_expired(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
         return cls.hasStartDatetimePassed
+
+    def is_two_days_past_end(self) -> bool:
+        if self.collectiveStock is None:
+            return False
+
+        return self.collectiveStock.is_two_days_past_end()
 
 
 class CollectiveOfferTemplate(
@@ -1575,6 +1573,9 @@ class CollectiveStock(PcObject, Base, Model):
             raise educational_exceptions.MultipleCollectiveBookingFound()
         return non_cancelled_bookings[0] if non_cancelled_bookings else None
 
+    def is_two_days_past_end(self) -> bool:
+        return self.endDatetime + timedelta(days=2) < datetime.utcnow()
+
     @property
     def isSoldOut(self) -> bool:
         non_cancelled_bookings = self.get_non_cancelled_bookings()
@@ -1836,11 +1837,13 @@ class CollectiveBooking(PcObject, Base, Model):
     def uncancel_booking(self) -> None:
         if not (self.status is CollectiveBookingStatus.CANCELLED):
             raise booking_exceptions.BookingIsNotCancelledCannotBeUncancelled()
+
         self.cancellationDate = None
         self.cancellationReason = None
         self.cancellationUserId = None
+
         if self.confirmationDate:
-            if self.collectiveStock.startDatetime < datetime.utcnow():
+            if self.collectiveStock.is_two_days_past_end():
                 self.status = CollectiveBookingStatus.USED
                 self.dateUsed = datetime.utcnow()
             else:

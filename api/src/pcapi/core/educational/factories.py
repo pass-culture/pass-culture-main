@@ -8,10 +8,8 @@ import factory
 from pcapi.core.categories.subcategories_v2 import COLLECTIVE_SUBCATEGORIES
 from pcapi.core.educational import models
 from pcapi.core.educational import utils
-from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
-from pcapi.core.educational.models import CollectiveOfferRejectionReason
 from pcapi.core.factories import BaseFactory
-import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils import db as db_utils
 
@@ -533,71 +531,89 @@ class ReimbursedCollectiveOfferFactory(CollectiveOfferBaseFactory):
 
 
 def create_collective_offer_by_status(
-    status: CollectiveOfferDisplayedStatus,
+    status: models.CollectiveOfferDisplayedStatus,
     **kwargs: typing.Any,
 ) -> models.CollectiveOffer:
     match status:
-        case CollectiveOfferDisplayedStatus.ARCHIVED:
+        case models.CollectiveOfferDisplayedStatus.ARCHIVED:
             return ArchivedCollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.REJECTED:
+        case models.CollectiveOfferDisplayedStatus.REJECTED:
             return RejectedCollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.PENDING:
+        case models.CollectiveOfferDisplayedStatus.PENDING:
             return PendingCollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.ACTIVE:
+        case models.CollectiveOfferDisplayedStatus.ACTIVE:
             return ActiveCollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.INACTIVE:
+        case models.CollectiveOfferDisplayedStatus.INACTIVE:
             return InactiveCollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.EXPIRED:
+        case models.CollectiveOfferDisplayedStatus.EXPIRED:
             return ExpiredWithBookingCollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.PREBOOKED:
+        case models.CollectiveOfferDisplayedStatus.PREBOOKED:
             return PrebookedCollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.CANCELLED:
+        case models.CollectiveOfferDisplayedStatus.CANCELLED:
             return CancelledWithoutBookingCollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.BOOKED:
+        case models.CollectiveOfferDisplayedStatus.BOOKED:
             return BookedCollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.ENDED:
+        case models.CollectiveOfferDisplayedStatus.ENDED:
             return EndedCollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.REIMBURSED:
+        case models.CollectiveOfferDisplayedStatus.REIMBURSED:
             return ReimbursedCollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.DRAFT:
+        case models.CollectiveOfferDisplayedStatus.DRAFT:
             return DraftCollectiveOfferFactory(**kwargs)
         case _:
             raise ValueError(f"No factory for collective offer status {status}")
 
 
 def create_collective_offer_template_by_status(
-    status: CollectiveOfferDisplayedStatus,
+    status: models.CollectiveOfferDisplayedStatus,
     **kwargs: typing.Any,
 ) -> models.CollectiveOfferTemplate:
     match status.value:
-        case CollectiveOfferDisplayedStatus.ARCHIVED.value:
+        case models.CollectiveOfferDisplayedStatus.ARCHIVED.value:
             kwargs.update({"isActive": False, "dateArchived": datetime.datetime.utcnow()})
             return CollectiveOfferTemplateFactory(**kwargs)
 
-        case CollectiveOfferDisplayedStatus.REJECTED.value:
+        case models.CollectiveOfferDisplayedStatus.REJECTED.value:
             kwargs["validation"] = OfferValidationStatus.REJECTED
-            kwargs["rejectionReason"] = CollectiveOfferRejectionReason.MISSING_PRICE
+            kwargs["rejectionReason"] = models.CollectiveOfferRejectionReason.MISSING_PRICE
             return CollectiveOfferTemplateFactory(**kwargs)
 
-        case CollectiveOfferDisplayedStatus.PENDING.value:
+        case models.CollectiveOfferDisplayedStatus.PENDING.value:
             kwargs["validation"] = OfferValidationStatus.PENDING
             return CollectiveOfferTemplateFactory(**kwargs)
 
-        case CollectiveOfferDisplayedStatus.DRAFT.value:
+        case models.CollectiveOfferDisplayedStatus.DRAFT.value:
             kwargs["validation"] = OfferValidationStatus.DRAFT
             return CollectiveOfferTemplateFactory(**kwargs)
 
-        case CollectiveOfferDisplayedStatus.INACTIVE.value:
+        case models.CollectiveOfferDisplayedStatus.INACTIVE.value:
             kwargs["isActive"] = False
             return CollectiveOfferTemplateFactory(**kwargs)
 
-        case CollectiveOfferDisplayedStatus.ACTIVE.value:
+        case models.CollectiveOfferDisplayedStatus.ACTIVE.value:
             return CollectiveOfferTemplateFactory(**kwargs)
 
-        case CollectiveOfferDisplayedStatus.ENDED.value:
+        case models.CollectiveOfferDisplayedStatus.ENDED.value:
             now = datetime.datetime.utcnow()
             start = now - datetime.timedelta(days=14)
             date_range = db_utils.make_timerange(start=start, end=now - datetime.timedelta(days=7))
             return CollectiveOfferTemplateFactory(**kwargs, dateRange=date_range, dateCreated=start)
 
     raise ValueError(f"No factory for collective offer status {status}")
+
+
+def create_collective_booking_by_status(
+    status: models.CollectiveBookingStatus, **kwargs: typing.Any
+) -> models.CollectiveBooking:
+    match status:
+        case models.CollectiveBookingStatus.PENDING:
+            return PendingCollectiveBookingFactory(**kwargs)
+        case models.CollectiveBookingStatus.CONFIRMED:
+            return ConfirmedCollectiveBookingFactory(**kwargs)
+        case models.CollectiveBookingStatus.USED:
+            return UsedCollectiveBookingFactory(**kwargs)
+        case models.CollectiveBookingStatus.CANCELLED:
+            return CancelledCollectiveBookingFactory(**kwargs)
+        case models.CollectiveBookingStatus.REIMBURSED:
+            return ReimbursedCollectiveBookingFactory(**kwargs)
+
+    raise ValueError(f"No factory for collective booking status {status}")
