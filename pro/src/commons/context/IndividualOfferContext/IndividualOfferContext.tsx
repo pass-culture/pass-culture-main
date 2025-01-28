@@ -63,12 +63,11 @@ export const IndividualOfferContextProvider = ({
   const offerEan = offer?.extraData?.ean
   const offerVenueId = offer?.venue.id
   const isProductBased = isOfferProductBased(offer)
-
   const publishedOfferWithSameEANQuery = useSWR(
     isProductBased && offerEan && offerVenueId
-      ? [GET_ACTIVE_VENUE_OFFER_BY_EAN_QUERY_KEY, offerVenueId]
+      ? [GET_ACTIVE_VENUE_OFFER_BY_EAN_QUERY_KEY, offerVenueId, offerEan]
       : null,
-    ([, venueId]) => api.getActiveVenueOfferByEan(venueId, offerEan),
+    ([, venueId, ean]) => api.getActiveVenueOfferByEan(venueId, ean),
     {
       onError: (error) => {
         if (error.status === 404) {
