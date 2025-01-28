@@ -1,6 +1,7 @@
 import { useFormikContext } from 'formik'
 
 import {
+  GetActiveEANOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
   VenueListItemResponseModel,
   WithdrawalTypeEnum,
@@ -39,12 +40,14 @@ interface UsefulInformationFormProps {
   conditionalFields: string[]
   offer: GetIndividualOfferWithAddressResponseModel
   selectedVenue: VenueListItemResponseModel | undefined // It is the selected venue at step 1 (Qui propose l'offre)
+  publishedOfferWithSameEAN?: GetActiveEANOfferResponseModel
 }
 
 export const UsefulInformationForm = ({
   conditionalFields,
   offer,
   selectedVenue,
+  publishedOfferWithSameEAN,
 }: UsefulInformationFormProps): JSX.Element => {
   const {
     values: { withdrawalType, receiveNotificationEmails, bookingEmail },
@@ -61,7 +64,9 @@ export const UsefulInformationForm = ({
   )
 
   const venue = offer.venue
-  const readOnlyFields = setFormReadOnlyFields(offer)
+  const readOnlyFields = publishedOfferWithSameEAN
+    ? Object.keys(DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES)
+    : setFormReadOnlyFields(offer)
 
   // we use venue is virtual here because we cannot infer it from the offerSubCategory
   // because of CATEGORY_STATUS.ONLINE_OR_OFFLINE who can be both virtual or not
@@ -99,7 +104,7 @@ export const UsefulInformationForm = ({
   return (
     <>
       {isOfferAddressEnabled && !isVenueVirtual && (
-        <OfferLocation venue={selectedVenue} offer={offer} />
+        <OfferLocation venue={selectedVenue} readOnlyFields={readOnlyFields} />
       )}
       <FormLayout.Section title="Retrait de l’offre">
         {displayNoRefundWarning && (

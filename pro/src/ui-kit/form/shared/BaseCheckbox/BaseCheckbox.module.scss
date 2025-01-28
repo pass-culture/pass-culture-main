@@ -96,8 +96,11 @@
   }
 
   &.is-disabled {
-    cursor: not-allowed;
     color: var(--color-input-text-color-disabled);
+
+    .base-checkbox-label {
+      cursor: not-allowed;
+    }
 
     .base-checkbox-input {
       border-color: var(--color-grey-medium);
@@ -106,14 +109,6 @@
       &:checked,
       &:indeterminate {
         background-color: var(--color-grey-medium);
-      }
-    }
-
-    &:hover {
-      text-decoration: unset;
-
-      .base-checkbox-input {
-        border-color: var(--color-grey-medium);
       }
     }
   }

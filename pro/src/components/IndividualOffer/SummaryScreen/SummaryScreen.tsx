@@ -43,7 +43,8 @@ export const SummaryScreen = () => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const { offer, subCategories } = useIndividualOfferContext()
+  const { offer, subCategories, publishedOfferWithSameEAN } =
+    useIndividualOfferContext()
   const showEventPublicationForm = Boolean(offer?.isEvent)
 
   const onPublish = async (values: EventPublicationFormValues) => {
@@ -209,7 +210,9 @@ export const SummaryScreen = () => {
           onClickPrevious={handlePreviousStep}
           step={OFFER_WIZARD_STEP_IDS.SUMMARY}
           isDisabled={
-            mode !== OFFER_WIZARD_MODE.CREATION ? false : formik.isSubmitting
+            (mode !== OFFER_WIZARD_MODE.CREATION
+              ? false
+              : formik.isSubmitting) || Boolean(publishedOfferWithSameEAN)
           }
         />
         <RedirectToBankAccountDialog

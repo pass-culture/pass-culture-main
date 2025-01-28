@@ -1,14 +1,25 @@
 import cn from 'classnames'
+import { useNavigate } from 'react-router-dom'
 
-import { GetIndividualOfferWithAddressResponseModel, OfferStatus } from 'apiClient/v1'
+import { api } from 'apiClient/api'
+import {
+  GetIndividualOfferWithAddressResponseModel,
+  OfferStatus,
+} from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useNotification } from 'commons/hooks/useNotification'
 import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { HeadlineOfferTag } from 'components/HeadlineOfferTag/HeadlineOfferTag'
 import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
+import fullTrashIcon from 'icons/full-trash.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED } from 'pages/IndividualOffer/IndividualOfferInformations/components/IndividualOfferInformationsScreen'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
+import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { Status } from '../Status/Status'
@@ -23,6 +34,7 @@ export interface IndivualOfferLayoutProps {
   children: JSX.Element | JSX.Element[]
   offer: GetIndividualOfferWithAddressResponseModel | null
   mode: OFFER_WIZARD_MODE
+  venueHasPublishedOfferWithSameEan?: boolean
 }
 
 export const IndivualOfferLayout = ({
@@ -31,11 +43,15 @@ export const IndivualOfferLayout = ({
   withStepper = true,
   offer,
   mode,
+  venueHasPublishedOfferWithSameEan,
 }: IndivualOfferLayoutProps) => {
   const offerHeadlineEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
   const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
     offer?.publicationDate
   )
+  const notify = useNotification()
+  const navigate = useNavigate()
+
   const shouldDisplayActionOnStatus =
     mode !== OFFER_WIZARD_MODE.CREATION && offer && withStepper
 
@@ -46,6 +62,22 @@ export const IndivualOfferLayout = ({
         `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer?.id}`
       )) ||
     mode !== OFFER_WIZARD_MODE.CREATION
+
+  const onDeleteOfferWithAlreadyExistingEan = async () => {
+    if (!offer) {
+      return
+    }
+    try {
+      await api.deleteDraftOffers({ ids: [offer.id] })
+    } catch {
+      notify.error(
+        'Une erreur s’est produite lors de la suppression de l’offre'
+      )
+      return
+    }
+    notify.success('Votre brouillon a bien été supprimé')
+    navigate('/offres')
+  }
 
   return (
     <>
@@ -64,7 +96,11 @@ export const IndivualOfferLayout = ({
         {offer && (
           <p className={styles['offer-title']}>
             {offer.name}
-            {offerHeadlineEnabled && offer.isHeadlineOffer && <HeadlineOfferTag className={styles['offer-title-headline-tag']} />}
+            {offerHeadlineEnabled && offer.isHeadlineOffer && (
+              <HeadlineOfferTag
+                className={styles['offer-title-headline-tag']}
+              />
+            )}
           </p>
         )}
 
@@ -85,6 +121,26 @@ export const IndivualOfferLayout = ({
       </div>
 
       {offer && withStepper && <OfferStatusBanner status={offer.status} />}
+
+      {venueHasPublishedOfferWithSameEan && (
+        <Callout
+          variant={CalloutVariant.ERROR}
+          title="Votre brouillon d’offre est obsolète car vous avez déjà publié une offre avec cet EAN"
+          className={styles['ean-already-exists-callout']}
+        >
+          <p className={styles['ean-already-exists-callout-description']}>
+            Vous ne pouvez pas publier 2 offres avec un EAN similaire.
+          </p>
+          <Button
+            onClick={onDeleteOfferWithAlreadyExistingEan}
+            variant={ButtonVariant.TERNARY}
+            icon={fullTrashIcon}
+            className={styles['ean-already-exists-callout-button']}
+          >
+            Supprimer ce brouillon
+          </Button>
+        </Callout>
+      )}
 
       {offer?.lastProvider?.name && (
         <div className={styles['banner-container']}>

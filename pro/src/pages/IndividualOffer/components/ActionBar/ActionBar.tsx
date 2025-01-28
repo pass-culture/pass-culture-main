@@ -73,36 +73,43 @@ export const ActionBar = ({
     if (mode === OFFER_WIZARD_MODE.CREATION) {
       return (
         <>
-          {dirtyForm === false && (
-            <span className={styles['draft-indicator']}>
-              <SvgIcon
-                src={fullValidateIcon}
-                alt=""
-                width="16"
-                className={styles['draft-saved-icon']}
-              />
-              Brouillon enregistré
-            </span>
+          {!isDisabled && (
+            <>
+              {dirtyForm === false && (
+                <span className={styles['draft-indicator']}>
+                  <SvgIcon
+                    src={fullValidateIcon}
+                    alt=""
+                    width="16"
+                    className={styles['draft-saved-icon']}
+                  />
+                  Brouillon enregistré
+                </span>
+              )}
+              {dirtyForm === true && (
+                <span className={styles['draft-indicator']}>
+                  <div className={styles['draft-not-saved-icon']} />
+                  Brouillon non enregistré
+                </span>
+              )}
+            </>
           )}
-          {dirtyForm === true && (
-            <span className={styles['draft-indicator']}>
-              <div className={styles['draft-not-saved-icon']} />
-              Brouillon non enregistré
-            </span>
-          )}
+
           {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
             <>
-              <ButtonLink
-                to={isOnboarding ? '/accueil' : '/offres'}
-                variant={ButtonVariant.SECONDARY}
-                onClick={() => {
-                  notify.success(
-                    'Brouillon sauvegardé dans la liste des offres'
-                  )
-                }}
-              >
-                Sauvegarder le brouillon et quitter
-              </ButtonLink>
+              {!isDisabled && (
+                <ButtonLink
+                  to={isOnboarding ? '/accueil' : '/offres'}
+                  variant={ButtonVariant.SECONDARY}
+                  onClick={() => {
+                    notify.success(
+                      'Brouillon sauvegardé dans la liste des offres'
+                    )
+                  }}
+                >
+                  Sauvegarder le brouillon et quitter
+                </ButtonLink>
+              )}
 
               <Button type="submit" disabled={isDisabled}>
                 Publier l’offre
