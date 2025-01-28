@@ -5,6 +5,7 @@ from unittest import mock
 import pytest
 from sqlalchemy import exc as sa_exc
 
+from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories
 from pcapi.core.educational.models import ALLOWED_ACTIONS_BY_DISPLAYED_STATUS
@@ -831,13 +832,10 @@ class CollectiveOfferAllowedActionsTest:
         factories.CollectiveStockFactory(collectiveOffer=offer)
 
         assert offer.collectiveStock.endDatetime > datetime.datetime.utcnow()
-        assert not offer.is_two_days_past_end
-
-        offer.collectiveStock.endDatetime = None
-        assert not offer.is_two_days_past_end
+        assert not offer.is_two_days_past_end()
 
         offer.collectiveStock.endDatetime = datetime.datetime.utcnow() - datetime.timedelta(days=3)
-        assert offer.is_two_days_past_end
+        assert offer.is_two_days_past_end()
 
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", COLLECTIVE_OFFER_TEMPLATE_STATUSES)
@@ -873,3 +871,53 @@ class CollectiveOfferTemplateHasEndDatePassedTest:
         ).all()
         assert len(not_passed_offers) == 2
         assert {o.id for o in not_passed_offers} == {offer_without_range.id, offer_with_range.id}
+
+
+class CollectiveBookingTest:
+    @pytest.mark.parametrize("status", set(CollectiveBookingStatus) - {CollectiveBookingStatus.CANCELLED})
+    def test_uncancel_booking_raise(self, status):
+        booking = factories.create_collective_booking_by_status(status)
+        with pytest.raises(booking_exceptions.BookingIsNotCancelledCannotBeUncancelled):
+            booking.uncancel_booking()
+
+    def test_uncancel_booking_to_confirmed(self):
+        booking = factories.CancelledCollectiveBookingFactory()
+        booking.uncancel_booking()
+
+        assert booking.cancellationDate is None
+        assert booking.cancellationReason is None
+        assert booking.cancellationUserId is None
+
+        assert booking.status == CollectiveBookingStatus.CONFIRMED
+        assert booking.dateUsed is None
+
+        db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
+
+    def test_uncancel_booking_to_used(self):
+        booking = factories.CancelledCollectiveBookingFactory(
+            collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            collectiveStock__endDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+        )
+        booking.uncancel_booking()
+
+        assert booking.cancellationDate is None
+        assert booking.cancellationReason is None
+        assert booking.cancellationUserId is None
+
+        assert booking.status == CollectiveBookingStatus.USED
+        assert booking.dateUsed is not None
+
+        db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
+
+    def test_uncancel_booking_to_pending(self):
+        booking = factories.CancelledCollectiveBookingFactory(confirmationDate=None)
+        booking.uncancel_booking()
+
+        assert booking.cancellationDate is None
+        assert booking.cancellationReason is None
+        assert booking.cancellationUserId is None
+
+        assert booking.status == CollectiveBookingStatus.PENDING
+        assert booking.dateUsed is None
+
+        db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
