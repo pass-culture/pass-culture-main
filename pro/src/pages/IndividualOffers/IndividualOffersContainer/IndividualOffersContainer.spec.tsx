@@ -218,8 +218,8 @@ describe('IndividualOffersScreen', () => {
     expect(await screen.findByText('1 offre')).toBeInTheDocument()
   })
 
-  it('should display 500+ for total number of offers if more than 500 offers are fetched', async () => {
-    offersRecap = Array.from({ length: 501 }, () => listOffersOfferFactory())
+  it('should display 100+ for total number of offers if more than 500 offers are fetched', async () => {
+    offersRecap = Array.from({ length: 101 }, () => listOffersOfferFactory())
 
     renderOffers({
       ...props,
@@ -227,7 +227,7 @@ describe('IndividualOffersScreen', () => {
     })
 
     screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
-    expect(await screen.findByText('500+ offres')).toBeInTheDocument()
+    expect(await screen.findByText('100+ offres')).toBeInTheDocument()
   })
 
   it('should send correct information when filling filter fields', async () => {

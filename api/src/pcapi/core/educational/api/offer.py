@@ -47,7 +47,7 @@ from pcapi.utils import rest
 
 
 logger = logging.getLogger(__name__)
-OFFERS_RECAP_LIMIT = 501
+OFFERS_RECAP_LIMIT = 101
 
 
 AnyCollectiveOffer = educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate
