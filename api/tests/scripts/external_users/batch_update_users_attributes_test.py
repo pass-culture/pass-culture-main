@@ -10,6 +10,7 @@ from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import FavoriteFactory
 from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import UserRole
 import pcapi.notifications.push.testing as push_testing
 from pcapi.scripts.external_users.batch_update_users_attributes import format_batch_users
@@ -111,6 +112,8 @@ def test_format_batch_user():
         "ut.booking_categories": ["FILM"],
         "ut.booking_subcategories": ["SUPPORT_PHYSIQUE_FILM"],
         "ut.roles": [UserRole.BENEFICIARY.value],
+        "u.eligibility": EligibilityType.AGE18.value,
+        "u.is_eligible": True,
     }
 
 
@@ -139,7 +142,7 @@ def test_format_sendinblue_user():
         "DEPOSIT_EXPIRATION_DATE": user.deposit_expiration_date,
         "DMS_APPLICATION_APPROVED": None,
         "DMS_APPLICATION_SUBMITTED": None,
-        "ELIGIBILITY": user.eligibility,
+        "ELIGIBILITY": user.eligibility.value,
         "EAC_MEG": None,
         "FIRSTNAME": "Jeanne",
         "HAS_BANNER_URL": None,
