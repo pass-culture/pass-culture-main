@@ -195,6 +195,8 @@ describe('VenueFormScreen', () => {
         ''
       )
     )
+    // This is necessary to trigger formik dirty state, and allow submitting the form
+    await userEvent.type(screen.getByLabelText('Description'), '…')
 
     await userEvent.click(screen.getByText(/Enregistrer/))
 
@@ -317,10 +319,13 @@ describe('VenueFormScreen', () => {
     })
   })
 
-  it('should not send opening hours if the filed was not filled, and if there were no opening hours already added previously', async () => {
+  it('should not send opening hours if the field was not filled, and if there were no opening hours already added previously', async () => {
     const editVenueSpy = vi.spyOn(api, 'editVenue')
 
     renderForm({ ...baseVenue, openingHours: null })
+
+    // This is necessary to trigger formik dirty state, and allow submitting the form
+    await userEvent.type(screen.getByLabelText('Description'), '…')
 
     await userEvent.click(screen.getByText(/Enregistrer/))
 
@@ -330,7 +335,7 @@ describe('VenueFormScreen', () => {
     )
   })
 
-  it('should send opening hours if the filed was not filled, but the openingHours already existed', async () => {
+  it('should send opening hours if the field was not filled, but the openingHours already existed', async () => {
     const editVenueSpy = vi.spyOn(api, 'editVenue')
 
     renderForm({
@@ -342,6 +347,9 @@ describe('VenueFormScreen', () => {
         ],
       },
     })
+
+    // This is necessary to trigger formik dirty state, and allow submitting the form
+    await userEvent.type(screen.getByLabelText('Description'), '…')
 
     await userEvent.click(screen.getByText(/Enregistrer/))
 
