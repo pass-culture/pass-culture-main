@@ -54,7 +54,7 @@ describe('TextArea', () => {
     )
 
     const templateButton = screen.getByRole('button', {
-      name: 'Générer un exemple',
+      name: 'Générer un modèle',
     })
     await userEvent.click(templateButton)
 
@@ -81,7 +81,7 @@ describe('TextArea', () => {
     )
 
     const templateButton = screen.getByRole('button', {
-      name: 'Générer un exemple',
+      name: 'Générer un modèle',
     })
     await userEvent.click(templateButton)
 
