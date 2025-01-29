@@ -12,11 +12,10 @@ interface CardProps {
   imageSrc: string
   title: string
   children: ReactNode
-  buttonTitle: string
   to?: string
 }
 
-const Card = ({ imageSrc, title, children, buttonTitle, to }: CardProps) => {
+const Card = ({ imageSrc, title, children, to }: CardProps) => {
   return (
     <div className={styles['card']}>
       <div className={styles['card-content']}>
@@ -27,17 +26,11 @@ const Card = ({ imageSrc, title, children, buttonTitle, to }: CardProps) => {
         </div>
         <div className={styles['card-button']}>
           {to ? (
-            <ButtonLink
-              variant={ButtonVariant.PRIMARY}
-              to={to}
-              title={buttonTitle}
-            >
+            <ButtonLink variant={ButtonVariant.PRIMARY} to={to}>
               Commencer
             </ButtonLink>
           ) : (
-            <Button type="submit" title={buttonTitle}>
-              Commencer
-            </Button>
+            <Button type="submit">Commencer</Button>
           )}
         </div>
       </div>
@@ -51,7 +44,6 @@ export const OnboardingOffersChoice = () => {
       <Card
         imageSrc={individuelle}
         title="Aux jeunes sur l’application mobile pass Culture"
-        buttonTitle="Commencer la création d’offre sur l’application mobile"
         to={'/onboarding/individuel'}
       >
         Vos offres seront visibles par{' '}
@@ -64,7 +56,6 @@ export const OnboardingOffersChoice = () => {
       <Card
         imageSrc={collective}
         title="Aux enseignants sur la plateforme ADAGE"
-        buttonTitle="Commencer la création d’offre sur ADAGE"
       >
         Vos offres seront visibles par{' '}
         <strong className={styles['card-description-highlight']}>

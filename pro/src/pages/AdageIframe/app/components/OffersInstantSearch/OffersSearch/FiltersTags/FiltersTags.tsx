@@ -30,7 +30,6 @@ const createTag = (label: string, onClose: () => void) => {
     <button
       className={styles['adage-tag']}
       onClick={() => onClose()}
-      title={'Supprimer ' + label}
       type="button"
       key={label}
     >

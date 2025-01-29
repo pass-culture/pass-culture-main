@@ -49,7 +49,7 @@ export const DialogBuilderCloseButton = ({
         closeButtonClassName
       )}
       onClick={onCloseClick}
-      title="Fermer la modale"
+      aria-label="Fermer la modale"
       type="button"
     >
       <SvgIcon

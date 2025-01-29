@@ -54,7 +54,8 @@ export const PasswordInput = ({
         rightButton={() => (
           <Button
             icon={isPasswordHidden ? strokeHideIcon : strokeShowIcon}
-            title={
+            aria-label={
+              //  TODO TOOLTIP Utiliser un tooltip ici
               isPasswordHidden
                 ? 'Afficher le mot de passe'
                 : 'Cacher le mot de passe'

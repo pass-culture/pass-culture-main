@@ -49,8 +49,6 @@ export const ModalImageUploadConfirm = ({
         <Button
           className={style['button']}
           onClick={onGoBack}
-          title="Retour"
-          type="button"
           variant={ButtonVariant.SECONDARY}
         >
           Retour

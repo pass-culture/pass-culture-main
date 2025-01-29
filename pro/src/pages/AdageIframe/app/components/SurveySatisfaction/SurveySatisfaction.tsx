@@ -53,11 +53,14 @@ export const SurveySatisfaction = ({
           <div className={styles['survey-title']}>Enquête de satisfaction</div>
           <button
             onClick={onCloseSurvey}
-            title="Masquer le bandeau"
             type="button"
             className={styles['survey-close']}
           >
-            <SvgIcon src={strokeCloseIcon} alt="" width="24" />
+            <SvgIcon
+              src={strokeCloseIcon}
+              alt="Masquer le bandeau"
+              width="24"
+            />
           </button>
         </div>
         <div className={styles['survey-description']}>

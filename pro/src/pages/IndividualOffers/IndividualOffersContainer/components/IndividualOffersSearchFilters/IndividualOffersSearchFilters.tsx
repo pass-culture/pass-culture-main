@@ -120,7 +120,8 @@ export const IndividualOffersSearchFilters = ({
 
   const searchByOfferNameLabel = (
     <span>
-      Nom de l’offre ou <abbr title="European Article Numbering">EAN-13</abbr>
+      Nom de l’offre ou <span lang="en">European Article Numbering</span> (
+      <abbr>EAN-13</abbr>)
     </span>
   )
 

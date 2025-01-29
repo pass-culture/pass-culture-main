@@ -98,13 +98,15 @@ export const DownloadBookingsModal = ({
             className={style['bookings-date-radio']}
             label={
               <div className={style['radio-label']}>
-                <abbr
-                  title={day}
+                <span
                   className={style['bookings-day']}
                   data-testid="short-week-day"
                 >
-                  {day.substring(0, 3)}
-                </abbr>
+                  {
+                    // TODO TOOLTIP - mettre un tooltip ici ? ou écrire le nom du jour en entier
+                    day.substring(0, 3)
+                  }
+                </span>
                 <span>{format(date, FORMAT_DD_MM_YYYY)}</span>
               </div>
             }
@@ -130,7 +132,7 @@ export const DownloadBookingsModal = ({
           </h1>
         </Dialog.Title>
         <fieldset className={style['date-select-section']}>
-          {priceCategoryAndScheduleCountByDate.length === 1 ? (
+          {priceCategoryAndScheduleCountByDate.length === 0 ? (
             <h2 className={style['one-booking-date-section']}>
               Date de votre évènement :{' '}
               {format(

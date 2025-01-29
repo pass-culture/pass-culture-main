@@ -64,7 +64,6 @@ export const OffererAuthenticationForm = (): JSX.Element => {
           <>
             <Button
               variant={ButtonVariant.QUATERNARY}
-              title="Renseignez l’adresse manuellement"
               icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
               onClick={toggleManuallySetAddress}
             >

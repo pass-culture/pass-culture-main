@@ -22,6 +22,7 @@ export const SortArrow = ({
     type="button"
     className={styles['sorting-icons']}
     onClick={onClick}
+    //  TODO TOOLTIP - replace title with a tooltip
     title={
       sortingMode === SortingMode.NONE
         ? 'Trier'
