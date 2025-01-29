@@ -293,6 +293,18 @@ class GetOffererTest(GetEndpointHelper):
         assert ("Offres BO" in response_text) is has_offers_links
         assert ("Réservations BO" in response_text) is has_bookings_links
 
+    def test_get_closed_offerer(self, authenticated_client):
+        closed_offerer = offerers_factories.ClosedOffererFactory()
+        url = url_for(self.endpoint, offerer_id=closed_offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert "Entité juridique Fermée " in response_text
+        assert "Générer une clé API" not in response_text
+
     def test_get_offerer_which_does_not_exist(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, offerer_id=12345))
         assert response.status_code == 404
@@ -572,6 +584,13 @@ class GenerateOffererAPIKeyTest(PostEndpointHelper):
         response = authenticated_client.get(response.location)
         alert = html_parser.extract_alert(response.data)
         assert alert == "Le nombre maximal de clés a été atteint"
+
+    def test_cant_generate_api_key_for_closed_offerer(self, legit_user, authenticated_client):
+        offerer = offerers_factories.ClosedOffererFactory()
+
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
+
+        assert response.status_code == 400
 
 
 class UpdateOffererTest(PostEndpointHelper):
@@ -2434,6 +2453,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 (["NEW", "PENDING"], 200, {"A", "B", "C", "D", "E", "F"}),
                 ("VALIDATED", 200, {"G"}),
                 ("REJECTED", 200, {"H"}),
+                ("CLOSED", 200, {"Z"}),
                 (None, 200, {"C", "A", "E"}),  # status NEW as default
                 ("OTHER", 400, set()),  # unknown value
                 (["REJECTED", "OTHER"], 400, set()),
@@ -2442,6 +2462,8 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         def test_list_filtering_by_status(
             self, authenticated_client, status_filter, expected_status, expected_offerer_names, offerers_to_be_validated
         ):
+            offerers_factories.ClosedOffererFactory(name="Z")
+
             expected_num_queries = (
                 self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 1
             )
