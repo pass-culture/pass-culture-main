@@ -200,7 +200,7 @@ export const VenueSettingsForm = ({
         )}
       </FormLayout>
 
-      <VenueFormActionBar venue={venue} />
+      <VenueFormActionBar venue={venue} disableFormSubmission={!formik.dirty} />
       <RouteLeavingGuardIndividualOffer when={dirty && !isSubmitting} />
     </>
   )
