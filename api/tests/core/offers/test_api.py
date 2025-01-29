@@ -1275,6 +1275,16 @@ class CreateDraftOfferTest:
         assert not offer.product
         assert models.Offer.query.count() == 1
 
+    def test_cannot_create_draft_offer_with_ean_in_name(self):
+        venue = offerers_factories.VenueFactory()
+        body = offers_schemas.PostDraftOfferBodyModel(
+            name="A pretty good offer 4759217254634",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            venueId=venue.id,
+        )
+        with pytest.raises(exceptions.EanInOfferNameException):
+            api.create_draft_offer(body, venue=venue)
+
     @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=False)
     def test_create_draft_digitaloffer_with_virtual_venue(self):
         venue = offerers_factories.VirtualVenueFactory()
@@ -1458,6 +1468,25 @@ class UpdateDraftOfferTest:
         assert offer.name == "New name"
         assert offer.description == "New description"
 
+    def test_cannot_update_if_ean_in_name(self):
+        offer = factories.OfferFactory(
+            name="Name",
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            description="description",
+        )
+        body = offers_schemas.PatchDraftOfferBodyModel(
+            name="New name 4759217254634",
+            description="New description",
+        )
+
+        with pytest.raises(exceptions.EanInOfferNameException):
+            api.update_draft_offer(offer, body)
+
+        db.session.flush()
+
+        assert offer.name == "Name"
+        assert offer.description == "description"
+
 
 @pytest.mark.usefixtures("db_session")
 class CreateOfferTest:
@@ -1597,6 +1626,21 @@ class CreateOfferTest:
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
+    def test_cannot_create_offer_with_ean_in_name(self):
+        venue = offerers_factories.VenueFactory()
+        body = offers_schemas.CreateOffer(
+            name="An offer he can't refuse - 4759217254634",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
+        with pytest.raises(exceptions.EanInOfferNameException) as error:
+            api.create_offer(body, venue=venue)
+
+        assert error.value.errors["name"] == ["Le titre d'une offre ne peut contenir l'EAN"]
+
     def test_raise_error_if_extra_data_mandatory_fields_not_provided(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.CreateOffer(
@@ -1711,6 +1755,15 @@ class UpdateOfferTest:
             api.update_offer(offer, body)
 
         assert error.value.errors == {"name": ["Vous devez saisir moins de 140 caractères"]}
+        assert models.Offer.query.one().name == "Old name"
+
+    def test_cannot_update_with_name_containing_ean(self):
+        offer = factories.OfferFactory(name="Old name", extraData={"ean": "1234567890124"})
+        body = offers_schemas.UpdateOffer(name="Luftballons 1234567890124")
+        with pytest.raises(exceptions.EanInOfferNameException) as error:
+            api.update_offer(offer, body)
+
+        assert error.value.errors == {"name": ["Le titre d'une offre ne peut contenir l'EAN"]}
         assert models.Offer.query.one().name == "Old name"
 
     def test_success_on_allocine_offer(self):

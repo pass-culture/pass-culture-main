@@ -877,6 +877,31 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["url"] == ['L\'URL doit commencer par "http://" ou "https://"']
 
+    def should_fail_when_name_contains_ean(self, app, client):
+        # Given
+        virtual_venue = offerers_factories.VirtualVenueFactory()
+        offer = offers_factories.OfferFactory(
+            venue=virtual_venue,
+            subcategoryId=subcategories.CARTE_MUSEE.id,
+            name="New name",
+            url="test@test.com",
+            description="description",
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {
+            "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",
+        }
+        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["name"] == ["Le titre d'une offre ne peut contenir l'EAN"]
+
     def should_fail_when_externalTicketOfficeUrl_has_no_scheme(self, app, client):
         # Given
         virtual_venue = offerers_factories.VirtualVenueFactory()

@@ -2,6 +2,7 @@ import datetime
 import decimal
 from io import BytesIO
 import logging
+import re
 import typing
 import warnings
 
@@ -661,6 +662,11 @@ def check_ean_does_not_exist(ean: str | None, venue: offerers_models.Venue) -> N
     if repository.has_active_offer_with_ean(ean, venue):
         if ean:
             raise exceptions.OfferAlreadyExists("ean")
+
+
+def check_offer_name_does_not_contain_ean(offer_name: str) -> None:
+    if re.search(r"\d{13}", offer_name):
+        raise exceptions.EanInOfferNameException()
 
 
 def _check_offer_has_product(offer: models.Offer | None) -> None:

@@ -361,6 +361,29 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["name"] == ["Le titre de l’offre doit faire au maximum 90 caractères."]
 
+    def test_fail_if_name_contains_ean(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "venueId": venue.id,
+            "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "withdrawalType": "no_ticket",
+            "mentalDisabilityCompliant": False,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+        }
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["name"] == ["Le titre d'une offre ne peut contenir l'EAN"]
+
     def test_fail_if_unknown_subcategory(self, client):
         # Given
         venue = offerers_factories.VenueFactory()

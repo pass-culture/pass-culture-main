@@ -632,6 +632,26 @@ class Returns400Test:
         for key in forbidden_keys:
             assert key in response.json
 
+    def when_trying_to_set_offer_name_with_ean(self, client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CARTE_MUSEE.id,
+            name="New name",
+            url="http://example.com/offer",
+            description="description",
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        data = {
+            "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",
+        }
+        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["name"] == ["Le titre d'une offre ne peut contenir l'EAN"]
+
     @pytest.mark.features(WIP_EAN_CREATION=True)
     def when_trying_to_patch_offer_with_product_with_new_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
