@@ -326,6 +326,7 @@ def _batch_validate_or_reject_collective_offers(
 
     for collective_offer in collective_offers:
         with atomic():
+            collective_offer_id = collective_offer.id
             old_validation_status = collective_offer.validation
             new_validation_status = validation
             collective_offer.validation = new_validation_status
@@ -343,7 +344,7 @@ def _batch_validate_or_reject_collective_offers(
                 db.session.flush()
             except Exception:  # pylint: disable=broad-except
                 mark_transaction_as_invalid()
-                collective_offer_update_failed_ids.append(collective_offer.id)
+                collective_offer_update_failed_ids.append(collective_offer_id)
                 continue
 
             collective_offer_update_succeed_ids.append(collective_offer.id)
