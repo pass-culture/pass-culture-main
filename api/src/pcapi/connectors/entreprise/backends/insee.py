@@ -90,7 +90,8 @@ class InseeBackend(BaseBackend):
         for periode in siren_data["periodesUniteLegale"]:
             if periode["dateDebut"] <= today and (not periode["dateFin"] or periode["dateFin"] >= today):
                 return periode
-        # In case all "periodes" are in the future (does this happen when company is declared before start date?):
+        # In case all "periodes" are in the future (or the single period: "dateCreationUniteLegale" in the future):
+        # Note that the company will be considered as active even before "dateCreationUniteLegale".
         return [_b for _b in siren_data["periodesUniteLegale"] if not _b["dateFin"]][0]
 
     def _get_name_from_siren_data(self, data: dict) -> str:

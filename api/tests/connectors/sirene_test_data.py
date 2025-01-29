@@ -1,3 +1,6 @@
+import datetime
+
+
 RESPONSE_SIREN_COMPANY = {
     "header": {"statut": 200, "message": "OK"},
     "uniteLegale": {
@@ -1279,6 +1282,61 @@ RESPONSE_SIRET_CLOSED = {
                 "caractereEmployeurEtablissement": "O",
                 "changementCaractereEmployeurEtablissement": False,
             },
+        ],
+    },
+}
+
+RESPONSE_FUTURE_SIREN = {
+    "header": {"statut": 200, "message": "OK"},
+    "uniteLegale": {
+        "siren": "222222226",
+        "statutDiffusionUniteLegale": "P",
+        "dateCreationUniteLegale": (datetime.date.today() + datetime.timedelta(days=10)).isoformat(),
+        "sigleUniteLegale": "[ND]",
+        "sexeUniteLegale": "[ND]",
+        "prenom1UniteLegale": "[ND]",
+        "prenom2UniteLegale": "[ND]",
+        "prenom3UniteLegale": "[ND]",
+        "prenom4UniteLegale": "[ND]",
+        "prenomUsuelUniteLegale": "[ND]",
+        "pseudonymeUniteLegale": "[ND]",
+        "identifiantAssociationUniteLegale": None,
+        "trancheEffectifsUniteLegale": None,
+        "anneeEffectifsUniteLegale": None,
+        "dateDernierTraitementUniteLegale": "2025-01-27T11:22:33.444",
+        "nombrePeriodesUniteLegale": 1,
+        "categorieEntreprise": None,
+        "anneeCategorieEntreprise": None,
+        "periodesUniteLegale": [
+            {
+                "dateFin": None,
+                "dateDebut": (datetime.date.today() + datetime.timedelta(days=10)).isoformat(),
+                "etatAdministratifUniteLegale": "A",
+                "changementEtatAdministratifUniteLegale": False,
+                "nomUniteLegale": "[ND]",
+                "changementNomUniteLegale": False,
+                "nomUsageUniteLegale": "[ND]",
+                "changementNomUsageUniteLegale": False,
+                "denominationUniteLegale": "[ND]",
+                "changementDenominationUniteLegale": False,
+                "denominationUsuelle1UniteLegale": "[ND]",
+                "denominationUsuelle2UniteLegale": "[ND]",
+                "denominationUsuelle3UniteLegale": "[ND]",
+                "changementDenominationUsuelleUniteLegale": False,
+                "categorieJuridiqueUniteLegale": "1000",
+                "changementCategorieJuridiqueUniteLegale": False,
+                "activitePrincipaleUniteLegale": "90.01Z",
+                "nomenclatureActivitePrincipaleUniteLegale": "NAFRev2",
+                "changementActivitePrincipaleUniteLegale": False,
+                "nicSiegeUniteLegale": "00011",
+                "changementNicSiegeUniteLegale": False,
+                "economieSocialeSolidaireUniteLegale": None,
+                "changementEconomieSocialeSolidaireUniteLegale": False,
+                "societeMissionUniteLegale": None,
+                "changementSocieteMissionUniteLegale": False,
+                "caractereEmployeurUniteLegale": None,
+                "changementCaractereEmployeurUniteLegale": False,
+            }
         ],
     },
 }
