@@ -153,7 +153,7 @@ export const Layout = ({
               >
                 <img
                   src={engagementsImage}
-                  alt=""
+                  alt="Plus de 4 millions de jeunes scolarisés ont participé à une sortie scolaire. Plus de 36 000 acteurs culturels déjà inscrits. Plus de 2 millions de jeunes ont déjà réservé une offre via l’application."
                   className={styles['image-engagements']}
                 />
                 <img
