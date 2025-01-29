@@ -69,7 +69,7 @@ export const IndivualOfferLayout = ({
       )) ||
     mode !== OFFER_WIZARD_MODE.CREATION
 
-  if (isOnboarding && !isDidacticOnboardingEnabled) {
+  if (isOnboarding && isDidacticOnboardingEnabled === false) {
     return <Navigate to="/accueil" />
   }
 

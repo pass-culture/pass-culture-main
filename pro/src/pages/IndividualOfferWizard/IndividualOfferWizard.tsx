@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { Outlet, useLocation, Navigate } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { Layout } from 'app/App/layout/Layout'
 import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -13,7 +13,7 @@ export const IndividualOfferWizard = () => {
   const isConfirmationPage = pathname.endsWith('confirmation')
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
 
-  if (isOnboarding && !isDidacticOnboardingEnabled) {
+  if (isOnboarding && isDidacticOnboardingEnabled === false) {
     return <Navigate to="/accueil" />
   }
 
