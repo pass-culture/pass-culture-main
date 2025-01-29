@@ -60,6 +60,25 @@ def create_special_event_from_typeform(
     return special_event
 
 
+@atomic()
+def reject_response_on_expired_operation() -> None:
+    models.SpecialEventResponse.query.filter(
+        models.SpecialEventResponse.eventId.in_(
+            models.SpecialEvent.query.filter(
+                models.SpecialEvent.eventDate < datetime.date.today() - datetime.timedelta(days=7),
+                # limit to 10 days to avoid checking all events until the end of time.
+                models.SpecialEvent.eventDate >= datetime.date.today() - datetime.timedelta(days=10),
+            ).with_entities(models.SpecialEvent.id),
+        ),
+        models.SpecialEventResponse.status == models.SpecialEventResponseStatus.NEW,
+    ).update(
+        {
+            "status": models.SpecialEventResponseStatus.REJECTED,
+        },
+        synchronize_session=False,
+    )
+
+
 def retrieve_data_from_typeform() -> None:
     events = models.SpecialEvent.query.filter(
         models.SpecialEvent.eventDate >= datetime.date.today() - datetime.timedelta(days=7),
