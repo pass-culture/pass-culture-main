@@ -16,9 +16,11 @@ import { Select } from 'ui-kit/form/Select/Select'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import { getNationalProgramsForDomains } from '../../constants/getNationalProgramsForDomains'
+import styles from '../OfferEducationalForm.module.scss'
 
 export interface FormTypeProps {
   domainsOptions: SelectOption[]
@@ -155,11 +157,11 @@ export const FormOfferType = ({
           </FormLayout.Row>
         )}
         <FormLayout.Row>
-          <TextInput
+          <TimePicker
+            classNameInput={styles['duration-input']}
             isOptional
             label="Indiquez la durée de l’évènement"
             name="duration"
-            description="Format : HH:MM"
             disabled={disableForm}
           />
         </FormLayout.Row>

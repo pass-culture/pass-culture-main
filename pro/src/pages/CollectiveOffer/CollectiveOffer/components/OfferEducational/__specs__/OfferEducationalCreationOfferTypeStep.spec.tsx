@@ -65,8 +65,6 @@ describe('screens | OfferEducational : creation offer type step', () => {
     expect(durationInput).toBeInTheDocument()
     expect(durationInput).toBeEnabled()
     expect(durationInput).toHaveValue('')
-    const durationInputDesc = screen.getByTestId('description-duration')
-    expect(durationInputDesc).toHaveTextContent('Format : HH:MM')
   })
 
   describe('domains', () => {
@@ -217,38 +215,6 @@ describe('screens | OfferEducational : creation offer type step', () => {
       )
 
       expect(description.textContent).toHaveLength(descMaxLength)
-    })
-
-    it('should have a duration field with a format of hh:mm', async () => {
-      renderComponent(props)
-      const duration = await screen.findByLabelText(
-        /Indiquez la durée de l’évènement */
-      )
-      expect(duration).toHaveValue('')
-
-      await userEvent.type(duration, 'bad String')
-
-      await waitFor(() => expect(duration).toHaveValue('bad String'))
-
-      await userEvent.click(duration)
-      await userEvent.tab()
-
-      expect(
-        screen.getByText(
-          'Veuillez renseigner une durée en heures au format hh:mm. Exemple: 1:30'
-        )
-      ).toBeInTheDocument()
-
-      await userEvent.clear(duration)
-      await userEvent.type(duration, '2:30')
-
-      expect(duration).toHaveValue('2:30')
-
-      expect(
-        screen.queryByText(
-          'Veuillez renseigner une durée en heures au format hh:mm. Exemple: 1:30'
-        )
-      ).not.toBeInTheDocument()
     })
   })
 })
