@@ -16,6 +16,8 @@ import {
   OnImageUploadArgs,
 } from './ModalImageEdit/ModalImageEdit'
 import { UploadImageValues } from './types'
+import { ModalImageUploadBrowser } from './ModalImageEdit/components/ModalImageUploadBrowser/ModalImageUploadBrowser'
+import { ImageUploadBrowserFormValues } from './ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/types'
 
 export type ButtonImageEditProps = {
   onImageUpload: (values: OnImageUploadArgs) => void
@@ -37,14 +39,9 @@ export const ButtonImageEdit = ({
   disableForm,
 }: ButtonImageEditProps): JSX.Element => {
   const { imageUrl, originalImageUrl } = initialValues
+  const [image, setImage] = useState<File | undefined>()
 
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
-
-  const onClickButtonImageAdd = () => {
-    if (onClickButtonImage) {
-      onClickButtonImage()
-    }
-  }
 
   const handleImageDelete = () => {
     onImageDelete()
@@ -52,55 +49,33 @@ export const ButtonImageEdit = ({
 
   function onImageUploadHandler(values: OnImageUploadArgs) {
     onImageUpload(values)
-    setIsModalImageOpen(false)
+    setIsModalImageOpen(true)
   }
 
+  const onImageClientUpload = (values: ImageUploadBrowserFormValues) => {
+    console.log(values)
+    setImage(values.image || undefined)
+    setIsModalImageOpen(true)
+  }
+  console.log(initialValues)
   return (
     <>
-      <DialogBuilder
-        onOpenChange={setIsModalImageOpen}
-        open={isModalImageOpen}
-        trigger={
-          imageUrl || originalImageUrl ? (
-            <Button
-              onClick={onClickButtonImageAdd}
-              variant={ButtonVariant.TERNARY}
-              aria-label="Modifier l’image"
-              icon={fullEditIcon}
-            >
-              {children ?? 'Modifier'}
-            </Button>
-          ) : (
-            <button
-              className={cn(style['button-image-add'], {
-                [style['add-image-venue']]: mode === UploaderModeEnum.VENUE,
-                [style['add-image-offer']]:
-                  mode === UploaderModeEnum.OFFER ||
-                  mode === UploaderModeEnum.OFFER_COLLECTIVE,
-              })}
-              onClick={onClickButtonImageAdd}
-              type="button"
-              disabled={disableForm}
-            >
-              <>
-                <SvgIcon
-                  src={strokeMoreIcon}
-                  alt=""
-                  className={style['icon']}
-                />
-                <span className={style['label']}>Ajouter une image</span>
-              </>
-            </button>
-          )
-        }
-      >
+      <DialogBuilder onOpenChange={setIsModalImageOpen} open={isModalImageOpen}>
         <ModalImageEdit
-          mode={mode}
+          mode={UploaderModeEnum.OFFER}
           onImageUpload={onImageUploadHandler}
           onImageDelete={handleImageDelete}
-          initialValues={initialValues}
+          initialValues={{
+            imageUrl,
+            originalImageUrl,
+          }}
+          imageFile={image}
         />
       </DialogBuilder>
+      <ModalImageUploadBrowser
+        onImageClientUpload={onImageClientUpload}
+        mode={mode}
+      />
     </>
   )
 }

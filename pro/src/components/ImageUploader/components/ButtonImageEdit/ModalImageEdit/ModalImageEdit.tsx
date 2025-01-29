@@ -28,6 +28,7 @@ interface ModalImageEditProps {
   onImageUpload: (values: OnImageUploadArgs) => void
   onImageDelete: () => void
   initialValues?: UploadImageValues
+  imageFile: File | undefined
 }
 
 // TODO: find a way to test FileReader
@@ -37,6 +38,7 @@ export const ModalImageEdit = ({
   onImageUpload,
   onImageDelete,
   initialValues = {},
+  imageFile,
 }: ModalImageEditProps): JSX.Element | null => {
   const notification = useNotification()
   const [isReady, setIsReady] = useState<boolean>(false)
@@ -48,7 +50,8 @@ export const ModalImageEdit = ({
     cropParams: initialCropParams,
   } = initialValues
 
-  const [image, setImage] = useState<File | undefined>()
+  const [image, setImage] = useState<File | undefined>(imageFile)
+
   useEffect(() => {
     async function setImageFromUrl(url: string) {
       try {
@@ -94,10 +97,6 @@ export const ModalImageEdit = ({
 
   const navigateFromPreviewToEdit = () => {
     setEditedImageDataUrl('')
-  }
-
-  const onImageClientUpload = (values: ImageUploadBrowserFormValues) => {
-    setImage(values.image || undefined)
   }
 
   const onReplaceImage = () => {
