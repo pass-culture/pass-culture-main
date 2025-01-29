@@ -858,11 +858,38 @@ class CheckBookingLimitDatetimeTest:
 
 
 class CheckPublicationDateTest:
-    def test_check_publication_date(self):
-        offer = offers_factories.ThingOfferFactory()
-        publication_date = None
-        assert validation.check_publication_date(offer, publication_date) is None
+    @pytest.mark.parametrize(
+        "offer_factory,publication_date,expected_message",
+        [
+            (
+                offers_factories.ThingOfferFactory,
+                datetime.datetime.utcnow().replace(minute=0),
+                "Seules les offres d’événements peuvent avoir une date de publication",
+            ),
+            (
+                offers_factories.EventOfferFactory,
+                datetime.datetime.utcnow().replace(minute=16),
+                "L’heure de publication ne peut avoir une précision supérieure au quart d'heure",
+            ),
+            (
+                offers_factories.EventOfferFactory,
+                datetime.datetime.utcnow() + datetime.timedelta(days=750),
+                "Impossible de sélectionner une date de publication dans le passé",
+            ),
+            (
+                offers_factories.EventOfferFactory,
+                datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                "Impossible sélectionner une date de publication plus de 2 ans en avance",
+            ),
+        ],
+    )
+    def test_check_publication_date_should_raise(self, offer_factory, publication_date, expected_message):
+        offer = offer_factory()
+        with pytest.raises(exceptions.FutureOfferException) as exc:
+            validation.check_publication_date(offer, publication_date)
+            assert exc.value.errors["publication_date"] == [expected_message]
 
+    def test_check_publication_date_should_raise_raise_because_already_set(self):
         offer = offers_factories.ThingOfferFactory()
         publication_date = datetime.datetime.utcnow().replace(minute=0) + datetime.timedelta(days=30)
         offers_factories.FutureOfferFactory(offerId=offer.id, publicationDate=publication_date)
@@ -871,37 +898,19 @@ class CheckPublicationDateTest:
             msg = "Cette offre est déjà programmée pour être publiée dans le futur"
             assert exc.value.errors["publication_date"] == [msg]
 
+    def test_check_publication_date_should_raise_not_raise(self):
         offer = offers_factories.ThingOfferFactory()
-        publication_date = datetime.datetime(2024, 3, 20, 9, 15, 0)
-        with pytest.raises(exceptions.FutureOfferException) as exc:
-            validation.check_publication_date(offer, publication_date)
-            msg = "Seules les offres d’événements peuvent avoir une date de publication"
-            assert exc.value.errors["publication_date"] == [msg]
-
-        offer = offers_factories.EventOfferFactory()
-        publication_date = datetime.datetime(2024, 3, 20, 9, 15, 0)
-        with pytest.raises(exceptions.FutureOfferException) as exc:
-            validation.check_publication_date(offer, publication_date)
-            msg = "L’heure de publication doit être une heure pile"
-            assert exc.value.errors["publication_date"] == [msg]
-
-        offer = offers_factories.EventOfferFactory()
-        publication_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        with pytest.raises(exceptions.FutureOfferException) as exc:
-            validation.check_publication_date(offer, publication_date)
-            msg = "Impossible de sélectionner une date de publication dans le passé"
-            assert exc.value.errors["publication_date"] == [msg]
-
-        offer = offers_factories.EventOfferFactory()
-        publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=750)
-        with pytest.raises(exceptions.FutureOfferException) as exc:
-            validation.check_publication_date(offer, publication_date)
-            msg = "Impossible sélectionner une date de publication plus de 2 ans en avance"
-            assert exc.value.errors["publication_date"] == [msg]
+        publication_date = None
+        assert validation.check_publication_date(offer, publication_date) is None
 
         offer = offers_factories.EventOfferFactory()
         publication_date = datetime.datetime.utcnow().replace(minute=0) + datetime.timedelta(days=30)
         assert validation.check_publication_date(offer, publication_date) is None
+
+        for i in [0, 15, 30, 45]:
+            offer = offers_factories.EventOfferFactory()
+            publication_date = datetime.datetime.utcnow().replace(minute=0) + datetime.timedelta(hours=1, minutes=i)
+            assert validation.check_publication_date(offer, publication_date) is None
 
 
 class CheckOffererIsEligibleForHeadlineOffersTest:
