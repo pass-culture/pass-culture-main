@@ -10,6 +10,7 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
 import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferNameCell'
 import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
+import { useIndividualOffersContext } from 'pages/IndividualOffers/context/IndividualOffersContext'
 
 import { AddressCell } from './components/AddressCell'
 import { IndividualActionsCells } from './components/IndividualActionsCells'
@@ -29,6 +30,7 @@ export const IndividualOfferRow = ({
   selectOffer,
 }: IndividualOfferRowProps) => {
   const rowId = `collective-offer-${offer.id}`
+  const { headlineOffer } = useIndividualOffersContext()
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const offerHeadlineEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
 
@@ -95,7 +97,7 @@ export const IndividualOfferRow = ({
         status={offer.status}
         className={styles['individual-cell-status']}
         displayLabel
-        isHeadline={offerHeadlineEnabled && offer.isHeadlineOffer}
+        isHeadline={offerHeadlineEnabled && offer.id === headlineOffer?.id}
       />
       <IndividualActionsCells
         rowId={rowId}
