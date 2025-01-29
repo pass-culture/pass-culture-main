@@ -60,7 +60,7 @@ class SpecialEventResponse(PcObject, Base, Model):
     """
 
     __tablename__ = "special_event_response"
-    eventId: int = sa.Column(sa.BigInteger, sa.ForeignKey("special_event.id"), index=True, nullable=False)
+    eventId: int = sa.Column(sa.BigInteger, sa.ForeignKey("special_event.id"), nullable=False)
     event: SpecialEvent = sa.orm.relationship(
         "SpecialEvent", foreign_keys=[eventId], backref=sa.orm.backref("responses")
     )
@@ -75,6 +75,8 @@ class SpecialEventResponse(PcObject, Base, Model):
     user: users_models.User | None = sa.orm.relationship(
         "User", foreign_keys=[userId], backref=sa.orm.backref("specialEventResponses")
     )
+
+    __table_args__ = (sa.Index("ix_special_event_response_eventid_status", eventId, status),)
 
 
 class SpecialEventAnswer(PcObject, Base, Model):

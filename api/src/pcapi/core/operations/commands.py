@@ -16,3 +16,4 @@ logger = logging.getLogger(__name__)
 def import_special_event_answers() -> None:
     if FeatureToggle.ENABLE_SPECIAL_EVENTS_SYNC.is_active():
         api.retrieve_data_from_typeform()
+        api.reject_response_on_expired_operation()
