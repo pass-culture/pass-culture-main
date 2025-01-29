@@ -101,22 +101,22 @@ export const OfferEducationalForm = ({
           setIsEligible(userOfferer.allowedOnAdage)
         }
 
-        let venuesOptions = userOfferer.managedVenues.map((item) => ({
+        let newVenuesOptions = userOfferer.managedVenues.map((item) => ({
           value: item['id'].toString(),
           label: item['name'] as string,
         }))
-        if (venuesOptions.length > 1) {
-          venuesOptions = [
+        if (newVenuesOptions.length > 1) {
+          newVenuesOptions = [
             {
               value: '',
               label: `Sélectionner ${isOfferAddressEnabled ? 'une structure' : 'un lieu'}`,
             },
-            ...sortByLabel(venuesOptions),
+            ...sortByLabel(newVenuesOptions),
           ]
         }
-        setVenuesOptions(venuesOptions)
-        if (venuesOptions.length === 1) {
-          await setFieldValue('venueId', venuesOptions[0].value)
+        setVenuesOptions(newVenuesOptions)
+        if (newVenuesOptions.length === 1) {
+          await setFieldValue('venueId', newVenuesOptions[0].value)
         } else {
           await setFieldValue('venueId', initialValues.venueId)
         }
@@ -132,7 +132,7 @@ export const OfferEducationalForm = ({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       handleOffererValues()
     })
-  }, [userOfferer])
+  }, [userOfferer?.id])
 
   return (
     <>
