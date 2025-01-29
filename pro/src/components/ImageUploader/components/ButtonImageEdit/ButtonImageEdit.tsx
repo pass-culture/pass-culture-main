@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useState } from 'react'
 
 import fullEditIcon from 'icons/full-edit.svg'
-import strokeMoreIcon from 'icons/stroke-more.svg'
+import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
@@ -83,11 +83,7 @@ export const ButtonImageEdit = ({
               disabled={disableForm}
             >
               <>
-                <SvgIcon
-                  src={strokeMoreIcon}
-                  alt=""
-                  className={style['icon']}
-                />
+                <SvgIcon src={fullMoreIcon} alt="" className={style['icon']} />
                 <span className={style['label']}>Ajouter une image</span>
               </>
             </button>

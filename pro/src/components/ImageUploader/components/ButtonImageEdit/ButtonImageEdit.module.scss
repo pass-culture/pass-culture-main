@@ -7,12 +7,12 @@
   justify-content: center;
   align-items: center;
   gap: rem.torem(16px);
-  border: rem.torem(1px) solid var(--color-grey-medium);
+  border: none;
   background-color: var(--color-grey-light);
   color: var(--color-black);
   box-shadow: 0 rem.torem(1px) rem.torem(8px)
     rgb(from var(--color-large-shadow) r g b / 15%);
-  border-radius: rem.torem(4px);
+  border-radius: rem.torem(8px);
   cursor: pointer;
 
   &.add-image-venue {
@@ -47,11 +47,11 @@
 .icon {
   height: rem.torem(32px);
   width: rem.torem(32px);
-  color: var(--color-grey-dark);
+  color: var(--color-secondary-light);
 }
 
 .label {
-  @include fonts.body-accent;
+  @include fonts.button;
 
   line-height: rem.torem(20px);
 }
