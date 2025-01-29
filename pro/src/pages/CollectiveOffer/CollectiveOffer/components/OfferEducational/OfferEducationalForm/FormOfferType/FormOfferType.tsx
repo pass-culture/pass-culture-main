@@ -2,7 +2,6 @@ import { useFormikContext } from 'formik'
 
 import { EacFormat } from 'apiClient/adage'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { useFunctionOnce } from 'app/App/hook/useFunctionOnce'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
   MAX_DESCRIPTION_LENGTH,
@@ -11,6 +10,7 @@ import {
 } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { SelectOption } from 'commons/custom_types/form'
+import { useFunctionOnce } from 'commons/hooks/useFunctionOnce'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Select } from 'ui-kit/form/Select/Select'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
