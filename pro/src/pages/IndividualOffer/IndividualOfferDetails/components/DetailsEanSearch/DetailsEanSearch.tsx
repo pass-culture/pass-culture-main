@@ -21,7 +21,7 @@ export type DetailsEanSearchProps = {
   isDirtyDraftOffer: boolean
   productId: string
   subcategoryId: string
-  initialEan?: string
+  initialEan?: string | null
   eanSubmitError?: string
   onEanSearch: (ean: string, product: Product) => Promise<void>
   onEanReset: () => void

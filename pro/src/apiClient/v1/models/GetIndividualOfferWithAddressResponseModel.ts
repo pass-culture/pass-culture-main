@@ -6,6 +6,7 @@ import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLin
 import type { GetOfferLastProviderResponseModel } from './GetOfferLastProviderResponseModel';
 import type { GetOfferMediationResponseModel } from './GetOfferMediationResponseModel';
 import type { GetOfferVenueResponseModel } from './GetOfferVenueResponseModel';
+import type { OfferExtraDataModel } from './OfferExtraDataModel';
 import type { OfferStatus } from './OfferStatus';
 import type { PriceCategoryResponseModel } from './PriceCategoryResponseModel';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
@@ -21,7 +22,7 @@ export type GetIndividualOfferWithAddressResponseModel = {
   description?: string | null;
   durationMinutes?: number | null;
   externalTicketOfficeUrl?: string | null;
-  extraData?: any;
+  extraData?: OfferExtraDataModel | null;
   hasBookingLimitDatetimesPassed: boolean;
   hasPendingBookings: boolean;
   hasStocks: boolean;
