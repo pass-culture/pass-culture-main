@@ -774,8 +774,8 @@ def check_publication_date(offer: models.Offer, publication_date: datetime.datet
         msg = "Seules les offres d’événements peuvent avoir une date de publication"
         raise exceptions.FutureOfferException("publication_date", msg)
 
-    if publication_date.minute != 0:
-        msg = "L’heure de publication doit être une heure pile"
+    if publication_date.minute not in [0, 15, 30, 45]:
+        msg = "L’heure de publication ne peut avoir une précision supérieure au quart d'heure"
         raise exceptions.FutureOfferException("publication_date", msg)
 
     now = datetime.datetime.utcnow()
