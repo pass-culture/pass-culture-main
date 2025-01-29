@@ -1561,7 +1561,7 @@ def has_venue_at_least_one_bookable_offer(venue: models.Venue) -> bool:
     at_least_one_eligible_offer_query = (
         offers_models.Stock.query.join(offers_models.Offer)
         .filter(offers_models.Offer.venueId == venue.id)
-        .filter(offers_models.Offer.is_eligible_for_search)
+        .filter(offers_models.Offer.is_released_and_bookable)
         .exists()
     )
 
