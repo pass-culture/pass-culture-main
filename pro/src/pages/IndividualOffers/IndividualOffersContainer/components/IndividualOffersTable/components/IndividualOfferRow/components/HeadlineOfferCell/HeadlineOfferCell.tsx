@@ -35,14 +35,16 @@ export function HeadlineOfferCell({
 
   return (
     <DropdownItem onSelect={onSelect} asChild>
-      <Button variant={ButtonVariant.TERNARY} icon={fullStarIcon}>
-        {offer.id === headlineOffer?.id
-          ? 'Ne plus mettre à la une'
-          : 'Mettre à la une'}
+      <span>
+        <Button variant={ButtonVariant.TERNARY} icon={fullStarIcon}>
+          {offer.id === headlineOffer?.id
+            ? 'Ne plus mettre à la une'
+            : 'Mettre à la une'}
+        </Button>
         <Tag variant={TagVariant.BLUE} className={styles['new-tag']}>
           Nouveau
         </Tag>
-      </Button>
+      </span>
     </DropdownItem>
   )
 }
