@@ -177,13 +177,17 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
           </FormLayout.Section>
         </FormLayout>
 
-        <VenueFormActionBar venue={venue} />
-
         <FormikConsumer>
           {(formik) => (
-            <RouteLeavingGuardVenueEdition
-              shouldBlock={formik.dirty && !formik.isSubmitting}
-            />
+            <>
+              <VenueFormActionBar
+                venue={venue}
+                disableFormSubmission={!formik.dirty}
+              />
+              <RouteLeavingGuardVenueEdition
+                shouldBlock={formik.dirty && !formik.isSubmitting}
+              />
+            </>
           )}
         </FormikConsumer>
       </Form>

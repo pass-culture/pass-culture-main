@@ -12,9 +12,13 @@ import styles from './VenueFormActionBar.module.scss'
 
 export interface VenueFormActionBarProps {
   venue?: GetVenueResponseModel
+  disableFormSubmission?: boolean
 }
 
-export const VenueFormActionBar = ({ venue }: VenueFormActionBarProps) => {
+export const VenueFormActionBar = ({
+  venue,
+  disableFormSubmission,
+}: VenueFormActionBarProps) => {
   const { isSubmitting } = useFormikContext<
     VenueEditionFormValues | VenueSettingsFormValues
   >()
@@ -27,7 +31,11 @@ export const VenueFormActionBar = ({ venue }: VenueFormActionBarProps) => {
       >
         Annuler
       </ButtonLink>
-      <Button type="submit" isLoading={isSubmitting}>
+      <Button
+        type="submit"
+        isLoading={isSubmitting}
+        disabled={disableFormSubmission}
+      >
         Enregistrer
       </Button>
     </div>
