@@ -330,6 +330,24 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
             ]
         }
 
+    def test_update_with_ean_in_name_raises(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.ABO_BIBLIOTHEQUE.id,
+            lastProvider=venue_provider.provider,
+        )
+
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url,
+            json={
+                "offerId": product_offer.id,
+                "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",
+            },
+        )
+        assert response.status_code == 400
+        assert response.json == {"name": ["Le titre d'une offre ne peut contenir l'EAN"]}
+
     def test_update_unallowed_subcategory_product_raises_error(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(

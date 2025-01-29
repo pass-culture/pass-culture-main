@@ -229,6 +229,14 @@ class EanFormatException(OfferCreationBaseException):
     pass
 
 
+class EanInOfferNameException(OfferCreationBaseException):
+    def __init__(self) -> None:
+        super().__init__(
+            "name",
+            "Le titre d'une offre ne peut contenir l'EAN",
+        )
+
+
 class ProductNotFoundForOfferCreation(OfferCreationBaseException):
     pass
 

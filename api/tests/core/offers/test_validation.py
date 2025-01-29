@@ -959,3 +959,17 @@ class CheckOffererIsEligibleForHeadlineOffersTest:
             validation.check_offer_is_eligible_to_be_headline(offer_without_image)
             msg = "Offers without images can not be set to the headline"
             assert exc.value.errors["headlineOffer"] == [msg]
+
+
+class CheckOfferNameDoesNotContainEanTest:
+    @pytest.mark.parametrize(
+        "offer_name",
+        [
+            "Mon offre de filou - 3759217254634",
+            "4759217254634",
+            "[3759217254634] J'essaye de mettre mon offre en avant",
+        ],
+    )
+    def test_check_offer_name_does_not_contain_ean_should_raise(self, offer_name):
+        with pytest.raises(exceptions.EanInOfferNameException):
+            validation.check_offer_name_does_not_contain_ean(offer_name)

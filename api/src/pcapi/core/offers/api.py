@@ -221,6 +221,7 @@ def create_draft_offer(
     is_from_private_api: bool = True,
 ) -> models.Offer:
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
+    validation.check_offer_name_does_not_contain_ean(body.name)
     if feature.FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES.is_active():
         venue = _get_coherent_venue_with_subcategory(venue, body.subcategory_id)
 
@@ -271,6 +272,9 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
     if not updates:
         return offer
 
+    if body.name:
+        validation.check_offer_name_does_not_contain_ean(body.name)
+
     if "extraData" in updates:
         formatted_extra_data = _format_extra_data(offer.subcategoryId, body.extra_data) or {}
         validation.check_offer_extra_data(
@@ -309,6 +313,7 @@ def create_offer(
     validation.check_is_duo_compliance(body.is_duo, subcategory)
     validation.check_can_input_id_at_provider(provider, body.id_at_provider)
     validation.check_can_input_id_at_provider_for_this_venue(venue.id, body.id_at_provider)
+    validation.check_offer_name_does_not_contain_ean(body.name)
 
     fields = body.dict(by_alias=True)
 
@@ -398,6 +403,10 @@ def update_offer(
         id_at_provider = get_field(offer, updates, "idAtProvider", aliases=aliases)
         validation.check_can_input_id_at_provider(offer.lastProvider, id_at_provider)
         validation.check_can_input_id_at_provider_for_this_venue(offer.venueId, id_at_provider, offer.id)
+
+    if "name" in updates:
+        name = get_field(offer, updates, "name", aliases=aliases)
+        validation.check_offer_name_does_not_contain_ean(name)
 
     if (
         "withdrawalType" in updates
