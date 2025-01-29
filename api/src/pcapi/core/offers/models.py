@@ -839,7 +839,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @is_eligible_for_search.expression  # type: ignore[no-redef]
     def is_eligible_for_search(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
-        return sa.and_(cls._released, sa.or_(cls.is_released_and_bookable, FutureOffer.isWaitingForPublication))
+        return sa.and_(cls._released, sa.or_(Stock._bookable, FutureOffer.isWaitingForPublication))
 
     @hybrid_property
     def is_released_and_bookable(self) -> bool:
