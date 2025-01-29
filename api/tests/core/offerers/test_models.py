@@ -9,6 +9,7 @@ from pcapi.core.educational import factories as educational_factories
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.offerers import factories
 from pcapi.core.offerers import models
+import pcapi.core.offerers.schemas as offerers_schemas
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.testing import assert_num_queries
@@ -161,6 +162,51 @@ class VenueBannerUrlTest:
         factories.GooglePlacesInfoFactory(bannerUrl=google_maps_banner_url, venue=venue)
 
         assert venue.bannerUrl == google_maps_banner_url
+
+
+class VenueIsEligibleForSearchTest:
+    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=False)
+    @pytest.mark.parametrize(
+        "permanent,active,type,is_eligible_for_search",
+        [
+            (True, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True),
+            (True, True, offerers_schemas.VenueTypeCode.ADMINISTRATIVE, False),
+            (True, False, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
+            (False, True, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
+            (False, False, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
+        ],
+    )
+    def test_legacy_is_eligible_for_search(self, permanent, active, type, is_eligible_for_search):
+        venue = factories.VenueFactory(
+            isVirtual=False,
+            managingOfferer__isActive=active,
+            isPermanent=permanent,
+            venueTypeCode=type,
+        )
+        assert venue.is_eligible_for_search == is_eligible_for_search
+
+    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
+    @pytest.mark.parametrize(
+        "open_to_public,permanent,active,type,is_eligible_for_search",
+        [
+            (True, True, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True),
+            (True, False, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True),
+            (False, True, True, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
+            (False, True, True, offerers_schemas.VenueTypeCode.ADMINISTRATIVE, False),
+            (False, True, False, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
+            (False, False, True, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
+            (False, False, False, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
+        ],
+    )
+    def test_is_eligible_for_search(self, open_to_public, permanent, active, type, is_eligible_for_search):
+        venue = factories.VenueFactory(
+            isVirtual=False,
+            isOpenToPublic=open_to_public,
+            managingOfferer__isActive=active,
+            isPermanent=permanent,
+            venueTypeCode=type,
+        )
+        assert venue.is_eligible_for_search == is_eligible_for_search
 
 
 class OffererDepartementCodePropertyTest:
