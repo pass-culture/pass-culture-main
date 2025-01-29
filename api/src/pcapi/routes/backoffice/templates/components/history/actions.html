@@ -55,7 +55,7 @@
               {% endif %}
               {% set modified_info = action.extraData.get('modified_info', {}) %}
               {% if modified_info %}
-                {# INFO_MODIFIED but also tags modified in OFFERER_PENDING #}
+                {# INFO_MODIFIED but also tags modified in OFFERER_PENDING, OFFERER_CLOSED #}
                 <div>
                   <span class="fw-bold">Informations modifiées :</span>
                   {% if show_venue and action.venueId %}

@@ -29,6 +29,7 @@ class ActionType(enum.Enum):
     OFFERER_PENDING = "Entité juridique mise en attente"
     OFFERER_VALIDATED = "Entité juridique validée"
     OFFERER_REJECTED = "Entité juridique rejetée"
+    OFFERER_CLOSED = "Entité juridique fermée"
     OFFERER_SUSPENDED = "Entité juridique désactivée"
     OFFERER_UNSUSPENDED = "Entité juridique réactivée"
     OFFERER_ATTESTATION_CHECKED = "Attestation consultée"
