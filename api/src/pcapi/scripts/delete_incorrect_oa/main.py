@@ -19,7 +19,7 @@ DESCRIPTION = "Delete incorrect OffererAddresses after OffererAddress fix for Ve
 DEFAULT_BATCH_SIZE = 1000
 DEFAULT_RETRIES = 3
 DEFAULT_TIMEOUT = "400s"
-DATA = [21090]
+DATA = [7281, 97976, 94975, 96053, 89158, 96696, 96050]
 
 
 def delete_items(batch_size: int, retries: int) -> None:

@@ -7,7 +7,7 @@ from pcapi.core import search
 logger = logging.getLogger(__name__)
 
 
-VENUE_IDS = [9731]
+VENUE_IDS = [13010, 17440]
 
 
 def reindex_offers() -> None:
