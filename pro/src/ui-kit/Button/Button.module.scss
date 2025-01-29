@@ -49,27 +49,28 @@
   }
 
   &:focus-visible {
-    outline: rem.torem(1px) solid var(--color-input-text-color);
+    outline: rem.torem(1px) solid var(--color-outline-default);
     outline-offset: rem.torem(2px);
   }
 
   &-primary {
     min-height: rem.torem(40px);
     align-items: center;
-    color: var(--color-white);
-    background-color: var(--color-primary);
-    border-color: var(--color-primary);
+    color: var(--color-grey-0);
+    background-color: var(--color-background-brand);
+    border-color: var(--color-border-brand);
 
     &:hover {
-      background-color: var(--color-primary-dark);
-      border-color: var(--color-primary-dark);
+      color: var(--color-grey-0);
+      background-color: var(--color-background-brand-hover);
+      border-color: var(--color-background-brand-hover);
     }
 
     &:disabled,
     &.button-disabled {
-      background-color: var(--color-grey-light);
-      color: var(--color-grey-dark);
-      border-color: var(--color-grey-light);
+      background-color: var(--color-background-disabled);
+      color: var(--color-text-disabled);
+      border-color: var(--color-border-disabled);
 
       .button-icon {
         color: var(--color-grey-semi-dark);
@@ -84,17 +85,17 @@
   &-secondary {
     min-height: rem.torem(40px);
     align-items: center;
-    color: var(--color-primary);
-    background-color: var(--color-white);
-    border-color: var(--color-primary);
+    color: var(--color-text-brand);
+    background-color: var(--color-background-default);
+    border-color: var(--color-border-brand);
 
     &:hover {
-      color: var(--color-white);
-      background-color: var(--color-primary-dark);
-      border-color: var(--color-primary-dark);
+      color: var(--color-grey-0);
+      background-color: var(--color-background-brand-hover);
+      border-color: var(--color-background-brand-hover);
 
       .button-icon {
-        color: var(--color-white);
+        color: var(--color-grey-0);
       }
     }
 
@@ -119,7 +120,7 @@
   &-quaternary,
   &-ternary-pink,
   &-quaternary-pink {
-    color: var(--color-black);
+    color: var(--color-text-default);
     align-items: flex-start;
     justify-content: flex-start;
     background-color: transparent;
@@ -129,7 +130,7 @@
     height: auto;
 
     &-pink {
-      color: var(--color-primary);
+      color: var(--color-text-brand);
     }
 
     &:hover,
@@ -140,12 +141,12 @@
     &:disabled,
     &.button-disabled {
       text-decoration: none;
-      color: var(--color-grey-dark);
+      color: var(--color-text-disabled);
     }
 
     &:disabled .button-icon,
     &.button-disabled .button-icon {
-      color: var(--color-grey-semi-dark);
+      color: var(--color-text-disabled);
     }
 
     .button-icon:not(.has-tooltip) {
@@ -166,7 +167,7 @@
 
     margin-top: rem.torem(6px);
     margin-bottom: rem.torem(6px);
-    color: var(--color-black);
+    color: var(--color-text-default);
 
     .button-icon:not(.has-tooltip) {
       height: var(--typography-body-xs-line-height);
@@ -192,17 +193,31 @@
   }
 
   &-box {
-    background-color: var(--color-white);
     justify-content: flex-start;
     width: 100%;
     padding: rem.torem(12px) rem.torem(8px);
-    border: rem.torem(1px) solid var(--color-grey-dark);
+    border: rem.torem(1px) solid var(--color-border-default);
     border-radius: rem.torem(6px);
     max-width: rem.torem(400px);
 
     &:hover:not(:disabled, .button-disabled) {
       box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
         var(--color-medium-shadow);
+    }
+
+    .button-arrow-content {
+      flex-grow: 1;
+      text-align: left;
+    }
+
+    .button-icon {
+      &:not(.button-icon-arrow) {
+        color: var(--color-text-brand);
+      }
+
+      &.button-icon-arrow {
+        color: var(--color-text-default);
+      }
     }
 
     &:disabled,

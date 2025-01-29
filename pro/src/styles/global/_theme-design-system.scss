@@ -1,0 +1,120 @@
+:root {
+  --color-grey-0: #fff;
+  --color-grey-100: #f1f1f4;
+  --color-grey-200: #cbcdd2;
+  --color-grey-300: #90949d;
+  --color-grey-400: #696a6f;
+  --color-grey-500: #161617;
+  --color-pink-200: #ffe0ea;
+  --color-pink-300: #ffa5c0;
+  --color-pink-400: #f2497c;
+  --color-pink-500: #eb0055;
+  --color-pink-600: #cb0659;
+  --color-purple-200: #f3edff;
+  --color-purple-300: #c1a3ff;
+  --color-purple-400: #6123df;
+  --color-purple-500: #320096;
+  --color-purple-600: #25026c;
+  --color-green-200: #eaf8f0;
+  --color-green-300: #91e1b5;
+  --color-green-400: #2cbe6e;
+  --color-green-500: #15884f;
+  --color-green-600: #096437;
+  --color-red-200: #fdf4f6;
+  --color-red-300: #f8b2c0;
+  --color-red-400: #de1e45;
+  --color-red-500: #b60025;
+  --color-red-600: #8e001d;
+  --color-yellow-200: #fff8df;
+  --color-yellow-300: #ffef63;
+  --color-yellow-400: #fedb5e;
+  --color-yellow-500: #f9c030;
+  --color-yellow-600: #d59800;
+  --color-blue-300: #dcf3f8;
+  --color-blue-400: #9be3f3;
+  --color-blue-500: #20c5e9;
+  --color-blue-600: #0e78b7;
+  --color-orange-300: #ffeae2;
+  --color-orange-400: #ffa079;
+  --color-orange-500: #f8733d;
+  --color-orange-600: #d63d00;
+  --color-mintgreen-300: #dbffea;
+  --color-mintgreen-400: #94f0d6;
+  --color-mintgreen-500: #27dca8;
+  --color-mintgreen-600: #0e8474;
+  --color-text-default: #161617; /* Couleur des titres & du corps de texte */
+  --color-text-subtle: #696a6f; /* Couleur des textes moins importants (ex : indivation sur un champ de formulaire) */
+  --color-text-error: #b60025; /* Couleur des textes messages d'erreur */
+  --color-text-disabled: #696a6f; /* Couleur des textes des éléments disabled */
+  --color-text-success: #096437; /* Couleur des textes de succès */
+  --color-text-brand: #320096; /* Couleur des textes de brand (ex : texte des boutons moins imprtants) */
+  --color-text-info: #0e78b7; /* Couleur d'information (ex : 'accent' sur pro, càd texte mis en avant dans un corps de texte / icon de la bannière type info) */
+  --color-border-default: #90949d; /* Couleur des bordures par défaut (ex : séparateurs) */
+  --color-border-subtle: #cbcdd2; /* Couleur des bordures moins importantes (ex : bordures des tables) */
+  --color-border-disabled: #f1f1f4; /* Couleur des bordures des éléments disabled */
+  --color-border-focused: #161617; /* Couleur des bordures des éléments focused (utile ?) */
+  --color-border-error: #b60025; /* Couleur des bordures des éléments en erreur */
+  --color-border-brand: #320096; /* Couleur des éléments de brand (ex : bordure des boutons moins importants) */
+  --color-outline-default: #161617; /* Couleur de l'outline de focus */
+  --color-interactive-border-default: #696a6f; /* Couleur des bordures des éléments interactifs (ex : bordure de l'input texte) */
+  --color-background-default: #fff; /* Couleur d'arrière-plan principale */
+  --color-background-disabled: #f1f1f4; /* Couleur d'arrière-plan des éléments disabled (ex : bouton disabled) */
+  --color-background-subtle: #f1f1f4; /* Couleur d'arrière-plan alternative */
+  --color-background-error: #fdf4f6; /* Couleur d'arrière-plan des éléments d'erreur (ex : callout/banner d'erreur) */
+  --color-background-success: #eaf8f0; /* Couleur d'arrière-plan des éléments de succès (ex : callout/banner de succès) */
+  --color-background-info: #dcf3f8; /* Couleur d'arrière-plan des éléments d'info (ex : callout/banner d'info) */
+  --color-background-brand: #320096; /* Couleur d'arrière-plan des éléments de brand (ex : arrière-plan du bouton principal) */
+  --color-background-brand-hover: #25026c; /* Couleur d'arrière-plan des éléments de brand en hover (ex : arrière plan du bouton pricipal quand il est hover) */
+}
+
+[data-theme="dark"] {
+  --color-text-default: #fff; /* Couleur des titres & du corps de texte */
+  --color-text-subtle: #f1f1f4; /* Couleur des textes moins importants (ex : indivation sur un champ de formulaire) */
+  --color-text-error: #f8b2c0; /* Couleur des textes messages d'erreur */
+  --color-text-disabled: #cbcdd2; /* Couleur des textes des éléments disabled */
+  --color-text-success: #91e1b5; /* Couleur des textes de succès */
+  --color-text-brand: #f3edff; /* Couleur des textes de brand (ex : texte des boutons moins imprtants) */
+  --color-text-info: #dcf3f8; /* Couleur d'information (ex : 'accent' sur pro, càd texte mis en avant dans un corps de texte / icon de la bannière type info) */
+  --color-border-default: #cbcdd2; /* Couleur des bordures par défaut (ex : séparateurs) */
+  --color-border-subtle: #cbcdd2; /* Couleur des bordures moins importantes (ex : bordures des tables) */
+  --color-border-disabled: #90949d; /* Couleur des bordures des éléments disabled */
+  --color-border-focused: #fff; /* Couleur des bordures des éléments focused (utile ?) */
+  --color-border-error: #de1e45; /* Couleur des bordures des éléments en erreur */
+  --color-border-brand: #6123df; /* Couleur des éléments de brand (ex : bordure des boutons moins importants) */
+  --color-outline-default: #fff; /* Couleur de l'outline de focus */
+  --color-interactive-border-default: #f1f1f4; /* Couleur des bordures des éléments interactifs (ex : bordure de l'input texte) */
+  --color-background-default: #161617; /* Couleur d'arrière-plan principale */
+  --color-background-disabled: #696a6f; /* Couleur d'arrière-plan des éléments disabled (ex : bouton disabled) */
+  --color-background-subtle: #696a6f; /* Couleur d'arrière-plan alternative */
+  --color-background-error: #b60025; /* Couleur d'arrière-plan des éléments d'erreur (ex : callout/banner d'erreur) */
+  --color-background-success: #15884f; /* Couleur d'arrière-plan des éléments de succès (ex : callout/banner de succès) */
+  --color-background-info: #0e78b7; /* Couleur d'arrière-plan des éléments d'info (ex : callout/banner d'info) */
+  --color-background-brand: #320096; /* Couleur d'arrière-plan des éléments de brand (ex : arrière-plan du bouton principal) */
+  --color-background-brand-hover: #25026c; /* Couleur d'arrière-plan des éléments de brand en hover (ex : arrière plan du bouton pricipal quand il est hover) */
+}
+
+[data-theme="binary"] {
+  --color-text-default: red;
+  --color-text-subtle: red;
+  --color-text-error: red;
+  --color-text-disabled: red;
+  --color-text-success: red;
+  --color-text-brand: red;
+  --color-border-default: red;
+  --color-border-disabled: red;
+  --color-border-focused: red;
+  --color-border-error: red;
+  --color-border-brand: red;
+  --color-outline-default: red;
+  --color-interactive-border-default: red;
+  --color-background-default: yellow;
+  --color-background-disabled: yellow;
+  --color-background-subtle: yellow;
+  --color-background-error: yellow;
+  --color-background-success: yellow;
+  --color-background-info: yellow;
+  --color-background-brand: red;
+  --color-background-brand-hover: red;
+  --color-text-info: red;
+  --color-border-subtle: red;
+}

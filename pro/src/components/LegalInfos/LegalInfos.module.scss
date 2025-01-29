@@ -4,10 +4,9 @@
 .legal-infos {
   @include fonts.body-accent-xs;
 
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
 
   .quaternary-link {
-    color: var(--color-primary);
     display: inline;
     text-decoration: underline;
   }
