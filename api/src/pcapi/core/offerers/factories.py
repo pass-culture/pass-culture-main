@@ -54,6 +54,10 @@ class RejectedOffererFactory(OffererFactory):
     isActive = False
 
 
+class ClosedOffererFactory(OffererFactory):
+    validationStatus = ValidationStatus.CLOSED
+
+
 class CaledonianOffererFactory(OffererFactory):
     name = factory.Sequence("Structure calédonienne {}".format)
     street = "Avenue James Cook"

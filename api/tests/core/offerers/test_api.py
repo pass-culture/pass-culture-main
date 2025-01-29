@@ -1955,7 +1955,7 @@ class CountOfferersByValidationStatusTest:
             stats = offerers_api.count_offerers_by_validation_status()
 
         # then
-        assert stats == {"DELETED": 0, "NEW": 1, "PENDING": 2, "VALIDATED": 3, "REJECTED": 4}
+        assert stats == {"DELETED": 0, "NEW": 1, "PENDING": 2, "VALIDATED": 3, "REJECTED": 4, "CLOSED": 0}
 
     def test_get_offerer_stats_zero(self, client):
         # when
@@ -1963,7 +1963,7 @@ class CountOfferersByValidationStatusTest:
             stats = offerers_api.count_offerers_by_validation_status()
 
         # then
-        assert stats == {"DELETED": 0, "NEW": 0, "PENDING": 0, "VALIDATED": 0, "REJECTED": 0}
+        assert stats == {"DELETED": 0, "NEW": 0, "PENDING": 0, "VALIDATED": 0, "REJECTED": 0, "CLOSED": 0}
 
 
 class UpdateOffererTagTest:
