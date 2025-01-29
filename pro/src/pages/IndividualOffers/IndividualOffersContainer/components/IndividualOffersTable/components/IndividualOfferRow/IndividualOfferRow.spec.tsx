@@ -780,10 +780,14 @@ describe('IndividualOfferRow', () => {
 
     describe('when offer is headline', () => {
       it('should display the boosted icon', () => {
-        props.offer.isHeadlineOffer = true
         renderOfferItem({
           props,
           features: ['WIP_HEADLINE_OFFER'],
+          headlineOffer: {
+            id: offer.id,
+            name: offer.name,
+            venueId: 1,
+          },
         })
 
         expect(
