@@ -676,7 +676,6 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
     sa.Index("offer_idAtProvider", idAtProvider)
-    sa.Index("ix_offer_ean", ean)
     sa.Index("offer_ean_idx", extraData["ean"].astext)
     sa.Index("offer_visa_idx", extraData["visa"].astext)
     sa.Index("offer_authorId_idx", authorId, postgresql_using="btree")
@@ -834,10 +833,20 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @hybrid_property
     def is_eligible_for_search(self) -> bool:
-        return self.isReleased and self.isBookable
+        if self.futureOffer:
+            return self.isReleased and self.futureOffer.isWaitingForPublication
+        return self.is_released_and_bookable
 
     @is_eligible_for_search.expression  # type: ignore[no-redef]
     def is_eligible_for_search(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+        return sa.and_(cls._released, sa.or_(cls.is_released_and_bookable, FutureOffer.isWaitingForPublication))
+
+    @hybrid_property
+    def is_released_and_bookable(self) -> bool:
+        return self.isReleased and self.isBookable
+
+    @is_released_and_bookable.expression  # type: ignore[no-redef]
+    def is_released_and_bookable(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls._released, Stock._bookable)
 
     @hybrid_property
