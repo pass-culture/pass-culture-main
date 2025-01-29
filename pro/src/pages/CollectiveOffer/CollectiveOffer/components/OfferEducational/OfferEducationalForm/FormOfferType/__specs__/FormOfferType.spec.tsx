@@ -83,7 +83,7 @@ describe('FormOfferType', () => {
     })
 
     const templateButton = screen.getByRole('button', {
-      name: 'Générer un exemple',
+      name: 'Générer un modèle',
     })
 
     await userEvent.click(templateButton)

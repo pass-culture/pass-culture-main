@@ -196,7 +196,7 @@ export const TextArea = ({
           onClick={generateTemplate}
           disabled={field.value?.length}
         >
-          Générer un exemple
+          Générer un modèle
         </Button>
       )}
     </FieldLayout>
