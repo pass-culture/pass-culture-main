@@ -31,8 +31,8 @@ export const Footer = ({ layout }: FooterProps) => {
       )}
       data-testid="app-footer"
     >
-      <ul>
-        <li>
+      <ul className={styles['footer-list']}>
+        <li className={styles['footer-list-item']}>
           <ButtonLink
             variant={ButtonVariant.QUATERNARY}
             to="https://pass.culture.fr/cgu-professionnels/"
@@ -43,7 +43,7 @@ export const Footer = ({ layout }: FooterProps) => {
             CGU professionnels
           </ButtonLink>
         </li>
-        <li>
+        <li className={styles['footer-list-item']}>
           <ButtonLink
             variant={ButtonVariant.QUATERNARY}
             to="https://pass.culture.fr/donnees-personnelles/"
@@ -54,19 +54,19 @@ export const Footer = ({ layout }: FooterProps) => {
             Charte des Données Personnelles
           </ButtonLink>
         </li>
-        <li>
+        <li className={styles['footer-list-item']}>
           <ButtonLink variant={ButtonVariant.QUATERNARY} to="/accessibilite">
             Accessibilité : non conforme
           </ButtonLink>
         </li>
         {currentUser && (
-          <li>
+          <li className={styles['footer-list-item']}>
             <ButtonLink variant={ButtonVariant.QUATERNARY} to="/plan-du-site">
               Plan du site
             </ButtonLink>
           </li>
         )}
-        <li>
+        <li className={styles['footer-list-item']}>
           <Button
             variant={ButtonVariant.QUATERNARY}
             onClick={() => orejime.show()}
