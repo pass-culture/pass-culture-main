@@ -11,6 +11,7 @@ import requests_mock
 
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.schemas import AdageCulturalPartners
+from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.models import db
@@ -148,6 +149,8 @@ def test_synchronize_adage_ids_on_venues(db_session):
     assert called_emails == expected_emails
     assert called_venues == expected_venues
 
+    assert history_models.ActionHistory.query.count() == 4
+
 
 @pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
@@ -191,6 +194,11 @@ def test_synchronize_adage_ids_on_venues_with_unknown_venue(db_session):
     assert venue.adageId == str(adage_id3)
     assert {ava.adageId for ava in venue.adage_addresses} == {str(adage_id1), str(adage_id3)}
 
+    action = history_models.ActionHistory.query.one()
+    assert action.actionType == history_models.ActionType.INFO_MODIFIED
+    assert action.venue == venue
+    assert action.extraData == {"modified_info": {"adageId": {"old_info": None, "new_info": str(adage_id3)}}}
+
 
 @pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
@@ -227,6 +235,11 @@ def test_synchronize_adage_ids_on_venues_with_venue_id_missing(db_session, caplo
 
     # venue had venue_id
     assert venue.adageId == str(adage_id1)
+
+    action = history_models.ActionHistory.query.one()
+    assert action.actionType == history_models.ActionType.INFO_MODIFIED
+    assert action.venue == venue
+    assert action.extraData == {"modified_info": {"adageId": {"old_info": None, "new_info": str(adage_id1)}}}
 
 
 @pytest.mark.settings(

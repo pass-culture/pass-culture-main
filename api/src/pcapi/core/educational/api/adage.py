@@ -15,6 +15,8 @@ from pcapi.core.educational.api import address as address_api
 from pcapi.core.educational.api.venue import get_relative_venues_by_siret
 from pcapi.core.educational.schemas import AdageCulturalPartner
 from pcapi.core.educational.schemas import AdageCulturalPartners
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional import send_eac_offerer_activation_email
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
@@ -240,6 +242,13 @@ def synchronize_adage_ids_on_venues(debug: bool = False, since_date: datetime | 
                 if venue.adageId != new_adage_id:
                     adage_id_updates[venue.id] = new_adage_id
 
+                history_api.add_action(
+                    history_models.ActionType.INFO_MODIFIED,
+                    author=None,
+                    venue=venue,
+                    comment="Synchronisation ADAGE",
+                    modified_info={"adageId": {"old_info": venue.adageId, "new_info": str(new_adage_id)}},
+                )
                 venue.adageId = str(new_adage_id)
                 db.session.add(venue)
             else:
@@ -269,6 +278,14 @@ def synchronize_adage_ids_on_venues(debug: bool = False, since_date: datetime | 
 
 
 def _remove_venue_from_eac(venue: offerers_models.Venue) -> None:
+    if venue.adageId:
+        history_api.add_action(
+            history_models.ActionType.INFO_MODIFIED,
+            author=None,
+            venue=venue,
+            comment="Synchronisation ADAGE",
+            modified_info={"adageId": {"old_info": venue.adageId, "new_info": None}},
+        )
     venue.adageId = None
     venue.adageInscriptionDate = None
 
