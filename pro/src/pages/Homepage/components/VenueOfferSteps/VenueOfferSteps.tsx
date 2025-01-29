@@ -43,6 +43,7 @@ export const VenueOfferSteps = ({
   className,
 }: VenueOfferStepsProps) => {
   const { logEvent } = useAnalytics()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
 
   const venueCreationUrl = isVenueCreationAvailable
@@ -101,7 +102,7 @@ export const VenueOfferSteps = ({
                     })
                   }}
                 >
-                  Créer un lieu
+                  Créer {isOfferAddressEnabled ? 'une structure' : 'un lieu'}
                 </ButtonLink>
 
                 <ButtonLink
