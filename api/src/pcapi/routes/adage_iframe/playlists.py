@@ -1,6 +1,5 @@
 from decimal import Decimal
 import logging
-import random
 import typing
 
 from sqlalchemy.sql.expression import func
@@ -13,7 +12,6 @@ import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.api.playlists as playlists_api
 from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.offerers.repository import get_venue_by_id
-from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import atomic
 from pcapi.routes.adage_iframe import blueprint
@@ -28,12 +26,6 @@ from pcapi.serialization.decorator import spectree_serialize
 
 
 logger = logging.getLogger(__name__)
-
-
-def get_random_results(cls: type[Model]) -> dict[str, float]:
-    offer_ids = [row[0] for row in cls.query.with_entities(cls.id)]
-    offer_ids = random.choices(offer_ids, k=min(len(offer_ids), 10))
-    return {str(offer_id): random.uniform(1.0, 60.0) for offer_id in offer_ids}
 
 
 @blueprint.adage_iframe.route("/playlists/classroom", methods=["GET"])
