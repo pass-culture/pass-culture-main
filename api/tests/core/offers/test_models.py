@@ -11,6 +11,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 import pcapi.core.providers.factories as providers_factories
+from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -742,3 +743,49 @@ class HeadlineOfferTest:
         factories.HeadlineOfferFactory(offer=offer)
         with pytest.raises(exc.IntegrityError):
             factories.HeadlineOfferFactory(offer=another_offer_on_the_same_venue)
+
+
+class OfferIsSearchableTest:
+    def test_offer_is_future(self):
+        offer_1 = factories.OfferFactory(isActive=True)
+        offer_2 = factories.OfferFactory(isActive=True)
+        offer_3 = factories.OfferFactory(isActive=False)
+        future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+        past_publication_date = datetime.datetime.utcnow() - datetime.timedelta(days=30)
+        _ = factories.FutureOfferFactory(offerId=offer_1.id, publicationDate=future_publication_date)
+        _ = factories.FutureOfferFactory(offerId=offer_2.id, publicationDate=past_publication_date)
+        _ = factories.FutureOfferFactory(offerId=offer_3.id, publicationDate=future_publication_date)
+
+        assert offer_1.is_eligible_for_search
+        assert not offer_2.is_eligible_for_search
+        assert not offer_3.is_eligible_for_search
+
+        # hybrid property: also check SQL expression
+        results = (
+            db.session.query(models.Offer.id)
+            .outerjoin(models.Stock)
+            .outerjoin(models.FutureOffer)
+            .filter(models.Offer.is_eligible_for_search)
+            .all()
+        )
+        assert len(results) == 1
+        assert results[0].id == offer_1.id
+
+    def test_offer_is_bookable(self):
+        offer_1 = factories.OfferFactory(isActive=True)
+        offer_2 = factories.OfferFactory(isActive=False)
+        _ = factories.StockFactory(offer=offer_1)
+
+        assert offer_1.is_eligible_for_search
+        assert not offer_2.is_eligible_for_search
+
+        # hybrid property: also check SQL expression
+        results = (
+            db.session.query(models.Offer.id)
+            .outerjoin(models.Stock)
+            .outerjoin(models.FutureOffer)
+            .filter(models.Offer.is_eligible_for_search)
+            .all()
+        )
+        assert len(results) == 1
+        assert results[0].id == offer_1.id

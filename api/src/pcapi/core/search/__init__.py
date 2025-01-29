@@ -460,7 +460,13 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
             offers_models.Stock,
             (offers_models.Stock.offerId == offers_models.Offer.id) & offers_models.Stock._bookable,
         )
+        .outerjoin(
+            offers_models.FutureOffer,
+            (offers_models.FutureOffer.offerId == offers_models.Offer.id)
+            & offers_models.FutureOffer.isWaitingForPublication,
+        )
         .options(sa.orm.contains_eager(offers_models.Offer.stocks))
+        .options(sa.orm.contains_eager(offers_models.Offer.futureOffer))
         .options(sa.orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer))
         .options(sa.orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.googlePlacesInfo))
         .options(sa.orm.joinedload(offers_models.Offer.criteria))

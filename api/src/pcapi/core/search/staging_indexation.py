@@ -25,9 +25,11 @@ def get_relevant_offers_to_index() -> set[int]:
 
 def get_offers_for_each_subcategory(size_per_subcategory: int) -> set[int]:
     result = set()
+
     for subcategory in ALL_SUBCATEGORIES:
         query = (
-            offers_models.Offer.query.join(offers_models.Stock)
+            offers_models.Offer.query.outerjoin(offers_models.Stock)
+            .outerjoin(offers_models.FutureOffer)
             .join(offerer_models.Venue)
             .join(offerer_models.Offerer)
             .filter(
@@ -44,7 +46,8 @@ def get_offers_for_each_subcategory(size_per_subcategory: int) -> set[int]:
 
 def get_offers_with_gtl(size: int) -> set[int]:
     query = (
-        offers_models.Offer.query.join(offers_models.Stock)
+        offers_models.Offer.query.outerjoin(offers_models.Stock)
+        .outerjoin(offers_models.FutureOffer)
         .filter(
             offers_models.Offer.extraData["gtl_id"].is_not(None),
             offers_models.Offer.is_eligible_for_search,
@@ -61,7 +64,8 @@ def get_offers_for_each_gtl_level_1(size_per_gtl: int) -> set[int]:
     result = set()
     for i in range(1, 14):
         query = (
-            offers_models.Offer.query.join(offers_models.Stock)
+            offers_models.Offer.query.outerjoin(offers_models.Stock)
+            .outerjoin(offers_models.FutureOffer)
             .filter(
                 offers_models.Offer.extraData["gtl_id"].astext.startswith(str(i).zfill(2)),
                 offers_models.Offer.is_eligible_for_search,
@@ -76,7 +80,8 @@ def get_offers_for_each_gtl_level_1(size_per_gtl: int) -> set[int]:
 
 def get_random_offers(size: int, excluded_offer_ids: set[int]) -> set[int]:
     query = (
-        offers_models.Offer.query.join(offers_models.Stock)
+        offers_models.Offer.query.outerjoin(offers_models.Stock)
+        .outerjoin(offers_models.FutureOffer)
         .filter(
             offers_models.Offer.is_eligible_for_search,
             offers_models.Offer.id.not_in(excluded_offer_ids),
