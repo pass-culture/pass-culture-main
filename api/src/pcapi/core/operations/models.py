@@ -76,6 +76,8 @@ class SpecialEventResponse(PcObject, Base, Model):
         "User", foreign_keys=[userId], backref=sa.orm.backref("specialEventResponses")
     )
 
+    __table_args__ = (sa.Index("ix_special_event_response_status", status, postgresql_using="hash"),)
+
 
 class SpecialEventAnswer(PcObject, Base, Model):
     """

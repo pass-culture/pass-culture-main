@@ -428,3 +428,87 @@ class GetUserForFormTest:
         result = operations_api._get_user_for_form(form=form)
 
         assert result == user
+
+
+class RejectResponseOnExpiredOperationTest:
+    def test_selected_offer(self):
+        event = operations_factories.SpecialEventFactory(
+            eventDate=datetime.datetime.utcnow() - datetime.timedelta(days=8),
+        )
+        operations_factories.SpecialEventResponseFactory(
+            event=event,
+            status=operations_models.SpecialEventResponseStatus.NEW,
+        )
+        operations_factories.SpecialEventResponseFactory(
+            event=event,
+            status=operations_models.SpecialEventResponseStatus.VALIDATED,
+        )
+        operations_factories.SpecialEventResponseFactory(
+            event=event,
+            status=operations_models.SpecialEventResponseStatus.REJECTED,
+        )
+        operations_factories.SpecialEventResponseFactory(
+            event=event,
+            status=operations_models.SpecialEventResponseStatus.PRESELECTED,
+        )
+
+        operations_api.reject_response_on_expired_operation()
+
+        responses = (
+            operations_models.SpecialEventResponse.query.filter(
+                operations_models.SpecialEventResponse.event == event,
+            )
+            .order_by(
+                operations_models.SpecialEventResponse.id,
+            )
+            .all()
+        )
+
+        assert responses[0].status == operations_models.SpecialEventResponseStatus.REJECTED
+        assert responses[1].status == operations_models.SpecialEventResponseStatus.VALIDATED
+        assert responses[2].status == operations_models.SpecialEventResponseStatus.REJECTED
+        assert responses[3].status == operations_models.SpecialEventResponseStatus.PRESELECTED
+
+    def test_ignore_newer_operations(self):
+        event = operations_factories.SpecialEventFactory(
+            eventDate=datetime.datetime.utcnow() - datetime.timedelta(days=6),
+        )
+        operations_factories.SpecialEventResponseFactory(
+            event=event,
+            status=operations_models.SpecialEventResponseStatus.NEW,
+        )
+        operations_api.reject_response_on_expired_operation()
+
+        response = (
+            operations_models.SpecialEventResponse.query.filter(
+                operations_models.SpecialEventResponse.event == event,
+            )
+            .order_by(
+                operations_models.SpecialEventResponse.id,
+            )
+            .one()
+        )
+
+        assert response.status == operations_models.SpecialEventResponseStatus.NEW
+
+    def test_ignore_older_operations(self):
+        event = operations_factories.SpecialEventFactory(
+            eventDate=datetime.datetime.utcnow() - datetime.timedelta(days=11),
+        )
+        operations_factories.SpecialEventResponseFactory(
+            event=event,
+            status=operations_models.SpecialEventResponseStatus.NEW,
+        )
+        operations_api.reject_response_on_expired_operation()
+
+        response = (
+            operations_models.SpecialEventResponse.query.filter(
+                operations_models.SpecialEventResponse.event == event,
+            )
+            .order_by(
+                operations_models.SpecialEventResponse.id,
+            )
+            .one()
+        )
+
+        assert response.status == operations_models.SpecialEventResponseStatus.NEW
