@@ -6,6 +6,7 @@ import { api } from 'apiClient/api'
 import {
   GetOffererAddressResponseModel,
   ListOffersOfferResponseModel,
+  OffererHeadLineOfferResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
 import {
@@ -40,11 +41,15 @@ const LABELS = {
 
 const renderOffers = (
   props: IndividualOffersContainerProps,
-  options?: RenderWithProvidersOptions
+  options?: RenderWithProvidersOptions,
+  headlineOffer: OffererHeadLineOfferResponseModel | null = null
 ) => {
   const user = sharedCurrentUserFactory()
   renderWithProviders(
-    <IndividualOffersContextProvider isHeadlineOfferAllowedForOfferer={true}>
+    <IndividualOffersContextProvider
+      isHeadlineOfferAllowedForOfferer={true}
+      headlineOffer={headlineOffer}
+    >
       <IndividualOffersContainer {...props} />
     </IndividualOffersContextProvider>,
 
@@ -691,14 +696,16 @@ describe('IndividualOffersScreen', () => {
     )
   })
 
-  it('should display healine offer block', async () => {
-    vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue({
-      id: 42,
-      name: 'My offer',
-      venueId: 1,
-    })
-
-    renderOffers(props, { features: ['WIP_HEADLINE_OFFER'] })
+  it('should display headline offer block', async () => {
+    renderOffers(
+      props,
+      { features: ['WIP_HEADLINE_OFFER'] },
+      {
+        id: 42,
+        name: 'My offer',
+        venueId: 1,
+      }
+    )
 
     await waitFor(() => {
       expect(screen.getByText('Votre offre à la une')).toBeInTheDocument()
