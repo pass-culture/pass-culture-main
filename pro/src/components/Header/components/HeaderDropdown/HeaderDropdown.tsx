@@ -4,11 +4,16 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
+import { useNotification } from 'commons/hooks/useNotification'
+import {
+  updateOffererIsOnboarded,
+  updateSelectedOffererId,
+} from 'commons/store/offerer/reducer'
 import {
   selectCurrentOffererId,
   selectOffererNames,
@@ -58,6 +63,7 @@ export const HeaderDropdown = () => {
       label: item['name'],
     })) ?? []
   )
+  const notify = useNotification()
 
   const { pathname } = useLocation()
   const IN_STRUCTURE_CREATION_FUNNEL = pathname.startsWith(
@@ -75,26 +81,33 @@ export const HeaderDropdown = () => {
     (offererOption) => offererOption.id === Number(selectedOffererId)
   )
 
-  const handleChangeOfferer = (newOffererId: string) => {
-    if (Number(newOffererId) !== selectedOffererId) {
-      dispatch(updateSelectedOffererId(Number(newOffererId)))
-      if (storageAvailable('localStorage')) {
-        localStorage.setItem(SAVED_OFFERER_ID_KEY, newOffererId)
+  const handleChangeOfferer = async (newOffererId: string) => {
+    try {
+      const { isOnboarded } = await api.getOfferer(Number(newOffererId))
+      dispatch(updateOffererIsOnboarded(isOnboarded))
+
+      if (Number(newOffererId) !== selectedOffererId) {
+        dispatch(updateSelectedOffererId(Number(newOffererId)))
+        if (storageAvailable('localStorage')) {
+          localStorage.setItem(SAVED_OFFERER_ID_KEY, newOffererId)
+        }
       }
+    } catch {
+      notify.error('Erreur lors de la récupération de la structure')
     }
   }
 
-  if (offererOptions.length && !currentOffererId) {
-    setTimeout(() => {
+  useEffect(() => {
+    if (offererOptions.length && !currentOffererId) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       handleChangeOfferer(selectedOffererId.toString())
-    })
-  }
+    }
 
-  if (offererOptions.length && !selectedOffererName) {
-    setTimeout(() => {
+    if (offererOptions.length && !selectedOffererName) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       handleChangeOfferer(offererOptions[0]?.value)
-    })
-  }
+    }
+  }, [])
 
   useEffect(() => {
     const handleResize = () => {

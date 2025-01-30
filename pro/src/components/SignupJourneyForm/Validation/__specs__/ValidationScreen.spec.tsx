@@ -10,8 +10,8 @@ import { api } from 'apiClient/api'
 import { PostOffererResponseModel, Target } from 'apiClient/v1'
 import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
 import {
-  SignupJourneyContextValues,
   SignupJourneyContext,
+  SignupJourneyContextValues,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import * as utils from 'commons/utils/recaptcha'

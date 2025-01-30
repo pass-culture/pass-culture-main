@@ -1,7 +1,9 @@
-import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events, VenueEvents } from 'commons/core/FirebaseEvents/constants'
+import { updateOffererIsOnboarded } from 'commons/store/offerer/reducer'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RedirectDialog } from 'components/RedirectDialog/RedirectDialog'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -22,6 +24,9 @@ export const RedirectToBankAccountDialog = ({
 }: RedirectToBankAccountDialogProps): JSX.Element => {
   const navigate = useNavigate()
   const { logEvent } = useAnalytics()
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const dispatch = useDispatch()
 
   return (
     <RedirectDialog
@@ -30,6 +35,9 @@ export const RedirectToBankAccountDialog = ({
         logEvent(Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL, {
           from: OFFER_WIZARD_STEP_IDS.SUMMARY,
         })
+        if (isOnboarding) {
+          dispatch(updateOffererIsOnboarded(true))
+        }
         navigate(cancelRedirectUrl)
       }}
       title="Félicitations, vous avez créé votre offre !"
@@ -38,12 +46,15 @@ export const RedirectToBankAccountDialog = ({
         to: `/remboursements/informations-bancaires?structure=${offerId}`,
         isExternal: false,
       }}
-      onRedirect={() =>
+      onRedirect={() => {
         logEvent(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
           venue_id: venueId,
           from: OFFER_WIZARD_STEP_IDS.SUMMARY,
         })
-      }
+        if (isOnboarding) {
+          dispatch(updateOffererIsOnboarded(true))
+        }
+      }}
       cancelText="Plus tard"
       cancelIcon={fullWaitIcon}
       withRedirectLinkIcon={false}

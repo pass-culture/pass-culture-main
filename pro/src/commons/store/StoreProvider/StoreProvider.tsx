@@ -6,9 +6,9 @@ import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import { updateFeatures } from 'commons/store/features/reducer'
 import {
+  updateOffererIsOnboarded,
   updateOffererNames,
   updateSelectedOffererId,
-  updateOffererIsOnboarded,
 } from 'commons/store/offerer/reducer'
 import { updateUser } from 'commons/store/user/reducer'
 import { storageAvailable } from 'commons/utils/storageAvailable'
