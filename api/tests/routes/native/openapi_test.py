@@ -765,7 +765,7 @@ def test_public_api(client):
                 },
                 "DepositType": {
                     "description": "An enumeration.",
-                    "enum": ["GRANT_15_17", "GRANT_18"],
+                    "enum": ["GRANT_17_18", "GRANT_15_17", "GRANT_18"],
                     "title": "DepositType",
                 },
                 "DomainsCredit": {

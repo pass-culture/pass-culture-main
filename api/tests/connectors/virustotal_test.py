@@ -7,7 +7,7 @@ from . import virustotal_test_data
 
 
 class CheckUrlIsSafeTest:
-    @pytest.mark.features(ENABLE_VIRUSTOTAL=0)
+    @pytest.mark.batch_validate_individual_bookings(ENABLE_VIRUSTOTAL=0)
     def test_with_feature_flag_disabled(self):
         with requests_mock.Mocker():
             # not request called

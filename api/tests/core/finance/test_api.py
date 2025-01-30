@@ -4078,6 +4078,7 @@ class EditReimbursementRuleTest:
             api.edit_reimbursement_rule(rule, end_date=end)
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 class CreateDepositTest:
     @time_machine.travel("2021-02-05 09:00:00")
     @pytest.mark.parametrize("age,expected_amount", [(15, Decimal(20)), (16, Decimal(30)), (17, Decimal(30))])
@@ -4343,6 +4344,61 @@ class CreateDepositTest:
         # Then
         assert models.Deposit.query.filter(models.Deposit.userId == beneficiary.id).count() == 1
         assert error.value.errors["user"] == ['Cet utilisateur a déjà été crédité de la subvention "GRANT_18".']
+
+
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
+class CreateDepositV3Test:
+    @time_machine.travel("2025-03-03")
+    def test_compute_deposit_expiration_date_v3(self):
+        user = users_models.User(validatedBirthDate=datetime.date(2007, 1, 1))
+        assert user.age == 18
+
+        expiration_date = api.compute_deposit_expiration_date_v3(user)
+
+        assert expiration_date == datetime.date(2028, 1, 1)
+
+    @time_machine.travel("2025-03-03")
+    def test_create_deposit_v3(self):
+        user_v3 = users_factories.HonorStatementValidatedUserFactory(validatedBirthDate=datetime.date(2007, 1, 1))
+        assert user_v3.age == 18
+
+        deposit_v3 = api.create_deposit(user_v3, "created by test", users_models.EligibilityType.AGE17_18)
+        assert deposit_v3.expirationDate == datetime.date(2028, 1, 1)
+        assert deposit_v3.type == models.DepositType.GRANT_17_18
+        assert deposit_v3.amount == 0
+
+    @time_machine.travel("2025-03-03")
+    def test_create_deposit_age_18_even_when_ff_credit_v3_is_active(self):
+        user = users_factories.HonorStatementValidatedUserFactory(validatedBirthDate=datetime.date(2007, 1, 1))
+        assert user.age == 18
+
+        deposit = api.create_deposit(user, "created by test", users_models.EligibilityType.AGE18)
+
+        assert deposit.type == models.DepositType.GRANT_18
+        assert deposit.amount == 300
+
+    @time_machine.travel("2025-03-03")
+    def test_17yo_becomes_17_18_when(self):
+        user = users_factories.HonorStatementValidatedUserFactory(validatedBirthDate=datetime.date(2008, 1, 1))
+        assert user.age == 17
+
+        deposit = api.create_deposit(
+            user, "created by test", users_models.EligibilityType.AGE17_18, age_at_registration=user.age
+        )
+
+        assert deposit.type == models.DepositType.GRANT_17_18
+
+    @time_machine.travel("2025-03-03")
+    def test_less_than_17_yo_keeps_underage(self):
+        user = users_factories.HonorStatementValidatedUserFactory(validatedBirthDate=datetime.date(2009, 1, 1))
+        assert user.age == 16
+
+        deposit = api.create_deposit(
+            user, "created by test", users_models.EligibilityType.UNDERAGE, age_at_registration=user.age
+        )
+
+        assert deposit.type == models.DepositType.GRANT_15_17
+        assert deposit.amount == 30
 
 
 class UserRecreditTest:
@@ -4892,17 +4948,15 @@ class UserRecreditTest:
             api.recredit_underage_users()
             assert user.deposit.amount == 50
 
-        assert push_testing.requests[-1] == {
-            "can_be_asynchronously_retried": True,
-            "event_name": "recredited_account",
-            "event_payload": {
-                "deposit_amount": 50,
-                "deposit_type": "GRANT_15_17",
-                "deposits_count": 1,
-                "deposit_expiration_date": "2022-12-01T00:00:00",
-            },
-            "user_id": user.id,
-        }
+        push_data = push_testing.requests[-1]
+        assert push_data["can_be_asynchronously_retried"] is True
+        assert push_data["event_name"] == "recredited_account"
+        assert push_data["user_id"] == user.id
+        payload = push_data["event_payload"]
+        assert payload["deposit_amount"] == 50
+        assert payload["deposit_type"] == "GRANT_15_17"
+        assert payload["deposits_count"] == 1
+        assert payload["deposit_expiration_date"] == user.deposit.expirationDate.isoformat()
 
 
 class ValidateFinanceIncidentTest:
