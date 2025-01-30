@@ -201,6 +201,7 @@ def list_offerers_to_be_validated(
                     history_models.ActionType.OFFERER_PENDING,
                     history_models.ActionType.OFFERER_VALIDATED,
                     history_models.ActionType.OFFERER_REJECTED,
+                    history_models.ActionType.OFFERER_CLOSED,
                     history_models.ActionType.COMMENT,
                 ]
             ),
@@ -313,6 +314,7 @@ def list_offerers_to_be_validated(
                         history_models.ActionType.OFFERER_PENDING,
                         history_models.ActionType.OFFERER_VALIDATED,
                         history_models.ActionType.OFFERER_REJECTED,
+                        history_models.ActionType.OFFERER_CLOSED,
                     )
                 ),
             )

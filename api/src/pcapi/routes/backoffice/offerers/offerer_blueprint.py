@@ -11,6 +11,7 @@ from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
+from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
 from pcapi import repository
@@ -377,6 +378,8 @@ def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
 @repository.atomic()
 def generate_api_key(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    if offerer.isRejected or offerer.isClosed:
+        raise BadRequest()  # No need for a user-friendly message since button is not available
     try:
         clear_key = offerers_api.generate_and_save_api_key(offerer.id)
         flash(

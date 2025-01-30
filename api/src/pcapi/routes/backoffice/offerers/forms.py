@@ -187,7 +187,9 @@ class UserOffererValidationListForm(utils.PCForm):
     )
     status = fields.PCSelectMultipleField(
         "États de la demande de rattachement",
-        choices=utils.choices_from_enum(ValidationStatus, filters.format_validation_status),
+        choices=utils.choices_from_enum(
+            ValidationStatus, formatter=filters.format_validation_status, exclude_opts=(ValidationStatus.CLOSED,)
+        ),
     )
     instructors = fields.PCTomSelectField(
         "Dernier instructeur",
@@ -198,7 +200,9 @@ class UserOffererValidationListForm(utils.PCForm):
     )
     offerer_status = fields.PCSelectMultipleField(
         "États de l'entité juridique",
-        choices=utils.choices_from_enum(ValidationStatus, filters.format_validation_status),
+        choices=utils.choices_from_enum(
+            ValidationStatus, formatter=filters.format_validation_status, exclude_opts=(ValidationStatus.DELETED,)
+        ),
     )
     from_date = fields.PCDateField("Demande à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Demande jusqu'au", validators=(wtforms.validators.Optional(),))

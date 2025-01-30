@@ -485,6 +485,17 @@ class GetVenueTest(GetEndpointHelper):
         assert "Cartographié sur ADAGE" not in response_text
         assert "ID ADAGE" not in response_text
 
+    def test_get_venue_managed_by_closed_offerer(self, authenticated_client):
+        closed_venue = offerers_factories.VenueFactory(managingOfferer=offerers_factories.ClosedOffererFactory())
+        url = url_for(self.endpoint, venue_id=closed_venue.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert "Partenaire culturel Fermé " in response_text
+
     @pytest.mark.parametrize(
         "role,has_offers_links,has_bookings_links",
         [
