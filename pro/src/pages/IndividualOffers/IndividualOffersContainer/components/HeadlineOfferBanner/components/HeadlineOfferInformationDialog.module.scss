@@ -39,8 +39,12 @@
   margin: 0 auto;
 }
 
+.video-container {
+  display: none;
+}
+
 .placeholder-video {
-   max-width: 100%;
+  display: none;
 }
 
 .options-icon {
@@ -65,6 +69,7 @@
   }
 
   .placeholder-video {
+    display: block;
     position: absolute;
     top: -4%;
     max-width: rem.torem(390px);
