@@ -31,21 +31,21 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Cache the node_modules"
-        id: "yarn-modules-cache"
+        id: "npm-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
         with:
           compression-method: "gzip"
           bucket: ${{ inputs.CACHE_BUCKET_NAME }}
           path: |
             **/node_modules
-          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: v1-npm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - run: yarn install --immutable
-      - run: yarn tsc -b
-      - run: yarn lint:dead-code
-      - run: yarn lint:js
-      - run: yarn lint:scss
+            v1-npm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - run: npm install --immutable
+      - run: npm tsc -b
+      - run: npm lint:dead-code
+      - run: npm lint:js
+      - run: npm lint:scss
 
   tests-pro-unit-tests:
     name: "Unit tests"
@@ -74,19 +74,19 @@ jobs:
             SONAR_TOKEN:passculture-metier-ehp/passculture-main-sonar-token
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
       - name: "Cache the node_modules"
-        id: "yarn-modules-cache"
+        id: "npm-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
         with:
           compression-method: "gzip"
           bucket: ${{ inputs.CACHE_BUCKET_NAME }}
           path: |
             **/node_modules
-          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: v1-npm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - run: yarn install --immutable
+            v1-npm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - run: npm install --immutable
       - name: Run tests with coverage
-        run: yarn test:unit:ci
+        run: npm test:unit:ci
 
       - name: "Upload Allure results for pro tests"
         uses: actions/upload-artifact@v4

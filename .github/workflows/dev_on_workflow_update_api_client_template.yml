@@ -40,7 +40,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -74,13 +74,13 @@ jobs:
           PCAPI_GID: 1000
       - uses: KengoTODA/actions-setup-docker-compose@v1
         with:
-          version: '2.23.3'
+          version: "2.23.3"
       - name: "Run API"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: docker-compose -f docker-compose-backend.yml up postgres redis -d
-      - name: 'Set up Cloud SDK'
+      - name: "Set up Cloud SDK"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        uses: 'google-github-actions/setup-gcloud@v2'
+        uses: "google-github-actions/setup-gcloud@v2"
       - name: "Run API server"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
@@ -120,13 +120,13 @@ jobs:
           service-account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
           compression-method: gzip
           path: pro/node_modules
-          key: v1-yarn-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: v1-npm-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            v1-yarn-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+            v1-npm-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - name: "Install dependencies PRO"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         working-directory: pro
-        run: yarn install --immutable
+        run: npm install --immutable
       - name: "Update api client"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         uses: nick-fields/retry@v3
@@ -135,19 +135,19 @@ jobs:
           max_attempts: 3
           command: |
             cd pro
-            yarn generate:api:client:local:no:docker
+            npm generate:api:client:local:no:docker
       - name: "Check if there are changes"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         id: "changes"
         working-directory: pro
         run: |
-            diff="$(git diff -- src)"
-            if [[ "${diff}" != "" ]]; then
-              echo "Found changes in the API."
-              echo "${diff}" | awk '{ print "\t" $0 }'
-              echo "Please run 'yarn generate:api:client:local' and add the changes to the commit(s) that change the API."
-              exit 1
-            fi
-      - name: 'Show pcapi log when it fails'
+          diff="$(git diff -- src)"
+          if [[ "${diff}" != "" ]]; then
+            echo "Found changes in the API."
+            echo "${diff}" | awk '{ print "\t" $0 }'
+            echo "Please run 'npm generate:api:client:local' and add the changes to the commit(s) that change the API."
+            exit 1
+          fi
+      - name: "Show pcapi log when it fails"
         if: failure()
         run: docker logs pc-api

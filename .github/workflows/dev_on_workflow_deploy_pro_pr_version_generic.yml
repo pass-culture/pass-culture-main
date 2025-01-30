@@ -31,7 +31,7 @@ on:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
     outputs:
-      pro_url: 
+      pro_url:
         description: "The pro (firebase) preview URL"
         value: ${{ jobs.deploy_on_firebase.outputs.pro_url }}
 
@@ -52,7 +52,7 @@ jobs:
           ref: ${{ inputs.REF }}
       - uses: actions/setup-node@v4
         with:
-          node-version-file: 'pro/.nvmrc'
+          node-version-file: "pro/.nvmrc"
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
         uses: "google-github-actions/auth@v2"
@@ -70,18 +70,18 @@ jobs:
         run: |
           sed -i 's/https:\/\/backend.testing.passculture.team/https:\/\/backend-${{ github.event.pull_request.number }}.testing.passculture.team/g' src/.env.testing
       - name: "Cache the node_modules"
-        id: "yarn-modules-cache"
+        id: "npm-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
         with:
           compression-method: "gzip"
           bucket: ${{ inputs.CACHE_BUCKET_NAME }}
           path: |
             **/node_modules
-          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: v1-npm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - run: yarn install --immutable
-      - run: yarn build:${{ inputs.ENV }}
+            v1-npm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - run: npm install --immutable
+      - run: npm build:${{ inputs.ENV }}
         env:
           # By default NodeJS processes are limited to 512MB of memory
           # This is not enough for the build process when compiling sourcemaps

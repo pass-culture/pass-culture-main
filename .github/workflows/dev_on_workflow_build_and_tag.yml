@@ -72,7 +72,7 @@ jobs:
       - name: "Add version to pro"
         working-directory: pro
         run: |
-          yarn version --new-version "${{ inputs.tag_number }}"
+          npm version --new-version "${{ inputs.tag_number }}"
           git add package.json
       - name: "Add version to image-resizing"
         working-directory: app-engine/image-resizing

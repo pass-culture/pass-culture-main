@@ -51,7 +51,7 @@ jobs:
         with:
           files: |
             api/poetry.lock
-            pro/yarn.lock
+            pro/package-lock.json
       - name: "Define pcapi image tags."
         id: pcapi-tags
         run: |
@@ -249,8 +249,8 @@ jobs:
       always() &&
       !cancelled() && needs.test-pro.result != 'skipped'
     steps:
-      - name: "Install Allure CLI via Yarn"
-        run: yarn global add allure-commandline
+      - name: "Install Allure CLI via NPM"
+        run: npm global add allure-commandline
 
       - name: "Download Allure results artifacts for pro"
         uses: actions/download-artifact@v4

@@ -87,7 +87,7 @@ jobs:
           PCAPI_UID: 1000
           PCAPI_GID: 1000
       - name: "Cache the node_modules"
-        id: "yarn-modules-cache"
+        id: "npm-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
         with:
           compression-method: "gzip"
@@ -95,10 +95,10 @@ jobs:
           path: |
             ~/.cache/Cypress
             **/node_modules
-          key: v1-yarn-pro-cypress-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: v1-npm-pro-cypress-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            v1-yarn-pro-cypress-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - run: yarn install --immutable
+            v1-npm-pro-cypress-dependency-cache-${{ runner.os }}-${{ hashFiles('**//package-lock.json') }}
+      - run: npm install --immutable
       - name: "Run postgres and redis server"
         run: docker-compose -f ../docker-compose-backend.yml up postgres redis -d
       - name: "Set up Cloud SDK"
@@ -128,9 +128,9 @@ jobs:
           resource: http://localhost:5001/health/api
           timeout: 120000
       - name: "Build vite application"
-        run: yarn build:development
+        run: npm build:development
       - name: "Serve vite preview"
-        run: yarn serve &
+        run: npm serve &
       # Using wait-on does not work well for this service, we use curl
       - name: "Wait for front-end to listen"
         run: |

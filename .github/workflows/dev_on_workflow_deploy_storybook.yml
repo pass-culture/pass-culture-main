@@ -1,7 +1,6 @@
 name: "3 [on_workflow/PRO] Storybook"
 
-on:
-  workflow_call
+on: workflow_call
 
 jobs:
   build-and-deploy-storybook:
@@ -17,10 +16,10 @@ jobs:
           node-version-file: "pro/.nvmrc"
       - name: "Install dependencies"
         working-directory: pro
-        run: yarn install --immutable
+        run: npm install --immutable
       - name: "Build Storybook 🔧"
         working-directory: pro
-        run: yarn build-storybook
+        run: npm build-storybook
       - name: "Deploy 🚀"
         uses: JamesIves/github-pages-deploy-action@v4.7.2
         with:
