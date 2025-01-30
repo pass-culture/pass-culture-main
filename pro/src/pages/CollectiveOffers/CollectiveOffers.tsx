@@ -61,7 +61,11 @@ export const CollectiveOffers = (): JSX.Element => {
   )
   const offerer = offererQuery.data
 
-  const { data } = useSWR(
+  const {
+    data,
+    isLoading: isVenuesLoading,
+    isValidating: isVenuesValidating,
+  } = useSWR(
     [GET_VENUES_QUERY_KEY, offerer?.id],
     ([, offererIdParam]) => api.getVenues(null, null, offererIdParam),
     { fallbackData: { venues: [] } }
@@ -138,7 +142,10 @@ export const CollectiveOffers = (): JSX.Element => {
     <Layout mainHeading="Offres collectives">
       {/* When the venues are cached for a given offerer, we still need to reset the Screen component.
       SWR isLoading is only true when the data is not cached, while isValidating is always set to true when the key is updated */}
-      {offererQuery.isLoading || offererQuery.isValidating ? (
+      {offererQuery.isLoading ||
+      offererQuery.isValidating ||
+      isVenuesLoading ||
+      isVenuesValidating ? (
         <Spinner />
       ) : (
         <CollectiveOffersScreen

@@ -58,10 +58,7 @@ describe('Search collective offers', () => {
       message: 'I search with the name "' + offerPublished.name + '"',
     })
 
-    cy.findByRole('searchbox', { name: /Nom de l’offre/ }).type(
-      offerPublished.name
-    )
-
+    cy.findByLabelText(/Nom de l’offre/).type(offerPublished.name)
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
     cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
@@ -292,7 +289,7 @@ describe('Search collective offers', () => {
     cy.findByLabelText('Format').select('Représentation')
 
     cy.stepLog({ message: 'I search with the name "brouillon"' })
-    cy.findByRole('searchbox', { name: /Nom de l’offre/ }).type('brouillon')
+    cy.findByLabelText(/Nom de l’offre/).type('brouillon', { delay: 0 })
 
     cy.stepLog({ message: 'I search with status "Brouillon"' })
     cy.get('#search-status').click()

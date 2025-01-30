@@ -28,6 +28,14 @@ export const hasCollectiveSearchFilters = (
       searchFilters[filterName] &&
       filterName !== 'offererId' &&
       filterName !== 'page' &&
-      searchFilters[filterName] !== { ...defaultFilters }[filterName]
+      ((['string', 'number'].includes(typeof searchFilters[filterName]) &&
+        searchFilters[filterName] !== { ...defaultFilters }[filterName]) ||
+        (Array.isArray(searchFilters[filterName]) &&
+          Array.isArray(defaultFilters[filterName]) &&
+          !isSameArray(searchFilters[filterName], defaultFilters[filterName])))
   )
+}
+
+function isSameArray(arr1: unknown[], arr2: unknown[]) {
+  return arr1.length === arr2.length && arr1.every((el) => arr2.includes(el))
 }
