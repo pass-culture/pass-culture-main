@@ -81,7 +81,7 @@ jobs:
           restore-keys: |
             v1-npm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install --immutable
-      - run: npm build:${{ inputs.ENV }}
+      - run: npm run build:${{ inputs.ENV }}
         env:
           # By default NodeJS processes are limited to 512MB of memory
           # This is not enough for the build process when compiling sourcemaps

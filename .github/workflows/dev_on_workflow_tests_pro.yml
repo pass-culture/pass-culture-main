@@ -42,10 +42,10 @@ jobs:
           restore-keys: |
             v1-npm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install --immutable
-      - run: npm tsc -b
-      - run: npm lint:dead-code
-      - run: npm lint:js
-      - run: npm lint:scss
+      - run: npm run tsc -b
+      - run: npm run lint:dead-code
+      - run: npm run lint:js
+      - run: npm run lint:scss
 
   tests-pro-unit-tests:
     name: "Unit tests"

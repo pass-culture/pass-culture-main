@@ -20,7 +20,7 @@ Sur linux + chrome / chromium l’application peut se charger indéfiniment un w
 - ### Lancement des tests unitaires
 
   ```shell
-  npm test:unit
+  npm run test:unit
   ```
 
 - ### Lancement des tests end to end

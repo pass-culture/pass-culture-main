@@ -128,9 +128,9 @@ jobs:
           resource: http://localhost:5001/health/api
           timeout: 120000
       - name: "Build vite application"
-        run: npm build:development
+        run: npm run build:development
       - name: "Serve vite preview"
-        run: npm serve &
+        run: npm run serve &
       # Using wait-on does not work well for this service, we use curl
       - name: "Wait for front-end to listen"
         run: |

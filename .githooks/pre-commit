@@ -22,10 +22,10 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   # run linter on staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",lint," ]]; then
     echo "Looking for dead code..."
-    npm lint:dead-code
+    npm run lint:dead-code
 
     echo "Running Linter..."
-    npm lint:js:fix $STAGED_FILES
+    npm run lint:js:fix $STAGED_FILES
     LINTER_EXIT_CODE=$?
 
     # add files auto-fixed by the linter
@@ -44,7 +44,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   # run typescript quality on staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",tsc," ]]; then
     echo "Quality checking..."
-    npm tsc -b
+    npm run tsc -b
     QUALITY_EXIT_CODE=$?
 
     # check linter exit code
@@ -61,7 +61,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
     echo "Running Tests"
     # The following command will run tests related to the vite root (`src`)
     # In bash ${string//substring/replacement} replace all occurrences of a string
-    npm test:unit:hook ${STAGED_FILES//src\//}
+    npm run test:unit:hook ${STAGED_FILES//src\//}
     VITEST_EXIT_CODE=$?
 
     # check vitest exit code

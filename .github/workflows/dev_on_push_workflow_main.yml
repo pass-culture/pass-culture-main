@@ -250,7 +250,7 @@ jobs:
       !cancelled() && needs.test-pro.result != 'skipped'
     steps:
       - name: "Install Allure CLI via NPM"
-        run: npm global add allure-commandline
+        run: npm run global add allure-commandline
 
       - name: "Download Allure results artifacts for pro"
         uses: actions/download-artifact@v4
