@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
@@ -18,7 +18,11 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
 import { useNotification } from 'commons/hooks/useNotification'
-import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
+import {
+  updateOffererIsOnboarded,
+  updateSelectedOffererId,
+} from 'commons/store/offerer/reducer'
+import { selecteOffererIsOnboarded } from 'commons/store/offerer/selectors'
 import { updateUser } from 'commons/store/user/reducer'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
@@ -49,6 +53,7 @@ export const Validation = (): JSX.Element => {
 
   const dispatch = useDispatch()
   const { currentUser } = useCurrentUser()
+  const isOnboarded = useSelector(selecteOffererIsOnboarded)
 
   const targetCustomerLabel = {
     [Target.INDIVIDUAL]: 'Au grand public',
@@ -112,9 +117,14 @@ export const Validation = (): JSX.Element => {
 
       const response = await api.saveNewOnboardingData(data)
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
-      notify.success('Votre structure a bien été créée')
-      navigate('/accueil')
       dispatch(updateSelectedOffererId(response.id))
+      if (!isOnboarded) {
+        dispatch(updateOffererIsOnboarded(false))
+        return navigate('/onboarding')
+      } else {
+        notify.success('Votre structure a bien été créée')
+        navigate('/accueil')
+      }
     } catch (error) {
       if (error === RECAPTCHA_ERROR) {
         notify.error(RECAPTCHA_ERROR_MESSAGE)

@@ -10,8 +10,8 @@ import { api } from 'apiClient/api'
 import { PostOffererResponseModel, Target } from 'apiClient/v1'
 import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
 import {
-  SignupJourneyContextValues,
   SignupJourneyContext,
+  SignupJourneyContextValues,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import * as utils from 'commons/utils/recaptcha'
@@ -53,7 +53,7 @@ const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
             path="/parcours-inscription/validation"
             element={<Validation />}
           />
-          <Route path="/accueil" element={<div>accueil</div>} />
+          <Route path="/onboarding" element={<div>onboarding</div>} />
         </Routes>
       </SignupJourneyContext.Provider>
       <Notification />
@@ -183,7 +183,8 @@ describe('ValidationScreen', () => {
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
-      expect(await screen.findByText('accueil')).toBeInTheDocument()
+      // After submit, if offerer isn't onboarded, we redirect by default to /onboarding instead of /accueil
+      expect(await screen.findByText('onboarding')).toBeInTheDocument()
     })
   })
 
