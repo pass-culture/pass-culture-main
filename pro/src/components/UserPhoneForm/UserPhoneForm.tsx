@@ -1,4 +1,5 @@
-import { Form, FormikProvider, useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 
 import { api } from 'apiClient/api'
@@ -6,12 +7,13 @@ import { isErrorAPIError } from 'apiClient/helpers'
 import { UserPhoneBodyModel } from 'apiClient/v1'
 import { parseAndValidateFrenchPhoneNumber } from 'commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
+import { useNotification } from 'commons/hooks/useNotification'
 import { updateUser } from 'commons/store/user/reducer'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { BoxFormLayout } from 'ui-kit/BoxFormLayout/BoxFormLayout'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
 import styles from './UserForm.module.scss'
 import { validationSchema } from './validationSchema'
@@ -27,6 +29,20 @@ export const UserPhoneForm = ({
 }: UserPhoneFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
+  const notify = useNotification()
+
+  const hookForm = useForm({
+    defaultValues: initialValues,
+    resolver: yupResolver(validationSchema),
+    mode: 'onBlur',
+  })
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = hookForm
 
   const onSubmit = async (values: UserPhoneBodyModel) => {
     values.phoneNumber = parseAndValidateFrenchPhoneNumber(
@@ -44,46 +60,42 @@ export const UserPhoneForm = ({
       closeForm()
     } catch (error) {
       if (isErrorAPIError(error)) {
-        for (const field in error.body) {
-          formik.setFieldError(field, error.body[field])
+        // Handle server-side errors and set field errors
+        for (const field of Object.keys(error.body)) {
+          notify.error(error.body[field])
         }
       }
     }
-    formik.setSubmitting(false)
   }
 
-  const formik = useFormik({
-    initialValues: initialValues,
-    onSubmit: onSubmit,
-    validationSchema,
-    validateOnChange: false,
-  })
-
   const onCancel = () => {
-    formik.resetForm()
+    reset()
     closeForm()
   }
 
   return (
     <BoxFormLayout.Fields>
-      <FormikProvider value={formik}>
-        <Form onSubmit={formik.handleSubmit}>
-          <FormLayout>
-            <FormLayout.Row>
-              <TextInput label="Téléphone" name="phoneNumber" />
-            </FormLayout.Row>
-          </FormLayout>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormLayout>
+          <FormLayout.Row>
+            <TextInput
+              label="Téléphone"
+              {...register('phoneNumber')}
+              required={true}
+              error={errors.phoneNumber?.message}
+            />
+          </FormLayout.Row>
+        </FormLayout>
 
-          <div className={styles['buttons-field']}>
-            <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
-              Annuler
-            </Button>
-            <Button type="submit" isLoading={formik.isSubmitting}>
-              Enregistrer
-            </Button>
-          </div>
-        </Form>
-      </FormikProvider>
+        <div className={styles['buttons-field']}>
+          <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
+            Annuler
+          </Button>
+          <Button type="submit" isLoading={isSubmitting}>
+            Enregistrer
+          </Button>
+        </div>
+      </form>
     </BoxFormLayout.Fields>
   )
 }
