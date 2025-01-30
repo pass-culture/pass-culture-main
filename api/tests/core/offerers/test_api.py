@@ -127,6 +127,15 @@ class CreateVenueTest:
         assert action.offerer is None
         assert action.venue == venue
 
+    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
+    def test_none_virtual_venue_is_permanent_when_created(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        data = venues_serialize.PostVenueBodyModel(**self.base_data(user_offerer.offerer))
+        offerers_api.create_venue(data, user_offerer.user)
+
+        venue = offerers_models.Venue.query.one()
+        assert venue.isPermanent is True
+
     def test_venue_with_no_siret_has_no_pricing_point(self):
         user_offerer = offerers_factories.UserOffererFactory()
         data = self.base_data(user_offerer.offerer) | {"siret": None, "comment": "no siret"}

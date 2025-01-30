@@ -78,6 +78,27 @@ class CreateVenueProviderTest:
                 reason=search.IndexationReason.VENUE_PROVIDER_CREATION,
             )
 
+    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
+    @pytest.mark.parametrize(
+        "venue_type",
+        (
+            offerers_models.VenueTypeCode.BOOKSTORE,
+            offerers_models.VenueTypeCode.MOVIE,
+            offerers_models.VenueTypeCode.DIGITAL,
+        ),
+    )
+    def test_permanent_venue_marking_ff_wip_is_open_to_public_activated(self, venue_type):
+        venue = offerers_factories.VenueFactory(venueTypeCode=venue_type, isPermanent=False)
+        provider = providers_factories.ProviderFactory(
+            enabledForPro=True,
+            isActive=True,
+            localClass=None,
+        )
+        author = users_factories.UserFactory()
+        api.create_venue_provider(provider.id, venue.id, current_user=author)
+
+        assert venue.isPermanent is False
+
 
 def create_product(ean, **kwargs):
     return offers_factories.ProductFactory(
