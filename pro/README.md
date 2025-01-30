@@ -4,19 +4,11 @@ C'est la version (browser) de l’application PRO frontend du pass Culture. Ce r
 
 Il faut aller voir le README dans https://github.com/pass-culture/pass-culture-main pour être informé des différentes lignes de commande associées à ce repo.
 
-## Note sur Yarn
-
-Yarn est prometteur, on vous conseille de l’utiliser. Tâchez de l’installer globalement sur votre ordinateur (https://yarnpkg.com/en/docs/install), puis:
-
-```bash
-yarn
-```
-
 ## Installation et Lancement de l’application Pro
 
 ```shell
-yarn install
-yarn start
+npm install
+npm start
 ```
 
 #### Troubleshooting:
@@ -28,14 +20,14 @@ Sur linux + chrome / chromium l’application peut se charger indéfiniment un w
 - ### Lancement des tests unitaires
 
   ```shell
-  yarn test:unit
+  npm test:unit
   ```
 
 - ### Lancement des tests end to end
 
   - Prérequis aux lancement des tests E2E Cypress
   - Lancement du backend `pc start-backend`
-  - Lancement des tests depuis la ligne de commande `yarn test:e2e`
+  - Lancement des tests depuis la ligne de commande `npm test:e2e`
 
 Note, si vous lancez les tests e2e hors Docker et sous OSX, Cypress tentera de contacter le backoffice sur le localhost ipv6. Comme, par défaut, le backend écoute sur les ports en ipv4, il faudra lancer le backend avec:
 
@@ -48,7 +40,7 @@ $ FLASK_IP="::1" python src/pcapi/app.py
 Il s'agit simplement de lancer la commande suivante :
 
 ```shell
-yarn lint:js
+npm lint:js
 ```
 
 Eslint est basé sur une configuration dite "flat" - afin qu'elle soit prise en compte par le plugin VSCode, veiller à ce que l'option suivante soit activée :

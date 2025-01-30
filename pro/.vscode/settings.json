@@ -5,6 +5,7 @@
     "source.fixAll.eslint": "explicit",
     "source.addMissingImports": "always"
   },
+  "eslint.useFlatConfig": true,
   "stylelint.validate": [
     "css",
     "scss"

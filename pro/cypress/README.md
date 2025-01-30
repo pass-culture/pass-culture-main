@@ -19,14 +19,14 @@ Et c’est tout. Il ne faut pas peupler la sandbox, elle doit rester vide et les
 ## Lancer les tests avec l'interface Cypress
 Pour lancer les tests avec l'interface Cypress et ainsi avoir la possibilité de revenir sur l'exécution sans marquer de points d'arrêts, il faut lancer la commande suivante depuis le répertoire `pro` dans un second terminal:
 ```
-pro % yarn test:e2e
+pro % npm test:e2e
 ```
 puis sélectionner le fichier `.cy.ts` à exécuter dans l'interface ou choisir de tout lancer (voir l'[open mode](https://docs.cypress.io/app/core-concepts/open-mode])).
 
 ## Lancer les tests sans l'interface Cypress
 Sans l'interface Cypress, et donc en ligne de commande, il faut exécuter la commande suivante depuis le répertoire `pro`:
 ```
-pro % yarn test:bdd
+pro % npm test:bdd
 ```
 
 Pour ne lancer qu'un seul fichier de test `.cy.ts` on peut le sélectionner avec l'option `--spec` dans cette commande:

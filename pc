@@ -291,7 +291,7 @@ elif [[ "$CMD" == "start-pro" ]]; then
     echo "Can only set backend as localhost or testing for developping your front app."
     exit
   fi
-  RUN="$RUN"' && yarn start'
+  RUN="$RUN"' && npm start'
 
 # Run tests for API
 # Need start-backend to be successful and delete all data
@@ -313,7 +313,7 @@ elif [[ "$CMD" == "test-backoffice" ]]; then
 elif [[ "$CMD" == "install" ]]; then
   cd $ROOT_PATH
   git checkout master
-  cd $ROOT_PATH/pro && yarn
+  cd $ROOT_PATH/pro && npm
   pc install-hooks
   pc set-git-config
   exit_success_restoring_branch

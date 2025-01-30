@@ -22,10 +22,10 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   # run linter on staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",lint," ]]; then
     echo "Looking for dead code..."
-    yarn lint:dead-code
+    npm lint:dead-code
 
     echo "Running Linter..."
-    yarn lint:js:fix $STAGED_FILES
+    npm lint:js:fix $STAGED_FILES
     LINTER_EXIT_CODE=$?
 
     # add files auto-fixed by the linter
@@ -44,7 +44,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   # run typescript quality on staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",tsc," ]]; then
     echo "Quality checking..."
-    yarn tsc -b
+    npm tsc -b
     QUALITY_EXIT_CODE=$?
 
     # check linter exit code
@@ -61,7 +61,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
     echo "Running Tests"
     # The following command will run tests related to the vite root (`src`)
     # In bash ${string//substring/replacement} replace all occurrences of a string
-    yarn test:unit:hook ${STAGED_FILES//src\//}
+    npm test:unit:hook ${STAGED_FILES//src\//}
     VITEST_EXIT_CODE=$?
 
     # check vitest exit code
@@ -78,7 +78,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
     echo "Running Tests"
     # The following command will run tests related to the vite root (`src`)
     # In bash ${string//substring/replacement} replace all occurrences of a string
-    yarn test:unit:hookcoverage ${STAGED_FILES//src\//}
+    npm test:unit:hookcoverage ${STAGED_FILES//src\//}
     VITEST_EXIT_CODE=$?
 
     # check vitest exit code
@@ -95,7 +95,7 @@ if [[ ! -z "$STAGED_SCSS_FILES" ]]; then
   # run stylelint on staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",stylelint," ]]; then
     echo "Running style Linter..."
-    yarn lint:scss:hook:fix $STAGED_SCSS_FILES
+    npm lint:scss:hook:fix $STAGED_SCSS_FILES
     LINTER_EXIT_CODE=$?
 
     # add files auto-fixed by the linter

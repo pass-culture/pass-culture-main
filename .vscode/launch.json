@@ -92,7 +92,7 @@
             "request": "launch",
             "name": "Debug current spec test file",
             "cwd": "${workspaceFolder}/pro",
-            "runtimeExecutable": "yarn",
+            "runtimeExecutable": "npm",
             "runtimeArgs": [
                 "test:unit",
                 "run",
