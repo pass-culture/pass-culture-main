@@ -320,7 +320,7 @@ jobs:
     needs: [pcapi-init-job, test-pro]
     if: |
       always() && 
-      needs.pcapi-init-job.outputs.api-changed == 'false'
+      needs.pcapi-init-job.outputs.api-changed == 'false' && needs.pcapi-init-job.outputs.pro-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
