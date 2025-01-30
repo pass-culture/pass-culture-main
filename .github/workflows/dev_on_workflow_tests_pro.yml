@@ -41,7 +41,7 @@ jobs:
           key: v1-npm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             v1-npm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      - run: npm install --immutable
+      - run: npm install --immutable --legacy-peer-deps
       - run: npm run tsc -b
       - run: npm run lint:dead-code
       - run: npm run lint:js
@@ -84,9 +84,9 @@ jobs:
           key: v1-npm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             v1-npm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      - run: npm install --immutable
+      - run: npm install --immutable --legacy-peer-deps
       - name: Run tests with coverage
-        run: npm test:unit:ci
+        run: npm run test:unit:ci
 
       - name: "Upload Allure results for pro tests"
         uses: actions/upload-artifact@v4

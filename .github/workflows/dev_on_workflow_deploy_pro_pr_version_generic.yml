@@ -80,7 +80,7 @@ jobs:
           key: v1-npm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             v1-npm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      - run: npm install --immutable
+      - run: npm install --immutable --legacy-peer-deps
       - run: npm run build:${{ inputs.ENV }}
         env:
           # By default NodeJS processes are limited to 512MB of memory

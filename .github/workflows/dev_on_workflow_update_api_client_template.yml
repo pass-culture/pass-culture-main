@@ -126,7 +126,7 @@ jobs:
       - name: "Install dependencies PRO"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         working-directory: pro
-        run: npm install --immutable
+        run: npm install --immutable --legacy-peer-deps
       - name: "Update api client"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         uses: nick-fields/retry@v3

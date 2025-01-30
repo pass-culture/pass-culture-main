@@ -16,7 +16,7 @@ jobs:
           node-version-file: "pro/.nvmrc"
       - name: "Install dependencies"
         working-directory: pro
-        run: npm install --immutable
+        run: npm install --immutable --legacy-peer-deps
       - name: "Build Storybook 🔧"
         working-directory: pro
         run: npm build-storybook

@@ -98,7 +98,7 @@ jobs:
           key: v1-npm-pro-cypress-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             v1-npm-pro-cypress-dependency-cache-${{ runner.os }}-${{ hashFiles('**//package-lock.json') }}
-      - run: npm install --immutable
+      - run: npm install --immutable --legacy-peer-deps
       - name: "Run postgres and redis server"
         run: docker-compose -f ../docker-compose-backend.yml up postgres redis -d
       - name: "Set up Cloud SDK"
