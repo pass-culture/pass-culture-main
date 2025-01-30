@@ -77,6 +77,26 @@ services:
     stdin_open: true
     tty: true
 
+  celery:
+    build:
+      context: ./api
+      target: api-flask
+    working_dir: /usr/src/app
+    container_name: pc-celery-worker
+    command: [ "./start-celery-worker.sh" ]
+    volumes:
+      - ./api:/usr/src/app
+    env_file:
+      - env_file
+    networks:
+      - db_nw
+      - web_nw
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - 10003:10003 # debugger port
+
   redis:
     image: scalingo/redis
     container_name: pc-redis
