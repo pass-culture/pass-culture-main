@@ -2892,9 +2892,11 @@ def test_generate_invoice_file(clean_temp_files):
     offerers_factories.VenueBankAccountLinkFactory(
         venue=nc_venue, bankAccount=nc_bank_account, timespan=(datetime.datetime.utcnow(),)
     )
+    underage_user = users_factories.UnderageBeneficiaryFactory()
     nc_pricing = factories.PricingFactory(
         status=models.PricingStatus.VALIDATED,
         booking__stock__offer__venue=nc_venue,
+        booking__user=underage_user,
         amount=-1000,
     )
     nc_pline_1 = factories.PricingLineFactory(pricing=nc_pricing, amount=-1100)
@@ -2972,7 +2974,7 @@ def test_generate_invoice_file(clean_temp_files):
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": nc_invoice.reference,
         "Type de ticket de facturation": nc_pline_1.category.value,
-        "Type de réservation": "PC",
+        "Type de réservation": "EACI",
         "Ministère": "NC",
         "Somme des tickets de facturation": nc_pline_1.amount,
     }
@@ -2982,7 +2984,7 @@ def test_generate_invoice_file(clean_temp_files):
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": nc_invoice.reference,
         "Type de ticket de facturation": nc_pline_2.category.value,
-        "Type de réservation": "PC",
+        "Type de réservation": "EACI",
         "Ministère": "NC",
         "Somme des tickets de facturation": nc_pline_2.amount,
     }
