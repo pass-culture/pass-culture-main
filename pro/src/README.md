@@ -75,7 +75,7 @@ Structure du dossier `pro/src/` (générée avec [cet utilitaire](<https://tree.
 > On peut générer un composant (page, ui-kit, transverse) avec la commande suivante :
 >
 > ```bash
-> yarn generate:component <nom composant>
+> npm generate:component <nom composant>
 > ```
 
 ## [COMPONENTS](./components/README.md)

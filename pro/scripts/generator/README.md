@@ -9,7 +9,7 @@
 Générer un composant du nom de **MyComponent** :
 
 ```bash
-yarn generate:component MyComponent
+npm generate:component MyComponent
 ```
 
 Cela va demander le dossier dans lequel le composant devra être créé :
@@ -79,7 +79,7 @@ Si tout s'est bien passé, une confirmation des fichiers générés apparaît :
 Générer un utilitaire du nom de **myUtil** :
 
 ```bash
-yarn generate:util myUtil
+npm generate:util myUtil
 ```
 
 Cela va demander le dossier dans lequel le composant devra être créé :
@@ -135,7 +135,7 @@ Si tout s'est bien passé, une confirmation des fichiers générés apparaît :
 
 Il est tout à fait possible de créer vos propres commandes pour générer des fichiers à partir de modèles.
 
-Les raccourcis de commande **yarn** doivent être renseignés dans **package.json** :
+Les raccourcis de commande **npm** doivent être renseignés dans **package.json** :
 
 ```json
 {
@@ -148,7 +148,7 @@ Les raccourcis de commande **yarn** doivent être renseignés dans **package.jso
 La nouvelle commande devra être invoquée de la manière suivante :
 
 ```bash
-yarn generate:nouvelle_commande <NOM_ELEMENT>
+npm generate:nouvelle_commande <NOM_ELEMENT>
 ```
 
 Ensuite, il faut créer un dossier **du même nom que la commande souhaitée** dans le dossier de templates `./scripts/generator/_templates`.
@@ -232,7 +232,7 @@ const <% name %> = "Hello World!"
 // Rest of file to be generated …
 ```
 
-Si l'utilisateur à invoqué la commande `yarn generate:nouvelle_commande message` et choisi "No" à la question "spec", alors le fichier généré sera :
+Si l'utilisateur à invoqué la commande `npm generate:nouvelle_commande message` et choisi "No" à la question "spec", alors le fichier généré sera :
 
 ```ts
 // This will be present only if user answered "No" to the "spec" question

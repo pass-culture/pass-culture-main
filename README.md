@@ -11,6 +11,7 @@
 </div>
 
 ---
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pass-culture_pass-culture-main&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=pass-culture_pass-culture-main) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pass-culture_pass-culture-main&metric=coverage)](https://sonarcloud.io/summary/new_code?id=pass-culture_pass-culture-main)
 
 [![Testing Environement](https://img.shields.io/github/deployments/pass-culture/pass-culture-main/testing?label=Testing%20Environment)](https://github.com/pass-culture/pass-culture-main/deployments/activity_log?environment=testing)
@@ -35,9 +36,6 @@ Le repo `main` contient les 4 projets suivants :
   - `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash`
 - [Node](https://nodejs.org/en/download/)
   - Lancer `nvm install` dans `/pro`
-- [Yarn](https://classic.yarnpkg.com/en/)
-  - `npm install --global yarn` (NPM)
-  - autres méthodes [dans la doc de Yarn](https://classic.yarnpkg.com/lang/en/docs/install/)
 - GPG (outil de (dé)chiffrement)
 
   - [GPG Suite](https://gpgtools.org/) (MacOS)
@@ -86,13 +84,12 @@ fonctionnement par la route [http://localhost:5001/health/api](http://localhost:
 #### Backoffice
 
 - [http://localhost:5002/](http://localhost:5002/) devrait être lancé et fonctionnel après `pc start-backend`, une fois
-qu'api répond
+  qu'api répond
 - Cliquez sur _Se connecter via Google_
 - Vous arriverez alors sur la page d'accueil du BO, en tant qu'utilisateur admin `admin@passculture.local`, avec toutes
-les permissions
-- Si vous avez besoin d'une adresse email spécifique pour l'admin local, par exemple pour le lien avec des services 
-externes, spécifiez l'email dans une variable `BACKOFFICE_LOCAL_USER_EMAIL` dans le fichier `.env.local.secret`. 
-
+  les permissions
+- Si vous avez besoin d'une adresse email spécifique pour l'admin local, par exemple pour le lien avec des services
+  externes, spécifiez l'email dans une variable `BACKOFFICE_LOCAL_USER_EMAIL` dans le fichier `.env.local.secret`.
 
 #### pro
 
@@ -110,25 +107,6 @@ Ces utilisateurs existent également pour le 97, en remplaçant `93` par `97`.
 
 D'autres informations sont disponibles sur le [README de Pro](./pro/README.md)
 
-### Lancer les tests sur VSCode
-
-#### Tests back
-
-Il est possible de lancer / débugger les tests python directement depuis VSCode. Pour cela il faut avoir installé les extensions `ms-python.python` et `ms-python.debugpy`.
-
-On peut voir la liste des tests dans l'onglet Testing, où l'on peut lancer les tests par fonction / classe / fichier / dossier. Lorsqu'on est dans un fichier de test, on peut également utiliser les icones placées directement à côté de chaque fonction.
-
-Quelques commandes VSCode utiles lorsqu'on est dans un fichier de test, avec leur équivalent `Debug Test` :
-- `Test: Run Test in Current File`
-- `Test: Run Test at Cursor`
-- `Test: Rerun Last Run`
-- `Test: Rerun Failed Tests`
-
-Voir https://code.visualstudio.com/docs/python/testing pour plus d'informations.
-
-#### Tests front
-
-Pour lancer / débugger un test front, on peut utiliser la commande de launch `Debug current spec test file`. Lorsqu'on est dans un fichier `*.spec.tsx`, on peut lancer la commande depuis l'onglet `Run and Debug` et les tests du fichier seront exécutés.
 
 ### Commandes utiles
 
@@ -148,7 +126,6 @@ sa BDD locale via `pc restart-backend`. Sinon:
 - `pc sandbox -n industrial`
 
 ## Déploiement
-
 
 ### Déployer dans l'environnement Testing
 
