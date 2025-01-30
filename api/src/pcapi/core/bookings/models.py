@@ -4,10 +4,12 @@ from decimal import Decimal
 import enum
 from typing import TYPE_CHECKING
 
+from dateutil.relativedelta import relativedelta
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import DDL
+from sqlalchemy import Date
 from sqlalchemy import DateTime
 from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
@@ -18,6 +20,7 @@ from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy import and_
 from sqlalchemy import case
+from sqlalchemy import cast
 from sqlalchemy import event
 from sqlalchemy import exists
 from sqlalchemy import select
@@ -29,6 +32,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import Label
+from sqlalchemy.sql.functions import concat
 
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
@@ -39,6 +43,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.reactions.models import ReactionTypeEnum
+from pcapi.core.users import models as users_models
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -47,7 +52,6 @@ from pcapi.utils.human_ids import humanize
 
 if TYPE_CHECKING:
     from pcapi.core.offerers import models as offerers_models
-    from pcapi.core.users import models as users_models
 
 
 class BookingCancellationReasons(enum.Enum):
@@ -422,6 +426,21 @@ class Booking(PcObject, Base, Model):
         return and_(
             offers_models.Offer.subcategoryId.in_(offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES),
             cls.amount == 0,
+        )
+
+    @hybrid_property
+    def made_by_underage_user(self) -> bool:
+        return self.dateCreated.date() < self.user.birth_date + relativedelta(years=18)
+
+    @made_by_underage_user.expression  # type: ignore[no-redef]
+    def made_by_underage_user(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+        return case(
+            (
+                cast(cls.dateCreated, Date)
+                < users_models.User.birth_date + cast(concat(18, " YEARS"), postgresql.INTERVAL),
+                True,
+            ),
+            else_=False,
         )
 
     @property

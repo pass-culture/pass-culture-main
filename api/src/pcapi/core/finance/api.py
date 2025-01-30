@@ -1472,7 +1472,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
     def get_individual_data(query: BaseQuery) -> BaseQuery:
         individual_data_query = (
             query.filter(bookings_models.Booking.amount != 0)
-            .join(bookings_models.Booking.deposit)
+            .join(bookings_models.Booking.user)
             .join(models.Pricing.cashflows)
             .join(
                 models.BankAccount,
@@ -1483,7 +1483,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
             .group_by(
                 models.BankAccount.id,
                 offerers_models.Offerer.id,
-                models.Deposit.type,
+                bookings_models.Booking.made_by_underage_user,
             )
             .with_entities(
                 models.BankAccount.id.label("bank_account_id"),
@@ -1493,7 +1493,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
                     (offerers_models.Offerer.is_caledonian == True, offerers_models.Offerer.rid7),
                     else_=offerers_models.Offerer.siren,
                 ).label("offerer_siren"),
-                models.Deposit.type.label("deposit_type"),
+                bookings_models.Booking.made_by_underage_user.label("made_by_underage_user"),  # type: ignore[attr-defined]
                 sa.case((offerers_models.Offerer.is_caledonian == True, "NC"), else_=None).label("caledonian_label"),
                 sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
             )
@@ -1561,7 +1561,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
             sa.column("bank_account_label"),
             sa.column("offerer_name"),
             sa.column("offerer_siren"),
-            sa.column("deposit_type"),
+            sa.column("made_by_underage_user"),
             sa.column("caledonian_label"),
         )
         .with_entities(
@@ -1569,7 +1569,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
             sa.column("bank_account_label"),
             sa.column("offerer_name"),
             sa.column("offerer_siren"),
-            sa.column("deposit_type"),
+            sa.column("made_by_underage_user"),
             sa.column("caledonian_label"),
             sqla_func.sum(sa.column("pricing_amount")).label("pricing_amount"),
         )
@@ -1618,12 +1618,10 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
 def _payment_details_row_formatter(sql_row: typing.Any) -> tuple:
     if hasattr(sql_row, "ministry"):
         booking_type = "EACC"
-    elif sql_row.deposit_type == models.DepositType.GRANT_15_17.value:
+    elif sql_row.made_by_underage_user:
         booking_type = "EACI"
-    elif sql_row.deposit_type == models.DepositType.GRANT_18.value:
-        booking_type = "PC"
     else:
-        raise ValueError("Unknown booking type (not educational nor individual)")
+        booking_type = "PC"
 
     ministry = getattr(sql_row, "caledonian_label", getattr(sql_row, "ministry", ""))
     net_amount = utils.cents_to_full_unit(-sql_row.pricing_amount)
@@ -1931,7 +1929,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
     def get_data(query: BaseQuery, bank_accounts: typing.Iterable[int]) -> BaseQuery:
         return (
             query.join(models.Pricing.lines)
-            .join(bookings_models.Booking.deposit)
+            .join(bookings_models.Booking.user)
             .join(models.Invoice.bankAccount)
             .join(models.BankAccount.offerer)
             .filter(
@@ -1945,7 +1943,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.Invoice.bankAccountId,
                 models.PricingLine.category,
                 offerers_models.Offerer.is_caledonian,
-                models.Deposit.type,
+                bookings_models.Booking.made_by_underage_user,
             )
             .with_entities(
                 models.Invoice.id,
@@ -1953,7 +1951,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.Invoice.reference.label("invoice_reference"),
                 models.Invoice.bankAccountId.label("bank_account_id"),
                 models.PricingLine.category.label("pricing_line_category"),
-                models.Deposit.type.label("deposit_type"),
+                bookings_models.Booking.made_by_underage_user.label("made_by_underage_user"),  # type: ignore[attr-defined]
                 sa.case((offerers_models.Offerer.is_caledonian == True, "NC"), else_=None).label("ministry"),
                 sqla_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
             )
@@ -2036,7 +2034,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 sa.column("invoice_reference"),
                 sa.column("bank_account_id"),
                 sa.column("pricing_line_category"),
-                sa.column("deposit_type"),
+                sa.column("made_by_underage_user"),
                 sa.column("ministry"),
             )
             .with_entities(
@@ -2044,7 +2042,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 sa.column("invoice_reference"),
                 sa.column("bank_account_id"),
                 sa.column("pricing_line_category"),
-                sa.column("deposit_type"),
+                sa.column("made_by_underage_user"),
                 sa.column("ministry"),
                 sqla_func.sum(sa.column("pricing_line_amount")).label("pricing_line_amount"),
             )
@@ -2094,7 +2092,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
 
     indiv_data = sorted(
         indiv_data,
-        key=lambda o: (o.invoice_reference, o.deposit_type, pricing_line_dict[o.pricing_line_category]),
+        key=lambda o: (o.invoice_reference, o.made_by_underage_user, pricing_line_dict[o.pricing_line_category]),
     )
     collective_data = sorted(
         collective_data,
@@ -2112,12 +2110,10 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
 def _invoice_row_formatter(sql_row: typing.Any) -> tuple:
     if sql_row.ministry and sql_row.ministry != "NC":
         booking_type = "EACC"
-    elif sql_row.deposit_type == models.DepositType.GRANT_15_17.value:
+    elif sql_row.made_by_underage_user:
         booking_type = "EACI"
-    elif sql_row.deposit_type == models.DepositType.GRANT_18.value:
-        booking_type = "PC"
     else:
-        raise ValueError("Unknown booking type (not educational nor individual)")
+        booking_type = "PC"
 
     ministry = getattr(sql_row, "ministry", "")
 
