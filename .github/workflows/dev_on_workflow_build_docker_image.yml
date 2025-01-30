@@ -26,7 +26,7 @@ env:
 
 jobs:
   build-docker-image:
-    name: "Build ${{ inputs.image }}:${{ inputs.tag }}"
+    name: "Build Docker image"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.2.2
