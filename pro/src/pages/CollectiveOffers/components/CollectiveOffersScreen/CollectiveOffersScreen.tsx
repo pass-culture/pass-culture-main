@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 import {
   CollectiveOfferResponseModel,
@@ -68,10 +68,6 @@ export const CollectiveOffersScreen = ({
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
-  useEffect(() => {
-    setSelectedFilters(initialSearchFilters)
-  }, [initialSearchFilters])
-
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
 
   const currentPageOffersSubset = offers.slice(
@@ -85,6 +81,7 @@ export const CollectiveOffersScreen = ({
     initialSearchFilters,
     defaultCollectiveFilters
   )
+
   const userHasNoOffers = !isLoading && !hasOffers && !hasFilters
 
   const areAllOffersSelected =
@@ -134,6 +131,7 @@ export const CollectiveOffersScreen = ({
   const resetFilters = () => {
     onResetFilters()
     applyUrlFiltersAndRedirect(defaultCollectiveFilters)
+    setSelectedFilters(defaultCollectiveFilters)
   }
 
   function onSetSelectedOffer(offer: CollectiveOfferResponseModel) {
