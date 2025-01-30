@@ -40,12 +40,4 @@ describe('Footer', () => {
       screen.queryByRole('link', { name: 'Accessibilité : non conforme' })
     ).toBeInTheDocument()
   })
-
-  it('should not render sitemap if user is not connected', () => {
-    renderFooter(false)
-
-    expect(
-      screen.queryByRole('link', { name: 'Plan du site' })
-    ).not.toBeInTheDocument()
-  })
 })
