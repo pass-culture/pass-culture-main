@@ -2007,10 +2007,10 @@
     axe-core "^4.2.0"
     vitest-axe "^0.1.0"
 
-"@storybook/addon-controls@^8.5.1":
-  version "8.5.1"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-8.5.1.tgz#21d9372c08c16c026a34abb35b87a9dcf5aafa7f"
-  integrity sha512-RA/SPXW1chfsWaV8Lv/aXJNZJ8hasDEXQ1C5xRCt+T8DFvPqRZGgUfIpsiZ80AKp5RzufT9KL+39piPMljhKXA==
+"@storybook/addon-controls@^8.5.2":
+  version "8.5.2"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-8.5.2.tgz#ebf3a305ca86df2fd362c87cca1df7c556401aa6"
+  integrity sha512-wkzw2vRff4zkzdvC/GOlB2PlV0i973u8igSLeg34TWNEAa4bipwVHnFfIojRuP9eN1bZL/0tjuU5pKnbTqH7aQ==
   dependencies:
     "@storybook/global" "^5.0.0"
     dequal "^2.0.2"
