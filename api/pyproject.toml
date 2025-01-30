@@ -16,6 +16,7 @@ dependencies = [
 "boto3==1.35.99",  # For compatibility with Outscale, do not upgrade to 1.36 until they solved the issue: https://status.outscale.com/incidents/hcq9vmjkl0k9
 "boussole==2.1.3",
 "brevo-python==1.1.2",
+"celery[redis]==5.4.0",
 "click-option-group==0.5.6",
 "click==8.1.8",
 "clickhouse-sqlalchemy==0.2.7",
@@ -79,9 +80,8 @@ dependencies = [
 "werkzeug==2.0.3",
 "wtforms-sqlalchemy==0.4.2",
 "wtforms==3.2.1",
-"xlsxwriter>=3.2.0",
-"zeep==4.3.1",
-"celery[redis] (>=5.4.0,<6.0.0)"
+"xlsxwriter==3.2.2",
+"zeep==4.3.1"
 ]
 
 [tool.poetry.group.dev]
