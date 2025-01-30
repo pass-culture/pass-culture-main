@@ -33,7 +33,7 @@ env:
 
 jobs:
   push-docker-image:
-    name: "Push ${{ inputs.image }}"
+    name: "Push Docker image"
     runs-on: ubuntu-22.04
     steps:
       - name: "Authentification to Google"
