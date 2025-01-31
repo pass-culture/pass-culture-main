@@ -1,6 +1,7 @@
 import datetime
 import decimal
 
+from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
 
@@ -394,6 +395,22 @@ def test_serialize_offer_book_format():
     offer = offers_factories.OfferFactory(product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["offer"]["bookFormat"] == "BEAUX LIVRES"
+
+
+def test_serialize_offer_forever_headline():
+    headline_offer = offers_factories.HeadlineOfferFactory()
+    serialized = algolia.AlgoliaBackend().serialize_offer(headline_offer.offer, 0)
+    assert serialized["offer"]["isHeadline"] is True
+    assert "isHeadlineUntil" not in serialized["offer"]
+
+
+@time_machine.travel("2025-01-01")
+def test_serialize_offer_temporarily_headline():
+    now = datetime.datetime.utcnow()
+    headline_offer = offers_factories.HeadlineOfferFactory(timespan=(now, now + relativedelta(days=1)))
+    serialized = algolia.AlgoliaBackend().serialize_offer(headline_offer.offer, 0)
+    assert serialized["offer"]["isHeadline"] is True
+    assert serialized["offer"]["isHeadlineUntil"] == 1735776000
 
 
 def test_serialize_venue():

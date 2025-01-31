@@ -466,6 +466,7 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
         .options(sa.orm.joinedload(offers_models.Offer.criteria))
         .options(sa.orm.joinedload(offers_models.Offer.mediations))
         .options(sa.orm.joinedload(offers_models.Offer.product))
+        .options(sa.orm.joinedload(offers_models.Offer.headlineOffers))
         .options(
             sa.orm.joinedload(offers_models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address)
         )
