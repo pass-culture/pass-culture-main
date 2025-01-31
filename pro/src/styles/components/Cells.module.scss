@@ -86,6 +86,7 @@
   }
 
   &-boosted-icon {
+    display: flex;
     margin-left: rem.torem(16px);
     color: var(--color-secondary-light);
   }

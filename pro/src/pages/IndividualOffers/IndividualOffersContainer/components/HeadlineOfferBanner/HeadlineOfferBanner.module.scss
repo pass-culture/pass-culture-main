@@ -41,14 +41,9 @@
 
 .headline-offer-close-button {
   color: var(--color-white);
-  background: none;
-  border: none;
-  cursor: pointer;
-  min-width: rem.torem(20px);
-  min-height: rem.torem(20px);
 }
 
-// magic value but aniway we will burn this component
+// magic value but anyway we will burn this component
 @media screen and (width >= 1100px) {
   .headline-offer-img {
     display: block;
