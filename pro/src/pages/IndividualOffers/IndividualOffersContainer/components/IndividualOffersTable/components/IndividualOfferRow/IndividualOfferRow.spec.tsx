@@ -6,6 +6,7 @@ import {
   ApiError,
   ListOffersOfferResponseModel,
   ListOffersStockResponseModel,
+  OffererHeadLineOfferResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
@@ -43,12 +44,14 @@ const offererId = 1
 type RenderOfferItemProps = {
   props: IndividualOfferRowProps
   isHeadlineOfferAllowedForOfferer?: boolean
+  headlineOffer?: OffererHeadLineOfferResponseModel | null
   features?: string[]
 }
 
 const renderOfferItem = ({
   props,
   isHeadlineOfferAllowedForOfferer = true,
+  headlineOffer = null,
   features = [],
 }: RenderOfferItemProps) =>
   renderWithProviders(
@@ -57,6 +60,7 @@ const renderOfferItem = ({
         <tbody>
           <IndividualOffersContextProvider
             isHeadlineOfferAllowedForOfferer={isHeadlineOfferAllowedForOfferer}
+            headlineOffer={headlineOffer}
           >
             <IndividualOfferRow {...props} />
           </IndividualOffersContextProvider>
@@ -285,13 +289,15 @@ describe('IndividualOfferRow', () => {
       })
 
       it('should replace headline offer', async () => {
-        vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue({
-          id: 666,
-          name: 'another headline offer',
-          venueId: 1,
+        renderOfferItem({
+          props,
+          features: ['WIP_HEADLINE_OFFER'],
+          headlineOffer: {
+            id: 666,
+            name: 'another headline offer',
+            venueId: 1,
+          },
         })
-
-        renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
 
         const openActionsButton = screen.getByRole('button', {
           name: LABELS.openActions,
@@ -317,13 +323,15 @@ describe('IndividualOfferRow', () => {
       })
 
       it('should delete headline offer', async () => {
-        vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue({
-          id: offer.id,
-          name: offer.name,
-          venueId: 1,
+        renderOfferItem({
+          props,
+          features: ['WIP_HEADLINE_OFFER'],
+          headlineOffer: {
+            id: offer.id,
+            name: offer.name,
+            venueId: 1,
+          },
         })
-
-        renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
 
         const openActionsButton = screen.getByRole('button', {
           name: LABELS.openActions,
@@ -350,13 +358,16 @@ describe('IndividualOfferRow', () => {
             ''
           )
         )
-        vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue({
-          id: offer.id,
-          name: offer.name,
-          venueId: 1,
-        })
 
-        renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
+        renderOfferItem({
+          props,
+          features: ['WIP_HEADLINE_OFFER'],
+          headlineOffer: {
+            id: offer.id,
+            name: offer.name,
+            venueId: 1,
+          },
+        })
 
         const openActionsButton = screen.getByRole('button', {
           name: LABELS.openActions,
@@ -625,10 +636,14 @@ describe('IndividualOfferRow', () => {
 
     describe('when offer is headline', () => {
       it('should display the boosted icon', () => {
-        props.offer.isHeadlineOffer = true
         renderOfferItem({
           props,
           features: ['WIP_HEADLINE_OFFER'],
+          headlineOffer: {
+            id: offer.id,
+            name: offer.name,
+            venueId: 1,
+          },
         })
 
         expect(

@@ -48,7 +48,8 @@
   min-height: rem.torem(20px);
 }
 
-@media screen and (min-width: size.$desktop) {
+// magic value but aniway we will burn this component
+@media screen and (width >= 1100px) {
   .headline-offer-img {
     display: block;
     position: absolute;

@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
+import { OffererHeadLineOfferResponseModel } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
 import {
   GET_CATEGORIES_QUERY_KEY,
   GET_OFFERER_ADDRESS_QUERY_KEY,
+  GET_OFFERER_HEADLINE_OFFER_QUERY_KEY,
   GET_OFFERS_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
@@ -55,6 +57,8 @@ export const IndividualOffers = (): JSX.Element => {
   const isHeadlineOfferEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
   const [isHeadlineOfferBannerOpen, setIsHeadlineOfferBannerOpen] =
     useState(true)
+  const [headlineOffer, setHeadlineOffer] =
+    useState<OffererHeadLineOfferResponseModel | null>(null)
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
@@ -141,6 +145,25 @@ export const IndividualOffers = (): JSX.Element => {
       offererAddressId
     )
   })
+  useSWR(
+    selectedOffererId && isHeadlineOfferEnabled
+      ? [GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId]
+      : null,
+    ([, offererId]) => api.getOffererHeadlineOffer(offererId),
+    {
+      onError: (error) => {
+        if (error.status === 404) {
+          setHeadlineOffer(null)
+        } else {
+          throw error
+        }
+      },
+      onSuccess: (data) => {
+        setHeadlineOffer(data)
+      },
+      shouldRetryOnError: false,
+    }
+  )
 
   const offers = offersQuery.error ? [] : offersQuery.data || []
 
@@ -164,6 +187,7 @@ export const IndividualOffers = (): JSX.Element => {
       ) : (
         <IndividualOffersContextProvider
           isHeadlineOfferAllowedForOfferer={isHeadlineOfferAllowedForOfferer}
+          headlineOffer={headlineOffer}
         >
           <IndividualOffersContainer
             categories={categoriesOptions}
