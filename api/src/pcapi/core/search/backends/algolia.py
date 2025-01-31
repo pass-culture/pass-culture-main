@@ -531,6 +531,10 @@ class AlgoliaBackend(base.SearchBackend):
             else [offer.subcategory.search_group_name]
         )
 
+        headline_offer = next(
+            (headline_offer for headline_offer in offer.headlineOffers if headline_offer.isActive), None
+        )
+
         # If you update this dictionary, please check whether you need to
         # also update `core.offerers.api.VENUE_ALGOLIA_INDEXED_FIELDS`.
         object_to_index: dict[str, typing.Any] = {
@@ -614,6 +618,11 @@ class AlgoliaBackend(base.SearchBackend):
                 None,
             )
             object_to_index["offer"]["gtl_level1"] = gtl_label
+
+        if headline_offer:
+            object_to_index["offer"]["isHeadline"] = True
+            if headline_offer.timespan.upper:
+                object_to_index["offer"]["isHeadlineUntil"] = headline_offer.timespan.upper.timestamp()
 
         for section in ("offer", "offerer", "venue"):
             object_to_index[section] = {
