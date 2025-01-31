@@ -1062,18 +1062,51 @@ describe('IndividualOfferDetails', () => {
     })
   })
 
-  it('should not render venue field when there is just one venue', () => {
+  it('should not render venue field when there is just one virtual venue', () => {
     vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
       SUGGESTED_CATEGORIES: 'true',
     })
 
     renderDetailsScreen({
       props: {
-        venues: [venueListItemFactory({ id: 189 })],
+        venues: [venueListItemFactory({ id: 189, isVirtual: true })],
       },
       contextValue,
       // There is no world where WIP_SUGGESTED_SUBCATEGORIES is enabled without WIP_SPLIT_OFFER
       options: { features: ['WIP_SUGGESTED_SUBCATEGORIES'] },
+    })
+
+    expect(screen.queryByText(/Lieu/)).not.toBeInTheDocument()
+  })
+
+  it('should not render venue field when there is just one physical venue', () => {
+    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+      SUGGESTED_CATEGORIES: 'true',
+    })
+
+    renderDetailsScreen({
+      props: {
+        venues: [venueListItemFactory({ id: 189, isVirtual: false })],
+      },
+      contextValue,
+    })
+
+    expect(screen.queryByText(/Lieu/)).not.toBeInTheDocument()
+  })
+
+  it('should not render venue field when there is one physical venue and one virtual venue', () => {
+    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+      SUGGESTED_CATEGORIES: 'true',
+    })
+
+    renderDetailsScreen({
+      props: {
+        venues: [
+          venueListItemFactory({ id: 189, isVirtual: false }),
+          venueListItemFactory({ id: 190, isVirtual: true }),
+        ],
+      },
+      contextValue,
     })
 
     expect(screen.queryByText(/Lieu/)).not.toBeInTheDocument()

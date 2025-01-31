@@ -70,7 +70,7 @@ export const UsefulInformationForm = ({
 
   // we use venue is virtual here because we cannot infer it from the offerSubCategory
   // because of CATEGORY_STATUS.ONLINE_OR_OFFLINE who can be both virtual or not
-  const isVenueVirtual = venue.isVirtual || false
+  const isVenueVirtual = venue.isVirtual
 
   const {
     currentUser: { isAdmin, email },
