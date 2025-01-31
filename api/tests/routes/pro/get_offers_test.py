@@ -191,8 +191,7 @@ class Returns200Test:
         offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.datetime(2024, 10, 10, 00, 00))
         offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        # +1 Feature flag
-        with testing.assert_num_queries(self.number_of_queries + 1):
+        with testing.assert_num_queries(self.number_of_queries):
             response = authenticated_client.get(f"/offers?offererId={offerer_id}&periodBeginningDate=2024-10-10")
             print(response)
             if dp == "974":
@@ -216,8 +215,7 @@ class Returns200Test:
         offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.datetime(2024, 10, 10, 00, 00))
         offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        # +1 Feature flag
-        with testing.assert_num_queries(self.number_of_queries + 1):
+        with testing.assert_num_queries(self.number_of_queries):
             response = authenticated_client.get(f"/offers?offererId={offerer_id}&periodEndingDate=2024-10-9")
             print(response)
             if dp == "971":
