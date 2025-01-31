@@ -7,6 +7,7 @@ from pcapi.core.educational.adage_backends.serialize import serialize_collective
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.exceptions import AdageInvalidEmailException
 from pcapi.routes.adage.v1.serialization import prebooking
+from pcapi.utils import requests
 
 
 MOCK_API_URL = "http://adage.fr"
@@ -67,6 +68,28 @@ class AdageHttpClientTest:
             adage_client.notify_prebooking(booking_data)
 
         assert ex.value.message == "Error posting new prebooking to Adage API - status code: 500 - error code: ERROR"
+
+    def test_notify_prebooking_connect_timeout(self, requests_mock):
+        adage_client = AdageHttpClient()
+        booking = educational_factories.CollectiveBookingFactory()
+        booking_data = prebooking.serialize_collective_booking(booking)
+
+        requests_mock.post(f"{MOCK_API_URL}/v1/prereservation", exc=requests.exceptions.ConnectTimeout)
+        with pytest.raises(AdageException) as ex:
+            adage_client.notify_prebooking(booking_data)
+
+        assert ex.value.message == "Cannot establish connection to omogen api"
+
+    def test_notify_prebooking_read_timeout(self, requests_mock):
+        adage_client = AdageHttpClient()
+        booking = educational_factories.CollectiveBookingFactory()
+        booking_data = prebooking.serialize_collective_booking(booking)
+
+        requests_mock.post(f"{MOCK_API_URL}/v1/prereservation", exc=requests.exceptions.ReadTimeout)
+        with pytest.raises(AdageException) as ex:
+            adage_client.notify_prebooking(booking_data)
+
+        assert ex.value.message == "Cannot establish connection to omogen api"
 
     def test_notify_institution_association_success_if_201(self, requests_mock):
         adage_client = AdageHttpClient()

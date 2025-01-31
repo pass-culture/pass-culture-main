@@ -866,12 +866,13 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
 
         assert (
             html_parser.extract_alert(response.data)
-            == f"Erreur lors de la notification à ADAGE pour l'offre {collective_offer.id} : ReadTimeout"
+            == f"Erreur lors de la notification à ADAGE pour l'offre {collective_offer.id} : Cannot establish connection to omogen api"
         )
 
         assert endpoint.called
 
         db.session.refresh(collective_offer)
+        # isActive should be False as session is marked as invalid, does not work with test session
         assert collective_offer.isActive is True
         assert collective_offer.validation == OfferValidationStatus.APPROVED
         assert collective_offer.lastValidationType == OfferValidationType.MANUAL
