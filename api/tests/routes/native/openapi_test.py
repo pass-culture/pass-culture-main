@@ -765,7 +765,7 @@ def test_public_api(client):
                 },
                 "DepositType": {
                     "description": "An enumeration.",
-                    "enum": ["GRANT_15_17", "GRANT_18"],
+                    "enum": ["GRANT_17_18", "GRANT_15_17", "GRANT_18"],
                     "title": "DepositType",
                 },
                 "DomainsCredit": {
@@ -799,7 +799,7 @@ def test_public_api(client):
                 },
                 "EligibilityType": {
                     "description": "An enumeration.",
-                    "enum": ["underage", "age-18"],
+                    "enum": ["age-17-18", "underage", "age-18"],
                     "title": "EligibilityType",
                 },
                 "EmailChangeConfirmationResponse": {
