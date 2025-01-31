@@ -6,7 +6,7 @@
 {% extends "layouts/connected.html" %}
 {% block page %}
   <div class="pt-3 px-5">
-    <h2 class="fw-light">Tags offres et partenaires culturels</h2>
+    <h1>Tags offres et partenaires culturels</h1>
     <div class="mt-4">
       {% call tabs.build_details_tabs_wrapper() %}
         {{ tabs.build_details_tab("tags", "Tags", active_tab == 'tags') }}

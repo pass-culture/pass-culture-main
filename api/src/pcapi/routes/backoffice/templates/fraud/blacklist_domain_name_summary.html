@@ -1,7 +1,16 @@
 {% extends "layouts/connected.html" %}
 {% block page %}
   <div class="pt-3 px-5">
-    <h2 class="fw-light">Suspension de comptes jeunes &gt; Noms de domaines > Résumé</h2>
+    <nav style="--bs-breadcrumb-divider: '>'"
+         aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">Suspension de comptes jeunes</li>
+        <li class="breadcrumb-item active"
+            aria-current="page">Noms de domaines</li>
+        <li class="breadcrumb-item active"
+            aria-current="page">Résumé</li>
+      </ol>
+    </nav>
     <div class="my-4">
       {% if targeted_non_pro_accounts | length == 0 %}
         Aucune entrée ne correspond aux critères.

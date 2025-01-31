@@ -9,7 +9,7 @@
 {% set cancel_booking_aria_described_by_id = random_hash() %}
 {% block page %}
   <div class="pt-3 px-5">
-    <h2 class="fw-light">Réservations individuelles</h2>
+    <h1>Réservations individuelles</h1>
     <div class="filters">{{ forms.build_filters_form(form, dst) }}</div>
     <div>
       {% if rows %}
