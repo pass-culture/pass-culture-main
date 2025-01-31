@@ -82,7 +82,7 @@ jobs:
           api_token_github: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
 
       - name: "Play pre-migrations"
-        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.3
+        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.4
         with:
           environment: ${{ inputs.environment }}
           app_version: ${{ inputs.app_version }}
@@ -159,7 +159,7 @@ jobs:
           sync_timeout: 1200
 
       - name: "Play post-migrations"
-        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.3
+        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.4
         with:
           environment: ${{ inputs.environment }}
           app_version: ${{ inputs.app_version }}
