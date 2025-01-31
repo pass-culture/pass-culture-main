@@ -9,8 +9,8 @@ import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
 
 const getMusicData = (
   offer: GetIndividualOfferResponseModel,
-  musicTypes?: GetMusicTypesResponse,
-  gtl_id?: string
+  musicTypes?: GetMusicTypesResponse | null,
+  gtl_id?: string | null
 ): {
   musicTypeName?: string
   musicSubTypeName?: string
@@ -23,7 +23,7 @@ const getMusicData = (
         : musicTypes?.find(
             (item) => item.gtl_id.substring(0, 2) === gtl_id?.substring(0, 2) // Gtl_id is a string of 8 characters, only first 2 are relevant to music genre
           )?.label,
-    gtl_id: offer.extraData?.gtl_id,
+    gtl_id: offer.extraData?.gtl_id || '',
   }
 }
 
@@ -62,10 +62,10 @@ const serializerOfferSubCategoryFields = (
     }
   }
   const showType = showOptionsTree.find(
-    (item) => item.code === parseInt(offer.extraData?.showType, 10)
+    (item) => item.code === parseInt(offer.extraData?.showType || '', 10)
   )
   const showSubType = showType?.children.find(
-    (item) => item.code === parseInt(offer.extraData?.showSubType, 10)
+    (item) => item.code === parseInt(offer.extraData?.showSubType || '', 10)
   )
 
   const { musicTypeName, musicSubTypeName, gtl_id } = getMusicData(

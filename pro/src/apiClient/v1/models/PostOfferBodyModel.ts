@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { AddressBodyModel } from './AddressBodyModel';
+import type { OfferExtraDataModel } from './OfferExtraDataModel';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 export type PostOfferBodyModel = {
   address?: AddressBodyModel | null;
@@ -12,7 +13,7 @@ export type PostOfferBodyModel = {
   description?: string | null;
   durationMinutes?: number | null;
   externalTicketOfficeUrl?: string | null;
-  extraData?: Record<string, any> | null;
+  extraData?: OfferExtraDataModel | null;
   isDuo?: boolean | null;
   isNational?: boolean | null;
   mentalDisabilityCompliant: boolean;

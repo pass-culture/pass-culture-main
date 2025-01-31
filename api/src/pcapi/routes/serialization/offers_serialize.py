@@ -73,6 +73,20 @@ class CategoryResponseModel(BaseModel):
         orm_mode = True
 
 
+class OfferExtraDataModel(BaseModel):
+    author: str | None
+    gtl_id: str | None
+    musicType: str | None
+    musicSubType: str | None
+    performer: str | None
+    ean: str | None
+    showType: str | None
+    showSubType: str | None
+    speaker: str | None
+    stageDirector: str | None
+    visa: str | None
+
+
 class PostOfferBodyModel(BaseModel):
     address: offerers_schemas.AddressBodyModel | None
     audio_disability_compliant: bool
@@ -81,7 +95,7 @@ class PostOfferBodyModel(BaseModel):
     description: str | None
     duration_minutes: int | None
     external_ticket_office_url: HttpUrl | None
-    extra_data: dict[str, typing.Any] | None
+    extra_data: OfferExtraDataModel | None
     is_duo: bool | None
     is_national: bool | None
     mental_disability_compliant: bool
@@ -118,7 +132,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     description: str | None
     isNational: bool | None
     name: str | None
-    extraData: Any
+    extraData: OfferExtraDataModel | None
     externalTicketOfficeUrl: HttpUrl | None
     url: HttpUrl | None
     withdrawalDetails: str | None
@@ -421,7 +435,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     publicationDate: datetime.datetime | None
     description: str | None
     durationMinutes: int | None
-    extraData: Any
+    extraData: OfferExtraDataModel | None
     hasBookingLimitDatetimesPassed: bool
     hasStocks: bool
     isActive: bool

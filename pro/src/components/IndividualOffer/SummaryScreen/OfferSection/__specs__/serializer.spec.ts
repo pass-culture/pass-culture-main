@@ -102,6 +102,7 @@ describe('routes::Summary::serializers', () => {
       visa: '',
       performer: 'Offer performer',
       ean: '',
+      gtl_id: '',
       isProductBased: false,
       durationMinutes: '140',
       status: OfferStatus.ACTIVE,

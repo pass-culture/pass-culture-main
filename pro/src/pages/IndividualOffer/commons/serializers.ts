@@ -43,6 +43,8 @@ export const serializeExtraDataForPatch = (
   extraData.stageDirector = formValues.stageDirector
   extraData.visa = formValues.visa
 
+  // Why does this appear ?
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const isEmpty = Object.values(extraData).every((value) => value === undefined)
 
   return isEmpty ? undefined : extraData
