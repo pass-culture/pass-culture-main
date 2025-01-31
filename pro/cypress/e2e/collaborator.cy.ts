@@ -25,6 +25,9 @@ describe('Collaborator list feature', () => {
   it('I can add a new collaborator and he receives an email invitation', () => {
     logInAndGoToPage(login, '/accueil')
 
+    cy.stepLog({ message: 'I close the collective budget information modal' })
+    cy.findAllByText('Fermer').click()
+
     cy.stepLog({ message: 'open collaborator page' })
     cy.findAllByText('Collaborateurs').click()
 
@@ -48,16 +51,14 @@ describe('Collaborator list feature', () => {
       message: 'check login validated and new collaborator waiting status',
     })
     cy.findAllByTestId('spinner').should('not.exist')
-    cy.contains(randomEmail)
-      .next()
-      .should('have.text', 'En attente')
+    cy.contains(randomEmail).next().should('have.text', 'En attente')
     cy.contains(login).next().should('have.text', 'Validé')
 
     cy.stepLog({ message: 'check email received' })
     cy.request({
       method: 'GET',
       url: 'http://localhost:5001/sandboxes/get_unique_email',
-      timeout: 60000
+      timeout: 60000,
     }).then((response) => {
       expect(response.status).to.eq(200)
       expect(response.body.To).to.eq(randomEmail)

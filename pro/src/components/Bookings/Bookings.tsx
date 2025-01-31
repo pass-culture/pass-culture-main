@@ -15,6 +15,7 @@ import {
   GET_BOOKINGS_QUERY_KEY,
   GET_HAS_BOOKINGS_QUERY_KEY,
   GET_OFFERER_ADDRESS_QUERY_KEY,
+  GET_OFFERER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
@@ -25,6 +26,7 @@ import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { stringify } from 'commons/utils/query-string'
+import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { NoData } from 'components/NoData/NoData'
 import { ChoosePreFiltersMessage } from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { NoBookingsForPreFiltersMessage } from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
@@ -99,6 +101,10 @@ export const BookingsContainer = <
       id: String(venue.value),
       displayName: venue.label,
     })
+  )
+  const { data: offerer } = useSWR(
+    selectedOffererId ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
+    ([, offererIdParam]) => api.getOfferer(offererIdParam)
   )
 
   const offererAddressQuery = useSWR(
@@ -237,6 +243,13 @@ export const BookingsContainer = <
   return (
     <div className="bookings-page">
       <h1 className={styles['title']}>{title}</h1>
+
+      {audience === Audience.COLLECTIVE && offerer?.allowedOnAdage && (
+        <CollectiveBudgetCallout
+          variant="COLLECTIVE_TABLE"
+          pageName={'bookings'}
+        />
+      )}
 
       <PreFilters
         appliedPreFilters={appliedPreFilters}

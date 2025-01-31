@@ -19,6 +19,7 @@ import { useColumnSorting } from 'commons/hooks/useColumnSorting'
 import { usePagination } from 'commons/hooks/usePagination'
 import { isSameOffer } from 'commons/utils/isSameOffer'
 import { sortCollectiveOffers } from 'commons/utils/sortCollectiveOffers'
+import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { CollectiveOffersActionsBar } from 'components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersTable } from 'components/CollectiveOffersTable/CollectiveOffersTable'
 import { NoData } from 'components/NoData/NoData'
@@ -61,10 +62,7 @@ export const CollectiveOffersScreen = ({
   isRestrictedAsAdmin,
   offers,
 }: CollectiveOffersScreenProps): JSX.Element => {
-  const {
-    onApplyFilters,
-    onResetFilters,
-  } = useStoredFilterConfig('collective')
+  const { onApplyFilters, onResetFilters } = useStoredFilterConfig('collective')
   const [selectedOffers, setSelectedOffers] = useState<
     CollectiveOfferResponseModel[]
   >([])
@@ -87,10 +85,7 @@ export const CollectiveOffersScreen = ({
     initialSearchFilters,
     defaultCollectiveFilters
   )
-  const userHasNoOffers =
-    !isLoading &&
-    !hasOffers &&
-    !hasFilters
+  const userHasNoOffers = !isLoading && !hasOffers && !hasFilters
 
   const areAllOffersSelected =
     selectedOffers.length > 0 &&
@@ -159,6 +154,9 @@ export const CollectiveOffersScreen = ({
 
   return (
     <div>
+      {offerer?.allowedOnAdage && (
+        <CollectiveBudgetCallout variant="COLLECTIVE_TABLE" pageName="offers" />
+      )}
       <CollectiveOffersSearchFilters
         hasFilters={hasFilters}
         applyFilters={applyFilters}

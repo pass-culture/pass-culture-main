@@ -18,6 +18,7 @@ import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/seriali
 import { useNotification } from 'commons/hooks/useNotification'
 import { useSuggestedSubcategoriesAbTest } from 'commons/hooks/useSuggestedSubcategoriesAbTest'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
@@ -164,53 +165,60 @@ export const OfferTypeScreen = (): JSX.Element => {
     !areSuggestedSubcategoriesUsed
 
   return (
-    <div className={styles['offer-type-container']}>
+    <>
       <h1 className={styles['offer-type-title']}>Créer une offre</h1>
-      <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit}>
-          <FormLayout>
-            <FormLayout.Section title="À qui destinez-vous cette offre ?">
-              <FormLayout.Row inline>
-                <RadioButtonWithImage
-                  name="offerType"
-                  icon={phoneStrokeIcon}
-                  isChecked={values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO}
-                  label="Au grand public"
-                  onChange={handleChange}
-                  value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
-                  className={styles['offer-type-button']}
-                />
-                <RadioButtonWithImage
-                  name="offerType"
-                  icon={strokeProfIcon}
-                  isChecked={values.offerType === OFFER_TYPES.EDUCATIONAL}
-                  label="À un groupe scolaire"
-                  onChange={handleChange}
-                  value={OFFER_TYPES.EDUCATIONAL}
-                  className={styles['offer-type-button']}
-                />
-              </FormLayout.Row>
-            </FormLayout.Section>
+      {offerer?.allowedOnAdage && (
+        <CollectiveBudgetCallout pageName="offer-creation-hub" />
+      )}
+      <div className={styles['offer-type-container']}>
+        <FormikProvider value={formik}>
+          <form onSubmit={formik.handleSubmit}>
+            <FormLayout>
+              <FormLayout.Section title="À qui destinez-vous cette offre ?">
+                <FormLayout.Row inline>
+                  <RadioButtonWithImage
+                    name="offerType"
+                    icon={phoneStrokeIcon}
+                    isChecked={
+                      values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO
+                    }
+                    label="Au grand public"
+                    onChange={handleChange}
+                    value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
+                    className={styles['offer-type-button']}
+                  />
+                  <RadioButtonWithImage
+                    name="offerType"
+                    icon={strokeProfIcon}
+                    isChecked={values.offerType === OFFER_TYPES.EDUCATIONAL}
+                    label="À un groupe scolaire"
+                    onChange={handleChange}
+                    value={OFFER_TYPES.EDUCATIONAL}
+                    className={styles['offer-type-button']}
+                  />
+                </FormLayout.Row>
+              </FormLayout.Section>
 
-            {!areSuggestedSubcategoriesUsed &&
-              values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
-                <IndividualOfferType />
-              )}
+              {!areSuggestedSubcategoriesUsed &&
+                values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
+                  <IndividualOfferType />
+                )}
 
-            {values.offerType === OFFER_TYPES.EDUCATIONAL &&
-              (offererQuery.isLoading ? (
-                <Spinner />
-              ) : (
-                <CollectiveOfferType offerer={offerer} />
-              ))}
-            <ActionsBar
-              disableNextButton={
-                isDisabledForEducationnal || isDisableForIndividual
-              }
-            />
-          </FormLayout>
-        </form>
-      </FormikProvider>
-    </div>
+              {values.offerType === OFFER_TYPES.EDUCATIONAL &&
+                (offererQuery.isLoading ? (
+                  <Spinner />
+                ) : (
+                  <CollectiveOfferType offerer={offerer} />
+                ))}
+              <ActionsBar
+                disableNextButton={
+                  isDisabledForEducationnal || isDisableForIndividual
+                }
+              />
+            </FormLayout>
+          </form>
+        </FormikProvider>
+      </div>
+    </>
   )
 }
