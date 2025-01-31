@@ -27,6 +27,11 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
+const useHasAccessToDidacticOnboarding = vi.hoisted(() => vi.fn())
+vi.mock('commons/hooks/useHasAccessToDidacticOnboarding', () => ({
+  useHasAccessToDidacticOnboarding,
+}))
+
 const addressInformations: Address = {
   street: '3 Rue de Valois',
   city: 'Paris',
@@ -54,6 +59,7 @@ const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
             element={<Validation />}
           />
           <Route path="/accueil" element={<div>accueil</div>} />
+          <Route path="/onboarding" element={<div>onboarding</div>} />
         </Routes>
       </SignupJourneyContext.Provider>
       <Notification />
@@ -173,6 +179,7 @@ describe('ValidationScreen', () => {
     })
 
     it('should redirect to home after submit', async () => {
+      useHasAccessToDidacticOnboarding.mockReturnValue(false)
       vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
         {} as PostOffererResponseModel
       )
@@ -184,6 +191,21 @@ describe('ValidationScreen', () => {
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(await screen.findByText('accueil')).toBeInTheDocument()
+    })
+
+    it('should redirect to onboarding after submit if isDidacticOnboardingEnabled is true', async () => {
+      useHasAccessToDidacticOnboarding.mockReturnValue(true)
+      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+        {} as PostOffererResponseModel
+      )
+      vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+        remove: vi.fn(),
+      } as unknown as HTMLScriptElement)
+      vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+      renderValidationScreen(contextValue)
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+      await userEvent.click(screen.getByText('Valider et créer ma structure'))
+      expect(await screen.findByText('onboarding')).toBeInTheDocument()
     })
   })
 
