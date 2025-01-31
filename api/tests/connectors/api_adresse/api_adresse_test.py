@@ -22,7 +22,7 @@ def test_nominal_case(requests_mock):
     postcode = "75018"
     city = "Paris"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search",
+        "https://api-adresse.data.gouv.fr/search?q=18+Rue+Duhesme&postcode=75018&city=Paris&autocomplete=0&limit=1",
         json=fixtures.ONE_FEATURE_RESPONSE,
     )
     address_info = api_adresse.get_address(address, postcode=postcode, city=city)
@@ -37,6 +37,17 @@ def test_nominal_case(requests_mock):
         street="18 Rue Duhesme",
         city="Paris",
     )
+
+
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+@pytest.mark.parametrize("address", ['"18 Rue Duhesme"', "« 18 Rue Duhesme »", "“18 Rue Duhesme”", "'18 Rue Duhesme'"])
+def test_with_quotes(requests_mock, address):
+    requests_mock.get(
+        "https://api-adresse.data.gouv.fr/search?q=18+Rue+Duhesme&postcode=75018&city=Paris&autocomplete=0&limit=1",
+        json=fixtures.ONE_FEATURE_RESPONSE,
+    )
+    api_adresse.get_address(address, postcode="75018", city="Paris")
+    assert requests_mock.call_count == 1
 
 
 @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")

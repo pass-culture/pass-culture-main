@@ -321,6 +321,12 @@ class ApiAdresseBackend(BaseBackend):
         response = self._request("POST", url, files=files, timeout=60)
         return response.text
 
+    @classmethod
+    def _remove_quotes(cls, value: str | None) -> str | None:
+        # API Adresse fails when q starts with non-alphanumeric characters, which are useless for search.
+        # Similar to PC Pro in pro/src/commons/utils/removeQuotes.ts
+        return re.sub('["“”«»]', "", value).strip("' ") if value is not None else None
+
     def get_municipality_centroid(
         self, city: str, postcode: str | None = None, citycode: str | None = None
     ) -> AddressInfo:
@@ -328,7 +334,7 @@ class ApiAdresseBackend(BaseBackend):
         if len(city) < 3 and postcode is not None:
             city = f"{postcode} {city}"
         params = {
-            "q": city,
+            "q": self._remove_quotes(city),
             "postcode": postcode,
             "citycode": citycode,
             "type": "municipality",
@@ -361,10 +367,10 @@ class ApiAdresseBackend(BaseBackend):
         If no result is found, we return the centroid of the municipality
         """
         params = {
-            "q": address,
+            "q": self._remove_quotes(address),
             "postcode": postcode,
             "citycode": citycode,
-            "city": city,
+            "city": self._remove_quotes(city),
             "autocomplete": 0,
             "limit": 1,
         }
@@ -438,7 +444,7 @@ class ApiAdresseBackend(BaseBackend):
 
     def search_address(self, address: str, limit: int) -> list[AddressInfo]:
         params = {
-            "q": address,
+            "q": self._remove_quotes(address),
             "autocomplete": 0,
             "limit": limit,
         }
