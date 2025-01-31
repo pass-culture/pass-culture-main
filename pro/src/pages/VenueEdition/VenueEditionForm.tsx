@@ -18,7 +18,6 @@ import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
-
 import { Accessibility } from './Accessibility/Accessibility'
 import { OpeningHoursForm } from './OpeningHoursForm/OpeningHoursForm'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
@@ -185,13 +184,17 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
           </FormLayout.Section>
         </FormLayout>
 
-        <VenueFormActionBar venue={venue} />
-
         <FormikConsumer>
           {(formik) => (
-            <RouteLeavingGuardVenueEdition
-              shouldBlock={formik.dirty && !formik.isSubmitting}
-            />
+            <>
+              <VenueFormActionBar
+                venue={venue}
+                disableFormSubmission={!formik.dirty}
+              />
+              <RouteLeavingGuardVenueEdition
+                shouldBlock={formik.dirty && !formik.isSubmitting}
+              />
+            </>
           )}
         </FormikConsumer>
       </Form>
