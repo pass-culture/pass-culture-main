@@ -1059,6 +1059,13 @@ class UserAccountUpdateRequest(PcObject, Base, Model):
             )
         )
 
+    @property
+    def can_be_corrected(self) -> bool:
+        return bool(
+            self.status in (dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going)
+            and not (set(self.flags) & {UserAccountUpdateFlag.WAITING_FOR_CORRECTION})
+        )
+
 
 class UserSession(PcObject, Base, Model):
     userId: int = sa.Column(sa.BigInteger, nullable=False)
