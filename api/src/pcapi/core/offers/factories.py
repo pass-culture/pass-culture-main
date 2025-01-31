@@ -219,6 +219,10 @@ class OfferFactory(BaseFactory):
         return super()._create(model_class, *args, **kwargs)
 
 
+class DraftOfferFactory(OfferFactory):
+    isActive = False
+
+
 class ArtistProductLinkFactory(BaseFactory):
     class Meta:
         model = artist_models.ArtistProductLink

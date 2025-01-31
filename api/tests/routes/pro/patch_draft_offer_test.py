@@ -14,6 +14,7 @@ from pcapi.core.offers.models import OfferStatus
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.core.users.factories as users_factories
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -52,7 +53,7 @@ class Returns200Test:
     def test_patch_draft_offer_without_product_with_new_ean_should_succeed(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        offer = offers_factories.OfferFactory(
+        offer = offers_factories.DraftOfferFactory(
             name="Name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,
@@ -693,6 +694,36 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["product_id"] == ["Vous ne pouvez pas changer cette information"]
+
+    def test_cannot_edit_details_if_ean_is_already_used(self, client):
+        ean = "0000000000001"
+        email = "user@example.com"
+
+        user_offerer = offerers_factories.UserOffererFactory(user__email=email)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.RECORD_STORE
+        )
+
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": ean})
+        offers_factories.OfferFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            product=product,
+            validation=OfferValidationStatus.APPROVED,
+            extraData={"ean": ean},
+        )
+
+        offer = offers_factories.OfferFactory(
+            venue=venue, isActive=False, validation=OfferValidationStatus.DRAFT, product=product, extraData={"ean": ean}
+        )
+
+        data = {"name": "some other name"}
+        response = client.with_session_auth(email).patch(f"offers/draft/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "ean": ["Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l’onglet Offres."]
+        }
 
 
 @pytest.mark.usefixtures("db_session")
