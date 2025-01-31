@@ -1308,17 +1308,6 @@ class UpdateUserLastConnectionDateTest:
         assert len(sendinblue_testing.sendinblue_requests) == 0
 
 
-class GetEligibilityTest:
-    def test_get_eligibility_at_date_timezones_tolerance(self):
-        date_of_birth = datetime.datetime(2000, 2, 1, 0, 0)
-
-        specified_date = datetime.datetime(2019, 2, 1, 8, 0)
-        assert users_api.get_eligibility_at_date(date_of_birth, specified_date) == users_models.EligibilityType.AGE18
-
-        specified_date = datetime.datetime(2019, 2, 1, 12, 0)
-        assert users_api.get_eligibility_at_date(date_of_birth, specified_date) is None
-
-
 class UserEmailValidationTest:
     def test_validate_pro_user_email_from_pro_ff_on(self):
         user_offerer = offerers_factories.UserOffererFactory(user__isEmailValidated=False)

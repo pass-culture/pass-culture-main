@@ -555,7 +555,7 @@ class OverflowSubscriptionLimitationTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class CommonSubscritpionTest:
+class CommonSubscriptionTest:
     def test_handle_eligibility_difference_between_declaration_and_identity_provider_no_difference(self):
         user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1039,7 +1039,9 @@ class GetFirstRegistrationDateTest:
     def test_get_first_registration_date_no_check(self):
         user = users_factories.UserFactory()
         assert (
-            subscription_api.get_first_registration_date(user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE)
+            subscription_api.get_first_registration_date_with_eligibility(
+                user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE
+            )
             is None
         )
 
@@ -1069,7 +1071,9 @@ class GetFirstRegistrationDateTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
         assert (
-            subscription_api.get_first_registration_date(user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE)
+            subscription_api.get_first_registration_date_with_eligibility(
+                user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE
+            )
             == d1
         )
 
@@ -1086,7 +1090,7 @@ class GetFirstRegistrationDateTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        first_registration_date = subscription_api.get_first_registration_date(
+        first_registration_date = subscription_api.get_first_registration_date_with_eligibility(
             user, user.birth_date, users_models.EligibilityType.UNDERAGE
         )
 
@@ -1105,7 +1109,7 @@ class GetFirstRegistrationDateTest:
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
-        first_registration_date = subscription_api.get_first_registration_date(
+        first_registration_date = subscription_api.get_first_registration_date_with_eligibility(
             user, user.birth_date, users_models.EligibilityType.AGE18
         )
 
@@ -1130,7 +1134,9 @@ class GetFirstRegistrationDateTest:
             eligibilityType=users_models.EligibilityType.AGE18,
         )
         assert (
-            subscription_api.get_first_registration_date(user, user.dateOfBirth, users_models.EligibilityType.AGE18)
+            subscription_api.get_first_registration_date_with_eligibility(
+                user, user.dateOfBirth, users_models.EligibilityType.AGE18
+            )
             == d2
         )
 
@@ -1154,7 +1160,9 @@ class GetFirstRegistrationDateTest:
         )
 
         assert (
-            subscription_api.get_first_registration_date(user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE)
+            subscription_api.get_first_registration_date_with_eligibility(
+                user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE
+            )
             == d2
         )
 
@@ -1178,7 +1186,9 @@ class GetFirstRegistrationDateTest:
         )
 
         assert (
-            subscription_api.get_first_registration_date(user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE)
+            subscription_api.get_first_registration_date_with_eligibility(
+                user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE
+            )
             == d2
         )
 
@@ -1194,7 +1204,9 @@ class GetFirstRegistrationDateTest:
         )
 
         assert (
-            subscription_api.get_first_registration_date(user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE)
+            subscription_api.get_first_registration_date_with_eligibility(
+                user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE
+            )
             is None
         )
 

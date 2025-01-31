@@ -1371,7 +1371,6 @@ class GetOfferBookingsByStatusCSVTest:
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def should_return_validated_bookings_for_offer(self):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1402,7 +1401,7 @@ class GetOfferBookingsByStatusCSVTest:
         bookings_factories.BookingFactory(stock=stock_2)
 
         queries = 0
-        queries += 1  # Get feature
+        # queries += 1  # feature flags are already cached by BeneficiaryGrant18Factory.beneficiaryImports
         queries += 1  # Get bookings
 
         offer_id = offer.id
@@ -1459,7 +1458,7 @@ class GetOfferBookingsByStatusCSVTest:
         bookings_factories.BookingFactory(stock=stock_2)
 
         queries = 0
-        queries += 1  # Get feature
+        # queries += 1  # feature flags are already cached by BeneficiaryGrant18Factory.beneficiaryImports
         queries += 1  # Get bookings
 
         offer_id = offer.id
@@ -1684,7 +1683,6 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         assert data_dict["Duo"] == duo
 
     def should_return_validated_bookings_for_offer(self):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1715,7 +1713,7 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         bookings_factories.BookingFactory(stock=stock_2)
 
         queries = 0
-        queries += 1  # Get feature
+        # queries += 1  # feature flags are already cached by BeneficiaryGrant18Factory.beneficiaryImports
         queries += 1  # Get bookings
 
         offer_id = offer.id
@@ -1737,7 +1735,6 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         )
 
     def should_return_validated_bookings_for_offer_with_offerer_address_as_data_source(self):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1768,7 +1765,7 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         bookings_factories.BookingFactory(stock=stock_2)
 
         queries = 0
-        queries += 1  # Get feature
+        # queries += 1  # feature flags are already cached by BeneficiaryGrant18Factory.beneficiaryImports
         queries += 1  # Get bookings
 
         offer_id = offer.id
@@ -1790,7 +1787,6 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         )
 
     def should_return_validated_bookings_for_offer_with_old_cancelled_booking(self):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1824,7 +1820,7 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         bookings_factories.BookingFactory(stock=stock_2)
 
         queries = 0
-        queries += 1  # Get feature
+        # queries += 1  # feature flags are already cached by BeneficiaryGrant18Factory.beneficiaryImports
         queries += 1  # Get bookings
 
         offer_id = offer.id
@@ -2073,7 +2069,6 @@ class GetOfferBookingsByStatusExcelTest:
         assert sheet.cell(row=row, column=18).value == duo
 
     def should_return_validated_bookings_for_offer_with_offerer_address_as_data_source(self):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -2105,7 +2100,7 @@ class GetOfferBookingsByStatusExcelTest:
 
         queries = 0
         queries += 1  # select offer
-        queries += 1  # select feature
+        # queries += 1  # feature flags are already cached by BeneficiaryGrant18Factory.beneficiaryImports
         queries += 1  # select booking
 
         with assert_num_queries(queries):
@@ -2423,7 +2418,6 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         assert sheet.cell(row=row, column=18).value == duo
 
     def should_return_validated_bookings_for_offer(self):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -2455,7 +2449,7 @@ class LegacyGetOfferBookingsByStatusExcelTest:
 
         queries = 0
         queries += 1  # select offer
-        queries += 1  # select feature
+        # queries += 1  # feature flags are already cached by BeneficiaryGrant18Factory.beneficiaryImports
         queries += 1  # select booking
 
         with assert_num_queries(queries):

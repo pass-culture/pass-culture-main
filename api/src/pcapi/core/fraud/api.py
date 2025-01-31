@@ -15,6 +15,7 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import repository as subscription_repository
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants
+from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
@@ -509,7 +510,7 @@ def has_user_pending_identity_check(user: users_models.User) -> bool:
 
 
 def has_user_performed_identity_check(user: users_models.User) -> bool:
-    if user.is_beneficiary and not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
+    if user.is_beneficiary and not eligibility_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
         return True
 
     user_subscription_state = subscription_api.get_user_subscription_state(user)
@@ -562,46 +563,6 @@ def has_performed_honor_statement(user: users_models.User, eligibility_type: use
     )
 
 
-def decide_eligibility(
-    user: users_models.User,
-    birth_date: datetime.date | None,
-    registration_datetime: datetime.datetime | None,
-) -> users_models.EligibilityType | None:
-    """Returns the applicable eligibility of the user.
-    It may be the current eligibility of the user if the age is between 15 and 18, or it may be the eligibility AGE18
-    if the user is over 19 and had previously tried to register when the age was 18.
-    """
-    if birth_date is None:
-        return None
-
-    user_age_today = users_utils.get_age_from_birth_date(birth_date, user.departementCode)
-    if user_age_today < 15:
-        return None
-    if user_age_today < 18:
-        return users_models.EligibilityType.UNDERAGE
-    if user_age_today == 18:
-        return users_models.EligibilityType.AGE18
-
-    eligibility_today = users_api.get_eligibility_at_date(birth_date, datetime.datetime.utcnow(), user.departementCode)
-
-    if eligibility_today == users_models.EligibilityType.AGE18:
-        return users_models.EligibilityType.AGE18
-
-    eligibility_at_registration = (
-        users_api.get_eligibility_at_date(birth_date, registration_datetime, user.departementCode)
-        if registration_datetime
-        else None
-    )
-    if eligibility_at_registration is None and eligibility_today is None and user_age_today == 19:
-        earliest_identity_check_date = subscription_api.get_first_registration_date(
-            user, birth_date, users_models.EligibilityType.AGE18
-        )
-        if earliest_identity_check_date:
-            return users_api.get_eligibility_at_date(birth_date, earliest_identity_check_date, user.departementCode)
-
-    return eligibility_at_registration
-
-
 def handle_ok_manual_review(
     user: users_models.User,
     _review: models.BeneficiaryFraudReview,
@@ -627,7 +588,9 @@ def handle_ok_manual_review(
     users_api.update_user_information_from_external_source(user, source_data)
 
     if eligibility is None:
-        eligibility = decide_eligibility(user, source_data.get_birth_date(), source_data.get_registration_datetime())
+        eligibility = eligibility_api.decide_eligibility(
+            user, source_data.get_birth_date(), source_data.get_registration_datetime()
+        )
         if not eligibility:
             raise EligibilityError("Aucune éligibilité trouvée. Veuillez renseigner une éligibilité.")
 

@@ -1024,65 +1024,6 @@ def reset_recredit_amount_to_show(user: models.User) -> None:
     repository.save(user)
 
 
-def get_eligibility_end_datetime(
-    date_of_birth: datetime.date | datetime.datetime | None,
-) -> datetime.datetime | None:
-    if not date_of_birth:
-        return None
-
-    return datetime.datetime.combine(date_of_birth, datetime.time(0, 0)) + relativedelta(
-        years=constants.ELIGIBILITY_AGE_18 + 1, hour=11
-    )
-
-
-def get_eligibility_start_datetime(
-    date_of_birth: datetime.date | datetime.datetime | None,
-) -> datetime.datetime | None:
-    if not date_of_birth:
-        return None
-
-    date_of_birth = datetime.datetime.combine(date_of_birth, datetime.time(0, 0))
-    fifteenth_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_UNDERAGE_RANGE[0])
-
-    return fifteenth_birthday
-
-
-def get_eligibility_at_date(
-    date_of_birth: datetime.date | None, specified_datetime: datetime.datetime, department_code: str | None = None
-) -> models.EligibilityType | None:
-    eligibility_start = get_eligibility_start_datetime(date_of_birth)
-    eligibility_end = get_eligibility_end_datetime(date_of_birth)
-
-    if not date_of_birth or not (eligibility_start <= specified_datetime < eligibility_end):  # type: ignore[operator]
-        return None
-
-    age = users_utils.get_age_at_date(date_of_birth, specified_datetime, department_code)
-    if not age:
-        return None
-
-    if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
-        return models.EligibilityType.UNDERAGE
-    # If the user is older than 18 in UTC timezone, we consider them eligible until they reach eligibility_end
-    if constants.ELIGIBILITY_AGE_18 <= age and specified_datetime < eligibility_end:  # type: ignore[operator]
-        return models.EligibilityType.AGE18
-
-    return None
-
-
-def is_eligible_for_beneficiary_upgrade(user: models.User, eligibility: models.EligibilityType | None) -> bool:
-    return (eligibility == models.EligibilityType.UNDERAGE and not user.is_beneficiary) or (
-        eligibility == models.EligibilityType.AGE18 and not user.has_beneficiary_role
-    )
-
-
-def is_user_age_compatible_with_eligibility(user_age: int | None, eligibility: models.EligibilityType | None) -> bool:
-    if eligibility == models.EligibilityType.UNDERAGE:
-        return user_age in constants.ELIGIBILITY_UNDERAGE_RANGE
-    if eligibility == models.EligibilityType.AGE18:
-        return user_age is not None and user_age >= constants.ELIGIBILITY_AGE_18
-    return False
-
-
 def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
     filters = []
     name_term = None

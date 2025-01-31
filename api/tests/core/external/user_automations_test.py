@@ -392,6 +392,7 @@ class UserAutomationsTest:
 
     @patch("pcapi.core.external.attributes.api.update_batch_user")
     @patch("pcapi.core.external.attributes.api.update_sendinblue_user")
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     def test_users_whose_credit_expired_today_automation_underage(self, mock_update_sendinblue, mock_update_batch):
         with time_machine.travel("2033-09-10 15:00:00"):
             user = users_factories.UnderageBeneficiaryFactory(

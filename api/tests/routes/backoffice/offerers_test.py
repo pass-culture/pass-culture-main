@@ -910,7 +910,9 @@ class GetOffererStatsDataTest:
     ):
         db.session.refresh(offerer)
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(
+            self.expected_num_queries - 1
+        ):  # ff already cached by BeneficiaryGrant18Factory.beneficiaryImports
             stats = offerer_blueprint.get_stats_data(offerer)
 
         assert stats["active"]["individual"] == 2
@@ -931,7 +933,9 @@ class GetOffererStatsDataTest:
     ):
         db.session.refresh(offerer)
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(
+            self.expected_num_queries - 1
+        ):  # ff already cached by BeneficiaryGrant18Factory.beneficiaryImports
             stats = offerer_blueprint.get_stats_data(offerer)
 
         assert stats["active"]["individual"] == 2

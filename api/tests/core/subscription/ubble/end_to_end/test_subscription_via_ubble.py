@@ -19,6 +19,7 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.utils.date import DATE_ISO_FORMAT
 from pcapi.validation.routes import ubble as ubble_routes
 
 import tests
@@ -45,14 +46,18 @@ class UbbleV2EndToEndTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(
             user=user, resultContent__first_name="Catherine", resultContent__last_name="Destivelle"
         )
-        eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18, months=1)
+        registration_date = datetime.datetime.strptime(
+            fixtures.ID_VERIFICATION_APPROVED_RESPONSE["created_on"], DATE_ISO_FORMAT
+        )
+        eighteen_years_before_registration = registration_date - relativedelta(years=18, months=1)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.STARTED,
             thirdPartyId="",
             resultContent=fraud_models.UbbleContent(
-                birth_date=eighteen_years_ago.date(), external_applicant_id="eaplt_61313A10000000000000000000"
+                birth_date=eighteen_years_before_registration.date(),
+                external_applicant_id="eaplt_61313A10000000000000000000",
             ).dict(exclude_none=True),
         )
 

@@ -182,7 +182,7 @@ class AccountTest:
     def test_get_user_not_beneficiary(self, client, app):
         users_factories.UserFactory(email=self.identifier)
 
-        expected_num_queries = 5  # user + booking + deposit + beneficiary_fraud_review + achievement
+        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud_review
 
         client.with_token(email=self.identifier)
 
@@ -195,7 +195,7 @@ class AccountTest:
     def test_get_user_profile_empty_first_name(self, client, app):
         users_factories.UserFactory(email=self.identifier, firstName="")
 
-        expected_num_queries = 5  # user + booking + deposit + beneficiary_fraud_review + achievement
+        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud_review
 
         client.with_token(email=self.identifier)
         with assert_num_queries(expected_num_queries):
@@ -210,7 +210,7 @@ class AccountTest:
     def test_get_user_profile_legacy_activity(self, client):
         users_factories.UserFactory(email=self.identifier, activity="activity not in enum")
 
-        expected_num_queries = 5  # user + booking + deposit + beneficiary_fraud_review + achievement
+        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud_review
         with assert_num_queries(expected_num_queries):
             response = client.with_token(email=self.identifier).get("/native/v1/me")
 
@@ -218,17 +218,18 @@ class AccountTest:
         assert "activity" not in response.json
 
     def test_get_user_profile_recredit_amount_to_show(self, client, app):
-        with time_machine.travel("2020-01-01"):
+        with time_machine.travel("2018-01-01"):
             users_factories.UnderageBeneficiaryFactory(email=self.identifier)
 
-        with time_machine.travel("2021-01-02"):
+        with time_machine.travel("2019-01-02"):
             finance_api.recredit_underage_users()
 
         expected_num_queries = 1  # user
-        expected_num_queries += 1  # booking(from _get_booked_offers)
-        expected_num_queries += 1  # booking (from get_domains_credit)
+        expected_num_queries += 1  # achievements
+        expected_num_queries += 1  # bookings (from _get_booked_offers)
+        expected_num_queries += 1  # bookings (from get_domains_credit)
+        expected_num_queries += 1  # ff (from decide_eligibility)
         expected_num_queries += 1  # beneficiary fraud checks
-        expected_num_queries += 1  # achievement
 
         client.with_token(email=self.identifier)
         with assert_num_queries(expected_num_queries):
@@ -325,7 +326,7 @@ class AccountTest:
     def test_not_eligible_user_should_not_need_to_fill_cultural_survey(self, client):
         user = users_factories.UserFactory(age=4)
 
-        expected_num_queries = 5  # user + booking + deposit + beneficiary_fraud_review + achievement
+        expected_num_queries = 6  # user + achievement + booking + deposit + ff + beneficiary_fraud_review
 
         client.with_token(user.email)
         with assert_num_queries(expected_num_queries):
@@ -404,7 +405,7 @@ class AccountTest:
         user = sso.user
         user.password = None
 
-        expected_num_queries = 6  # user(update) + user + beneficiary_fraud_review + deposit + booking + achievement
+        expected_num_queries = 7  # user(update) + user + achievements + bookings + deposit + ff + fraud review
         with assert_num_queries(expected_num_queries):
             response = client.with_token(user.email).get("/native/v1/me")
             assert response.status_code == 200, response.json
@@ -414,7 +415,7 @@ class AccountTest:
     def test_currency_pacific_franc(self, client):
         user = users_factories.UserFactory(departementCode="988", postalCode="98818")
 
-        expected_num_queries = 6  # user(update) + user + beneficiary_fraud_review + deposit + booking + achievement
+        expected_num_queries = 7  # user*2 + achievements + bookings + deposit + ff + fraud reviews
         with assert_num_queries(expected_num_queries):
             response = client.with_token(user.email).get("/native/v1/me")
 
@@ -1416,7 +1417,7 @@ class UpdateUserEmailTest:
         # Ensure the access token is valid
         access_token = response.json["accessToken"]
 
-        expected_num_queries = 5  # user + booking + deposit + beneficiary_fraud_review + achievement
+        expected_num_queries = 6  # user + achievement + booking + deposit + ff + beneficiary_fraud_review
 
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
         with assert_num_queries(expected_num_queries):

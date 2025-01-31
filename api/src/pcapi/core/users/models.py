@@ -68,6 +68,8 @@ class UserRole(enum.Enum):
 
 
 class EligibilityType(enum.Enum):
+    AGE17_18 = "age-17-18"
+    # legacy eligibilities that are present in the database
     UNDERAGE = "underage"
     AGE18 = "age-18"
 
@@ -389,9 +391,9 @@ class User(PcObject, Base, Model, DeactivableMixin):
 
     @property
     def eligibility(self) -> EligibilityType | None:
-        from pcapi.core.fraud import api as fraud_api
+        from pcapi.core.users import eligibility_api
 
-        return fraud_api.decide_eligibility(self, self.birth_date, datetime.utcnow())
+        return eligibility_api.decide_eligibility(self, self.birth_date, datetime.utcnow())
 
     @hybrid_property
     def full_name(self) -> str:
