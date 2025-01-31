@@ -107,7 +107,7 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     },
     "EAN": {
         "field": "string",
-        "column": offers_models.Offer.extraData["ean"].astext,
+        "column": offers_models.Offer.ean,
         "facet": "offer.ean",
         "special": string_utils.format_ean_or_visa,
         "algolia_special": string_utils.format_ean_or_visa,

@@ -75,7 +75,7 @@ def search_multiple_offers() -> utils.BackofficeResponse:
 
     offers = (
         offers_models.Offer.query.filter(
-            sa.or_(offers_models.Offer.extraData["ean"].astext == ean, offers_models.Offer.productId == product.id)
+            sa.or_(offers_models.Offer.ean == ean, offers_models.Offer.productId == product.id)
         )
         .options(
             sa.orm.load_only(offers_models.Offer.isActive, offers_models.Offer.validation)
