@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from flask import url_for
 import pytest
+import requests.exceptions
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
@@ -849,6 +850,56 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         assert collective_offer_to_validate.validation == OfferValidationStatus.APPROVED
         assert collective_offer_to_validate.lastValidationType == OfferValidationType.MANUAL
 
+    @pytest.mark.settings(
+        ADAGE_API_URL="https://adage_base_url",
+        ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+    )
+    def test_validate_collective_offer_adage_timeout(self, legit_user, authenticated_client, requests_mock):
+        collective_offer = educational_factories.PendingCollectiveOfferFactory()
+
+        endpoint = requests_mock.post("https://adage_base_url/v1/offre-assoc", exc=requests.exceptions.ReadTimeout)
+
+        response = self.post_to_endpoint(
+            authenticated_client, collective_offer_id=collective_offer.id, follow_redirects=True
+        )
+        assert response.status_code == 200
+
+        assert (
+            html_parser.extract_alert(response.data)
+            == f"Erreur lors de la notification à ADAGE pour l'offre {collective_offer.id} : ReadTimeout"
+        )
+
+        assert endpoint.called
+
+        db.session.refresh(collective_offer)
+        assert collective_offer.isActive is True
+        assert collective_offer.validation == OfferValidationStatus.APPROVED
+        assert collective_offer.lastValidationType == OfferValidationType.MANUAL
+
+    @pytest.mark.settings(
+        ADAGE_API_URL="https://adage_base_url",
+        ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+    )
+    @pytest.mark.features(DISABLE_ADAGE_INSTITUTION_NOTIFICATION=True)
+    def test_validate_collective_offer_adage_notification_disabled(
+        self, legit_user, authenticated_client, requests_mock
+    ):
+        collective_offer = educational_factories.PendingCollectiveOfferFactory()
+
+        endpoint = requests_mock.post("https://adage_base_url/v1/offre-assoc", exc=requests.exceptions.ReadTimeout)
+
+        response = self.post_to_endpoint(
+            authenticated_client, collective_offer_id=collective_offer.id, follow_redirects=True
+        )
+        assert response.status_code == 200
+
+        assert not endpoint.called
+
+        db.session.refresh(collective_offer)
+        assert collective_offer.isActive is True
+        assert collective_offer.validation == OfferValidationStatus.APPROVED
+        assert collective_offer.lastValidationType == OfferValidationType.MANUAL
+
     def test_cant_validate_non_pending_offer(self, legit_user, authenticated_client):
         collective_offer_to_validate = educational_factories.CollectiveOfferFactory(
             validation=OfferValidationStatus.REJECTED
@@ -1042,7 +1093,7 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
         assert response.status_code == 200
         assert (
             html_parser.extract_alert(response.data)
-            == f"Erreur Adage pour l'offre {collective_offer.id}: An error occured on adage side"
+            == f"Erreur lors de la notification à ADAGE pour l'offre {collective_offer.id} : An error occured on adage side"
         )
 
 

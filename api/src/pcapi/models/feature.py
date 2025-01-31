@@ -31,6 +31,7 @@ class FeatureToggle(enum.Enum):
     API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
     APP_ENABLE_AUTOCOMPLETE = "Active l'autocomplete sur la barre de recherche relative au rework de la homepage"
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
+    DISABLE_ADAGE_INSTITUTION_NOTIFICATION = "Désactiver la notification de l'établissement à la validation des offres collectives (à utiliser lorsqu'ADAGE est KO)"
     DISABLE_ENTERPRISE_API = "Désactiver les appels à l'API entreprise"
     DISABLE_BOOST_EXTERNAL_BOOKINGS = "Désactiver les réservations externes Boost"
     DISABLE_CDS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CDS"
@@ -170,6 +171,7 @@ class Feature(PcObject, Base, Model, DeactivableMixin):
 
 
 FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
+    FeatureToggle.DISABLE_ADAGE_INSTITUTION_NOTIFICATION,
     FeatureToggle.DISABLE_BOOST_EXTERNAL_BOOKINGS,
     FeatureToggle.DISABLE_CDS_EXTERNAL_BOOKINGS,
     FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS,
