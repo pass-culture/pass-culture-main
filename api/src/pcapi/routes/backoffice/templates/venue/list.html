@@ -5,7 +5,7 @@
 {% set can_edit = has_permission("MANAGE_PRO_ENTITY") %}
 {% block page %}
   <div class="pt-3 px-5">
-    <h2 class="fw-light">
+    <h1>
       Actions sur les
       <th scope="col">
         {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
@@ -14,7 +14,7 @@
           lieux
         {% endif %}
       </th>
-    </h2>
+    </h1>
     {{ build_filters_form(form, dst) }}
     <div>
       {% if rows %}
