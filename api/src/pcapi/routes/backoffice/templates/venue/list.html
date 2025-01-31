@@ -5,10 +5,7 @@
 {% set can_edit = has_permission("MANAGE_PRO_ENTITY") %}
 {% block page %}
   <div class="pt-3 px-5">
-    <h2 class="fw-light">
-      Actions sur les
-      <th scope="col">partenaires culturels</th>
-    </h2>
+    <h1>Actions sur les partenaires culturels</h1>
     {{ build_filters_form(form, dst) }}
     <div>
       {% if rows %}

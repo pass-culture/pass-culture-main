@@ -1,7 +1,7 @@
 {% extends "layouts/connected.html" %}
 {% block page %}
   <div class="pt-3 px-5">
-    <h2 class="fw-light">Suppression d'utilisateur de test</h2>
+    <h1>Suppression d'utilisateur de test</h1>
     <div class="col">
       <form action="{{ url_for('backoffice_web.dev.delete_user') }}"
             name="{{ url_for('backoffice_web.dev.delete_user') | action_to_name }}"

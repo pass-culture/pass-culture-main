@@ -2,7 +2,6 @@
 @import "../bootstrap/functions";
 @import "../bootstrap/variables";
 
-$pc-body-body-bg-color: #f9f9f9;
 $pc-code-font-family: Consolas, "courier new", serif;
 $pc-code-padding: 0.5rem;
 $pc-nav-pills-bg-color-active: #DBDADAFF;
@@ -54,7 +53,7 @@ $theme-colors: map-merge($theme-colors, (
 
 
 // redefine color to match old theme
-$body-bg: #f9f9f9;
+$body-bg: $gray-100;
 $link-color: $primary;
 $input-bg: $white;
 $form-select-bg: $white;
@@ -77,10 +76,14 @@ $focus-ring-box-shadow:             0 0 $focus-ring-blur $focus-ring-width $focu
 $form-switch-focus-color:           rgba($primary, .5);
 $input-focus-border-color:          tint-color($component-active-bg, 50%);
 $form-check-input-focus-border:     $input-focus-border-color;
-$form-check-input-focus-box-shadow: $focus-ring-box-shadow; 
+$form-check-input-focus-box-shadow: $focus-ring-box-shadow;
 $input-focus-box-shadow:            $focus-ring-box-shadow;
 $form-switch-focus-bg-image:        url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='3' fill='#{$form-switch-focus-color}'/></svg>");
 
+// scss-docs-start headings-variables
+$headings-color:              $gray-700;
+$headings-font-weight:        $font-weight-semibold;
+// scss-docs-end headings-variables
 
 $zindex-levels: map-merge($zindex-levels, (
   4: 4,

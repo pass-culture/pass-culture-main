@@ -7,7 +7,7 @@
   {% set edit_offerer_tag_modal_label_id = random_hash() %}
   {% set delete_offerer_tag_modal_label_id = random_hash() %}
   <div class="pt-3 px-5">
-    <h2 class="fw-light">Tags des entités juridiques</h2>
+    <h1>Tags des entités juridiques</h1>
     <div class="mt-4">
       {% call tabs.build_details_tabs_wrapper() %}
         {{ tabs.build_details_tab("tags", "Tags", active_tab == 'tags') }}
