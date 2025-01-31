@@ -16,9 +16,17 @@ describe('Navigation', () => {
   it('I should see the top of the page when changing page', () => {
     logInAndGoToPage(login, '/accueil')
 
+    cy.stepLog({ message: 'I close the collective budget information modal' })
+    cy.findAllByText('Fermer').click()
+
     cy.stepLog({ message: 'I scroll to my venue' })
-    cy.contains('h3', /Votre page partenaire|Vos pages partenaire/).scrollIntoView()
-    cy.contains('h3', /Votre page partenaire|Vos pages partenaire/).should('be.visible')
+    cy.contains(
+      'h3',
+      /Votre page partenaire|Vos pages partenaire/
+    ).scrollIntoView()
+    cy.contains('h3', /Votre page partenaire|Vos pages partenaire/).should(
+      'be.visible'
+    )
     cy.get('[id=content-wrapper]').then((el) => {
       expect(el.get(0).scrollTop).to.be.greaterThan(0)
     })

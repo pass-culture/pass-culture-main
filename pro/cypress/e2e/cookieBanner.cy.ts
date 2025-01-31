@@ -124,6 +124,9 @@ describe('Cookie management with login', () => {
 
     logInAndGoToPage(login1, '/accueil', false)
 
+    cy.stepLog({ message: 'I close the collective budget information modal' })
+    cy.findAllByText('Fermer').click()
+
     cy.stepLog({ message: 'I open the cookie management option' })
     cy.findByText('Gestion des cookies').click()
 
@@ -171,6 +174,9 @@ describe('Cookie management with login', () => {
       logInAndGoToPage(login.toString(), '/accueil', false)
     )
 
+    cy.stepLog({ message: 'I close the collective budget information modal' })
+    cy.findAllByText('Fermer').click()
+
     cy.stepLog({ message: 'I open the cookie management option' })
     cy.findByText('Gestion des cookies').click()
 
@@ -194,6 +200,9 @@ describe('Cookie management with login', () => {
     cy.get('@login').then((login) =>
       logInAndGoToPage(login.toString(), '/accueil', false)
     )
+
+    cy.stepLog({ message: 'I close the collective budget information modal' })
+    cy.findAllByText('Fermer').click()
 
     cy.stepLog({ message: 'I open the cookie management option' })
     cy.findByText('Gestion des cookies').click()
