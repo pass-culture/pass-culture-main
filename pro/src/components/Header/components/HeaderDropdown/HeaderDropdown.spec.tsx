@@ -2,6 +2,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
+import { api } from 'apiClient/api'
 import {
   GetOffererNameResponseModel,
   GetOffererResponseModel,
@@ -111,6 +112,33 @@ describe('App', () => {
       await waitFor(() => {
         expect(screen.getByText('Ajouter'))
       })
+    })
+  })
+
+  describe('Switch Offerer', () => {
+    it('should call "handleChangeOfferer" on value change', async () => {
+      renderHeaderDropdown()
+
+      vi.mock('apiClient/api', () => ({
+        api: {
+          getOfferer: vi.fn(),
+        },
+      }))
+
+      // Opens main menu
+      await userEvent.click(screen.getByTestId('offerer-select'))
+
+      // Opens sub-menu
+      await userEvent.click(screen.getByText(/Changer de structure/))
+
+      // Get structures list
+      const offererList = screen.getByTestId('offerers-selection-menu')
+      const offerers = within(offererList).getAllByRole('menuitemradio')
+
+      // Clic on one structure
+      await userEvent.click(offerers[0])
+
+      expect(api.getOfferer).toHaveBeenCalledOnce()
     })
   })
 })

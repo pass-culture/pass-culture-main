@@ -1,5 +1,4 @@
-import { Navigate } from 'react-router'
-import { useLocation } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 
 import { Layout } from 'app/App/layout/Layout'
 import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
@@ -11,7 +10,7 @@ export const OfferType = (): JSX.Element => {
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
 
-  if (isOnboarding && !isDidacticOnboardingEnabled) {
+  if (isOnboarding && isDidacticOnboardingEnabled === false) {
     return <Navigate to="/accueil" />
   }
 
