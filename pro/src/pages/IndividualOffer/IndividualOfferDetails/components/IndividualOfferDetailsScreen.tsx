@@ -10,6 +10,7 @@ import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
+  CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
   OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
@@ -35,7 +36,6 @@ import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
 } from 'pages/IndividualOffer/commons/filterCategories'
-import { getFilteredVenueListByCategoryStatus } from 'pages/IndividualOffer/commons/getFilteredVenueList'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import {
   DetailsFormValues,
@@ -43,14 +43,16 @@ import {
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import { useIndividualOfferImageUpload } from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 import {
+  formatVenuesOptions,
   hasMusicType,
   serializeDetailsPatchData,
   serializeDetailsPostData,
-  setDefaultInitialValues,
   setDefaultInitialValuesFromOffer,
   setFormReadOnlyFields,
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { getValidationSchema } from 'pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
+
+import { DEFAULT_DETAILS_FORM_VALUES } from '../commons/constants'
 
 import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm/DetailsForm'
@@ -95,18 +97,23 @@ export const IndividualOfferDetailsScreen = ({
     isOfferSubtypeEvent(offerSubtype)
   )
 
-  const filteredVenues = getFilteredVenueListByCategoryStatus(
+  const availableVenuesOptions = formatVenuesOptions(
     venues,
-    categoryStatus
+    categoryStatus === CATEGORY_STATUS.ONLINE
   )
 
   const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
 
   const initialValues = isDirtyDraftOffer
-    ? setDefaultInitialValues({
-        filteredVenues,
-        areSuggestedSubcategoriesUsed,
-      })
+    ? //  When there is only one venue available the venueId field is not displayed
+      //  Thus we need to set the venueId programmatically
+      {
+        ...DEFAULT_DETAILS_FORM_VALUES,
+        venueId:
+          availableVenuesOptions.length === 1
+            ? availableVenuesOptions[0]?.value
+            : '',
+      }
     : setDefaultInitialValuesFromOffer({
         offer,
         subcategories: subCategories,
@@ -217,7 +224,7 @@ export const IndividualOfferDetailsScreen = ({
   const readOnlyFields = setFormReadOnlyFields(offer, isProductBased)
   const isEanSearchAvailable =
     isSearchByEanEnabled &&
-    isRecordStore(filteredVenues) &&
+    isRecordStore(venues) &&
     queryOfferType === INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
   const isEanSearchDisplayed =
     isEanSearchAvailable &&
@@ -310,13 +317,13 @@ export const IndividualOfferDetailsScreen = ({
             <DetailsForm
               isEanSearchDisplayed={isEanSearchDisplayed}
               isProductBased={isProductBased}
-              filteredVenues={filteredVenues}
               filteredCategories={filteredCategories}
               filteredSubcategories={filteredSubcategories}
               readonlyFields={readOnlyFields}
               onImageUpload={onImageUpload}
               onImageDelete={onImageDelete}
               imageOffer={imageOffer}
+              venuesOptions={availableVenuesOptions}
             />
           </FormLayout>
           <ActionBar
