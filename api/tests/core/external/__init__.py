@@ -5,6 +5,7 @@ from pcapi.core.external.attributes import models as attributes_models
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
+from pcapi.core.users.models import EligibilityType
 
 
 common_user_attributes = attributes_models.UserAttributes(
@@ -24,7 +25,7 @@ common_user_attributes = attributes_models.UserAttributes(
         digital=Credit(initial=Decimal("200"), remaining=Decimal("200")),
         physical=Credit(initial=200, remaining=Decimal("180.00")),
     ),
-    eligibility="age-18",
+    eligibility=EligibilityType.AGE18,
     first_name="First name",
     has_completed_id_check=True,
     is_active=True,

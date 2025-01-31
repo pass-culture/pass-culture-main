@@ -70,6 +70,8 @@ def format_user_attributes(
         "u.most_booked_movie_genre": user_attributes.most_booked_movie_genre,
         "u.most_booked_music_type": user_attributes.most_booked_music_type,
         "ut.most_favorite_offer_subcat": user_attributes.most_favorite_offer_subcategories,  # max 30 char.
+        "u.eligibility": user_attributes.eligibility.value if user_attributes.eligibility else None,
+        "u.is_eligible": user_attributes.is_eligible,
     }
 
     for product_use_date_key, product_use_date_value in user_attributes.products_use_date.items():

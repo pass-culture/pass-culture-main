@@ -48,6 +48,8 @@ class FormatUserAttributesTest:
             "ut.permanent_theme_preference": ["cinema"],
             "u.postal_code": None,
             "ut.roles": ["BENEFICIARY"],
+            "u.eligibility": "age-18",
+            "u.is_eligible": True,
         }
 
         # ensure attributes keys are shorter than MAX_BATCH_PARAMETER_SIZE

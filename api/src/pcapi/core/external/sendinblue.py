@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+import enum
 from enum import Enum
 from itertools import islice
 import logging
@@ -167,6 +168,12 @@ def format_list_or_str(raw_value: str | Iterable[str]) -> str:
     return format_list(raw_value)
 
 
+def format_enum(enum_value: enum.Enum | str) -> str:
+    if isinstance(enum_value, str):
+        return enum_value
+    return enum_value.value
+
+
 def _get_attr(
     attributes: attributes_models.UserAttributes | attributes_models.ProAttributes,
     name: str,
@@ -196,7 +203,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.DEPOSIT_EXPIRATION_DATE.value: _get_attr(attributes, "deposit_expiration_date"),
         SendinblueAttributes.DMS_APPLICATION_APPROVED.value: _get_attr(attributes, "dms_application_approved"),
         SendinblueAttributes.DMS_APPLICATION_SUBMITTED.value: _get_attr(attributes, "dms_application_submitted"),
-        SendinblueAttributes.ELIGIBILITY.value: _get_attr(attributes, "eligibility"),
+        SendinblueAttributes.ELIGIBILITY.value: _get_attr(attributes, "eligibility", format_enum),
         SendinblueAttributes.FIRSTNAME.value: _get_attr(attributes, "first_name"),
         SendinblueAttributes.HAS_BANNER_URL.value: _get_attr(attributes, "has_banner_url"),
         SendinblueAttributes.HAS_BOOKINGS.value: _get_attr(attributes, "has_bookings"),
