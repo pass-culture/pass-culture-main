@@ -1,6 +1,6 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -79,7 +79,10 @@ export const IndividualOfferInformationsScreen = ({
 
   const addToLocalStorage = () => {
     const keyName = getLocalStorageKeyName(offer)
-    if (storageAvailable('localStorage') && localStorage.getItem(keyName) === null) {
+    if (
+      storageAvailable('localStorage') &&
+      localStorage.getItem(keyName) === null
+    ) {
       localStorage.setItem(keyName, true.toString())
     }
   }

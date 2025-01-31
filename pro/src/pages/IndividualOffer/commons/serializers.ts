@@ -7,6 +7,7 @@ import {
 import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'commons/core/Offers/constants'
 import { isAllocineOffer } from 'commons/core/Providers/utils/localProvider'
 import { AccessibilityEnum } from 'commons/core/shared/types'
+import { removeQuotes } from 'commons/utils/removeQuotes'
 import { trimStringsInObject } from 'commons/utils/trimStringsInObject'
 import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
@@ -93,11 +94,11 @@ export const serializePatchOffer = ({
   ) {
     addressValues = {
       address: {
-        city: sentValues.city,
+        city: removeQuotes(sentValues.city.trim()),
         latitude: sentValues.latitude,
         longitude: sentValues.longitude,
         postalCode: sentValues.postalCode,
-        street: sentValues.street,
+        street: removeQuotes(sentValues.street.trim()),
         label: sentValues.locationLabel,
         isManualEdition: sentValues.manuallySetAddress,
         isVenueAddress:

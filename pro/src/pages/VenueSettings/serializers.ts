@@ -1,5 +1,6 @@
 import { EditVenueBodyModel, VenueTypeCode } from 'apiClient/v1'
 import { unhumanizeSiret } from 'commons/core/Venue/utils'
+import { removeQuotes } from 'commons/utils/removeQuotes'
 
 import { VenueSettingsFormValues } from './types'
 
@@ -10,14 +11,14 @@ export const serializeEditVenueBodyModel = (
   const payload: EditVenueBodyModel = {
     banId: formValues.banId,
     bookingEmail: formValues.bookingEmail,
-    city: formValues.city,
+    city: removeQuotes(formValues.city),
     comment: formValues.comment,
     latitude: formValues.latitude,
     longitude: formValues.longitude,
     name: formValues.name,
     postalCode: formValues.postalCode,
     publicName: formValues.publicName,
-    street: formValues.street,
+    street: removeQuotes(formValues.street?.trim() ?? ''),
     siret: unhumanizeSiret(formValues.siret),
     withdrawalDetails: formValues.withdrawalDetails,
     venueLabelId: !formValues.venueLabel ? null : Number(formValues.venueLabel),
