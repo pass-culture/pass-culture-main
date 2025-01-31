@@ -81,7 +81,7 @@ export function IndividualOffersContextProvider({
   }: UpsertHeadlineOfferParams) => {
     try {
       await api.upsertHeadlineOffer({ offerId })
-      notify.success('Votre offre à bien été mise à la une !')
+      notify.success('Votre offre a été mise à la une !')
       await mutate([GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId])
       logEvent(Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
         from: location.pathname,

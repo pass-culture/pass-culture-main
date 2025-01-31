@@ -51,13 +51,15 @@ export const HeadlineOfferBanner = ({ close }: HeadlineOfferBannerProps) => {
         src={imgHeadlineOffer}
         role="presentation"
       />
-      <Button
-        className={styles['headline-offer-close-button']}
-        variant={ButtonVariant.TERNARY}
-        icon={strokeCloseIcon}
-        aria-label="Fermer la bannière"
-        onClick={close}
-      />
+      <div>
+        <Button
+          className={styles['headline-offer-close-button']}
+          variant={ButtonVariant.TERNARY}
+          icon={strokeCloseIcon}
+          aria-label="Fermer la bannière"
+          onClick={close}
+        />
+      </div>
       <HeadlineOfferInformationDialog
         onCancel={() => {
           /* istanbul ignore next */

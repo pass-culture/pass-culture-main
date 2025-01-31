@@ -1,5 +1,5 @@
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
-import fullStarIcon from 'icons/full-star.svg'
+import fullBoostedIcon from 'icons/full-boosted.svg'
 import { useIndividualOffersContext } from 'pages/IndividualOffers/context/IndividualOffersContext'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -44,7 +44,7 @@ export function HeadlineOfferCell({
   return (
     <DropdownItem onSelect={onSelect} asChild>
       <span>
-        <Button variant={ButtonVariant.TERNARY} icon={fullStarIcon}>
+        <Button variant={ButtonVariant.TERNARY} icon={fullBoostedIcon}>
           {offer.id === headlineOffer?.id
             ? 'Ne plus mettre à la une'
             : 'Mettre à la une'}

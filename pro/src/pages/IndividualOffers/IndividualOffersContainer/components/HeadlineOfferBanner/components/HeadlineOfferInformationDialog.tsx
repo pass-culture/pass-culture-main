@@ -62,7 +62,7 @@ export const HeadlineOfferInformationDialog = ({
         </div>
 
         <Button className={styles['dialog-button']} onClick={onCancel}>
-          J’ai compris
+          Bien noté
         </Button>
       </div>
     </DialogBuilder>
