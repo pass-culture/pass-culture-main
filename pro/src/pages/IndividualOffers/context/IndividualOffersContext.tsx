@@ -45,7 +45,7 @@ export function IndividualOffersContextProvider({
   const upsertHeadlineOffer = async (offerId: number) => {
     try {
       await api.upsertHeadlineOffer({ offerId })
-      notify.success('Votre offre à bien été mise à la une !')
+      notify.success('Votre offre a été mise à la une !')
       await mutate([GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId])
     } catch {
       notify.error(
