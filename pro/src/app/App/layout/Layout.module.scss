@@ -34,7 +34,8 @@ $connect-as-header-height: rem.torem(52px);
 
     &-funnel,
     &-onboarding,
-    &-sticky-onboarding {
+    &-sticky-onboarding,
+    &-sign-up {
       width: 100%;
     }
   }
@@ -48,7 +49,7 @@ $connect-as-header-height: rem.torem(52px);
   overflow-y: auto;
   background-color: var(--color-white);
 
-  &-side {
+  &-left-side {
     @media screen and (min-width: size.$tablet) {
       flex-direction: row;
     }
@@ -78,6 +79,39 @@ $connect-as-header-height: rem.torem(52px);
       }
     }
   }
+
+  &-right-side {
+    @media screen and (min-width: size.$laptop) {
+      flex-direction: row-reverse;
+    }
+
+    &-logo {
+      display: none;
+
+      @media screen and (min-width: size.$desktop) {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        min-width: size.$signup-side-min-width;
+        width: 50%;
+        background-color: var(--color-primary);
+        position: sticky;
+        top: 0;
+        overflow: hidden;
+
+        .image-engagements {
+          margin: rem.torem(64px) auto;
+          width: clamp(rem.torem(380px), 22vw, rem.torem(490px));
+        }
+
+        .image-laptop {
+          width: clamp(rem.torem(600px), 55vw, rem.torem(1000px));
+          align-self: flex-end;
+        }
+      }
+    }
+  }
 }
 
 .content-container {
@@ -99,8 +133,37 @@ $connect-as-header-height: rem.torem(52px);
     padding: 0;
   }
 
-  &-logged-out {
+  &-logged-out,
+  &-sign-up {
     padding: 0;
+  }
+
+  &-sign-up {
+    display: flex;
+
+    .logo-sign-up {
+      color: var(--color-primary);
+      max-width: rem.torem(135px);
+      align-self: center;
+      margin-top: rem.torem(32px);
+
+      @media (min-width: size.$laptop) {
+        align-self: flex-start;
+        margin-left: rem.torem(40px);
+        margin-top: rem.torem(40px);
+        flex-shrink: 0;
+      }
+    }
+
+    [id="content"] {
+      max-width: rem.torem(640px);
+      align-self: center;
+      margin: auto;
+
+      @media (min-width: size.$desktop) {
+        max-width: rem.torem(800px);
+      }
+    }
   }
 
   &-sticky-onboarding {
@@ -141,6 +204,14 @@ $connect-as-header-height: rem.torem(52px);
     max-width: size.$main-content-width;
     padding: size.$main-content-padding size.$main-content-padding 0;
     margin: 0 auto;
+  }
+
+  &-sign-up {
+    padding: rem.torem(16px);
+
+    @media (min-width: size.$laptop) {
+      padding: rem.torem(24px);
+    }
   }
 }
 
