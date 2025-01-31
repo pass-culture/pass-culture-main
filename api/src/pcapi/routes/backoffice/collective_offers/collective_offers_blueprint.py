@@ -30,6 +30,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
@@ -366,21 +367,27 @@ def _batch_validate_or_reject_collective_offers(
                 )
             )
 
-            if validation is offer_mixin.OfferValidationStatus.APPROVED and collective_offer.institutionId is not None:
+            if (
+                validation is offer_mixin.OfferValidationStatus.APPROVED
+                and collective_offer.institutionId is not None
+                and not FeatureToggle.DISABLE_ADAGE_INSTITUTION_NOTIFICATION.is_active()
+            ):
                 try:
                     adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
                 except educational_exceptions.AdageInvalidEmailException:
                     # in the case of an invalid institution email, adage is not notified but we still want to validate of reject the offer
                     flash(
-                        Markup("Email invalide pour l'offre {offer_id}, Adage n'a pas été notifié").format(
+                        Markup("Email invalide pour l'offre <b>{offer_id}</b>, ADAGE n'a pas été notifié").format(
                             offer_id=collective_offer.id
-                        )
+                        ),
+                        "warning",
                     )
                 except educational_exceptions.AdageException as exp:
                     flash(
-                        Markup("Erreur Adage pour l'offre {offer_id}: {message}").format(
-                            offer_id=collective_offer.id, message=exp.message
-                        )
+                        Markup(
+                            "Erreur lors de la notification à ADAGE pour l'offre <b>{offer_id}</b> : {message}"
+                        ).format(offer_id=collective_offer.id, message=exp.message),
+                        "warning",
                     )
 
                     mark_transaction_as_invalid()
@@ -389,6 +396,19 @@ def _batch_validate_or_reject_collective_offers(
                         collective_offer_update_succeed_ids.remove(collective_offer.id)
 
                     collective_offer_update_failed_ids.append(collective_offer.id)
+                except Exception as exc:  # pylint: disable=broad-exception-caught
+                    # ConnectionError, ReadTimeout...
+                    # When ADAGE is unavailable, we still need to validate collective offers, so the notification
+                    # will not be sent to educational institution.
+                    flash(
+                        Markup(
+                            "Erreur lors de la notification à ADAGE pour l'offre <b>{offer_id}</b> : {message}"
+                        ).format(
+                            offer_id=collective_offer.id,
+                            message=getattr(exc, "message", None) or str(exc) or type(exc).__name__,
+                        ),
+                        "warning",
+                    )
 
     if len(collective_offer_update_succeed_ids) == 1:
         flash(
