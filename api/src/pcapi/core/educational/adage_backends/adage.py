@@ -2,15 +2,16 @@ import datetime
 from json import JSONDecodeError
 import logging
 import traceback
+import typing
 
 from pydantic.v1 import parse_obj_as
 
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
+from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.adage_backends import serialize
 from pcapi.core.educational.adage_backends.base import AdageClient
-import pcapi.core.educational.schemas as educational_schemas
 from pcapi.utils import requests
 
 
@@ -66,55 +67,56 @@ class AdageHttpClient(AdageClient):
             message=full_message, status_code=api_response.status_code, response_text=api_response.text
         )
 
-    @staticmethod
-    def _get_connection_error_adage_exception() -> exceptions.AdageException:
-        return exceptions.AdageException(
-            status_code=502,
-            response_text="Connection Error",
-            message="Cannot establish connection to omogen api",
-        )
+    def _make_request(
+        self,
+        url: str,
+        method: typing.Literal["get"] | typing.Literal["post"],
+        data: typing.Any | None = None,
+        params: dict[str, typing.Any] | None = None,
+    ) -> requests.Response:
+        try:
+            if method == "post":
+                api_response = requests.post(
+                    url=url, headers={self.header_key: self.api_key, "Content-Type": "application/json"}, data=data
+                )
+            else:
+                api_response = requests.get(url=url, headers={self.header_key: self.api_key}, params=params)
+        except requests.exceptions.ConnectionError as exp:
+            logger.info("could not connect to adage, error: %s", traceback.format_exc())
+
+            raise exceptions.AdageException(
+                status_code=502,
+                response_text="Connection Error",
+                message="Cannot establish connection to omogen api",
+            ) from exp
+
+        return api_response
 
     def notify_prebooking(self, data: educational_schemas.EducationalBookingResponse) -> None:
-        api_url = f"{self.base_url}/v1/prereservation"
-        try:
-            api_response = requests.post(
-                api_url,
-                headers={self.header_key: self.api_key, "Content-Type": "application/json"},
-                data=data.json(),
-            )
-        except ConnectionError as exp:
-            logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise self._get_connection_error_adage_exception() from exp
+        api_response = self._make_request(
+            url=f"{self.base_url}/v1/prereservation",
+            method="post",
+            data=data.json(),
+        )
 
         if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
             raise self._get_api_adage_exception(api_response, "Error posting new prebooking to Adage API")
 
     def notify_offer_or_stock_edition(self, data: educational_schemas.EducationalBookingEdition) -> None:
-        api_url = f"{self.base_url}/v1/prereservation-edit"
-        try:
-            api_response = requests.post(
-                api_url,
-                headers={self.header_key: self.api_key, "Content-Type": "application/json"},
-                data=data.json(),
-            )
-        except ConnectionError as exp:
-            logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise self._get_connection_error_adage_exception() from exp
+        api_response = self._make_request(
+            url=f"{self.base_url}/v1/prereservation-edit",
+            method="post",
+            data=data.json(),
+        )
 
         if api_response.status_code != 201:
             raise self._get_api_adage_exception(api_response, "Error posting booking edition notification to Adage API")
 
     def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
-        api_url = f"{self.base_url}/v1/partenaire-culturel/{siren}"
-
-        try:
-            api_response = requests.get(
-                api_url,
-                headers={self.header_key: self.api_key},
-            )
-        except ConnectionError as exp:
-            logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise self._get_connection_error_adage_exception() from exp
+        api_response = self._make_request(
+            url=f"{self.base_url}/v1/partenaire-culturel/{siren}",
+            method="get",
+        )
 
         if api_response.status_code == 404:
             raise exceptions.CulturalPartnerNotFoundException(
@@ -126,16 +128,11 @@ class AdageHttpClient(AdageClient):
         return parse_obj_as(list[AdageVenue], api_response.json())
 
     def notify_booking_cancellation_by_offerer(self, data: educational_schemas.EducationalBookingResponse) -> None:
-        api_url = f"{self.base_url}/v1/prereservation-annule"
-        try:
-            api_response = requests.post(
-                api_url,
-                headers={self.header_key: self.api_key, "Content-Type": "application/json"},
-                data=data.json(),
-            )
-        except ConnectionError as exp:
-            logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise self._get_connection_error_adage_exception() from exp
+        api_response = self._make_request(
+            url=f"{self.base_url}/v1/prereservation-annule",
+            method="post",
+            data=data.json(),
+        )
 
         if api_response.status_code != 201:
             raise self._get_api_adage_exception(
@@ -145,21 +142,15 @@ class AdageHttpClient(AdageClient):
     def get_cultural_partners(
         self, since_date: datetime.datetime | None = None
     ) -> list[dict[str, str | int | float | None]]:
-        api_url = f"{self.base_url}/v1/partenaire-culturel"
-
         params = {}
         if since_date:
             params["dateModificationMin"] = since_date.strftime("%Y-%m-%d %H:%M:%S")
 
-        try:
-            api_response = requests.get(
-                api_url,
-                params=params,
-                headers={self.header_key: self.api_key},
-            )
-        except ConnectionError as exp:
-            logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise self._get_connection_error_adage_exception() from exp
+        api_response = self._make_request(
+            url=f"{self.base_url}/v1/partenaire-culturel",
+            method="get",
+            params=params,
+        )
 
         if api_response.status_code == 404:
             raise exceptions.CulturalPartnerNotFoundException("Requested cultural partners not found for Adage")
@@ -169,14 +160,11 @@ class AdageHttpClient(AdageClient):
         return api_response.json()
 
     def notify_institution_association(self, data: serialize.AdageCollectiveOffer) -> None:
-        api_url = f"{self.base_url}/v1/offre-assoc"
-        try:
-            api_response = requests.post(
-                api_url, headers={self.header_key: self.api_key, "Content-Type": "application/json"}, data=data.json()
-            )
-        except ConnectionError as exp:
-            logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise self._get_connection_error_adage_exception() from exp
+        api_response = self._make_request(
+            url=f"{self.base_url}/v1/offre-assoc",
+            method="post",
+            data=data.json(),
+        )
 
         if api_response.status_code != 201:
             if is_adage_institution_email_invalid(api_response):
@@ -191,15 +179,10 @@ class AdageHttpClient(AdageClient):
                 raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
     def get_cultural_partner(self, siret: str) -> educational_schemas.AdageCulturalPartner:
-        api_url = f"{self.base_url}/v1/etablissement-culturel/{siret}"
-        try:
-            api_response = requests.get(
-                api_url,
-                headers={self.header_key: self.api_key},
-            )
-        except ConnectionError as exp:
-            logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise self._get_connection_error_adage_exception() from exp
+        api_response = self._make_request(
+            url=f"{self.base_url}/v1/etablissement-culturel/{siret}",
+            method="get",
+        )
 
         if api_response.status_code == 404:
             raise exceptions.CulturalPartnerNotFoundException("Requested cultural partner not found for Adage")
@@ -218,10 +201,9 @@ class AdageHttpClient(AdageClient):
         page = 1
         institutions = []
         while True:
-            api_url = template_url % page
-            api_response = requests.get(
-                api_url,
-                headers={self.header_key: self.api_key},
+            api_response = self._make_request(
+                url=template_url % page,
+                method="get",
             )
 
             if api_response.status_code == 404:
@@ -241,15 +223,10 @@ class AdageHttpClient(AdageClient):
         return parse_obj_as(list[serialize.AdageEducationalInstitution], institutions)
 
     def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
-        api_url = f"{self.base_url}/v1/redacteurs-projets/{uai}"
-        try:
-            api_response = requests.get(
-                api_url,
-                headers={self.header_key: self.api_key},
-            )
-        except ConnectionError as exp:
-            logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise self._get_connection_error_adage_exception() from exp
+        api_response = self._make_request(
+            url=f"{self.base_url}/v1/redacteurs-projets/{uai}",
+            method="get",
+        )
 
         if api_response.status_code == 404:
             raise exceptions.EducationalRedactorNotFound("Requested UAI not found")
@@ -274,29 +251,21 @@ class AdageHttpClient(AdageClient):
         return redactors
 
     def notify_reimburse_collective_booking(self, data: educational_schemas.AdageReimbursementNotification) -> None:
-        api_url = f"{self.base_url}/v1/reservation-remboursement"
-        try:
-            api_response = requests.post(
-                api_url,
-                headers={self.header_key: self.api_key, "Content-Type": "application/json"},
-                data=data.json(),
-            )
-        except ConnectionError as exp:
-            logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise self._get_connection_error_adage_exception() from exp
+        api_response = self._make_request(
+            url=f"{self.base_url}/v1/reservation-remboursement",
+            method="post",
+            data=data.json(),
+        )
 
         if api_response.status_code != 201:
             raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
     def notify_redactor_when_collective_request_is_made(self, data: serialize.AdageCollectiveRequest) -> None:
-        api_url = f"{self.base_url}/v1/offre-vitrine"
-        try:
-            api_response = requests.post(
-                api_url, headers={self.header_key: self.api_key, "Content-Type": "application/json"}, data=data.json()
-            )
-        except ConnectionError as exp:
-            logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise self._get_connection_error_adage_exception() from exp
+        api_response = self._make_request(
+            url=f"{self.base_url}/v1/offre-vitrine",
+            method="post",
+            data=data.json(),
+        )
 
         if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
             raise self._get_api_adage_exception(api_response, "Error getting Adage API")
