@@ -6,6 +6,7 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
+import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { HelpLink } from 'components/HelpLink/HelpLink'
 import { CollectiveCreationOfferNavigation } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import { getActiveStep } from 'pages/CollectiveOfferRoutes/utils/getActiveStep'
@@ -69,9 +70,14 @@ export const CollectiveOfferLayout = ({
         )}
         {}
         <h1 className={styles['eac-layout-heading']}>
-          {title}{' '}
+          {title}
           <span className={styles['eac-layout-sub-heading']}>{subTitle}</span>
         </h1>
+        {isCreation && (
+          <CollectiveBudgetCallout
+            pageName={isTemplate ? 'template-offer-creation' : 'offer-creation'}
+          />
+        )}
       </div>
 
       {navigationProps.isCreatingOffer ? (
