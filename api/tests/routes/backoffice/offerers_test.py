@@ -2304,11 +2304,11 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
             assert "Date invalide" in response.data.decode("utf-8")
 
-        @pytest.mark.parametrize("search", ["123004004", "123 004 004", "  123004004 ", "123004004\n"])
-        def test_list_search_by_siren(self, authenticated_client, offerers_to_be_validated, search):
+        @pytest.mark.parametrize("search_string", ["123004004", "123 004 004", "  123004004 ", "123004004\n"])
+        def test_list_search_by_siren(self, authenticated_client, offerers_to_be_validated, search_string):
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q=search, status="PENDING")
+                    url_for("backoffice_web.validation.list_offerers_to_validate", q=search_string, status="PENDING")
                 )
                 assert response.status_code == 200
 
@@ -2364,11 +2364,11 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert {row["Nom"] for row in rows} == {"B", "D"}
             assert html_parser.extract_pagination_info(response.data) == (1, 1, 2)
 
-        @pytest.mark.parametrize("search", ["1", "1234", "123456", "12345678", "12345678912345", "  1234"])
-        def test_list_search_by_invalid_number_of_digits(self, authenticated_client, search):
+        @pytest.mark.parametrize("search_string", ["1", "1234", "123456", "12345678", "12345678912345", "  1234"])
+        def test_list_search_by_invalid_number_of_digits(self, authenticated_client, search_string):
             with assert_num_queries(self.expected_num_queries_when_no_query + 1):  # rollback transaction
                 response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q=search)
+                    url_for("backoffice_web.validation.list_offerers_to_validate", q=search_string)
                 )
                 assert response.status_code == 400
 

@@ -8,7 +8,6 @@ from unittest.mock import patch
 from dateutil.relativedelta import relativedelta
 import flask
 import pytest
-import requests_mock
 import time_machine
 
 from pcapi import settings
@@ -202,7 +201,7 @@ class UbbleEndToEndTest:
         return f"ts={timestamp},v1={token}"
 
     @time_machine.travel("2018-01-01")
-    def test_beneficiary_activation(self, client, app):
+    def test_beneficiary_activation(self, client, app, requests_mock):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime(2000, 1, 1),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -227,18 +226,15 @@ class UbbleEndToEndTest:
         next_step = subscription_api.get_user_subscription_state(user).next_step
         assert next_step == subscription_models.SubscriptionStep.IDENTITY_CHECK
 
-        with requests_mock.Mocker() as requests_mocker:
-            requests_mocker.post(
-                f"{settings.UBBLE_API_URL}/identifications/", json=fixtures.START_IDENTIFICATION_RESPONSE
-            )
+        requests_mock.post(f"{settings.UBBLE_API_URL}/identifications/", json=fixtures.START_IDENTIFICATION_RESPONSE)
 
-            response = client.post(
-                "/native/v1/ubble_identification",
-                json={"redirectUrl": "https://passculture.app/verification-identite/fin"},
-            )
-            assert response.status_code == 200, response.json
+        response = client.post(
+            "/native/v1/ubble_identification",
+            json={"redirectUrl": "https://passculture.app/verification-identite/fin"},
+        )
+        assert response.status_code == 200, response.json
 
-        assert requests_mocker.last_request.json() == {
+        assert requests_mock.last_request.json() == {
             "data": {
                 "attributes": {
                     "identification-form": {"external-user-id": user.id, "phone-number": None},
@@ -268,21 +264,20 @@ class UbbleEndToEndTest:
             "status": "initiated",
         }
 
-        with requests_mock.Mocker() as requests_mocker:
-            requests_mocker.get(
-                f"{settings.UBBLE_API_URL}/identifications/{fixtures.IDENTIFICATION_ID}/",
-                json=fixtures.INITIATED_IDENTIFICATION_RESPONSE,
-            )
+        requests_mock.get(
+            f"{settings.UBBLE_API_URL}/identifications/{fixtures.IDENTIFICATION_ID}/",
+            json=fixtures.INITIATED_IDENTIFICATION_RESPONSE,
+        )
 
-            response = ubble_client.post(
-                "/webhooks/ubble/application_status",
-                headers={
-                    "Ubble-Signature": self._get_ubble_webhook_signature(
-                        json.dumps(webhook_request_payload, default=json_default)
-                    )
-                },
-                json=webhook_request_payload,
-            )
+        response = ubble_client.post(
+            "/webhooks/ubble/application_status",
+            headers={
+                "Ubble-Signature": self._get_ubble_webhook_signature(
+                    json.dumps(webhook_request_payload, default=json_default)
+                )
+            },
+            json=webhook_request_payload,
+        )
 
         assert response.status_code == 200
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
@@ -306,21 +301,20 @@ class UbbleEndToEndTest:
             "status": "processing",
         }
 
-        with requests_mock.Mocker() as requests_mocker:
-            requests_mocker.get(
-                f"{settings.UBBLE_API_URL}/identifications/{fixtures.IDENTIFICATION_ID}/",
-                json=fixtures.PROCESSING_IDENTIFICATION_RESPONSE,
-            )
+        requests_mock.get(
+            f"{settings.UBBLE_API_URL}/identifications/{fixtures.IDENTIFICATION_ID}/",
+            json=fixtures.PROCESSING_IDENTIFICATION_RESPONSE,
+        )
 
-            response = ubble_client.post(
-                "/webhooks/ubble/application_status",
-                headers={
-                    "Ubble-Signature": self._get_ubble_webhook_signature(
-                        json.dumps(webhook_request_payload, default=json_default)
-                    )
-                },
-                json=webhook_request_payload,
-            )
+        response = ubble_client.post(
+            "/webhooks/ubble/application_status",
+            headers={
+                "Ubble-Signature": self._get_ubble_webhook_signature(
+                    json.dumps(webhook_request_payload, default=json_default)
+                )
+            },
+            json=webhook_request_payload,
+        )
 
         assert response.status_code == 200
         assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
@@ -346,23 +340,23 @@ class UbbleEndToEndTest:
             "identification_id": fixtures.IDENTIFICATION_ID,
             "status": "processed",
         }
-        with requests_mock.Mocker() as requests_mocker:
-            requests_mocker.get(
-                f"{settings.UBBLE_API_URL}/identifications/{fixtures.IDENTIFICATION_ID}/",
-                json=fixtures.PROCESSED_IDENTIFICATION_RESPONSE,
-            )
-            storage_path_matcher = re.compile("https://storage.ubble.ai/*")
-            requests_mocker.get(storage_path_matcher)
 
-            response = ubble_client.post(
-                "/webhooks/ubble/application_status",
-                headers={
-                    "Ubble-Signature": self._get_ubble_webhook_signature(
-                        json.dumps(webhook_request_payload, default=json_default)
-                    )
-                },
-                json=webhook_request_payload,
-            )
+        requests_mock.get(
+            f"{settings.UBBLE_API_URL}/identifications/{fixtures.IDENTIFICATION_ID}/",
+            json=fixtures.PROCESSED_IDENTIFICATION_RESPONSE,
+        )
+        storage_path_matcher = re.compile("https://storage.ubble.ai/*")
+        requests_mock.get(storage_path_matcher)
+
+        response = ubble_client.post(
+            "/webhooks/ubble/application_status",
+            headers={
+                "Ubble-Signature": self._get_ubble_webhook_signature(
+                    json.dumps(webhook_request_payload, default=json_default)
+                )
+            },
+            json=webhook_request_payload,
+        )
 
         assert response.status_code == 200
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
