@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 import {
   CollectiveOfferResponseModel,
@@ -61,18 +61,11 @@ export const CollectiveOffersScreen = ({
   isRestrictedAsAdmin,
   offers,
 }: CollectiveOffersScreenProps): JSX.Element => {
-  const {
-    onApplyFilters,
-    onResetFilters,
-  } = useStoredFilterConfig('collective')
+  const { onApplyFilters, onResetFilters } = useStoredFilterConfig('collective')
   const [selectedOffers, setSelectedOffers] = useState<
     CollectiveOfferResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
-
-  useEffect(() => {
-    setSelectedFilters(initialSearchFilters)
-  }, [initialSearchFilters])
 
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
 
@@ -87,10 +80,8 @@ export const CollectiveOffersScreen = ({
     initialSearchFilters,
     defaultCollectiveFilters
   )
-  const userHasNoOffers =
-    !isLoading &&
-    !hasOffers &&
-    !hasFilters
+
+  const userHasNoOffers = !isLoading && !hasOffers && !hasFilters
 
   const areAllOffersSelected =
     selectedOffers.length > 0 &&
@@ -139,6 +130,7 @@ export const CollectiveOffersScreen = ({
   const resetFilters = () => {
     onResetFilters()
     applyUrlFiltersAndRedirect(defaultCollectiveFilters)
+    setSelectedFilters(defaultCollectiveFilters)
   }
 
   function onSetSelectedOffer(offer: CollectiveOfferResponseModel) {
