@@ -1,5 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { forwardRef } from 'react'
+import { vi } from 'vitest'
 
 import { api } from 'apiClient/api'
 import {
@@ -35,8 +37,38 @@ vi.mock('apiClient/api', () => ({
     upsertHeadlineOffer: vi.fn(),
     getOffererHeadlineOffer: vi.fn(),
     deleteHeadlineOffer: vi.fn(),
+    createThumbnail: vi.fn(),
   },
 }))
+
+vi.mock('react-avatar-editor', () => {
+  const MockAvatarEditor = forwardRef((props, ref) => {
+    if (ref && typeof ref === 'object' && 'current' in ref) {
+      ref.current = {
+        getImage: vi.fn(() => ({ toDataURL: vi.fn(() => 'my img') })),
+        getCroppingRect: vi.fn(() => ({
+          x: 0,
+          y: 0,
+          width: 100,
+          height: 100,
+        })),
+      }
+    }
+    return ''
+  })
+
+  MockAvatarEditor.displayName = 'MockAvatarEditor'
+
+  return {
+    __esModule: true,
+    default: MockAvatarEditor,
+  }
+})
+
+vi.mock(
+  'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/validationSchema',
+  () => ({ getValidationSchema: () => ({ validate: vi.fn() }) })
+)
 
 const offererId = 1
 
@@ -253,6 +285,130 @@ describe('IndividualOfferRow', () => {
         expect(api.upsertHeadlineOffer).toHaveBeenCalledWith({
           offerId: offer.id,
         })
+      })
+
+      it('should handle no image case', async () => {
+        const mockFile = new File(['fake img'], 'fake_img.jpg', {
+          type: 'image/jpeg',
+        })
+
+        props.offer = listOffersOfferFactory({
+          id: offerId,
+          hasBookingLimitDatetimesPassed: false,
+          name: 'My little offer without thumb',
+          thumbUrl: undefined,
+          stocks,
+        })
+
+        renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
+
+        const openActionsButton = screen.getByRole('button', {
+          name: LABELS.openActions,
+        })
+        await userEvent.click(openActionsButton)
+
+        const makeHeadlineOfferButton = screen.getByRole('menuitem', {
+          name: LABELS.makeHeadlineOffer,
+        })
+        await userEvent.click(makeHeadlineOfferButton)
+
+        // dialog : add an img to make han headline offer
+        expect(
+          screen.getByText('Ajoutez une image pour mettre votre offre à la une')
+        ).toBeInTheDocument()
+
+        await userEvent.click(screen.getByText('Ajouter une image'))
+
+        // dialog: import img
+        const inputField = screen.getByLabelText(
+          'Importer une image depuis l’ordinateur'
+        )
+        await userEvent.upload(inputField, mockFile)
+
+        // dialog: crop img
+        expect(screen.getByText('Modifier une image')).toBeInTheDocument()
+        await userEvent.click(screen.getByText('Suivant'))
+
+        // dialog: img preview
+        expect(
+          screen.getByText(
+            'Prévisualisation de votre image dans l’application pass Culture'
+          )
+        ).toBeInTheDocument()
+
+        await userEvent.click(screen.getByText('Enregistrer'))
+        expect(api.createThumbnail).toHaveBeenCalled()
+
+        // dialog: last step
+        expect(
+          screen.getByText('Votre offre va être mise à la une !')
+        ).toBeInTheDocument()
+
+        await userEvent.click(screen.getByText('Confirmer'))
+        expect(api.upsertHeadlineOffer).toHaveBeenCalledWith({
+          offerId: offer.id,
+        })
+      })
+
+      it('should notify when img upload fails', async () => {
+        vi.spyOn(api, 'createThumbnail').mockRejectedValueOnce({})
+
+        const mockFile = new File(['fake img'], 'fake_img.jpg', {
+          type: 'image/jpeg',
+        })
+
+        props.offer = listOffersOfferFactory({
+          id: offerId,
+          hasBookingLimitDatetimesPassed: false,
+          name: 'My little offer without thumb',
+          thumbUrl: undefined,
+          stocks,
+        })
+
+        renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
+
+        const openActionsButton = screen.getByRole('button', {
+          name: LABELS.openActions,
+        })
+        await userEvent.click(openActionsButton)
+
+        const makeHeadlineOfferButton = screen.getByRole('menuitem', {
+          name: LABELS.makeHeadlineOffer,
+        })
+        await userEvent.click(makeHeadlineOfferButton)
+
+        // dialog : add an img to make han headline offer
+        expect(
+          screen.getByText('Ajoutez une image pour mettre votre offre à la une')
+        ).toBeInTheDocument()
+
+        await userEvent.click(screen.getByText('Ajouter une image'))
+
+        // dialog: import img
+        const inputField = screen.getByLabelText(
+          'Importer une image depuis l’ordinateur'
+        )
+        await userEvent.upload(inputField, mockFile)
+
+        // dialog: crop img
+        expect(screen.getByText('Modifier une image')).toBeInTheDocument()
+        await userEvent.click(screen.getByText('Suivant'))
+
+        // dialog: img preview
+        expect(
+          screen.getByText(
+            'Prévisualisation de votre image dans l’application pass Culture'
+          )
+        ).toBeInTheDocument()
+
+        await userEvent.click(screen.getByText('Enregistrer'))
+        expect(api.createThumbnail).toHaveBeenCalled()
+
+        expect(
+          screen.getByText(
+            'Une erreur est survenue lors de la sauvegarde de votre image'
+          )
+        ).toBeInTheDocument()
       })
 
       it('should notify when adding headline offer fails', async () => {

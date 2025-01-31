@@ -141,14 +141,11 @@ export const ModalImageEdit = ({
     }
   }
 
-  if (!isReady) {
-    return null
-  }
-
   return !image ? (
     <ModalImageUploadBrowser
       onImageClientUpload={onImageClientUpload}
       mode={mode}
+      isReady={isReady}
     />
   ) : !croppingRect || !editedImageDataUrl ? (
     <ModalImageCrop

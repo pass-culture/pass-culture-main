@@ -21,7 +21,7 @@ const renderImageUploadBrowserForm = (
   mode: UploaderModeEnum = UploaderModeEnum.OFFER
 ) => {
   return renderWithProviders(
-    <ImageUploadBrowserForm onSubmit={onSubmit} mode={mode} />
+    <ImageUploadBrowserForm onSubmit={onSubmit} mode={mode} isReady />
   )
 }
 
