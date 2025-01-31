@@ -179,58 +179,22 @@ export const onSubcategoryChange = async ({
   })
 }
 
-export const buildVenueOptions = (
+export const formatVenuesOptions = (
   venues: VenueListItemResponseModel[],
-  areSuggestedCategoriesEnabled: boolean,
-  isOfferAddressEnabled: boolean
+  isOnline: boolean
 ) => {
-  let venueOptions = venues
-    .filter((venue) => !areSuggestedCategoriesEnabled || !venue.isVirtual)
+  //  We want to display the virtual venues only if there are no physical venues available
+  //  We also want to prevent selecting a virtual venue for a physical offer form
+  const hasAtLeastOnePhysicalVenue = venues.some((v) => !v.isVirtual)
+  return venues
+    .filter((venue) =>
+      hasAtLeastOnePhysicalVenue || !isOnline ? !venue.isVirtual : true
+    )
     .map((venue) => ({
       value: venue.id.toString(),
       label: computeVenueDisplayName(venue),
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
-  if (venueOptions.length > 1) {
-    venueOptions = [
-      {
-        value: '',
-        label: isOfferAddressEnabled
-          ? 'Sélectionner la structure'
-          : 'Sélectionner le partenaire',
-      },
-      ...venueOptions,
-    ]
-  }
-
-  return venueOptions
-}
-
-type SetDefaultInitialValuesProps = {
-  filteredVenues: VenueListItemResponseModel[]
-  areSuggestedSubcategoriesUsed: boolean
-}
-
-export function setDefaultInitialValues({
-  filteredVenues,
-  areSuggestedSubcategoriesUsed,
-}: SetDefaultInitialValuesProps): DetailsFormValues {
-  let venueId = ''
-
-  const venues = areSuggestedSubcategoriesUsed
-    ? filteredVenues.filter((v) => !v.isVirtual)
-    : filteredVenues
-
-  if (venues.length === 1) {
-    venueId = String(venues[0].id)
-  } else if (venues.length === 0 && filteredVenues.length > 0) {
-    venueId = String(filteredVenues[0].id)
-  }
-
-  return {
-    ...DEFAULT_DETAILS_FORM_VALUES,
-    venueId,
-  }
 }
 
 type SetDefaultInitialValuesFromOfferProps = {

@@ -12,10 +12,9 @@ import {
   buildShowSubTypeOptions,
   completeSubcategoryConditionalFields,
   buildSubcategoryOptions,
-  buildVenueOptions,
+  formatVenuesOptions,
   deSerializeDurationMinutes,
   serializeExtraData,
-  setDefaultInitialValues,
   setDefaultInitialValuesFromOffer,
   setFormReadOnlyFields,
   serializeDetailsPostData,
@@ -150,69 +149,46 @@ describe('buildSubcategoryFields', () => {
   })
 })
 
-describe('buildVenueOptions', () => {
-  it('should build venues options', () => {
-    expect(
-      buildVenueOptions(
-        [venueListItemFactory({}), venueListItemFactory({})],
-        false,
-        false
-      )
-    ).toStrictEqual([
-      {
-        label: 'Sélectionner le partenaire',
-        value: '',
-      },
-      {
-        label: 'Le nom du lieu 1',
-        value: '1',
-      },
-      {
-        label: 'Le nom du lieu 2',
-        value: '2',
-      },
-    ])
+describe('formatVenuesOptions', () => {
+  it('should format venues as options', () => {
+    const formattedVenuesOptions = formatVenuesOptions(
+      [
+        venueListItemFactory({ isVirtual: false, id: 10 }),
+        venueListItemFactory({ isVirtual: false, id: 3 }),
+      ],
+      false
+    )
+    expect(formattedVenuesOptions).toEqual(
+      expect.arrayContaining([expect.objectContaining({ value: '10' })])
+    )
+
+    expect(formattedVenuesOptions).toEqual(
+      expect.arrayContaining([expect.objectContaining({ value: '3' })])
+    )
   })
-})
 
-describe('setDefaultInitialValues', () => {
-  it('should set default initial values', () => {
-    expect(
-      setDefaultInitialValues({
-        filteredVenues: [venueListItemFactory({}), venueListItemFactory({})],
-        areSuggestedSubcategoriesUsed: false,
-      })
-    ).toStrictEqual({
-      author: '',
-      categoryId: '',
-      description: '',
-      durationMinutes: '',
-      ean: '',
-      gtl_id: '',
-      name: '',
-      performer: '',
-      showSubType: '',
-      showType: '',
-      speaker: '',
-      stageDirector: '',
-      subcategoryConditionalFields: [],
-      suggestedSubcategory: '',
-      subcategoryId: '',
-      venueId: '',
-      visa: '',
-      productId: '',
-      callId: '',
-    })
+  it('should exclude digital venues if a physcal venue is available', () => {
+    const formattedVenuesOptions = formatVenuesOptions(
+      [
+        venueListItemFactory({ isVirtual: true, id: 10 }),
+        venueListItemFactory({ isVirtual: false, id: 3 }),
+      ],
+      false
+    )
+    expect(formattedVenuesOptions).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ value: '10' })])
+    )
 
-    expect(
-      setDefaultInitialValues({
-        filteredVenues: [venueListItemFactory({ id: 666 })],
-        areSuggestedSubcategoriesUsed: false,
-      })
-    ).toStrictEqual(
-      expect.objectContaining({
-        venueId: '666',
-      })
+    expect(formattedVenuesOptions).toEqual(
+      expect.arrayContaining([expect.objectContaining({ value: '3' })])
+    )
+
+    const formattedDigitalVenuesOptions = formatVenuesOptions(
+      [venueListItemFactory({ isVirtual: true, id: 10 })],
+      true
+    )
+    expect(formattedDigitalVenuesOptions).toEqual(
+      expect.arrayContaining([expect.objectContaining({ value: '10' })])
     )
   })
 })

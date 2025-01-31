@@ -7,7 +7,6 @@ import {
   CategoryResponseModel,
   SubcategoryResponseModel,
   SuggestedSubcategoriesResponseModel,
-  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
@@ -19,10 +18,7 @@ import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonIma
 import fullMoreIcon from 'icons/full-more.svg'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
-import {
-  buildVenueOptions,
-  isSubCategoryCD,
-} from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
+import { isSubCategoryCD } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -38,7 +34,7 @@ const DEBOUNCE_TIME_BEFORE_REQUEST = 400
 type DetailsFormProps = {
   isEanSearchDisplayed: boolean
   isProductBased: boolean
-  filteredVenues: VenueListItemResponseModel[]
+  venuesOptions: { label: string; value: string }[]
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
   readonlyFields: string[]
@@ -50,7 +46,7 @@ type DetailsFormProps = {
 export const DetailsForm = ({
   isEanSearchDisplayed,
   isProductBased,
-  filteredVenues,
+  venuesOptions,
   filteredCategories,
   filteredSubcategories,
   readonlyFields: readOnlyFields,
@@ -70,12 +66,6 @@ export const DetailsForm = ({
     values
   const { offer, subCategories } = useIndividualOfferContext()
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
-  const venueOptions = buildVenueOptions(
-    filteredVenues,
-    areSuggestedSubcategoriesUsed,
-    offerAddressEnabled
-  )
 
   async function getSuggestedSubcategories() {
     if (!areSuggestedSubcategoriesUsed && !offer) {
@@ -131,14 +121,14 @@ export const DetailsForm = ({
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
 
   const showAddVenueBanner =
-    !areSuggestedSubcategoriesUsed && venueOptions.length === 0
+    !areSuggestedSubcategoriesUsed && venuesOptions.length === 0
 
   const isSuggestedSubcategoryDisplayed =
     areSuggestedSubcategoriesUsed && !offer && !isProductBased
 
   const showOtherAddVenueBanner =
     areSuggestedSubcategoriesUsed &&
-    venueOptions.length === 0 &&
+    venuesOptions.length === 0 &&
     subcategory?.onlineOfflinePlatform === CATEGORY_STATUS.OFFLINE
 
   return (
@@ -166,12 +156,18 @@ export const DetailsForm = ({
         )}
         {!showAddVenueBanner && (
           <>
-            {venueOptions.length > 1 && (
+            {venuesOptions.length > 1 && (
               <FormLayout.Row>
                 <Select
                   label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
                   name="venueId"
-                  options={venueOptions}
+                  options={venuesOptions}
+                  defaultOption={{
+                    value: '',
+                    label: offerAddressEnabled
+                      ? 'Sélectionner la structure'
+                      : 'Sélectionner le partenaire',
+                  }}
                   onChange={async (ev) => {
                     if (isProductBased) {
                       return
@@ -181,7 +177,7 @@ export const DetailsForm = ({
                   }}
                   disabled={
                     readOnlyFields.includes('venueId') ||
-                    venueOptions.length === 1
+                    venuesOptions.length === 1
                   }
                   {...(isSuggestedSubcategoryDisplayed && {
                     'aria-controls': 'suggested-subcategories',
