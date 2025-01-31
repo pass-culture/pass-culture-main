@@ -14,12 +14,12 @@
   <div class="pt-3 px-5">
     {% set procedure_id = get_setting("DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID") %}
     {% set link = "https://www.demarches-simplifiees.fr/procedures/" + procedure_id|string %}
-    <h2 class="fw-light">
+    <h1>
       Demandes de modifications – démarche <a href="{{ link }}"
     class="link-primary"
     target="_blank"
     title="Ouvrir la démarche DS">{{ procedure_id }} <i class="bi bi-box-arrow-up-right"></i></a>
-    </h2>
+    </h1>
     <div class="filters-container">{{ forms.build_filters_form(form, dst) }}</div>
     <div>
       {% if rows and rows.total > 0 %}

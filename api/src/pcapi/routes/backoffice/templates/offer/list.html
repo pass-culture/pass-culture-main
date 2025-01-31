@@ -7,7 +7,9 @@
 {% block page %}
   <div class="pt-3 px-5">
     <div class="d-flex justify-content-between">
-      <h2 class="fw-light p-2">Offres individuelles</h2>
+      <div class="p-2">
+        <h1>Offres individuelles</h1>
+      </div>
       {{ display_selector("form-selector-individual-offer", (("Recherche exhaustive", "Toutes les offres, même celles non réservables","advanced-search", page=="offer") , ("Recherche dans l'app", "Même résultats que dans l’app jeune : offres réservables", "algolia-search", page=="algolia")), "p-3") }}
       <div class="p-2"></div>
     </div>
