@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
@@ -12,7 +12,9 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { hasStatusCode } from 'commons/core/OfferEducational/utils/hasStatusCode'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 import { sortByLabel } from 'commons/utils/strings'
+import { CollectiveBudgetDialog } from 'components/CollectiveBudgetInformation/CollectiveBudgetDialog'
 import { Newsletter } from 'components/Newsletter/Newsletter'
 import { AddBankAccountCallout } from 'pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
@@ -34,6 +36,7 @@ export const Homepage = (): JSX.Element => {
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
   const remoteConfigData = useRemoteConfigParams()
+  const [isCollectiveDialogOpen, setIsCollectiveDialogOpen] = useState(true)
 
   useEffect(() => {
     const callApi = async () => {
@@ -107,54 +110,79 @@ export const Homepage = (): JSX.Element => {
     )
   }
 
+  const LOCAL_STORAGE_HAS_SEEN_COLLECTIVE_BUDGET_INFO_KEY =
+    'COLLECTIVE_BUDGET_INFORMATION_DIALOG'
+  const isLocalStorageAvailable = storageAvailable('localStorage')
+
+  const shouldShowCollectiveBudgetDialog =
+    selectedOfferer?.allowedOnAdage &&
+    (!isLocalStorageAvailable ||
+      localStorage.getItem(
+        LOCAL_STORAGE_HAS_SEEN_COLLECTIVE_BUDGET_INFO_KEY
+      ) !== 'true')
+
+  const onCloseCollectiveBudgetDialog = () => {
+    localStorage.setItem(
+      LOCAL_STORAGE_HAS_SEEN_COLLECTIVE_BUDGET_INFO_KEY,
+      'true'
+    )
+    setIsCollectiveDialogOpen(false)
+  }
+
   return (
-    <Layout mainHeading='Bienvenue dans l’espace acteurs culturels'>
-      <div className={styles['reimbursements-banners']}>
-        <AddBankAccountCallout offerer={selectedOfferer} />
-        <LinkVenueCallout offerer={selectedOfferer} />
-        <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
-      </div>
-      {!selectedOffererQuery.isValidating &&
-        (selectedOffererQuery.data || selectedOffererQuery.error) && (
-          <OffererBanners
-            isUserOffererValidated={isUserOffererValidated}
-            offerer={selectedOfferer}
-          />
-        )}
-
-      {selectedOfferer?.isValidated && selectedOfferer.isActive && (
-        <section className={styles['section']}>
-          <StatisticsDashboard offerer={selectedOfferer} />
-        </section>
-      )}
-
-      <section className={styles['section']} ref={offerersRef}>
-        <Offerers
-          selectedOfferer={selectedOfferer}
-          isLoading={selectedOffererQuery.isLoading}
-          offererOptions={offererOptions}
-          isUserOffererValidated={isUserOffererValidated}
-          venueTypes={venueTypes}
-        />
-      </section>
-
-      {isUserOffererValidated &&
-        hasNoVenueVisible &&
-        selectedOfferer !== null && (
-          <section className={styles['step-section']}>
-            <VenueOfferSteps
-              hasVenue={!hasNoVenueVisible}
+    <>
+      <Layout mainHeading="Bienvenue dans l’espace acteurs culturels">
+        <div className={styles['reimbursements-banners']}>
+          <AddBankAccountCallout offerer={selectedOfferer} />
+          <LinkVenueCallout offerer={selectedOfferer} />
+          <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
+        </div>
+        {!selectedOffererQuery.isValidating &&
+          (selectedOffererQuery.data || selectedOffererQuery.error) && (
+            <OffererBanners
+              isUserOffererValidated={isUserOffererValidated}
               offerer={selectedOfferer}
             />
+          )}
+
+        {selectedOfferer?.isValidated && selectedOfferer.isActive && (
+          <section className={styles['section']}>
+            <StatisticsDashboard offerer={selectedOfferer} />
           </section>
         )}
 
-      <section className={styles['section']} ref={profileRef}>
-        <div className={styles['newsletter']}>
-          <Newsletter />
-        </div>
-      </section>
-    </Layout>
+        <section className={styles['section']} ref={offerersRef}>
+          <Offerers
+            selectedOfferer={selectedOfferer}
+            isLoading={selectedOffererQuery.isLoading}
+            offererOptions={offererOptions}
+            isUserOffererValidated={isUserOffererValidated}
+            venueTypes={venueTypes}
+          />
+        </section>
+
+        {isUserOffererValidated &&
+          hasNoVenueVisible &&
+          selectedOfferer !== null && (
+            <section className={styles['step-section']}>
+              <VenueOfferSteps
+                hasVenue={!hasNoVenueVisible}
+                offerer={selectedOfferer}
+              />
+            </section>
+          )}
+
+        <section className={styles['section']} ref={profileRef}>
+          <div className={styles['newsletter']}>
+            <Newsletter />
+          </div>
+        </section>
+      </Layout>
+      <CollectiveBudgetDialog
+        open={isCollectiveDialogOpen && shouldShowCollectiveBudgetDialog}
+        onClose={onCloseCollectiveBudgetDialog}
+      />
+    </>
   )
 }
 
