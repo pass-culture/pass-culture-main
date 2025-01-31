@@ -111,8 +111,8 @@ class PublicAPIEndpointBaseHelper:
 
         return plain_api_key, provider
 
-    def setup_venue(self) -> offerers_models.Venue:
-        return offerers_factories.VenueFactory()
+    def setup_venue(self, **kwargs: typing.Any) -> offerers_models.Venue:
+        return offerers_factories.VenueFactory(**kwargs)
 
 
 # pylint: disable=abstract-method
@@ -140,7 +140,7 @@ class PublicAPIVenueEndpointHelper(PublicAPIEndpointBaseHelper):
         self, provider_has_ticketing_urls=True
     ) -> tuple[str, providers_models.VenueProvider]:
         plain_api_key, provider = self.setup_provider(provider_has_ticketing_urls)
-        venue = self.setup_venue()
+        venue = self.setup_venue(managingOfferer=provider.offererProvider.offerer)
         venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 
         return plain_api_key, venue_provider

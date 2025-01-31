@@ -152,18 +152,15 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert educational_institution.isActive is True
 
     def test_change_venue(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-        venue2 = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        api_key = offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        venue2 = offerers_factories.VenueFactory(venueProviders=[venue_provider], managingOfferer=api_key.offerer)
         offer = educational_factories.CollectiveOfferFactory(
             imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         payload = {
             "venueId": venue2.id,
@@ -174,13 +171,11 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             },
         }
 
-        # When
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 200
 
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
@@ -1294,6 +1289,31 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
             payload=self.offer_venue_offerer_venue("unknown and invalid id"),
             status_code=400,
             json_error={"offerVenue.venueId": ["invalid literal for int() with base 10: 'unknown and invalid id'"]},
+        )
+
+    def test_offer_venue_is_not_updated_when_venue_does_not_exist(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        self.assert_offer_venue_is_not_updated(
+            client=client,
+            api_key=plain_api_key,
+            venue_provider=venue_provider,
+            src=self.offer_venue_offerer_venue(venue_provider.venueId),
+            payload=self.offer_venue_offerer_venue(venue_id=999999),
+            status_code=404,
+            json_error={"offerVenue.venueId": ["Ce lieu n'a pas été trouvé."]},
+        )
+
+    def test_offer_venue_is_not_updated_when_offerer_does_not_match(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        other_venue = offerers_factories.VenueFactory()
+        self.assert_offer_venue_is_not_updated(
+            client=client,
+            api_key=plain_api_key,
+            venue_provider=venue_provider,
+            src=self.offer_venue_offerer_venue(venue_provider.venueId),
+            payload=self.offer_venue_offerer_venue(venue_id=other_venue.id),
+            status_code=404,
+            json_error={"offerVenue.venueId": ["Ce lieu n'a pas été trouvé."]},
         )
 
     def test_offer_venue_is_not_updated_when_updating_with_current_values(self, client):
