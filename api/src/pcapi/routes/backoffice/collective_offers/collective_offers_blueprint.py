@@ -111,7 +111,32 @@ SEARCH_FIELD_TO_PYTHON = {
         "column": aliased_stock.price,
         "inner_join": "stock",
     },
+    "MINISTRY": {
+        "field": "ministry",
+        "column": educational_models.EducationalDeposit.ministry,
+        "inner_join": "deposit",
+    },
 }
+
+
+def _get_educational_year_subquery(
+    stock_class: type[educational_models.CollectiveStock],
+) -> sa.sql.selectable.ScalarSelect:
+    return (
+        sa.select(educational_models.EducationalYear.adageId)
+        .filter(
+            aliased_stock.startDatetime.between(
+                educational_models.EducationalYear.beginningDate,
+                educational_models.EducationalYear.expirationDate,
+            )
+        )
+        # Final deposit when set, temporary deposit otherwise
+        .order_by(sa.desc(educational_models.EducationalDeposit.isFinal))
+        .limit(1)
+        .correlate(stock_class)
+        .scalar_subquery()
+    )
+
 
 JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
     "stock": [
@@ -128,6 +153,31 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
             "name": "venue",
             "args": (offerers_models.Venue, educational_models.CollectiveOffer.venue),
         }
+    ],
+    "deposit": [
+        {
+            "name": "stock",
+            "args": (
+                aliased_stock,
+                educational_models.CollectiveOffer.collectiveStock,
+            ),
+        },
+        {
+            "name": "institution",
+            "args": (educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution),
+        },
+        {
+            "name": "deposit",
+            "args": (
+                educational_models.EducationalDeposit,
+                sa.and_(
+                    educational_models.EducationalDeposit.educationalInstitutionId
+                    == educational_models.EducationalInstitution.id,
+                    educational_models.EducationalDeposit.educationalYearId
+                    == _get_educational_year_subquery(aliased_stock),
+                ),
+            ),
+        },
     ],
 }
 
@@ -247,17 +297,7 @@ def _get_collective_offers(
                     educational_models.EducationalDeposit.educationalInstitutionId
                     == educational_models.EducationalInstitution.id,
                     educational_models.EducationalDeposit.educationalYearId
-                    == sa.select(educational_models.EducationalYear.adageId).filter(
-                        educational_models.CollectiveStock.startDatetime.between(
-                            educational_models.EducationalYear.beginningDate,
-                            educational_models.EducationalYear.expirationDate,
-                        )
-                    )
-                    # Final deposit when set, temporary deposit otherwise
-                    .order_by(sa.desc(educational_models.EducationalDeposit.isFinal))
-                    .limit(1)
-                    .correlate(educational_models.CollectiveStock)
-                    .scalar_subquery(),
+                    == _get_educational_year_subquery(educational_models.CollectiveStock),
                 ),
             )
             .outerjoin(
