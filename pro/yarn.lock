@@ -2105,10 +2105,10 @@
   resolved "https://registry.yarnpkg.com/@storybook/components/-/components-8.5.2.tgz#987eb741c39c1edeef87347ebd00555f13ebc859"
   integrity sha512-o5vNN30sGLTJBeGk5SKyekR4RfTpBTGs2LDjXGAmpl2MRhzd62ix8g+KIXSR0rQ55TCvKUl5VR2i99ttlRcEKw==
 
-"@storybook/core@8.5.2":
-  version "8.5.2"
-  resolved "https://registry.yarnpkg.com/@storybook/core/-/core-8.5.2.tgz#c51c84a37f6d5ca7f7b74114f196e6e1c602cce2"
-  integrity sha512-rCOpXZo2XbdKVnZiv8oC9FId/gLkStpKGGL7hhdg/RyjcyUyTfhsvaf7LXKZH2A0n/UpwFxhF3idRfhgc1XiSg==
+"@storybook/core@8.5.3":
+  version "8.5.3"
+  resolved "https://registry.yarnpkg.com/@storybook/core/-/core-8.5.3.tgz#a353472e5069d127af7ada97f9db601c3d3cd1b5"
+  integrity sha512-ZLlr2pltbj/hmC54lggJTnh09FCAJR62lIdiXNwa+V+/eJz0CfD8tfGmZGKPSmaQeZBpMwAOeRM97k2oLPF+0w==
   dependencies:
     "@storybook/csf" "0.1.12"
     better-opn "^3.0.2"
@@ -7837,12 +7837,12 @@ storybook-addon-remix-react-router@^3.1.0:
     compare-versions "^6.0.0"
     react-inspector "6.0.2"
 
-storybook@^8.5.2:
-  version "8.5.2"
-  resolved "https://registry.yarnpkg.com/storybook/-/storybook-8.5.2.tgz#8d71481c019510c9ed1bdb6c1593d965be3826b6"
-  integrity sha512-pf84emQ7Pd5jBdT2gzlNs4kRaSI3pq0Lh8lSfV+YqIVXztXIHU+Lqyhek2Lhjb7btzA1tExrhJrgQUsIji7i7A==
+storybook@^8.5.3:
+  version "8.5.3"
+  resolved "https://registry.yarnpkg.com/storybook/-/storybook-8.5.3.tgz#9758f0da8a9ee4f6a600370f64833fa5d3079c96"
+  integrity sha512-2WtNBZ45u1AhviRU+U+ld588tH8gDa702dNSq5C8UBaE9PlOsazGsyp90dw1s9YRvi+ejrjKAupQAU0GwwUiVg==
   dependencies:
-    "@storybook/core" "8.5.2"
+    "@storybook/core" "8.5.3"
 
 "string-width-cjs@npm:string-width@^4.2.0":
   version "4.2.3"
