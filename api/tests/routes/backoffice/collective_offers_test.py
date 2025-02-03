@@ -1101,7 +1101,14 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
     endpoint = "backoffice_web.collective_offer.batch_reject_collective_offers"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    def test_batch_reject_offers(self, legit_user, authenticated_client):
+    @pytest.mark.parametrize(
+        "reason",
+        [
+            educational_models.CollectiveOfferRejectionReason.WRONG_PRICE,
+            educational_models.CollectiveOfferRejectionReason.MAX_BUDGET_REACHED,
+        ],
+    )
+    def test_batch_reject_offers(self, legit_user, authenticated_client, reason):
         collective_offers = educational_factories.CollectiveOfferFactory.create_batch(
             3, validation=OfferValidationStatus.PENDING
         )
@@ -1111,7 +1118,7 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "object_ids": parameter_ids,
-                "reason": educational_models.CollectiveOfferRejectionReason.WRONG_PRICE.value,
+                "reason": reason.value,
             },
         )
 
@@ -1129,17 +1136,18 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
             assert collective_offer.lastValidationType is OfferValidationType.MANUAL
             assert collective_offer.validation is OfferValidationStatus.REJECTED
             assert collective_offer.lastValidationAuthor == legit_user
-            assert collective_offer.rejectionReason == educational_models.CollectiveOfferRejectionReason.WRONG_PRICE
+            assert collective_offer.rejectionReason == reason
 
         assert len(mails_testing.outbox) == 3
 
-        received_dict = {email["To"]: email["template"] for email in mails_testing.outbox}
-        expected_dict = {
-            collective_offers[0].venue.bookingEmail: asdict(TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value),
-            collective_offers[1].venue.bookingEmail: asdict(TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value),
-            collective_offers[2].venue.bookingEmail: asdict(TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value),
+        assert {email["To"] for email in mails_testing.outbox} == {
+            collective_offers[0].venue.bookingEmail,
+            collective_offers[1].venue.bookingEmail,
+            collective_offers[2].venue.bookingEmail,
         }
-        assert received_dict == expected_dict
+        for email_sent in mails_testing.outbox:
+            assert email_sent["template"] == asdict(TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value)
+            assert email_sent["params"]["REJECTION_REASON"] == reason.value
 
     def test_batch_reject_collective_offers_wrong_id(self, legit_user, authenticated_client):
         fake_offer_ids = [123, 456]
