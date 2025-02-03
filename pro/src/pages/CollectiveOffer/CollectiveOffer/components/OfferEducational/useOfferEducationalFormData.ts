@@ -7,12 +7,12 @@ import {
   GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
 import {
-  GET_EDUCATIONAL_DOMAINS_QUERY_KEY,
   GET_EDUCATIONAL_OFFERERS_QUERY_KEY,
   GET_NATIONAL_PROGRAMS_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { serializeEducationalOfferer } from 'commons/core/OfferEducational/utils/serializeEducationalOfferer'
 import { SelectOption } from 'commons/custom_types/form'
+import { useEducationalDomains } from 'commons/hooks/swr/useEducationalDomains'
 
 type OfferEducationalFormData = {
   domains: SelectOption[]
@@ -29,9 +29,7 @@ export const useOfferEducationalFormData = (
   isReady: boolean
 } => {
   const { data: educationalDomains, isLoading: loadingEducationalDomains } =
-    useSWR(GET_EDUCATIONAL_DOMAINS_QUERY_KEY, () =>
-      api.listEducationalDomains()
-    )
+    useEducationalDomains()
 
   const { data: nationalPrograms, isLoading: loadingNationalPrograms } = useSWR(
     GET_NATIONAL_PROGRAMS_QUERY_KEY,
@@ -53,7 +51,7 @@ export const useOfferEducationalFormData = (
       (educationalOfferer) => educationalOfferer.id === targetOffererId
     )
 
-  const domains = (educationalDomains ?? []).map((domain) => ({
+  const domains = educationalDomains.map((domain) => ({
     value: domain.id.toString(),
     label: domain.name,
   }))

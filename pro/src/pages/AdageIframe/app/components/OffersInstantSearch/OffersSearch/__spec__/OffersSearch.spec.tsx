@@ -5,6 +5,7 @@ import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { api } from 'apiClient/api'
 import { StudentLevels } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
@@ -161,8 +162,9 @@ describe('offersSearch component', () => {
     lat: 10,
     lon: 10,
   }
+  const notifyError = vi.fn()
 
-  beforeEach(() => {
+  beforeEach(async () => {
     props = {
       setGeoRadius: setGeoRadiusMock,
       setFilters: () => {},
@@ -172,6 +174,14 @@ describe('offersSearch component', () => {
       observe: vi.fn(),
       unobserve: vi.fn(),
       disconnect: vi.fn(),
+    }))
+
+    const notifsImport = (await vi.importActual(
+      'commons/hooks/useNotification'
+    )) as ReturnType<typeof useNotification.useNotification>
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+      ...notifsImport,
+      error: notifyError,
     }))
   })
 
@@ -410,11 +420,13 @@ describe('offersSearch component', () => {
   })
 
   it('should show an error message notification when domains could not be fetched', async () => {
-    vi.spyOn(api, 'listEducationalDomains').mockRejectedValueOnce(null)
+    vi.spyOn(api, 'listEducationalDomains').mockRejectedValueOnce('error')
 
     renderOffersSearchComponent(props, user)
 
-    expect(await screen.findByText(GET_DATA_ERROR_MESSAGE)).toBeInTheDocument()
+    await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
+
+    expect(notifyError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
   })
 
   it('should display suggestions if there are no search results', async () => {

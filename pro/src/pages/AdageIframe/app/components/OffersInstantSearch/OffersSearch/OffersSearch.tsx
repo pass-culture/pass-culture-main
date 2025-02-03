@@ -6,9 +6,10 @@ import { useSearchParams } from 'react-router-dom'
 import useSWRMutation from 'swr/mutation'
 
 import { AdageFrontRoles, TrackingFilterBody } from 'apiClient/adage'
-import { api, apiAdage } from 'apiClient/api'
+import { apiAdage } from 'apiClient/api'
 import { LOG_TRACKING_FILTER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { useEducationalDomains } from 'commons/hooks/swr/useEducationalDomains'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useIsElementVisible } from 'commons/hooks/useIsElementVisible'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -19,7 +20,6 @@ import {
 import { adageQuerySelector } from 'commons/store/adageFilter/selectors'
 import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
-import { Option } from 'pages/AdageIframe/app/types'
 
 import {
   DEFAULT_GEO_RADIUS,
@@ -63,8 +63,6 @@ export const OffersSearch = ({
   const notification = useNotification()
   const adageQueryFromSelector = useSelector(adageQuerySelector)
 
-  const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
-
   const { scopedResults } = useInstantSearch()
 
   const mainOffersSearchResults = scopedResults.find(
@@ -103,21 +101,17 @@ export const OffersSearch = ({
     ) => apiAdage.logTrackingFilter(options.arg)
   )
 
-  useEffect(() => {
-    const getAllDomains = async () => {
-      try {
-        const result = await api.listEducationalDomains()
+  const { data: educationalDomains, error: educationalDomainsApiError } =
+    useEducationalDomains()
 
-        return setDomainsOptions(
-          result.map(({ id, name }) => ({ value: id, label: name }))
-        )
-      } catch {
-        notification.error(GET_DATA_ERROR_MESSAGE)
-      }
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getAllDomains()
-  }, [notification])
+  if (educationalDomainsApiError) {
+    notification.error(GET_DATA_ERROR_MESSAGE)
+  }
+
+  const domainsOptions = educationalDomains.map(({ id, name }) => ({
+    value: id,
+    label: name,
+  }))
 
   function handleSubmit() {
     resetUrlSearchFilterParams()

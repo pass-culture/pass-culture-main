@@ -4,11 +4,9 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel } from 'apiClient/v1'
-import {
-  GET_EDUCATIONAL_DOMAINS_QUERY_KEY,
-  GET_EDUCATIONAL_STATUSES_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
+import { GET_EDUCATIONAL_STATUSES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { SelectOption } from 'commons/custom_types/form'
+import { useEducationalDomains } from 'commons/hooks/swr/useEducationalDomains'
 import { getLastCollectiveDmsApplication } from 'commons/utils/getLastCollectiveDmsApplication'
 import { PartnerPageCollectiveSection } from 'pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageCollectiveSection'
 import { Callout } from 'ui-kit/Callout/Callout'
@@ -32,19 +30,19 @@ export const CollectiveDataEdition = ({
     venueId: string
   }>()
 
-  const domainsQuery = useSWR([GET_EDUCATIONAL_DOMAINS_QUERY_KEY], () =>
-    api.listEducationalDomains()
-  )
+  const { data: educationalDomains, isLoading: areEducationalDomainsLoading } =
+    useEducationalDomains()
+
   const educationalStatusesQuery = useSWR(
     [GET_EDUCATIONAL_STATUSES_QUERY_KEY],
     () => api.getVenuesEducationalStatuses()
   )
 
-  const domains: SelectOption[] =
-    domainsQuery.data?.map((domain) => ({
-      value: domain.id.toString(),
-      label: domain.name,
-    })) ?? []
+  const domains: SelectOption[] = educationalDomains.map((domain) => ({
+    value: domain.id.toString(),
+    label: domain.name,
+  }))
+
   const statuses: SelectOption[] =
     educationalStatusesQuery.data?.statuses.map((status) => ({
       value: status.id,
@@ -59,7 +57,7 @@ export const CollectiveDataEdition = ({
     !venueId ||
     !offererId ||
     !venue ||
-    domainsQuery.isLoading ||
+    areEducationalDomainsLoading ||
     educationalStatusesQuery.isLoading
   ) {
     return <Spinner className={styles.spinner} />

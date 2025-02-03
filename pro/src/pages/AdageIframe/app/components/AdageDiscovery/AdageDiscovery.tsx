@@ -1,11 +1,11 @@
-import { createRef, useEffect, useRef, useState } from 'react'
+import { createRef, useRef } from 'react'
 
 import { AdagePlaylistType } from 'apiClient/adage'
-import { api, apiAdage } from 'apiClient/api'
+import { apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { useEducationalDomains } from 'commons/hooks/swr/useEducationalDomains'
 import { useIsElementVisible } from 'commons/hooks/useIsElementVisible'
 import { useNotification } from 'commons/hooks/useNotification'
-import { Option } from 'pages/AdageIframe/app/types'
 
 import styles from './AdageDiscovery.module.scss'
 import { AdageDiscoveryBanner } from './AdageDiscoveryBanner/AdageDiscoveryBanner'
@@ -27,7 +27,6 @@ import { TrackerElementArg } from './types'
 export const AdageDiscovery = () => {
   const hasSeenAllPlaylist = useRef<boolean>(false)
   const params = new URLSearchParams(location.search)
-  const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
 
   const footerSuggestion = createRef<HTMLDivElement>()
   const [isFooterSuggestionVisible] = useIsElementVisible(footerSuggestion)
@@ -42,22 +41,17 @@ export const AdageDiscovery = () => {
     hasSeenAllPlaylist.current = true
   }
 
-  useEffect(() => {
-    const getAllDomains = async () => {
-      try {
-        const result = await api.listEducationalDomains()
+  const { data: educationalDomains, error: educationalDomainsApiError } =
+    useEducationalDomains()
 
-        return setDomainsOptions(
-          result.map(({ id, name }) => ({ value: id, label: name }))
-        )
-      } catch {
-        notification.error(GET_DATA_ERROR_MESSAGE)
-      }
-    }
+  if (educationalDomainsApiError) {
+    notification.error(GET_DATA_ERROR_MESSAGE)
+  }
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getAllDomains()
-  }, [notification])
+  const domainsOptions = educationalDomains.map(({ id, name }) => ({
+    value: id,
+    label: name,
+  }))
 
   function onWholePlaylistSeen({
     playlistId,
