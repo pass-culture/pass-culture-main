@@ -23,7 +23,7 @@ import styles from '../OfferType.module.scss'
 import { OfferTypeFormValues } from '../types'
 
 interface CollectiveOfferTypeProps {
-  offerer?: GetOffererResponseModel
+  offerer: GetOffererResponseModel | null
 }
 
 export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {

@@ -1,10 +1,8 @@
 import { Outlet } from 'react-router-dom'
-import useSWR from 'swr'
 
-import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
-import { GET_OFFERER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { ReimbursementsTabs } from 'components/ReimbursementsTabs/ReimbursementsTabs'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -17,13 +15,13 @@ export type ReimbursementsContextProps = {
 
 export const Reimbursements = (): JSX.Element => {
   const selectedOffererId = useCurrentUser().selectedOffererId
+  const {
+    data: selectedOfferer,
+    error: offererApiError,
+    isLoading: isOffererLoading
+  } = useOfferer(selectedOffererId)
 
-  const offererQuery = useSWR(
-    !selectedOffererId ? null : [GET_OFFERER_QUERY_KEY, selectedOffererId],
-    ([, offererId]) => api.getOfferer(Number(offererId))
-  )
-
-  if (offererQuery.isLoading || offererQuery.error) {
+  if (isOffererLoading || offererApiError) {
     return (
       <Layout>
         <Spinner />
@@ -36,9 +34,8 @@ export const Reimbursements = (): JSX.Element => {
       <div className={styles['reimbursements-container']}>
         <h1 className={styles['title']}>Gestion financière</h1>
         <div>
-          <ReimbursementsTabs selectedOfferer={offererQuery.data} />
-
-          <Outlet context={{ selectedOfferer: offererQuery.data }} />
+          <ReimbursementsTabs selectedOfferer={selectedOfferer} />
+          <Outlet context={{ selectedOfferer }} />
         </div>
       </div>
     </Layout>

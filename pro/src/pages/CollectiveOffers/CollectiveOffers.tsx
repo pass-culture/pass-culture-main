@@ -6,7 +6,6 @@ import { api } from 'apiClient/api'
 import { CollectiveOfferType } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
 import {
-  GET_OFFERER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { DEFAULT_PAGE } from 'commons/core/Offers/constants'
@@ -16,6 +15,7 @@ import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
@@ -48,15 +48,10 @@ export const CollectiveOffers = (): JSX.Element => {
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
 
-  const offererQuery = useSWR(
-    [GET_OFFERER_QUERY_KEY, offererId],
-    ([, offererIdParam]) =>
-      offererId === defaultCollectiveFilters.offererId
-        ? null
-        : api.getOfferer(Number(offererIdParam)),
-    { fallbackData: null }
+  const { data: offerer, isLoading: isOffererLoading, isValidating: isOffererValidating } = useOfferer(
+    offererId !== defaultCollectiveFilters.offererId ? offererId : null,
+    true
   )
-  const offerer = offererQuery.data
 
   const {
     data,
@@ -130,8 +125,8 @@ export const CollectiveOffers = (): JSX.Element => {
     <Layout mainHeading="Offres collectives">
       {/* When the venues are cached for a given offerer, we still need to reset the Screen component.
       SWR isLoading is only true when the data is not cached, while isValidating is always set to true when the key is updated */}
-      {offererQuery.isLoading ||
-      offererQuery.isValidating ||
+      {isOffererLoading ||
+      isOffererValidating ||
       isVenuesLoading ||
       isVenuesValidating ? (
         <Spinner />

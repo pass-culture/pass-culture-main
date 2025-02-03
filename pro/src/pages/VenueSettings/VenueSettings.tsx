@@ -4,12 +4,12 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { Layout } from 'app/App/layout/Layout'
 import {
-  GET_OFFERER_QUERY_KEY,
   GET_VENUE_LABELS_QUERY_KEY,
   GET_VENUE_PROVIDERS_QUERY_KEY,
   GET_VENUE_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -36,11 +36,7 @@ const VenueSettings = (): JSX.Element | null => {
     { fallbackData: [] }
   )
 
-  const offererQuery = useSWR(
-    [GET_OFFERER_QUERY_KEY, offererId],
-    ([, offererIdParam]) => api.getOfferer(Number(offererIdParam))
-  )
-  const offerer = offererQuery.data
+  const { data: offerer, isLoading: isOffererLoading } = useOfferer(offererId)
 
   const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
     api.getVenueTypes()
@@ -54,7 +50,7 @@ const VenueSettings = (): JSX.Element | null => {
   const venueProviders = venueProvidersQuery.data?.venue_providers
 
   if (
-    offererQuery.isLoading ||
+    isOffererLoading ||
     venueQuery.isLoading ||
     venueLabelsQuery.isLoading ||
     venueTypesQuery.isLoading ||

@@ -31,7 +31,7 @@ export interface CollectiveOfferSummaryCreationProps {
   offer:
     | GetCollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
-  offerer: GetOffererResponseModel | undefined
+  offerer?: GetOffererResponseModel | null
 }
 
 export const CollectiveOfferPreviewCreationScreen = ({

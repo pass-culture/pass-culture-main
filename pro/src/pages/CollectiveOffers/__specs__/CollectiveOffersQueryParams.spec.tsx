@@ -54,6 +54,13 @@ const renderOffers = async (
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [route],
+      storeOverrides: {
+        offerer: {
+          selectedOffererId: 1,
+          offererNames: [],
+          isOnboarded: true,
+        },
+      }
     }
   )
 

@@ -4,8 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferType as CollectiveOfferApiType } from 'apiClient/v1'
-import { GET_OFFERER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { CollectiveOfferType as CollectiveOfferApiType , GetOfferersNamesResponseModel } from 'apiClient/v1'
+import { GET_OFFERER_NAMES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
@@ -15,6 +15,7 @@ import {
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useSuggestedSubcategoriesAbTest } from 'commons/hooks/useSuggestedSubcategoriesAbTest'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
@@ -48,23 +49,15 @@ export const OfferTypeScreen = (): JSX.Element => {
     individualOfferSubtype: '',
   }
 
-  const offererQuery = useSWR(
-    [GET_OFFERER_QUERY_KEY, queryOffererId],
-    async function ([, offererIdParam]) {
-      if (!offererIdParam) {
-        //  If there is no offerer id in the url, consider the first offerer found in the user's offerers list
-        const offerers = await api.listOfferersNames()
-        if (offerers.offerersNames.length === 0) {
-          return
-        }
-        const firstoffererId = offerers.offerersNames[0].id
-        return api.getOfferer(firstoffererId)
-      }
-      return api.getOfferer(Number(offererIdParam))
-    }
+  const { data } = useSWR<GetOfferersNamesResponseModel | null, string, [string]>(
+    [GET_OFFERER_NAMES_QUERY_KEY],
+    () => api.listOfferersNames()
   )
+  const offerersNames = data?.offerersNames
 
-  const offerer = offererQuery.data
+  //  If there is no offerer id in the url, consider the first offerer found in the user's offerers list
+  const offererId = queryOffererId || offerersNames?.[0].id
+  const { data: offerer, isLoading: isOffererLoading } = useOfferer(offererId)
 
   const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
 
@@ -210,7 +203,7 @@ export const OfferTypeScreen = (): JSX.Element => {
                 )}
 
               {values.offerType === OFFER_TYPES.EDUCATIONAL &&
-                (offererQuery.isLoading ? (
+                (isOffererLoading ? (
                   <Spinner />
                 ) : (
                   <CollectiveOfferType offerer={offerer} />

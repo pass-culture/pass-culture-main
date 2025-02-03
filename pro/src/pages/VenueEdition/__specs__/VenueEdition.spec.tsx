@@ -29,7 +29,6 @@ const renderVenueEdition = (options?: RenderWithProvidersOptions) => {
     </Routes>,
     {
       user: sharedCurrentUserFactory(),
-
       initialRouterEntries: [
         `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/edition`,
       ],
@@ -41,6 +40,7 @@ const renderVenueEdition = (options?: RenderWithProvidersOptions) => {
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual('react-router-dom')),
   useParams: () => ({
+    offererId: '1',
     venueId: defaultGetVenue.id,
   }),
   useNavigate: () => vi.fn(),

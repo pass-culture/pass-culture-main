@@ -11,11 +11,11 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { Layout } from 'app/App/layout/Layout'
 import {
-  GET_OFFERER_QUERY_KEY,
   GET_VENUE_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { SelectOption } from 'commons/custom_types/form'
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
@@ -43,11 +43,7 @@ export const VenueEdition = (): JSX.Element | null => {
   )
   const venue = venueQuery.data
 
-  const offererQuery = useSWR(
-    [GET_OFFERER_QUERY_KEY, offererId],
-    ([, offererIdParam]) => api.getOfferer(Number(offererIdParam))
-  )
-  const offerer = offererQuery.data
+  const { data: offerer, isLoading: isOffererLoading } = useOfferer(offererId)
 
   const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
     api.getVenueTypes()
@@ -63,7 +59,7 @@ export const VenueEdition = (): JSX.Element | null => {
   if (
     venueQuery.isLoading ||
     venueTypesQuery.isLoading ||
-    offererQuery.isLoading ||
+    isOffererLoading ||
     !venue ||
     !offerer ||
     !venueTypes

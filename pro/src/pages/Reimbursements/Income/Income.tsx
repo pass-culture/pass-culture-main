@@ -2,13 +2,16 @@ import classnames from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash.isequal'
 import { useState, useEffect, useRef } from 'react'
+import { useSelector } from 'react-redux'
 import * as yup from 'yup'
 
+import { useVenuesFromOfferer } from 'commons/hooks/swr/useVenuesFromOfferer'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { useIncome } from 'pages/Reimbursements/Income/useIncome'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import { useVenues, useIncome } from './hooks'
 import styles from './Income.module.scss'
 import { IncomeError } from './IncomeError/IncomeError'
 import { IncomeNoData } from './IncomeNoData/IncomeNoData'
@@ -29,15 +32,19 @@ export const Income = () => {
   >([])
   const [activeYear, setActiveYear] = useState<number>()
 
+  const selectedOffererId = useSelector(selectCurrentOffererId)
   const {
-    areVenuesLoading,
-    venuesApiError,
-    venuesDataReady,
-    venues,
-    selectedOffererId,
-  } = useVenues()
+    data: venues,
+    isLoading: areVenuesLoading,
+    error: venuesApiError,
+  } = useVenuesFromOfferer(selectedOffererId)
+  const hasVenuesData = venues.length > 0
+  const venuesDataReady = !areVenuesLoading && !venuesApiError && hasVenuesData
   const hasSingleVenue = venuesDataReady && venues.length === 1
-  const venueValues = venues.map((v) => v.value)
+  const venueValues = venues.map((v: {
+    value: string
+    label: string
+  }) => v.value)
 
   const formik = useFormik<VenueFormValues>({
     // SelectAutocomplete has two fields:
