@@ -67,7 +67,6 @@ export const BookingOfferCell = ({
     <div className={cn(className)}>
       <a
         href={offerUrl}
-        title={booking.stock.offerName}
         className={styles['booking-offer-name']}
         data-testid="booking-offer-name"
       >

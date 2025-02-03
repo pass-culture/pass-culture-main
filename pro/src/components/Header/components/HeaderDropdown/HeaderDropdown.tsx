@@ -126,10 +126,10 @@ export const HeaderDropdown = () => {
       <DropdownMenu.Trigger asChild>
         <button
           className={styles['dropdown-button']}
-          title={selectedOffererName?.name || 'Profil'}
           data-testid="offerer-select"
+          type="button"
         >
-          <SvgIcon src={fullProfilIcon} alt="" width="18" />
+          <SvgIcon src={fullProfilIcon} alt="Profil" width="18" />
           {offererOptions.length > 1 && (
             <span className={styles['dropdown-button-name']}>
               {selectedOffererName?.name}

@@ -141,7 +141,6 @@ export const OfferLocation = ({
           <FormLayout.Row>
             <Button
               variant={ButtonVariant.QUATERNARY}
-              title="Renseignez l’adresse manuellement"
               icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
               onClick={toggleManuallySetAddress}
               disabled={readOnlyFields.includes('manuallySetAddress')}

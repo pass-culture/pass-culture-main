@@ -172,9 +172,9 @@ describe('OffererAuthenticationForm', () => {
     )
 
     // The toggle button "Renseignez l’adresse manuellement" should be visible
-    const manualAddressToggle = screen.getByTitle(
-      /Renseignez l’adresse manuellement/
-    )
+    const manualAddressToggle = screen.getByRole('button', {
+      name: 'Vous ne trouvez pas votre adresse ?',
+    })
 
     expect(manualAddressToggle).toBeInTheDocument()
 

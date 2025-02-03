@@ -33,15 +33,15 @@ export const ThumbCell = ({
       )}
       headers={`${rowId} ${CELLS_DEFINITIONS.THUMB.id}`}
     >
-      <Link
-        title={`${offer.name} - éditer l’offre`}
-        to={offerLink}
-      >
+      <Link to={offerLink} aria-label={`${offer.name} - éditer l’offre`}>
         <Thumb
           url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl}
-          className={classNames({
-            [styles['thumb-column-inactive']]: inactive,
-          }, className)}
+          className={classNames(
+            {
+              [styles['thumb-column-inactive']]: inactive,
+            },
+            className
+          )}
         />
       </Link>
     </td>

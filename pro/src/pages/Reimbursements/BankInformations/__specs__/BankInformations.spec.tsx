@@ -212,7 +212,7 @@ describe('BankInformations page', () => {
     ).toBeInTheDocument()
 
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Fermer la modale' })
+      await screen.findByRole('button', { name: 'Fermer la fenêtre modale' })
     )
 
     expect(

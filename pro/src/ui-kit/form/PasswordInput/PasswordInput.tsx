@@ -54,7 +54,7 @@ export const PasswordInput = ({
         rightButton={() => (
           <Button
             icon={isPasswordHidden ? strokeHideIcon : strokeShowIcon}
-            title={
+            iconAlt={
               isPasswordHidden
                 ? 'Afficher le mot de passe'
                 : 'Cacher le mot de passe'

@@ -18,18 +18,7 @@ export const SortArrow = ({
   onClick,
   children,
 }: SortArrowProps) => (
-  <button
-    type="button"
-    className={styles['sorting-icons']}
-    onClick={onClick}
-    title={
-      sortingMode === SortingMode.NONE
-        ? 'Trier'
-        : sortingMode === SortingMode.DESC
-          ? 'Ne plus trier'
-          : 'Trier par ordre décroissant'
-    }
-  >
+  <button type="button" className={styles['sorting-icons']} onClick={onClick}>
     {sortingMode !== SortingMode.NONE ? (
       sortingMode === SortingMode.DESC ? (
         <SvgIcon

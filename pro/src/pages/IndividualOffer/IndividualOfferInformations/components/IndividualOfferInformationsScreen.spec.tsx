@@ -189,7 +189,9 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
 
     // If user toggle manual address fields
     await userEvent.click(
-      screen.getByTitle(/Renseignez l’adresse manuellement/)
+      screen.getByRole('button', {
+        name: 'Vous ne trouvez pas votre adresse ?',
+      })
     )
     // ...then he should see the different address fields
     expect(

@@ -96,15 +96,12 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
                 : 'Créez vos premières offres grand public pour être visible par les bénéficiaires'}
             </div>
           )}
-
-          <div className={styles['sync-date']}>
-            Dernière mise à jour :{' '}
-            {stats?.syncDate ? (
-              format(new Date(stats.syncDate), FORMAT_DD_MM_YYYY_HH_mm)
-            ) : (
-              <abbr title="Non applicable">N/A</abbr>
-            )}
-          </div>
+          {stats?.syncDate ? (
+            <div className={styles['sync-date']}>
+              Dernière mise à jour :{' '}
+              {format(new Date(stats.syncDate), FORMAT_DD_MM_YYYY_HH_mm)}
+            </div>
+          ) : null}
         </Card>
       )}
 

@@ -49,7 +49,7 @@ describe('ButtonAppPreview', () => {
     expect(modalPreview).toBeInTheDocument()
 
     await userEvent.click(
-      screen.getByRole('button', { name: /Fermer la modale/i })
+      screen.getByRole('button', { name: /Fermer la fenêtre modale/i })
     )
 
     expect(modalPreview).not.toBeInTheDocument()

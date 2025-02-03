@@ -55,7 +55,9 @@ describe('OnboardingOffersChoice Component', () => {
 
   it('displays the onboarding collective modal when the second button is clicked', async () => {
     await userEvent.click(
-      screen.getByTitle('Commencer la création d’offre sur ADAGE')
+      screen.getByRole('button', {
+        name: 'Commencer la création d’offre sur ADAGE',
+      })
     )
 
     expect(

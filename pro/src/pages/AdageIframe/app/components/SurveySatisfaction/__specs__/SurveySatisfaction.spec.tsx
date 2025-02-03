@@ -23,7 +23,9 @@ describe('SurveySatisfaction', () => {
 
     screen.getByText('Enquête de satisfaction')
 
-    const closeButton = screen.getByTitle('Masquer le bandeau')
+    const closeButton = screen.getByRole('button', {
+      name: 'J’ai déjà répondu',
+    })
 
     await userEvent.click(closeButton)
 
@@ -53,7 +55,9 @@ describe('SurveySatisfaction', () => {
 
     screen.getByText('Enquête de satisfaction')
 
-    const closeButton = screen.getByTitle('Masquer le bandeau')
+    const closeButton = screen.getByRole('button', {
+      name: 'J’ai déjà répondu',
+    })
 
     await userEvent.click(closeButton)
 
