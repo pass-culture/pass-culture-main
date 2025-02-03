@@ -6,7 +6,6 @@ import { api } from 'apiClient/api'
 import { CollectiveOfferType } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
 import {
-  GET_OFFERER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import {
@@ -18,6 +17,7 @@ import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
@@ -42,15 +42,10 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
 
-  const offererQuery = useSWR(
-    [GET_OFFERER_QUERY_KEY, offererId],
-    ([, offererIdParam]) =>
-      offererId === DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.offererId
-        ? null
-        : api.getOfferer(Number(offererIdParam)),
-    { fallbackData: null }
+  const { data: offerer } = useOfferer(
+    offererId !== DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.offererId ? offererId : null,
+    true
   )
-  const offerer = offererQuery.data
 
   const { data } = useSWR(
     [GET_VENUES_QUERY_KEY, offerer?.id],

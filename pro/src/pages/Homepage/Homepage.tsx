@@ -7,17 +7,15 @@ import { useRemoteConfigParams } from 'app/App/analytics/firebase'
 import { Layout } from 'app/App/layout/Layout'
 import {
   GET_OFFERER_NAMES_QUERY_KEY,
-  GET_OFFERER_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
-import { hasStatusCode } from 'commons/core/OfferEducational/utils/hasStatusCode'
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { sortByLabel } from 'commons/utils/strings'
 import { CollectiveBudgetDialog } from 'components/CollectiveBudgetInformation/CollectiveBudgetDialog'
 import { Newsletter } from 'components/Newsletter/Newsletter'
 import { AddBankAccountCallout } from 'pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
-import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { BankAccountHasPendingCorrectionCallout } from './components/BankAccountHasPendingCorrectionCallout/BankAccountHasPendingCorrectionCallout'
@@ -69,26 +67,13 @@ export const Homepage = (): JSX.Element => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   // TODO: this may need to be in the store, as it is loaded in the header dropdown
-  const selectedOffererQuery = useSWR(
-    selectedOffererId ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
-    async ([, offererIdParam]) => {
-      try {
-        return await api.getOfferer(Number(offererIdParam))
-      } catch (error) {
-        if (hasStatusCode(error) && error.status === HTTP_STATUS.FORBIDDEN) {
-          throw error
-        }
-        return null
-      }
-    },
-    {
-      fallbackData: null,
-      shouldRetryOnError: false,
-      onError: () => {},
-    }
-  )
-  const selectedOfferer = selectedOffererQuery.data
-  const isUserOffererValidated = !selectedOffererQuery.error
+  const {
+    data: selectedOfferer,
+    error: offererApiError,
+    isLoading: isOffererLoading,
+    isValidating: isOffererValidating
+  } = useOfferer(selectedOffererId, true)
+  const isUserOffererValidated = !offererApiError
 
   const hasNoVenueVisible = useMemo(() => {
     const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
@@ -137,8 +122,8 @@ export const Homepage = (): JSX.Element => {
           <LinkVenueCallout offerer={selectedOfferer} />
           <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
         </div>
-        {!selectedOffererQuery.isValidating &&
-          (selectedOffererQuery.data || selectedOffererQuery.error) && (
+        {!isOffererValidating &&
+          (selectedOfferer || offererApiError) && (
             <OffererBanners
               isUserOffererValidated={isUserOffererValidated}
               offerer={selectedOfferer}
@@ -154,7 +139,7 @@ export const Homepage = (): JSX.Element => {
         <section className={styles['section']} ref={offerersRef}>
           <Offerers
             selectedOfferer={selectedOfferer}
-            isLoading={selectedOffererQuery.isLoading}
+            isLoading={isOffererLoading}
             offererOptions={offererOptions}
             isUserOffererValidated={isUserOffererValidated}
             venueTypes={venueTypes}
