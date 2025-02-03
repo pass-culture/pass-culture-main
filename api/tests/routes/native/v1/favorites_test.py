@@ -223,9 +223,7 @@ class GetTest:
             today = datetime.utcnow() + timedelta(hours=3)  # offset a bit to make sure it's > now()
             yesterday = today - timedelta(days=1)
             tomorow = today + timedelta(days=1)
-            user = users_factories.UserFactory()
-            user.add_beneficiary_role()
-            users_factories.DepositGrantFactory(user=user)
+            user = users_factories.BeneficiaryFactory()
             offerer = offerers_factories.OffererFactory()
             venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 

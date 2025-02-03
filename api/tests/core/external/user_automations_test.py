@@ -16,6 +16,7 @@ from pcapi.core.users.models import UserRole
 
 
 @pytest.mark.usefixtures("db_session")
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 class UserAutomationsTest:
     def _create_users_around_18(self):
         today = datetime.combine(date.today(), datetime.min.time())

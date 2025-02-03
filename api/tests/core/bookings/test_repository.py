@@ -4760,6 +4760,7 @@ class FindExpiringBookingsTest:
         assert bookings == {book_booking_old_enough, movie_booking_old_enough}
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 def test_get_bookings_from_deposit():
     deposit1 = users_factories.DepositGrantFactory()
     deposit2 = users_factories.DepositGrantFactory()
