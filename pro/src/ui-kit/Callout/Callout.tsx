@@ -19,6 +19,7 @@ export interface CalloutProps {
   closable?: boolean
   onClose?: undefined | (() => void)
   variant?: CalloutVariant
+  testId?: string
 }
 
 interface CalloutVariantProps {
@@ -33,6 +34,7 @@ export const Callout = ({
   links,
   closable = false,
   onClose,
+  testId,
   variant = CalloutVariant.INFO,
 }: CalloutProps): JSX.Element => {
   let calloutIcon: CalloutVariantProps
@@ -62,6 +64,7 @@ export const Callout = ({
         hasNoBottomSpace ? styles['small-callout'] : '',
         className
       )}
+      data-testid={testId}
     >
       <SvgIcon
         src={calloutIcon.src}

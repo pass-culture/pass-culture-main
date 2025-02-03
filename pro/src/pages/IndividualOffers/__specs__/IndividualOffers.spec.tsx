@@ -14,6 +14,7 @@ import {
   ListOffersOfferResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   ALL_CREATION_MODES,
   ALL_VENUES_OPTION,
@@ -968,6 +969,10 @@ describe('route Offers', () => {
     })
 
     it('should not render the headline offer banner anymore when the user closes it', async () => {
+      vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+        PRO_EXPERIMENT_GTM_HEADLINE_OFFER: 'true',
+      })
+
       await renderOffers(undefined, ['WIP_HEADLINE_OFFER'])
 
       let bannerTitle = await screen.findByText(/Nouvelle fonctionnalité : l’offre à la une !/)
