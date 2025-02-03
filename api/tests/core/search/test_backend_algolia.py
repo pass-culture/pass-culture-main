@@ -206,20 +206,20 @@ def test_index_collective_offers_templates():
     # Unfortunatly had to create explicit OffererAddress because
     # venue__offererAddress__address__postalCode did not work on the CollectiveOfferTemplateFactory
     offerer_address_north_corsica = offerers_factories.OffererAddressFactory(
-        address__departmentCode=20,
+        address__departmentCode="2B",
         address__postalCode="20213",
     )
     offerer_address_south_corsica = offerers_factories.OffererAddressFactory(
-        address__departmentCode=20,
+        address__departmentCode="2A",
         address__postalCode="20113",
     )
     collective_offer_template_north_corsica = educational_factories.CollectiveOfferTemplateFactory(
-        venue__departementCode=20,
+        venue__departementCode="2B",
         venue__postalCode="20213",
         venue__offererAddress=offerer_address_north_corsica,
     )
     collective_offer_template_south_corsica = educational_factories.CollectiveOfferTemplateFactory(
-        venue__departementCode=20,
+        venue__departementCode="2A",
         venue__postalCode="20113",
         venue__offererAddress=offerer_address_south_corsica,
     )
@@ -250,20 +250,20 @@ def test_index_collective_offers_templates_legacy():
     backend = get_backend()
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory.build()
     offerer_address_north_corsica = offerers_factories.OffererAddressFactory(
-        address__departmentCode=20,
+        address__departmentCode="2B",
         address__postalCode="20213",
     )
     offerer_address_south_corsica = offerers_factories.OffererAddressFactory(
-        address__departmentCode=20,
+        address__departmentCode="2A",
         address__postalCode="20113",
     )
     collective_offer_template_north_corsica = educational_factories.CollectiveOfferTemplateFactory(
-        venue__departementCode=20,
+        venue__departementCode="2B",
         venue__postalCode="20213",
         venue__offererAddress=offerer_address_north_corsica,
     )
     collective_offer_template_south_corsica = educational_factories.CollectiveOfferTemplateFactory(
-        venue__departementCode=20,
+        venue__departementCode="2A",
         venue__postalCode="20113",
         venue__offererAddress=offerer_address_south_corsica,
     )
