@@ -43,10 +43,30 @@ pytestmark = [
 
 @pytest.fixture(scope="function", name="collective_offers")
 def collective_offers_fixture() -> tuple:
+    last_year = educational_factories.create_educational_year(datetime.datetime.utcnow() - datetime.timedelta(days=365))
+    current_year = educational_factories.create_educational_year(datetime.datetime.utcnow())
+    institution_1 = educational_factories.EducationalInstitutionFactory()
+    institution_2 = educational_factories.EducationalInstitutionFactory()
+    educational_factories.EducationalDepositFactory(
+        educationalInstitution=institution_1,
+        educationalYear=last_year,
+        ministry=educational_models.Ministry.EDUCATION_NATIONALE.name,
+    )
+    educational_factories.EducationalDepositFactory(
+        educationalInstitution=institution_1,
+        educationalYear=current_year,
+        ministry=educational_models.Ministry.EDUCATION_NATIONALE.name,
+    )
+    educational_factories.EducationalDepositFactory(
+        educationalInstitution=institution_2,
+        educationalYear=current_year,
+        ministry=educational_models.Ministry.MER.name,
+    )
+
     collective_offer_1 = educational_factories.CollectiveStockFactory(
         startDatetime=datetime.date.today() + datetime.timedelta(days=1),
         collectiveOffer__author=users_factories.UserFactory(),
-        collectiveOffer__institution=educational_factories.EducationalInstitutionFactory(),
+        collectiveOffer__institution=institution_1,
         collectiveOffer__formats=[subcategories.EacFormat.ATELIER_DE_PRATIQUE],
         collectiveOffer__venue__postalCode="47000",
         collectiveOffer__venue__departementCode="47",
@@ -55,7 +75,7 @@ def collective_offers_fixture() -> tuple:
     collective_offer_2 = educational_factories.CollectiveStockFactory(
         startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
         endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=24),
-        collectiveOffer__institution=collective_offer_1.institution,
+        collectiveOffer__institution=institution_1,
         collectiveOffer__name="A Very Specific Name",
         collectiveOffer__formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
         collectiveOffer__venue__postalCode="97400",
@@ -66,7 +86,7 @@ def collective_offers_fixture() -> tuple:
         startDatetime=datetime.datetime.utcnow(),
         endDatetime=datetime.datetime.utcnow(),
         collectiveOffer__dateCreated=datetime.date.today() - datetime.timedelta(days=2),
-        collectiveOffer__institution=educational_factories.EducationalInstitutionFactory(),
+        collectiveOffer__institution=institution_2,
         collectiveOffer__name="A Very Specific Name That Is Longer",
         collectiveOffer__formats=[
             subcategories.EacFormat.FESTIVAL_SALON_CONGRES,
@@ -128,6 +148,9 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offers[0].formats])
         assert rows[0]["Entité juridique"] == collective_offers[0].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == collective_offers[0].venue.name
+        assert rows[0]["Ministère"] == "MENjs"
+        first_year = educational_factories._get_educational_year_beginning(datetime.datetime.utcnow())
+        assert rows[0]["Année"] == f"{first_year}-{first_year+1}"
 
     def test_list_collective_offers_without_fraud_permission(
         self,
@@ -145,6 +168,8 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert "Tarif" not in rows[0]
         assert "Règles de conformité" not in rows[0]
+        assert "Ministère" not in rows[0]
+        assert "Année" not in rows[0]
 
     def test_list_collective_offers_by_name(self, authenticated_client, collective_offers):
         query_args = {
@@ -171,6 +196,9 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Tarif"] == "11,00 €"
         assert rows[0]["Entité juridique"] == collective_offers[1].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == collective_offers[1].venue.name
+        assert rows[0]["Ministère"] == "MENjs"
+        first_year = educational_factories._get_educational_year_beginning(datetime.datetime.utcnow())
+        assert rows[0]["Année"] == f"{first_year}-{first_year+1}"
 
     def test_list_collective_offers_by_several_filters(self, authenticated_client, collective_offers):
         collective_offer = collective_offers[2]
