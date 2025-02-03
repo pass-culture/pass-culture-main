@@ -30,25 +30,23 @@ class CalculatedOfferAddress:
 
 
 def get_offer_address(offer: Offer) -> CalculatedOfferAddress:
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        offerer_address = offer.offererAddress
-        if offerer_address:
-            return CalculatedOfferAddress(
-                city=offerer_address.address.city,
-                departmentCode=offerer_address.address.departmentCode,
-                label=offerer_address.label or offer.venue.name,
-                latitude=offerer_address.address.latitude,
-                longitude=offerer_address.address.longitude,
-                postalCode=offerer_address.address.postalCode,
-                street=offerer_address.address.street,
-            )
-
+    offerer_address = offer.offererAddress or offer.venue.offererAddress
+    if offerer_address:
+        return CalculatedOfferAddress(
+            city=offerer_address.address.city,
+            departmentCode=offerer_address.address.departmentCode,
+            label=offerer_address.label or offer.venue.name,
+            latitude=offerer_address.address.latitude,
+            longitude=offerer_address.address.longitude,
+            postalCode=offerer_address.address.postalCode,
+            street=offerer_address.address.street,
+        )
     return CalculatedOfferAddress(
-        city=offer.venue.city,
-        departmentCode=offer.venue.departementCode,
+        city=None,
+        departmentCode=None,
         label=offer.venue.name,
-        latitude=offer.venue.latitude,
-        longitude=offer.venue.longitude,
-        postalCode=offer.venue.postalCode,
-        street=offer.venue.street,
+        latitude=None,
+        longitude=None,
+        postalCode=None,
+        street=None,
     )

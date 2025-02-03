@@ -292,17 +292,7 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
                 offerers_models.Venue.isOpenToPublic,
                 offerers_models.Venue.bannerUrl,
                 offerers_models.Venue.venueTypeCode,
-                # FIXME (dramelet, 17-01-2025)
-                # For tests purposes only
-                # Those legacy location fields are still used by CalculatedOfferAddress with FF off
-                # It will be removed along side column removals of the Venue table
-                offerers_models.Venue.departementCode,
-                offerers_models.Venue.latitude,
-                offerers_models.Venue.longitude,
-                offerers_models.Venue.postalCode,
-                offerers_models.Venue.city,
                 offerers_models.Venue.timezone,
-                offerers_models.Venue.street,
             )
             .joinedload(offerers_models.Venue.managingOfferer)
             .load_only(
