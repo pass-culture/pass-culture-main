@@ -37,8 +37,7 @@ class GetBankAccountTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get bank_account (1 query)
-    # get the features WIP_ENABLE_OFFER_ADDRESS (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     @mock.patch("pcapi.routes.backoffice.bank_account.blueprint.dms_api.get_dms_stats", lambda x: None)
     def test_get_bank_account(self, authenticated_client):
@@ -169,16 +168,14 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - full history with joined data (1 query)
-    # - WIP_ENABLE_OFFER_ADDRESS FF
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_no_action(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()
 
         url = url_for(self.endpoint, bank_account_id=bank_account.id)
 
-        # no WIP_ENABLE_OFFER_ADDRESS FF
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -329,8 +326,7 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
     endpoint_kwargs = {"bank_account_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    @pytest.mark.parametrize("is_use_offer_address_ff_active", [True, False])
-    def test_download_reimbursement_details(self, features, is_use_offer_address_ff_active, authenticated_client):
+    def test_download_reimbursement_details(self, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
         bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
@@ -390,8 +386,6 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
             bankAccount=bank_account, pricings=[second_pricing], amount=-1010
         )
         second_invoice = finance_factories.InvoiceFactory(cashflows=[second_cashflow], bankAccount=bank_account)
-        features.WIP_ENABLE_OFFER_ADDRESS = is_use_offer_address_ff_active
-        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_use_offer_address_ff_active
         response = self.post_to_endpoint(
             authenticated_client,
             bank_account_id=bank_account.id,
@@ -435,20 +429,16 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
             "Montant remboursé",
             "Type d'offre",
         ]
-        if is_use_offer_address_ff_active:
-            expected_header[6:10] = [
-                "SIRET de la structure",
-                "Raison sociale de la structure",
-                "Nom de l'offre",
-                "Adresse de l'offre",
-            ]
+        expected_header[6:10] = [
+            "SIRET de la structure",
+            "Raison sociale de la structure",
+            "Nom de l'offre",
+            "Adresse de l'offre",
+        ]
         assert reader.fieldnames == expected_header
 
         rows = list(reader)
-        if is_use_offer_address_ff_active:
-            assert rows[1]["Adresse de l'offre"] == booking.stock.offer.offererAddress.address.fullAddress
-        else:
-            assert rows[1]["Adresse du lieu"] == venue.offererAddress.address.fullAddress
+        assert rows[1]["Adresse de l'offre"] == booking.stock.offer.offererAddress.address.fullAddress
 
         assert str(response.data).count("Incident") == 3
 

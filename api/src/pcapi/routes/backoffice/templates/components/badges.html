@@ -13,18 +13,10 @@
 {% endmacro %}
 {% macro build_venue_badges(venue) %}
   <span class="me-1 pb-1 badge rounded-pill text-bg-secondary align-middle">
-    {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-      {% if venue.isPermanent %}
-        Partenaire culturel permanent
-      {% else %}
-        Partenaire culturel
-      {% endif %}
+    {% if venue.isPermanent %}
+      Partenaire culturel permanent
     {% else %}
-      {% if venue.isPermanent %}
-        Lieu permanent
-      {% else %}
-        Lieu
-      {% endif %}
+      Partenaire culturel
     {% endif %}
   </span>
   {% if not venue.managingOfferer.isActive %}

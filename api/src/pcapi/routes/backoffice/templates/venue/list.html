@@ -7,13 +7,7 @@
   <div class="pt-3 px-5">
     <h2 class="fw-light">
       Actions sur les
-      <th scope="col">
-        {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-          partenaires culturels
-        {% else %}
-          lieux
-        {% endif %}
-      </th>
+      <th scope="col">partenaires culturels</th>
     </h2>
     {{ build_filters_form(form, dst) }}
     <div>
@@ -29,23 +23,13 @@
                  data-toggle-id="table-container-venues-edit-btn-group"
                  data-pc-table-multi-select-id="table-venues-multiselect"
                  data-input-ids-name="object_ids">
-              {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                <button disabled
-                        type="button"
-                        class="btn btn-outline-primary"
-                        data-modal-selector="#batch-edit-venues-modal"
-                        data-mode="fetch"
-                        data-fetch-url="{{ url_for('backoffice_web.venue.get_batch_edit_venues_form') }}"
-                        data-use-confirmation-modal="true">Éditer les partenaires culturels</button>
-              {% else %}
-                <button disabled
-                        type="button"
-                        class="btn btn-outline-primary"
-                        data-modal-selector="#batch-edit-venues-modal"
-                        data-mode="fetch"
-                        data-fetch-url="{{ url_for('backoffice_web.venue.get_batch_edit_venues_form') }}"
-                        data-use-confirmation-modal="true">Éditer les lieux</button>
-              {% endif %}
+              <button disabled
+                      type="button"
+                      class="btn btn-outline-primary"
+                      data-modal-selector="#batch-edit-venues-modal"
+                      data-mode="fetch"
+                      data-fetch-url="{{ url_for('backoffice_web.venue.get_batch_edit_venues_form') }}"
+                      data-use-confirmation-modal="true">Éditer les partenaires culturels</button>
             </div>
           {% endif %}
         </div>
@@ -98,13 +82,7 @@
                 <td>{{ links.build_offerer_name_to_details_link(venue.managingOfferer) }}</td>
                 <td>
                   {% if venue.isPermanent %}
-                    <span class="visually-hidden">
-                      {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                        Partenaire culturel permanent
-                      {% else %}
-                        Lieu permanent
-                      {% endif %}
-                    </span><i class="bi bi-check-circle-fill"></i>
+                    <span class="visually-hidden">Partenaire culturel permanent</span><i class="bi bi-check-circle-fill"></i>
                   {% endif %}
                 </td>
                 <td>{{ venue.venueLabel.label }}</td>

@@ -63,7 +63,7 @@ class BaseBookingListForm(FlaskForm):
         endpoint="backoffice_web.autocomplete_offerers",
     )
     venue = fields.PCTomSelectField(
-        typing.cast(str, utils.VenueRenaming("Lieux", "Partenaires culturels")),
+        "Partenaires culturels",
         multiple=True,
         choices=[],
         validate_choice=False,
@@ -129,7 +129,7 @@ class GetDownloadBookingsForm(FlaskForm):
     class Meta:
         csrf = False
 
-    venue = fields.PCIntegerField(utils.VenueRenaming("Lieux", "Partenaires culturels"))
+    venue = fields.PCIntegerField("Partenaires culturels")
     from_to_date = fields.PCDateRangeField(
         "Créées entre",
         validators=(wtforms.validators.Optional(),),

@@ -22,8 +22,7 @@ class HomePageTest:
     # - session
     # - authenticated user
     # - data inserted in cards (stats got in a single request)
-    # - WIP_ENABLE_OFFER_ADDRESS FF
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_view_home_page_as_anonymous(self, client):
         response = client.get(url_for("backoffice_web.home"))

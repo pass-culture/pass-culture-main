@@ -35,13 +35,7 @@
         <div class="d-flex justify-content-start">
           <div class="d-flex flex-column pe-5">
             <p class="mb-1">
-              <span class="fw-bold">
-                {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                  Partenaire culturel porteur de l'offre :
-                {% else %}
-                  Lieu porteur de l'offre :
-                {% endif %}
-              </span> {{ links.build_venue_name_to_details_link(incident.venue) }}
+              <span class="fw-bold">Partenaire culturel porteur de l'offre :</span> {{ links.build_venue_name_to_details_link(incident.venue) }}
             </p>
             {% set bank_account_link = incident.venue.current_bank_account_link %}
             <p class="mb-1">

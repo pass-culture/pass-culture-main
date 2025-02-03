@@ -62,12 +62,10 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
     # - fetch user (1 query)
     expected_num_queries_when_no_query = 2
     # - fetch collective offer templates with joinedload including extra data (1 query)
-    # - fetch connect as extended FF
-    expected_num_queries = expected_num_queries_when_no_query + 2
+    expected_num_queries = expected_num_queries_when_no_query + 1
 
     def test_list_collective_offer_templates_without_filter(self, authenticated_client, collective_offer_templates):
-        # +1 for WIP_ENABLE_OFFER_ADDRESS FF
-        with assert_num_queries(self.expected_num_queries_when_no_query + 1):
+        with assert_num_queries(self.expected_num_queries_when_no_query):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -295,14 +293,14 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
     # - fetch user (1 query)
     # - fetch CollectiveOfferTemplate including joinedload of venue and offerer
     expected_num_queries = 3
+    expected_num_queries_with_ff = expected_num_queries + 1
 
     def test_nominal(self, authenticated_client):
         collectiveOfferTemplate = educational_factories.CollectiveOfferTemplateFactory(
             formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
         )
         url = url_for(self.endpoint, collective_offer_template_id=collectiveOfferTemplate.id)
-        # +1 query WIP_ENABLE_OFFER_ADDRESS FF
-        with assert_num_queries(self.expected_num_queries + 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -330,8 +328,7 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
             rejectionReason=educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION,
         )
         url = url_for(self.endpoint, collective_offer_template_id=collectiveOfferTemplate.id)
-        # +1 query WIP_ENABLE_OFFER_ADDRESS FF
-        with assert_num_queries(self.expected_num_queries + 1):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -346,7 +343,7 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, collective_offer_template_id=collective_offer_template.id)
-        with assert_num_queries(self.expected_num_queries + 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -358,7 +355,7 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
         collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(venue=rule.venue)
 
         url = url_for(self.endpoint, collective_offer_template_id=collective_offer_template.id)
-        with assert_num_queries(self.expected_num_queries + 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -375,7 +372,7 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, collective_offer_template_id=collective_offer_template.id)
-        with assert_num_queries(self.expected_num_queries + 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

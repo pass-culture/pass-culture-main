@@ -33,8 +33,7 @@ class ListProvidersPageTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch providers and associated api keys (1 query)
-    # - fetch WIP_ENABLE_OFFER_ADDRESS FF (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_list_providers(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(name="Aaaaaah je suis au début")
@@ -213,8 +212,7 @@ class GetProviderTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get provider (1 query)
-    # get WIP_ENABLE_OFFER_ADDRESS FF (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_get_provider(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(name="Le videur pro")
@@ -268,8 +266,7 @@ class GetProviderStatsTest(GetEndpointHelper):
         # get session (1 query)
         # get user with profile and permissions (1 query)
         # get provider counts (1 query)
-        # get WIP_ENABLE_OFFER_ADDRESS FF (1 query)
-        with assert_num_queries(4):
+        with assert_num_queries(3):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -286,8 +283,7 @@ class GetProviderStatsTest(GetEndpointHelper):
         # get session (1 query)
         # get user with profile and permissions (1 query)
         # get provider counts (1 query)
-        # get WIP_ENABLE_OFFER_ADDRESS FF (1 query)
-        with assert_num_queries(4):
+        with assert_num_queries(3):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

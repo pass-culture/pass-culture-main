@@ -35,8 +35,8 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
     endpoint = "backoffice_web.account_update.list_account_update_requests"
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
-    # session + current_user + results + results count + FF
-    expected_num_queries = 5
+    # session + current_user + results + results count
+    expected_num_queries = 4
 
     def test_list_account_update_requests(self, authenticated_client):
         now = datetime.datetime.utcnow()

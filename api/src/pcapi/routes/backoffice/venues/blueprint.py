@@ -36,7 +36,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
@@ -46,7 +45,6 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.forms import utils as forms_utils
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
@@ -473,20 +471,12 @@ def toggle_venue_provider_is_active(venue_id: int, provider_id: int) -> utils.Ba
     )
     db.session.commit()
 
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        flash(
-            Markup("La synchronisation du partenaire culturel avec le provider a été {verb}.").format(
-                verb="réactivée" if set_active else "mise en pause"
-            ),
-            "info",
-        )
-    else:
-        flash(
-            Markup("La synchronisation du lieu avec le provider a été {verb}.").format(
-                verb="réactivée" if set_active else "mise en pause"
-            ),
-            "info",
-        )
+    flash(
+        Markup("La synchronisation du partenaire culturel avec le provider a été {verb}.").format(
+            verb="réactivée" if set_active else "mise en pause"
+        ),
+        "info",
+    )
 
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
@@ -497,17 +487,11 @@ def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeRe
     venue_provider = _fetch_venue_provider(venue_id, provider_id)
 
     if venue_provider.isFromAllocineProvider:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash("Impossible de supprimer le lien entre le partenaire culturel et Allociné.", "warning")
-        else:
-            flash("Impossible de supprimer le lien entre le lieu et Allociné.", "warning")
+        flash("Impossible de supprimer le lien entre le partenaire culturel et Allociné.", "warning")
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
     providers_api.delete_venue_provider(venue_provider, author=current_user, send_email=False)
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        flash("Le lien entre le partenaire culturel et le provider a été supprimé.", "info")
-    else:
-        flash("Le lien entre le lieu et le provider a été supprimé.", "info")
+    flash("Le lien entre le partenaire culturel et le provider a été supprimé.", "info")
 
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
@@ -618,36 +602,24 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
     try:
         offerers_api.delete_venue(venue.id)
     except offerers_exceptions.CannotDeleteVenueWithBookingsException:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash("Impossible de supprimer un partenaire culturel pour lequel il existe des réservations", "warning")
-        else:
-            flash("Impossible de supprimer un lieu pour lequel il existe des réservations", "warning")
+        flash("Impossible de supprimer un partenaire culturel pour lequel il existe des réservations", "warning")
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
     except offerers_exceptions.CannotDeleteVenueUsedAsPricingPointException:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash(
-                "Impossible de supprimer un partenaire culturel utilisé comme point de valorisation d'un autre partenaire culturel",
-                "warning",
-            )
-        else:
-            flash("Impossible de supprimer un lieu utilisé comme point de valorisation d'un autre lieu", "warning")
+        flash(
+            "Impossible de supprimer un partenaire culturel utilisé comme point de valorisation d'un autre partenaire culturel",
+            "warning",
+        )
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
     for email in emails:
         external_attributes_api.update_external_pro(email)
 
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        flash(
-            Markup("Le partenaire culturel {venue_name} ({venue_id}) a été supprimé").format(
-                venue_name=venue_name, venue_id=venue_id
-            ),
-            "success",
-        )
-    else:
-        flash(
-            Markup("Le lieu {venue_name} ({venue_id}) a été supprimé").format(venue_name=venue_name, venue_id=venue_id),
-            "success",
-        )
+    flash(
+        Markup("Le partenaire culturel {venue_name} ({venue_id}) a été supprimé").format(
+            venue_name=venue_name, venue_id=venue_id
+        ),
+        "success",
+    )
     db.session.commit()
     return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
 
@@ -690,64 +662,41 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         new_siret = form.siret.data
 
         if not _can_edit_siret():
-            if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-                flash(
-                    f"Vous ne pouvez pas {'modifier' if venue.siret else 'ajouter'} le SIRET d'un partenaire culturel. Contactez le support pro N2.",
-                    "warning",
-                )
-            else:
-                flash(
-                    f"Vous ne pouvez pas {'modifier' if venue.siret else 'ajouter'} le SIRET d'un lieu. Contactez le support pro N2.",
-                    "warning",
-                )
+            flash(
+                f"Vous ne pouvez pas {'modifier' if venue.siret else 'ajouter'} le SIRET d'un partenaire culturel. Contactez le support pro N2.",
+                "warning",
+            )
             return render_venue_details(venue, form), 400
 
         if venue.siret:
             if not new_siret:
-                if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-                    flash("Vous ne pouvez pas retirer le SIRET d'un partenaire culturel.", "warning")
-                else:
-                    flash("Vous ne pouvez pas retirer le SIRET d'un lieu.", "warning")
+                flash("Vous ne pouvez pas retirer le SIRET d'un partenaire culturel.", "warning")
                 return render_venue_details(venue, form), 400
         elif new_siret:
             # Remove comment because of constraint check_has_siret_xor_comment_xor_isVirtual
             attrs["comment"] = None
 
         if new_siret and offerers_repository.find_venue_by_siret(new_siret):
-            if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-                flash(
-                    Markup("Un autre partenaire culturel existe déjà avec le SIRET {siret}").format(siret=new_siret),
-                    "warning",
-                )
-            else:
-                flash(Markup("Un autre lieu existe déjà avec le SIRET {siret}").format(siret=new_siret), "warning")
+            flash(
+                Markup("Un autre partenaire culturel existe déjà avec le SIRET {siret}").format(siret=new_siret),
+                "warning",
+            )
             return render_venue_details(venue, form), 400
 
         existing_pricing_point_id = venue.current_pricing_point_id
         if existing_pricing_point_id and venue.id != existing_pricing_point_id:
-            if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-                flash(
-                    f"Ce partenaire culturel a déjà un point de valorisation "
-                    f"(Venue.id={existing_pricing_point_id}). "
-                    f"Définir un SIRET impliquerait qu'il devienne son propre point de valorisation, "
-                    f"mais le changement de point de valorisation n'est pas autorisé",
-                    "warning",
-                )
-            else:
-                flash(
-                    f"Ce lieu a déjà un point de valorisation (Venue.id={existing_pricing_point_id}). "
-                    f"Définir un SIRET impliquerait qu'il devienne son propre point de valorisation, "
-                    f"mais le changement de point de valorisation n'est pas autorisé",
-                    "warning",
-                )
+            flash(
+                f"Ce partenaire culturel a déjà un point de valorisation "
+                f"(Venue.id={existing_pricing_point_id}). "
+                f"Définir un SIRET impliquerait qu'il devienne son propre point de valorisation, "
+                f"mais le changement de point de valorisation n'est pas autorisé",
+                "warning",
+            )
             return render_venue_details(venue, form), 400
 
         try:
             if not sirene.siret_is_active(new_siret):
-                if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-                    flash("Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce partenaire culturel", "warning")
-                else:
-                    flash("Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce lieu", "warning")
+                flash("Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce partenaire culturel", "warning")
                 return render_venue_details(venue, form), 400
         except entreprise_exceptions.SireneException:
             unavailable_sirene = True
@@ -884,7 +833,7 @@ def get_batch_edit_venues_form() -> utils.BackofficeResponse:
         form=form,
         dst=url_for(".batch_edit_venues"),
         div_id="batch-edit-venues-modal",
-        title=forms_utils.VenueRenaming("Édition des lieux", "Édition des partenaires culturels"),
+        title="Édition des partenaires culturels",
         button_text="Enregistrer les modifications",
     )
 
@@ -925,10 +874,7 @@ def batch_edit_venues() -> utils.BackofficeResponse:
         )
     )
 
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        flash("Les partenaires culturels ont été modifiés", "success")
-    else:
-        flash("Les lieux ont été modifiés", "success")
+    flash("Les partenaires culturels ont été modifiés", "success")
     return redirect(request.referrer or url_for(".list_venues"), code=303)
 
 
@@ -1006,10 +952,7 @@ def _render_remove_pricing_point_content(
             }
         )
     additional_data = {}
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        additional_data["Partenaire culturel"] = venue.name
-    else:
-        additional_data["Lieu"] = venue.name
+    additional_data["Partenaire culturel"] = venue.name
     additional_data.update(
         {
             "Venue ID": str(venue.id),
@@ -1147,30 +1090,18 @@ def set_pricing_point(venue_id: int) -> utils.BackofficeResponse:
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
     try:
         offerers_api.link_venue_to_pricing_point(venue, form.new_pricing_point.data)
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash("Ce partenaire culturel a été lié à un point de valorisation", "info")
-        else:
-            flash("Ce lieu a été lié à un point de valorisation", "info")
+        flash("Ce partenaire culturel a été lié à un point de valorisation", "info")
     except ApiErrors as exc:
         if not exc.errors or "pricingPointId" not in exc.errors:
             flash(escape(str(exc.errors)) if exc.errors else "Erreur inconue", "warning")
         else:
             flash(escape(exc.errors["pricingPointId"][0]), "warning")
     except offerers_exceptions.CannotLinkVenueToPricingPoint:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash("Ce partenaire culturel est déja lié à un point de valorisation", "warning")
-        else:
-            flash("Ce lieu est déja lié à un point de valorisation", "warning")
+        flash("Ce partenaire culturel est déja lié à un point de valorisation", "warning")
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
 
-REMOVE_SIRET_TITLE = typing.cast(
-    str,
-    forms_utils.VenueRenaming(
-        "Supprimer le SIRET d'un lieu",
-        "Supprimer le SIRET d'un partenaire culturel",
-    ),
-)
+REMOVE_SIRET_TITLE = "Supprimer le SIRET d'un partenaire culturel"
 
 
 def _load_venue_for_removing_siret(venue_id: int) -> offerers_models.Venue:
@@ -1217,10 +1148,7 @@ def _render_remove_siret_content(
         "Entité juridique": venue.managingOfferer.name,
         "Offerer ID": venue.managingOfferer.id,
     }
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        additional_data["Partenaire culturel"] = venue.name
-    else:
-        additional_data["Lieu"] = venue.name
+    additional_data["Partenaire culturel"] = venue.name
     additional_data.update(
         {
             "Venue ID": venue.id,

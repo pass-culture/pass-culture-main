@@ -1,5 +1,3 @@
-import typing
-
 from flask_wtf import FlaskForm
 import wtforms
 
@@ -46,9 +44,7 @@ class SearchTagForm(utils.PCForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField(
-        typing.cast(str, utils.VenueRenaming("Tags offres et lieux", "Tags offres et partenaires culturels"))
-    )
+    q = fields.PCOptSearchField("Tags offres et partenaires culturels")
 
     page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
     per_page = fields.PCSelectField(

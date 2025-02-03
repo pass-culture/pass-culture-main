@@ -41,7 +41,6 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.search import search_offer_ids
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
@@ -1373,33 +1372,18 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
 
     except offers_exceptions.MoveOfferBaseException as exc:
         mark_transaction_as_invalid()
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash(
-                Markup("Le partenaire culturel de cette offre ne peut pas être modifié : {reason}").format(
-                    reason=str(exc)
-                ),
-                "warning",
-            )
-        else:
-            flash(
-                Markup("Le lieu de cette offre ne peut pas être modifié : {reason}").format(reason=str(exc)), "warning"
-            )
+        flash(
+            Markup("Le partenaire culturel de cette offre ne peut pas être modifié : {reason}").format(reason=str(exc)),
+            "warning",
+        )
         return redirect(offer_url, 303)
 
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        flash(
-            Markup("L'offre a été déplacée vers le partenaire culturel <b>{venue_name}</b>").format(
-                venue_name=destination_venue.common_name
-            ),
-            "success",
-        )
-    else:
-        flash(
-            Markup("L'offre a été déplacée vers le lieu <b>{venue_name}</b>").format(
-                venue_name=destination_venue.common_name
-            ),
-            "success",
-        )
+    flash(
+        Markup("L'offre a été déplacée vers le partenaire culturel <b>{venue_name}</b>").format(
+            venue_name=destination_venue.common_name
+        ),
+        "success",
+    )
     return redirect(offer_url, 303)
 
 

@@ -13,13 +13,7 @@
       <h5 class="fs-2 card-title">{{ stats.by_venue or 0 }}</h5>
       <p class="card-text fw-light small mb-0">
         tarifs dérogatoires sur des
-        <b>
-          {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-            partenaires culturels
-          {% else %}
-            lieux
-          {% endif %}
-        </b>
+        <b>partenaires culturels</b>
       </p>
     </div>
   </div>

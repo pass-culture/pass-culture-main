@@ -1175,7 +1175,7 @@ def format_offer_validation_sub_rule_field(sub_rule_field: offers_models.OfferVa
         case offers_models.OfferValidationSubRuleField.SHOW_SUB_TYPE_OFFER:
             return "Le sous-type de spectacle de l'offre individuelle"
         case offers_models.OfferValidationSubRuleField.ID_VENUE:
-            return "Le lieu/partenaire culturel proposant l'offre"  # Remove `lieu/` along with WIP_ENABLE_OFFER_ADDRESS
+            return "Le partenaire culturel proposant l'offre"
         case offers_models.OfferValidationSubRuleField.ID_OFFERER:
             return "L'entité juridique proposant l'offre"
         case offers_models.OfferValidationSubRuleField.FORMATS_COLLECTIVE_OFFER:

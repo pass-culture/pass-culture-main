@@ -1,7 +1,6 @@
 import enum
 import json
 import re
-import typing
 
 from flask_wtf import FlaskForm
 import wtforms
@@ -11,7 +10,6 @@ from pcapi.core.categories import subcategories_v2
 from pcapi.core.offers import models as offers_models
 from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.routes.backoffice import autocomplete
-import pcapi.routes.backoffice.forms.utils as forms_utils
 from pcapi.utils.clean_accents import clean_accents
 
 from .. import filters
@@ -84,7 +82,7 @@ class SearchRuleForm(FlaskForm):
         endpoint="backoffice_web.autocomplete_offerers",
     )
     venue = fields.PCTomSelectField(
-        typing.cast(str, forms_utils.VenueRenaming("Lieux", "Partenaires culturels")),
+        "Partenaires culturels",
         multiple=True,
         choices=[],
         validate_choice=False,
@@ -142,7 +140,7 @@ class OfferValidationSubRuleForm(FlaskForm):
         "Type de l'offre", choices=utils.choices_from_enum(OfferType), field_list_compatibility=True
     )
     venue = fields.PCTomSelectField(
-        typing.cast(str, forms_utils.VenueRenaming("Lieu", "Partenaire culturel")),
+        "Partenaire culturel",
         multiple=True,
         choices=[],
         validate_choice=False,

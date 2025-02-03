@@ -107,8 +107,7 @@ class SearchProUserTest:
 
     # - fetch session
     # - fetch authenticated user
-    # - fetch WIP_ENABLE_OFFER_ADDRESS FF
-    expected_num_queries_when_no_query = 3
+    expected_num_queries_when_no_query = 2
     # - fetch results
     # - fetch count for pagination
     expected_num_queries = expected_num_queries_when_no_query + 2
@@ -147,8 +146,7 @@ class SearchProUserTest:
         self._create_accounts()
 
         search_query = self.pro_accounts[5].id
-        # HTML not rendered -> WIP_ENABLE_OFFER_ADDRESS not loaded
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query, pro_type=TypeOptions.USER.name))
             assert response.status_code == 303
 
@@ -181,8 +179,7 @@ class SearchProUserTest:
         self._create_accounts()
 
         search_query = self.pro_accounts[2].email
-        # HTML not rendered -> WIP_ENABLE_OFFER_ADDRESS not loaded
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query, pro_type=TypeOptions.USER.name))
             assert response.status_code == 303
 
@@ -210,8 +207,7 @@ class SearchProUserTest:
     def test_can_search_pro_by_first_and_last_name(self, authenticated_client):
         self._create_accounts()
 
-        # HTML not rendered -> WIP_ENABLE_OFFER_ADDRESS not loaded
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="Alice Dubois", pro_type=TypeOptions.USER.name)
             )
@@ -256,8 +252,7 @@ class SearchProUserTest:
         offerers_factories.UserOffererFactory(user=pro_beneficiary)
 
         search_query = pro_beneficiary.id
-        # HTML not rendered -> WIP_ENABLE_OFFER_ADDRESS not loaded
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query, pro_type=TypeOptions.USER.name))
             assert response.status_code == 303
 
@@ -332,8 +327,6 @@ class SearchOffererTest:
     # - fetch results
     # - fetch count for pagination
     expected_num_queries = 4
-    # - fetch feature flag
-    expected_num_queries_with_ff = expected_num_queries + 1
 
     def _create_offerers(
         self,
@@ -393,7 +386,7 @@ class SearchOffererTest:
     def test_can_search_offerer_by_name_without_similarity(self, authenticated_client):
         self._create_offerers()
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="Librairie du C", pro_type=TypeOptions.OFFERER.name)
             )
@@ -425,7 +418,7 @@ class SearchOffererTest:
     def test_can_search_offerer_by_name_and_department(self, authenticated_client):
         self._create_offerers()
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="Librairie", pro_type=TypeOptions.OFFERER.name, departments=["03", "971"])
             )
@@ -437,19 +430,19 @@ class SearchOffererTest:
         assert_offerer_equals(cards_text[1], self.offerers[6])  # Librairie du Centre
 
     @pytest.mark.parametrize(
-        "query,departments,feature_flag_count",
+        "query,departments",
         [
-            ("987654321", [], 1),  # WIP_ENABLE_OFFER_ADDRESS FF
-            ("festival@example.com", [], 1),
-            ("Festival de la Montagne", [], 1),
-            ("Librairie", ["62"], 1),
-            ("Plage", ["03"], 1),
+            ("987654321", []),
+            ("festival@example.com", []),
+            ("Festival de la Montagne", []),
+            ("Librairie", ["62"]),
+            ("Plage", ["03"]),
         ],
     )
-    def test_can_search_offerer_no_result(self, authenticated_client, query, departments, feature_flag_count):
+    def test_can_search_offerer_no_result(self, authenticated_client, query, departments):
         self._create_offerers()
 
-        with assert_num_queries(self.expected_num_queries + feature_flag_count):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, q=query, pro_type=TypeOptions.OFFERER.name, departments=departments)
             )
@@ -473,7 +466,7 @@ class SearchOffererTest:
         offerer_1 = offerers_factories.CaledonianOffererFactory()
         offerer_2 = offerers_factories.CaledonianOffererFactory()
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="calédonienne", pro_type=TypeOptions.OFFERER.name)
             )
@@ -499,8 +492,6 @@ class SearchVenueTest:
     # - fetch results
     # - fetch count for pagination
     expected_num_queries = 4
-    # - fetch feature flag
-    expected_num_queries_with_ff = 5
 
     def _create_venues(
         self,
@@ -579,8 +570,7 @@ class SearchVenueTest:
     def test_can_search_venue_by_booking_email_domain(self, authenticated_client):
         self._create_venues()
 
-        # +1 for WIP_ENABLE_OFFER_ADDRESS
-        with assert_num_queries(self.expected_num_queries + 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="@librairie.fr", pro_type=TypeOptions.VENUE.name)
             )
@@ -608,7 +598,7 @@ class SearchVenueTest:
     def test_can_search_venue_by_name(self, authenticated_client):
         self._create_venues()
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="Alpha", pro_type=TypeOptions.VENUE.name))
             assert response.status_code == 200
 
@@ -622,7 +612,7 @@ class SearchVenueTest:
     def test_can_search_venue_by_name_and_department(self, authenticated_client):
         self._create_venues()
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="cinema", pro_type=TypeOptions.VENUE.name, departments=["974", "80"])
             )
@@ -637,7 +627,7 @@ class SearchVenueTest:
     def test_can_search_venue_by_public_name(self, authenticated_client):
         self._create_venues()
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="du Centre", pro_type=TypeOptions.VENUE.name))
             assert response.status_code == 200
 
@@ -710,7 +700,7 @@ class SearchVenueTest:
         venue_1 = offerers_factories.CaledonianVenueFactory()
         venue_2 = offerers_factories.CaledonianVenueFactory()
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="calédonien", pro_type=TypeOptions.VENUE.name))
             assert response.status_code == 200
 
@@ -726,18 +716,18 @@ class SearchVenueTest:
         assert f"RIDET : {venue_2.ridet} " in cards_text[1]
 
     @pytest.mark.parametrize(
-        "query,departments,feature_flag_count",
+        "query,departments",
         [
-            ("987654321", [], 1),  # WIP_ENABLE_OFFER_ADDRESS FF
-            ("festival@example.com", [], 1),  # WIP_ENABLE_OFFER_ADDRESS FF
-            ("Festival de la Montagne", [], 1),
-            ("Plage", ["74", "77"], 1),
+            ("987654321", []),
+            ("festival@example.com", []),
+            ("Festival de la Montagne", []),
+            ("Plage", ["74", "77"]),
         ],
     )
-    def test_can_search_venue_no_result(self, authenticated_client, query, departments, feature_flag_count):
+    def test_can_search_venue_no_result(self, authenticated_client, query, departments):
         self._create_venues()
 
-        with assert_num_queries(self.expected_num_queries + feature_flag_count):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, q=query, pro_type=TypeOptions.VENUE.name, departments=departments)
             )
@@ -751,12 +741,10 @@ class SearchBankAccountTest:
 
     # session + current user (2 queries)
     # results + count in .paginate (2 queries)
-    # WIP_ENABLE_OFFER_ADDRESS FF (1 query)
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def _search_for_one(self, authenticated_client, search_query: typing.Any, expected_id: int):
-        # HTML not rendered -> WIP_ENABLE_OFFER_ADDRESS not loaded
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, q=str(search_query), pro_type=TypeOptions.BANK_ACCOUNT.name)
             )
@@ -840,7 +828,7 @@ class GetCreateOffererFormTest(GetEndpointHelper):
     def test_get_create_offerer_form(self, authenticated_client):
         url = url_for(self.endpoint)
 
-        with assert_num_queries(3):  # session + current user + WIP_ENABLE_OFFER_ADDRESS FF
+        with assert_num_queries(2):  # session + current user
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1219,9 +1207,8 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            # +1 for WIP_ENABLE_OFFER_ADDRESS
             # +1 for rollback query
-            expected_num_queries=self.expected_num_queries + 2,
+            expected_num_queries=self.expected_num_queries + 1,
         )
 
         assert response.status_code == 303
@@ -1237,9 +1224,8 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            # +1 for WIP_ENABLE_OFFER_ADDRESS
             # +1 for rollback query
-            expected_num_queries=self.expected_num_queries + 2,
+            expected_num_queries=self.expected_num_queries + 1,
         )
 
         assert response.status_code == 303
@@ -1261,9 +1247,8 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            # +1 for WIP_ENABLE_OFFER_ADDRESS
             # +1 for rollback query
-            expected_num_queries=self.expected_num_queries + 2,
+            expected_num_queries=self.expected_num_queries + 1,
         )
 
         assert response.status_code == 303
@@ -1292,9 +1277,8 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            # +1 for WIP_ENABLE_OFFER_ADDRESS
             # +1 for rollback query
-            expected_num_queries=self.expected_num_queries + 2,
+            expected_num_queries=self.expected_num_queries + 1,
         )
 
         assert response.status_code == 303

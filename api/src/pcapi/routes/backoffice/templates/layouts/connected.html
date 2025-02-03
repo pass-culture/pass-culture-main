@@ -100,18 +100,10 @@
                     {{ menu_section_item('Recherche EAN via Tite Live', 'backoffice_web.titelive.search_titelive') }}
                   {% endif %}
                   {% if has_permission("READ_TAGS") %}
-                    {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                      {{ menu_section_item('Tags des offres et partenaires culturels', 'backoffice_web.tags.list_tags') }}
-                    {% else %}
-                      {{ menu_section_item('Tags des offres et lieux', 'backoffice_web.tags.list_tags') }}
-                    {% endif %}
+                    {{ menu_section_item('Tags des offres et partenaires culturels', 'backoffice_web.tags.list_tags') }}
                   {% endif %}
                   {% if has_permission("READ_PRO_ENTITY") and has_permission("MANAGE_PRO_ENTITY") %}
-                    {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                      {{ menu_section_item('Actions sur les partenaires culturels', 'backoffice_web.venue.list_venues') }}
-                    {% else %}
-                      {{ menu_section_item('Actions sur les lieux', 'backoffice_web.venue.list_venues') }}
-                    {% endif %}
+                    {{ menu_section_item('Actions sur les partenaires culturels', 'backoffice_web.venue.list_venues') }}
                   {% endif %}
                   {% if has_permission("READ_PRO_ENTITY") %}{{ menu_section_item('Préférences', 'backoffice_web.preferences.edit_preferences') }}{% endif %}
                 {% endcall %}

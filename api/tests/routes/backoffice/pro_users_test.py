@@ -38,8 +38,8 @@ class GetProUserTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # session + current user + pro user data + feature flag
-    expected_num_queries = 4
+    # session + current user + pro user data
+    expected_num_queries = 3
 
     class EmailValidationButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -154,7 +154,7 @@ class GetProUserTest(GetEndpointHelper):
         user = users_factories.BeneficiaryGrant18Factory()
         url = url_for(self.endpoint, user_id=user.id)
 
-        with assert_num_queries(self.expected_num_queries - 1):  # -1 because we don't reach the feature flag check
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 303
 

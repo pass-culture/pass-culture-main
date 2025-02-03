@@ -46,8 +46,7 @@ class ListGdprUserExtractDataTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch gdpr_data_extract
-    # - fetch feature flag in menu: WIP_ENABLE_OFFER_ADDRESS
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_list_gdpr_user_extract_data(self, authenticated_client, list_of_gdpr_user_extract_data):
 

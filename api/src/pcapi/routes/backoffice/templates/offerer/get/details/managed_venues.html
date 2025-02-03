@@ -29,13 +29,7 @@
         <td>{{ links.build_siret_to_external_link(venue) }}</td>
         <td>
           {% if venue.isPermanent %}
-            <span class="visually-hidden">
-              {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                Partenaire culturel permanent
-              {% else %}
-                Lieu permanent
-              {% endif %}
-            </span><i class="bi bi-check-circle-fill"></i>
+            <span class="visually-hidden">Partenaire culturel permanent</span><i class="bi bi-check-circle-fill"></i>
           {% endif %}
         </td>
         <td>{{ venue.venueTypeCode.value }}</td>

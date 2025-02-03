@@ -2,15 +2,7 @@
 {% extends "layouts/connected.html" %}
 {% block page %}
   <div class="pt-3 px-5">
-    <h2 class="fw-light">
-      Déplacer un SIRET d’un
-      {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-        partenaire culturel
-      {% else %}
-        lieu
-      {% endif %}
-      à un autre
-    </h2>
+    <h2 class="fw-light">Déplacer un SIRET d’un partenaire culturel à un autre</h2>
     <div class="col-12 py-4">
       <form action="{{ dst }}"
             name="{{ dst | action_to_name }}"

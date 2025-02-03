@@ -62,13 +62,7 @@
               <th scope="col">Date de l'évènement</th>
               {% if has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Tarif</th>{% endif %}
               <th scope="col">Entité juridique</th>
-              <th scope="col">
-                {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                  Partenaire culturel
-                {% else %}
-                  Lieu
-                {% endif %}
-              </th>
+              <th scope="col">Partenaire culturel</th>
               <th scope="col">{# icon #}</th>
             </tr>
           </thead>

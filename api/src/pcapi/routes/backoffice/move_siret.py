@@ -14,7 +14,6 @@ from pcapi.core.finance import siret_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 
@@ -38,10 +37,7 @@ def _validate_move_siret_form() -> (
         return form, None, None
 
     if form.source_venue.data == form.target_venue.data:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash("Les partenaires culturels source et destination doivent être différents", "warning")
-        else:
-            flash("Les lieux source et destination doivent être différents", "warning")
+        flash("Les partenaires culturels source et destination doivent être différents", "warning")
         return form, None, None
 
     source_venue = (
@@ -54,18 +50,12 @@ def _validate_move_siret_form() -> (
         .one_or_none()
     )
     if not source_venue:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash(
-                Markup("Aucun partenaire culturel n'a été trouvé avec l'ID <b>{venue_id}</b>").format(
-                    venue_id=form.source_venue.data
-                ),
-                "warning",
-            )
-        else:
-            flash(
-                Markup("Aucun lieu n'a été trouvé avec l'ID <b>{venue_id}</b>").format(venue_id=form.source_venue.data),
-                "warning",
-            )
+        flash(
+            Markup("Aucun partenaire culturel n'a été trouvé avec l'ID <b>{venue_id}</b>").format(
+                venue_id=form.source_venue.data
+            ),
+            "warning",
+        )
         return form, None, None
 
     target_venue = (
@@ -78,52 +68,30 @@ def _validate_move_siret_form() -> (
         .one_or_none()
     )
     if not target_venue:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash(
-                Markup("Aucun partenaire culturel n'a été trouvé avec l'ID <b>{venue_id}</b>").format(
-                    venue_id=form.target_venue.data
-                ),
-                "warning",
-            )
-        else:
-            flash(
-                Markup("Aucun lieu n'a été trouvé avec l'ID <b>{venue_id}</b>").format(venue_id=form.target_venue.data),
-                "warning",
-            )
+        flash(
+            Markup("Aucun partenaire culturel n'a été trouvé avec l'ID <b>{venue_id}</b>").format(
+                venue_id=form.target_venue.data
+            ),
+            "warning",
+        )
         return form, None, None
 
     if source_venue.siret != form.siret.data:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash(
-                Markup("Le SIRET <b>{siret}</b> ne correspond pas au partenaire culturel <b>{venue_id}</b>").format(
-                    siret=form.siret.data, venue_id=form.source_venue.data
-                ),
-                "warning",
-            )
-        else:
-            flash(
-                Markup("Le SIRET <b>{siret}</b> ne correspond pas au lieu <b>{venue_id}</b>").format(
-                    siret=form.siret.data, venue_id=form.source_venue.data
-                ),
-                "warning",
-            )
+        flash(
+            Markup("Le SIRET <b>{siret}</b> ne correspond pas au partenaire culturel <b>{venue_id}</b>").format(
+                siret=form.siret.data, venue_id=form.source_venue.data
+            ),
+            "warning",
+        )
         return form, None, None
 
     if target_venue.isVirtual:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash(
-                Markup(
-                    "Le partenaire culturel cible <b>{venue_name}</b> (ID {venue_id}) est un partenaire culturel virtuel"
-                ).format(venue_name=target_venue.name, venue_id=target_venue.id),
-                "warning",
-            )
-        else:
-            flash(
-                Markup("Le lieu cible <b>{venue_name}</b> (ID {venue_id}) est un lieu virtuel").format(
-                    venue_name=target_venue.name, venue_id=target_venue.id
-                ),
-                "warning",
-            )
+        flash(
+            Markup(
+                "Le partenaire culturel cible <b>{venue_name}</b> (ID {venue_id}) est un partenaire culturel virtuel"
+            ).format(venue_name=target_venue.name, venue_id=target_venue.id),
+            "warning",
+        )
         return form, None, None
 
     return form, source_venue, target_venue

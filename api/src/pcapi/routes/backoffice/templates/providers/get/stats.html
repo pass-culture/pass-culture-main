@@ -5,22 +5,14 @@
       <div class="col-6">
         <h5 class="fs-2 card-title">{{ stats.active }}</h5>
         <p class="card-text fw-light small mb-0">
-          {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-            partenaire{{ stats.active | pluralize('', 's') }} culturel{{ stats.active | pluralize('', 's') }}
-          {% else %}
-            lieu{{ stats.active | pluralize('', 'x') }}
-          {% endif %}
+          partenaire{{ stats.active | pluralize('', 's') }} culturel{{ stats.active | pluralize('', 's') }}
           avec une synchronisation <b>active</b>
         </p>
       </div>
       <div class="col-6">
         <h5 class="fs-2 card-title">{{ stats.inactive }}</h5>
         <p class="card-text fw-light small mb-0">
-          {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-            partenaire{{ stats.inactive | pluralize('', 's') }} culturel{{ stats.inactive | pluralize('', 's') }}
-          {% else %}
-            lieu{{ stats.inactive | pluralize('', 'x') }}
-          {% endif %}
+          partenaire{{ stats.inactive | pluralize('', 's') }} culturel{{ stats.inactive | pluralize('', 's') }}
           avec une synchronisation <b>inactive</b>
         </p>
       </div>

@@ -33,7 +33,7 @@ class CollectiveOffersSearchAttributes(enum.Enum):
     REGION = "Région"
     VALIDATION = "État"
     ID = "ID de l'offre"
-    VENUE = typing.cast(str, forms_utils.VenueRenaming("Lieux", "Partenaires culturels"))
+    VENUE = "Partenaires culturels"
     NAME = "Nom de l'offre"
     STATUS = "Statut"
     OFFERER = "Entité juridique"
@@ -161,7 +161,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         ],
     )
     venue = fields.PCTomSelectField(
-        typing.cast(str, forms_utils.VenueRenaming("Lieux", "Partenaires culturels")),
+        "Partenaires culturels",
         multiple=True,
         choices=[],
         validate_choice=False,
@@ -290,7 +290,7 @@ class GetCollectiveOfferTemplatesListForm(forms.GetOffersBaseFields):
         endpoint="backoffice_web.autocomplete_offerers",
     )
     venue = fields.PCTomSelectField(
-        typing.cast(str, forms_utils.VenueRenaming("Lieux", "Partenaires culturels")),
+        "Partenaires culturels",
         multiple=True,
         choices=[],
         validate_choice=False,

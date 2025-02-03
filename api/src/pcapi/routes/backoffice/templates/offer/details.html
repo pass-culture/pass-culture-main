@@ -83,11 +83,7 @@
               {% endif %}
               {% if edit_offer_venue_form %}
                 {% set edit_offer_venue_aria_described_by_id = random_hash() %}
-                {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                  {{ build_modal_form("edit-offer-venue", url_for("backoffice_web.offer.edit_offer_venue", offer_id=offer.id) , edit_offer_venue_form, "Modifier le partenaire culturel", "Modifier le partenaire culturel", "Enregistrer") }}
-                {% else %}
-                  {{ build_modal_form("edit-offer-venue", url_for("backoffice_web.offer.edit_offer_venue", offer_id=offer.id) , edit_offer_venue_form, "Modifier le lieu", "Modifier le lieu", "Enregistrer") }}
-                {% endif %}
+                {{ build_modal_form("edit-offer-venue", url_for("backoffice_web.offer.edit_offer_venue", offer_id=offer.id) , edit_offer_venue_form, "Modifier le partenaire culturel", "Modifier le partenaire culturel", "Enregistrer") }}
               {% endif %}
             </div>
             <div class="col-2"></div>
@@ -181,13 +177,7 @@
               </div>
               <div class="fs-6">
                 <p class="mb-1">
-                  <span class="fw-bold">
-                    {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                      Partenaire culturel :
-                    {% else %}
-                      Lieu :
-                    {% endif %}
-                  </span> {{ links.build_venue_name_to_details_link(offer.venue) }}
+                  <span class="fw-bold">Partenaire culturel :</span> {{ links.build_venue_name_to_details_link(offer.venue) }}
                   {{ badges.build_offer_venue_fraud_badges(offer.venue) }}
                 </p>
               </div>
