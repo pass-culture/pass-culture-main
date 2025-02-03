@@ -128,7 +128,9 @@ Voir https://code.visualstudio.com/docs/python/testing pour plus d'informations.
 
 #### Tests front
 
-Pour lancer / débugger un test front, on peut utiliser la commande de launch `Debug current spec test file`. Lorsqu'on est dans un fichier `*.spec.tsx`, on peut lancer la commande depuis l'onglet `Run and Debug` et les tests du fichier seront exécutés.
+De la même manière pour les tests front, il faut cette fois installer l'extension `vitest.explorer`. On aura alors accès aux tests des fichiers `*.spec.tsx` dans l'onglet Testing.
+
+On peut également utiliser la commande de launch `Debug current spec test file`. Lorsqu'on est dans un fichier `*.spec.tsx`, on peut lancer la commande depuis l'onglet `Run and Debug` et les tests du fichier seront exécutés.
 
 ### Commandes utiles
 

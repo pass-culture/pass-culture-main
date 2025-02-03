@@ -1,5 +1,10 @@
 {
   "python.formatting.provider": "black",
   "python.testing.cwd": "${workspaceFolder}/api",
-  "python.testing.pytestEnabled": true
+  "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+    "-vv",
+    "-s",
+    "-W ignore::DeprecationWarning"
+  ]
 }
