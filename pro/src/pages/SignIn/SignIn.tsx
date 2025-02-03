@@ -47,6 +47,8 @@ export const SignIn = (): JSX.Element => {
   const dispatch = useDispatch()
   const [searchParams, setSearchParams] = useSearchParams()
   const [shouldRedirect, setshouldRedirect] = React.useState(false)
+  const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
+
   useInitReCaptcha()
 
   useEffect(() => {
@@ -136,14 +138,14 @@ export const SignIn = (): JSX.Element => {
     }
   }
 
-  const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
-
   return shouldRedirect ? (
     <Navigate to="/" replace />
   ) : (
     <Layout layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}>
       <h1 className={styles['title']}>
-        Bienvenue sur l’espace partenaires culturels
+        {is2025SignUpEnabled
+          ? 'Connexion'
+          : 'Bienvenue sur l’espace partenaires culturels'}
       </h1>
 
       <div className={styles['mandatory']}>
