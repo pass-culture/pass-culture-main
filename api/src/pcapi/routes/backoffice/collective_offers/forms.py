@@ -39,6 +39,7 @@ class CollectiveOffersSearchAttributes(enum.Enum):
     OFFERER = "Entité juridique"
     PRICE = "Prix"
     MINISTRY = "Ministère"
+    MEG = "Marseille en Grand"
 
 
 operator_no_require_value = ["NOT_EXIST"]
@@ -59,6 +60,7 @@ form_field_configuration = {
     "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
     "PRICE": {"field": "price", "operator": ["EQUALS", "LESS_THAN", "GREATER_THAN_OR_EQUAL_TO"]},
     "MINISTRY": {"field": "ministry", "operator": ["IN", "NOT_IN"]},
+    "MEG": {"field": "boolean", "operator": ["NULLABLE"]},
 }
 
 
@@ -83,6 +85,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "validation",
                 "price",
                 "ministry",
+                "boolean",
             ],
             "sub_rule_type_field_name": "search_field",
             "operator_field_name": "operator",
@@ -200,6 +203,14 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         choices=forms_utils.choices_from_enum(educational_models.Ministry),
         search_inline=True,
         field_list_compatibility=True,
+    )
+    boolean = fields.PCSelectField(
+        "Booléen",
+        choices=(("true", "Oui"), ("false", "Non")),
+        default="true",
+        validators=[
+            wtforms.validators.Optional(""),
+        ],
     )
 
     def validate_string(self, string: fields.PCStringField) -> fields.PCStringField:

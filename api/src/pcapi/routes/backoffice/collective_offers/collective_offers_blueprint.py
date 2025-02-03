@@ -117,6 +117,26 @@ SEARCH_FIELD_TO_PYTHON = {
         "column": educational_models.EducationalDeposit.ministry,
         "inner_join": "deposit",
     },
+    "MEG": {
+        "field": "boolean",
+        "special": lambda x: x == "true",
+        "inner_join": "institution",
+        "custom_filters": {
+            "NULLABLE": lambda value: (
+                sa.exists()
+                .where(
+                    sa.and_(
+                        educational_models.EducationalInstitutionProgramAssociation.institutionId
+                        == educational_models.EducationalInstitution.id,
+                        educational_models.EducationalInstitutionProgram.name
+                        == educational_models.PROGRAM_MARSEILLE_EN_GRAND,
+                    )
+                )
+                .correlate(educational_models.EducationalInstitution)
+                .is_(value)
+            )
+        },
+    },
 }
 
 
@@ -154,6 +174,12 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
             "name": "venue",
             "args": (offerers_models.Venue, educational_models.CollectiveOffer.venue),
         }
+    ],
+    "institution": [
+        {
+            "name": "institution",
+            "args": (educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution),
+        },
     ],
     "deposit": [
         {
@@ -309,12 +335,17 @@ def _get_collective_offers(
                 ),
             )
             .options(
-                sa.orm.contains_eager(educational_models.CollectiveOffer.institution)
-                .contains_eager(educational_models.EducationalInstitution.deposits)
-                .load_only(educational_models.EducationalDeposit.ministry)
-                .contains_eager(educational_models.EducationalDeposit.educationalYear)
-                .load_only(
-                    educational_models.EducationalYear.beginningDate, educational_models.EducationalYear.expirationDate
+                sa.orm.contains_eager(educational_models.CollectiveOffer.institution).options(
+                    sa.orm.contains_eager(educational_models.EducationalInstitution.deposits)
+                    .load_only(educational_models.EducationalDeposit.ministry)
+                    .contains_eager(educational_models.EducationalDeposit.educationalYear)
+                    .load_only(
+                        educational_models.EducationalYear.beginningDate,
+                        educational_models.EducationalYear.expirationDate,
+                    ),
+                    sa.orm.joinedload(educational_models.EducationalInstitution.programs).load_only(  # max 1: MeG
+                        educational_models.EducationalInstitutionProgram.label
+                    ),
                 )
             )
         )

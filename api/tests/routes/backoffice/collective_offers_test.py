@@ -521,6 +521,38 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             collective_offers[expected_index].id for expected_index in expected_indexes
         }
 
+    @pytest.mark.parametrize(
+        "value,expected_indexes",
+        [
+            ("false", [0, 1, 2]),
+            ("true", [3]),
+        ],
+    )
+    def test_list_offers_by_meg(self, authenticated_client, collective_offers, value, expected_indexes):
+        meg_program = educational_factories.EducationalInstitutionProgramFactory(
+            name=educational_models.PROGRAM_MARSEILLE_EN_GRAND
+        )
+        meg_educational_institution = educational_factories.EducationalInstitutionFactory(programs=[meg_program])
+        educational_factories.EducationalDepositFactory(educationalInstitution=meg_educational_institution)
+        meg_offer = educational_factories.CollectiveStockFactory(
+            collectiveOffer__institution=meg_educational_institution
+        ).collectiveOffer
+        all_offers = list(collective_offers) + [meg_offer]
+
+        query_args = {
+            "search-1-search_field": "MEG",
+            "search-1-operator": "NULLABLE",
+            "search-1-boolean": value,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {
+            all_offers[expected_index].id for expected_index in expected_indexes
+        }
+
     def test_list_collective_offers_by_department(self, authenticated_client, collective_offers):
         query_args = {
             "search-3-search_field": "DEPARTMENT",
