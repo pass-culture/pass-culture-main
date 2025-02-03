@@ -68,7 +68,9 @@ describe('OnboardingOffersChoice Component', () => {
   describe('trackers', () => {
     it('should track choosing collective offers', async () => {
       await userEvent.click(
-        screen.getByTitle('Commencer la création d’offre sur ADAGE')
+        screen.getByRole('button', {
+          name: 'Commencer la création d’offre sur ADAGE',
+        })
       )
 
       await waitFor(() => {

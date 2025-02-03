@@ -10,33 +10,24 @@ import styles from './Thumb.module.scss'
  */
 interface ThumbProps {
   /**
-   * The URL of the thumbnail image.
+   * The URL of the thumbnail image. If it is not provided, a fallback icon is displayed.
    */
   url?: string | null
-  /**
-   * Custom CSS class for additional styling of the thumbnail.
-   */
   className?: string
+  /**
+   * The accessible label of the image or fallback icon.
+   */
+  alt?: string
 }
 
 /**
  * The Thumb component is used to display a thumbnail image or a default icon if no image URL is provided.
- *
- * ---
- * **Important: Use the `url` prop to provide the image source, or leave it empty to display the default icon.**
- * ---
- *
- * @param {ThumbProps} props - The props for the Thumb component.
- * @returns {JSX.Element} The rendered Thumb component.
- *
- * @example
- * <Thumb url="/path/to/image.jpg" className="custom-class" />
- *
- * @accessibility
- * - **Alt Attribute**: Ensure that the `alt` attribute is properly set to provide context for the image or icon.
- * - **Lazy Loading**: The thumbnail image is loaded lazily to improve performance and reduce initial load time.
  */
-export const Thumb = ({ url = '', className }: ThumbProps): JSX.Element => {
+export const Thumb = ({
+  url = '',
+  className,
+  alt = '',
+}: ThumbProps): JSX.Element => {
   return (
     <div className={styles['thumb-container']}>
       {url ? (
@@ -44,11 +35,11 @@ export const Thumb = ({ url = '', className }: ThumbProps): JSX.Element => {
           className={cn(styles['offer-thumb'], className)}
           loading="lazy"
           src={url}
-          alt=""
+          alt={alt}
         />
       ) : (
         <SvgIcon
-          alt=""
+          alt={alt}
           src={strokeOfferIcon}
           width="48"
           className={cn(styles['default-thumb'], className)}

@@ -11,41 +11,18 @@ import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
-/**
- * Props for the Button component.
- *
- * @extends SharedButtonProps, React.ButtonHTMLAttributes<HTMLButtonElement>
- */
 export interface ButtonProps
   extends SharedButtonProps,
-    React.ButtonHTMLAttributes<HTMLButtonElement> {
-  /**
-   * Whether the button has a tooltip.
-   */
+    Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'title'> {
   hasTooltip?: boolean
-  /**
-   * Whether the button is in a loading state.
-   * @default false
-   */
   isLoading?: boolean
-  /**
-   * Custom class name for the tooltip content.
-   */
   tooltipContentClassName?: string
-  /**
-   * Custom class name for the icon.
-   */
   iconClassName?: string
 }
 
 /**
  * The Button component provides a customizable button element that can include icons, tooltips, and loading states.
  * It supports various styles through the `variant` prop and can display icons on either side of the button text.
- *
- * ---
- * **Important: Ensure to use descriptive labels for buttons to improve accessibility.**
- * When using icons only, make sure to provide an accessible label or `aria-label`.
- * ---
  *
  * @param {ButtonProps} props - The props for the Button component.
  * @returns {JSX.Element} The rendered Button component.
@@ -62,9 +39,9 @@ export interface ButtonProps
  * </Button>
  *
  * @accessibility
- * - **Loading State**: When `isLoading` is true, a spinner icon is displayed to indicate the button's loading state.
- * - **Tooltip Support**: The `Tooltip` component is used to display additional information. Ensure that the tooltip content is meaningful and helpful for users.
- * - **Keyboard Navigation**: The button can be focused and activated using the keyboard, ensuring it meets accessibility standards for interactive elements.
+ * - Ensure to use descriptive labels for buttons to improve accessibility.
+ * - When using an icons as content for the button, make sure to provide an accessible label with the `iconAlt` prop.
+ * - The `Tooltip` component is used to display additional information. Ensure that the tooltip content is meaningful and helpful for users.
  */
 export const Button = forwardRef(
   (

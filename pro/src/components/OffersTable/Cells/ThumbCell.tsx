@@ -33,8 +33,9 @@ export const ThumbCell = ({
       )}
       headers={`${rowId} ${CELLS_DEFINITIONS.THUMB.id}`}
     >
-      <Link to={offerLink} aria-label={`${offer.name} - éditer l’offre`}>
+      <Link to={offerLink}>
         <Thumb
+          alt={`${offer.name} - éditer l’offre`}
           url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl}
           className={classNames(
             {
