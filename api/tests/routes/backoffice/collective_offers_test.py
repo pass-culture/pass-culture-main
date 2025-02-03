@@ -498,6 +498,29 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[0].id, collective_offers[1].id}
 
+    @pytest.mark.parametrize(
+        "ministry,expected_indexes",
+        [
+            ("EDUCATION_NATIONALE", [0, 1]),
+            ("MER", [2]),
+            ("AGRICULTURE", []),
+        ],
+    )
+    def test_list_offers_by_ministry(self, authenticated_client, collective_offers, ministry, expected_indexes):
+        query_args = {
+            "search-1-search_field": "MINISTRY",
+            "search-1-operator": "IN",
+            "search-1-ministry": ministry,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {
+            collective_offers[expected_index].id for expected_index in expected_indexes
+        }
+
     def test_list_collective_offers_by_department(self, authenticated_client, collective_offers):
         query_args = {
             "search-3-search_field": "DEPARTMENT",
