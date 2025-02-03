@@ -289,6 +289,7 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.isPermanent,
+                offerers_models.Venue.isOpenToPublic,
                 offerers_models.Venue.bannerUrl,
                 offerers_models.Venue.venueTypeCode,
                 # FIXME (dramelet, 17-01-2025)

@@ -1691,6 +1691,7 @@ def test_public_api(client):
                         "coordinates": {"$ref": "#/components/schemas/Coordinates"},
                         "id": {"title": "Id", "type": "integer"},
                         "isPermanent": {"title": "Ispermanent", "type": "boolean"},
+                        "isOpenToPublic": {"nullable": True, "title": "Isopentopublic", "type": "boolean"},
                         "name": {"title": "Name", "type": "string"},
                         "offerer": {"$ref": "#/components/schemas/OfferOffererResponse"},
                         "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
