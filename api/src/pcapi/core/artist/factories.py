@@ -1,6 +1,7 @@
 import factory
 
 from pcapi.core.factories import BaseFactory
+from pcapi.core.offers import models as offers_models
 
 from . import models
 
@@ -32,3 +33,11 @@ class ArtistAliasFactory(BaseFactory):
     artist_cluster_id = factory.Faker("pystr", max_chars=10)
     artist_wiki_data_id = factory.Faker("pystr", max_chars=10)
     offer_category_id = factory.Faker("pystr", max_chars=10)
+
+
+class ArtistProductLinkFactory(BaseFactory):
+    class Meta:
+        model = models.ArtistProductLink
+
+    artist_id = factory.SubFactory(models.Artist)
+    product_id = factory.SubFactory(offers_models.Product)

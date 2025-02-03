@@ -5,6 +5,8 @@ from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
 
+import pcapi.core.artist.factories as artists_factories
+import pcapi.core.artist.models as artists_models
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.educational.factories as educational_factories
@@ -411,6 +413,18 @@ def test_serialize_offer_temporarily_headline():
     serialized = algolia.AlgoliaBackend().serialize_offer(headline_offer.offer, 0)
     assert serialized["offer"]["isHeadline"] is True
     assert serialized["offer"]["isHeadlineUntil"] == 1735776000
+
+
+def test_serialize_offer_artists():
+    artist = artists_factories.ArtistFactory()
+    product = offers_factories.ProductFactory()
+    offer = offers_factories.OfferFactory(product=product)
+    artists_factories.ArtistProductLinkFactory(
+        artist_id=artist.id, product_id=product.id, artist_type=artists_models.ArtistType.AUTHOR
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert serialized["artists"] == [{"id": artist.id, "name": artist.name, "image": artist.image}]
 
 
 def test_serialize_venue():

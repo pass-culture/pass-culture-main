@@ -471,7 +471,7 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
         .options(sa.orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.googlePlacesInfo))
         .options(sa.orm.joinedload(offers_models.Offer.criteria))
         .options(sa.orm.joinedload(offers_models.Offer.mediations))
-        .options(sa.orm.joinedload(offers_models.Offer.product))
+        .options(sa.orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.artists))
         .options(sa.orm.joinedload(offers_models.Offer.headlineOffers))
         .options(
             sa.orm.joinedload(offers_models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address)
