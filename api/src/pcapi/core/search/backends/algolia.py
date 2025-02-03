@@ -462,7 +462,14 @@ class AlgoliaBackend(base.SearchBackend):
         tags = [criterion.name for criterion in offer.criteria]
 
         extra_data = offer.product.extraData if offer.product and offer.product.extraData else offer.extraData or {}
-        artist = " ".join(str(extra_data.get(key, "")) for key in ("author", "performer", "speaker", "stageDirector"))
+        extra_data_artist = " ".join(
+            str(extra_data.get(key, "")) for key in ("author", "performer", "speaker", "stageDirector")
+        )
+        artists = (
+            [{"id": artist.id, "image": artist.image, "name": artist.name} for artist in offer.product.artists]
+            if offer.product and offer.product.artists
+            else None
+        )
         release_date = None
         if extra_data.get("releaseDate"):
             try:
@@ -542,7 +549,7 @@ class AlgoliaBackend(base.SearchBackend):
             "objectID": offer.id,
             "offer": {
                 "allocineId": extra_data.get("allocineId"),
-                "artist": artist.strip() or None,
+                "artist": extra_data_artist.strip() or None,
                 "bookMacroSection": macro_section,
                 "dateCreated": date_created,
                 "dates": sorted(dates),
@@ -623,6 +630,9 @@ class AlgoliaBackend(base.SearchBackend):
             object_to_index["offer"]["isHeadline"] = True
             if headline_offer.timespan.upper:
                 object_to_index["offer"]["isHeadlineUntil"] = headline_offer.timespan.upper.timestamp()
+
+        if artists:
+            object_to_index["artists"] = artists
 
         for section in ("offer", "offerer", "venue"):
             object_to_index[section] = {

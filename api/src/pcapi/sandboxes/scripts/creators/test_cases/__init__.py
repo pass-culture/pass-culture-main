@@ -72,6 +72,10 @@ def save_test_cases_sandbox() -> None:
 
 
 def create_artists() -> None:
+    venue = offerers_factories.VenueFactory(
+        name="Lieu avec artistes", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
+    )
+
     # Artist 1 : writer
     artist_1 = artist_factories.ArtistFactory(
         name="Virginie Despentes",
@@ -82,6 +86,7 @@ def create_artists() -> None:
     )
     for _ in range(10):
         product = offers_factories.ProductFactory(subcategoryId=subcategories_v2.LIVRE_PAPIER.id)
+        offers_factories.OfferFactory(product=product, venue=venue)
         offers_factories.ArtistProductLinkFactory(
             artist_id=artist_1.id, product_id=product.id, artist_type=ArtistType.AUTHOR
         )
@@ -97,6 +102,7 @@ def create_artists() -> None:
     )
     for _ in range(10):
         product = offers_factories.ProductFactory(subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
+        offers_factories.OfferFactory(product=product, venue=venue)
         offers_factories.ArtistProductLinkFactory(
             artist_id=artist_2.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
@@ -112,6 +118,7 @@ def create_artists() -> None:
     )
     for _ in range(10):
         product = offers_factories.ProductFactory(subcategoryId=subcategories_v2.SEANCE_CINE.id)
+        offers_factories.OfferFactory(product=product, venue=venue)
         offers_factories.ArtistProductLinkFactory(
             artist_id=artist_3.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
