@@ -23,7 +23,6 @@ class Returns200Test:
     num_queries = 1  # Fetch the session
     num_queries += 1  # Fetch the user
     num_queries += 1  # Fetch the collective_booking
-    num_queries += 1  # Check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
 
     @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_complete_booking_single(self, client):

@@ -707,8 +707,8 @@ class GetCollectiveBookingCSVDownloadTest(GetEndpointHelper):
     endpoint = "backoffice_web.collective_bookings.get_collective_booking_csv_download"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
-    # session + current user + list of bookings + FF check
-    expected_num_queries = 4
+    # session + current user + list of bookings
+    expected_num_queries = 3
 
     def test_csv_length(self, authenticated_client, collective_bookings):
         venue_id = collective_bookings[0].venueId
@@ -728,8 +728,8 @@ class GetCollectiveBookingXLSXDownloadTest(GetEndpointHelper):
     endpoint = "backoffice_web.collective_bookings.get_collective_booking_xlsx_download"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
-    # session + current user + list of bookings + FF check
-    expected_num_queries = 4
+    # session + current user + list of bookings
+    expected_num_queries = 3
 
     def reader_from_response(self, response):
         wb = openpyxl.load_workbook(BytesIO(response.data))

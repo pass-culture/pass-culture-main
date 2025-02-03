@@ -141,7 +141,6 @@ class Returns200Test:
     expected_num_queries += 1  # Fetch user timezones (for the query)
     expected_num_queries += 1  # CTE built over booking, stock and external_booking
     expected_num_queries += 1  # 4.external_booking
-    expected_num_queries += 1  # 5. check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
 
     @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_when_user_is_linked_to_a_valid_offerer(self, client: Any):
