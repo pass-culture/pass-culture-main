@@ -6,14 +6,7 @@
 {% extends "layouts/connected.html" %}
 {% block page %}
   <div class="pt-3 px-5">
-    <h2 class="fw-light">
-      Tags offres et
-      {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-        partenaires culturels
-      {% else %}
-        lieux
-      {% endif %}
-    </h2>
+    <h2 class="fw-light">Tags offres et partenaires culturels</h2>
     <div class="mt-4">
       {% call tabs.build_details_tabs_wrapper() %}
         {{ tabs.build_details_tab("tags", "Tags", active_tab == 'tags') }}
@@ -22,17 +15,10 @@
       {% call tabs.build_details_tabs_content_wrapper() %}
         {% call tabs.build_details_tab_content("tags", active_tab == 'tags') %}
           {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
-            {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-              <button class="btn btn-outline-primary lead fw-bold my-2"
-                      data-bs-toggle="modal"
-                      data-bs-target="#create-offer-venue-tag"
-                      type="button">Créer un tag offres et partenaires culturels</button>
-            {% else %}
-              <button class="btn btn-outline-primary lead fw-bold my-2"
-                      data-bs-toggle="modal"
-                      data-bs-target="#create-offer-venue-tag"
-                      type="button">Créer un tag offres et lieux</button>
-            {% endif %}
+            <button class="btn btn-outline-primary lead fw-bold my-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#create-offer-venue-tag"
+                    type="button">Créer un tag offres et partenaires culturels</button>
             {{ build_lazy_modal(url_for("backoffice_web.tags.get_create_tag_form") , "create-offer-venue-tag") }}
           {% endif %}
           <div class="mt-4">

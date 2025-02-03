@@ -131,19 +131,11 @@
               </p>
               {% if not offerer.is_caledonian %}
                 <p class="mb-1">
-                  {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                    <span class="fw-bold">Partenaires culturels cartographiés sur ADAGE : {{ adage_information }}</span>
-                  {% else %}
-                    <span class="fw-bold">Lieux cartographiés sur ADAGE : {{ adage_information }}</span>
-                  {% endif %}
+                  <span class="fw-bold">Partenaires culturels cartographiés sur ADAGE : {{ adage_information }}</span>
                 </p>
               {% endif %}
               <p class="mb-1">
-                {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                  <span class="fw-bold">Présence CB dans les partenaires culturels :</span>
-                {% else %}
-                  <span class="fw-bold">Présence CB dans les lieux :</span>
-                {% endif %}
+                <span class="fw-bold">Présence CB dans les partenaires culturels :</span>
                 {{ bank_information_status.ok }} OK
                 / {{ bank_information_status.ko }} KO
               </p>
@@ -260,11 +252,7 @@
             {{ build_details_tab("entreprise", "Données Entreprise", active_tab == 'entreprise') }}
           {% endif %}
           {{ build_details_tab("pro-users", "Comptes pro", active_tab == 'users') }}
-          {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-            {{ build_details_tab("managed-venues", "Partenaires culturels", active_tab == 'managed_venues') }}
-          {% else %}
-            {{ build_details_tab("managed-venues", "Lieux", active_tab == 'managed_venues') }}
-          {% endif %}
+          {{ build_details_tab("managed-venues", "Partenaires culturels", active_tab == 'managed_venues') }}
           {% if has_offerer_address %}
             {# tab is hidden when there is no address in database; so it does not need a FF until migration #}
             {{ build_details_tab("addresses", "Localisations", active_tab == 'addresses') }}

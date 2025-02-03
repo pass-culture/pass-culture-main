@@ -22,21 +22,12 @@
             <span class="fs-5 ps-4">{{ build_venue_badges(venue) }}</span>
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if has_permission("MANAGE_PRO_ENTITY") %}
-                {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                  {{ build_modal_form("edit-venue", url_for("backoffice_web.venue.update_venue", venue_id=venue.id) , edit_venue_form, "Modifier les informations", "Modifier les informations du partenaire culturel", "Enregistrer") }}
-                {% else %}
-                  {{ build_modal_form("edit-venue", url_for("backoffice_web.venue.update_venue", venue_id=venue.id) , edit_venue_form, "Modifier les informations", "Modifier les informations du lieu", "Enregistrer") }}
-                {% endif %}
+                {{ build_modal_form("edit-venue", url_for("backoffice_web.venue.update_venue", venue_id=venue.id) , edit_venue_form, "Modifier les informations", "Modifier les informations du partenaire culturel", "Enregistrer") }}
               {% endif %}
               {% if has_permission("DELETE_PRO_ENTITY") %}
                 {% set delete_venue_modal_label_id = random_hash() %}
-                {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                  {% set form_description = "Le partenaire culturel <strong>"|safe + venue.common_name + "</strong> ("|safe + venue.id|string + ") sera définitivement supprimé de la base de données. Veuillez confirmer ce choix." %}
-                  {{ build_modal_form("delete-venue", url_for("backoffice_web.venue.delete_venue", venue_id=venue.id) , delete_form, "Supprimer le partenaire culturel", "Supprimer le partenaire culturel " + venue.common_name, "Confirmer", form_description, "bi-trash3-fill") }}
-                {% else %}
-                  {% set form_description = "Le lieu <strong>"|safe + venue.common_name + "</strong> ("|safe + venue.id|string + ") sera définitivement supprimé de la base de données. Veuillez confirmer ce choix." %}
-                  {{ build_modal_form("delete-venue", url_for("backoffice_web.venue.delete_venue", venue_id=venue.id) , delete_form, "Supprimer le lieu", "Supprimer le lieu " + venue.common_name, "Confirmer", form_description, "bi-trash3-fill") }}
-                {% endif %}
+                {% set form_description = "Le partenaire culturel <strong>"|safe + venue.common_name + "</strong> ("|safe + venue.id|string + ") sera définitivement supprimé de la base de données. Veuillez confirmer ce choix." %}
+                {{ build_modal_form("delete-venue", url_for("backoffice_web.venue.delete_venue", venue_id=venue.id) , delete_form, "Supprimer le partenaire culturel", "Supprimer le partenaire culturel " + venue.common_name, "Confirmer", form_description, "bi-trash3-fill") }}
               {% endif %}
             </div>
           </div>
@@ -44,21 +35,13 @@
             <p class="card-subtitle text-muted mb-3 h5">Nom d'usage : {{ venue.publicName }}</p>
           {% endif %}
           <p class="card-subtitle text-muted mb-3 h5">
-            {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-              Venue ID : {{ venue.id }} {{ clipboard.copy_to_clipboard(venue.id, "Copier l'ID du partenaire culturel") }}
-            {% else %}
-              Venue ID : {{ venue.id }} {{ clipboard.copy_to_clipboard(venue.id, "Copier l'ID du lieu") }}
-            {% endif %}
+            Venue ID : {{ venue.id }} {{ clipboard.copy_to_clipboard(venue.id, "Copier l'ID du partenaire culturel") }}
           </p>
           <p class="card-subtitle text-muted mb-3 h5">
             {{ venue.identifier_name }} : {{ links.build_siret_to_external_link(venue) }}
             {% if venue.siret %}
               <span class="ms-1 link-primary">
-                {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                  {{ clipboard.copy_to_clipboard(venue.identifier, "Copier le " + venue.identifier_name + " du partenaire culturel") }}
-                {% else %}
-                  {{ clipboard.copy_to_clipboard(venue.identifier, "Copier le " + venue.identifier_name + " du lieu") }}
-                {% endif %}
+                {{ clipboard.copy_to_clipboard(venue.identifier, "Copier le " + venue.identifier_name + " du partenaire culturel") }}
               </span>
             {% endif %}
             {% if venue.siret and has_permission("MOVE_SIRET") %}
@@ -170,13 +153,7 @@
                   {% elif venue.accessibilityProvider.externalAccessibilityId and not venue.accessibilityProvider.externalAccessibilityUrl %}
                     Attention, l'URL pour l'identifiant Acceslibre <i>{{ venue.accessibilityProvider.externalAccessibilityId }}</i> n'est pas renseignée
                   {% elif not venue.accessibilityProvider.externalAccessibilityId and not venue.accessibilityProvider.externalAccessibilityUrl %}
-                    Attention, l'URL et l'identifiant Acceslibre ne sont pas renseignés alors que le
-                    {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                      partenaire culturel
-                    {% else %}
-                      lieu
-                    {% endif %}
-                    est synchronisé
+                    Attention, l'URL et l'identifiant Acceslibre ne sont pas renseignés alors que le partenaire culturel est synchronisé
                   {% endif %}
                 </p>
               {% endif %}
@@ -248,13 +225,7 @@
                               <div class="modal-header"
                                    id="delete-venue-provider-modal-label">
                                 <h5 class="modal-title">
-                                  Supprimer le lien entre le
-                                  {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                                    partenaire culturel
-                                  {% else %}
-                                    lieu
-                                  {% endif %}
-                                  {{ venue.common_name }} et le provider {{ venue_provider.provider.name }}
+                                  Supprimer le lien entre le partenaire culturel {{ venue.common_name }} et le provider {{ venue_provider.provider.name }}
                                 </h5>
                               </div>
                               <div class="modal-body row">
@@ -342,15 +313,7 @@
                           {{ zendesk_sell_synchronisation_form.csrf_token }}
                           <div class="modal-header"
                                id="{{ sync_zsell_aria_described_by_id }}">
-                            <h5 class="modal-title">
-                              Synchroniser le
-                              {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                                partenaire culturel
-                              {% else %}
-                                lieu
-                              {% endif %}
-                              {{ venue.common_name }} sur Zendesk Sell
-                            </h5>
+                            <h5 class="modal-title">Synchroniser le partenaire culturel {{ venue.common_name }} sur Zendesk Sell</h5>
                           </div>
                           <div class="modal-body row">
                             <div class="d-flex align-items-center">

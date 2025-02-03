@@ -35,8 +35,7 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch custom reimbursement rules with extra data (1 query)
-    # - fetch connect as extended FF
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_list_custom_reimbursement_rules(self, authenticated_client):
         start = datetime.datetime.utcnow() - datetime.timedelta(days=365)
@@ -627,8 +626,7 @@ class GetReimburementStatsTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch custom reimbursement rules statistics (1 query)
-    # - fetch WIP_ENABLE_OFFER_ADDRESS FF
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_get_data(self, authenticated_client):
         finance_factories.CustomReimbursementRuleFactory.create_batch(4, offerer=offerers_factories.OffererFactory())

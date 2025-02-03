@@ -38,8 +38,8 @@ class ListRulesTest(GetEndpointHelper):
     endpoint = "backoffice_web.offer_price_limitation_rules.list_rules"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    # session + current_user + rules + WIP_ENABLE_OFFER_ADDRESS FF
-    expected_num_queries = 4
+    # session + current_user + rules
+    expected_num_queries = 3
 
     def test_list_rules(self, authenticated_client, offer_price_limitation_rules):
 

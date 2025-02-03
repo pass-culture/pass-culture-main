@@ -90,11 +90,7 @@
       </div>
       <div class="mt-4">
         {% call build_details_tabs_wrapper() %}
-          {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-            {{ build_details_tab("linked-venues", "Partenaires culturels associés", active_tab == 'linked_venues') }}
-          {% else %}
-            {{ build_details_tab("linked-venues", "Lieux associés", active_tab == 'linked_venues') }}
-          {% endif %}
+          {{ build_details_tab("linked-venues", "Partenaires culturels associés", active_tab == 'linked_venues') }}
           {{ build_details_tab("history", "Historique du compte bancaire", active_tab == 'history') }}
           {{ build_details_tab("invoices", "Remboursements", active_tab == 'invoices') }}
         {% endcall %}

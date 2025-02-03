@@ -114,8 +114,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
     # by a field added in the jinja template.
     # - fetch session (1 query)
     # - fetch user (1 query)
-    # - check OA FF
-    expected_num_queries_when_no_query = 3
+    expected_num_queries_when_no_query = 2
     # - fetch individual bookings with extra data (1 query)
     expected_num_queries = expected_num_queries_when_no_query + 1
 
@@ -249,8 +248,6 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert rows[0]["ID résa"] == str(bookings[0].id)
 
     def test_list_bookings_by_token_not_found(self, authenticated_client, bookings):
-        # Keeping this for whenever we'll remove the WIP_ENABLE_OFFER_ADDRESS FF:
-        # -1 query because no need to check incident ff when no result
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="IENA06"))
             assert response.status_code == 200
@@ -616,26 +613,6 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert "Date d'annulation" in extra_data
         assert "Raison de l'annulation" in extra_data
         assert expected_text in extra_data
-
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=False)
-    def test_list_bookings_venue_naming_without_oa(self, authenticated_client, bookings):
-        searched_booking_id = bookings[0].id
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=searched_booking_id))
-            assert response.status_code == 200
-
-        assert "Lieux" in str(response.data)
-        assert "Partenaires culturels" not in str(response.data)
-
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True)
-    def test_list_bookings_venue_naming_with_oa(self, authenticated_client, bookings):
-        searched_booking_id = bookings[0].id
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=searched_booking_id))
-            assert response.status_code == 200
-
-        assert "Lieux" not in str(response.data)
-        assert "Partenaires culturels" in str(response.data)
 
     @pytest.mark.parametrize("field", ["offerer", "venue", "cashflow_batches"])
     def test_list_bookings_by_invalid_autocomplete_id(self, authenticated_client, field):
@@ -1281,20 +1258,10 @@ class GetIndividualBookingCSVDownloadTest(GetEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.get_individual_booking_csv_download"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
-    # session + current user + bookings + check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
+    # session + current user + bookings + FF check
     expected_num_queries = 4
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=False, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
-    def test_csv_length_without_oa(self, authenticated_client, bookings):
-        venue_id = bookings[0].venueId
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
-            assert response.status_code == 200
-
-        assert len(response.data.split(b"\n")) == 4
-
-    def test_csv_length_with_oa(self, authenticated_client, bookings):
+    def test_csv_length(self, authenticated_client, bookings):
         venue_id = bookings[0].venueId
 
         with assert_num_queries(self.expected_num_queries):
@@ -1308,29 +1275,22 @@ class GetIndividualBookingXLSXDownloadTest(GetEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.get_individual_booking_xlsx_download"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
-    # session + current user + bookings + check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
+    # session + current user + bookings + FF check
     expected_num_queries = 4
 
     def reader_from_response(self, response):
         wb = openpyxl.load_workbook(BytesIO(response.data))
         return wb.active
 
-    @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (True, False))
-    def test_csv_length(self, features, authenticated_client, bookings, is_oa_as_data_source_ff_active):
-        EXPECTED_COLUMN_NAME = {
-            True: "Structure",
-            False: "Lieu",
-        }
+    def test_csv_length(self, authenticated_client, bookings):
         venue_id = bookings[0].venueId
 
-        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_oa_as_data_source_ff_active
-        features.WIP_ENABLE_OFFER_ADDRESS = is_oa_as_data_source_ff_active
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
             assert response.status_code == 200
 
         sheet = self.reader_from_response(response)
-        assert sheet.cell(row=1, column=1).value == EXPECTED_COLUMN_NAME[is_oa_as_data_source_ff_active]
+        assert sheet.cell(row=1, column=1).value == "Structure"
         assert sheet.cell(row=2, column=1).value == bookings[0].venue.name
         assert sheet.cell(row=3, column=1).value == bookings[0].venue.name
         assert sheet.cell(row=4, column=1).value == None

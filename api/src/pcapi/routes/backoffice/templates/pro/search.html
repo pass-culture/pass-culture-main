@@ -12,12 +12,7 @@
     </div>
   {% endif %}
   {% call build_base_search() %}
-    Retrouve une entité juridique ou un
-    {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-      partenaire culturel
-    {% else %}
-      lieu
-    {% endif %}
+    Retrouve une entité juridique ou un partenaire culturel
     par raison sociale, SIREN, SIRET, RID7, RIDET,
     ID de son dossier DMS CB ou par l'identité du pro (nom, prénom,
     email rattaché au SIRET, numéro de téléphone).

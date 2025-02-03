@@ -1,13 +1,10 @@
 import re
-import typing
 
 from flask import flash
 from flask_wtf import FlaskForm
 import wtforms
 
 from pcapi.core.providers import repository as providers_repository
-from pcapi.models import feature
-from pcapi.routes.backoffice.forms import utils as forms_utils
 
 from ..forms import fields
 
@@ -16,20 +13,12 @@ class SearchPivotForm(FlaskForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField(
-        typing.cast(
-            str,
-            forms_utils.VenueRenaming(
-                "ID ou nom de lieu, identifiant cinéma",
-                "ID ou nom de partenaire culturel, identifiant cinéma",
-            ),
-        )
-    )
+    q = fields.PCOptSearchField("ID ou nom de partenaire culturel, identifiant cinéma")
 
 
 class EditPivotForm(FlaskForm):
     venue_id = fields.PCTomSelectField(
-        typing.cast(str, forms_utils.VenueRenaming("Lieu", "Partenaire culturel")),
+        "Partenaire culturel",
         choices=[],
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_venues",
@@ -69,10 +58,7 @@ class EditBoostForm(EditPivotForm):
             id_at_provider=self.cinema_id.data, provider_id=boost_provider.id
         )
         if pivot and pivot.venueId != self.venue_id.data[0]:
-            if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-                flash("Cet identifiant cinéma existe déjà pour un autre partenaire culturel", "warning")
-            else:
-                flash("Cet identifiant cinéma existe déjà pour un autre lieu", "warning")
+            flash("Cet identifiant cinéma existe déjà pour un autre partenaire culturel", "warning")
             return False
 
         return super().validate(extra_validators)
@@ -99,10 +85,7 @@ class EditCGRForm(EditPivotForm):
             id_at_provider=self.cinema_id.data, provider_id=cgr_provider.id
         )
         if pivot and pivot.venueId != self.venue_id.data[0]:
-            if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-                flash("Cet identifiant cinéma existe déjà pour un autre partenaire culturel", "warning")
-            else:
-                flash("Cet identifiant cinéma existe déjà pour un autre lieu", "warning")
+            flash("Cet identifiant cinéma existe déjà pour un autre partenaire culturel", "warning")
             return False
 
         return super().validate(extra_validators)
@@ -131,10 +114,7 @@ class EditCineOfficeForm(EditPivotForm):
             id_at_provider=self.cinema_id.data, provider_id=cds_provider.id
         )
         if pivot and pivot.venueId != self.venue_id.data[0]:
-            if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-                flash("Cet identifiant cinéma existe déjà pour un autre partenaire culturel", "warning")
-            else:
-                flash("Cet identifiant cinéma existe déjà pour un autre lieu", "warning")
+            flash("Cet identifiant cinéma existe déjà pour un autre partenaire culturel", "warning")
             return False
 
         return super().validate(extra_validators)
@@ -159,10 +139,7 @@ class EditEMSForm(EditPivotForm):
             id_at_provider=self.cinema_id.data, provider_id=ems_provider.id
         )
         if pivot and pivot.venueId != self.venue_id.data[0]:
-            if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-                flash("Cet identifiant cinéma existe déjà pour un autre partenaire culturel", "warning")
-            else:
-                flash("Cet identifiant cinéma existe déjà pour un autre lieu", "warning")
+            flash("Cet identifiant cinéma existe déjà pour un autre partenaire culturel", "warning")
             return False
 
         return super().validate(extra_validators)

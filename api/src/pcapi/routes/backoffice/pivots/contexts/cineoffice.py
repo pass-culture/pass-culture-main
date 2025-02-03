@@ -12,7 +12,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.utils import requests
 
 from .. import forms
@@ -62,27 +61,16 @@ class CineofficeContext(PivotContext):
 
         venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
         if not venue:
-            if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-                flash(Markup("Le partenaire culturel id={venue_id} n'existe pas").format(venue_id=venue_id), "warning")
-            else:
-                flash(Markup("Le lieu id={venue_id} n'existe pas").format(venue_id=venue_id), "warning")
+            flash(Markup("Le partenaire culturel id={venue_id} n'existe pas").format(venue_id=venue_id), "warning")
             return False
         pivot = providers_models.CinemaProviderPivot.query.filter_by(venueId=venue_id).one_or_none()
         if pivot:
-            if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-                flash(
-                    Markup("Des identifiants cinéma existent déjà pour ce partenaire culturel id={venue_id}").format(
-                        venue_id=venue_id
-                    ),
-                    "warning",
-                )
-            else:
-                flash(
-                    Markup("Des identifiants cinéma existent déjà pour ce lieu id={venue_id}").format(
-                        venue_id=venue_id
-                    ),
-                    "warning",
-                )
+            flash(
+                Markup("Des identifiants cinéma existent déjà pour ce partenaire culturel id={venue_id}").format(
+                    venue_id=venue_id
+                ),
+                "warning",
+            )
             return False
 
         cinema_provider_pivot = providers_models.CinemaProviderPivot(

@@ -131,8 +131,7 @@ class ListIncidentsTest(GetEndpointHelper):
     # Fetch Session
     # Fetch User
     # Fetch Finance Incidents
-    # Fetch FF
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_list_incidents_without_filter(self, authenticated_client):
         partial_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(newTotalAmount=8.10)
@@ -335,7 +334,6 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
 
     expected_num_queries = 2
     expected_num_queries += 1  # get incident info
-    expected_num_queries += 1  # get WIP_ENABLE_OFFER_ADDRESS FF
 
     def test_get_incident_validation_form(self, authenticated_client):
         booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory()
@@ -1049,7 +1047,6 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
     expected_num_queries += 1  # Fetch Session
     expected_num_queries += 1  # Fetch User
     expected_num_queries += 1  # Fetch Incidents infos
-    expected_num_queries += 1  # Fetch connect as extended FF
 
     @pytest.mark.parametrize(
         "venue_factory,expected_xpf_text",
@@ -1155,7 +1152,6 @@ class GetCommercialGestureTest(GetEndpointHelper):
     expected_num_queries += 1  # Fetch Session
     expected_num_queries += 1  # Fetch User
     expected_num_queries += 1  # Fetch Incidents infos
-    expected_num_queries += 1  # Fetch connect as extended FF
 
     @pytest.mark.parametrize(
         "venue_factory,expected_xpf_text",
@@ -1261,7 +1257,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    expected_num_queries = 8
+    expected_num_queries = 7
 
     @pytest.mark.parametrize(
         "venue_factory,show_xfp_amount",
@@ -1279,8 +1275,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         booking = bookings_factories.ReimbursedBookingFactory(stock=stock, pricings=[invoiced_pricing])
         object_ids = str(booking.id)
 
-        # +1 fetch the WIP_ENABLE_OFFER_ADDRESS FF
-        with assert_num_queries(self.expected_num_queries + 1):
+        with assert_num_queries(self.expected_num_queries):
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
             assert response.status_code == 200
 
@@ -1316,8 +1311,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         ]
         object_ids = ",".join([str(booking.id) for booking in selected_bookings])
 
-        # +1 fetch the WIP_ENABLE_OFFER_ADDRESS FF
-        with assert_num_queries(self.expected_num_queries + 1):
+        with assert_num_queries(self.expected_num_queries):
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
             assert response.status_code == 200
 
@@ -1352,8 +1346,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         # don't query the number of BookingFinanceIncident with FinanceIncident's status in
         # (CREATED, VALIDATED)
         # but adds 1 query for rollback
-        # extra query for WIP_ENABLE_OFFER_ADDRESS FF
-        with assert_num_queries(self.expected_num_queries + 1):
+        with assert_num_queries(self.expected_num_queries):
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
 
         assert (
@@ -1367,7 +1360,7 @@ class GetCollectiveBookingOverpaymentFormTest(PostEndpointHelper):
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    expected_num_queries = 11
+    expected_num_queries = 10
 
     def test_get_form(self, authenticated_client, invoiced_collective_pricing):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
@@ -1516,7 +1509,7 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    expected_num_queries = 8
+    expected_num_queries = 7
 
     @pytest.mark.parametrize(
         "venue_factory,show_xfp_amount",
@@ -1543,8 +1536,7 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
         )
         object_ids = str(booking.id)
 
-        # +1 fetch the WIP_ENABLE_OFFER_ADDRESS FF
-        with assert_num_queries(self.expected_num_queries + 1):
+        with assert_num_queries(self.expected_num_queries):
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
             assert response.status_code == 200
 
@@ -1584,8 +1576,7 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
         )
         object_ids = f"{booking1.id},{booking2.id}"
 
-        # +1 fetch the WIP_ENABLE_OFFER_ADDRESS FF
-        with assert_num_queries(self.expected_num_queries + 1):
+        with assert_num_queries(self.expected_num_queries):
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
             assert response.status_code == 200
 

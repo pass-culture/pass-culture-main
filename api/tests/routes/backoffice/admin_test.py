@@ -31,8 +31,8 @@ class GetRolesTest(GetEndpointHelper):
     endpoint = "backoffice_web.get_roles"
     needed_permission = perm_models.Permissions.READ_PERMISSIONS
 
-    # session + current user + roles + permissions + WIP_ENABLE_OFFER_ADDRESS FF
-    expected_num_queries = 5
+    # session + current user + roles + permissions
+    expected_num_queries = 4
 
     def test_get_roles_matrix(self, authenticated_client):
         count_roles = perm_models.Role.query.count()
@@ -264,7 +264,7 @@ class GetRolesHistoryTest(GetEndpointHelper):
 class ListFeatureFlagsTest(GetEndpointWithoutPermissionHelper):
     endpoint = "backoffice_web.list_feature_flags"
 
-    # user + session + list of feature flags + WIP_ENABLE_OFFER_ADDRESS FF
+    # user + session + list of feature flags
     expected_num_queries = 3
 
     def test_list_feature_flags(self, authenticated_client):
@@ -272,8 +272,7 @@ class ListFeatureFlagsTest(GetEndpointWithoutPermissionHelper):
         first_feature_flag.isActive = True
         db.session.flush()
 
-        # +1 for WIP_ENABLE_OFFER_ADDRESS FF in templates
-        with assert_num_queries(self.expected_num_queries + 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -285,8 +284,7 @@ class ListFeatureFlagsTest(GetEndpointWithoutPermissionHelper):
         first_feature_flag.isActive = False
         db.session.flush()
 
-        # +1 for WIP_ENABLE_OFFER_ADDRESS FF in templates
-        with assert_num_queries(self.expected_num_queries + 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -378,8 +376,7 @@ class SearchBoUsersTest(GetEndpointHelper):
     # - fetch authenticated user
     # - fetch results
     # - fetch count for pagination
-    # - fetch WIP_ENABLE_OFFER_ADDRESS FF
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def test_search_without_filter(self, authenticated_client, legit_user):
         user1 = users_factories.AdminFactory()
@@ -452,7 +449,7 @@ class SearchBoUsersTest(GetEndpointHelper):
         assert_user_equals(cards_text[0], users[0])
 
     def test_search_invalid(self, authenticated_client):
-        with assert_num_queries(3):  # only session + current user + WIP_ENABLE_OFFER_ADDRESS FF
+        with assert_num_queries(2):  # only session + current user
             response = authenticated_client.get(url_for(self.endpoint, q="%"))
             assert response.status_code == 400
 
@@ -473,7 +470,7 @@ class GetBoUserTest(GetEndpointHelper):
         user = users_factories.AdminFactory()
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries + 1):  # FF
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -506,7 +503,7 @@ class GetBoUserTest(GetEndpointHelper):
         )
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries + 1):  # FF
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -538,7 +535,7 @@ class GetBoUserTest(GetEndpointHelper):
         )
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries + 1):  # FF
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 

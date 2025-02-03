@@ -12,7 +12,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 
@@ -87,13 +86,10 @@ def create_pivot(name: str) -> utils.BackofficeResponse:
 
     venue = offerers_models.Venue.query.filter_by(id=form.venue_id.data[0]).one_or_none()
     if not venue:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            flash(
-                Markup("Le partenaire culturel id={venue_id} n'existe pas").format(venue_id=form.venue_id.data[0]),
-                "warning",
-            )
-        else:
-            flash(Markup("Le lieu id={venue_id} n'existe pas").format(venue_id=form.venue_id.data[0]), "warning")
+        flash(
+            Markup("Le partenaire culturel id={venue_id} n'existe pas").format(venue_id=form.venue_id.data[0]),
+            "warning",
+        )
         mark_transaction_as_invalid()
         return redirect(url_for(".get_pivots", active_tab=name), code=303)
 

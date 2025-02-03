@@ -108,8 +108,7 @@ class ListVenuesTest(GetEndpointHelper):
     # - fetch user (1 query)
     # - fetch venue_label for select (1 query)
     # - fetch venues with joinedload including extra data (1 query)
-    # - fetch WIP_ENABLE_OFFER_ADDRESS FF
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def test_list_venues_without_filter(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint))
@@ -281,8 +280,7 @@ class GetVenueTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get venue (1 query)
-    # get connect as extended FF (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_keep_search_parameters_on_top(self, authenticated_client, venue):
         url = url_for(self.endpoint, venue_id=venue.id, q=venue.name, departments=["75", "77"])
@@ -2214,8 +2212,7 @@ class GetVenueHistoryTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get history (1 query)
-    # get WIP_ENABLE_OFFER_ADDRESS FF (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     class CommentButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -2328,7 +2325,7 @@ class GetVenueHistoryTest(GetEndpointHelper):
         db.session.expire(venue)
 
         auth_client = client.with_bo_session_auth(read_only_bo_user)
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = auth_client.get(url)
             assert response.status_code == 200
 
@@ -2462,7 +2459,7 @@ class GetBatchEditVenuesFormTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_get_empty_batch_edit_venues_form(self, legit_user, authenticated_client):
-        with assert_num_queries(3):  # session + current user + FF
+        with assert_num_queries(2):  # session + current user
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -2476,8 +2473,8 @@ class GetBatchEditVenuesFormTest(PostEndpointHelper):
             "object_ids": ",".join(str(venue.id) for venue in venues),
         }
 
-        # session + current user + criteria + FF
-        response = self.post_to_endpoint(authenticated_client, form=form_data, expected_num_queries=4)
+        # session + current user + criteria
+        response = self.post_to_endpoint(authenticated_client, form=form_data, expected_num_queries=3)
         assert response.status_code == 200
 
         autocomplete_select = html_parser.get_soup(response.data).find(
@@ -2732,12 +2729,11 @@ class SetPricingPointTest(PostEndpointHelper):
     # +1 session
     # +1 user
     # +1 venue and venues from the same offerer
-    # +1 feature flags
     # +1 pricing point validation
     # +1 check if the venue already has a link
     # +3 set pricing point
     # +1 reload venue
-    expected_num_queries = 10
+    expected_num_queries = 9
 
     def test_set_pricing_point(self, authenticated_client):
         venue_with_no_siret = offerers_factories.VirtualVenueFactory()

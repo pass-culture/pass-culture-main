@@ -44,7 +44,7 @@ class MultipleOffersHomeTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.READ_OFFERS
 
     def test_get_search_form(self, authenticated_client):
-        with assert_num_queries(3):
+        with assert_num_queries(2):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -58,8 +58,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
     # - fetch user (1 query)
     # - fetch unique product (1 query)
     # - fetch offers with joinedload including extra data (1 query)
-    # - fetch WIP_ENABLE_OFFER_ADDRESS FF
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def test_search_product_with_offers(self, authenticated_client):
         provider = providers_factories.PublicApiProviderFactory()
@@ -231,7 +230,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert "Tag des offres ⚠️ 3 offres actives associées à cet EAN-13 seront affectées" in right_card
 
     def test_search_product_from_ean_with_invalid_ean(self, authenticated_client):
-        with assert_num_queries(3):
+        with assert_num_queries(2):
             response = authenticated_client.get(url_for(self.endpoint, ean="978-3-16-14840-0"))
             assert response.status_code == 400
 

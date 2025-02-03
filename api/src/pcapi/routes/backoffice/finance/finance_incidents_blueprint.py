@@ -26,7 +26,6 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
@@ -733,10 +732,7 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
 def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict:
     additional_data: dict[str, typing.Any] = {}
 
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        additional_data["Partenaire culturel"] = bookings[0].venue.common_name
-    else:
-        additional_data["Lieu"] = bookings[0].venue.common_name
+    additional_data["Partenaire culturel"] = bookings[0].venue.common_name
 
     if len(bookings) == 1:
         booking = bookings[0]
@@ -821,12 +817,9 @@ def _get_finance_overpayment_incident_validation_form(
 ) -> utils.BackofficeResponse:
     incident_total_amount_euros = finance_utils.cents_to_full_unit(finance_incident.due_amount_by_offerer)
     bank_account_link = finance_incident.venue.current_bank_account_link
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        bank_account_details_str = (
-            "du partenaire culturel" if not bank_account_link else bank_account_link.bankAccount.label
-        )
-    else:
-        bank_account_details_str = "du lieu" if not bank_account_link else bank_account_link.bankAccount.label
+    bank_account_details_str = (
+        "du partenaire culturel" if not bank_account_link else bank_account_link.bankAccount.label
+    )
     validation_url = "backoffice_web.finance_incidents.validate_finance_overpayment_incident"
 
     return render_template(
@@ -851,12 +844,9 @@ def _get_finance_commercial_gesture_validation_form(
 ) -> utils.BackofficeResponse:
     commercial_gesture_amount = finance_utils.cents_to_full_unit(finance_incident.due_amount_by_offerer)
     bank_account_link = finance_incident.venue.current_bank_account_link
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        bank_account_details_str = (
-            "du partenaire culturel" if not bank_account_link else bank_account_link.bankAccount.label
-        )
-    else:
-        bank_account_details_str = "du lieu" if not bank_account_link else bank_account_link.bankAccount.label
+    bank_account_details_str = (
+        "du partenaire culturel" if not bank_account_link else bank_account_link.bankAccount.label
+    )
     validation_url = "backoffice_web.finance_incidents.validate_finance_commercial_gesture"
 
     return render_template(

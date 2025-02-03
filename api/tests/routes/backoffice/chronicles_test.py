@@ -29,8 +29,7 @@ class ListChroniclesTest(GetEndpointHelper):
     # current user
     # list chronicles
     # count chronicles
-    # feature flag
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def test_without_filters(self, authenticated_client):
         product = offers_factories.ProductFactory()
@@ -146,8 +145,7 @@ class GetChronicleDetailsTest(GetEndpointHelper):
     # - fetch user (1 query)
     # - fetch chronicle and its products
     # - fetch chronicle's action history
-    # - fetch feature flag
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def test_nominal(self, authenticated_client):
         products = [

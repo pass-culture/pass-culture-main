@@ -123,8 +123,7 @@ class ListOffersTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
-    # - fetch connect as extended FF (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # no filter => no query to fetch offers
@@ -952,7 +951,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "IN",
             "search-0-category": categories.LIVRE.id,
         }
-        with assert_num_queries(4):  # only session + current user + FF, before form validation + rollback
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -972,7 +971,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": operator,
             f"search-0-{operand}": "",
         }
-        with assert_num_queries(4):  # only session + current user, before form validation + FF + rollback
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -988,7 +987,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-4-search_field": "BOOKING_LIMIT_DATE",
             "search-4-operator": "DATE_TO",
         }
-        with assert_num_queries(4):  # only session + current user + FF, before form validation + rollback
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1003,7 +1002,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "IN",
             "search-0-criteria": "A",
         }
-        with assert_num_queries(4):  # only session + current user + FF, before form validation + rollback
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1015,7 +1014,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "OUT",
             "search-0-category": "13",
         }
-        with assert_num_queries(4):  # only session + current user + FF, before form validation + rollback
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1037,7 +1036,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-string": value,
         }
-        with assert_num_queries(4):  # only session + current user + FF, before form validation + rollback
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1446,8 +1445,7 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
-    # - fetch connect as extended FF (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # no filter => no query to fetch offers
@@ -1861,8 +1859,9 @@ class GetOfferDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + user + offer with joined data + connect as extended FF
-    expected_num_queries = 4
+    # session + user + offer with joined data
+    expected_num_queries = 3
+    expected_num_queries_with_ff = 4
 
     def test_get_detail_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory(
@@ -2207,7 +2206,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id, venue=venue_factory())
         stock = offers_factories.EventStockFactory(offer=offer, quantity=quantity, dnBookedQuantity=booked_quantity)
 
-        query_count = self.expected_num_queries
+        query_count = self.expected_num_queries_with_ff
         query_count += 1  # _get_editable_stock
         query_count += 3  # check_can_move_event_offer
 
@@ -2227,7 +2226,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
     def test_get_offer_details_with_soft_deleted_stock(self, authenticated_client):
         stock = offers_factories.EventStockFactory(quantity=0, dnBookedQuantity=0, isSoftDeleted=True)
 
-        query_count = self.expected_num_queries
+        query_count = self.expected_num_queries_with_ff
         query_count += 1  # _get_editable_stock
         query_count += 3  # check_can_move_event_offer
 
@@ -2286,7 +2285,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_bronze)
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_free)
 
-        query_count = self.expected_num_queries
+        query_count = self.expected_num_queries_with_ff
         query_count += 1  # _get_editable_stock
         query_count += 3  # check_can_move_event_offer
 
@@ -2315,7 +2314,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             offer=offer, beginningDatetime=now + datetime.timedelta(days=7), isSoftDeleted=True
         )
 
-        query_count = self.expected_num_queries
+        query_count = self.expected_num_queries_with_ff
         query_count += 1  # _get_editable_stock
         query_count += 3  # check_can_move_event_offer
 
@@ -3382,27 +3381,10 @@ class DownloadBookingsCSVTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + current user + bookings + check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
+    # session + current user + bookings + FF check
     expected_num_queries = 4
 
-    @pytest.mark.feature(WIP_ENABLE_OFFER_ADDRESS=False, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_download_bookings_csv(self, legit_user, authenticated_client):
-        offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
-        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
-        bookings_factories.UsedBookingFactory(stock__offer=offer)
-        bookings_factories.ReimbursedBookingFactory(stock__offer=offer)
-        bookings_factories.BookingFactory(stock__offer=offer)
-        bookings_factories.BookingFactory()  # other offer
-
-        url = url_for(self.endpoint, offer_id=offer.id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        assert len(response.data.split(b"\n")) == 1 + 3 + 1
-
-    def test_download_bookings_csv_with_oa(self, legit_user, authenticated_client):
         offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
         bookings_factories.UsedBookingFactory(stock__offer=offer)
@@ -3424,19 +3406,14 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + current user + bookings + check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
+    # session + current user + bookings + FF check
     expected_num_queries = 4
 
     def reader_from_response(self, response):
         wb = openpyxl.load_workbook(BytesIO(response.data))
         return wb.active
 
-    @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (False, True))
-    def test_download_bookings_xlsx(self, features, authenticated_client, is_oa_as_data_source_ff_active):
-        EXPECTED_COLUMN_NAME = {
-            True: "Structure",
-            False: "Lieu",
-        }
+    def test_download_bookings_xlsx(self, authenticated_client):
         offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=offerer)
         booking1 = bookings_factories.UsedBookingFactory(stock__offer=offer)
@@ -3445,14 +3422,12 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, offer_id=offer.id)
 
-        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_oa_as_data_source_ff_active
-        features.WIP_ENABLE_OFFER_ADDRESS = is_oa_as_data_source_ff_active
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
         sheet = self.reader_from_response(response)
-        assert sheet.cell(row=1, column=1).value == EXPECTED_COLUMN_NAME[is_oa_as_data_source_ff_active]
+        assert sheet.cell(row=1, column=1).value == "Structure"
         assert sheet.cell(row=2, column=1).value == booking1.venue.name
         assert sheet.cell(row=3, column=1).value == booking2.venue.name
         assert sheet.cell(row=4, column=1).value == None

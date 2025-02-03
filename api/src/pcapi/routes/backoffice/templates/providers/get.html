@@ -84,15 +84,7 @@
       </div>
       <div class="mt-4">
         {% call build_details_tabs_wrapper() %}
-          {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-            {{ build_details_tab("venues", "Partenaires culturels synchronisés", active_tab == 'venues') }}
-          {% else %}
-            {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-              {{ build_details_tab("venues", "Partenaires culturels synchronisés", active_tab == 'venues') }}
-            {% else %}
-              {{ build_details_tab("venues", "Lieux synchronisés", active_tab == 'venues') }}
-            {% endif %}
-          {% endif %}
+          {{ build_details_tab("venues", "Partenaires culturels synchronisés", active_tab == 'venues') }}
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
           {% call build_details_tab_content("venues", active_tab == 'venues') %}

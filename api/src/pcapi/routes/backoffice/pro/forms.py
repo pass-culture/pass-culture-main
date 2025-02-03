@@ -37,7 +37,7 @@ def format_search_type_options(type_option: TypeOptions) -> str:
         case TypeOptions.OFFERER:
             return "Entité juridique"
         case TypeOptions.VENUE:
-            return typing.cast(str, utils.VenueRenaming("Lieu", "Partenaire culturel"))
+            return "Partenaire culturel"
         case TypeOptions.USER:
             return "Compte pro"
         case TypeOptions.BANK_ACCOUNT:
@@ -77,7 +77,7 @@ class CreateOffererForm(FlaskForm):
     email = fields.PCEmailField("Adresse email du compte pro")
     siret = fields.PCSiretField("SIRET")
     public_name = fields.PCStringField(
-        typing.cast(str, utils.VenueRenaming("Nom d'usage du lieu", "Nom d'usage du partenaire culturel")),
+        "Nom d'usage du partenaire culturel",
         validators=(
             wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.Length(max=255, message="doit contenir au maximum %(max)d caractères"),

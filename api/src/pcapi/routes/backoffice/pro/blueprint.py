@@ -27,8 +27,6 @@ from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models import feature
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
@@ -175,14 +173,10 @@ def get_context(pro_type: pro_forms.TypeOptions) -> type[Context]:
 
 
 def _render_get_create_offerer_form(form: pro_forms.CreateOffererForm) -> str:
-    if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        venue_label = "partenaire culturel"
-    else:
-        venue_label = "lieu"
     return render_template(
         "components/turbo/modal_form.html",
-        information=f"Ce formulaire permet de créer une nouvelle entité juridique et le {venue_label} associé dans la base de données. "
-        f"L'Acteur Culturel doit avoir créé son compte utilisateur sur PC Pro et sera ainsi rattaché à la nouvelle entité juridique. ",
+        information="Ce formulaire permet de créer une nouvelle entité juridique et le partenaire culturel associé dans la base de données. "
+        "L'Acteur Culturel doit avoir créé son compte utilisateur sur PC Pro et sera ainsi rattaché à la nouvelle entité juridique. ",
         form=form,
         dst=url_for("backoffice_web.pro.create_offerer"),
         div_id="create-offerer-modal",  # must be consistent with parameter passed to build_lazy_modal
@@ -287,18 +281,12 @@ def create_offerer() -> utils.BackofficeResponse:
 
     on_commit(partial(transactional_mails.send_welcome_to_pro_email, pro_user, venue))
 
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        flash(
-            Markup("L'entité juridique et le partenaire culturel <b>{name}</b> ont été créés").format(
-                name=venue.common_name
-            ),
-            "success",
-        )
-    else:
-        flash(
-            Markup("L'entité juridique et le lieu <b>{name}</b> ont été créés").format(name=venue.common_name),
-            "success",
-        )
+    flash(
+        Markup("L'entité juridique et le partenaire culturel <b>{name}</b> ont été créés").format(
+            name=venue.common_name
+        ),
+        "success",
+    )
     return redirect(url_for("backoffice_web.offerer.get", offerer_id=user_offerer.offererId), code=303)
 
 
@@ -368,9 +356,7 @@ def _get_user_id_from_venue_id(venue_id: int) -> int:
     )
     user_id = _get_best_user_id_for_connect_as(query)
     if not user_id:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            raise ValueError("Aucun utilisateur approprié n'a été trouvé pour se connecter à ce partenaire culturel")
-        raise ValueError("Aucun utilisateur approprié n'a été trouvé pour se connecter à ce lieu")
+        raise ValueError("Aucun utilisateur approprié n'a été trouvé pour se connecter à ce partenaire culturel")
     return user_id
 
 

@@ -34,7 +34,7 @@ class GetPivotsPageTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 
     def test_get_pivots_page(self, authenticated_client):
-        with assert_num_queries(3):
+        with assert_num_queries(2):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -47,8 +47,7 @@ class ListPivotsTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch a single pivot with joinedload (1 query)
-    # - fetch WIP_ENABLE_OFFER_ADDRESS FF (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_list_pivots_allocine(self, authenticated_client):
         allocine_pivot = providers_factories.AllocinePivotFactory()
@@ -289,8 +288,7 @@ class GetCreatePivotFormTest(GetEndpointHelper):
 
     # - fetch session (1 query)
     # - fetch user (1 query)
-    # - fetch WIP_ENABLE_OFFER_ADDRESS FF (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_get_create_pivot_form_allocine(self, authenticated_client):
         with assert_num_queries(self.expected_num_queries):
@@ -479,16 +477,14 @@ class GetUpdatePivotFormTest(GetEndpointHelper):
     # - fetch pivot (1 query)
     # - fetch venue for form validate (1 query)
     # - fetch venue to fill autocomplete (1 query)
-    # - fetch WIP_ENABLE_OFFER_ADDRESS FF (1 query)
-    expected_num_queries = 7
+    expected_num_queries = 6
 
     def test_get_update_pivot_form_allocine(self, authenticated_client):
         # - fetch session (1 query)
         # - fetch user (1 query)
         # - fetch pivot (1 query)
         # - fetch venue to fill autocomplete (1 query)
-        # - fetch WIP_ENABLE_OFFER_ADDRESS FF (1 query)
-        allocine_pivot_expected_num_queries = 5
+        allocine_pivot_expected_num_queries = 4
 
         allocine_pivot = providers_factories.AllocinePivotFactory()
         pivot_id = allocine_pivot.id

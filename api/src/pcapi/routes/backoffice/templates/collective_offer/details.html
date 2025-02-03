@@ -117,13 +117,7 @@
               </div>
               <div class="fs-6">
                 <p class="mb-1">
-                  <span class="fw-bold">
-                    {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
-                      Partenaire culturel :
-                    {% else %}
-                      Lieu :
-                    {% endif %}
-                  </span> {{ links.build_venue_name_to_details_link(collective_offer.venue) }}
+                  <span class="fw-bold">Partenaire culturel :</span> {{ links.build_venue_name_to_details_link(collective_offer.venue) }}
                   {{ badges.build_offer_venue_fraud_badges(collective_offer.venue) }}
                 </p>
               </div>

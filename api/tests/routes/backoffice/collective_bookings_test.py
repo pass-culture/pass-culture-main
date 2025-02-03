@@ -94,8 +94,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch collective bookings with extra data (1 query)
-    # - check finance incident or offer address feature flag
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_list_bookings_without_filter(self, authenticated_client, collective_bookings):
         with assert_num_queries(self.expected_num_queries - 1):
@@ -398,7 +397,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         authenticated_client,
         collective_bookings,
     ):
-        with assert_num_queries(3):  # user_session + user + offer address FF
+        with assert_num_queries(2):  # user_session + user
             response = authenticated_client.get(
                 url_for(
                     self.endpoint,
@@ -708,14 +707,12 @@ class GetCollectiveBookingCSVDownloadTest(GetEndpointHelper):
     endpoint = "backoffice_web.collective_bookings.get_collective_booking_csv_download"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
-    # session + current user + list of bookings + Check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
+    # session + current user + list of bookings + FF check
     expected_num_queries = 4
 
-    @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (True, False))
-    def test_csv_length(self, features, authenticated_client, collective_bookings, is_oa_as_data_source_ff_active):
+    def test_csv_length(self, authenticated_client, collective_bookings):
         venue_id = collective_bookings[0].venueId
 
-        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_oa_as_data_source_ff_active
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
             assert response.status_code == 200
@@ -731,18 +728,16 @@ class GetCollectiveBookingXLSXDownloadTest(GetEndpointHelper):
     endpoint = "backoffice_web.collective_bookings.get_collective_booking_xlsx_download"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
-    # session + current user + list of bookings + Check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
+    # session + current user + list of bookings + FF check
     expected_num_queries = 4
 
     def reader_from_response(self, response):
         wb = openpyxl.load_workbook(BytesIO(response.data))
         return wb.active
 
-    @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (True, False))
-    def test_xlsx_length(self, features, authenticated_client, collective_bookings, is_oa_as_data_source_ff_active):
+    def test_xlsx_length(self, authenticated_client, collective_bookings):
         venue_id = collective_bookings[0].venueId
 
-        features.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = is_oa_as_data_source_ff_active
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
             assert response.status_code == 200

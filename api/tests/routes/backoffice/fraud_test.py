@@ -46,8 +46,7 @@ class ListBlacklistedDomainNamesTest(GetEndpointHelper):
         # get user with profile and permissions (1 query)
         # get history (1 query)
         # get blacklisted domains (1 query)
-        # WIP_ENABLE_OFFER_ADDRESS FF
-        with assert_num_queries(5):
+        with assert_num_queries(4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -72,8 +71,7 @@ class PrepareBlacklistDomainNamesTest(GetEndpointHelper):
         # get user with profile and permissions (1 query)
         # get beneficiary emails (1 query)
         # get pro users emails (1 query)
-        # WIP_ENABLE_OFFER_ADDRESS FF
-        with assert_num_queries(5):
+        with assert_num_queries(4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
