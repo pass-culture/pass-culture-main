@@ -148,7 +148,7 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     "TAG": {
         "field": "criteria",
         "column": criteria_models.Criterion.id,
-        "inner_join": "criterion",
+        "inner_join": "criterion",  # applied only when no custom filter (with operator IN)
         "outer_join": "offer_criterion",
         "outer_join_column": criteria_models.OfferCriterion.offerId,
         "custom_filters": {

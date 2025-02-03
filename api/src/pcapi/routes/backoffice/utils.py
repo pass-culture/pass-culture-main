@@ -305,13 +305,15 @@ def generate_search_query(
 
         if custom_filter := meta_field.get("custom_filters", {}).get(operator):
             filters.append(custom_filter(field_value))
+            if custom_filter_inner_join := meta_field.get("custom_filters_inner_join", {}).get(operator):
+                inner_joins.add(custom_filter_inner_join)
             continue
 
         column = meta_field["column"]
         if OPERATOR_DICT[operator].get("outer_join", False):
             if not meta_field.get("outer_join") or not meta_field.get("outer_join_column"):
                 warnings.add(
-                    f"La règle de recherche '{search_field}' n'est pas correctement configuré pour "
+                    f"La règle de recherche '{search_field}' n'est pas correctement configurée pour "
                     f"l'opérateur '{operator}', merci de prévenir les devs"
                 )
                 continue
