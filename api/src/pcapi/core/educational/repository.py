@@ -24,7 +24,6 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.utils.clean_accents import clean_accents
 
@@ -811,12 +810,8 @@ def get_filtered_collective_booking_report(
         # the label prevents SA from using a bad (prefixed) label for this field
         educational_models.CollectiveBooking.id.label("id"),
         educational_models.CollectiveBooking.educationalRedactorId,
+        geography_models.Address.departmentCode.label("venueDepartmentCode"),
     )
-
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        with_entities += (geography_models.Address.departmentCode.label("venueDepartmentCode"),)
-    else:
-        with_entities += (offerers_models.Venue.departementCode.label("venueDepartmentCode"),)
 
     bookings_query = _get_filtered_collective_bookings_query(
         pro_user,
