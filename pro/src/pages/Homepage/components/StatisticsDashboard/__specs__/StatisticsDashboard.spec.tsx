@@ -68,7 +68,6 @@ describe('StatisticsDashboard', () => {
         'Créez vos premières offres grand public pour être visible par les bénéficiaires'
       )
     ).toBeInTheDocument()
-    expect(screen.getByText('Dernière mise à jour :')).toBeInTheDocument()
 
     expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
   })
@@ -84,7 +83,6 @@ describe('StatisticsDashboard', () => {
         'Les statistiques de consultation de vos offres seront bientôt disponibles.'
       )
     ).toBeInTheDocument()
-    expect(screen.getByText('Dernière mise à jour :')).toBeInTheDocument()
 
     expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
   })
@@ -111,7 +109,6 @@ describe('StatisticsDashboard', () => {
     expect(
       screen.queryByText('Vos offres les plus consultées')
     ).not.toBeInTheDocument()
-    expect(screen.getByText('Dernière mise à jour :')).toBeInTheDocument()
 
     expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
   })
@@ -129,5 +126,23 @@ describe('StatisticsDashboard', () => {
       await screen.findByText('à destination du grand public')
     ).toBeInTheDocument()
     expect(screen.queryByText(/Créer une offre/)).not.toBeInTheDocument()
+  })
+
+  it('should display the last sync date', async () => {
+    vi.spyOn(api, 'getOffererStats').mockResolvedValueOnce({
+      jsonData: {
+        dailyViews: [{ eventDate: '2020-10-10', numberOfViews: 10 }],
+        topOffers: [],
+        totalViewsLast30Days: 0,
+      },
+      syncDate: '2020-10-10',
+      offererId: 1,
+    })
+
+    renderStatisticsDashboard()
+
+    expect(
+      await screen.findByText('Dernière mise à jour : 10/10/2020 00:00')
+    ).toBeInTheDocument()
   })
 })

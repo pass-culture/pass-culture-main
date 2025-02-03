@@ -426,7 +426,9 @@ describe('screens:StocksThing', () => {
         )
       ).resolves.toBeInTheDocument()
 
-      await userEvent.click(screen.getByTitle('Fermer la modale'))
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Fermer la fenêtre modale' })
+      )
       expect(title).not.toBeInTheDocument()
     })
 

@@ -49,12 +49,11 @@ export const DialogBuilderCloseButton = ({
         closeButtonClassName
       )}
       onClick={onCloseClick}
-      title="Fermer la modale"
       type="button"
     >
       <SvgIcon
         src={strokeCloseIcon}
-        alt=""
+        alt="Fermer la fenêtre modale"
         className={styles['dialog-builder-close-icon']}
       />
     </Dialog.Close>

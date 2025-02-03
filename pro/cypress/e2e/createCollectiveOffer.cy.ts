@@ -151,7 +151,7 @@ describe('Create collective offers', () => {
 
     cy.findAllByTestId('offer-item-row')
       .eq(0)
-      .within(() => cy.get('a[title*="' + newOfferName + '"]').click())
+      .within(() => cy.findByRole('link', { name: newOfferName }).click())
 
     cy.wait('@educationalOfferers')
 

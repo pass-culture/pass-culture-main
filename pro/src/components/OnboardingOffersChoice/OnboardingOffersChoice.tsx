@@ -47,7 +47,7 @@ export const OnboardingOffersChoice = () => {
           <ButtonLink
             variant={ButtonVariant.PRIMARY}
             to="/onboarding/individuel"
-            title="Commencer la création d’offre sur l’application mobile"
+            aria-label="Commencer la création d’offre sur l’application mobile"
           >
             Commencer
           </ButtonLink>
@@ -71,7 +71,7 @@ export const OnboardingOffersChoice = () => {
             trigger={
               <Button
                 type="submit"
-                title="Commencer la création d’offre sur ADAGE"
+                aria-label="Commencer la création d’offre sur ADAGE"
                 onClick={() => {
                   logEvent(
                     OnboardingDidacticEvents.HAS_CLICKED_START_COLLECTIVE_DIDACTIC_ONBOARDING

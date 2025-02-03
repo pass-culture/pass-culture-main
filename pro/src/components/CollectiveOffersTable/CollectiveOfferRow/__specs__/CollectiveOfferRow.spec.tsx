@@ -88,11 +88,7 @@ describe('ollectiveOfferRow', () => {
     it('should render an image with url from offer when offer has a thumb url', () => {
       renderOfferItem(props)
 
-      expect(
-        within(
-          screen.getAllByRole('link', { name: /éditer l’offre/ })[0]
-        ).getByRole('presentation')
-      ).toHaveAttribute('src', '/my-fake-thumb')
+      expect(screen.getByRole('img')).toHaveAttribute('src', '/my-fake-thumb')
     })
 
     it('should render an image with an empty url when offer does not have a thumb url', () => {
@@ -101,7 +97,7 @@ describe('ollectiveOfferRow', () => {
       renderOfferItem(props)
 
       expect(
-        screen.getAllByTitle(`${props.offer.name} - éditer l’offre`)[0]
+        screen.getAllByRole('link', { name: 'offer name 4' })[0]
       ).toBeInTheDocument()
     })
   })
@@ -209,9 +205,7 @@ describe('ollectiveOfferRow', () => {
     props.offer.isEditable = false
     renderOfferItem(props)
 
-    expect(screen.getByRole('presentation')).toHaveClass(
-      'thumb-column-inactive'
-    )
+    expect(screen.getByRole('img')).toHaveClass('thumb-column-inactive')
   })
 
   it('should display disabled checkbox when offer is not editable', () => {
@@ -231,9 +225,7 @@ describe('ollectiveOfferRow', () => {
       props.offer.status = status
       renderOfferItem(props)
 
-      expect(screen.getByRole('presentation')).not.toHaveClass(
-        'thumb-column-inactive'
-      )
+      expect(screen.getByRole('img')).not.toHaveClass('thumb-column-inactive')
     }
   )
 

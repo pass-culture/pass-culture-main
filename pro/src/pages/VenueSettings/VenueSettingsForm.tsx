@@ -114,7 +114,6 @@ export const VenueSettingsForm = ({
                   <FormLayout.Row>
                     <Button
                       variant={ButtonVariant.QUATERNARY}
-                      title="Renseignez l’adresse manuellement"
                       icon={
                         manuallySetAddress.value ? fullBackIcon : fullNextIcon
                       }
