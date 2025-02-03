@@ -434,7 +434,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
             url="https://ebook.download",
         )
 
-        other_venue = offerers_factories.VirtualVenueFactory(managingOfferer=venue.managingOfferer)
+        other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         providers_factories.VenueProviderFactory(provider=venue_provider.provider, venue=other_venue)
         json_data = {"location": {"type": "digital", "venueId": other_venue.id, "url": "https://oops.fr"}}
 

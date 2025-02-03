@@ -10,6 +10,7 @@ export type PostDraftOfferBodyModel = {
   name: string;
   productId?: number | null;
   subcategoryId: string;
+  url?: string | null;
   venueId: number;
 };
 

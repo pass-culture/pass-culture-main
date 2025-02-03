@@ -1255,6 +1255,7 @@ class CreateMediationV2Test:
         assert len(os.listdir(self.THUMBS_DIR)) == existing_number_of_files
 
 
+@pytest.mark.features(WIP_URL_IN_OFFER_DRAFT=True)
 @pytest.mark.usefixtures("db_session")
 class CreateDraftOfferTest:
     def test_create_draft_offer_from_scratch(self):
@@ -1291,6 +1292,7 @@ class CreateDraftOfferTest:
         body = offers_schemas.PostDraftOfferBodyModel(
             name="La Poudre",
             subcategoryId=subcategories.PODCAST.id,
+            url="https://coucou.com",
             venueId=venue.id,
         )
         offer = api.create_draft_offer(body, venue=venue)
@@ -1306,19 +1308,6 @@ class CreateDraftOfferTest:
         assert offer.mentalDisabilityCompliant == None
         assert offer.motorDisabilityCompliant == None
         assert offer.visualDisabilityCompliant == None
-
-    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
-    def test_create_draft_physical_offer_on_virtual_venue_must_fail(self):
-        physical_venue = offerers_factories.VenueFactory(isVirtual=False)
-        virtual_venue = offerers_factories.VirtualVenueFactory(managingOffererId=physical_venue.managingOffererId)
-
-        body = offers_schemas.PostDraftOfferBodyModel(
-            name="La Marguerite et le Maître",
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-            venueId=virtual_venue.id,
-        )
-        with pytest.raises(exceptions.OfferVenueShouldNotBeVirtual):
-            api.create_draft_offer(body, venue=virtual_venue)
 
     def test_create_draft_offer_with_accessibility_provider(self):
         # when venue is synchronized with acceslibre, create draft offer should
@@ -1391,45 +1380,6 @@ class CreateDraftOfferTest:
             api.create_draft_offer(body, venue=venue)
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
-
-    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
-    def test_create_offer_with_online_subcategory_must_be_on_virtual_venue(self):
-        venue = offerers_factories.VenueFactory(isVirtual=False)
-        virtual_venue = offerers_factories.VirtualVenueFactory(
-            managingOfferer=venue.managingOfferer,
-        )
-        body = offers_schemas.PostDraftOfferBodyModel(
-            name="La Poudre",
-            subcategoryId="PODCAST",
-            venueId=venue.id,
-        )
-        offer = api.create_draft_offer(body, venue=venue)
-        assert offer.venue == virtual_venue
-
-    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
-    def test_create_offer_with_offline_subcategory_must_be_on_physical_venue(self):
-        physical_venue = offerers_factories.VenueFactory(isVirtual=False)
-        virtual_venue = offerers_factories.VirtualVenueFactory(
-            managingOfferer=physical_venue.managingOfferer,
-        )
-        body = offers_schemas.PostDraftOfferBodyModel(
-            name="Le Maître et Marguerite",
-            subcategoryId="LIVRE_PAPIER",
-            venueId=virtual_venue.id,
-        )
-        offer = api.create_draft_offer(body, venue=physical_venue)
-        assert offer.venue == physical_venue
-
-    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
-    def test_create_offer_with_online_subcategory_with_no_virtual_venue_must_fail(self):
-        venue = offerers_factories.VenueFactory(isVirtual=False)
-        body = offers_schemas.PostDraftOfferBodyModel(
-            name="Dua Lipa - Physical",
-            subcategoryId="TELECHARGEMENT_MUSIQUE",
-            venueId=venue.id,
-        )
-        with pytest.raises(exceptions.OffererVirtualVenueNotFound):
-            api.create_draft_offer(body, venue=venue)
 
     @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
     def test_create_offer_sends_complete_log_to_data(self, caplog):
@@ -1640,6 +1590,37 @@ class CreateOfferTest:
             api.create_offer(body, venue=venue)
 
         assert error.value.errors["name"] == ["Le titre d'une offre ne peut contenir l'EAN"]
+
+    @pytest.mark.parametrize(
+        "url, subcategory_id, expected_error",
+        [
+            (
+                "https://coucou.com",
+                subcategories.SEANCE_CINE.id,
+                ['Une offre de sous-catégorie "Séance de cinéma" ne peut contenir un champ `url`'],
+            ),
+            (
+                None,
+                subcategories.ABO_LIVRE_NUMERIQUE.id,
+                ['Une offre de catégorie "Abonnement livres numériques" doit contenir un champ `url`'],
+            ),
+        ],
+    )
+    def test_raise_error_if_url_not_coherent_with_subcategory(self, url, subcategory_id, expected_error):
+        venue = offerers_factories.VenueFactory()
+        body = offers_schemas.CreateOffer(
+            name="An offer he can't refuse",
+            subcategoryId=subcategory_id,
+            url=url,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_offer(body, venue=venue)
+
+        assert error.value.errors["url"] == expected_error
 
     def test_raise_error_if_extra_data_mandatory_fields_not_provided(self):
         venue = offerers_factories.VenueFactory()

@@ -145,6 +145,7 @@ class FeatureToggle(enum.Enum):
     WIP_HEADLINE_OFFER = "Activer l'offre à la une"
     WIP_IS_OPEN_TO_PUBLIC = "Activer l'utilisation du critère 'ouvert au public' pour les synchro"
     WIP_2025_SIGN_UP = "Activer le nouveau parcours d’inscription au portail pro"
+    WIP_URL_IN_OFFER_DRAFT = "Activer la validation concernant l'url dans la création d'un brouillon d'offre"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -222,6 +223,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_OFFERER_STATS_V2,
     FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES,
     FeatureToggle.WIP_UBBLE_V2,
+    FeatureToggle.WIP_URL_IN_OFFER_DRAFT,
     # Please keep alphabetic order
 )
 

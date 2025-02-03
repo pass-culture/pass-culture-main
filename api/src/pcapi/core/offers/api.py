@@ -197,23 +197,6 @@ def _get_internal_accessibility_compliance(venue: offerers_models.Venue) -> dict
     }
 
 
-def _get_coherent_venue_with_subcategory(
-    venue: offerers_models.Venue, offer_subcategory_id: str
-) -> offerers_models.Venue:
-    # FIXME: ogeber 30.08.2024 - This wont be useful when
-    # virtual venues will be removed
-    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer_subcategory_id]
-    if not subcategory.is_online_only and venue.isVirtual:
-        raise exceptions.OfferVenueShouldNotBeVirtual()
-    if (subcategory.is_online_only and venue.isVirtual) or (not subcategory.is_online_only and not venue.isVirtual):
-        return venue
-    # venue is physical and offer is digital : we look for virtual venue
-    virtual_venue = offerers_repository.find_virtual_venue_by_offerer_id(venue.managingOffererId)
-    if not virtual_venue:
-        raise exceptions.OffererVirtualVenueNotFound()
-    return virtual_venue
-
-
 def create_draft_offer(
     body: offers_schemas.PostDraftOfferBodyModel,
     venue: offerers_models.Venue,
@@ -221,9 +204,10 @@ def create_draft_offer(
     is_from_private_api: bool = True,
 ) -> models.Offer:
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
+    if feature.FeatureToggle.WIP_URL_IN_OFFER_DRAFT.is_active():
+        validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
     validation.check_offer_name_does_not_contain_ean(body.name)
-    if feature.FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES.is_active():
-        venue = _get_coherent_venue_with_subcategory(venue, body.subcategory_id)
 
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
     validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api)
@@ -235,7 +219,6 @@ def create_draft_offer(
     fields.update(_get_accessibility_compliance_fields(venue))
     fields.update({"withdrawalDetails": venue.withdrawalDetails})
 
-    subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(fields.get("subcategoryId", None))
     fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
 
     offer = models.Offer(
@@ -311,6 +294,7 @@ def create_offer(
     validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
     validation.check_is_duo_compliance(body.is_duo, subcategory)
+    validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
     validation.check_can_input_id_at_provider(provider, body.id_at_provider)
     validation.check_can_input_id_at_provider_for_this_venue(venue.id, body.id_at_provider)
     validation.check_offer_name_does_not_contain_ean(body.name)
@@ -330,7 +314,6 @@ def create_offer(
         isActive=False,
         validation=models.OfferValidationStatus.DRAFT,
     )
-    validation.check_digital_offer_fields(offer)
     repository.add_to_session(offer)
     db.session.flush()
 
@@ -434,7 +417,8 @@ def update_offer(
     for key, value in updates.items():
         setattr(offer, key, value)
     with db.session.no_autoflush:
-        validation.check_digital_offer_fields(offer)
+        validation.check_url_is_coherent_with_subcategory(offer.subcategory, offer.url)
+        validation.check_url_and_offererAddress_are_not_both_set(offer.url, offer.offererAddress)
     if offer.isFromAllocine:
         offer.fieldsUpdated = list(set(offer.fieldsUpdated) | updates_set)
     repository.add_to_session(offer)
@@ -1805,7 +1789,7 @@ def create_price_category(
     id_at_provider: str | None = None,
 ) -> models.PriceCategory:
     validation.check_stock_price(price, offer)
-    validation.check_digital_offer_fields(offer)
+
     if id_at_provider is not None:
         validation.check_can_input_id_at_provider_for_this_price_category(offer.id, id_at_provider)
 
