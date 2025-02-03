@@ -70,10 +70,10 @@ export const OfferNameCell = ({
     const stockSize = offer.stocks.length
     return stockSize === 1
       ? formatLocalTimeDateString(
-          startDatetime,
-          departmentCode,
-          FORMAT_DD_MM_YYYY_HH_mm
-        )
+        startDatetime,
+        departmentCode,
+        FORMAT_DD_MM_YYYY_HH_mm
+      )
       : pluralize(stockSize, 'date')
   }
 
@@ -156,9 +156,9 @@ export const OfferNameCell = ({
               )}
             </span>
           )}
-          {!isOfferEducational(offer) && offer.productIsbn && (
+          {!isOfferEducational(offer) && offer.ean && (
             <div className={styles['isbn']} data-testid="offer-isbn">
-              {offer.productIsbn}
+              {offer.ean}
             </div>
           )}
         </div>
