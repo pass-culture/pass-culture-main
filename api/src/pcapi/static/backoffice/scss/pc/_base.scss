@@ -14,11 +14,6 @@ a {
   }
 }
 
-pre:has(code) {
-  padding: $pc-code-padding;
-  font-family: $pc-code-font-family;
-}
-
 .primary-tooltip {
   --bs-tooltip-bg: var(--bs-primary);
 }

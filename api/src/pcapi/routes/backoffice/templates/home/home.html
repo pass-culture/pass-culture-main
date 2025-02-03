@@ -5,7 +5,7 @@
         <div class="fs-2">{{ value }}</div>
         <div class="text-muted">{{ value | pluralize(text_one, text_many) }}</div>
       </div>
-      <div class="card-footer bg-white border-0 py-0 pb-3">
+      <div class="card-footer border-0 py-0 pb-3">
         {% if link %}
           <div class="d-flex flex-row-reverse mt-4">
             <a href="{{ link }}"
@@ -28,7 +28,9 @@
 {% extends "layouts/connected.html" %}
 {% block page %}
   <div class="py-4 px-5">
-    <h1 class="text-muted mt-5">Bonjour {{ current_user.firstName | empty_string_if_null }} !</h1>
+    <div class="mt-5">
+      <h1>Bonjour {{ current_user.firstName | empty_string_if_null }} !</h1>
+    </div>
     {% if has_permission("PRO_FRAUD_ACTIONS") %}
       <div class="row row-cols-4 g-3 py-4">
         {% set offers_params = {
