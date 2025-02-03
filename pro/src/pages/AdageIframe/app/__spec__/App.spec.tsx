@@ -82,6 +82,12 @@ vi.mock('apiClient/api', () => ({
     logHasSeenAllPlaylist: vi.fn(),
     logOfferListViewSwitch: vi.fn(),
   },
+  api: {
+    listEducationalDomains: vi.fn(() => [
+      { id: 1, name: 'Danse' },
+      { id: 2, name: 'Architecture' },
+    ]),
+  },
 }))
 
 vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
