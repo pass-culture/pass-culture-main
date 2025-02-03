@@ -120,7 +120,9 @@ SEARCH_FIELD_TO_PYTHON = {
     "MEG": {
         "field": "boolean",
         "special": lambda x: x == "true",
-        "inner_join": "institution",
+        "custom_filters_inner_join": {  # "inner_join" would not be applied with custom filter
+            "NULLABLE": "institution"
+        },
         "custom_filters": {
             "NULLABLE": lambda value: (
                 sa.exists()
@@ -128,6 +130,8 @@ SEARCH_FIELD_TO_PYTHON = {
                     sa.and_(
                         educational_models.EducationalInstitutionProgramAssociation.institutionId
                         == educational_models.EducationalInstitution.id,
+                        educational_models.EducationalInstitutionProgram.id
+                        == educational_models.EducationalInstitutionProgramAssociation.programId,
                         educational_models.EducationalInstitutionProgram.name
                         == educational_models.PROGRAM_MARSEILLE_EN_GRAND,
                     )
