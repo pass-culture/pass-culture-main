@@ -4,7 +4,6 @@ import logging
 from pcapi import settings
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offers.models import Stock
-from pcapi.models import feature
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
@@ -23,11 +22,10 @@ def get_event_datetime(stock: CollectiveStock | Stock) -> datetime:
 
     if isinstance(stock, Stock):
         departement_code = stock.offer.venue.departementCode
-        if feature.FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-            if stock.offer.offererAddress is not None:
-                departement_code = stock.offer.offererAddress.address.departmentCode
-            elif stock.offer.venue.offererAddress is not None:
-                departement_code = stock.offer.venue.offererAddress.address.departmentCode
+        if stock.offer.offererAddress is not None:
+            departement_code = stock.offer.offererAddress.address.departmentCode
+        elif stock.offer.venue.offererAddress is not None:
+            departement_code = stock.offer.venue.offererAddress.address.departmentCode
     else:
         departement_code = stock.collectiveOffer.venue.departementCode
 
