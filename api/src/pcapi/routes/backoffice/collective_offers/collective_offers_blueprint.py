@@ -184,6 +184,7 @@ def _get_collective_offers(
         .filter(educational_models.CollectiveOffer.id.in_(_get_collective_offer_ids_query(form).subquery()))
         .join(offerers_models.Venue)
         .join(offerers_models.Offerer)
+        .outerjoin(educational_models.CollectiveOffer.collectiveStock)
         .options(
             sa.orm.load_only(
                 educational_models.CollectiveOffer.id,
@@ -194,7 +195,7 @@ def _get_collective_offers(
                 educational_models.CollectiveOffer.authorId,
                 educational_models.CollectiveOffer.rejectionReason,
             ),
-            sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).load_only(
+            sa.orm.contains_eager(educational_models.CollectiveOffer.collectiveStock).load_only(
                 educational_models.CollectiveStock.startDatetime,
                 educational_models.CollectiveStock.endDatetime,
                 educational_models.CollectiveStock.price,
@@ -224,7 +225,7 @@ def _get_collective_offers(
                     offerers_models.OffererConfidenceRule.confidenceLevel
                 ),
             ),
-            sa.orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
+            sa.orm.contains_eager(educational_models.CollectiveOffer.institution).load_only(
                 educational_models.EducationalInstitution.name,
                 educational_models.EducationalInstitution.institutionId,
                 educational_models.EducationalInstitution.institutionType,
@@ -237,6 +238,46 @@ def _get_collective_offers(
             ),
         )
     )
+
+    if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+        query = (
+            query.outerjoin(educational_models.CollectiveOffer.institution)
+            .outerjoin(
+                educational_models.EducationalDeposit,
+                sa.and_(
+                    educational_models.EducationalDeposit.educationalInstitutionId
+                    == educational_models.EducationalInstitution.id,
+                    educational_models.EducationalDeposit.educationalYearId
+                    == sa.select(educational_models.EducationalYear.adageId).filter(
+                        educational_models.CollectiveStock.startDatetime.between(
+                            educational_models.EducationalYear.beginningDate,
+                            educational_models.EducationalYear.expirationDate,
+                        )
+                    )
+                    # Final deposit when set, temporary deposit otherwise
+                    .order_by(sa.desc(educational_models.EducationalDeposit.isFinal))
+                    .limit(1)
+                    .correlate(educational_models.CollectiveStock)
+                    .scalar_subquery(),
+                ),
+            )
+            .outerjoin(
+                educational_models.EducationalYear,
+                sa.and_(
+                    educational_models.EducationalYear.adageId
+                    == educational_models.EducationalDeposit.educationalYearId,
+                ),
+            )
+            .options(
+                sa.orm.contains_eager(educational_models.CollectiveOffer.institution)
+                .contains_eager(educational_models.EducationalInstitution.deposits)
+                .load_only(educational_models.EducationalDeposit.ministry)
+                .contains_eager(educational_models.EducationalDeposit.educationalYear)
+                .load_only(
+                    educational_models.EducationalYear.beginningDate, educational_models.EducationalYear.expirationDate
+                )
+            )
+        )
 
     if form.sort.data:
         order = form.order.data or "desc"

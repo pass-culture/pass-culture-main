@@ -218,9 +218,9 @@ def _get_current_educational_year() -> int:
     return _get_educational_year_beginning(current_date)
 
 
-def create_educational_year(date_time: datetime.datetime) -> None:
+def create_educational_year(date_time: datetime.datetime) -> models.EducationalYear:
     beginning_year = _get_educational_year_beginning(date_time)
-    EducationalYearFactory(
+    return EducationalYearFactory(
         beginningDate=datetime.datetime(beginning_year, 9, 1),
         expirationDate=datetime.datetime(beginning_year + 1, 8, 31, 23, 59, 59),
     )
