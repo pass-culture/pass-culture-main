@@ -480,6 +480,7 @@ class ChangeUserEmailTest:
         ]
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 class CreateBeneficiaryTest:
     def test_with_eligible_user(self):
         user = users_factories.UserFactory(roles=[])
@@ -708,6 +709,7 @@ class UpdateUserInfoTest:
 
 
 @pytest.mark.usefixtures("db_session")
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 class DomainsCreditTest:
     def test_get_domains_credit_v1(self):
         user = users_factories.BeneficiaryGrant18Factory(deposit__version=1, deposit__amount=500)

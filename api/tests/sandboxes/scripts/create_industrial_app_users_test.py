@@ -7,6 +7,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users imp
 
 
 @pytest.mark.usefixtures("db_session")
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 class CreateIndustrialWebappUsersTest:
     def test_create_industrial_app_users(self):
         create_industrial_app_users()

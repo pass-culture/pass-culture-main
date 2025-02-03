@@ -2184,16 +2184,6 @@ class RegistrationStepTest:
         [
             (
                 datetime.datetime.utcnow(),
-                None,
-                TunnelType.NOT_ELIGIBLE,
-            ),
-            (
-                datetime.datetime.utcnow(),
-                datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18 + 1, days=1),
-                TunnelType.NOT_ELIGIBLE,
-            ),
-            (
-                datetime.datetime.utcnow(),
                 datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
                 TunnelType.AGE18,
             ),
@@ -2217,6 +2207,25 @@ class RegistrationStepTest:
         user.add_beneficiary_role()
         users_factories.DepositGrantFactory(user=user)
         assert _get_tunnel_type(user) is tunnel_type
+
+    @pytest.mark.parametrize(
+        "dateCreated,dateOfBirth",
+        [
+            (
+                datetime.datetime.utcnow(),
+                None,
+            ),
+            (
+                datetime.datetime.utcnow(),
+                datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18 + 1, days=1),
+            ),
+        ],
+    )
+    def test_get_tunnel_type_non_eligible(self, dateCreated, dateOfBirth):
+        user = users_factories.UserFactory(
+            dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth, dateCreated=dateCreated
+        )
+        assert _get_tunnel_type(user) is TunnelType.NOT_ELIGIBLE
 
     @pytest.mark.parametrize(
         "dateCreated,dateOfBirth,age",
