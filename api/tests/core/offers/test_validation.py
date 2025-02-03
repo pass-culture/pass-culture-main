@@ -798,7 +798,6 @@ class CheckBookingLimitDatetimeTest:
         validation.check_booking_limit_datetime(stock, beginning=None, booking_limit_datetime=booking_limit_date)
         validation.check_booking_limit_datetime(stock, beginning=beginning_date, booking_limit_datetime=None)
 
-    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize(
         "offer_factory",
         [offers_factories.OfferFactory, offers_factories.EventOfferFactory, offers_factories.DigitalOfferFactory],
@@ -818,7 +817,6 @@ class CheckBookingLimitDatetimeTest:
         except exceptions.BookingLimitDatetimeTooLate as e:
             assert False, f"Should not raise exception {e}"
 
-    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize(
         "time_zone_expected,",
         [

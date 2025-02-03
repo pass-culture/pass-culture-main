@@ -58,7 +58,6 @@ class Returns200Test:
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
         assert not updated_offer.product
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_we_handle_unique_address_among_manual_edition_while_patch_offer(self, client):
         user_offerer_1 = offerers_factories.UserOffererFactory(user__email="user1@example.com")
         user_offerer_2 = offerers_factories.UserOffererFactory(user__email="user2@example.com")
@@ -210,7 +209,6 @@ class Returns200Test:
         assert offer.offererAddress.address.isManualEdition == True
         assert offer.offererAddress.address.city == data["address"]["city"].title()
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_patch_offer_with_manually_edited_oa(self, client):
         LONGITUDE = "1.55"
         LATITUDE = "47.16995"

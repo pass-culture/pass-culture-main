@@ -2345,7 +2345,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert len(cards_text) == 1
         assert "Modifier le partenaire culturel" in cards_text[0]
 
-    def test_get_offer_details_with_offerer_address(self, authenticated_client):
+    def test_get_offer_details(self, authenticated_client):
         address = geography_factories.AddressFactory(
             street="1v Place Jacques Rueff",
             postalCode="75007",
@@ -3381,10 +3381,10 @@ class DownloadBookingsCSVTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + current user + bookings + FF check
+    # session + current user + FF check + bookings
     expected_num_queries = 4
 
-    def test_download_bookings_csv(self, legit_user, authenticated_client):
+    def test_download_bookings_csv_with_oa(self, legit_user, authenticated_client):
         offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
         bookings_factories.UsedBookingFactory(stock__offer=offer)

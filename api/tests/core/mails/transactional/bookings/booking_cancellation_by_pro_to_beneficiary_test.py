@@ -55,7 +55,6 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
             "REJECTED": False,
         }
 
-    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @time_machine.travel("2024-07-31 15:12")
     def test_should_sends_email_to_beneficiary_when_pro_cancels_event_booking(self):
         # time is set because it tests a human readable EVENT_DATE and EVENT_HOUR

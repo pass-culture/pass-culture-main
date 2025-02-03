@@ -930,7 +930,6 @@ class DeleteStockTest:
             reason=search.IndexationReason.STOCK_DELETION,
         )
 
-    @pytest.mark.features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
     def test_delete_stock_cancel_bookings_and_send_emails(self):
         offerer_email = "offerer@example.com"
         stock = factories.EventStockFactory(
@@ -1058,114 +1057,6 @@ class DeleteStockTest:
         stock = models.Stock.query.one()
         assert stock.isSoftDeleted
 
-    def test_cannot_delete_if_too_late(self):
-        too_long_ago = datetime.utcnow() - timedelta(days=3)
-        stock = factories.EventStockFactory(beginningDatetime=too_long_ago)
-
-        with pytest.raises(exceptions.TooLateToDeleteStock):
-            api.delete_stock(stock)
-        stock = models.Stock.query.one()
-        assert not stock.isSoftDeleted
-
-
-@pytest.mark.usefixtures("db_session")
-class DeleteStockWithOffererAddressAsDataSourceTest:
-    @mock.patch("pcapi.core.search.async_index_offer_ids")
-    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
-    def test_delete_stock_basics(self, mocked_async_index_offer_ids):
-        stock = factories.EventStockFactory()
-
-        api.delete_stock(stock)
-
-        stock = models.Stock.query.one()
-        assert stock.isSoftDeleted
-        mocked_async_index_offer_ids.assert_called_once_with(
-            [stock.offerId],
-            reason=search.IndexationReason.STOCK_DELETION,
-        )
-
-    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
-    def test_delete_stock_cancel_bookings_and_send_emails(self):
-        offerer_email = "offerer@example.com"
-        stock = factories.EventStockFactory(
-            offer__bookingEmail=offerer_email,
-            offer__venue__pricing_point="self",
-        )
-        booking1 = bookings_factories.BookingFactory(stock=stock)
-        booking2 = bookings_factories.CancelledBookingFactory(stock=stock)
-        booking3 = bookings_factories.UsedBookingFactory(stock=stock)
-        event4 = finance_factories.UsedBookingFinanceEventFactory(booking__stock=stock)
-        booking4 = event4.booking
-        finance_factories.PricingFactory(
-            event=event4,
-            booking=booking4,
-            status=finance_models.PricingStatus.PROCESSED,
-        )
-
-        api.delete_stock(stock)
-
-        # cancellation can trigger more than one request to Batch
-        assert len(push_testing.requests) >= 1
-        db.session.expunge_all()
-        stock = models.Stock.query.one()
-        assert stock.isSoftDeleted
-        booking1 = bookings_models.Booking.query.get(booking1.id)
-        assert booking1.status == bookings_models.BookingStatus.CANCELLED
-        assert booking1.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking2 = bookings_models.Booking.query.get(booking2.id)
-        assert booking2.status == bookings_models.BookingStatus.CANCELLED  # unchanged
-        assert booking2.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
-        booking3 = bookings_models.Booking.query.get(booking3.id)
-        assert booking3.status == bookings_models.BookingStatus.CANCELLED  # cancel used booking for event offer
-        assert booking3.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking4 = bookings_models.Booking.query.get(booking4.id)
-        assert booking4.status == bookings_models.BookingStatus.USED  # unchanged
-        assert booking4.cancellationDate is None
-        assert booking4.pricings[0].status == finance_models.PricingStatus.PROCESSED  # unchanged
-
-        assert len(mails_testing.outbox) == 3
-        assert {email_data["To"] for email_data in mails_testing.outbox} == {
-            booking1.email,
-            booking3.email,
-            offerer_email,
-        }
-
-        last_request = copy.deepcopy(push_testing.requests[-1])
-        last_request["user_ids"] = set(last_request["user_ids"])
-        assert last_request == {
-            "group_id": "Cancel_booking",
-            "user_ids": {
-                booking1.userId,
-                booking3.userId,
-            },
-            "message": {
-                "body": f"""Ta réservation "{stock.offer.name}" a été annulée par l'offreur.""",
-                "title": "Réservation annulée",
-            },
-            "can_be_asynchronously_retried": False,
-        }
-
-    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
-    def test_can_delete_if_stock_from_provider(self):
-        provider = providers_factories.PublicApiProviderFactory()
-        offer = factories.OfferFactory(lastProvider=provider, idAtProvider="1")
-        stock = factories.StockFactory(offer=offer)
-
-        api.delete_stock(stock)
-
-        stock = models.Stock.query.one()
-        assert stock.isSoftDeleted
-
-    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
-    def test_can_delete_if_event_ended_recently(self):
-        recently = datetime.utcnow() - timedelta(days=1)
-        stock = factories.EventStockFactory(beginningDatetime=recently)
-
-        api.delete_stock(stock)
-        stock = models.Stock.query.one()
-        assert stock.isSoftDeleted
-
-    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_cannot_delete_if_too_late(self):
         too_long_ago = datetime.utcnow() - timedelta(days=3)
         stock = factories.EventStockFactory(beginningDatetime=too_long_ago)
@@ -1469,7 +1360,7 @@ class CreateOfferTest:
         assert models.Offer.query.count() == 1
         assert offer.offererAddress == venue.offererAddress
 
-    def test_create_digital_offer_from_scratch_with_offerer_address(
+    def test_create_digital_offer_from_scratch_with(
         self,
     ):
         venue = offerers_factories.VenueFactory(isVirtual=True, offererAddress=None, siret=None)
@@ -1490,7 +1381,7 @@ class CreateOfferTest:
 
         assert offer.offererAddressId == None
 
-    def test_create_offer_from_scratch_with_offerer_address(self):
+    def test_create_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
 
