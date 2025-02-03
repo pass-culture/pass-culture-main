@@ -13,7 +13,13 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import imagePopinDiscover from './discover-popin.png'
 import styles from './HeadlineOfferInformationDialog.module.scss'
 
-export const HeadlineOfferInformationDialog = () => {
+type HeadlineOfferInformationDialogProps = {
+  triggerClassName: string
+}
+
+export const HeadlineOfferInformationDialog = ({
+  triggerClassName,
+}: HeadlineOfferInformationDialogProps) => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
@@ -21,7 +27,7 @@ export const HeadlineOfferInformationDialog = () => {
     <DialogBuilder
       trigger={
         <Button
-          className={styles['headline-offer-button']}
+          className={triggerClassName}
           variant={ButtonVariant.TERNARY}
           icon={fullNextIcon}
           onClick={() => {

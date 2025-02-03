@@ -3,6 +3,8 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_outline.scss" as outline;
 
+// Awesome banner.
+
 .headline-offer-banner {
   width: 100%;
   min-height: rem.torem(175px);
@@ -39,7 +41,7 @@
   display: none;
 }
 
-.headline-offer-close-button {
+.headline-offer-button {
   color: var(--color-white);
 
   &:focus-visible {
@@ -56,4 +58,14 @@
     bottom: 0;
     max-width: rem.torem(184px);
   }
+}
+
+// Regular banner.
+
+.headline-offer-callout{
+  margin-bottom: rem.torem(32px);
+}
+
+.headline-offer-callout-discover-button {
+  margin-top: rem.torem(4px);
 }

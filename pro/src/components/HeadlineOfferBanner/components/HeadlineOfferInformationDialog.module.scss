@@ -54,11 +54,3 @@
   vertical-align: middle;
   display: inline-block;
 }
-
-.headline-offer-button {
-  color: var(--color-white);
-
-  &:focus-visible {
-    @include outline.focus-outline(rem.torem(2px), var(--color-white));
-  }
-}
