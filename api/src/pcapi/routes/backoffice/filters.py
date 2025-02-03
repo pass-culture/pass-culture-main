@@ -611,6 +611,8 @@ def format_collective_offer_rejection_reason(reason: educational_models.Collecti
             return "Offre inéligible"
         case educational_models.CollectiveOfferRejectionReason.INELIGIBLE_SERVICE:
             return "Prestation inéligible"
+        case educational_models.CollectiveOfferRejectionReason.MAX_BUDGET_REACHED:
+            return "Budget maximal atteint"
         case educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION:
             return "Description manquante"
         case educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION_AND_DATE:
