@@ -875,7 +875,8 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         assert collective_offer_to_validate.validation == OfferValidationStatus.APPROVED
         assert collective_offer_to_validate.lastValidationType == OfferValidationType.MANUAL
 
-    def test_validate_collective_offer_with_institution(self, legit_user, authenticated_client):
+    @pytest.mark.usefixtures("clean_database")
+    def test_validate_collective_offer_with_institution_validated(self, legit_user, authenticated_client):
         collective_offer_to_validate = educational_factories.PendingCollectiveOfferFactory()
 
         response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
@@ -901,7 +902,8 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         ADAGE_API_URL="https://adage_base_url",
         ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
     )
-    def test_validate_collective_offer_with_institution_invalid_email(
+    @pytest.mark.usefixtures("clean_database")
+    def test_validate_collective_offer_with_institution_invalid_email_validated(
         self, legit_user, authenticated_client, requests_mock
     ):
         collective_offer_to_validate = educational_factories.PendingCollectiveOfferFactory()
@@ -937,7 +939,47 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         ADAGE_API_URL="https://adage_base_url",
         ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
     )
-    def test_validate_collective_offer_adage_timeout(self, legit_user, authenticated_client, requests_mock):
+    @pytest.mark.usefixtures("clean_database")
+    def test_validate_collective_offer_with_institution_500_not_validated(
+        self, legit_user, authenticated_client, requests_mock
+    ):
+        collective_offer_to_validate = educational_factories.PendingCollectiveOfferFactory()
+
+        adage_json = {
+            "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
+            "title": "Error",
+            "status": 500,
+            "detail": "ERROR",
+        }
+        endpoint = requests_mock.post("https://adage_base_url/v1/offre-assoc", status_code=500, json=adage_json)
+
+        response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
+        assert response.location == expected_url
+
+        collective_offer_list_url = url_for(
+            "backoffice_web.collective_offer.list_collective_offers",
+            q=collective_offer_to_validate.id,
+            _external=True,
+        )
+        response = authenticated_client.get(collective_offer_list_url)
+        assert response.status_code == 200
+
+        assert endpoint.called
+        assert collective_offer_to_validate.isActive is False
+        assert collective_offer_to_validate.validation == OfferValidationStatus.PENDING
+        assert collective_offer_to_validate.lastValidationType == None
+
+    @pytest.mark.settings(
+        ADAGE_API_URL="https://adage_base_url",
+        ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+    )
+    @pytest.mark.usefixtures("clean_database")
+    def test_validate_collective_offer_adage_timeout_not_validated(
+        self, legit_user, authenticated_client, requests_mock
+    ):
         collective_offer = educational_factories.PendingCollectiveOfferFactory()
 
         endpoint = requests_mock.post("https://adage_base_url/v1/offre-assoc", exc=requests.exceptions.ReadTimeout)
@@ -955,34 +997,9 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         assert endpoint.called
 
         db.session.refresh(collective_offer)
-        # isActive should be False as session is marked as invalid, does not work with test session
-        assert collective_offer.isActive is True
-        assert collective_offer.validation == OfferValidationStatus.APPROVED
-        assert collective_offer.lastValidationType == OfferValidationType.MANUAL
-
-    @pytest.mark.settings(
-        ADAGE_API_URL="https://adage_base_url",
-        ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
-    )
-    @pytest.mark.features(DISABLE_ADAGE_INSTITUTION_NOTIFICATION=True)
-    def test_validate_collective_offer_adage_notification_disabled(
-        self, legit_user, authenticated_client, requests_mock
-    ):
-        collective_offer = educational_factories.PendingCollectiveOfferFactory()
-
-        endpoint = requests_mock.post("https://adage_base_url/v1/offre-assoc", exc=requests.exceptions.ReadTimeout)
-
-        response = self.post_to_endpoint(
-            authenticated_client, collective_offer_id=collective_offer.id, follow_redirects=True
-        )
-        assert response.status_code == 200
-
-        assert not endpoint.called
-
-        db.session.refresh(collective_offer)
-        assert collective_offer.isActive is True
-        assert collective_offer.validation == OfferValidationStatus.APPROVED
-        assert collective_offer.lastValidationType == OfferValidationType.MANUAL
+        assert collective_offer.isActive is False
+        assert collective_offer.validation == OfferValidationStatus.PENDING
+        assert collective_offer.lastValidationType is None
 
     def test_cant_validate_non_pending_offer(self, legit_user, authenticated_client):
         collective_offer_to_validate = educational_factories.CollectiveOfferFactory(
