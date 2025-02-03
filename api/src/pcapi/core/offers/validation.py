@@ -579,12 +579,12 @@ def check_booking_limit_datetime(
             offer = stock.collectiveOffer
         else:
             offer = stock.offer
+
         reference_tz = offer.venue.timezone
-        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-            if offer.offererAddress and not isinstance(stock, educational_models.CollectiveStock):
-                reference_tz = offer.offererAddress.address.timezone
-            elif offer.venue.offererAddress:
-                reference_tz = offer.venue.offererAddress.address.timezone
+        if offer.offererAddress and not isinstance(stock, educational_models.CollectiveStock):
+            reference_tz = offer.offererAddress.address.timezone
+        elif offer.venue.offererAddress:
+            reference_tz = offer.venue.offererAddress.address.timezone
 
         if reference_tz is not None:  # update to timezone
             beginning = date.default_timezone_to_local_datetime(beginning, reference_tz)
