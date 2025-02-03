@@ -258,6 +258,7 @@ class OffersTest:
             "postalCode": "75002",
             "publicName": "il est venu le temps des names",
             "isPermanent": False,
+            "isOpenToPublic": False,
             "timezone": "Europe/Paris",
             "bannerUrl": offer.venue.bannerUrl,
         }
@@ -1025,6 +1026,7 @@ class OffersV2Test:
             "postalCode": "75002",
             "publicName": "il est venu le temps des names",
             "isPermanent": False,
+            "isOpenToPublic": False,
             "timezone": "Europe/Paris",
             "bannerUrl": offer.venue.bannerUrl,
         }
@@ -1070,6 +1072,7 @@ class OffersV2Test:
         assert response.json["isEducational"] is False
         assert not response.json["isExpired"]
         assert response.json["venue"]["isPermanent"]
+        assert response.json["venue"]["isOpenToPublic"]
         assert response.json["stocks"][0]["features"] == []
 
     @pytest.mark.parametrize(
@@ -2419,6 +2422,7 @@ class OffersStocksV2Test:
             "postalCode": "75002",
             "publicName": offer.venue.publicName,
             "isPermanent": False,
+            "isOpenToPublic": False,
             "timezone": "Europe/Paris",
             "bannerUrl": offer.venue.bannerUrl,
         }
