@@ -38,6 +38,7 @@ class CollectiveOffersSearchAttributes(enum.Enum):
     STATUS = "Statut"
     OFFERER = "Entité juridique"
     PRICE = "Prix"
+    MINISTRY = "Ministère"
 
 
 operator_no_require_value = ["NOT_EXIST"]
@@ -57,6 +58,7 @@ form_field_configuration = {
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
     "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
     "PRICE": {"field": "price", "operator": ["EQUALS", "LESS_THAN", "GREATER_THAN_OR_EQUAL_TO"]},
+    "MINISTRY": {"field": "ministry", "operator": ["IN", "NOT_IN"]},
 }
 
 
@@ -80,6 +82,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "venue",
                 "validation",
                 "price",
+                "ministry",
             ],
             "sub_rule_type_field_name": "search_field",
             "operator_field_name": "operator",
@@ -189,6 +192,12 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
             CollectiveOfferStatus,
             formatter=filters.format_offer_status,
         ),
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    ministry = fields.PCSelectMultipleField(
+        "Ministère",
+        choices=forms_utils.choices_from_enum(educational_models.Ministry),
         search_inline=True,
         field_list_compatibility=True,
     )
