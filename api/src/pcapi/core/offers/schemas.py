@@ -20,6 +20,7 @@ class PostDraftOfferBodyModel(BaseModel):
     call_id: str | None
     venue_id: int
     description: str | None = None
+    url: HttpUrl | None = None
     extra_data: typing.Any = None
     duration_minutes: int | None = None
     product_id: int | None
@@ -37,6 +38,7 @@ class PostDraftOfferBodyModel(BaseModel):
 class PatchDraftOfferBodyModel(BaseModel):
     name: str | None = None
     subcategory_id: str | None = None
+    url: HttpUrl | None = None
     description: str | None = None
     extra_data: dict[str, typing.Any] | None = None
     duration_minutes: int | None = None

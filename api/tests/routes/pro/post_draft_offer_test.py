@@ -37,6 +37,23 @@ class Returns201Test:
         assert response_dict["isDuo"] == False
         assert not offer.product
 
+    def test_created_offer_should_return_url_if_set(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {
+            "name": "Celeste",
+            "subcategoryId": subcategories.LIVRE_NUMERIQUE.id,
+            "url": "https://monsuperlivrenum.com/1345666",
+            "venueId": venue.id,
+            "extraData": {"gtl_id": "07000000"},
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
+        assert response.status_code == 201
+        assert response.json["url"] == "https://monsuperlivrenum.com/1345666"
+
     def test_created_offer_should_have_is_duo_set_to_true_if_subcategory_is_event_and_can_be_duo(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -262,64 +279,69 @@ class Returns201Test:
         assert offer.visualDisabilityCompliant == True
 
 
+@pytest.mark.features(WIP_URL_IN_OFFER_DRAFT=True)
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-    def test_fail_if_venue_is_not_found(self, client):
-        offerers_factories.UserOffererFactory(user__email="user@example.com")
 
-        data = {
-            "name": "Celeste",
+    @pytest.mark.parametrize(
+        "partial_body,expected_status_code, expected_json",
+        [
+            # 400
+            (
+                {"name": "too long" * 30},
+                400,
+                {"name": ["Le titre de l’offre doit faire au maximum 90 caractères."]},
+            ),
+            (
+                {"name": "Offre avec EAN dans le titre - 9782070286256"},
+                400,
+                {"name": ["Le titre d'une offre ne peut contenir l'EAN"]},
+            ),
+            (
+                {"subcategoryId": "TOTO"},
+                400,
+                {"subcategory": ["La sous-catégorie de cette offre est inconnue"]},
+            ),
+            (
+                {"url": "https:mince.e"},
+                400,
+                {"url": ['L\'URL doit commencer par "http://" ou "https://"']},
+            ),
+            (
+                {
+                    "url": "https://monlivrevirtuel.com/12345",
+                    "subcategoryId": subcategories.LIVRE_PAPIER.id,
+                },
+                400,
+                {"url": ['Une offre de sous-catégorie "Livre papier" ne peut contenir un champ `url`']},
+            ),
+            (
+                {"subcategoryId": subcategories.LIVRE_NUMERIQUE.id},
+                400,
+                {"url": ['Une offre de catégorie "Livre numérique, e-book" doit contenir un champ `url`']},
+            ),
+            # 404
+            (
+                {"venueId": 1234642646},
+                404,
+                {},
+            ),
+        ],
+    )
+    def test_fail_when_json_body_has_incorrect_values(self, partial_body, expected_status_code, expected_json, client):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        json_body = {
+            "name": "Le Visible et l'invisible - Suivi de notes de travail",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
-            "venueId": 1,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
-
-        assert response.status_code == 404
-
-    def test_fail_if_name_too_long(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        data = {
-            "name": "too long" * 30,
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "venueId": venue.id,
         }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        json_body.update(**partial_body)
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=json_body)
 
-        assert response.status_code == 400
-        assert response.json["name"] == ["Le titre de l’offre doit faire au maximum 90 caractères."]
-
-    def test_fail_if_name_contains_ean(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        data = {
-            "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",
-            "subcategoryId": subcategories.LIVRE_PAPIER.id,
-            "venueId": venue.id,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
-
-        assert response.status_code == 400
-        assert response.json["name"] == ["Le titre d'une offre ne peut contenir l'EAN"]
-
-    def test_fail_if_unknown_subcategory(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        data = {
-            "name": "Name",
-            "subcategoryId": "TOTO",
-            "venueId": venue.id,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
-
-        assert response.status_code == 400
-        assert response.json["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
+        assert response.status_code == expected_status_code
+        assert response.json == expected_json
 
     @pytest.mark.features(WIP_EAN_CREATION=True)
     def test_fail_if_venue_is_record_store_offer_is_cd_without_product(self, client):

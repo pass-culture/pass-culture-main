@@ -410,7 +410,11 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         response = client.with_explicit_token(plain_api_key).post(
             self.endpoint_url,
             json={
-                "location": {"type": "physical", "venueId": venue_provider.venue.id},
+                "location": {
+                    "type": "digital",
+                    "venueId": venue_provider.venue.id,
+                    "url": "https://monebook.com/le-visible",
+                },
                 "categoryRelatedFields": {"category": "LIVRE_NUMERIQUE"},
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",

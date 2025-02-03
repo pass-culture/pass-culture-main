@@ -10,6 +10,7 @@ from PIL import Image
 from PIL import UnidentifiedImageError
 from dateutil.relativedelta import relativedelta
 import flask
+from pydantic.v1 import HttpUrl
 import sqlalchemy as sqla
 
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -18,7 +19,6 @@ from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.api.national_program as np_api
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers.repository import find_venue_by_id
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
@@ -413,28 +413,31 @@ def check_offer_is_digital(offer: models.Offer) -> None:
         raise errors
 
 
-def check_digital_offer_fields(offer: models.Offer) -> None:
-    venue = offer.venue if offer.venue else find_venue_by_id(offer.venueId)
-    assert venue is not None  # helps mypy below
-    errors = api_errors.ApiErrors()
+def check_url_is_coherent_with_subcategory(subcategory: subcategories.Subcategory, url: HttpUrl | str | None) -> None:
+    if url and subcategory.is_offline_only:
+        raise api_errors.ApiErrors(
+            {"url": [f'Une offre de sous-catégorie "{subcategory.pro_label}" ne peut contenir un champ `url`']}
+        )
 
-    if offer.isDigital:
-        if offer.subcategory.is_offline_only:
-            errors.add_error(
-                "url", f"Une offre de sous-catégorie {offer.subcategory.pro_label} ne peut pas être numérique"
-            )
-            raise errors
-        if offer.offererAddress is not None:
-            errors.add_error("offererAddress", "Une offre numérique ne peut pas avoir d'adresse")
-            raise errors
-    else:
-        if offer.subcategory.is_online_only:
-            errors.add_error("url", f'Une offre de catégorie {offer.subcategory.id} doit contenir un champ "url"')
-        if offer.offererAddress is None and FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            errors.add_error("offererAddress", "Une offre physique doit avoir une adresse")
+    if not url and subcategory.is_online_only:
+        raise api_errors.ApiErrors(
+            {"url": [f'Une offre de catégorie "{subcategory.pro_label}" doit contenir un champ `url`']}
+        )
 
-    if errors.errors:
-        raise errors
+
+def check_url_and_offererAddress_are_not_both_set(
+    url: HttpUrl | str | None, offererAddress: offerers_models.OffererAddress | None
+) -> None:
+    """
+    An offer is either:
+        - digital -> `url` is not null or empty & `offererAddress=None`
+        - physicial -> `offererAddress` is not null and `url=None`
+    """
+    if url and offererAddress is not None:
+        raise api_errors.ApiErrors({"offererAddress": ["Une offre numérique ne peut pas avoir d'adresse"]})
+
+    if not url and offererAddress is None:
+        raise api_errors.ApiErrors({"offererAddress": ["Une offre physique doit avoir une adresse"]})
 
 
 def check_can_input_id_at_provider_for_this_price_category(
