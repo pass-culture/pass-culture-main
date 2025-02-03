@@ -122,7 +122,6 @@ class OffersTest:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         nb_queries += 1  # select chronicles
         nb_queries += 1  # select futureOffer
         with assert_num_queries(nb_queries):
@@ -430,7 +429,6 @@ class OffersTest:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         nb_queries += 1  # select chronicles
         nb_queries += 1  # select futureOffer
         with assert_num_queries(nb_queries):
@@ -888,7 +886,6 @@ class OffersV2Test:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         nb_queries += 1  # select chronicles
         nb_queries += 1  # select futureOffer
         with assert_num_queries(nb_queries):
@@ -1185,7 +1182,6 @@ class OffersV2Test:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         nb_queries += 1  # select chronicles
         nb_queries += 1  # select futureOffer
         with assert_num_queries(nb_queries):
@@ -1753,7 +1749,6 @@ class OffersV2Test:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         nb_queries += 1  # select chronicles
         nb_queries += 1  # select futureOffer
         with assert_num_queries(nb_queries):
@@ -1775,7 +1770,6 @@ class OffersV2Test:
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
         nb_queries += 1  # select chronicles
-        nb_queries += 1  # select feature
         nb_queries += 1  # select futureOffer
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
@@ -1791,7 +1785,6 @@ class OffersV2Test:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         nb_queries += 1  # select chronicles
         nb_queries += 1  # select futureOffer
         with assert_num_queries(nb_queries):
@@ -2280,7 +2273,6 @@ class OffersStocksV2Test:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         nb_queries += 1  # select chronicles
         nb_queries += 1  # select futureOffer
         with assert_num_queries(nb_queries):
