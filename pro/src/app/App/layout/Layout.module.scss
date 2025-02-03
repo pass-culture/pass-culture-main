@@ -157,11 +157,13 @@ $connect-as-header-height: rem.torem(52px);
     }
 
     [id="content"] {
+      width: 100%;
       max-width: rem.torem(640px);
       align-self: center;
       margin: auto;
 
-      @media (min-width: size.$desktop) {
+      /* For ultra-wide screens, makes content little bit more larger */
+      @media (min-width: rem.torem(2200px)) {
         max-width: rem.torem(800px);
       }
     }
