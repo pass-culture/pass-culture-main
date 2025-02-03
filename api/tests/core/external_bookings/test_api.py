@@ -393,7 +393,6 @@ class BookEventTicketTest:
 
         assert str(error.value) == "External booking failed with status code 500 and message on est en carafe !!"
 
-    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_uses_offer_address_when_available(self, requests_post):
         requests_post.return_value.status_code = 200

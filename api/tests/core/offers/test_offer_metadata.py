@@ -221,7 +221,6 @@ class OfferMetadataTest:
 
             assert metadata["offers"]["availability"] == "https://schema.org/SoldOut"
 
-        @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
         def should_have_offer_location_when_available(self):
             venue = offerers_factories.VenueFactory(
                 name="Le Poney qui tousse",

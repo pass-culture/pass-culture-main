@@ -25,7 +25,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 @pytest.mark.settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
-@pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
 @time_machine.travel("2024-01-01T00:00:00", tick=False)
 def test_serialize_offer():
     rayon = "Policier / Thriller format poche"  # fetched from provider
@@ -137,7 +136,6 @@ def test_serialize_offer():
 
 
 @pytest.mark.settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
-@pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
 @time_machine.travel("2024-01-01T00:00:00", tick=False)
 def test_serialize_offer_legacy():
     rayon = "Policier / Thriller format poche"  # fetched from provider
@@ -471,7 +469,6 @@ def test_serialize_venue_with_one_bookable_offer():
     assert serialized["has_at_least_one_bookable_offer"]
 
 
-@pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
 def test_serialize_collective_offer_template():
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
@@ -537,7 +534,6 @@ def test_serialize_collective_offer_template():
     }
 
 
-@pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False, WIP_ENABLE_OFFER_ADDRESS=False)
 def test_serialize_collective_offer_template_legacy():
     # Same as test_serialize_collective_offer_template
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")

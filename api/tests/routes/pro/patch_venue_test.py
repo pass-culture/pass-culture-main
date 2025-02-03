@@ -388,7 +388,6 @@ class Returns200Test:
             "old_info": "75000",
         }
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS=True, WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_update_venue_location_with_manual_edition_and_oa(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         address = geography_factories.AddressFactory(

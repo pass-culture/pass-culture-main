@@ -175,7 +175,6 @@ class Returns200Test:
             offerer_address_id=None,
         )
 
-    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize("dp", ["974", "971"])
     def should_consider_the_offer_oa_timezone_for_begining_period(self, dp, client):
         pro = users_factories.ProFactory()
@@ -199,7 +198,6 @@ class Returns200Test:
             else:
                 assert response.json == []
 
-    @pytest.mark.features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize("dp", ["974", "971"])
     def should_consider_the_offer_oa_timezone_for_ending_period(self, dp, client):
         pro = users_factories.ProFactory()
