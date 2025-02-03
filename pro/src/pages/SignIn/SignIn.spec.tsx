@@ -453,10 +453,34 @@ describe('SignIn', () => {
     expect(getItemSpy).not.toHaveBeenLastCalledWith('homepageSelectedOffererId')
   })
 
-  it('should have the sign up layout if FF WIP_2025_SIGN_UP is enabled', () => {
-    renderSignIn({ features: ['API_SIRENE_AVAILABLE', 'WIP_2025_SIGN_UP'] })
+  describe('with feature flag WIP_2025_SIGN_UP enabled', () => {
+    beforeEach(() => {
+      renderSignIn({
+        features: ['API_SIRENE_AVAILABLE', 'WIP_2025_SIGN_UP'],
+      })
+    })
 
-    expect(screen.getByTestId('sign-up-header')).toBeInTheDocument()
-    expect(screen.getByTestId('sign-up-logo')).toBeInTheDocument()
+    it('should have the new sign up layout', () => {
+      expect(screen.getByTestId('sign-up-header')).toBeInTheDocument()
+      expect(screen.getByTestId('sign-up-logo')).toBeInTheDocument()
+    })
+
+    it('should not have the security callout', () => {
+      expect(
+        screen.queryByRole('link', {
+          name: /Consulter nos recommandations de sécurité/,
+        })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should be "S’inscrire" instead of "Créer un compte" for account creation', () => {
+      expect(
+        screen.queryByRole('link', { name: 'Créer un compte' })
+      ).not.toBeInTheDocument()
+
+      expect(
+        screen.queryByRole('link', { name: 'S’inscrire' })
+      ).toBeInTheDocument()
+    })
   })
 })
