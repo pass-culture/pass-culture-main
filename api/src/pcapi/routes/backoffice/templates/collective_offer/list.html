@@ -153,6 +153,12 @@
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
                   <td>
                     {% if deposit %}{{ deposit.ministry.value }}{% endif %}
+                    {% if collective_offer.institution %}
+                      {% for program in collective_offer.institution.programs %}
+                        <br />
+                        {{ program.label }}
+                      {% endfor %}
+                    {% endif %}
                   </td>
                   <td>
                     {% if deposit and deposit.educationalYear %}
