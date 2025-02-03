@@ -20,7 +20,7 @@ export const getLastCollectiveDmsApplication = (
 
 export const getLastDmsApplicationForOfferer = (
   venueId?: string | null,
-  offerer?: GetOffererResponseModel
+  offerer?: GetOffererResponseModel | null
 ) => {
   if (!offerer) {
     return

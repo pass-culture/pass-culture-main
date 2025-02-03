@@ -2,12 +2,8 @@ import classnames from 'classnames'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useLocation } from 'react-router-dom'
-import useSWR from 'swr'
 
-import { api } from 'apiClient/api'
-import { HTTP_STATUS } from 'apiClient/helpers'
-import { GET_OFFERER_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { hasStatusCode } from 'commons/core/OfferEducational/utils/hasStatusCode'
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import {
   SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY,
@@ -61,30 +57,9 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY
   )
 
-  const selectedOffererQuery = useSWR(
-    selectedOffererId ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
-    async ([, offererId]) => {
-      try {
-        const offerer = await api.getOfferer(Number(offererId))
+  const { data: selectedOfferer, error: offererApiError } = useOfferer(selectedOffererId, true)
+  const isUserOffererValidated = !offererApiError
 
-        return offerer
-      } catch (error) {
-        if (hasStatusCode(error) && error.status === HTTP_STATUS.FORBIDDEN) {
-          throw error
-        }
-        return null
-      }
-    },
-    {
-      fallbackData: null,
-      shouldRetryOnError: false,
-      onError: () => {},
-    }
-  )
-
-  const isUserOffererValidated = !selectedOffererQuery.error
-
-  const selectedOfferer = selectedOffererQuery.data
   const permanentVenues =
     selectedOfferer?.managedVenues?.filter((venue) => venue.isPermanent) ?? []
 
@@ -112,7 +87,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         [styles['nav-links-open']]: isLateralPanelOpen,
       })}
     >
-      {selectedOffererQuery.data && isUserOffererValidated && (
+      {selectedOfferer && isUserOffererValidated && (
         <ul className={styles['nav-links-group']}>
           <li className={styles['nav-links-create-offer-wrapper']}>
             <ButtonLink variant={ButtonVariant.PRIMARY} to={'/offre/creation'}>

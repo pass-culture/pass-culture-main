@@ -31,7 +31,7 @@ describe('<CardLink />', () => {
 
     const cardLink = screen.getByRole('link', { name: 'Un bien physique' })
 
-    expect(cardLink.closest('.cardlink')).not.toHaveClass('vertical')
+    expect(cardLink.closest('.cardlink')).not.toHaveClass('cardlink-vertical')
   })
 
   it('should render in vertical mode when specified', () => {
@@ -43,7 +43,7 @@ describe('<CardLink />', () => {
 
     const cardLink = screen.getByRole('link', { name: 'Un bien physique' })
 
-    expect(cardLink.closest('.cardlink')).toHaveClass('vertical')
+    expect(cardLink.closest('.cardlink')).toHaveClass('cardlink-vertical')
   })
 
   it('should render a description when specified', () => {

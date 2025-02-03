@@ -1,16 +1,16 @@
-@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_outline.scss" as outline;
 
-$border-size-selected: rem.torem(2px);
+$cardlink-max-width: rem.torem(565px);
 
 .cardlink {
   border: rem.torem(1px) solid var(--color-grey-dark);
   border-radius: rem.torem(8px);
   position: relative;
+  max-width: $cardlink-max-width;
 
   // Direction: horizontal (default)
   padding: rem.torem(16px);
@@ -22,10 +22,19 @@ $border-size-selected: rem.torem(2px);
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     flex-grow: 1;
   }
 
+  &-icon {
+    width: rem.torem(24px);
+    height: rem.torem(24px);
+    color: var(--color-secondary-light);
+    margin-right: rem.torem(18px);
+  }
+
   &-content {
+    flex: 1;
     display: flex;
     flex-direction: column;
   }
@@ -41,50 +50,98 @@ $border-size-selected: rem.torem(2px);
       inset: 0;
       z-index: 1;
     }
-  }
 
-  &:hover {
-    box-shadow: forms.$input-hover-shadow;
-    cursor: pointer;
-  }
+    &:hover {
+      box-shadow: forms.$input-hover-shadow;
+      cursor: pointer;
+    }
 
-  &-icon {
-    flex-shrink: 0;
-    width: rem.torem(44px);
-    height: rem.torem(44px);
-    color: var(--color-secondary-light);
-    margin-left: rem.torem(12px);
-    order: 1;
-  }
+    &-icon {
+      flex-shrink: 0;
+      width: rem.torem(44px);
+      height: rem.torem(44px);
+      color: var(--color-secondary-light);
+      margin-left: rem.torem(12px);
+      order: 1;
+    }
 
-  &:focus-within {
-    @include outline.focus-outline(rem.torem(4px));
-  }
+    &:focus-within {
+      @include outline.focus-outline(rem.torem(4px));
+    }
 
-  &:active {
-    outline: $border-size-selected solid var(--color-secondary-light);
-    background-color: var(--color-background-secondary);
+    &-disabled {
+      pointer-events: none;
+    }
+
+    &:active {
+      outline: $border-size-selected solid var(--color-secondary-light);
+      background-color: var(--color-background-secondary);
+    }
   }
 
   &-description {
-    @include fonts.body-accent-xs;
+    @include fonts.body-xs;
 
     color: var(--color-grey-dark);
     margin-top: rem.torem(4px);
   }
 
-  &.vertical {
+  // Error state
+  &.cardlink-error {
+    border-color: var(--color-error);
+
+    .cardlink-icon {
+      color: var(--color-error);
+    }
+
+    .cardlink-error-message {
+      @include fonts.body-xs;
+
+      max-width: 33%;
+      color: var(--color-error);
+      align-self: flex-start;
+    }
+  }
+
+  // Disabled state
+  &.cardlink-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  // Other states (when not disabled)
+  &:not(.cardlink-disabled) {
+    &:hover {
+      border-color: var(--color-secondary-lighter);
+      background-color: var(--color-background-secondary);
+      cursor: pointer;
+    }
+
+    &:focus-within {
+      border-color: var(--color-grey-dark);
+      outline: rem.torem(2px) solid var(--color-grey-dark);
+    }
+
+    &:active {
+      border-color: var(--color-secondary-lighter);
+      outline: none;
+      background-color: var(--color-background-secondary);
+
+      .cardlink-icon,
+      .cardlink-link,
+      .cardlink-description {
+        color: var(--color-secondary-light);
+      }
+    }
+  }
+
+  // Vertical state
+  @mixin cardlink-vertical-styles {
     padding: rem.torem(40px) rem.torem(16px) rem.torem(32px);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
-    .cardlink-icon {
-      margin-bottom: rem.torem(12px);
-      margin-left: 0;
-      order: initial;
-    }
 
     .cardlink-body {
       align-items: center;
@@ -92,8 +149,35 @@ $border-size-selected: rem.torem(2px);
       justify-content: initial;
     }
 
+    .cardlink-icon {
+      width: rem.torem(40px);
+      height: rem.torem(40px);
+      margin-bottom: rem.torem(12px);
+      margin-right: 0;
+    }
+
     .cardlink-content {
       align-items: center;
     }
+
+    .cardlink-description {
+      text-align: center;
+    }
+
+    &.cardlink-error .cardlink-error-message {
+      align-self: initial;
+      margin-top: rem.torem(4px);
+      max-width: initial;
+      text-align: center;
+    }
+  }
+
+  &.cardlink-vertical {
+    @include cardlink-vertical-styles;
+  }
+
+  // Force vertical state in mobile
+  @media (max-width: size.$tablet) {
+    @include cardlink-vertical-styles;
   }
 }

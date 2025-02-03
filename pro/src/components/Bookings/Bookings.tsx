@@ -15,13 +15,13 @@ import {
   GET_BOOKINGS_QUERY_KEY,
   GET_HAS_BOOKINGS_QUERY_KEY,
   GET_OFFERER_ADDRESS_QUERY_KEY,
-  GET_OFFERER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
 import { PreFiltersParams } from 'commons/core/Bookings/types'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { Audience } from 'commons/core/shared/types'
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { stringify } from 'commons/utils/query-string'
@@ -100,10 +100,8 @@ export const BookingsContainer = <
       displayName: venue.label,
     })
   )
-  const { data: offerer } = useSWR(
-    selectedOffererId ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
-    ([, offererIdParam]) => api.getOfferer(offererIdParam)
-  )
+
+  const { data: offerer } = useOfferer(selectedOffererId)
 
   const offererAddressQuery = useSWR(
     [GET_OFFERER_ADDRESS_QUERY_KEY, selectedOffererId],
