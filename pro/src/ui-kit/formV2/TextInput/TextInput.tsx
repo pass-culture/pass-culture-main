@@ -7,6 +7,7 @@ import {
 } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 import { FieldLayoutBaseProps } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
+import { FieldLayoutCharacterCount } from 'ui-kit/form/shared/FieldLayout/FieldLayoutCharacterCount/FieldLayoutCharacterCount'
 
 import styles from './TextInput.module.scss'
 
@@ -37,6 +38,7 @@ type TextInputProps = FieldLayoutBaseProps &
      * a checkbox to reset the input value.
      */
     InputExtension?: React.ReactNode
+    count?: number
   }
 
 /**
@@ -86,6 +88,7 @@ export const TextInput = React.forwardRef(
       description,
       error,
       InputExtension,
+      count,
       ...props
     }: TextInputProps,
     ref: ForwardedRef<HTMLInputElement>
@@ -189,6 +192,13 @@ export const TextInput = React.forwardRef(
             )}
           </div>
         </div>
+        {count !== undefined && (
+          <FieldLayoutCharacterCount
+            count={count}
+            maxLength={maxLength}
+            name={name}
+          />
+        )}
       </div>
     )
   }
