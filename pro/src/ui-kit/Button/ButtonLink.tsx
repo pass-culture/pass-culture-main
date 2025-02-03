@@ -15,7 +15,7 @@ import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
  */
 export type LinkProps = {
   /**
-   * Indicates if the link is external.
+   * If `true` the `to` prop should contain an absolute url.
    */
   isExternal?: boolean
   /**
@@ -27,21 +27,13 @@ export type LinkProps = {
    */
   to: string
   /**
-   * Indicates if the link should open in a new tab.
+   * If `true` the link will open in a new tab and the new tab icon will be displayed with an accessible label.
    */
   opensInNewTab?: boolean
   /**
    * ARIA label for the link, providing additional accessibility information.
    */
   'aria-label'?: string
-  /**
-   * The type of link.
-   */
-  type?: string
-  /**
-   * Indicates if the link should prompt for download.
-   */
-  download?: boolean
 }
 
 /**
@@ -49,16 +41,11 @@ export type LinkProps = {
  */
 type ButtonLinkProps = LinkProps &
   SharedButtonProps &
-  React.HTMLProps<HTMLAnchorElement>
+  Omit<React.HTMLProps<HTMLAnchorElement>, 'title'>
 
 /**
  * The ButtonLink component provides a button-like anchor link that supports internal and external navigation.
  * It integrates with React Router for internal links and supports a variety of styles and icons.
- *
- * ---
- * **Important: Use `aria-label` for button links that have no visible text to ensure accessibility.**
- * For external links, use `rel="noopener noreferrer"` to enhance security.
- * ---
  *
  * @param {ButtonLinkProps} props - The props for the ButtonLink component.
  * @returns {JSX.Element} The rendered ButtonLink component.
@@ -75,9 +62,7 @@ type ButtonLinkProps = LinkProps &
  * </ButtonLink>
  *
  * @accessibility
- * - **External Links**: When `isExternal` is true, the link includes `rel="noopener noreferrer"` to ensure security.
- * - **Keyboard Navigation**: The link can be focused and activated using the keyboard, ensuring accessibility for interactive elements.
- * - **ARIA Labels**: Provide meaningful ARIA labels for links without visible text to assist screen reader users.
+ * - Provide meaningful ARIA labels for links without visible text to assist screen reader users.
  */
 export const ButtonLink = forwardRef(
   (
