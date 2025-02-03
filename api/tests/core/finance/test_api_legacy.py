@@ -541,7 +541,7 @@ def _generate_finance_event_context(
     return event
 
 
-@time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 26))
+@time_machine.travel(datetime.datetime(datetime.datetime.utcnow().year, 2, 1, 12, 34, 26), tick=False)
 @mock.patch("pcapi.connectors.googledrive.TestingBackend.create_file")
 def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
     # The contents of generated files is unit-tested in other test
@@ -564,11 +564,13 @@ def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
     assert len(cashflow.logs) == 1
     assert cashflow.logs[0].statusBefore == models.CashflowStatus.PENDING
     assert cashflow.logs[0].statusAfter == models.CashflowStatus.UNDER_REVIEW
+
+    current_year = datetime.datetime.utcnow().year
     gdrive_file_names = {call.args[1] for call in mocked_gdrive_create_file.call_args_list}
     assert gdrive_file_names == {
-        "bank_accounts_20230201_1334.csv",
-        "legacy_bank_accounts_20230201_1334.csv",
-        f"down_payment_{cashflow.batch.label}_20230201_1334.csv",
+        f"bank_accounts_{current_year}0201_1334.csv",
+        f"legacy_bank_accounts_{current_year}0201_1334.csv",
+        f"down_payment_{cashflow.batch.label}_{current_year}0201_1334.csv",
     }
 
 
@@ -907,6 +909,10 @@ def test_generate_payments_file(clean_temp_files):
 
     # Double pricings for an underage individual booking
     underage_user = users_factories.UnderageBeneficiaryFactory()
+    underage_user.deposits[0].amount = 10_000
+    db.session.add(underage_user.deposits[0])
+    db.session.commit()
+
     factories.PricingFactory(
         amount=-400,  # rate = 50 %
         booking__amount=8,
