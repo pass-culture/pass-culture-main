@@ -264,6 +264,7 @@ def _get_collective_offers(
         .join(offerers_models.Venue)
         .join(offerers_models.Offerer)
         .outerjoin(educational_models.CollectiveOffer.collectiveStock)
+        .outerjoin(educational_models.CollectiveOffer.institution)
         .options(
             sa.orm.load_only(
                 educational_models.CollectiveOffer.id,
@@ -320,8 +321,7 @@ def _get_collective_offers(
 
     if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         query = (
-            query.outerjoin(educational_models.CollectiveOffer.institution)
-            .outerjoin(
+            query.outerjoin(
                 educational_models.EducationalDeposit,
                 sa.and_(
                     educational_models.EducationalDeposit.educationalInstitutionId
