@@ -1,8 +1,8 @@
-import { MOCKED_BACK_ADDRESS_LABEL } from '../support/constants.ts'
+import { MOCKED_BACK_ADDRESS_LABEL } from '../../support/constants.ts'
 import {
   interceptSearch5Adresses,
   sessionLogInAndGoToPage,
-} from '../support/helpers.ts'
+} from '../../support/helpers.ts'
 
 describe('Create individual offers with OA', () => {
   let login: string

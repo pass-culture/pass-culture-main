@@ -1,6 +1,6 @@
 import { addDays, format } from 'date-fns'
 
-import { sessionLogInAndGoToPage } from '../support/helpers.ts'
+import { sessionLogInAndGoToPage } from '../../support/helpers.ts'
 
 describe('Desk (Guichet) feature', () => {
   let login: string

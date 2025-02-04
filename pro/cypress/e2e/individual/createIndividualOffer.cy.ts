@@ -2,7 +2,7 @@ import {
   interceptSearch5Adresses,
   sessionLogInAndGoToPage,
   expectOffersOrBookingsAreFound,
-} from '../support/helpers.ts'
+} from '../../support/helpers.ts'
 
 describe('Create individual offers', () => {
   let login: string

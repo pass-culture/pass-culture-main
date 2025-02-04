@@ -1,4 +1,4 @@
-import { logInAndGoToPage } from '../support/helpers.ts'
+import { logInAndGoToPage } from '../../support/helpers.ts'
 
 describe('Navigation', () => {
   let login: string

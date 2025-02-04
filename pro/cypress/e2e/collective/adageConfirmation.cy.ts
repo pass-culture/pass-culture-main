@@ -2,7 +2,7 @@ import {
   collectiveFormatEventDate,
   expectOffersOrBookingsAreFound,
   logInAndGoToPage,
-} from '../support/helpers.ts'
+} from '../../support/helpers.ts'
 
 describe('Adage confirmation', () => {
   let login: string

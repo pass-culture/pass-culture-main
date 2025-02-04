@@ -3,7 +3,7 @@ import { addWeeks, format } from 'date-fns'
 import {
   expectOffersOrBookingsAreFound,
   sessionLogInAndGoToPage,
-} from '../support/helpers.ts'
+} from '../../support/helpers.ts'
 
 describe('Search collective offers', () => {
   let login: string

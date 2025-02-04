@@ -1,6 +1,6 @@
 import { addDays, format } from 'date-fns'
 
-import { sessionLogInAndGoToPage, logInAndGoToPage } from '../support/helpers.ts'
+import { sessionLogInAndGoToPage, logInAndGoToPage } from '../../support/helpers.ts'
 
 describe('Edit digital individual offers', () => {
   describe('Display and url modification', () => {

@@ -3,7 +3,7 @@ import { addDays, format } from 'date-fns'
 import {
   expectOffersOrBookingsAreFound,
   sessionLogInAndGoToPage,
-} from '../support/helpers.ts'
+} from '../../support/helpers.ts'
 
 describe('Search individual offers', () => {
   let login: string

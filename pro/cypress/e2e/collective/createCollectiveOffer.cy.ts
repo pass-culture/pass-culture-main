@@ -1,7 +1,7 @@
 import {
   expectOffersOrBookingsAreFound,
   logInAndGoToPage,
-} from '../support/helpers.ts'
+} from '../../support/helpers.ts'
 
 describe('Create collective offers', () => {
   let login: string
