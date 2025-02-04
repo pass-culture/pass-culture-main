@@ -2,14 +2,12 @@ import datetime
 
 from dateutil.relativedelta import relativedelta
 
+from pcapi import settings
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.models.feature import FeatureToggle
-
-
-CREDIT_V3_DECREE_DATETIME = datetime.datetime(2025, 3, 3)
 
 
 class EligibilityError(Exception):
@@ -114,7 +112,7 @@ def get_extended_eligibility_at_date(
     if not age:
         return None
 
-    if specified_datetime < CREDIT_V3_DECREE_DATETIME or not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
+    if specified_datetime < settings.CREDIT_V3_DECREE_DATETIME or not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
         if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
             return users_models.EligibilityType.UNDERAGE
         # If the user is older than 18 in UTC timezone, we consider them eligible until they reach eligibility_end

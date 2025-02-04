@@ -1,5 +1,6 @@
 """ config """
 
+from datetime import datetime
 import base64
 import json
 from logging import INFO as LOG_LEVEL_INFO
@@ -637,3 +638,6 @@ EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS = int(os.environ.get("EXTERNAL_BOOKINGS_TIM
 
 # HARVESTR
 HARVESTR_API_KEY = secrets_utils.get("HARVESTR_API_KEY", "")
+
+# Credit reform
+CREDIT_V3_DECREE_DATETIME = datetime.fromisoformat(os.environ.get("CREDIT_V3_DECREE_DATETIME", "2025-01-01"))
