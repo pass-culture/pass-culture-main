@@ -1,3 +1,6 @@
+import datetime
+import typing
+
 from pcapi import settings
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
@@ -114,36 +117,29 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
 
 
 def create_deposits(institutions: list[educational_models.EducationalInstitution]) -> None:
-    current_year, next_year = create_years()
-    educational_factories.EducationalDepositFactory(
-        ministry=educational_models.Ministry.AGRICULTURE,
-        educationalInstitution=institutions[0],
-        educationalYear=current_year,
-        amount=40000,
-    )
-    educational_factories.EducationalDepositFactory(
-        ministry=educational_models.Ministry.AGRICULTURE,
-        educationalInstitution=institutions[0],
-        educationalYear=next_year,
-        amount=50000,
-        isFinal=False,
-    )
+    years = create_years()
 
-    for educational_institution in institutions[1:]:
+    for year, amount in zip(years, range(20000, 50001, 10000)):
         educational_factories.EducationalDepositFactory(
-            educationalInstitution=educational_institution,
-            educationalYear=current_year,
-            amount=40000,
-        )
-        educational_factories.EducationalDepositFactory(
-            educationalInstitution=educational_institution,
-            educationalYear=next_year,
-            amount=50000,
-            isFinal=False,
+            ministry=educational_models.Ministry.AGRICULTURE,
+            educationalInstitution=institutions[0],
+            educationalYear=year,
+            amount=amount,
+            isFinal=(year.beginningDate <= datetime.datetime.utcnow()),
         )
 
+        for educational_institution in institutions[1:]:
+            educational_factories.EducationalDepositFactory(
+                educationalInstitution=educational_institution,
+                educationalYear=year,
+                amount=amount,
+                isFinal=(year.beginningDate <= datetime.datetime.utcnow()),
+            )
 
-def create_years() -> tuple[educational_models.EducationalYear, educational_models.EducationalYear]:
-    current_year = educational_factories.EducationalYearFactory()
-    next_year = educational_factories.EducationalYearFactory()
-    return current_year, next_year
+
+def create_years() -> typing.Iterable[educational_models.EducationalYear]:
+    before = educational_factories.create_educational_year(datetime.datetime.utcnow() - datetime.timedelta(days=731))
+    last_year = educational_factories.create_educational_year(datetime.datetime.utcnow() - datetime.timedelta(days=365))
+    current_year = educational_factories.create_educational_year(datetime.datetime.utcnow())
+    next_year = educational_factories.create_educational_year(datetime.datetime.utcnow() + datetime.timedelta(days=365))
+    return before, last_year, current_year, next_year

@@ -149,7 +149,7 @@ def _get_educational_year_subquery(
     return (
         sa.select(educational_models.EducationalYear.adageId)
         .filter(
-            aliased_stock.startDatetime.between(
+            stock_class.startDatetime.between(
                 educational_models.EducationalYear.beginningDate,
                 educational_models.EducationalYear.expirationDate,
             )
