@@ -5,20 +5,12 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 
 .text-input {
-  &-readonly {
-    display: flex;
-    align-items: center;
-    min-height: rem.torem(40px);
+  &-wrapper {
+    width: 100%;
   }
 
-  &-group {
-    display: flex;
-    align-items: center;
-
-    &-extension {
-      display: flex;
-      margin-left: rem.torem(16px);
-    }
+  &-readonly {
+    min-height: rem.torem(40px);
   }
 }
 
