@@ -117,7 +117,6 @@ class GetOffererResponseModel(BaseModel):
     allowedOnAdage: bool
     hasBankAccountWithPendingCorrections: bool
     isOnboarded: bool
-    isOnboardingOngoing: bool
     hasHeadlineOffer: bool
 
     @classmethod
@@ -150,7 +149,6 @@ class GetOffererResponseModel(BaseModel):
         offerer.hasActiveOffer = row.hasActiveOffer
         offerer.hasBankAccountWithPendingCorrections = row.hasBankAccountWithPendingCorrections
         offerer.isOnboarded = row.isOnboarded
-        offerer.isOnboardingOngoing = row.isOnboardingOngoing
         offerer.hasHeadlineOffer = row.hasHeadlineOffer
 
         # We would like the response attribute to be called

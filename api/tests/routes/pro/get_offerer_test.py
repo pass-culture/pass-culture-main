@@ -127,7 +127,6 @@ class GetOffererTest:
             "street": offerer.street,
             "allowedOnAdage": offerer.allowedOnAdage,
             "isOnboarded": True,
-            "isOnboardingOngoing": False,
         }
         assert response.json == expected_serialized_offerer
 
@@ -442,65 +441,6 @@ class GetOffererTest:
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert response.json["hasNonFreeOffer"] is False
-
-    @pytest.mark.parametrize(
-        "has_adage,num_draft_offer,num_approved_offers",
-        [
-            (True, 1, 3),
-            (True, 2, 1),
-            (True, 0, 3),
-            (True, 3, 3),
-            (True, 0, 0),
-            (False, 1, 3),
-            (False, 2, 1),
-            (False, 0, 3),
-            (False, 3, 3),
-            (False, 0, 0),
-        ],
-    )
-    def test_offerer_has_started_on_boarding(self, client, has_adage, num_draft_offer, num_approved_offers):
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-
-        adage_id = None
-        if has_adage:
-            adage_id = "1"
-
-        venue_with_offer = offerers_factories.VenueFactory(managingOfferer=offerer, adageId=adage_id)
-        if num_approved_offers:
-            offers_factories.OfferFactory.create_batch(
-                num_approved_offers, venue=venue_with_offer, validation=offers_models.OfferValidationStatus.APPROVED
-            )
-        if num_draft_offer:
-            offers_factories.OfferFactory.create_batch(
-                num_draft_offer, venue=venue_with_offer, validation=offers_models.OfferValidationStatus.DRAFT
-            )
-
-        offerer_id = offerer.id
-        client = client.with_session_auth(pro.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
-            assert response.status_code == 200
-
-        assert response.json["managedVenues"][0]["hasCreatedOffer"] is (num_approved_offers > 0)
-        assert response.json["hasValidBankAccount"] is False
-        assert response.json["hasPendingBankAccount"] is False
-        assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
-        assert response.json["hasNonFreeOffer"] is False
-        assert response.json["isOnboardingOngoing"] is bool(
-            num_draft_offer >= 1 and num_approved_offers == 0 and not has_adage
-        )
 
     def test_offerer_has_inactive_non_free_collective_offer(self, client):
         pro = users_factories.ProFactory()
