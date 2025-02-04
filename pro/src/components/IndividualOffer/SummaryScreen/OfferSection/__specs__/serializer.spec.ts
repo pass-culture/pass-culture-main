@@ -83,7 +83,6 @@ describe('routes::Summary::serializers', () => {
       venueName: 'Le nom du lieu 1',
       venuePublicName: 'Mon Lieu',
       venueDepartmentCode: '78',
-      isVenueVirtual: false,
       offererName: 'Le nom de la structure 1',
       bookingEmail: 'booking@email.com',
       bookingContact: 'alfonsoLeBg@exampple.com',

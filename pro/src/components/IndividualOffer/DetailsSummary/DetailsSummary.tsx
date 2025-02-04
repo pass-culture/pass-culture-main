@@ -59,7 +59,14 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
   const aboutDescriptions: Description[] = [
     { title: 'Titre de l’offre', text: offerData.name },
     { title: 'Description', text: offerData.description },
-  ]
+  ].concat(
+    offer.isDigital
+      ? {
+          title: 'URL d’accès à l’offre',
+          text: offer.url || ' - ',
+        }
+      : []
+  )
   const venueName = offerData.venuePublicName || offerData.venueName
   aboutDescriptions.unshift({
     title: isOfferAddressEnabled ? 'Structure' : 'Lieu',

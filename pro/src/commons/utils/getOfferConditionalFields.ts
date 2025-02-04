@@ -4,14 +4,12 @@ interface GetOfferConditionalFieldsProps {
   offerSubCategory?: SubcategoryResponseModel | null
   isUserAdmin?: boolean | null
   receiveNotificationEmails?: boolean | null
-  isVenueVirtual?: boolean | null
 }
 
 export const getOfferConditionalFields = ({
   offerSubCategory = null,
   isUserAdmin = null,
   receiveNotificationEmails = null,
-  isVenueVirtual = null,
 }: GetOfferConditionalFieldsProps): string[] => {
   const offerConditionalFields = []
 
@@ -37,10 +35,6 @@ export const getOfferConditionalFields = ({
 
   if (receiveNotificationEmails) {
     offerConditionalFields.push('bookingEmail')
-  }
-
-  if (isVenueVirtual) {
-    offerConditionalFields.push('url')
   }
 
   if (offerSubCategory?.canBeWithdrawable) {

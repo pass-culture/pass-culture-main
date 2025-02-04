@@ -44,7 +44,6 @@ describe('UsefulInformationsSummaryScreen', () => {
       withdrawalDelay: 120,
       bookingContact: 'robert@exemple.com',
       venue: { ...getOfferVenueFactory(), isVirtual: true },
-      url: 'https://www.example.com',
     })
 
     renderUsefulInformationsSummaryScreen(offer)
@@ -57,7 +56,6 @@ describe('UsefulInformationsSummaryScreen', () => {
       screen.getByText('2 minutes avant le début de l’évènement')
     ).toBeInTheDocument()
     expect(screen.getByText('robert@exemple.com')).toBeInTheDocument()
-    expect(screen.getByText('https://www.example.com')).toBeInTheDocument()
   })
 
   it('should render summary with right field with OA FF', async () => {

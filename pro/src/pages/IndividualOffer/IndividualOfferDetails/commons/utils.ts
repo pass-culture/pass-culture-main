@@ -244,6 +244,7 @@ export function setDefaultInitialValuesFromOffer({
       DEFAULT_DETAILS_FORM_VALUES.stageDirector,
     productId:
       offer.productId?.toString() ?? DEFAULT_DETAILS_FORM_VALUES.productId,
+    url: offer.url,
   }
 }
 
@@ -320,6 +321,7 @@ export function serializeDetailsPostData(
     extraData: serializeExtraData(formValues),
     productId: formValues.productId ? Number(formValues.productId) : undefined,
     callId: formValues.callId,
+    url: formValues.url,
   })
 }
 
@@ -329,6 +331,7 @@ type PatchPayload = {
   extraData?: Record<string, unknown>
   name: string
   subcategoryId: string
+  url?: string | null
 }
 
 export function serializeDetailsPatchData(
@@ -340,5 +343,6 @@ export function serializeDetailsPatchData(
     description: formValues.description,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
     extraData: serializeExtraData(formValues),
+    url: formValues.url,
   }
 }

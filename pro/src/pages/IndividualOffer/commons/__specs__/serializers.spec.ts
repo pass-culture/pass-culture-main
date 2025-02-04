@@ -99,7 +99,6 @@ describe('IndividualOffer:commons:serializers', () => {
         bookingContact: undefined,
         isDuo: false,
         url: 'https://my.url',
-        isVenueVirtual: false,
         city: 'Paris',
         latitude: '48.853320',
         longitude: '2.348979',

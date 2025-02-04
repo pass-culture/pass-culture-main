@@ -67,7 +67,7 @@ export function setDefaultInitialValuesFromOffer({
       latitude: String(offer.address.latitude),
       longitude: String(offer.address.longitude),
     }
-  } else if (selectedVenue && selectedVenue.address) {
+  } else if (!offer.isDigital && selectedVenue && selectedVenue.address) {
     addressFields = {
       offerLocation: String(selectedVenue.address.id_oa),
       coords: `${selectedVenue.address.latitude}, ${selectedVenue.address.longitude}`,
@@ -100,8 +100,6 @@ export function setDefaultInitialValuesFromOffer({
     bookingEmail: offer.bookingEmail || '',
     bookingContact: offer.bookingContact || undefined,
     receiveNotificationEmails: !!offer.bookingEmail,
-    url: offer.url || DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['url'],
-    isVenueVirtual: offer.venue.isVirtual || false,
     ...addressFields,
   }
 }

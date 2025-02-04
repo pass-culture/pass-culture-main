@@ -29,7 +29,6 @@ describe('setDefaultInitialValuesFromOffer', () => {
     const expectedValues = {
       isEvent: true,
       isNational: false,
-      isVenueVirtual: false,
       withdrawalDetails: 'Detailed info',
       withdrawalDelay: 3,
       withdrawalType: WithdrawalTypeEnum.BY_EMAIL,
@@ -43,7 +42,6 @@ describe('setDefaultInitialValuesFromOffer', () => {
       bookingEmail: 'test@example.com',
       bookingContact: 'Contact Info',
       receiveNotificationEmails: true,
-      url: 'http://example.com',
     }
 
     const result = setDefaultInitialValuesFromOffer({ offer: mockOffer })
@@ -64,7 +62,6 @@ describe('setDefaultInitialValuesFromOffer', () => {
     const expectedValues = {
       isEvent: false,
       isNational: true,
-      isVenueVirtual: false,
       withdrawalDetails:
         DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['withdrawalDetails'],
       withdrawalDelay: undefined,
@@ -79,7 +76,6 @@ describe('setDefaultInitialValuesFromOffer', () => {
       bookingEmail: '',
       bookingContact: undefined,
       receiveNotificationEmails: false,
-      url: DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['url'],
     }
 
     const result = setDefaultInitialValuesFromOffer({
@@ -102,7 +98,6 @@ describe('setDefaultInitialValuesFromOffer', () => {
     const expectedValues = {
       isEvent: false,
       isNational: true,
-      isVenueVirtual: false,
       withdrawalDetails:
         DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['withdrawalDetails'],
       withdrawalDelay: undefined,
@@ -117,7 +112,6 @@ describe('setDefaultInitialValuesFromOffer', () => {
       bookingEmail: '',
       bookingContact: undefined,
       receiveNotificationEmails: false,
-      url: DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['url'],
     }
 
     const result = setDefaultInitialValuesFromOffer({
@@ -167,7 +161,6 @@ describe('setDefaultInitialValuesFromOffer', () => {
     const expectedValues = {
       isEvent: true,
       isNational: false,
-      isVenueVirtual: false,
       withdrawalDetails: 'Detailed info',
       withdrawalDelay: 3,
       withdrawalType: WithdrawalTypeEnum.BY_EMAIL,
@@ -181,7 +174,6 @@ describe('setDefaultInitialValuesFromOffer', () => {
       bookingEmail: 'test@example.com',
       bookingContact: 'Contact Info',
       receiveNotificationEmails: true,
-      url: 'http://example.com',
 
       offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
       manuallySetAddress: true,

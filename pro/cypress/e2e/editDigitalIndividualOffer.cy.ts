@@ -1,6 +1,9 @@
 import { addDays, format } from 'date-fns'
 
-import { sessionLogInAndGoToPage, logInAndGoToPage } from '../support/helpers.ts'
+import {
+  sessionLogInAndGoToPage,
+  logInAndGoToPage,
+} from '../support/helpers.ts'
 
 describe('Edit digital individual offers', () => {
   describe('Display and url modification', () => {
@@ -17,7 +20,11 @@ describe('Edit digital individual offers', () => {
     })
 
     it('An edited offer is displayed with 4 tabs', function () {
-      sessionLogInAndGoToPage('Session edit digital individual offer', login1, '/offre/individuelle/1/recapitulatif/details')
+      sessionLogInAndGoToPage(
+        'Session edit digital individual offer',
+        login1,
+        '/offre/individuelle/1/recapitulatif/details'
+      )
 
       cy.contains('Récapitulatif')
 
@@ -33,30 +40,40 @@ describe('Edit digital individual offers', () => {
     })
 
     it('I should be able to modify the url of a digital offer', function () {
-      sessionLogInAndGoToPage('Session edit digital individual offer', login1, '/offres')
+      sessionLogInAndGoToPage(
+        'Session edit digital individual offer',
+        login1,
+        '/offres'
+      )
 
       cy.stepLog({ message: 'I open the first offer in the list' })
       cy.findAllByTestId('offer-item-row')
         .first()
         .within(() => {
-          cy.findByRole('button', { name: 'Voir les actions'}).click()
+          cy.findByRole('button', { name: 'Voir les actions' }).click()
         })
       cy.findByRole('menuitem', { name: 'Voir l’offre' }).click()
       cy.url().should('contain', '/recapitulatif')
 
-      cy.stepLog({ message: 'I display Informations pratiques tab' })
-      cy.findByText('Informations pratiques').click()
-      cy.url().should('contain', '/pratiques')
-
-      cy.stepLog({ message: 'I edit the offer displayed' })
-      cy.get('a[aria-label^="Modifier les détails de l’offre"]').click()
-      cy.url().should('contain', '/edition/pratiques')
+      cy.findByRole('link', { name: 'Modifier les détails de l’offre' }).click()
 
       cy.stepLog({ message: 'I update the url link' })
       const randomUrl = `http://myrandomurl.fr/`
       cy.get('input#url').type('{selectall}{del}' + randomUrl)
+
+      cy.stepLog({ message: 'I display Informations pratiques tab' })
       cy.findByText('Enregistrer les modifications').click()
+
       cy.findByText('http://myrandomurl.fr/').should('exist')
+
+      cy.findByText('Informations pratiques').click()
+      cy.url().should('contain', '/pratiques')
+
+      cy.stepLog({ message: 'I edit the offer displayed' })
+      cy.findByRole('link', { name: 'Modifier les détails de l’offre' }).click()
+      cy.url().should('contain', '/edition/pratiques')
+
+      cy.findByText('Enregistrer les modifications').click()
       cy.findByText('Retour à la liste des offres').click()
       cy.url().should('contain', '/offres')
       cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
@@ -66,7 +83,7 @@ describe('Edit digital individual offers', () => {
       cy.findAllByTestId('offer-item-row')
         .first()
         .within(() => {
-          cy.findByRole('button', { name: 'Voir les actions'}).click()
+          cy.findByRole('button', { name: 'Voir les actions' }).click()
         })
       cy.findByRole('menuitem', { name: 'Voir l’offre' }).click()
       cy.url().should('contain', '/recapitulatif')
@@ -74,11 +91,6 @@ describe('Edit digital individual offers', () => {
       cy.stepLog({ message: 'I display Informations pratiques tab' })
       cy.findByText('Informations pratiques').click()
       cy.url().should('contain', '/pratiques')
-
-      cy.stepLog({
-        message: 'the url updated is retrieved in the details of the offer',
-      })
-      cy.contains('URL d’accès à l’offre : ' + randomUrl)
     })
   })
 

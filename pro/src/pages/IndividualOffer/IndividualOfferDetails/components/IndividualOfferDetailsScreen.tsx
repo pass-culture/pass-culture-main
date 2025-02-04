@@ -100,7 +100,7 @@ export const IndividualOfferDetailsScreen = ({
 
   const availableVenuesOptions = formatVenuesOptions(
     venues,
-    categoryStatus === CATEGORY_STATUS.ONLINE
+    categoryStatus === CATEGORY_STATUS.ONLINE || Boolean(offer?.isDigital)
   )
 
   const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
@@ -194,10 +194,13 @@ export const IndividualOfferDetailsScreen = ({
       formik.setStatus('apiError')
     }
   }
-
   const formik = useFormik({
     initialValues,
-    validationSchema: getValidationSchema({ isOfferAddressEnabled }),
+    validationSchema: getValidationSchema({
+      isOfferAddressEnabled,
+      isDigitalOffer:
+        categoryStatus === CATEGORY_STATUS.ONLINE || Boolean(offer?.isDigital),
+    }),
     onSubmit,
   })
   const handlePreviousStepOrBackToReadOnly = () => {
@@ -322,11 +325,12 @@ export const IndividualOfferDetailsScreen = ({
               isProductBased={isProductBased}
               filteredCategories={filteredCategories}
               filteredSubcategories={filteredSubcategories}
-              readonlyFields={readOnlyFields}
+              readOnlyFields={readOnlyFields}
               onImageUpload={onImageUpload}
               onImageDelete={onImageDelete}
               imageOffer={imageOffer}
               venuesOptions={availableVenuesOptions}
+              categoryStatus={categoryStatus}
             />
           </FormLayout>
           <ActionBar

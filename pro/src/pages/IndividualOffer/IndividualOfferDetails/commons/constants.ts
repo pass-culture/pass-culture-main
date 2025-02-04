@@ -18,4 +18,5 @@ export const DEFAULT_DETAILS_FORM_VALUES = {
   suggestedSubcategory: '',
   productId: '',
   callId: '',
+  url: null,
 }

@@ -13,7 +13,6 @@ export const DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES: UsefulInformationFormVal
     withdrawalDelay: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['withdrawalDelay'],
     receiveNotificationEmails: false,
     bookingEmail: '',
-    url: '',
     accessibility: {
       [AccessibilityEnum.VISUAL]: false,
       [AccessibilityEnum.MENTAL]: false,

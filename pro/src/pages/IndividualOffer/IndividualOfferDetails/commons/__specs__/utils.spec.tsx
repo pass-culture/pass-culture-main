@@ -224,6 +224,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       visa: 'USA',
       productId: '',
       callId: '',
+      url: undefined,
     })
   })
 })
@@ -412,6 +413,7 @@ describe('serializeDetailsPostData', () => {
         visa: '123456789',
         ean: 'any ean',
       },
+      url: undefined,
       productId: undefined,
       callId: '1',
     })

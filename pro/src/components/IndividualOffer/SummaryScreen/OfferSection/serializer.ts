@@ -116,7 +116,6 @@ export const serializeOfferSectionData = (
     venueName: offer.venue.name,
     venuePublicName: offer.venue.publicName,
     venueDepartmentCode: offer.venue.departementCode,
-    isVenueVirtual: offer.venue.isVirtual,
     offererName: offer.venue.managingOfferer.name,
     bookingEmail: offer.bookingEmail,
     bookingContact: offer.bookingContact,
