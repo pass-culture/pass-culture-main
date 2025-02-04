@@ -102,14 +102,72 @@ $connect-as-header-height: rem.torem(52px);
         overflow: hidden;
 
         .image-engagements {
-          margin: rem.torem(64px) auto;
-          width: clamp(rem.torem(380px), 22vw, rem.torem(490px));
+          margin: 14vh auto;
+          display: flex;
+          flex-direction: column;
+          width: 80%;
+          gap: 5.05vh;
+
+          &-1 {
+            width: rem.torem(223px);
+            align-self: flex-start;
+          }
+
+          &-2 {
+            width: rem.torem(265px);
+            align-self: flex-end;
+          }
+
+          &-3 {
+            width: rem.torem(240px);
+            align-self: flex-start;
+          }
+
+          @media (max-height: rem.torem(740px)) {
+            margin: 4vh auto;
+          }
         }
 
         .image-laptop {
-          width: clamp(rem.torem(600px), 55vw, rem.torem(1000px));
-          align-self: flex-end;
+          &-blob {
+            position: absolute;
+            bottom: rem.torem(-100px);
+            left: rem.torem(-200px);
+            width: 100%;
+            max-width: rem.torem(800px);
+          }
+
+          &-macstudio {
+            width: 100%;
+            bottom: rem.torem(-140px);
+            right: rem.torem(-20px);
+            position: absolute;
+            max-width: rem.torem(540px);
+
+            @media (max-height: rem.torem(610px)) {
+              bottom: rem.torem(-95px);
+              max-width: rem.torem(400px);
+            }
+          }
         }
+
+        @media (max-height: rem.torem(430px)) {
+          .image-engagements {
+            margin: rem.torem(50px) auto rem.torem(25px);
+          }
+
+          .image-laptop {
+            &-macstudio {
+              display: none;
+            }
+          }
+        }
+      }
+
+      @media screen and (min-width: rem.torem(2600px)) {
+        // Fix width for ultra-wide screens
+        min-width: initial;
+        width: rem.torem(1300px);
       }
     }
   }
@@ -163,7 +221,7 @@ $connect-as-header-height: rem.torem(52px);
       margin: auto;
 
       /* For ultra-wide screens, makes content little bit more larger */
-      @media (min-width: rem.torem(2200px)) {
+      @media (min-width: rem.torem(2600px)) {
         max-width: rem.torem(800px);
       }
     }

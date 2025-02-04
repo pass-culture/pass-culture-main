@@ -12,8 +12,11 @@ import fullInfoIcon from 'icons/full-info.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import engagementsImage from './assets/engagements.svg'
+import bullImage from './assets/bull.svg'
 import macStudioImage from './assets/mac-studio.svg'
+import engagementImage1 from './assets/texte-1.svg'
+import engagementImage2 from './assets/texte-2.svg'
+import engagementImage3 from './assets/texte-3.svg'
 import { LateralPanel } from './LateralPanel/LateralPanel'
 import styles from './Layout.module.scss'
 
@@ -151,16 +154,35 @@ export const Layout = ({
                 className={styles['content-wrapper-right-side-logo']}
                 data-testid="sign-up-header"
               >
-                <img
-                  src={engagementsImage}
-                  alt="Plus de 4 millions de jeunes scolarisés ont participé à une sortie scolaire. Plus de 36 000 acteurs culturels déjà inscrits. Plus de 2 millions de jeunes ont déjà réservé une offre via l’application."
-                  className={styles['image-engagements']}
-                />
-                <img
-                  src={macStudioImage}
-                  alt=""
-                  className={styles['image-laptop']}
-                />
+                <div className={styles['image-engagements']}>
+                  <img
+                    src={engagementImage1}
+                    className={styles['image-engagements-1']}
+                    alt="Plus de 4 millions de jeunes scolarisés ont participé à une sortie scolaire"
+                  />
+                  <img
+                    src={engagementImage2}
+                    className={styles['image-engagements-2']}
+                    alt="Plus de 36 000 acteurs culturels déjà inscrits"
+                  />
+                  <img
+                    src={engagementImage3}
+                    className={styles['image-engagements-3']}
+                    alt="Plus de 2 millions de jeunes ont déjà réservé une offre via l’application"
+                  />
+                </div>
+                <div className={styles['image-laptop']}>
+                  <img
+                    src={bullImage}
+                    alt=""
+                    className={styles['image-laptop-bull']}
+                  />
+                  <img
+                    src={macStudioImage}
+                    alt=""
+                    className={styles['image-laptop-macstudio']}
+                  />
+                </div>
               </header>
             )}
             <div

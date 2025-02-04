@@ -34,7 +34,13 @@
 
     .footer-list {
       flex: 1;
-      margin: rem.torem(16px);
+      margin: auto;
+      max-width: rem.torem(640px);
+
+      @media (min-width: size.$laptop) {
+        margin: rem.torem(16px);
+        max-width: initial;
+      }
     }
 
     .footer-list-item {
