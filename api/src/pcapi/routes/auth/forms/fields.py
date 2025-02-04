@@ -66,13 +66,7 @@ class PCHiddenField(PCStringField):
 
 
 class PCLongHiddenField(PCHiddenField):
-    validators = [
-        validators.DataRequired("Information obligatoire"),
-        # This validator is used for the reCAPTCHA V3 tokens which can be very long.
-        # We decide to keep the validator with an arbitrarily high length value that,
-        # as far as we know, should be greater than 10_000.
-        validators.Length(max=2**16, message="doit contenir au maximum %(max)d caractères"),
-    ]
+    validators = [validators.DataRequired("Information obligatoire")]
 
 
 class PCEmailField(wtforms.EmailField):
