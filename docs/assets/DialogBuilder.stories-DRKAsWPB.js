@@ -1,0 +1,11 @@
+import{j as i}from"./jsx-runtime-CfatFE5O.js";import{D as s,T as l}from"./DialogBuilder-BC_Iv_3R.js";import{B as a}from"./Button-SeWbfM7k.js";import"./index-ClcD9ViR.js";import"./_commonjsHelpers-Cpj98o6Y.js";import"./index-Dd9yOW4x.js";import"./index-CBV61OJ-.js";import"./index-DeARc5FM.js";import"./stroke-close-DnlFsd1c.js";import"./SvgIcon-CUWb-Ez8.js";import"./stroke-pass-CALgybTM.js";import"./Tooltip-CPMX2zM9.js";import"./useTooltipProps-C5TDwaI9.js";import"./Button.module-CiMaKVCX.js";import"./types-DjX_gQD6.js";const _={title:"ui-kit/DialogBuilder",component:s},r={args:{trigger:i.jsx(a,{children:"Cliquez ici!"}),children:i.jsxs(i.Fragment,{children:[i.jsx(l,{asChild:!0,children:i.jsx("h1",{children:"Dialog title"})}),i.jsx("p",{children:"lorem ipsum dolor sit amet"})]})}};var t,o,e;r.parameters={...r.parameters,docs:{...(t=r.parameters)==null?void 0:t.docs,source:{originalSource:`{
+  args: {
+    trigger: <Button>Cliquez ici!</Button>,
+    children: <>
+        <Dialog.Title asChild>
+          <h1>Dialog title</h1>
+        </Dialog.Title>
+        <p>lorem ipsum dolor sit amet</p>
+      </>
+  }
+}`,...(e=(o=r.parameters)==null?void 0:o.docs)==null?void 0:e.source}}};const q=["Default"];export{r as Default,q as __namedExportsOrder,_ as default};
