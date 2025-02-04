@@ -1252,24 +1252,6 @@ class CreateDraftOfferTest:
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
-    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=True)
-    def test_create_offer_sends_complete_log_to_data(self, caplog):
-        venue = offerers_factories.VenueFactory(isVirtual=False)
-        body = offers_schemas.PostDraftOfferBodyModel(
-            name="L'esclave et Violette",
-            subcategoryId="LIVRE_PAPIER",
-            venueId=venue.id,
-            callId="123e4567-e89b-12d3-a456-426614174000",
-        )
-        with caplog.at_level(logging.INFO):
-            offer = api.create_draft_offer(body, venue=venue)
-            assert caplog.records[0].message == "Offer Categorisation Data API"
-            assert caplog.records[0].technical_message_id == "offer_categorisation"
-            assert caplog.records[0].extra["analyticsSource"] == "app-pro"
-            assert caplog.records[0].extra["offer_id"] == offer.id
-            assert caplog.records[0].extra["offer_data_api_call_id"] == "123e4567-e89b-12d3-a456-426614174000"
-            assert caplog.records[0].extra["offer_subcategory"] == offer.subcategoryId
-
 
 @pytest.mark.usefixtures("db_session")
 class UpdateDraftOfferTest:

@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type PostDraftOfferBodyModel = {
-  callId?: string | null;
   description?: string | null;
   durationMinutes?: number | null;
   extraData?: any;

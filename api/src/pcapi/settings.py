@@ -586,14 +586,6 @@ RECOMMENDATION_API_AUTHENTICATION_TOKEN = os.environ.get("RECOMMENDATION_API_AUT
 RECOMMENDATION_API_URL = os.environ.get("RECOMMENDATION_API_URL", "")
 
 
-# SUBCATEGORY SUGGESTION API
-SUBCATEGORY_SUGGESTION_API_URL = "https://compliance.passculture.team/latest/model/categorisation"
-SUBCATEGORY_SUGGESTION_BACKEND = os.environ.get(
-    "SUBCATEGORY_SUGGESTION_BACKEND",
-    "pcapi.core.external.subcategory_suggestion_backends.subcategory_suggestion.SubcategorySuggestionBackend",
-)
-
-
 # PRO TESTS
 MAKE_PROS_BENEFICIARIES_IN_APP = bool(int(os.environ.get("MAKE_PROS_BENEFICIARIES_IN_APP", 0)))
 
