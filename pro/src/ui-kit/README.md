@@ -2,8 +2,6 @@
 
 ## Description
 
-Liste tous les composants ultra standards et réutilisables. Les composants de l’ui-kit doivent être bêtes et ne pas interagir avec le monde exterieur (calls api, redux, contextes) autrement que via des fontions passés en props. Ils doivent aussi ne posséder qu'une intelligence limitée (pas de state interne complexe)
-
 On y trouvera notament :
 
 - éléments typographiques
