@@ -31,7 +31,7 @@ class BannerTest:
         self.activation_banner = {
             "banner": {
                 "name": "activation_banner",
-                "title": f"Débloque tes 300{u_nbsp}€",
+                "title": f"Débloque tes 150{u_nbsp}€",
                 "text": "à dépenser sur l'application",
             }
         }
@@ -144,7 +144,7 @@ class BannerTest:
         assert response.json == {
             "banner": {
                 "name": "activation_banner",
-                "title": f"Débloque tes 30{u_nbsp}€",
+                "title": f"Débloque tes 50{u_nbsp}€",
                 "text": "à dépenser sur l'application",
             }
         }
@@ -183,7 +183,7 @@ class BannerTest:
             "banner": {
                 "name": "transition_17_18_banner",
                 "text": "Vérifie ton identité",
-                "title": f"Débloque tes 300{u_nbsp}€",
+                "title": f"Débloque tes 150{u_nbsp}€",
             },
         }
 
@@ -205,6 +205,6 @@ class BannerTest:
             "banner": {
                 "name": "transition_17_18_banner",
                 "text": "Confirme tes informations",
-                "title": f"Débloque tes 300{u_nbsp}€",
+                "title": f"Débloque tes 150{u_nbsp}€",
             },
         }

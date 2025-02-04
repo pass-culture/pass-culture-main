@@ -1,6 +1,7 @@
 import decimal
 
 import pcapi.core.offers.models as offers_models
+from pcapi.models.feature import FeatureToggle
 
 from . import models
 
@@ -25,8 +26,10 @@ GRANT_18_VALIDITY_IN_YEARS = 2
 GRANTED_DEPOSIT_AMOUNT_15 = decimal.Decimal(20)
 GRANTED_DEPOSIT_AMOUNT_16 = decimal.Decimal(30)
 GRANTED_DEPOSIT_AMOUNT_17 = decimal.Decimal(30)
+GRANTED_DEPOSIT_AMOUNT_17_v3 = decimal.Decimal(50)
 GRANTED_DEPOSIT_AMOUNT_18_v1 = decimal.Decimal(500)
 GRANTED_DEPOSIT_AMOUNT_18_v2 = decimal.Decimal(300)
+GRANTED_DEPOSIT_AMOUNT_18_v3 = decimal.Decimal(150)
 
 GRANT_18_DIGITAL_CAP_V1 = decimal.Decimal(200)
 GRANT_18_DIGITAL_CAP_V2 = decimal.Decimal(100)
@@ -50,16 +53,12 @@ GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE = {
     17: GRANTED_DEPOSIT_AMOUNT_17,
 }
 
-GRANTED_DEPOSIT_AMOUNTS_FOR_18_BY_VERSION = {
-    1: GRANTED_DEPOSIT_AMOUNT_18_v1,  # not used anymore, still present in database
-    2: GRANTED_DEPOSIT_AMOUNT_18_v2,
-}
-
 
 RECREDIT_TYPE_AGE_MAPPING = {
     15: models.RecreditType.RECREDIT_15,
     16: models.RecreditType.RECREDIT_16,
     17: models.RecreditType.RECREDIT_17,
+    18: models.RecreditType.RECREDIT_18,
 }
 
 RECREDIT_TYPE_AMOUNT_MAPPING = {
@@ -69,13 +68,27 @@ RECREDIT_TYPE_AMOUNT_MAPPING = {
 }
 
 
-def get_amount_to_display(user_age: int) -> decimal.Decimal | None:
-    if user_age == 18:
-        amount_to_display: decimal.Decimal | None = GRANTED_DEPOSIT_AMOUNT_18_v2
-    else:
-        amount_to_display = GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE.get(user_age)
+def get_credit_amount_per_age(age: int) -> decimal.Decimal | None:
+    if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
+        match age:
+            case 17:
+                return GRANTED_DEPOSIT_AMOUNT_17_v3
+            case 18:
+                return GRANTED_DEPOSIT_AMOUNT_18_v3
+            case _:
+                return None
 
-    return amount_to_display
+    match age:
+        case 15:
+            return GRANTED_DEPOSIT_AMOUNT_15
+        case 16:
+            return GRANTED_DEPOSIT_AMOUNT_16
+        case 17:
+            return GRANTED_DEPOSIT_AMOUNT_17
+        case 18:
+            return GRANTED_DEPOSIT_AMOUNT_18_v2
+        case _:
+            return None
 
 
 def digital_cap_applies_to_offer(offer: offers_models.Offer) -> bool:

@@ -925,7 +925,7 @@ def get_stepper_title_and_subtitle(
         logger.error("Eligible user has no age", extra={"user": user.id})
         return models.SubscriptionStepperDetails(title=models.STEPPER_DEFAULT_TITLE)
 
-    amount_to_display = finance_conf.get_amount_to_display(user.age)
+    amount_to_display = finance_conf.get_credit_amount_per_age(user.age)
     subtitle = models.STEPPER_DEFAULT_SUBTITLE.format(amount_to_display)
 
     return models.SubscriptionStepperDetails(title=models.STEPPER_DEFAULT_TITLE, subtitle=subtitle)

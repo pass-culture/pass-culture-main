@@ -96,7 +96,7 @@ def _get_activation_banner(
             text=serializers.BannerText.RETRY_IDENTITY_CHECK_BANNER.value,
         )
 
-    amount_to_display = finance_conf.get_amount_to_display(user.age)
+    amount_to_display = finance_conf.get_credit_amount_per_age(user.age)
     if amount_to_display is None:
         return None
 
