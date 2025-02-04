@@ -186,6 +186,7 @@ export const Collaborators = (): JSX.Element | null => {
                       description="Format : email@exemple.com"
                       label="Adresse email"
                       className={styles['invitation-email-field']}
+                      showMandatoryAsterisk={false}
                     />
                     <Button
                       type="submit"

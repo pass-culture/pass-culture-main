@@ -136,7 +136,7 @@ export const DetailsEanSearch = ({
           <div className={styles['details-ean-search']}>
             <div className={styles['details-ean-search-form']}>
               <TextInput
-                refForInput={inputRef}
+                focusRef={inputRef}
                 classNameLabel={styles['details-ean-search-label']}
                 label={label}
                 description="Format : EAN à 13 chiffres"
