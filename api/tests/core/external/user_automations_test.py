@@ -11,7 +11,6 @@ from pcapi import settings
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.external.automations import user as user_automations
 import pcapi.core.users.factories as users_factories
-from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 
 
@@ -40,41 +39,6 @@ class UserAutomationsTest:
             email="gerard+test@example.net",
             dateOfBirth=today - relativedelta(days=user_automations.DAYS_IN_18_YEARS - 30),
         )
-
-    @time_machine.travel("2033-08-01 10:00:00")
-    def test_get_emails_who_will_turn_eighteen_in_one_month(self):
-        self._create_users_around_18()
-
-        result = user_automations.get_emails_who_will_turn_eighteen_in_one_month()
-        assert sorted(result) == ["fabien+test@example.net", "gerard+test@example.net"]
-        assert len(User.query.all()) == 6
-
-    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
-    def test_user_turned_eighteen_automation(self, mock_import_contacts):
-        self._create_users_around_18()
-
-        result = user_automations.users_turned_eighteen_automation()
-
-        mock_import_contacts.assert_called_once()
-        assert mock_import_contacts.call_args.args[0].file_url is None
-        assert mock_import_contacts.call_args.args[0].file_body in (
-            "EMAIL\nfabien+test@example.net\ngerard+test@example.net",
-            "EMAIL\ngerard+test@example.net\nfabien+test@example.net",
-        )
-        assert mock_import_contacts.call_args.args[0].list_ids == [
-            settings.SENDINBLUE_AUTOMATION_YOUNG_18_IN_1_MONTH_LIST_ID
-        ]
-        assert (
-            mock_import_contacts.call_args.args[0].notify_url
-            == f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_18_IN_1_MONTH_LIST_ID}/1"
-        )
-        assert mock_import_contacts.call_args.args[0].new_list is None
-        assert mock_import_contacts.call_args.args[0].email_blacklist is False
-        assert mock_import_contacts.call_args.args[0].sms_blacklist is False
-        assert mock_import_contacts.call_args.args[0].update_existing_contacts is True
-        assert mock_import_contacts.call_args.args[0].empty_contacts_attributes is False
-
-        assert result is True
 
     def _create_users_with_deposits(self):
         with time_machine.travel("2032-11-15 15:00:00"):
@@ -134,55 +98,6 @@ class UserAutomationsTest:
 
         return [user0, user1, user2, user3, user4, user5, user6]
 
-    def test_get_users_beneficiary_three_months_before_credit_expiration(self):
-        users = self._create_users_with_deposits()
-
-        with time_machine.travel("2034-10-31 16:00:00"):
-            results = user_automations.get_users_beneficiary_credit_expiration_within_next_3_months()
-            assert sorted([user.email for user in results]) == [user.email for user in users[1:4]]
-
-        with time_machine.travel("2034-11-01 14:00:00"):
-            results = user_automations.get_users_beneficiary_credit_expiration_within_next_3_months()
-            assert sorted([user.email for user in results]) == [user.email for user in users[2:5]]
-
-        with time_machine.travel("2034-11-02 12:00:00"):
-            results = user_automations.get_users_beneficiary_credit_expiration_within_next_3_months()
-            assert sorted([user.email for user in results]) == [user.email for user in users[3:6]]
-
-        with time_machine.travel("2035-01-15 08:00:00"):
-            results = user_automations.get_users_beneficiary_credit_expiration_within_next_3_months()
-            assert sorted([user.email for user in results]) == [user.email for user in users[4:7]]
-
-    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
-    def test_users_beneficiary_credit_expiration_within_next_3_months_automation(self, mock_import_contacts):
-        users = self._create_users_with_deposits()
-
-        with time_machine.travel("2034-11-01 16:00:00"):
-            result = user_automations.users_beneficiary_credit_expiration_within_next_3_months_automation()
-
-        mock_import_contacts.assert_called_once()
-
-        request_contact_import = mock_import_contacts.call_args[0][0]
-        body_lines = request_contact_import.file_body.split("\n")
-
-        assert isinstance(request_contact_import, RequestContactImport)
-        assert request_contact_import.file_url is None
-        assert len(body_lines) == 4
-        assert body_lines[0] == "EMAIL"
-        assert set(body_lines[1:]) == {users[2].email, users[3].email, users[4].email}
-        assert request_contact_import.list_ids == [settings.SENDINBLUE_AUTOMATION_YOUNG_EXPIRATION_M3_ID]
-        assert (
-            request_contact_import.notify_url
-            == f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_EXPIRATION_M3_ID}/1"
-        )
-        assert request_contact_import.new_list is None
-        assert request_contact_import.email_blacklist is False
-        assert request_contact_import.sms_blacklist is False
-        assert request_contact_import.update_existing_contacts is True
-        assert request_contact_import.empty_contacts_attributes is False
-
-        assert result is True
-
     def test_get_users_ex_beneficiary(self):
         users = self._create_users_with_deposits()
 
@@ -222,73 +137,6 @@ class UserAutomationsTest:
         assert mock_import_contacts.call_args.args[0].empty_contacts_attributes is False
 
         assert result is True
-
-    def test_get_email_for_inactive_user_since_thirty_days(self):
-        with time_machine.travel("2033-08-01 15:00:00") as frozen_time:
-            beneficiary = users_factories.BeneficiaryGrant18Factory(
-                email="fabien+test@example.net", lastConnectionDate=datetime(2033, 8, 1)
-            )
-            not_beneficiary = users_factories.UserFactory(
-                email="marc+test@example.net", lastConnectionDate=datetime(2033, 8, 2)
-            )
-            users_factories.ProFactory(email="pierre+test@example.net", lastConnectionDate=datetime(2033, 8, 1))
-            users_factories.UserFactory(email="daniel+test@example.net", lastConnectionDate=datetime(2033, 8, 3))
-            users_factories.UserFactory(email="billy+test@example.net", dateCreated=datetime(2033, 7, 31))
-            users_factories.UserFactory(email="gerard+test@example.net", dateCreated=datetime(2033, 9, 1))
-
-            frozen_time.move_to("2033-09-01 15:00:01")
-            results = user_automations.get_email_for_inactive_user_since_thirty_days()
-            assert sorted(results) == sorted([beneficiary.email, not_beneficiary.email])
-
-    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
-    def test_users_inactive_since_30_days_automation(self, mock_import_contacts):
-        with time_machine.travel("2033-08-01 15:00:00") as frozen_time:
-            users_factories.BeneficiaryGrant18Factory(
-                email="fabien+test@example.net", lastConnectionDate=datetime(2033, 8, 1)
-            )
-            users_factories.ProFactory(email="pierre+test@example.net", lastConnectionDate=datetime(2033, 8, 1))
-            users_factories.UserFactory(email="daniel+test@example.net", lastConnectionDate=datetime(2033, 8, 4))
-            users_factories.UserFactory(email="billy+test@example.net", dateCreated=datetime(2033, 7, 31))
-            users_factories.UserFactory(email="gerard+test@example.net", dateCreated=datetime(2033, 9, 1))
-
-            frozen_time.move_to("2033-09-02 15:00:01")
-
-            result = user_automations.users_inactive_since_30_days_automation()
-
-            mock_import_contacts.assert_called_once_with(
-                RequestContactImport(
-                    file_url=None,
-                    file_body="EMAIL\nfabien+test@example.net",
-                    list_ids=[settings.SENDINBLUE_AUTOMATION_YOUNG_INACTIVE_30_DAYS_LIST_ID],
-                    notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_INACTIVE_30_DAYS_LIST_ID}/1",
-                    new_list=None,
-                    email_blacklist=False,
-                    sms_blacklist=False,
-                    update_existing_contacts=True,
-                    empty_contacts_attributes=False,
-                )
-            )
-
-            assert result is True
-
-    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
-    def test_users_inactive_since_30_days_automation_no_result(self, mock_import_contacts):
-        with time_machine.travel("2033-08-01 15:00:00") as frozen_time:
-            users_factories.BeneficiaryGrant18Factory(
-                email="fabien+test@example.net", lastConnectionDate=datetime(2033, 8, 1)
-            )
-            users_factories.UserFactory(email="marc+test@example.net", lastConnectionDate=datetime(2033, 8, 1))
-            users_factories.UserFactory(email="daniel+test@example.net", lastConnectionDate=datetime(2033, 8, 2))
-            users_factories.UserFactory(email="billy+test@example.net", dateCreated=datetime(2033, 7, 31))
-            users_factories.UserFactory(email="gerard+test@example.net", dateCreated=datetime(2033, 9, 1))
-
-            frozen_time.move_to("2033-08-30 15:00:01")
-
-            result = user_automations.users_inactive_since_30_days_automation()
-
-            mock_import_contacts.assert_not_called()
-
-            assert result is True
 
     def test_get_email_for_users_created_one_year_ago_per_month(self):
         matching_users = []
