@@ -46,6 +46,8 @@
         "filterOnly(offer.isDuo)",
         "filterOnly(offer.isEducational)",
         "filterOnly(offer.isEvent)",
+        "filterOnly(offer.isHeadline)",
+        "filterOnly(offer.isHeadlineUntil)",
         "filterOnly(offer.isForbiddenToUnderage)",
         "filterOnly(offer.isThing)",
         "filterOnly(offer.last30DaysBookings)",
