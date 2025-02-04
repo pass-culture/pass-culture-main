@@ -2990,7 +2990,7 @@ def get_granted_deposit(
 
     if eligibility == users_models.EligibilityType.AGE18:
         return models.GrantedDeposit(
-            amount=conf.GRANTED_DEPOSIT_AMOUNTS_FOR_18_BY_VERSION[2],
+            amount=conf.GRANTED_DEPOSIT_AMOUNT_18_v2,
             expiration_date=compute_deposit_expiration_date(beneficiary, deposit_type=DepositType.GRANT_18),
             type=models.DepositType.GRANT_18,
             version=2,
@@ -3025,9 +3025,12 @@ def _recredit_user(user: users_models.User) -> models.Recredit | None:
 
 
 def _recredit_deposit(deposit: models.Deposit, age: int) -> models.Recredit:
+    amount = conf.get_credit_amount_per_age(age)
+    if amount is None:
+        raise ValueError(f"Could not create recredit with unknown amount. Deposit: {deposit.id}, user {deposit.userId}")
     recredit = models.Recredit(
         deposit=deposit,
-        amount=conf.RECREDIT_TYPE_AMOUNT_MAPPING[conf.RECREDIT_TYPE_AGE_MAPPING[age]],
+        amount=amount,
         recreditType=conf.RECREDIT_TYPE_AGE_MAPPING[age],
     )
     deposit.amount += recredit.amount
@@ -3077,6 +3080,7 @@ def create_deposit_v3(
     )
     db.session.add(deposit)
     db.session.flush()
+
     return deposit
 
 
@@ -3141,6 +3145,7 @@ def expire_current_deposit_for_user(user: users_models.User) -> None:
 def _can_be_recredited(user: users_models.User, age: int | None = None) -> bool:
     if age is None:
         age = user.age
+    # TODO: 18 ans ?
     return (
         age in conf.RECREDIT_TYPE_AGE_MAPPING
         and _has_celebrated_birthday_since_credit_or_registration(user)

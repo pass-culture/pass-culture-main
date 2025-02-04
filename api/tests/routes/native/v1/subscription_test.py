@@ -590,7 +590,7 @@ class StepperTest:
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
         assert response.json["title"] == f"C'est très rapide{u_nbsp}!"
-        assert response.json["subtitle"] == f"Pour débloquer tes 300€ tu dois suivre les étapes suivantes{u_nbsp}:"
+        assert response.json["subtitle"] == f"Pour débloquer tes 150€ tu dois suivre les étapes suivantes{u_nbsp}:"
 
     def should_contain_all_subscription_steps_for_17yo_user(self, client):
         user = users_factories.UserFactory(age=17, isEmailValidated=True)
@@ -606,7 +606,7 @@ class StepperTest:
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
         assert response.json["title"] == f"C'est très rapide{u_nbsp}!"
-        assert response.json["subtitle"] == f"Pour débloquer tes 30€ tu dois suivre les étapes suivantes{u_nbsp}:"
+        assert response.json["subtitle"] == f"Pour débloquer tes 50€ tu dois suivre les étapes suivantes{u_nbsp}:"
 
     def should_not_contain_id_check_in_steps_if_ubble_or_dms_done_for_underage(self, client):
         user = users_factories.UnderageBeneficiaryFactory(
