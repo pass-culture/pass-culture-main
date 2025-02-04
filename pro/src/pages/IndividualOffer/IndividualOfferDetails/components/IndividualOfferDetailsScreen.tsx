@@ -22,10 +22,6 @@ import {
 } from 'commons/core/Offers/utils/typology'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import {
-  isRecordStore,
-  useSuggestedSubcategoriesAbTest,
-} from 'commons/hooks/useSuggestedSubcategoriesAbTest'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -36,6 +32,7 @@ import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
 } from 'pages/IndividualOffer/commons/filterCategories'
+import { isRecordStore } from 'pages/IndividualOffer/commons/isRecordStore'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import {
   DetailsFormValues,
@@ -103,8 +100,6 @@ export const IndividualOfferDetailsScreen = ({
     categoryStatus === CATEGORY_STATUS.ONLINE || Boolean(offer?.isDigital)
   )
 
-  const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
-
   const initialValues = isDirtyDraftOffer
     ? //  When there is only one venue available the venueId field is not displayed
       //  Thus we need to set the venueId programmatically
@@ -170,7 +165,6 @@ export const IndividualOfferDetailsScreen = ({
         venueId: formik.values.venueId,
         offerType: 'individual',
         subcategoryId: formik.values.subcategoryId,
-        choosenSuggestedSubcategory: formik.values.suggestedSubcategory,
       })
       navigate(
         getIndividualOfferUrl({
@@ -291,7 +285,6 @@ export const IndividualOfferDetailsScreen = ({
       author,
       performer,
       subcategoryConditionalFields,
-      suggestedSubcategory: '',
       productId: id.toString() || '',
     })
   }
@@ -335,14 +328,6 @@ export const IndividualOfferDetailsScreen = ({
           </FormLayout>
           <ActionBar
             onClickPrevious={handlePreviousStepOrBackToReadOnly}
-            onClickNext={async () => {
-              if (
-                areSuggestedSubcategoriesUsed &&
-                formik.values.suggestedSubcategory === ''
-              ) {
-                await formik.setFieldValue('suggestedSubcategory', 'OTHER')
-              }
-            }}
             step={OFFER_WIZARD_STEP_IDS.DETAILS}
             isDisabled={
               formik.isSubmitting ||

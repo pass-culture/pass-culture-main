@@ -16,7 +16,6 @@ export type DetailsFormValues = {
   visa?: string
   durationMinutes?: string | null
   subcategoryConditionalFields: string[]
-  suggestedSubcategory: string
   productId: string
   callId?: string
   url?: string | null

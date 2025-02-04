@@ -4,7 +4,6 @@ import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { SubcategoryIdEnum, VenueTypeCode } from 'apiClient/v1'
-import * as useAnalytics from 'app/App/analytics/firebase'
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import {
   categoryFactory,
@@ -92,24 +91,5 @@ describe('screens:IndividualOffer::OfferType', () => {
 
     await userEvent.click(screen.getByText('Un évènement physique daté'))
     expect(screen.getByText('Étape suivante')).not.toBeDisabled()
-  })
-
-  it('should not display options when suggested subcategories are enabled and redirect to offer creation', async () => {
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      SUGGESTED_CATEGORIES: 'true',
-    })
-    renderOfferTypes('123', {
-      features: ['WIP_SUGGESTED_SUBCATEGORIES'],
-    })
-
-    expect(
-      screen.queryByText('Un évènement physique daté')
-    ).not.toBeInTheDocument()
-    await userEvent.click(screen.getByText('Étape suivante'))
-
-    expect(mockNavigate).toHaveBeenCalledWith({
-      pathname: '/offre/individuelle/creation/details',
-      search: 'lieu=123',
-    })
   })
 })

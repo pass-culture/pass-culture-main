@@ -15,7 +15,7 @@ import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from './Subcategories.module.scss'
 
-type SuggestedSubcategoriesProps = {
+type SubcategoriesProps = {
   readOnlyFields: string[]
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
@@ -25,7 +25,7 @@ export function Subcategories({
   readOnlyFields,
   filteredCategories,
   filteredSubcategories,
-}: SuggestedSubcategoriesProps) {
+}: SubcategoriesProps) {
   const {
     values: { categoryId, subcategoryConditionalFields },
     handleChange,

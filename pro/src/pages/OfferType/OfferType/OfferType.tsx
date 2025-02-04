@@ -16,7 +16,6 @@ import {
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
 import { useNotification } from 'commons/hooks/useNotification'
-import { useSuggestedSubcategoriesAbTest } from 'commons/hooks/useSuggestedSubcategoriesAbTest'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -66,10 +65,7 @@ export const OfferTypeScreen = (): JSX.Element => {
 
   const offerer = offererQuery.data
 
-  const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
-
   const isOnboarding = location.pathname.indexOf('onboarding') !== -1
-
   const onSubmit = async (values: OfferTypeFormValues) => {
     if (values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
       const params = new URLSearchParams(location.search)
@@ -163,8 +159,7 @@ export const OfferTypeScreen = (): JSX.Element => {
 
   const isDisableForIndividual =
     values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO &&
-    hasNotChosenOfferType &&
-    !areSuggestedSubcategoriesUsed
+    hasNotChosenOfferType
 
   return (
     <>
@@ -203,12 +198,9 @@ export const OfferTypeScreen = (): JSX.Element => {
                   </FormLayout.Row>
                 </FormLayout.Section>
               )}
-
-              {!areSuggestedSubcategoriesUsed &&
-                values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
-                  <IndividualOfferType />
-                )}
-
+              {values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
+                <IndividualOfferType />
+              )}
               {values.offerType === OFFER_TYPES.EDUCATIONAL &&
                 (offererQuery.isLoading ? (
                   <Spinner />

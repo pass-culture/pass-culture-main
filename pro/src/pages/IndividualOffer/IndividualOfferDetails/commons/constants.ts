@@ -15,8 +15,6 @@ export const DEFAULT_DETAILS_FORM_VALUES = {
   ean: '',
   durationMinutes: '',
   subcategoryConditionalFields: [],
-  suggestedSubcategory: '',
   productId: '',
-  callId: '',
   url: null,
 }
