@@ -9,6 +9,7 @@ from pydantic.v1 import ConstrainedStr
 from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
 from pydantic.v1 import root_validator
+from pydantic.v1 import utils as pydantic_utils
 from pydantic.v1 import validator
 
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -19,6 +20,7 @@ from pcapi.core.offers import validation as offers_validation
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.routes.serialization.national_programs import NationalProgramModel
@@ -318,6 +320,28 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
+def collective_offer_address_getter_dict_helper(
+    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
+) -> address_serialize.AddressResponseIsLinkedToVenueModel | None:
+    oa = offer.offererAddress
+    if oa is None:
+        return None
+
+    label = offer.venue.common_name if oa._isLinkedToVenue else oa.label
+    return address_serialize.AddressResponseIsLinkedToVenueModel(
+        **address_serialize.retrieve_address_info_from_oa(oa),
+        label=label,
+        isLinkedToVenue=oa._isLinkedToVenue,
+    )
+
+
+class GetCollectiveOfferBaseResponseGetterDict(pydantic_utils.GetterDict):
+    def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
+        if key == "address":
+            return collective_offer_address_getter_dict_helper(self._obj)
+        return super().get(key, default)
+
+
 class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixin):
     bookingEmails: list[str]
     dateCreated: datetime
@@ -346,11 +370,16 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     formats: typing.Sequence[subcategories.EacFormat] | None
     isNonFreeOffer: bool | None
 
+    locationType: educational_models.CollectiveLocationType | None
+    locationComment: str | None
+    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+
     class Config:
         allow_population_by_field_name = True
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
         use_enum_values = True
+        getter_dict = GetCollectiveOfferBaseResponseGetterDict
 
 
 class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseModel):

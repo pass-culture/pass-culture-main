@@ -19,8 +19,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # select features
     num_queries += 1  # select collective_offer and collective_stock
-    sucessful_num_queries = num_queries + 1  # select national_program
-    sucessful_num_queries += 1  # select educational_institution
 
     def test_get_offer(self, client):
         venue_provider = provider_factories.VenueProviderFactory()
@@ -42,7 +40,7 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         offer = booking.collectiveStock.collectiveOffer
         offer_id = offer.id
 
-        with assert_num_queries(self.sucessful_num_queries):
+        with assert_num_queries(self.num_queries):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
                 f"/v2/collective/offers/{offer_id}"
             )

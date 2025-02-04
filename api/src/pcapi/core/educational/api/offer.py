@@ -403,8 +403,9 @@ def update_collective_offer_educational_institution(
 ) -> educational_models.CollectiveOffer:
     offer = educational_repository.get_collective_offer_by_id(offer_id)
 
+    new_institution = None
     if educational_institution_id is not None:
-        validation.check_institution_id_exists(educational_institution_id)
+        new_institution = validation.check_institution_id_exists(educational_institution_id)
 
     if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
         validation.check_collective_offer_action_is_allowed(
@@ -413,14 +414,14 @@ def update_collective_offer_educational_institution(
     elif offer.collectiveStock and not offer.collectiveStock.isEditable:
         raise exceptions.CollectiveOfferNotEditable()
 
-    offer.institutionId = educational_institution_id
+    offer.institution = new_institution
     offer.teacher = None
 
     if offer.institution is not None:
         if not offer.institution.isActive:
             raise exceptions.EducationalInstitutionIsNotActive()
     elif teacher_email is not None:
-        raise exceptions.EducationalRedcatorCannotBeLinked()
+        raise exceptions.EducationalRedactorCannotBeLinked()
 
     if offer.institution is not None and teacher_email:
         possible_teachers = educational_api_adage.autocomplete_educational_redactor_for_uai(

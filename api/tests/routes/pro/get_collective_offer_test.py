@@ -61,8 +61,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
         expected_num_queries = self.num_queries
-        expected_num_queries += 1  # educational_redactor
-        expected_num_queries += 1  # provider
+        expected_num_queries -= 1  # google_places_info
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
@@ -70,7 +69,7 @@ class Returns200Test:
         response_json = response.json
         assert "iban" not in response_json["venue"]
         assert "bic" not in response_json["venue"]
-        assert response_json["venue"]["imgUrl"]
+        assert response_json["venue"]["imgUrl"] == "http://localhost/image.png"
         assert "iban" not in response_json["venue"]["managingOfferer"]
         assert "bic" not in response_json["venue"]["managingOfferer"]
         assert "validationStatus" not in response_json["venue"]["managingOfferer"]
@@ -93,8 +92,111 @@ class Returns200Test:
         assert response_json["formats"] == [fmt.value for fmt in subcategories.SEANCE_CINE.formats]
         assert response_json["provider"]["name"] == provider.name
         assert response_json["displayedStatus"] == "ACTIVE"
-        assert not response_json["isTemplate"]
+        assert response_json["isTemplate"] is False
         assert response_json["isActive"] is True
+
+        assert response_json["locationType"] is None
+        assert response_json["locationComment"] is None
+        assert response_json["address"] is None
+
+    def test_location_venue(self, client):
+        venue = offerers_factories.VenueFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue,
+            locationType=educational_models.CollectiveLocationType.VENUE,
+            locationComment=None,
+            offererAddressId=venue.offererAddressId,
+            interventionArea=None,
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        client = client.with_session_auth(email="user@example.com")
+
+        offer_id = offer.id
+        expected_num_queries = self.num_queries - 1  # feature toggle
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/collective/offers/{offer_id}")
+            assert response.status_code == 200
+
+        response_json = response.json
+        assert response_json["locationType"] == "VENUE"
+        assert response_json["locationComment"] is None
+        assert response_json["address"] is not None
+        assert response_json["address"]["id_oa"] == venue.offererAddressId
+        assert response_json["address"]["isLinkedToVenue"] is True
+        assert response_json["address"]["banId"] == venue.offererAddress.address.banId
+        assert response_json["interventionArea"] == []
+
+    def test_location_school(self, client):
+        offer = educational_factories.CollectiveOfferFactory(
+            locationType=educational_models.CollectiveLocationType.SCHOOL,
+            locationComment=None,
+            offererAddressId=None,
+            interventionArea=["33", "75", "93"],
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        client = client.with_session_auth(email="user@example.com")
+
+        offer_id = offer.id
+        expected_num_queries = self.num_queries - 1  # feature toggle
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/collective/offers/{offer_id}")
+            assert response.status_code == 200
+
+        response_json = response.json
+        assert response_json["locationType"] == "SCHOOL"
+        assert response_json["locationComment"] is None
+        assert response_json["address"] is None
+        assert response_json["interventionArea"] == ["33", "75", "93"]
+
+    def test_location_address(self, client):
+        venue = offerers_factories.VenueFactory()
+        oa = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        offer = educational_factories.CollectiveOfferFactory(
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
+            locationComment=None,
+            offererAddress=oa,
+            interventionArea=None,
+            venue=venue,
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        client = client.with_session_auth(email="user@example.com")
+
+        offer_id = offer.id
+        expected_num_queries = self.num_queries - 1  # feature toggle
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/collective/offers/{offer_id}")
+            assert response.status_code == 200
+
+        response_json = response.json
+        assert response_json["locationType"] == "ADDRESS"
+        assert response_json["locationComment"] is None
+        assert response_json["address"] is not None
+        assert response_json["address"]["id_oa"] == oa.id
+        assert response_json["address"]["isLinkedToVenue"] is False
+        assert response_json["address"]["banId"] == oa.address.banId
+        assert response_json["interventionArea"] == []
+
+    def test_location_to_be_defined(self, client):
+        offer = educational_factories.CollectiveOfferFactory(
+            locationType=educational_models.CollectiveLocationType.TO_BE_DEFINED,
+            locationComment="In space",
+            offererAddressId=None,
+            interventionArea=["33", "75", "93"],
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        client = client.with_session_auth(email="user@example.com")
+
+        offer_id = offer.id
+        expected_num_queries = self.num_queries - 1  # feature toggle
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/collective/offers/{offer_id}")
+            assert response.status_code == 200
+
+        response_json = response.json
+        assert response_json["locationType"] == "TO_BE_DEFINED"
+        assert response_json["locationComment"] == "In space"
+        assert response_json["address"] is None
+        assert response_json["interventionArea"] == ["33", "75", "93"]
 
     def test_sold_out(self, client):
         # Given

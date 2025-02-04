@@ -43,6 +43,7 @@ export type { CollectiveBookingEducationalRedactorResponseModel } from './models
 export type { CollectiveBookingResponseModel } from './models/CollectiveBookingResponseModel';
 export { CollectiveBookingStatus } from './models/CollectiveBookingStatus';
 export { CollectiveBookingStatusFilter } from './models/CollectiveBookingStatusFilter';
+export { CollectiveLocationType } from './models/CollectiveLocationType';
 export { CollectiveOfferAllowedAction } from './models/CollectiveOfferAllowedAction';
 export { CollectiveOfferDisplayedStatus } from './models/CollectiveOfferDisplayedStatus';
 export type { CollectiveOfferInstitutionModel } from './models/CollectiveOfferInstitutionModel';
