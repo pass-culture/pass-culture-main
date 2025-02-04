@@ -69,6 +69,7 @@ class Returns200Test:
 
         updated_offer = Offer.query.get(offer.id)
         assert updated_offer.extraData["ean"] == "2222222222222"
+        assert updated_offer.ean == "2222222222222"
 
     @pytest.mark.features(WIP_EAN_CREATION=True)
     def test_patch_draft_offer_without_product(self, client):
@@ -196,6 +197,8 @@ class Returns200Test:
 
         updated_offer = Offer.query.get(offer.id)
         assert updated_offer.extraData == {"gtl_id": "07000000", "ean": "1111111111111"}
+        # We do not update extraData if they are the same.
+        assert updated_offer.ean is None
 
     def test_patch_draft_offer_with_existing_extra_data_with_new_extra_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")

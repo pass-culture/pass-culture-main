@@ -118,6 +118,7 @@ class Returns201Test:
         assert response_dict["id"] == offer.id
         assert response_dict["productId"] == product.id
         assert response_dict["extraData"] == {"ean": "9782123456803"}
+        assert offer.ean == "9782123456803"
         assert offer.product == product
         assert offer._description is None
         assert offer.description == product.description
@@ -198,6 +199,7 @@ class Returns201Test:
         assert response_dict["id"] == offer.id
         assert response_dict["productId"] == offer.productId
         assert response_dict["extraData"] == {"ean": "1234567891234"}
+        assert offer.ean == "1234567891234"
         assert offer.product == product
         assert offer.description == product.description
         assert offer._description is None

@@ -285,6 +285,7 @@ class Returns200Test:
         assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert offer.venue == venue
         assert offer.extraData["ean"] == "1234567890112"
+        assert offer.ean == "1234567890112"
 
     def test_withdrawable_event_offer_can_have_no_ticket_to_withdraw(self, client):
         # Given
