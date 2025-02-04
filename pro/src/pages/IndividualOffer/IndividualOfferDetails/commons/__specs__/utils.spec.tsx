@@ -218,12 +218,10 @@ describe('setDefaultInitialValuesFromOffer', () => {
       speaker: "Chuck Norris n'a pas besoin de doubleur",
       stageDirector: 'JCVD',
       subcategoryConditionalFields: [],
-      suggestedSubcategory: '',
       subcategoryId: 'SEANCE_CINE',
       venueId: '6',
       visa: 'USA',
       productId: '',
-      callId: '',
       url: undefined,
     })
   })
@@ -319,7 +317,6 @@ describe('serializeExtraData', () => {
       visa: '123456789',
       durationMinutes: '',
       subcategoryConditionalFields: [],
-      suggestedSubcategory: '',
       productId: '',
     }
 
@@ -354,7 +351,6 @@ describe('serializeExtraData', () => {
       visa: '',
       durationMinutes: '',
       subcategoryConditionalFields: [],
-      suggestedSubcategory: '',
       productId: '',
     }
 
@@ -391,9 +387,7 @@ describe('serializeDetailsPostData', () => {
       visa: ' 123456789 ',
       durationMinutes: '',
       subcategoryConditionalFields: [],
-      suggestedSubcategory: '',
       productId: '',
-      callId: '1',
     }
 
     expect(serializeDetailsPostData(formValues)).toStrictEqual({
@@ -415,7 +409,6 @@ describe('serializeDetailsPostData', () => {
       },
       url: undefined,
       productId: undefined,
-      callId: '1',
     })
   })
 })

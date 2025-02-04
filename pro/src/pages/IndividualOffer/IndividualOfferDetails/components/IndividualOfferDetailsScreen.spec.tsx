@@ -49,7 +49,6 @@ vi.mock('apiClient/api', () => ({
     getMusicTypes: vi.fn(),
     postDraftOffer: vi.fn(),
     patchDraftOffer: vi.fn(),
-    getSuggestedSubcategories: vi.fn(),
     getProductByEan: vi.fn(),
     getActiveVenueOfferByEan: vi.fn(),
   },
@@ -131,8 +130,6 @@ const MOCK_DATA = {
       conditionalFields: ['gtl_id', 'author', 'performer', 'ean'],
     }),
   ],
-  suggestedSubcategories: ['virtual', 'physical'],
-  suggestedSubcatCallId: '1',
   ean: '1234567891234',
   showType: 'Cirque',
   showSubType: 'Clown',
@@ -149,8 +146,6 @@ const LABELS = {
   showType: /Type de spectacle/,
   showSubType: /Sous-type/,
   musicType: /Genre musical/,
-  suggestedSubCatTitle: /Catégories suggérées pour votre offre/,
-  suggestedSubCatEmptyState: /Veuillez renseigner un titre ou une description/,
 }
 
 const renderDetailsScreen = ({
@@ -216,11 +211,7 @@ const renderDetailsScreen = ({
 // Mind that vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
 // { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
 // ]) must be added to the test file where this function is called.
-const userFillsEverything = async ({
-  withSubcategorySuggestion = false,
-}: {
-  withSubcategorySuggestion?: boolean
-} = {}) => {
+const userFillsEverything = async () => {
   await userEvent.type(screen.getByLabelText(LABELS.title), MOCK_DATA.title)
   await userEvent.type(
     screen.getByLabelText(LABELS.description),
@@ -231,30 +222,18 @@ const userFillsEverything = async ({
     MOCK_DATA.venues[0].id.toString()
   )
 
-  if (!withSubcategorySuggestion) {
-    await userEvent.selectOptions(
-      await screen.findByLabelText(LABELS.category),
-      MOCK_DATA.categories[0].id
-    )
-    await userEvent.selectOptions(
-      await screen.findByLabelText(LABELS.subcategory),
-      (
-        MOCK_DATA.subCategories.find(
-          (s) => s.id === 'physical'
-        ) as SubcategoryResponseModel
-      ).proLabel
-    )
-  } else {
-    await userEvent.click(
-      await screen.findByRole('radio', {
-        name: (
-          MOCK_DATA.subCategories.find(
-            (s) => s.id === 'physical'
-          ) as SubcategoryResponseModel
-        ).proLabel,
-      })
-    )
-  }
+  await userEvent.selectOptions(
+    await screen.findByLabelText(LABELS.category),
+    MOCK_DATA.categories[0].id
+  )
+  await userEvent.selectOptions(
+    await screen.findByLabelText(LABELS.subcategory),
+    (
+      MOCK_DATA.subCategories.find(
+        (s) => s.id === 'physical'
+      ) as SubcategoryResponseModel
+    ).proLabel
+  )
 
   await userEvent.type(screen.getByLabelText(LABELS.ean), MOCK_DATA.ean)
   await userEvent.selectOptions(
@@ -469,7 +448,6 @@ describe('IndividualOfferDetails', () => {
       name: 'My super offer',
       subcategoryId: 'physical',
       venueId: 189,
-      callId: '',
       url: null,
     })
     expect(mockNavigate).toHaveBeenCalledWith(
@@ -479,7 +457,6 @@ describe('IndividualOfferDetails', () => {
     expect(mockLogEvent).toHaveBeenCalledWith(
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
-        choosenSuggestedSubcategory: '',
         from: 'details',
         offerId: 12,
         offerType: 'individual',
@@ -538,82 +515,8 @@ describe('IndividualOfferDetails', () => {
   })
 
   describe('about categories / subcategories selection', () => {
-    it('should render suggested subcategories when enabled', async () => {
-      vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
-        callId: MOCK_DATA.suggestedSubcatCallId,
-        subcategoryIds: MOCK_DATA.suggestedSubcategories,
-      })
-      vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-        SUGGESTED_CATEGORIES: 'true',
-      })
-
-      renderDetailsScreen({
-        contextValue,
-        options: {
-          features: ['WIP_SUGGESTED_SUBCATEGORIES'],
-        },
-      })
-
-      // Init.
-      const title = screen.getByText(LABELS.suggestedSubCatTitle)
-      expect(title).toBeInTheDocument()
-      const initText = screen.queryByText(LABELS.suggestedSubCatEmptyState)
-      expect(initText).toBeInTheDocument()
-
-      // User fills the title.
-      const titleInput = screen.getByLabelText(LABELS.title)
-      await userEvent.type(titleInput, MOCK_DATA.title)
-      expect(initText).not.toBeInTheDocument()
-
-      // Suggested subcategories are displayed along with the "Autre" option.
-      const radioButtons = screen.getAllByRole('radio')
-      expect(radioButtons).toHaveLength(
-        MOCK_DATA.suggestedSubcategories.length + 1
-      )
-    })
-
-    it('should fallback to manual selection when suggested subcategories are enabled but not available', async () => {
-      // An empty array of suggestions will be handled the same way as an api error.
-      // To test this, we either mock the api call to return an empty array or reject the promise.
-      vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
-        callId: '',
-        subcategoryIds: [],
-      })
-      vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-        SUGGESTED_CATEGORIES: 'true',
-      })
-
-      renderDetailsScreen({
-        contextValue,
-        options: {
-          features: ['WIP_SUGGESTED_SUBCATEGORIES'],
-        },
-      })
-
-      // User selects fills the title.
-      const titleInput = screen.getByLabelText(LABELS.title)
-      await userEvent.type(titleInput, MOCK_DATA.title)
-
-      // Only the "Autre" option should be available and selected.
-      const radioButtons = screen.getAllByRole('radio')
-      expect(radioButtons).toHaveLength(1)
-    })
-
     it('should render an error when no selection has been made', async () => {
-      vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
-        callId: MOCK_DATA.suggestedSubcatCallId,
-        subcategoryIds: MOCK_DATA.suggestedSubcategories,
-      })
-      vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-        SUGGESTED_CATEGORIES: 'true',
-      })
-
-      renderDetailsScreen({
-        contextValue,
-        options: {
-          features: ['WIP_SUGGESTED_SUBCATEGORIES'],
-        },
-      })
+      renderDetailsScreen({ contextValue })
 
       // User selects fills the title.
       const titleInput = screen.getByLabelText(LABELS.title)
@@ -624,57 +527,9 @@ describe('IndividualOfferDetails', () => {
       const error = screen.getByText('Veuillez sélectionner une catégorie')
       expect(error).toBeInTheDocument()
     })
-
-    it('should pass callId to the api when suggested subcategories are enabled and used once', async () => {
-      vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
-        callId: MOCK_DATA.suggestedSubcatCallId,
-        subcategoryIds: MOCK_DATA.suggestedSubcategories,
-      })
-      vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-        SUGGESTED_CATEGORIES: 'true',
-      })
-      vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
-        { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
-      ])
-
-      renderDetailsScreen({
-        contextValue,
-        options: {
-          features: ['WIP_SUGGESTED_SUBCATEGORIES'],
-        },
-      })
-
-      // User selects fills the title, which triggers the api call.
-      await userFillsEverything({ withSubcategorySuggestion: true })
-
-      // User submits the form.
-      // The callId is passed to the api (we don't care if the form is entirely filled or not).
-      await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
-
-      expect(api.postDraftOffer).toHaveBeenCalledOnce()
-      expect(api.postDraftOffer).toHaveBeenCalledWith({
-        description: 'My super description',
-        extraData: {
-          author: '',
-          ean: '1234567891234',
-          gtl_id: 'pop',
-          showSubType: '205',
-          showType: '200',
-          performer: '',
-          speaker: '',
-          stageDirector: '',
-          visa: '',
-        },
-        name: 'My super offer',
-        subcategoryId: 'physical',
-        venueId: 189,
-        callId: MOCK_DATA.suggestedSubcatCallId,
-        url: null,
-      })
-    })
   })
 
-  it('should display first venue banner when venues are empty and suggested categories not enable', () => {
+  it('should display first venue banner when venues are empty', () => {
     renderDetailsScreen({
       props: {
         venues: [],
@@ -686,35 +541,6 @@ describe('IndividualOfferDetails', () => {
         'Pour créer une offre, vous devez d’abord créer une structure.'
       )
     ).toBeInTheDocument()
-  })
-
-  it('should display second venue banner when only one virtual venue and not virtual subcategory chosen', async () => {
-    vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
-      callId: '1',
-      subcategoryIds: ['virtual', 'physical'],
-    })
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      SUGGESTED_CATEGORIES: 'true',
-    })
-
-    renderDetailsScreen({
-      props: {
-        venues: [venueListItemFactory({ id: 189, isVirtual: true })],
-      },
-      contextValue,
-      options: { features: ['WIP_SUGGESTED_SUBCATEGORIES'] },
-    })
-    await userEvent.type(screen.getByLabelText(/Titre de l’offre/), 'My title')
-    await userEvent.click(
-      await screen.findByText('Sous catégorie offline de A')
-    )
-
-    expect(
-      screen.getByText(
-        'Pour créer une offre, vous devez d’abord créer une structure.'
-      )
-    ).toBeInTheDocument()
-    expect(screen.queryByText('Image de l’offre')).not.toBeInTheDocument()
   })
 
   describe('on creation', () => {
@@ -1014,37 +840,7 @@ describe('IndividualOfferDetails', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should not render suggested subcategories', () => {
-      vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-        SUGGESTED_CATEGORIES: 'true',
-      })
-      const context = individualOfferContextValuesFactory({
-        categories: MOCK_DATA.categories,
-        subCategories: MOCK_DATA.subCategories,
-        offer: getIndividualOfferFactory({
-          subcategoryId: 'physical' as SubcategoryIdEnum,
-        }),
-      })
-
-      renderDetailsScreen({
-        contextValue: context,
-        options: { features: ['WIP_SUGGESTED_SUBCATEGORIES'] },
-        mode: OFFER_WIZARD_MODE.EDITION,
-      })
-
-      expect(
-        screen.queryByText(/Catégories suggérées pour votre offre/)
-      ).not.toBeInTheDocument()
-      expect(screen.getByText('Type d’offre')).toBeInTheDocument()
-      expect(
-        screen.getByText('Sous catégorie offline de A')
-      ).toBeInTheDocument()
-    })
-
     it('should display categories and subcategories as disabled', () => {
-      vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-        SUGGESTED_CATEGORIES: 'true',
-      })
       const context = individualOfferContextValuesFactory({
         categories: MOCK_DATA.categories,
         subCategories: MOCK_DATA.subCategories,
@@ -1055,7 +851,6 @@ describe('IndividualOfferDetails', () => {
 
       renderDetailsScreen({
         contextValue: context,
-        options: { features: ['WIP_SUGGESTED_SUBCATEGORIES'] },
         mode: OFFER_WIZARD_MODE.EDITION,
       })
 
@@ -1065,17 +860,11 @@ describe('IndividualOfferDetails', () => {
   })
 
   it('should not render venue field when there is just one virtual venue', () => {
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      SUGGESTED_CATEGORIES: 'true',
-    })
-
     renderDetailsScreen({
       props: {
         venues: [venueListItemFactory({ id: 189, isVirtual: true })],
       },
       contextValue,
-      // There is no world where WIP_SUGGESTED_SUBCATEGORIES is enabled without WIP_SPLIT_OFFER
-      options: { features: ['WIP_SUGGESTED_SUBCATEGORIES'] },
     })
 
     expect(screen.queryByText(/Lieu/)).not.toBeInTheDocument()
