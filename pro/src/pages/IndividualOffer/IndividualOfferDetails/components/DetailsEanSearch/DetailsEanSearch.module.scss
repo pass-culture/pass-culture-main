@@ -6,52 +6,23 @@ $icon-size: rem.torem(20px);
 
 .details-ean-search {
   margin-bottom: rem.torem(32px);
-
-  &-form {
-    display: flex;
-    flex-direction: column;
-  }
-
-  &-label label {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  &-button {
-    height: rem.torem(40px);
-    margin-top: rem.torem(24px);
-  }
-
-  &-callout {
-    margin-top: rem.torem(16px);
-  }
-
-  @media (min-width: size.$tablet) {
-    &-form {
-      flex-direction: row;
-      align-items: center;
-    }
-
-    &-label {
-      position: relative;
-    }
-
-    &-tag {
-      position: absolute;
-      top: 0;
-      left: calc(100% + rem.torem(16px));
-    }
-
-    &-button {
-      margin-top: rem.torem(45px);
-      margin-left: rem.torem(24px);
-    }
-  }
+  position: relative;
 }
 
-.input-container {
-  position: relative;
+.details-ean-search-callout {
+  margin-top: rem.torem(16px);
+}
+
+@media screen and (min-width: size.$tablet) {
+  .details-ean-search-button {
+    position: absolute;
+    right: 0;
+    top: rem.torem(57px);
+  }
+   
+  .details-ean-search-container {
+     max-width: rem.torem(340px);
+  }
 }
 
 .clear-button {
@@ -64,8 +35,8 @@ $icon-size: rem.torem(20px);
   &-container {
     position: absolute;
     border-radius: 50%;
-    top: rem.torem(64px);
-    right: rem.torem(14px);
+    top: rem.torem(65px);
+    right: rem.torem(160px);
   }
 
   &:focus {

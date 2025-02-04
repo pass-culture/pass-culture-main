@@ -90,11 +90,6 @@ export const TextInput = React.forwardRef(
     }: TextInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ) => {
-    // Regex patterns for input validation
-    const regexHasDecimal = /[0-9,.]/
-    const regexHasNotDecimal = /[0-9]/
-    const regexIsNavigationKey = /Tab|Backspace|Enter/
-
     const input = (
       <BaseInput
         name={name}
@@ -109,27 +104,9 @@ export const TextInput = React.forwardRef(
         aria-required={required}
         aria-describedby={description ? `description-${name}` : undefined}
         onKeyDown={(event) => {
-          // Restrict input for number types
-          if (type === 'number') {
-            if (regexIsNavigationKey.test(event.key)) {
-              return
-            }
-            const testInput = hasDecimal
-              ? !regexHasDecimal.test(event.key)
-              : !regexHasNotDecimal.test(event.key)
-            if (testInput) {
-              event.preventDefault()
-            }
-          }
-        }}
-        // Disable changing input value on scroll over a number input
-        /* istanbul ignore next */
-        onWheel={(event) => {
-          /* istanbul ignore next */
-          if (type === 'number') {
-            // Blur the input to prevent value change on scroll
-            /* istanbul ignore next */
-            event.currentTarget.blur()
+          // If the number input should have no decimal, prevent the user from typing "," or "."
+          if (type === 'number' && !hasDecimal && /[,.]/.test(event.key)) {
+            event.preventDefault()
           }
         }}
         {...props}
@@ -166,15 +143,14 @@ export const TextInput = React.forwardRef(
             <div className={styles['text-input']}>
               {input}
               <div className={styles['input-layout-footer']}>
-                {error && (
-                  <div
-                    role="alert"
-                    className={styles['input-layout-error']}
-                    id={`error-details-${name}`}
-                  >
-                    <FieldError name={name}>{error}</FieldError>
-                  </div>
-                )}
+                <div
+                  role="alert"
+                  className={styles['input-layout-error']}
+                  id={`error-details-${name}`}
+                >
+                  {error && <FieldError name={name}>{error}</FieldError>}
+                </div>
+
                 {count !== undefined && (
                   <FieldLayoutCharacterCount
                     count={count}

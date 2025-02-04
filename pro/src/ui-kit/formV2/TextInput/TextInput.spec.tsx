@@ -115,7 +115,7 @@ describe('TextInput', () => {
     render(<TextInput {...defaultProps} error={errorMessage} />)
 
     // Check if the error message is displayed
-    const error = screen.getByRole('alert')
+    const error = screen.getByTestId('error-email')
     expect(error).toHaveTextContent(errorMessage)
   })
 
@@ -123,8 +123,8 @@ describe('TextInput', () => {
     render(<TextInput {...defaultProps} />)
 
     // Check if the error is not displayed
-    const error = screen.queryByRole('alert')
-    expect(error).toBeNull()
+    const error = screen.queryByTestId('error-email')
+    expect(error).not.toBeInTheDocument()
   })
 
   it('disables the input when the disabled prop is passed', () => {
