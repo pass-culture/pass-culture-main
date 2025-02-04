@@ -219,6 +219,8 @@ def create_draft_offer(
     fields = {key: value for key, value in body.dict(by_alias=True).items() if key not in ("venueId", "callId")}
     fields.update(_get_accessibility_compliance_fields(venue))
     fields.update({"withdrawalDetails": venue.withdrawalDetails})
+    # TODO: (pcharlet, 2025-02-04): Delete next line when body schemas contains specific EAN field outside extraData
+    fields.update({"ean": body.extra_data.get("ean") if body.extra_data else None})
 
     fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
 
@@ -264,6 +266,8 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
         validation.check_offer_extra_data(
             offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api=True, offer=offer
         )
+        # TODO: (pcharlet, 2025-02-04): Delete next line when body schemas contains specific EAN field outside extraData
+        updates.update({"ean": updates["extraData"].get("ean", None)})
 
     for key, value in updates.items():
         setattr(offer, key, value)
@@ -301,6 +305,8 @@ def create_offer(
     validation.check_offer_name_does_not_contain_ean(body.name)
 
     fields = body.dict(by_alias=True)
+    # TODO: (pcharlet, 2025-02-04): Delete next line when body schemas contains specific EAN field outside extraData
+    fields.update({"ean": body.extra_data.get("ean") if body.extra_data else None})
 
     offerer_address = offerer_address or venue.offererAddress
 
@@ -379,6 +385,8 @@ def update_offer(
         validation.check_offer_extra_data(
             offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api, offer=offer
         )
+        # TODO: (pcharlet, 2025-02-04): Delete next line when body schemas contains specific EAN field outside extraData
+        updates.update({"ean": updates["extraData"].get("ean", None)})
     if "isDuo" in updates:
         is_duo = get_field(offer, updates, "isDuo", aliases=aliases)
         validation.check_is_duo_compliance(is_duo, offer.subcategory)

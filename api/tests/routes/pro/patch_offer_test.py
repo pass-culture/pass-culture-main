@@ -286,20 +286,16 @@ class Returns200Test:
         assert not updated_offer.product
 
     @pytest.mark.features(WIP_EAN_CREATION=True)
-    def test_patch_offer_with_product_with_same_ean(self, client):
+    def test_patch_offer_with_product_with_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
-        product = offers_factories.ProductFactory(
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offers_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": "1111111111111"},
             name="New name",
             description="description",
         )
-        offer = offers_factories.OfferFactory(
-            venue=venue,
-            url="test@test.com",
-            product=product,
-        )
+        offer = offers_factories.OfferFactory(venue=venue)
 
         data = {"extraData": {"ean": "1111111111111"}}
         response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
@@ -309,6 +305,30 @@ class Returns200Test:
 
         updated_offer = Offer.query.get(offer.id)
         assert updated_offer.extraData == {"ean": "1111111111111"}
+        assert updated_offer.ean == "1111111111111"
+
+    @pytest.mark.features(WIP_EAN_CREATION=True)
+    def test_patch_offer_with_product_with_same_ean(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={"ean": "1111111111111"},
+            name="New name",
+            description="description",
+        )
+        offer = offers_factories.OfferFactory(venue=venue, product=product)
+
+        data = {"extraData": {"ean": "1111111111111"}}
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        assert response.json["id"] == offer.id
+
+        updated_offer = Offer.query.get(offer.id)
+        assert updated_offer.extraData == {"ean": "1111111111111"}
+        # We do not update extraData if they are the same.
+        assert updated_offer.ean is None
 
     def test_patch_offer_with_provider_extra_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
