@@ -1,3 +1,5 @@
+import logging
+
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -23,6 +25,8 @@ from pcapi.utils import requests
 from . import blueprint
 from . import utils
 
+
+logger = logging.getLogger(__name__)
 
 ERROR_STRING_PREFIX = "Erreur d'authentification Discord: "
 
@@ -162,7 +166,8 @@ def discord_signin_post() -> str | Response | None:
             original_action="discordSignin",
             minimal_score=settings.RECAPTCHA_MINIMAL_SCORE,
         )
-    except (ReCaptchaException, InvalidRecaptchaTokenException):
+    except (ReCaptchaException, InvalidRecaptchaTokenException) as exc:
+        logger.error("Recaptcha failed: %s", str(exc))
         raise ApiErrors({"recaptcha": "Erreur recaptcha"}, 401)
 
     try:
