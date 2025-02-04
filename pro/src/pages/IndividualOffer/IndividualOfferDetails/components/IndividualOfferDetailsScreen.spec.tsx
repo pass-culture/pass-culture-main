@@ -718,7 +718,7 @@ describe('IndividualOfferDetails', () => {
   describe('on creation', () => {
     describe('about EAN search', () => {
       const eanSearchTitle = /Scanner ou rechercher un produit par EAN/
-      const eanInputLabel = /Nouveau Scanner ou rechercher un produit par EAN/
+      const eanInputLabel = /Scanner ou rechercher un produit par EAN/
       const eanSearchButtonLabel = /Rechercher/
       const eanResetButtonLabel = /Effacer/
 

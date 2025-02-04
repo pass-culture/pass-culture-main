@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { FormikProvider, useFormik } from 'formik'
 
 import { api } from 'apiClient/api'
 import {
@@ -51,14 +50,6 @@ const EanSearchWrappedWithFormik = ({
   onEanSearch = vi.fn(),
   onEanReset = vi.fn(),
 }: DetailsEanSearchTestProps): JSX.Element => {
-  const formik = useFormik({
-    initialValues: {
-      ...DEFAULT_DETAILS_FORM_VALUES,
-      subcategoryId,
-    },
-    onSubmit: vi.fn(),
-  })
-
   const hasCompleteValues =
     !isDirtyDraftOffer || wasEanSearchPerformedSuccessfully
   const mockedSubCategoryId = hasCompleteValues
@@ -67,17 +58,15 @@ const EanSearchWrappedWithFormik = ({
   const mockedProductId = hasCompleteValues ? '0000' : productId
 
   return (
-    <FormikProvider value={formik}>
-      <DetailsEanSearch
-        isDirtyDraftOffer={isDirtyDraftOffer}
-        productId={mockedProductId}
-        subcategoryId={mockedSubCategoryId}
-        initialEan={initialEan}
-        eanSubmitError={eanSubmitError}
-        onEanSearch={onEanSearch}
-        onEanReset={onEanReset}
-      />
-    </FormikProvider>
+    <DetailsEanSearch
+      isDirtyDraftOffer={isDirtyDraftOffer}
+      productId={mockedProductId}
+      subcategoryId={mockedSubCategoryId}
+      initialEan={initialEan}
+      eanSubmitError={eanSubmitError}
+      onEanSearch={onEanSearch}
+      onEanReset={onEanReset}
+    />
   )
 }
 

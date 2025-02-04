@@ -45,6 +45,7 @@ export const DetailsEanSearch = ({
   const tooltipId = useId()
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const [wasCleared, setWasCleared] = useState(false)
+  const [subcatError, setSubcatError] = useState<string | null>(null)
 
   const isProductBased = !!productId
   const isDirtyDraftOfferProductBased = isDirtyDraftOffer && isProductBased
@@ -61,7 +62,7 @@ export const DetailsEanSearch = ({
   } = useForm<EanSearchForm>({
     defaultValues: { eanSearch: initialEan || '' },
     resolver: yupResolver(eanSearchValidationSchema),
-    mode: 'onBlur',
+    mode: 'onChange',
   })
 
   const ean = watch('eanSearch', '')
@@ -74,13 +75,21 @@ export const DetailsEanSearch = ({
   }, [wasCleared, setFocus])
 
   useEffect(() => {
-    if (isDirtyDraftOfferNotProductBased && isSubCategoryCD(subcategoryId)) {
+    if (eanSubmitError) {
       setError('eanSearch', {
-        type: 'subCatError',
-        message: 'Les offres de type CD doivent être liées à un produit.',
+        type: 'apiError',
+        message: eanSubmitError,
       })
     }
-  }, [isDirtyDraftOfferNotProductBased, subcategoryId, setError])
+  }, [eanSubmitError, setError])
+
+  useEffect(() => {
+    if (isDirtyDraftOfferNotProductBased && isSubCategoryCD(subcategoryId)) {
+      setSubcatError('Les offres de type CD doivent être liées à un produit.')
+    } else {
+      setSubcatError(null)
+    }
+  }, [isDirtyDraftOfferNotProductBased, subcategoryId])
 
   const onSearch = async (data: EanSearchForm) => {
     if (data.eanSearch) {
@@ -111,65 +120,66 @@ export const DetailsEanSearch = ({
     setWasCleared(true)
   }
 
-  const apiError = eanSubmitError || errors.eanSearch?.message
+  const apiError = errors.eanSearch?.type === 'apiError'
   const shouldInputBeDisabled = isProductBased || isLoading
-  const shouldInputBeRequired = errors.eanSearch?.type !== 'subCatError'
+  const shouldInputBeRequired = !!subcatError
 
   const shouldButtonBeDisabled =
     isProductBased || !ean || !isValid || !!apiError || isLoading
   const displayClearButton = isDirtyDraftOfferProductBased
 
+  const cumulativeError = subcatError
+    ? `${subcatError}\n${errors.eanSearch?.message || ''}`
+    : errors.eanSearch?.message || ''
+
   return (
     <form onSubmit={handleSubmit(onSearch)}>
       <FormLayout fullWidthActions>
         <div className={styles['details-ean-search']}>
-          <div className={styles['details-ean-search-form']}>
-            <div className={styles['input-container']}>
-              <TextInput
-                label={'Scanner ou rechercher un produit par EAN'}
-                error={errors.eanSearch?.message}
-                disabled={shouldInputBeDisabled}
-                required={shouldInputBeRequired}
-                maxLength={13}
-                description="Format : EAN à 13 chiffres"
-                {...(!displayClearButton && {
-                  rightIcon: strokeBarcode,
-                })}
-                {...register('eanSearch')}
-                count={ean?.length}
-              />
-              {displayClearButton && (
-                <div className={styles['clear-button-container']}>
-                  <Button
-                    onClick={onEanClear}
-                    aria-describedby={tooltipId}
-                    className={styles['clear-button']}
-                    hasTooltip={true}
-                    type="button"
-                    icon={fullCloseIcon}
-                    variant={ButtonVariant.TERNARY}
-                  >
-                    Effacer
-                  </Button>
-                </div>
-              )}
-            </div>
-
+          <div className={styles['details-ean-search-container']}>
+            <TextInput
+              label={'Scanner ou rechercher un produit par EAN'}
+              error={cumulativeError}
+              disabled={shouldInputBeDisabled}
+              required={shouldInputBeRequired}
+              maxLength={13}
+              description="Format : EAN à 13 chiffres"
+              {...(!displayClearButton && {
+                rightIcon: strokeBarcode,
+              })}
+              {...register('eanSearch')}
+              count={ean?.length}
+            />
+          </div>
+          <Button
+            type="submit"
+            className={styles['details-ean-search-button']}
+            disabled={shouldButtonBeDisabled}
+          >
+            Rechercher
+          </Button>
+        </div>
+        {displayClearButton && (
+          <div className={styles['clear-button-container']}>
             <Button
-              type="submit"
-              className={styles['details-ean-search-button']}
-              disabled={shouldButtonBeDisabled}
+              onClick={onEanClear}
+              aria-describedby={tooltipId}
+              className={styles['clear-button']}
+              hasTooltip={true}
+              type="button"
+              icon={fullCloseIcon}
+              variant={ButtonVariant.TERNARY}
             >
-              Rechercher
+              Effacer
             </Button>
           </div>
-          <div role="status" className={styles['details-ean-search-callout']}>
-            {isProductBased && (
-              <EanSearchCallout
-                isDirtyDraftOfferProductBased={isDirtyDraftOfferProductBased}
-              />
-            )}
-          </div>
+        )}
+        <div role="status" className={styles['details-ean-search-callout']}>
+          {isProductBased && (
+            <EanSearchCallout
+              isDirtyDraftOfferProductBased={isDirtyDraftOfferProductBased}
+            />
+          )}
         </div>
       </FormLayout>
     </form>
