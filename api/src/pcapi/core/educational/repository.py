@@ -836,31 +836,41 @@ def get_filtered_collective_booking_report(
     return bookings_query
 
 
+def get_collective_offer_by_id_query(offer_id: int) -> sa_orm.Query:
+    return (
+        db.session.query(educational_models.CollectiveOffer)
+        .filter(educational_models.CollectiveOffer.id == offer_id)
+        .outerjoin(educational_models.CollectiveStock, educational_models.CollectiveStock.collectiveOfferId == offer_id)
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).joinedload(
+                offerers_models.Venue.managingOfferer, innerjoin=True
+            )
+        )
+        .options(sa_orm.joinedload(educational_models.CollectiveOffer.domains))
+        .options(
+            sa_orm.contains_eager(educational_models.CollectiveOffer.collectiveStock).joinedload(
+                educational_models.CollectiveStock.collectiveBookings
+            )
+        )
+        .options(sa_orm.joinedload(educational_models.CollectiveOffer.nationalProgram))
+        .options(sa_orm.joinedload(educational_models.CollectiveOffer.provider))
+        .options(sa_orm.joinedload(educational_models.CollectiveOffer.teacher))
+        .options(sa_orm.joinedload(educational_models.CollectiveOffer.institution))
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).joinedload(
+                offerers_models.OffererAddress.address
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).with_expression(
+                offerers_models.OffererAddress._isLinkedToVenue, offerers_models.OffererAddress.isLinkedToVenue.expression  # type: ignore [attr-defined]
+            ),
+        )
+    )
+
+
 def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOffer:
     try:
-        return (
-            educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == offer_id)
-            .outerjoin(
-                educational_models.CollectiveStock, educational_models.CollectiveStock.collectiveOfferId == offer_id
-            )
-            .options(
-                sa.orm.joinedload(
-                    educational_models.CollectiveOffer.venue,
-                    innerjoin=True,
-                ).joinedload(
-                    offerers_models.Venue.managingOfferer,
-                    innerjoin=True,
-                )
-            )
-            .options(sa.orm.joinedload(educational_models.CollectiveOffer.domains))
-            .options(
-                sa.orm.contains_eager(educational_models.CollectiveOffer.collectiveStock).joinedload(
-                    educational_models.CollectiveStock.collectiveBookings
-                )
-            )
-            .one()
-        )
-    except sa.orm.exc.NoResultFound:
+        return get_collective_offer_by_id_query(offer_id=offer_id).one()
+    except sa_orm.exc.NoResultFound:
         raise educational_exceptions.CollectiveOfferNotFound()
 
 
@@ -877,37 +887,19 @@ def get_collective_offer_and_extra_data(offer_id: int) -> educational_models.Col
     )
 
     collective_offer = (
-        db.session.query(educational_models.CollectiveOffer)
-        .filter(educational_models.CollectiveOffer.id == offer_id)
-        .outerjoin(educational_models.CollectiveStock, educational_models.CollectiveStock.collectiveOfferId == offer_id)
+        get_collective_offer_by_id_query(offer_id=offer_id)
         .options(
-            sa.orm.joinedload(
-                educational_models.CollectiveOffer.venue,
-                innerjoin=True,
-            )
-            .load_only(offerers_models.Venue.id)
-            .joinedload(
-                offerers_models.Venue.managingOfferer,
-                innerjoin=True,
-            )
-            .load_only(offerers_models.Offerer.id)
+            # venue -> managingOfferer -> confidenceRule -> confidenceLevel
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
+            .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True)
             .joinedload(offerers_models.Offerer.confidenceRule)
             .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
-            sa.orm.joinedload(
-                educational_models.CollectiveOffer.venue,
-                innerjoin=True,
-            )
-            .load_only(offerers_models.Venue.id)
+            # venue -> confidenceRule -> confidenceLevel
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
             .joinedload(offerers_models.Venue.confidenceRule)
             .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
         )
-        .options(sa.orm.joinedload(educational_models.CollectiveOffer.domains))
-        .options(
-            sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock)
-            .joinedload(educational_models.CollectiveStock.collectiveBookings)
-            .load_only(educational_models.CollectiveBooking.id)
-        )
-        .options(sa.orm.with_expression(educational_models.CollectiveOffer.isNonFreeOffer, is_non_free_offer_subquery))
+        .options(sa_orm.with_expression(educational_models.CollectiveOffer.isNonFreeOffer, is_non_free_offer_subquery))
         .one_or_none()
     )
 
@@ -954,19 +946,27 @@ def get_offerer_ids_from_collective_offers_template_ids(offers_ids: list[int]) -
 
 def get_collective_offer_template_by_id(offer_id: int) -> educational_models.CollectiveOfferTemplate:
     try:
-        query = educational_models.CollectiveOfferTemplate.query
-        query = query.filter(educational_models.CollectiveOfferTemplate.id == offer_id)
-        query = query.options(
-            sa.orm.joinedload(
-                educational_models.CollectiveOfferTemplate.venue,
-                innerjoin=True,
-            ).joinedload(
-                offerers_models.Venue.managingOfferer,
-                innerjoin=True,
+        return (
+            educational_models.CollectiveOfferTemplate.query.filter(
+                educational_models.CollectiveOfferTemplate.id == offer_id
             )
+            .options(
+                sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
+                    offerers_models.Venue.managingOfferer, innerjoin=True
+                )
+            )
+            .options(sa.orm.joinedload(educational_models.CollectiveOfferTemplate.domains))
+            .options(sa.orm.joinedload(educational_models.CollectiveOfferTemplate.nationalProgram))
+            .options(
+                sa_orm.joinedload(educational_models.CollectiveOfferTemplate.offererAddress).joinedload(
+                    offerers_models.OffererAddress.address
+                ),
+                sa_orm.joinedload(educational_models.CollectiveOfferTemplate.offererAddress).with_expression(
+                    offerers_models.OffererAddress._isLinkedToVenue, offerers_models.OffererAddress.isLinkedToVenue.expression  # type: ignore [attr-defined]
+                ),
+            )
+            .one()
         )
-        query = query.options(sa.orm.joinedload(educational_models.CollectiveOfferTemplate.domains))
-        return query.one()
     except sa.orm.exc.NoResultFound:
         raise educational_exceptions.CollectiveOfferTemplateNotFound()
 

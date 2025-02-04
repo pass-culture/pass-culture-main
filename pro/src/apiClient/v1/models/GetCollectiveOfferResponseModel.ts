@@ -2,7 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLinkedToVenueModel';
 import type { CollectiveBookingStatus } from './CollectiveBookingStatus';
+import type { CollectiveLocationType } from './CollectiveLocationType';
 import type { CollectiveOfferAllowedAction } from './CollectiveOfferAllowedAction';
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
@@ -19,6 +21,7 @@ import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 import type { TemplateDatesModel } from './TemplateDatesModel';
 export type GetCollectiveOfferResponseModel = {
+  address?: AddressResponseIsLinkedToVenueModel | null;
   allowedActions: Array<CollectiveOfferAllowedAction>;
   audioDisabilityCompliant?: boolean | null;
   bookingEmails: Array<string>;
@@ -48,6 +51,8 @@ export type GetCollectiveOfferResponseModel = {
   isVisibilityEditable: boolean;
   lastBookingId?: number | null;
   lastBookingStatus?: CollectiveBookingStatus | null;
+  locationComment?: string | null;
+  locationType?: CollectiveLocationType | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;

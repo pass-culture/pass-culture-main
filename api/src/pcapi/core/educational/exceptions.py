@@ -133,7 +133,7 @@ class EducationalInstitutionIsNotActive(Exception):
     pass
 
 
-class EducationalRedcatorCannotBeLinked(Exception):
+class EducationalRedactorCannotBeLinked(Exception):
     pass
 
 
