@@ -523,7 +523,7 @@ class SyncUserAccountUpdateRequestsTest:
                 "input": {
                     "dossierId": uaur.dsTechnicalId,
                     "instructeurId": instructor.backoffice_profile.dsInstructorId,
-                    "disableNotification": False,
+                    "disableNotification": True,
                 }
             }
         }
@@ -541,6 +541,46 @@ class SyncUserAccountUpdateRequestsTest:
         }
 
         assert uaur.status == dms_models.GraphQLApplicationStates.without_continuation
+
+    @time_machine.travel("2025-01-16 17:12")
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        side_effect=[
+            ds_fixtures.DS_RESPONSE_EMAIL_CHANGED_WITH_SET_WITHOUT_CONTINUATION,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_WITHOUT_CONTINUATION_TO_WITHOUT_CONTINUATION,
+        ],
+    )
+    def test_sync_with_failed_set_without_continuation(self, mocked_execute_query, instructor):
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiaire@example.com")
+
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21163559,
+            dsTechnicalId="UHJvY4VkdXKlLTI5NTgw",
+            status=dms_models.GraphQLApplicationStates.on_going,
+            user=beneficiary,
+        )
+
+        users_ds.sync_user_account_update_requests(104118, None, set_without_continuation=True)
+
+        mocked_execute_query.assert_called()
+        assert mocked_execute_query.call_count == 2
+        mocked_execute_query.call_args_list[0].assert_called_once_with(
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+        )
+
+        assert mocked_execute_query.call_args_list[1].args == (dms_api.MARK_WITHOUT_CONTINUATION_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[1].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                    "motivation": "Dossier classé sans suite car pas de correction apportée au dossier depuis 30 jours",
+                }
+            }
+        }
+
+        assert uaur.status == dms_models.GraphQLApplicationStates.on_going
 
     @time_machine.travel("2025-01-16 17:12")
     @pytest.mark.parametrize(
