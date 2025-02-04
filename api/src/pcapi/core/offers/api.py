@@ -235,18 +235,6 @@ def create_draft_offer(
     db.session.add(offer)
     db.session.flush()
 
-    if body.call_id:
-        logger.info(
-            "Offer Categorisation Data API",
-            extra={
-                "analyticsSource": "app-pro",
-                "offer_id": offer.id,
-                "offer_data_api_call_id": body.call_id,
-                "offer_subcategory": offer.subcategoryId,
-            },
-            technical_message_id="offer_categorisation",
-        )
-
     update_external_pro(venue.bookingEmail)
 
     return offer

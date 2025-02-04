@@ -17,7 +17,6 @@ from .validation import check_offer_subcategory_is_valid
 class PostDraftOfferBodyModel(BaseModel):
     name: str
     subcategory_id: str
-    call_id: str | None
     venue_id: int
     description: str | None = None
     url: HttpUrl | None = None
