@@ -3,15 +3,7 @@ import * as yup from 'yup'
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { emailSchema } from 'commons/utils/isValidEmail'
 
-import { validationSchema as offerLocationSchema } from '../components/OfferLocation/validationSchema'
-
-// TODO: this regex is subject to backtracking which can lead to "catastrophic backtracking", high memory usage and slow performance
-// we cannot use the yup url validation because we need to allow {} in the url to interpolate some data
-const offerFormUrlRegex = new RegExp(
-  /*eslint-disable-next-line no-useless-escape*/
-  /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)(([a-z0-9]+([\-\.\.-\.@_a-z0-9]+)*\.[a-z]{2,5})|((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.){3}(25[0-5]|(2[0-4]|1\d|[1-9]|)\d))(:[0-9]{1,5})?\S*?$/,
-  'i'
-)
+import { validationSchema as locationSchema } from '../components/OfferLocation/validationSchema'
 
 const isAnyTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
@@ -19,10 +11,12 @@ const isAnyTrue = (values: Record<string, boolean>): boolean =>
 type ValidationSchemaProps = {
   subcategories: string[]
   isOfferAddressEnabled?: boolean
+  isDigitalOffer?: boolean
 }
 export const getValidationSchema = ({
   subcategories,
   isOfferAddressEnabled = false,
+  isDigitalOffer = false,
 }: ValidationSchemaProps) => {
   const validationSchema = {
     withdrawalType: yup.string().when([], {
@@ -40,21 +34,6 @@ export const getValidationSchema = ({
         ),
       then: (schema) =>
         schema.required('Vous devez choisir l’une des options ci-dessus'),
-    }),
-    url: yup.string().when('isVenueVirtual', {
-      is: (isVenueVirtual: boolean) => isVenueVirtual,
-      then: (schema) =>
-        schema
-          .required(
-            'Veuillez renseigner une URL valide. Ex : https://exemple.com'
-          )
-          .test({
-            name: 'url',
-            message:
-              'Veuillez renseigner une URL valide. Ex : https://exemple.com',
-            test: (url?: string) =>
-              url ? url.match(offerFormUrlRegex) !== null : true,
-          }),
     }),
     bookingContact: yup.string().when([], {
       is: () => subcategories.includes('bookingContact'),
@@ -96,6 +75,6 @@ export const getValidationSchema = ({
 
   return yup.object().shape({
     ...validationSchema,
-    ...(isOfferAddressEnabled ? offerLocationSchema : {}),
+    ...(isOfferAddressEnabled && !isDigitalOffer ? locationSchema : {}),
   })
 }

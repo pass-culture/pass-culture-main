@@ -90,7 +90,10 @@ def create_regular_pro_user_with_virtual_offer() -> dict:
     offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
     virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
     offers_factories.OfferFactory(
-        name="Mon offre virtuelle", subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id, venue=virtual_venue
+        name="Mon offre virtuelle",
+        subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
+        venue=virtual_venue,
+        url="http://www.example.com",
     )
     return {"user": get_pro_user_helper(pro_user)}
 

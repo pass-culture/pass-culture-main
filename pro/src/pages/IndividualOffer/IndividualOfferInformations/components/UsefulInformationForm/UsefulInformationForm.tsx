@@ -68,10 +68,6 @@ export const UsefulInformationForm = ({
     ? Object.keys(DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES)
     : setFormReadOnlyFields(offer)
 
-  // we use venue is virtual here because we cannot infer it from the offerSubCategory
-  // because of CATEGORY_STATUS.ONLINE_OR_OFFLINE who can be both virtual or not
-  const isVenueVirtual = venue.isVirtual
-
   const {
     currentUser: { isAdmin, email },
   } = useCurrentUser()
@@ -80,7 +76,7 @@ export const UsefulInformationForm = ({
     offerSubCategory?.reimbursementRule === REIMBURSEMENT_RULES.NOT_REIMBURSED
 
   const displayWithdrawalReminder =
-    !offerSubCategory?.isEvent && !isVenueVirtual
+    !offerSubCategory?.isEvent && !offer.isDigital
 
   const displayBookingContact = offerSubCategory?.canBeWithdrawable
 
@@ -103,7 +99,7 @@ export const UsefulInformationForm = ({
 
   return (
     <>
-      {isOfferAddressEnabled && !isVenueVirtual && (
+      {isOfferAddressEnabled && !offer.isDigital && (
         <OfferLocation venue={selectedVenue} readOnlyFields={readOnlyFields} />
       )}
       <FormLayout.Section title="Retrait de l’offre">
@@ -185,7 +181,7 @@ export const UsefulInformationForm = ({
                 text: 'Quelles modalités de retrait choisir ?',
               }}
             >
-              {isVenueVirtual
+              {offer.isDigital
                 ? 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre.'
                 : 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis les paramètres généraux de votre page partenaire, elles s’appliqueront par défaut à toutes vos offres.'}
             </InfoBox>
@@ -198,7 +194,7 @@ export const UsefulInformationForm = ({
             maxLength={500}
             disabled={readOnlyFields.includes('withdrawalDetails')}
             description={
-              isVenueVirtual
+              offer.isDigital
                 ? 'Exemples : une création de compte, un code d’accès spécifique, une communication par email...'
                 : 'Exemples : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par email...'
             }
@@ -221,25 +217,6 @@ export const UsefulInformationForm = ({
               name="bookingContact"
               description="Format : email@exemple.com"
               disabled={readOnlyFields.includes('bookingContact')}
-            />
-          </FormLayout.Row>
-        )}
-
-        {isVenueVirtual && (
-          <FormLayout.Row
-            sideComponent={
-              <InfoBox>
-                Lien vers lequel seront renvoyés les bénéficiaires ayant réservé
-                votre offre sur l’application pass Culture.
-              </InfoBox>
-            }
-          >
-            <TextInput
-              label="URL d’accès à l’offre"
-              name="url"
-              type="text"
-              description="Format : https://exemple.com"
-              disabled={readOnlyFields.includes('url')}
             />
           </FormLayout.Row>
         )}

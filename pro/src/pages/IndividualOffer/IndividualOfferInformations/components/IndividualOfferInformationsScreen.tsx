@@ -198,12 +198,12 @@ export const IndividualOfferInformationsScreen = ({
     offerSubCategory,
     isUserAdmin: false,
     receiveNotificationEmails: true,
-    isVenueVirtual: offer.venue.isVirtual,
   })
 
   const validationSchema = getValidationSchema({
     subcategories: conditionalFields,
     isOfferAddressEnabled,
+    isDigitalOffer: offer.isDigital,
   })
 
   const initialValues = setDefaultInitialValuesFromOffer({

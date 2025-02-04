@@ -33,7 +33,6 @@ export interface IndividualOfferFormValues extends Partial<AddressFormValues> {
   bookingEmail: string
   isDuo: boolean
   url: string
-  isVenueVirtual?: boolean
   bookingContact?: string
   offerLocation?: string | undefined
   locationLabel?: string | null

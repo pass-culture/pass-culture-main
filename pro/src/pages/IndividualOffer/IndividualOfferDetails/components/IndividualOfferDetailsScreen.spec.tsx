@@ -470,6 +470,7 @@ describe('IndividualOfferDetails', () => {
       subcategoryId: 'physical',
       venueId: 189,
       callId: '',
+      url: null,
     })
     expect(mockNavigate).toHaveBeenCalledWith(
       '/offre/individuelle/12/creation/details',
@@ -668,6 +669,7 @@ describe('IndividualOfferDetails', () => {
         subcategoryId: 'physical',
         venueId: 189,
         callId: MOCK_DATA.suggestedSubcatCallId,
+        url: null,
       })
     })
   })

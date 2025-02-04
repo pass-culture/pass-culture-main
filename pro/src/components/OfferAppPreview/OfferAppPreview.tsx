@@ -58,7 +58,7 @@ export const OfferAppPreview = ({
           </div>
         )}
 
-        {!venue.isVirtual && (
+        {!offer.isDigital && (
           <VenueDetails
             venue={venue}
             address={isOfferAddressEnabled ? offer.address : undefined}

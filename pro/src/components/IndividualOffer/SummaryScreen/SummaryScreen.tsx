@@ -134,7 +134,6 @@ export const SummaryScreen = () => {
     offerSubCategory,
     isUserAdmin: false,
     receiveNotificationEmails: true,
-    isVenueVirtual: offer.venue.isVirtual,
   })
   const subCategoryConditionalFields = offerSubCategory
     ? offerSubCategory.conditionalFields

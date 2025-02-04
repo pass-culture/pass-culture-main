@@ -19,6 +19,7 @@ export type DetailsFormValues = {
   suggestedSubcategory: string
   productId: string
   callId?: string
+  url?: string | null
 }
 
 export type Product = {

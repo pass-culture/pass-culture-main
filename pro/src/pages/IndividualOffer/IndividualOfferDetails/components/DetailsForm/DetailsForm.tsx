@@ -24,6 +24,7 @@ import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'
 import { Subcategories } from './Subcategories/Subcategories'
@@ -37,10 +38,11 @@ type DetailsFormProps = {
   venuesOptions: { label: string; value: string }[]
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
-  readonlyFields: string[]
+  readOnlyFields: string[]
   onImageUpload: (values: OnImageUploadArgs) => Promise<void>
   onImageDelete: () => Promise<void>
   imageOffer?: IndividualOfferImage
+  categoryStatus: CATEGORY_STATUS
 }
 
 export const DetailsForm = ({
@@ -49,10 +51,11 @@ export const DetailsForm = ({
   venuesOptions,
   filteredCategories,
   filteredSubcategories,
-  readonlyFields: readOnlyFields,
+  readOnlyFields,
   onImageUpload,
   onImageDelete,
   imageOffer,
+  categoryStatus,
 }: DetailsFormProps): JSX.Element => {
   const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
   const [hasSuggestionsApiBeenCalled, setHasSuggestionsApiBeenCalled] =
@@ -210,6 +213,25 @@ export const DetailsForm = ({
                 })}
               />
             </FormLayout.Row>
+            {(categoryStatus === CATEGORY_STATUS.ONLINE ||
+              offer?.isDigital) && (
+              <FormLayout.Row
+                sideComponent={
+                  <InfoBox>
+                    Lien vers lequel seront renvoyés les bénéficiaires ayant
+                    réservé votre offre sur l’application pass Culture.
+                  </InfoBox>
+                }
+              >
+                <TextInput
+                  label="URL d’accès à l’offre"
+                  name="url"
+                  type="text"
+                  description="Format : https://exemple.com"
+                  disabled={readOnlyFields.includes('url')}
+                />
+              </FormLayout.Row>
+            )}
           </>
         )}
       </FormLayout.Section>

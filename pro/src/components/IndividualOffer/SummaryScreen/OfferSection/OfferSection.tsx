@@ -71,7 +71,14 @@ export const OfferSection = ({
   const aboutDescriptions: Description[] = [
     { title: 'Titre de l’offre', text: offerData.name },
     { title: 'Description', text: offerData.description || '-' },
-  ]
+  ].concat(
+    offer.isDigital
+      ? {
+          title: 'URL d’accès à l’offre',
+          text: offer.url || ' - ',
+        }
+      : []
+  )
   const venueName = offerData.venuePublicName || offerData.venueName
   aboutDescriptions.unshift({
     title: isOfferAddressEnabled ? 'Structure' : 'Lieu',
@@ -165,14 +172,6 @@ export const OfferSection = ({
         offerData.bookingContact || ' - ',
     })
   }
-  if (conditionalFields.includes('url')) {
-    practicalInfoDescriptions.push({
-      title: 'URL d’accès à l’offre',
-      text:
-        /* istanbul ignore next: DEBT, TO FIX */
-        offerData.url || ' - ',
-    })
-  }
 
   const artisticInformationsFields = [
     'speaker',
@@ -229,7 +228,7 @@ export const OfferSection = ({
         })}
         aria-label="Modifier les informations pratiques de l’offre"
       >
-        {!offerData.isVenueVirtual && isOfferAddressEnabled && (
+        {!offer.isDigital && isOfferAddressEnabled && (
           <SummarySubSection title="Localisation de l’offre">
             <SummaryDescriptionList
               listDataTestId="localisation-offer-details"

@@ -46,27 +46,6 @@ describe('getValidationSchema', () => {
     ).rejects.toThrow('Vous devez choisir l’une des options ci-dessus')
   })
 
-  it('should validate url correctly when isVenueVirtual is true', async () => {
-    const schema = getValidationSchema({ subcategories: [] })
-    await expect(
-      schema.validate({
-        ...defaultAccessibility,
-        isVenueVirtual: true,
-        url: 'https://example.com',
-      })
-    ).resolves.toBeTruthy()
-
-    await expect(
-      schema.validate({
-        ...defaultAccessibility,
-        isVenueVirtual: true,
-        url: 'invalid-url',
-      })
-    ).rejects.toThrow(
-      'Veuillez renseigner une URL valide. Ex : https://exemple.com'
-    )
-  })
-
   it('should validate bookingContact correctly', async () => {
     const schema = getValidationSchema({ subcategories: ['bookingContact'] })
     await expect(

@@ -133,6 +133,7 @@ describe('Summary', () => {
         description: 'ma description',
         subcategoryId: SubcategoryIdEnum.CONCERT,
         url: 'https://offer-url.example.com',
+        isDigital: true,
         withdrawalDetails: 'détails de retrait',
         bookingEmail: 'booking@example.com',
         venue: getOfferVenueFactory({
@@ -165,18 +166,12 @@ describe('Summary', () => {
     expect(
       screen.getByText('Notifications des réservations')
     ).toBeInTheDocument()
-    expect(
-      screen.getByText('URL d’accès à l’offre', { exact: false })
-    ).toBeInTheDocument()
     expect(screen.getByText('Aperçu dans l’app')).toBeInTheDocument()
 
     expect(screen.getByText(categories[0].proLabel)).toBeInTheDocument()
     expect(screen.getByText(subCategories[0].proLabel)).toBeInTheDocument()
     expect(screen.getByText('ma venue (nom public)')).toBeInTheDocument()
     expect(screen.getByText('détails de retrait')).toBeInTheDocument()
-    expect(
-      screen.getByText('https://offer-url.example.com')
-    ).toBeInTheDocument()
     expect(screen.getByText('Non accessible')).toBeInTheDocument()
     expect(screen.getByText('booking@example.com')).toBeInTheDocument()
     expect(screen.getAllByText('mon offre')).toHaveLength(2)
@@ -218,6 +213,7 @@ describe('Summary', () => {
         screen.queryByText('Visualiser dans l’app')
       ).not.toBeInTheDocument()
     })
+
     it('should render component with new sections', async () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue(
         defaultGetOffererResponseModel

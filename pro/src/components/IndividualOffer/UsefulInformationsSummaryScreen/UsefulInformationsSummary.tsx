@@ -52,12 +52,6 @@ export function UsefulInformationsSummaryScreen({
       text: offer.bookingContact || ' - ',
     })
   }
-  if (offer.venue.isVirtual) {
-    practicalInfoDescriptions.push({
-      title: 'URL d’accès à l’offre',
-      text: offer.url || ' - ',
-    })
-  }
   return (
     <SummaryLayout>
       <SummaryContent>
@@ -70,7 +64,7 @@ export function UsefulInformationsSummaryScreen({
           })}
           aria-label="Modifier les détails de l’offre"
         >
-          {!offer.venue.isVirtual && isOfferAddressEnabled && (
+          {!offer.isDigital && isOfferAddressEnabled && (
             <SummarySubSection title="Localisation de l’offre">
               <SummaryDescriptionList
                 descriptions={[
