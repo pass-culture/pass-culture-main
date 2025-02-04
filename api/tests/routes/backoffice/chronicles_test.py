@@ -91,6 +91,26 @@ class ListChroniclesTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(chronicle_to_find.id)
 
+    def test_search_by_content_with_colon(self, authenticated_client):
+        chronicle_to_find = chronicles_factories.ChronicleFactory(
+            content="Deux hommes, et même dix, peuvent bien en craindre un",
+        )
+        chronicles_factories.ChronicleFactory()
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    q="HomMe : bien",
+                    research_type="CHRONICLE_CONTENT",
+                ),
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(chronicle_to_find.id)
+
     def test_search_by_product_name(self, authenticated_client):
         product = offers_factories.ProductFactory(name="My super product")
         chronicle_with_product = chronicles_factories.ChronicleFactory(products=[product])

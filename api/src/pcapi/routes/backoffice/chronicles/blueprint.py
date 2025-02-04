@@ -70,8 +70,9 @@ def list_chronicles() -> utils.BackofficeResponse:
         if form.search_type.data in (forms.SearchType.ALL.name, forms.SearchType.CHRONICLE_CONTENT.name):
             q_filters.append(
                 sa.and_(
-                    chronicles_models.Chronicle.__content_ts_vector__.match(w, postgresql_regconfig="french")
+                    chronicles_models.Chronicle.__content_ts_vector__.op("@@")(sa.func.plainto_tsquery("french", w))
                     for w in form.q.data.split(" ")
+                    if len(w) > 1
                 )
             )
         if form.search_type.data in (forms.SearchType.ALL.name, forms.SearchType.PRODUCT_NAME.name):
