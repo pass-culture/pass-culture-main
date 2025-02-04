@@ -275,36 +275,12 @@ def _send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
     send_email_reminder_tomorrow_event_to_beneficiaries()
 
 
-@blueprint.cli.command("users_turned_eighteen_automation")
-@log_cron_with_transaction
-def users_turned_eighteen_automation() -> None:
-    """Includes all young users who will turn 18 exactly 30 days later in "jeunes-18-m-1" list.
-    This command is meant to be called every day."""
-    user_automations.users_turned_eighteen_automation()
-
-
-@blueprint.cli.command("users_beneficiary_credit_expiration_within_next_3_months_automation")
-@log_cron_with_transaction
-def users_beneficiary_credit_expiration_within_next_3_months_automation() -> None:
-    """Includes all young user whose pass expires in the next 3 months in "jeunes-expiration-M-3" list.
-    This command is meant to be called every day."""
-    user_automations.users_beneficiary_credit_expiration_within_next_3_months_automation()
-
-
 @blueprint.cli.command("users_ex_beneficiary_automation")
 @log_cron_with_transaction
 def users_ex_beneficiary_automation() -> None:
     """Includes all young users whose credit is expired in "jeunes-ex-benefs" list.
     This command is meant to be called every day."""
     user_automations.users_ex_beneficiary_automation()
-
-
-@blueprint.cli.command("users_inactive_since_30_days_automation")
-@log_cron_with_transaction
-def users_inactive_since_30_days_automation() -> None:
-    """Updates the list of users who are inactive since 30 days or more ("jeunes-utilisateurs-inactifs" list).
-    This command is meant to be called every day."""
-    user_automations.users_inactive_since_30_days_automation()
 
 
 @blueprint.cli.command("users_one_year_with_pass_automation")
