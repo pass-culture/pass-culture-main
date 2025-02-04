@@ -1151,6 +1151,14 @@ DS_RESPONSE_UPDATE_STATE_DRAFT_TO_WITHOUT_CONTINUATION = {
     }
 }
 
+DS_RESPONSE_UPDATE_STATE_WITHOUT_CONTINUATION_TO_WITHOUT_CONTINUATION = {
+    "dossierClasserSansSuite": {
+        "dossier": None,
+        "errors": [{"message": "Le dossier est déjà classé sans suite"}],
+    }
+}
+
+
 DS_RESPONSE_ARCHIVE = {
     "dossierArchiver": {
         "dossier": {

@@ -7,6 +7,7 @@ import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.connectors.dms import api as ds_api
+from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.permissions import models as perm_models
@@ -170,18 +171,23 @@ def check_set_without_continuation(user_request: users_models.UserAccountUpdateR
         < datetime.datetime.utcnow().astimezone(datetime.timezone.utc)
         and data["dateLastInstructorMessage"] > last_user_action_date
     ):
-        if user_request.status == dms_models.GraphQLApplicationStates.draft:
+        try:
+            if user_request.status == dms_models.GraphQLApplicationStates.draft:
+                update_state(
+                    user_request,
+                    new_state=dms_models.GraphQLApplicationStates.on_going,
+                    instructor=user_request.lastInstructor,
+                    disable_notification=True,
+                )
             update_state(
                 user_request,
-                new_state=dms_models.GraphQLApplicationStates.on_going,
+                new_state=dms_models.GraphQLApplicationStates.without_continuation,
                 instructor=user_request.lastInstructor,
+                motivation=f"Dossier classé sans suite car pas de correction apportée au dossier depuis {settings.DS_MARK_WITHOUT_CONTINUATION_UDPATE_REQUEST_DEADLINE} jours",
             )
-        update_state(
-            user_request,
-            new_state=dms_models.GraphQLApplicationStates.without_continuation,
-            instructor=user_request.lastInstructor,
-            motivation=f"Dossier classé sans suite car pas de correction apportée au dossier depuis {settings.DS_MARK_WITHOUT_CONTINUATION_UDPATE_REQUEST_DEADLINE} jours",
-        )
+        except (dms_exceptions.DmsGraphQLApiError, dms_exceptions.DmsGraphQLApiException):
+            pass
+
         transactional_mails.send_beneficiary_update_request_set_to_without_continuation(
             user_request.user.email if user_request.user else data["email"]
         )
@@ -349,6 +355,7 @@ def update_state(
     new_state: dms_models.GraphQLApplicationStates,
     instructor: users_models.User | None,
     motivation: str | None = None,
+    disable_notification: bool = False,
 ) -> None:
     ds_client = ds_api.DMSGraphQLClient()
     if instructor is not None:
@@ -360,18 +367,21 @@ def update_state(
         node = ds_client.make_on_going(
             application_techid=user_request.dsTechnicalId,
             instructeur_techid=instructor_id,
+            disable_notification=disable_notification,
         )
     elif new_state == dms_models.GraphQLApplicationStates.accepted:
         node = ds_client.make_accepted(
             application_techid=user_request.dsTechnicalId,
             instructeur_techid=instructor_id,
             motivation=motivation,
+            disable_notification=disable_notification,
         )
     elif new_state == dms_models.GraphQLApplicationStates.without_continuation:
         node = ds_client.mark_without_continuation(
             application_techid=user_request.dsTechnicalId,
             instructeur_techid=instructor_id,
             motivation=motivation,
+            disable_notification=disable_notification,
         )
     else:
         raise NotImplementedError()
