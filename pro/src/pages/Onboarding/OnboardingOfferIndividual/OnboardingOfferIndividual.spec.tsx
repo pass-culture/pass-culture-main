@@ -6,12 +6,12 @@ import {
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
+import * as useHasAccessToDidacticOnboarding from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
   listOffersOfferFactory,
 } from 'commons/utils/factories/individualApiFactories'
-import * as useHasAccessToDidacticOnboarding from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
