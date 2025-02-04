@@ -583,6 +583,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert_user_equals(cards_text[1], suspended_user)
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 class GetPublicAccountTest(GetEndpointHelper):
     endpoint = "backoffice_web.public_accounts.get_public_account"
     endpoint_kwargs = {"user_id": 1}
@@ -805,7 +806,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
-        with assert_num_queries(self.expected_num_queries + 1):  # +1 to get duplicate user info
+        with assert_num_queries(self.expected_num_queries_with_ff + 1):  # +1 to get duplicate user info
             response = authenticated_client.get(url_for(self.endpoint, user_id=duplicate_user.id))
             assert response.status_code == 200
 
@@ -1540,6 +1541,7 @@ class SendValidationCodeTest(PostEndpointHelper):
             assert not sms_testing.requests, f"[{idx}] {len(sms_testing.requests)} sms sent"
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 class UpdatePublicAccountReviewTest(PostEndpointHelper):
     endpoint = "backoffice_web.public_accounts.review_public_account"
     endpoint_kwargs = {"user_id": 1}
@@ -1942,6 +1944,7 @@ class GetPublicAccountHistoryTest:
         assert datetimes == sorted(datetimes, reverse=True)
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 class GetUserRegistrationStepTest(GetEndpointHelper):
     endpoint = "backoffice_web.public_accounts.get_public_account"
     endpoint_kwargs = {"user_id": 1}

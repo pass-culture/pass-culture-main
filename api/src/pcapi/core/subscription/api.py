@@ -35,7 +35,6 @@ from pcapi.workers import apps_flyer_job
 
 from . import exceptions
 from . import models
-from . import repository
 
 
 logger = logging.getLogger(__name__)
@@ -63,14 +62,18 @@ def activate_beneficiary_for_eligibility(
     fraud_check: fraud_models.BeneficiaryFraudCheck,
     eligibility: users_models.EligibilityType,
 ) -> users_models.User:
-    if eligibility == users_models.EligibilityType.UNDERAGE:
+    if eligibility == users_models.EligibilityType.UNDERAGE or (
+        eligibility == users_models.EligibilityType.AGE17_18 and user.age and user.age <= 17
+    ):
         user.add_underage_beneficiary_role()
         age_at_registration = _get_age_at_first_registration(user, users_models.EligibilityType.UNDERAGE)
 
         if age_at_registration not in users_constants.ELIGIBILITY_UNDERAGE_RANGE:
             raise exceptions.InvalidAgeException(age=age_at_registration)
 
-    elif eligibility == users_models.EligibilityType.AGE18:
+    elif eligibility == users_models.EligibilityType.AGE18 or (
+        eligibility == users_models.EligibilityType.AGE17_18 and user.age and user.age >= 18
+    ):
         user.add_beneficiary_role()
         age_at_registration = users_constants.ELIGIBILITY_AGE_18
     else:
@@ -98,42 +101,23 @@ def activate_beneficiary_for_eligibility(
     return user
 
 
-def _get_filled_dms_fraud_check(
-    user: users_models.User, eligibility: users_models.EligibilityType | None
-) -> fraud_models.BeneficiaryFraudCheck | None:
-    # If a pending or started DMS fraud check exists, the user has already completed the profile.
-    # No need to ask for this information again.
-    return next(
-        (
-            fraud_check
-            for fraud_check in user.beneficiaryFraudChecks
-            if fraud_check.type == fraud_models.FraudCheckType.DMS
-            and fraud_check.eligibilityType == eligibility
-            and fraud_check.status in (fraud_models.FraudCheckStatus.PENDING, fraud_models.FraudCheckStatus.STARTED)
-            and fraud_check.resultContent
-            and fraud_check.source_data().city is not None
-        ),
-        None,
-    )
-
-
 def has_completed_profile_for_given_eligibility(
     user: users_models.User, eligibility: users_models.EligibilityType
 ) -> bool:
-    if repository.get_completed_profile_check(user, eligibility) is not None:
+    if fraud_repository.get_completed_profile_check(user, eligibility) is not None:
         return True
-    if _get_filled_dms_fraud_check(user, eligibility) is not None:
+    if fraud_repository.get_filled_dms_fraud_check(user, eligibility) is not None:
         return True
     return False
 
 
 def get_declared_names(user: users_models.User) -> tuple[str, str] | None:
-    profile_completion_check = repository.get_completed_profile_check(user, user.eligibility)
+    profile_completion_check = fraud_repository.get_completed_profile_check(user, user.eligibility)
     if profile_completion_check and profile_completion_check.resultContent:
         profile_data = typing.cast(fraud_models.ProfileCompletionContent, profile_completion_check.source_data())
         return profile_data.first_name, profile_data.last_name
 
-    dms_filled_check = _get_filled_dms_fraud_check(user, user.eligibility)
+    dms_filled_check = fraud_repository.get_filled_dms_fraud_check(user, user.eligibility)
     if dms_filled_check:
         dms_data = dms_filled_check.source_data()
         return dms_data.first_name, dms_data.last_name
@@ -158,23 +142,28 @@ def get_email_validation_subscription_item(
 def get_phone_validation_subscription_item(
     user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
-    if eligibility != users_models.EligibilityType.AGE18:
-        status = models.SubscriptionItemStatus.NOT_APPLICABLE
-    else:
-        if user.is_phone_validated:
+    should_fill_phone = (eligibility == users_models.EligibilityType.AGE18) or (
+        eligibility == users_models.EligibilityType.AGE17_18 and user.age and user.age >= 18
+    )
+    if not should_fill_phone:
+        return models.SubscriptionItem(
+            type=models.SubscriptionStep.PHONE_VALIDATION, status=models.SubscriptionItemStatus.NOT_APPLICABLE
+        )
+
+    if user.is_phone_validated:
+        status = models.SubscriptionItemStatus.OK
+    elif user.is_phone_validation_skipped:
+        status = models.SubscriptionItemStatus.SKIPPED
+    elif fraud_repository.has_failed_phone_validation(user):
+        status = models.SubscriptionItemStatus.KO
+    elif eligibility_api.is_eligibility_activable(user, eligibility):
+        has_user_filled_phone = user.phoneNumber is not None
+        if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active() and has_user_filled_phone:
             status = models.SubscriptionItemStatus.OK
-        elif user.is_phone_validation_skipped:
-            status = models.SubscriptionItemStatus.SKIPPED
-        elif fraud_repository.has_failed_phone_validation(user):
-            status = models.SubscriptionItemStatus.KO
-        elif eligibility_api.is_eligibility_activable(user, eligibility):
-            has_user_filled_phone = user.phoneNumber is not None
-            if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active() and has_user_filled_phone:
-                status = models.SubscriptionItemStatus.OK
-            else:
-                status = models.SubscriptionItemStatus.TODO
         else:
-            status = models.SubscriptionItemStatus.VOID
+            status = models.SubscriptionItemStatus.TODO
+    else:
+        status = models.SubscriptionItemStatus.VOID
 
     return models.SubscriptionItem(type=models.SubscriptionStep.PHONE_VALIDATION, status=status)
 
@@ -193,7 +182,7 @@ def get_profile_completion_subscription_item(
 
 
 def get_profile_data(user: users_models.User) -> fraud_models.ProfileCompletionContent | None:
-    profile_completion_check = repository.get_latest_completed_profile_check(user)
+    profile_completion_check = fraud_repository.get_latest_completed_profile_check(user)
     if profile_completion_check and profile_completion_check.resultContent:
         return typing.cast(fraud_models.ProfileCompletionContent, profile_completion_check.source_data())
 
@@ -279,39 +268,10 @@ def should_retry_identity_check(user_subscription_state: models.UserSubscription
     return False
 
 
-def get_relevant_identity_fraud_check(
-    user: users_models.User, eligibility: users_models.EligibilityType | None
-) -> fraud_models.BeneficiaryFraudCheck | None:
-    identity_fraud_checks = [
-        fraud_check
-        for fraud_check in user.beneficiaryFraudChecks
-        if eligibility in fraud_check.applicable_eligibilities and fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
-    ]
-    identity_fraud_checks.sort(key=lambda fraud_check: fraud_check.dateCreated, reverse=True)
-
-    if not identity_fraud_checks:
-        return None
-
-    for status in (  # order matters here
-        fraud_models.FraudCheckStatus.OK,
-        fraud_models.FraudCheckStatus.PENDING,
-        fraud_models.FraudCheckStatus.STARTED,
-        fraud_models.FraudCheckStatus.SUSPICIOUS,
-        fraud_models.FraudCheckStatus.KO,
-    ):
-        relevant_fraud_check = next(
-            (fraud_check for fraud_check in identity_fraud_checks if fraud_check.status == status), None
-        )
-        if relevant_fraud_check:
-            return relevant_fraud_check
-
-    return None
-
-
 def get_identity_check_subscription_item(
     user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
-    id_check = get_relevant_identity_fraud_check(user, eligibility)
+    id_check = fraud_repository.get_relevant_identity_fraud_check(user, eligibility)
     status = get_identity_check_fraud_status(user, eligibility, id_check)
     return models.SubscriptionItem(type=models.SubscriptionStep.IDENTITY_CHECK, status=status)
 
@@ -319,7 +279,7 @@ def get_identity_check_subscription_item(
 def get_honor_statement_subscription_item(
     user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
-    if fraud_api.has_performed_honor_statement(user, eligibility):  # type: ignore[arg-type]
+    if fraud_repository.get_completed_honor_statement(user, eligibility):  # type: ignore[arg-type]
         status = models.SubscriptionItemStatus.OK
     else:
         if eligibility_api.is_eligibility_activable(user, eligibility):
@@ -402,7 +362,7 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
         )
 
     # Step 5: identity check
-    relevant_identity_fraud_check = get_relevant_identity_fraud_check(user, user.eligibility)
+    relevant_identity_fraud_check = fraud_repository.get_relevant_identity_fraud_check(user, user.eligibility)
     identity_check_fraud_status = get_identity_check_fraud_status(user, user.eligibility, relevant_identity_fraud_check)
     allowed_identity_check_methods = get_allowed_identity_check_methods(user)
     next_step: models.SubscriptionStep | None = (
@@ -462,7 +422,7 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
         )
 
     # Step 6: honor statement
-    if not fraud_api.has_performed_honor_statement(user, user.eligibility):
+    if not fraud_repository.get_completed_honor_statement(user, user.eligibility):
         return subscription_models.UserSubscriptionState(
             identity_fraud_check=relevant_identity_fraud_check,
             next_step=models.SubscriptionStep.HONOR_STATEMENT,
@@ -564,10 +524,10 @@ def complete_profile(
 def get_allowed_identity_check_methods(user: users_models.User) -> list[models.IdentityCheckMethod]:
     allowed_methods = []
 
-    if (
-        user.eligibility == users_models.EligibilityType.UNDERAGE
-        and FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION.is_active()
-    ):
+    is_educonnect_allowed = user.eligibility == users_models.EligibilityType.UNDERAGE or (
+        user.eligibility == users_models.EligibilityType.AGE17_18 and user.age and user.age < 18
+    )
+    if is_educonnect_allowed and FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION.is_active():
         allowed_methods.append(models.IdentityCheckMethod.EDUCONNECT)
 
     if FeatureToggle.ENABLE_UBBLE.is_active() and _is_ubble_allowed_if_subscription_overflow(user):
@@ -598,18 +558,19 @@ def _is_ubble_allowed_if_subscription_overflow(user: users_models.User) -> bool:
 
 def get_maintenance_page_type(user: users_models.User) -> models.MaintenancePageType | None:
     allowed_identity_check_methods = get_allowed_identity_check_methods(user)
-    if allowed_identity_check_methods:
+    if allowed_identity_check_methods or not user.age:
         return None
 
-    if (
-        user.eligibility == users_models.EligibilityType.AGE18
-        and FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18.is_active()
-    ):
+    is_user_eighteen = user.eligibility == users_models.EligibilityType.AGE18 or (
+        user.eligibility == users_models.EligibilityType.AGE17_18 and user.age >= 18
+    )
+    if is_user_eighteen and FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18.is_active():
         return models.MaintenancePageType.WITH_DMS
-    if (
-        user.eligibility == users_models.EligibilityType.UNDERAGE
-        and FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE.is_active()
-    ):
+
+    is_user_underage = user.eligibility == users_models.EligibilityType.UNDERAGE or (
+        user.eligibility == users_models.EligibilityType.AGE17_18 and user.age < 18
+    )
+    if is_user_underage and FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE.is_active():
         return models.MaintenancePageType.WITH_DMS
 
     return models.MaintenancePageType.WITHOUT_DMS
@@ -846,7 +807,10 @@ def get_subscription_steps_to_display(
 
 def _get_ordered_steps(user: users_models.User) -> list[models.SubscriptionStep]:
     ordered_steps = []
-    if user.eligibility == users_models.EligibilityType.AGE18:
+    should_fill_phone = (user.eligibility == users_models.EligibilityType.AGE18) or (
+        user.eligibility == users_models.EligibilityType.AGE17_18 and user.age and user.age >= 18
+    )
+    if should_fill_phone:
         ordered_steps.append(models.SubscriptionStep.PHONE_VALIDATION)
     ordered_steps.append(models.SubscriptionStep.PROFILE_COMPLETION)
     if requires_identity_check_step(user):
@@ -901,7 +865,7 @@ def requires_identity_check_step(user: users_models.User) -> bool:
     if not user.has_underage_beneficiary_role:
         return True
 
-    fraud_check = get_relevant_identity_fraud_check(user, users_models.EligibilityType.AGE18)
+    fraud_check = fraud_repository.get_relevant_identity_fraud_check(user, users_models.EligibilityType.AGE18)
     if not fraud_check:
         return True
 
@@ -918,6 +882,15 @@ def _has_completed_profile_for_previous_eligibility_only(user: users_models.User
         return has_completed_profile_for_given_eligibility(
             user, users_models.EligibilityType.UNDERAGE
         ) and not has_completed_profile_for_given_eligibility(user, users_models.EligibilityType.AGE18)
+    if user.eligibility == users_models.EligibilityType.AGE17_18 and user.age and user.age >= 18:
+        completed_profile_checks = fraud_repository.get_completed_profile_checks(user)
+        return any(
+            not fraud_repository.is_fraud_check_relevant_for_age(fraud_check, user)
+            for fraud_check in completed_profile_checks
+        ) and not any(
+            fraud_repository.is_fraud_check_relevant_for_age(fraud_check, user)
+            for fraud_check in completed_profile_checks
+        )
 
     return False
 

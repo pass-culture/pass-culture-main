@@ -907,7 +907,7 @@ class DmsWebhookApplicationTest:
 
         assert dms_fraud_check.status == fraud_models.FraudCheckStatus.PENDING
         assert dms_fraud_check.type == fraud_models.FraudCheckType.DMS
-        assert dms_fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+        assert dms_fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
         assert fraud_api.has_user_performed_identity_check(user)
 
@@ -1443,7 +1443,7 @@ class UbbleWebhookTest:
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            eligibilityType=users_models.EligibilityType.AGE18,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
             status=fraud_models.FraudCheckStatus.OK,
         )
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1455,7 +1455,7 @@ class UbbleWebhookTest:
             status=fraud_models.FraudCheckStatus.PENDING,
             reason=None,
             reasonCodes=None,
-            eligibilityType=users_models.EligibilityType.AGE18,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
         )
         request_data = self._get_request_body(fraud_check, ubble_serializers.UbbleIdentificationStatus.PROCESSED)
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
@@ -1589,7 +1589,7 @@ class UbbleWebhookTest:
             status=fraud_models.FraudCheckStatus.PENDING,
             reason=None,
             reasonCodes=None,
-            eligibilityType=users_models.EligibilityType.AGE18,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
         )
         repository.save(ubble_fraud_check)
         honor_fraud_check = fraud_models.BeneficiaryFraudCheck(
@@ -1600,7 +1600,7 @@ class UbbleWebhookTest:
             status=fraud_models.FraudCheckStatus.OK,
             reason=None,
             reasonCodes=None,
-            eligibilityType=users_models.EligibilityType.AGE18,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
         )
         repository.save(honor_fraud_check)
         request_data = self._get_request_body(ubble_fraud_check, ubble_serializers.UbbleIdentificationStatus.PROCESSED)
@@ -2346,6 +2346,7 @@ class UbbleWebhookTest:
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.SUSPICIOUS,
             reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC],
+            eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(

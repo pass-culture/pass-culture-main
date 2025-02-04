@@ -2,7 +2,6 @@ import datetime
 from enum import Enum
 import typing
 
-from dateutil.relativedelta import relativedelta
 from jwt import DecodeError
 from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
@@ -20,6 +19,7 @@ from pcapi.core.subscription import profile_options
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import eligibility_api
+from pcapi.core.users import utils as users_utils
 from pcapi.core.users import young_status
 import pcapi.core.users.models as users_models
 from pcapi.core.users.utils import decode_jwt_token
@@ -169,9 +169,13 @@ class UserProfileGetterDict(GetterDict):
             return subscription_api.requires_identity_check_step(user)
         if key == "showEligibleCard":
             return (
-                relativedelta(user.dateCreated, user.birth_date).years < users_constants.ELIGIBILITY_AGE_18
+                users_utils.get_age_at_date(user.birth_date, user.dateCreated, user.departementCode)
+                < users_constants.ELIGIBILITY_AGE_18
                 and user.has_beneficiary_role is False
-                and user.eligibility == users_models.EligibilityType.AGE18
+                and (
+                    user.eligibility == users_models.EligibilityType.AGE18
+                    or (user.eligibility == users_models.EligibilityType.AGE17_18 and user.age >= 18)
+                )
             )
         if key == "status":
             user_subscription_state = subscription_api.get_user_subscription_state(user)

@@ -112,7 +112,7 @@ def test_format_batch_user():
         "ut.booking_categories": ["FILM"],
         "ut.booking_subcategories": ["SUPPORT_PHYSIQUE_FILM"],
         "ut.roles": [UserRole.BENEFICIARY.value],
-        "u.eligibility": EligibilityType.AGE18.value,
+        "u.eligibility": EligibilityType.AGE17_18.value,
         "u.is_eligible": True,
     }
 

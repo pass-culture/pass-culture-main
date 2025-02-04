@@ -171,7 +171,10 @@ def complete_profile(user: users_models.User, body: serializers.ProfileUpdateReq
 def get_activity_types(user: users_models.User) -> serializers.ActivityTypesResponse:
     activities = [serializers.ActivityResponseModel.from_orm(activity) for activity in profile_options.ALL_ACTIVITIES]
     middle_school = serializers.ActivityResponseModel.from_orm(profile_options.MIDDLE_SCHOOL_STUDENT)
-    if user.eligibility == users_models.EligibilityType.AGE18 and middle_school in activities:
+    is_user_18 = (user.eligibility == users_models.EligibilityType.AGE18) or (
+        user.eligibility == users_models.EligibilityType.AGE17_18 and user.age and user.age >= 18
+    )
+    if is_user_18 and middle_school in activities:
         activities.remove(middle_school)
 
     return serializers.ActivityTypesResponse(activities=activities)

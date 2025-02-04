@@ -30,7 +30,7 @@ class EduconnectTest:
     email = "lucy.ellingson@example.com"
     request_id = "id-XXMmsDBrJGm1N0761"
     request_id_key_prefix = "educonnect-saml-request-"
-    default_underage_user_age = 15
+    default_underage_user_age = 17
 
     def connect_to_educonnect(self, client, app):
         user = users_factories.UserFactory(email=self.email, activity="Collégien")
@@ -182,8 +182,7 @@ class EduconnectTest:
         # set user_id in redis as if /saml/educonnect/login was called
         user = users_factories.UserFactory(email=self.email)
         app.redis_client.set(f"{self.request_id_key_prefix}{self.request_id}", user.id)
-        # We don't need the birth date to be exact, it just needs to be less than 18 years
-        birth_date = (datetime.date.today() - datetime.timedelta(days=17 * 365)).strftime("%Y-%m-%d")
+        birth_date = (datetime.date.today() - relativedelta(years=17, months=1)).strftime("%Y-%m-%d")
 
         mock_saml_client = MagicMock()
         mock_saml_response = MagicMock()
@@ -334,7 +333,7 @@ class EduconnectTest:
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     def test_duplicate_beneficiary(self, mock_get_educonnect_user, client, app):
         duplicate_user, request_id = self.connect_to_educonnect(client, app)
-        educonnect_user = users_factories.EduconnectUserFactory(saml_request_id=request_id)
+        educonnect_user = users_factories.EduconnectUserFactory(saml_request_id=request_id, age=17)
         mock_get_educonnect_user.return_value = educonnect_user
 
         users_factories.UserFactory(
@@ -367,7 +366,9 @@ class EduconnectTest:
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     def test_duplicate_ine(self, mock_get_educonnect_user, client, app):
         duplicate_user, request_id = self.connect_to_educonnect(client, app)
-        educonnect_user = users_factories.EduconnectUserFactory(saml_request_id=request_id, ine_hash="shotgun_ine")
+        educonnect_user = users_factories.EduconnectUserFactory(
+            saml_request_id=request_id, ine_hash="shotgun_ine", age=17
+        )
         mock_get_educonnect_user.return_value = educonnect_user
 
         users_factories.UserFactory(ineHash="shotgun_ine", email="shotgun@ine.com")
@@ -520,7 +521,7 @@ class EduconnectTest:
 class PerformanceTest:
     @pytest.mark.settings(IS_PERFORMANCE_TESTS=True)
     def test_performance_tests(self, client):
-        user = users_factories.UserFactory(dateOfBirth=datetime.date.today() - relativedelta(years=15))
+        user = users_factories.UserFactory(age=17)
 
         response = client.post("/saml/acs", form={"SAMLResponse": str(user.id)})
 

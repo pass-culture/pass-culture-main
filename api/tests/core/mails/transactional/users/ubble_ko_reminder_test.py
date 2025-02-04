@@ -2,7 +2,9 @@ import datetime
 
 from dateutil.relativedelta import relativedelta
 import pytest
+import time_machine
 
+from pcapi import settings
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.ubble.constants as ubble_constants
@@ -20,7 +22,7 @@ def build_user_with_ko_retryable_ubble_fraud_check(
     user: users_models.User | None = None,
     user_age: int = 18,
     ubble_date_created: datetime.datetime = datetime.datetime.utcnow() - relativedelta(days=7),
-    ubble_eligibility: users_models.EligibilityType = users_models.EligibilityType.AGE18,
+    ubble_eligibility: users_models.EligibilityType = users_models.EligibilityType.AGE17_18,
     # pylint: disable=dangerous-default-value
     reasonCodes: list[fraud_models.FraudReasonCode] = [fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC],
 ) -> users_models.User:
@@ -108,21 +110,33 @@ class FindUsersThatFailedUbbleTest:
         # Then
         assert not result
 
-    def should_find_users_when_they_had_ok_fraud_checks_of_another_eligibility(self):
-        # Given
-        user = build_user_with_ko_retryable_ubble_fraud_check()
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-        )
+    @pytest.mark.parametrize(
+        "decree_month_offset",
+        [
+            pytest.param(-1, id="with eighteenth birthday before decree"),
+            pytest.param(6, id="with decree between the seventeenth and eighteenth birthday"),
+            pytest.param(13, id="with decree before seventeenth birthday"),
+        ],
+    )
+    def should_find_users_when_they_had_ok_fraud_checks_of_another_eligibility(self, decree_month_offset):
+        with time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME + relativedelta(months=decree_month_offset)):
+            # Given
+            last_week = datetime.datetime.utcnow() - relativedelta(days=7)
+            user = build_user_with_ko_retryable_ubble_fraud_check(ubble_date_created=last_week)
+            year_when_user_was_underage = datetime.datetime.utcnow() - relativedelta(years=1)
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.EDUCONNECT,
+                status=fraud_models.FraudCheckStatus.OK,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+                dateCreated=year_when_user_was_underage,
+            )
 
-        # When
-        found_user, _fraud_check = _find_users_to_remind(days_ago=7, reason_codes_filter=self.error_codes)[0]
+            # When
+            found_user, _fraud_check = _find_users_to_remind(days_ago=7, reason_codes_filter=self.error_codes)[0]
 
-        # Then
-        assert found_user == user
+            # Then
+            assert found_user == user
 
     def should_not_find_user_if_they_already_retried_thrice(self):
         # Given

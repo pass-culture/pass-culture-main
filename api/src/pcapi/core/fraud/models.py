@@ -615,14 +615,22 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         identity again. Extended eligibility of a previous id check should not be considered as an action made in the
         subscription process once eligibility period has ended.
         """
-        if (
+        if self.is_id_check_ok_across_eligibilities_or_age:
+            return [
+                users_models.EligibilityType.UNDERAGE,
+                users_models.EligibilityType.AGE18,
+                users_models.EligibilityType.AGE17_18,
+            ]
+        return [self.eligibilityType] if self.eligibilityType else []
+
+    @property
+    def is_id_check_ok_across_eligibilities_or_age(self) -> bool:
+        return (
             self.type in (FraudCheckType.UBBLE, FraudCheckType.DMS)
             and self.status == FraudCheckStatus.OK
-            and self.eligibilityType == users_models.EligibilityType.UNDERAGE
+            and self.eligibilityType in [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE17_18]
             and (self.user.has_beneficiary_role or self.user.age == users_constants.ELIGIBILITY_AGE_18)
-        ):
-            return [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE18]
-        return [self.eligibilityType] if self.eligibilityType else []
+        )
 
 
 class OrphanDmsApplication(PcObject, Base, Model):

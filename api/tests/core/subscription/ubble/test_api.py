@@ -617,7 +617,9 @@ class UbbleWorkflowV1Test:
     @pytest.mark.parametrize("state, status, fraud_check_status", IDENTIFICATION_STATE_PARAMETERS)
     def test_update_ubble_workflow(self, ubble_mocker, state, status, fraud_check_status):
         user = users_factories.UserFactory()
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.UBBLE, user=user)
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE, user=user, eligibilityType=users_models.EligibilityType.AGE17_18
+        )
         ubble_response = UbbleIdentificationResponseFactory(identification_state=state)
         assert user.married_name is None
 
@@ -635,7 +637,9 @@ class UbbleWorkflowV1Test:
     @pytest.mark.parametrize("state, status, fraud_check_status", IDENTIFICATION_STATE_PARAMETERS)
     def test_update_ubble_workflow_with_v2_feature_flag(self, ubble_mocker, state, status, fraud_check_status):
         user = users_factories.UserFactory()
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.UBBLE, user=user)
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE, user=user, eligibilityType=users_models.EligibilityType.AGE17_18
+        )
         ubble_response = UbbleIdentificationResponseFactory(identification_state=state)
         assert user.married_name is None
 
@@ -661,7 +665,9 @@ class UbbleWorkflowV1Test:
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.HONOR_STATEMENT, user=user, status=fraud_models.FraudCheckStatus.OK
         )
-        ubble_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.UBBLE, user=user)
+        ubble_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE, user=user, eligibilityType=users_models.EligibilityType.AGE17_18
+        )
         ubble_response = UbbleIdentificationResponseFactory(
             identification_state=IdentificationState.VALID, data__attributes__identification_id=ubble_check.thirdPartyId
         )

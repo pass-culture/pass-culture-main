@@ -34,6 +34,7 @@ class EnsurePhoneNumberUnicityTest:
     @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
     def test_send_phone_code_success_if_validated_by_not_beneficiary(self, send_sms_mock):
         already_validated_user = users_factories.EligibleUnderageFactory(
+            age=17,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             phoneNumber="+33607080900",
             roles=[],
@@ -59,7 +60,7 @@ class EnsurePhoneNumberUnicityTest:
             unvalidated_by_peer_check.reason
             == f"Phone number +33607080900 was unvalidated by user {in_validation_user.id}"
         )
-        assert unvalidated_by_peer_check.eligibilityType == users_models.EligibilityType.UNDERAGE
+        assert unvalidated_by_peer_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
         unvalidated_for_peer_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
             userId=in_validation_user.id,
@@ -72,7 +73,7 @@ class EnsurePhoneNumberUnicityTest:
             unvalidated_for_peer_check.reason
             == f"The phone number validation had the following side effect: phone number +33607080900 was unvalidated for user {already_validated_user.id}"
         )
-        assert unvalidated_for_peer_check.eligibilityType == users_models.EligibilityType.AGE18
+        assert unvalidated_for_peer_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
         success_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
             userId=in_validation_user.id,

@@ -592,12 +592,8 @@ class StepperTest:
         assert response.json["title"] == f"C'est très rapide{u_nbsp}!"
         assert response.json["subtitle"] == f"Pour débloquer tes 300€ tu dois suivre les étapes suivantes{u_nbsp}:"
 
-    def should_contain_all_subscription_steps_for_15yo_user(self, client):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
-            - relativedelta(years=15, months=5),
-            isEmailValidated=True,
-        )
+    def should_contain_all_subscription_steps_for_17yo_user(self, client):
+        user = users_factories.UserFactory(age=17, isEmailValidated=True)
 
         client.with_token(user.email)
         with assert_num_queries(self.expected_num_queries):
@@ -610,7 +606,7 @@ class StepperTest:
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
         assert response.json["title"] == f"C'est très rapide{u_nbsp}!"
-        assert response.json["subtitle"] == f"Pour débloquer tes 20€ tu dois suivre les étapes suivantes{u_nbsp}:"
+        assert response.json["subtitle"] == f"Pour débloquer tes 30€ tu dois suivre les étapes suivantes{u_nbsp}:"
 
     def should_not_contain_id_check_in_steps_if_ubble_or_dms_done_for_underage(self, client):
         user = users_factories.UnderageBeneficiaryFactory(
@@ -680,7 +676,7 @@ class StepperTest:
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=True,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=True,
     )
-    @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    @pytest.mark.parametrize("age", [17, 18])
     def should_contain_maintenance_page_type_with_dms(self, client, age):
         user = users_factories.BaseUserFactory(age=age)
 
@@ -752,7 +748,7 @@ class StepperTest:
         ]
 
     def should_contain_identity_check_methods(self, client):
-        user = users_factories.EligibleUnderageFactory()
+        user = users_factories.EligibleUnderageFactory(age=17)
 
         client.with_token(user.email)
         with assert_num_queries(self.expected_num_queries):
@@ -1651,7 +1647,7 @@ class UpdateProfileTest:
 
 
 class ActivityTypesTest:
-    @pytest.mark.parametrize("age", (15, 16, 17, 18))
+    @pytest.mark.parametrize("age", (17, 18))
     def test_get_activity_types(self, client, age):
         user = users_factories.BaseUserFactory(age=age)
         client.with_token(user.email)
@@ -1700,16 +1696,8 @@ class ActivityTypesTest:
 
 
 class HonorStatementTest:
-    @pytest.mark.parametrize(
-        "age,eligibility_type",
-        [
-            (15, users_models.EligibilityType.UNDERAGE),
-            (16, users_models.EligibilityType.UNDERAGE),
-            (17, users_models.EligibilityType.UNDERAGE),
-            (18, users_models.EligibilityType.AGE18),
-        ],
-    )
-    def test_create_honor_statement_fraud_check(self, client, age, eligibility_type):
+    @pytest.mark.parametrize("age", [17, 18])
+    def test_create_honor_statement_fraud_check(self, client, age):
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, days=10))
 
         client.with_token(user.email)
@@ -1724,5 +1712,4 @@ class HonorStatementTest:
 
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert fraud_check.reason == "statement from /subscription/honor_statement endpoint"
-        assert fraud_check.eligibilityType == eligibility_type
-        assert fraud_check.eligibilityType == eligibility_type
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18

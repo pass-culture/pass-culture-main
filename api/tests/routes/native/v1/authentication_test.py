@@ -17,6 +17,7 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.google_oauth import GoogleUser
 from pcapi.core import token as token_utils
 from pcapi.core.fraud import factories as fraud_factories
+from pcapi.core.fraud import repository as fraud_repository
 from pcapi.core.history import factories as history_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -1165,5 +1166,5 @@ class EmailValidationTest:
         assert user.isEmailValidated
         assert response.status_code == 200
 
-        fraud_check = subscription_api.get_relevant_identity_fraud_check(user, user.eligibility)
+        fraud_check = fraud_repository.get_relevant_identity_fraud_check(user, user.eligibility)
         assert fraud_check is not None
