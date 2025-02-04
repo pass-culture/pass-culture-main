@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
 
+from pcapi import settings
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import eligibility_api
@@ -45,7 +46,7 @@ class DecideV3CreditEligibilityTest:
 
         assert eligibility is None
 
-    @time_machine.travel(eligibility_api.CREDIT_V3_DECREE_DATETIME + relativedelta(years=2))
+    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME + relativedelta(years=2))
     @pytest.mark.parametrize("age", [19, 20])
     def test_old_user_still_eligible_with_early_first_registration(self, age):
         birth_date = date.today() - relativedelta(years=age, months=1)
@@ -62,7 +63,7 @@ class DecideV3CreditEligibilityTest:
 
         assert eligibility == users_models.EligibilityType.AGE17_18
 
-    @time_machine.travel(eligibility_api.CREDIT_V3_DECREE_DATETIME + relativedelta(years=2))
+    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME + relativedelta(years=2))
     @pytest.mark.parametrize("age", [19, 20])
     def test_old_user_still_eligible_with_early_registration_datetime(self, age):
         birth_date = date.today() - relativedelta(years=age, months=1)
@@ -101,7 +102,7 @@ class DecideV3CreditEligibilityTest:
 
         assert eligibility is None
 
-    @time_machine.travel(eligibility_api.CREDIT_V3_DECREE_DATETIME)
+    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
     @pytest.mark.parametrize("age", [15, 16, 17])
     def test_user_underage_eligibility_when_registered_before_decree(self, age):
         birth_date = date.today() - relativedelta(years=age, months=1)
@@ -110,14 +111,14 @@ class DecideV3CreditEligibilityTest:
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            dateCreated=eligibility_api.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1),
+            dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1),
         )
 
         eligibility = eligibility_api.decide_eligibility(user, birth_date, None)
 
         assert eligibility == users_models.EligibilityType.UNDERAGE
 
-    @time_machine.travel(eligibility_api.CREDIT_V3_DECREE_DATETIME)
+    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
     @pytest.mark.parametrize("age", [15, 16, 17])
     def test_user_underage_eligibility_with_registration_datetime_before_decree(self, age):
         birth_date = date.today() - relativedelta(years=age, months=1)
@@ -126,7 +127,7 @@ class DecideV3CreditEligibilityTest:
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            dateCreated=eligibility_api.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1),
+            dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1),
         )
 
         yesterday = datetime.utcnow() - relativedelta(days=1)
@@ -134,7 +135,7 @@ class DecideV3CreditEligibilityTest:
 
         assert eligibility == users_models.EligibilityType.UNDERAGE
 
-    @time_machine.travel(eligibility_api.CREDIT_V3_DECREE_DATETIME)
+    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
     def test_user_eighteen_eligibility_when_registered_before_decree(self):
         birth_date = date.today() - relativedelta(years=18, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
@@ -142,14 +143,14 @@ class DecideV3CreditEligibilityTest:
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.AGE18,
-            dateCreated=eligibility_api.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1),
+            dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1),
         )
 
         eligibility = eligibility_api.decide_eligibility(user, birth_date, None)
 
         assert eligibility == users_models.EligibilityType.AGE18
 
-    @time_machine.travel(eligibility_api.CREDIT_V3_DECREE_DATETIME)
+    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
     def test_user_eighteen_eligibility_with_registration_datetime_before_decree(self):
         birth_date = date.today() - relativedelta(years=18, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
@@ -159,7 +160,7 @@ class DecideV3CreditEligibilityTest:
 
         assert eligibility == users_models.EligibilityType.AGE18
 
-    @time_machine.travel(eligibility_api.CREDIT_V3_DECREE_DATETIME)
+    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
     def test_user_21_ineligibility_when_registered_before_decree(self):
         birth_date = date.today() - relativedelta(years=21, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
@@ -175,7 +176,7 @@ class DecideV3CreditEligibilityTest:
 
         assert eligibility is None
 
-    @time_machine.travel(eligibility_api.CREDIT_V3_DECREE_DATETIME)
+    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
     def test_user_21_ineligibility_with_registration_date_before_decree(self):
         birth_date = date.today() - relativedelta(years=21, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
