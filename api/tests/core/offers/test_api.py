@@ -38,6 +38,7 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.providers.allocine import get_allocine_products_provider
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
@@ -4295,14 +4296,23 @@ class CreateMovieProductFromProviderTest:
 
     def test_updates_product_if_exists(self):
         # Given
-        product = factories.ProductFactory(extraData={"allocineId": 12345})
-        movie = self._get_movie(allocine_id="12345")
+        allocine_id = 12345
+        visa = "67890"
+
+        allocine_movie = factories.ProductFactory(extraData={"allocineId": allocine_id})
+        random_movie_with_visa = factories.ProductFactory(extraData={"visa": visa})
+
+        movie = self._get_movie(allocine_id=str(allocine_id), visa=visa)
+        offer = offers_factories.OfferFactory(product=random_movie_with_visa)
 
         # When
         api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
 
         # Then
-        assert product.lastProvider.id == self.allocine_provider.id
+        assert allocine_movie.lastProvider.id == self.allocine_provider.id
+
+        db.session.refresh(offer)
+        offer.productId == allocine_movie.id
 
     def test_does_not_update_allocine_product_from_non_allocine_synchro(self):
         # Given

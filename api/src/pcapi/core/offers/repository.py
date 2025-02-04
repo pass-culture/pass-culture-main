@@ -1512,6 +1512,8 @@ def merge_products(to_keep: models.Product, to_delete: models.Product) -> models
     )
     db.session.delete(to_delete)
 
+    db.session.flush()
+
     return to_keep
 
 
