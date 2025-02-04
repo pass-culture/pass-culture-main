@@ -1962,7 +1962,7 @@ class SendPhoneValidationCodeTest:
         ).one_or_none()
 
         assert fraud_check is not None
-        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
         content = fraud_check.resultContent
         expected_reason = "Le nombre maximum de sms envoyés est atteint"
@@ -2052,7 +2052,7 @@ class SendPhoneValidationCodeTest:
         ).one_or_none()
 
         assert fraud_check is not None
-        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
         content = fraud_check.resultContent
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_ALREADY_EXISTS]
@@ -2114,7 +2114,7 @@ class SendPhoneValidationCodeTest:
             status=fraud_models.FraudCheckStatus.KO,
         ).one_or_none()
 
-        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
         content = fraud_check.resultContent
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.BLACKLISTED_PHONE_NUMBER]
@@ -2145,7 +2145,7 @@ class ValidatePhoneNumberTest:
             user=user, type=fraud_models.FraudCheckType.PHONE_VALIDATION
         ).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
-        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
         assert not token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
@@ -2220,7 +2220,7 @@ class ValidatePhoneNumberTest:
             thirdPartyId=f"PC-{user.id}",
         ).all()
         for fraud_check in fraud_checks:
-            assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+            assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
             expected_reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
             content = fraud_check.resultContent
@@ -2577,6 +2577,7 @@ class IdentificationSessionTest:
             status=fraud_models.FraudCheckStatus.STARTED,
             user=user,
             resultContent=ubble_content,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
         )
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 

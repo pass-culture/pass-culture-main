@@ -6,13 +6,13 @@ import re
 from pcapi import settings
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
+from pcapi.core.fraud import repository as fraud_repository
 import pcapi.core.fraud.utils as fraud_utils
 import pcapi.core.mails.transactional as transaction_mails
 from pcapi.core.mails.transactional.users import fraud_emails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import models as subscription_models
-from pcapi.core.subscription import repository as subscription_repository
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants
 from pcapi.core.users import eligibility_api
@@ -553,16 +553,6 @@ def create_honor_statement_fraud_check(
     db.session.commit()
 
 
-def has_performed_honor_statement(user: users_models.User, eligibility_type: users_models.EligibilityType) -> bool:
-    fraud_checks = user.beneficiaryFraudChecks
-    return any(
-        fraud_check.type == models.FraudCheckType.HONOR_STATEMENT
-        and fraud_check.eligibilityType == eligibility_type
-        and fraud_check.status == models.FraudCheckStatus.OK
-        for fraud_check in fraud_checks
-    )
-
-
 def handle_ok_manual_review(
     user: users_models.User,
     _review: models.BeneficiaryFraudReview,
@@ -694,7 +684,7 @@ def create_profile_completion_fraud_check(
     eligibility: users_models.EligibilityType | None,
     fraud_check_content: models.ProfileCompletionContent,
 ) -> None:
-    if subscription_repository.get_completed_profile_check(user, eligibility) is not None:
+    if fraud_repository.get_completed_profile_check(user, eligibility) is not None:
         logger.warning(
             "Profile completion fraud check for user already exists.",
             extra={"user_id": user.id},

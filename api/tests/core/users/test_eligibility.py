@@ -21,7 +21,7 @@ class DecideV3CreditEligibilityTest:
         birth_date = date.today() - relativedelta(years=age, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
 
-        eligibility = eligibility_api.decide_eligibility(user, birth_date, None)
+        eligibility = eligibility_api.decide_eligibility(user, birth_date, datetime.utcnow())
 
         assert eligibility == users_models.EligibilityType.AGE17_18
 
@@ -42,7 +42,7 @@ class DecideV3CreditEligibilityTest:
         birth_date = date.today() - relativedelta(years=age, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
 
-        eligibility = eligibility_api.decide_eligibility(user, birth_date, None)
+        eligibility = eligibility_api.decide_eligibility(user, birth_date, datetime.utcnow())
 
         assert eligibility is None
 

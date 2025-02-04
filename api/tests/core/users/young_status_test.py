@@ -20,15 +20,9 @@ def _with_age(age):
 
 class YoungStatusTest:
     class EligibleTest:
-        @pytest.mark.parametrize("age", [15, 16, 17])
-        def should_be_eligible_when_age_is_between_15_and_17(self, age):
+        @pytest.mark.parametrize("age", [17, 18])
+        def should_be_eligible_when_age_is_between_17_and_18(self, age):
             user = users_factories.UserFactory(dateOfBirth=_with_age(age))
-            assert young_status.young_status(user) == young_status.Eligible(
-                subscription_status=young_status.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
-            )
-
-        def should_be_eligible_when_at_18yo(self):
-            user = users_factories.UserFactory(dateOfBirth=_with_age(18))
             assert young_status.young_status(user) == young_status.Eligible(
                 subscription_status=young_status.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
             )
@@ -68,10 +62,9 @@ class YoungStatusTest:
                 subscription_status=young_status.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
             )
 
-        @pytest.mark.parametrize("age", [15, 16, 17])
-        def should_have_subscription_pending_when_dms_is_started_for_underage(self, age):
+        def should_have_subscription_pending_when_dms_is_started_for_underage(self):
             user = users_factories.UserFactory(
-                dateOfBirth=_with_age(age), phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
+                dateOfBirth=_with_age(17), phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
                 status=fraud_models.FraudCheckStatus.OK,
@@ -120,9 +113,8 @@ class YoungStatusTest:
                 subscription_status=young_status.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
             )
 
-        @pytest.mark.parametrize("age", [15, 16, 17])
-        def should_be_eligible_when_subscription_is_pending_for_an_underage_user(self, age):
-            user = users_factories.UserFactory(dateOfBirth=_with_age(age))
+        def should_be_eligible_when_subscription_is_pending_for_an_underage_user(self):
+            user = users_factories.UserFactory(dateOfBirth=_with_age(17))
             fraud_factories.BeneficiaryFraudCheckFactory(
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
                 type=fraud_models.FraudCheckType.PROFILE_COMPLETION,

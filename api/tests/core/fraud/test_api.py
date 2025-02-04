@@ -97,7 +97,7 @@ class CommonTest:
 
         assert profile_completion_fraud_check.type == fraud_models.FraudCheckType.PROFILE_COMPLETION
         assert profile_completion_fraud_check.status == fraud_models.FraudCheckStatus.OK
-        assert profile_completion_fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+        assert profile_completion_fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
         # try to create duplicate
         fraud_api.create_profile_completion_fraud_check(user, user.eligibility, content)
@@ -355,9 +355,10 @@ class FindDuplicateUserTest:
 @pytest.mark.usefixtures("db_session")
 class EduconnectFraudTest:
     def test_on_educonnect_result(self):
-        birth_date = (datetime.datetime.today() - relativedelta(years=15, days=5)).date()
-        registration_date = datetime.datetime.utcnow() - relativedelta(days=3)  # eligible 15-17
+        birth_date = (datetime.datetime.today() - relativedelta(years=17, days=5)).date()
+        registration_date = datetime.datetime.utcnow() - relativedelta(days=3)  # eligible 17-18
         user = users_factories.UserFactory(dateOfBirth=birth_date)
+
         fraud_api.on_educonnect_result(
             user,
             fraud_models.EduconnectContent(
@@ -380,7 +381,7 @@ class EduconnectFraudTest:
         assert fraud_check is not None
         assert fraud_check.userId == user.id
         assert fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT
-        assert fraud_check.eligibilityType == users_models.EligibilityType.UNDERAGE
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert fraud_check.source_data().__dict__ == {
             "civility": users_models.GenderEnum.F,
@@ -420,7 +421,7 @@ class EduconnectFraudTest:
         )
         assert fraud_check.userId == user.id
         assert fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT
-        assert fraud_check.eligibilityType == users_models.EligibilityType.UNDERAGE
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
         assert fraud_check.source_data().__dict__ == {
             "civility": users_models.GenderEnum.M,
             "educonnect_id": "id-1",
@@ -546,15 +547,12 @@ def build_user_at_id_check(age, eligibility_type=users_models.EligibilityType.AG
 class HasUserPerformedIdentityCheckTest:
     def test_has_not_performed(self):
         user = build_user_at_id_check(18)
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, eligibilityType=users_models.EligibilityType.UNDERAGE)
 
         assert not fraud_api.has_user_performed_identity_check(user)
 
     @pytest.mark.parametrize(
         "age, eligibility_type",
         [
-            (15, users_models.EligibilityType.UNDERAGE),
-            (16, users_models.EligibilityType.UNDERAGE),
             (17, users_models.EligibilityType.UNDERAGE),
             (18, users_models.EligibilityType.AGE18),
         ],
@@ -569,13 +567,26 @@ class HasUserPerformedIdentityCheckTest:
 
         assert fraud_api.has_user_performed_identity_check(user)
 
-    def test_has_user_performed_identity_check_turned_18(self):
-        user = build_user_at_id_check(18)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE, user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
-        )
+    @pytest.mark.parametrize(
+        "decree_month_offset",
+        [
+            pytest.param(-1, id="with eighteenth birthday before decree"),
+            pytest.param(6, id="with decree between the seventeenth and eighteenth birthday"),
+            pytest.param(13, id="with decree before seventeenth birthday"),
+        ],
+    )
+    def test_has_user_performed_identity_check_at_17_now_turned_18(self, decree_month_offset):
+        with time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME + relativedelta(months=decree_month_offset)):
+            user = build_user_at_id_check(18)
+            year_when_user_was_underage = datetime.datetime.utcnow() - relativedelta(years=1)
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                type=fraud_models.FraudCheckType.UBBLE,
+                user=user,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+                dateCreated=year_when_user_was_underage,
+            )
 
-        assert not fraud_api.has_user_performed_identity_check(user)
+            assert not fraud_api.has_user_performed_identity_check(user)
 
     def test_has_user_performed_identity_check_without_identity_fraud_check(self):
         user = user = build_user_at_id_check(18)
@@ -657,7 +668,6 @@ class HasUserPerformedIdentityCheckTest:
 
 @pytest.mark.usefixtures("db_session")
 class DuplicateBeneficiaryEmailTest:
-
     def test_duplicate_user(self):
         rejected_user = users_factories.UserFactory()
         duplicater_user = users_factories.BeneficiaryGrant18Factory(email="shotgun@example.com")

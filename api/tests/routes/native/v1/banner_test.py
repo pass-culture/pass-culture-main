@@ -133,21 +133,18 @@ class BannerTest:
 
         assert response.json == {"banner": None}
 
-    def should_return_activation_banner_with_20_euros_when_15_year_old(self, client):
-        dateOfBirth = datetime.datetime.utcnow() - relativedelta(years=15, months=5)
-        user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
+    def should_return_activation_banner_with_30_euros_when_17_year_old(self, client):
+        user = users_factories.UserFactory(age=17)
 
         client.with_token(email=user.email)
-
-        # authenticated user + joined user + credit v3 FF
-        with assert_num_queries(3):
+        with assert_num_queries(3):  # authenticated user + joined user + credit v3 FF
             response = client.get("/native/v1/banner?isGeolocated=false")
             assert response.status_code == 200
 
         assert response.json == {
             "banner": {
                 "name": "activation_banner",
-                "title": f"Débloque tes 20{u_nbsp}€",
+                "title": f"Débloque tes 30{u_nbsp}€",
                 "text": "à dépenser sur l'application",
             }
         }

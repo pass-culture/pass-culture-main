@@ -133,12 +133,12 @@ class HandleDmsApplicationTest:
 
     def test_handle_dms_application_updates_birth_date(self):
         beneficiary = users_factories.ExUnderageBeneficiaryFactory()
-        sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16, months=1)
+        seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17, months=1)
         dms_response = make_parsed_graphql_application(
             application_number=1234,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=beneficiary.email,
-            birth_date=sixteen_years_ago,
+            birth_date=seventeen_years_ago,
             construction_datetime=datetime.datetime.utcnow().isoformat(),
             first_name="little",
             last_name="sister",
@@ -146,7 +146,7 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
 
-        assert beneficiary.validatedBirthDate == sixteen_years_ago.date()
+        assert beneficiary.validatedBirthDate == seventeen_years_ago.date()
 
     def test_concurrent_accepted_calls(self):
         user = users_factories.UserFactory(

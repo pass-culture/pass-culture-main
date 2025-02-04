@@ -66,14 +66,16 @@ class UbbleV2EndToEndTest:
         self._receive_and_ignore_capture_in_progress_webhook_notification(user, ubble_client)
         self._receive_and_handle_verification_refused_webhook_notification(user, client, ubble_client, requests_mock)
 
-        assert user.eligibility == users_models.EligibilityType.UNDERAGE
+        assert user.eligibility == users_models.EligibilityType.AGE17_18
+        assert user.age < 18
 
         self._retry_ubble_workflow(user, client, requests_mock)
         self._receive_and_ignore_capture_in_progress_webhook_notification(user, ubble_client)
         self._receive_and_handle_checks_in_progress_webhook_notification(user, client, ubble_client, requests_mock)
         self._receive_and_handle_verification_approved_webhook_notification(user, client, ubble_client, requests_mock)
 
-        assert user.eligibility == users_models.EligibilityType.AGE18
+        assert user.eligibility == users_models.EligibilityType.AGE17_18
+        assert user.age >= 18
 
         self._create_honor_statement_fraud_check(user, client)
 

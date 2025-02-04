@@ -77,7 +77,7 @@ def decide_v3_credit_eligibility(
     eligibility: users_models.EligibilityType | None = None
 
     if registration_datetime:
-        eligibility = get_extended_eligibility_at_date(birth_date, registration_datetime, user.departementCode)
+        eligibility = get_eligibility_at_date(birth_date, registration_datetime, user.departementCode)
     if eligibility:
         return eligibility
 
@@ -91,6 +91,23 @@ def decide_v3_credit_eligibility(
         eligibility = users_models.EligibilityType.AGE17_18
 
     return eligibility
+
+
+def get_eligibility_at_date(
+    birth_date: datetime.date, specified_datetime: datetime.datetime, department_code: str | None = None
+) -> users_models.EligibilityType | None:
+    age = users_utils.get_age_at_date(birth_date, specified_datetime, department_code)
+
+    if specified_datetime < settings.CREDIT_V3_DECREE_DATETIME or not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
+        if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
+            return users_models.EligibilityType.UNDERAGE
+        if constants.ELIGIBILITY_AGE_18 == age:
+            return users_models.EligibilityType.AGE18
+
+    if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and 17 <= age <= 18:
+        return users_models.EligibilityType.AGE17_18
+
+    return None
 
 
 def get_extended_eligibility_at_date(
@@ -185,8 +202,12 @@ def is_eligible_for_next_recredit_activation_steps(user: users_models.User) -> b
 def is_user_age_compatible_with_eligibility(
     user_age: int | None, eligibility: users_models.EligibilityType | None
 ) -> bool:
+    if not user_age:
+        return False
     if eligibility == users_models.EligibilityType.UNDERAGE:
         return user_age in constants.ELIGIBILITY_UNDERAGE_RANGE
     if eligibility == users_models.EligibilityType.AGE18:
-        return user_age is not None and user_age >= constants.ELIGIBILITY_AGE_18
+        return user_age >= constants.ELIGIBILITY_AGE_18
+    if eligibility == users_models.EligibilityType.AGE17_18:
+        return user_age >= 17
     return False
