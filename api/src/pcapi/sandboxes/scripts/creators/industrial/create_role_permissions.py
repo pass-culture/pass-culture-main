@@ -196,6 +196,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_CHRONICLE,
         perm_models.Permissions.MANAGE_CHRONICLE,
         perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST,
+        perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW,
     ],
     "dpo": [
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
