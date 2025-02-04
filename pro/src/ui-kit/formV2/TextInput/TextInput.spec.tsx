@@ -73,21 +73,6 @@ describe('TextInput', () => {
     expect(input.getAttribute('aria-describedby')).toBe(descriptionId)
   })
 
-  it('should display the element passed as input extension when defined', () => {
-    const inputExtensionContent = 'Extension content'
-
-    render(
-      <TextInput
-        type="text"
-        label="Input 1"
-        name="test1"
-        InputExtension={<span>{inputExtensionContent}</span>}
-      />
-    )
-
-    expect(screen.getByText(inputExtensionContent)).toBeInTheDocument()
-  })
-
   it('should display the element with an error', () => {
     render(
       <TextInput label="Input 1" name="test1" error="My error on my input" />
@@ -170,15 +155,6 @@ describe('TextInput', () => {
     // Test if non-numeric input is rejected
     await userEvent.keyboard('a')
     expect(input).toHaveValue(123.45) // Input remains unchanged for non-numeric input
-  })
-
-  it('renders InputExtension correctly if passed', () => {
-    const InputExtension = <button>Reset</button>
-    render(<TextInput {...defaultProps} InputExtension={InputExtension} />)
-
-    // Check if the InputExtension is rendered next to the input
-    const extensionButton = screen.getByText('Reset')
-    expect(extensionButton).toBeInTheDocument()
   })
 
   it('renders description when the description prop is passed', () => {

@@ -33,11 +33,9 @@ type TextInputProps = FieldLayoutBaseProps &
      */
     error?: string
     /**
-     * A custom component to be displayed next to the input.
-     * It can be used to display additional information or related actions like
-     * a checkbox to reset the input value.
+     * A custom character counter to be displayed.
+     * If this prop is provided, the counter will be displayed
      */
-    InputExtension?: React.ReactNode
     count?: number
   }
 
@@ -87,7 +85,6 @@ export const TextInput = React.forwardRef(
       hasDecimal = true,
       description,
       error,
-      InputExtension,
       count,
       ...props
     }: TextInputProps,
@@ -162,42 +159,32 @@ export const TextInput = React.forwardRef(
             </span>
           )}
         </div>
-
-        <div className={styles['input-layout-content']}>
-          <div className={cn(styles['input-wrapper'])}>
-            {readOnly ? (
-              <span className={styles['text-input-readonly']}>
-                {props.value}
-              </span>
-            ) : InputExtension ? (
-              <div className={styles['text-input-group']} role="group">
-                {input}
-                <div className={styles['text-input-group-extension']}>
-                  {InputExtension}
-                </div>
+        {readOnly ? (
+          <span className={styles['text-input-readonly']}>{props.value}</span>
+        ) : (
+          <>
+            <div className={styles['text-input']}>
+              {input}
+              <div className={styles['input-layout-footer']}>
+                {error && (
+                  <div
+                    role="alert"
+                    className={styles['input-layout-error']}
+                    id={`error-details-${name}`}
+                  >
+                    <FieldError name={name}>{error}</FieldError>
+                  </div>
+                )}
+                {count !== undefined && (
+                  <FieldLayoutCharacterCount
+                    count={count}
+                    maxLength={maxLength}
+                    name={name}
+                  />
+                )}
               </div>
-            ) : (
-              input
-            )}
-          </div>
-          <div className={styles['input-layout-footer']}>
-            {error && (
-              <div
-                role="alert"
-                className={styles['input-layout-error']}
-                id={`error-details-${name}`}
-              >
-                <FieldError name={name}>{error}</FieldError>
-              </div>
-            )}
-          </div>
-        </div>
-        {count !== undefined && (
-          <FieldLayoutCharacterCount
-            count={count}
-            maxLength={maxLength}
-            name={name}
-          />
+            </div>
+          </>
         )}
       </div>
     )
