@@ -199,6 +199,12 @@ class UbbleV2EndToEndTest:
         assert response.status_code == 204, response.json
 
 
+class UbbleDummyWebhookTest:
+    def test_dummy_webhook_with_data(self, ubble_client):
+        response = ubble_client.post("/webhooks/ubble/dummy", json=fixtures.ID_VERIFICATION_APPROVED_WEBHOOK_BODY)
+        assert response.status_code == 200
+
+
 @pytest.mark.usefixtures("db_session")
 class UbbleEndToEndTest:
     def _get_ubble_webhook_signature(self, payload):

@@ -28,6 +28,15 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
     dms_subscription_api.handle_dms_application(dms_application)
 
 
+@public_api.route("/webhooks/ubble/dummy", methods=["POST"])
+@spectree_serialize(
+    on_success_status=200,
+    response_model=ubble_serializers.WebhookDummyReponse,  # type: ignore[arg-type]
+)
+def dummy_webook_ubble_v2(body: ubble_serializers.WebhookBodyV2) -> ubble_serializers.WebhookDummyReponse:
+    return ubble_serializers.WebhookDummyReponse()
+
+
 @public_api.route("/webhooks/ubble/v2/application_status", methods=["POST"])
 @ubble_validation.require_ubble_v2_signature
 @spectree_serialize(
