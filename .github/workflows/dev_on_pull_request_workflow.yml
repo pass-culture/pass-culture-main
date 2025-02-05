@@ -229,7 +229,7 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   test-pro-e2e:
-    name: "Tests pro E2E"
+    name: "Pro E2E Tests"
     needs: [pcapi-init-job, build-pcapi]
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
     if: always() &&
@@ -237,6 +237,7 @@ jobs:
       needs.pcapi-init-job.outputs.api-changed == 'true' ||
       needs.pcapi-init-job.outputs.pro-changed == 'true'
     with:
+      ENV: "development"
       tag: ${{ needs.build-pcapi.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     secrets:
