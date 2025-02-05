@@ -25,6 +25,7 @@ import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfte
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 import { FormAccessibility } from './FormAccessibility/FormAccessibility'
 import { FormContact } from './FormContact/FormContact'
@@ -43,7 +44,7 @@ import styles from './OfferEducationalForm.module.scss'
 
 export type OfferEducationalFormProps = {
   userOfferer: GetEducationalOffererResponseModel | null
-  domainsOptions: SelectOption[]
+  domainsOptions: Option[]
   nationalPrograms: SelectOption<number>[]
   isTemplate: boolean
   mode: Mode

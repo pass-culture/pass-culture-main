@@ -15,9 +15,9 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
-import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+import { MultiSelect } from 'ui-kit/MultiSelect/MultiSelect'
 
 import {
   EVENT_ADDRESS_OFFERER_LABEL,
@@ -189,14 +189,16 @@ export const FormPracticalInformation = ({
             </InfoBox>
           }
         >
-          <SelectAutocomplete
-            multi
+          <MultiSelect 
             label={INTERVENTION_AREA_LABEL}
             name="interventionArea"
-            hideTags
+            buttonLabel='Zone de mobilité'
             options={offerInterventionOptions}
-            className={styles.row}
             disabled={disableForm}
+            hasSearch
+            searchLabel='Rehercher'
+            hasSelectAllOptions
+            onSelectedOptionsChanged={(selectedOptions) => setFieldValue('interventionArea', selectedOptions.map((elm) => elm.id))}
           />
         </FormLayout.Row>
       )}

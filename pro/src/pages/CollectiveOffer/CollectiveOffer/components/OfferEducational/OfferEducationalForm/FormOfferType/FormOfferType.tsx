@@ -15,17 +15,17 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Select } from 'ui-kit/form/Select/Select'
-import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 import { getNationalProgramsForDomains } from '../../constants/getNationalProgramsForDomains'
 import styles from '../OfferEducationalForm.module.scss'
 
 export interface FormTypeProps {
-  domainsOptions: SelectOption[]
+  domainsOptions: Option[]
   nationalPrograms: SelectOption<number>[]
   disableForm: boolean
   isTemplate: boolean
@@ -37,11 +37,11 @@ export const FormOfferType = ({
   disableForm,
   isTemplate,
 }: FormTypeProps): JSX.Element => {
-  const { values } = useFormikContext<OfferEducationalFormValues>()
+  const { values, setFieldValue } = useFormikContext<OfferEducationalFormValues>()
   const { logEvent } = useAnalytics()
 
   const eacFormatOptions = Object.entries(EacFormat).map(([, value]) => ({
-    value: value,
+    id: value,
     label: String(value),
   }))
 
@@ -77,21 +77,27 @@ export const FormOfferType = ({
       >
         {domainsOptions.length > 0 && (
           <FormLayout.Row>
-            <SelectAutocomplete
-              multi
+            <MultiSelect 
               label="Ajoutez un ou plusieurs domaines artistiques"
               name="domains"
+              hasSearch
+              searchLabel='Recherche'
               options={domainsOptions}
+              buttonLabel='Domaines artistiques'
+              onSelectedOptionsChanged={(selectedOptions) => setFieldValue('domains', [...selectedOptions.map((elm) => Number(elm.id))])}
               disabled={disableForm}
             />
           </FormLayout.Row>
         )}
         <FormLayout.Row>
-          <SelectAutocomplete
-            multi
+          <MultiSelect
             options={eacFormatOptions}
             label="Ajoutez un ou plusieurs formats"
+            buttonLabel='Formats'
+            hasSearch
+            searchLabel='Recherche'
             name="formats"
+            onSelectedOptionsChanged={(selectedOptions) => setFieldValue('formats', [...selectedOptions.map((elm) => elm.id)])}
             disabled={disableForm}
           />
         </FormLayout.Row>

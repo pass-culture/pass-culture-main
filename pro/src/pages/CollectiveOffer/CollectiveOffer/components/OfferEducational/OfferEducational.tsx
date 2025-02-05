@@ -42,6 +42,7 @@ import {
   createPatchOfferPayload,
   createPatchOfferTemplatePayload,
 } from 'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferEdition/utils/createPatchOfferPayload'
+import { Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 import styles from './OfferEducational.module.scss'
 import { OfferEducationalForm } from './OfferEducationalForm/OfferEducationalForm'
@@ -57,7 +58,7 @@ export interface OfferEducationalProps {
   mode: Mode
   isOfferBooked?: boolean
   isOfferActive?: boolean
-  domainsOptions: SelectOption[]
+  domainsOptions: Option[]
   nationalPrograms: SelectOption<number>[]
   isTemplate: boolean
   isOfferCreated?: boolean
