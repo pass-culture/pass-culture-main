@@ -610,6 +610,22 @@ class CollectiveOfferTemplateIsEligibleForSearchTest:
         assert searchable_offer.is_eligible_for_search
         assert not unsearchable_offer.is_eligible_for_search
 
+    @pytest.mark.parametrize(
+        "validation_status,is_eligible_for_search",
+        [
+            (ValidationStatus.NEW, False),
+            (ValidationStatus.PENDING, False),
+            (ValidationStatus.VALIDATED, True),
+            (ValidationStatus.REJECTED, False),
+            (ValidationStatus.CLOSED, False),
+        ],
+    )
+    def test_offerer_validation_status(self, validation_status, is_eligible_for_search):
+        collective_offer_template = factories.CollectiveOfferTemplateFactory(
+            isActive=True, venue__managingOfferer__validationStatus=validation_status
+        )
+        assert collective_offer_template.is_eligible_for_search is is_eligible_for_search
+
 
 class EducationalInstitutionProgramTest:
     def test_unique_program_for_an_educational_institution(self):
