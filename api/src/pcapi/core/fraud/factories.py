@@ -16,6 +16,7 @@ from pcapi.core import factories
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 import pcapi.core.users.factories as users_factories
+from pcapi.models.feature import FeatureToggle
 
 from . import models
 
@@ -158,16 +159,22 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
     type = models.FraudCheckType.UBBLE
     thirdPartyId = factory.LazyFunction(lambda: str(uuid.uuid4()))
     status = models.FraudCheckStatus.PENDING
-    eligibilityType = factory.LazyAttribute(
-        lambda o: (
-            users_models.EligibilityType.UNDERAGE
-            if o.user.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
-            else users_models.EligibilityType.AGE18
-        )
-    )
+
+    @factory.lazy_attribute
+    def eligibilityType(self) -> users_models.EligibilityType:
+        if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
+            return users_models.EligibilityType.AGE17_18
+        if self.user.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE:
+            return users_models.EligibilityType.UNDERAGE
+        return users_models.EligibilityType.AGE18
 
     @classmethod
-    def generate_content_from_user(cls, factory_class: typing.Type[factory.Factory], user: users_models.User) -> dict:
+    def generate_content_from_user(
+        cls,
+        factory_class: typing.Type[factory.Factory],
+        user: users_models.User,
+        date_created: datetime | None = None,
+    ) -> dict:
         identification_id = str(uuid.uuid4())
         identification_url = urllib.parse.urljoin(settings.UBBLE_API_URL, f"/identifications/{identification_id}")
         kwargs = dict(identification_id=identification_id, identification_url=identification_url)
@@ -177,6 +184,8 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
             kwargs.update(last_name=user.lastName)
         if user.birth_date:
             kwargs.update(birth_date=user.birth_date.isoformat())
+        if date_created:
+            kwargs.update(registration_datetime=date_created.isoformat())
         return factory_class(**kwargs).dict(by_alias=True)
 
     @classmethod
@@ -192,10 +201,18 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
             kwargs["resultContent"] = None
             return super()._create(model_class, *args, **kwargs)
 
+        first_registration_datetime = None
+        if kwargs.get("dateCreated") and kwargs.get("type") in (
+            models.FraudCheckType.DMS,
+            models.FraudCheckType.UBBLE,
+            models.FraudCheckType.EDUCONNECT,
+        ):
+            first_registration_datetime = datetime.combine(kwargs["dateCreated"], datetime.min.time())
+
         content = None
         if "resultContent" not in kwargs:
             content = (
-                cls.generate_content_from_user(factory_class, kwargs["user"])
+                cls.generate_content_from_user(factory_class, kwargs["user"], first_registration_datetime)
                 if "user" in kwargs
                 else factory_class().dict(by_alias=True)
             )

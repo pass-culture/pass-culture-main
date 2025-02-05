@@ -1,5 +1,6 @@
 import datetime
 
+from dateutil.relativedelta import relativedelta
 import pytest
 
 import pcapi.core.finance.models as finance_models
@@ -177,6 +178,7 @@ class UserGeneratorTest:
         fraud_item = fraud_api.validate_id_piece_number_format_fraud_item(user.idPieceNumber)
         assert fraud_item.status == fraud_models.FraudStatus.OK
 
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
     def test_profile_completion_is_consistent_with_user_data(self):
         user_data = users_generator.GenerateUserData(
             age=users_constants.ELIGIBILITY_AGE_18,
@@ -190,6 +192,7 @@ class UserGeneratorTest:
         assert profile_completion.resultContent["lastName"] == user.lastName
         assert profile_completion.resultContent["postalCode"] == user.postalCode
 
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
     def test_identity_check_is_consistent_with_user_data(self):
         user_data = users_generator.GenerateUserData(
             age=users_constants.ELIGIBILITY_AGE_18,
@@ -201,6 +204,7 @@ class UserGeneratorTest:
         assert identity_check.resultContent["last_name"] == user.lastName
         assert identity_check.resultContent["birth_date"] == str(user.birth_date)
 
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
     def test_user_in_transition_17_18(self):
         user_data = users_generator.GenerateUserData(transition_17_18=True)
         user = users_generator.generate_user(user_data)
@@ -219,7 +223,25 @@ class UserGeneratorTest:
             users_generator.GeneratedIdProvider.UBBLE,
         ],
     )
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
     def test_id_provider_in_transition_17_18(self, id_provider):
         user_data = users_generator.GenerateUserData(transition_17_18=True, id_provider=id_provider)
         user = users_generator.generate_user(user_data)
         assert self.has_fraud_check_validated(user, id_provider.value)
+
+    def test_user_generated_with_date_created(self):
+        date_in_the_past = datetime.datetime.utcnow() - relativedelta(months=5)
+        user_data = users_generator.GenerateUserData(
+            step=users_generator.GeneratedSubscriptionStep.BENEFICIARY, date_created=date_in_the_past
+        )
+
+        user = users_generator.generate_user(user_data)
+
+        identity_fraud_check = next(
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        )
+
+        assert identity_fraud_check.dateCreated == date_in_the_past
+        assert identity_fraud_check.source_data().get_registration_datetime().date() == date_in_the_past.date()
