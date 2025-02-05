@@ -78,7 +78,7 @@ jobs:
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - run: yarn install --immutable
       - name: Run tests with coverage
-        run: yarn test:unit:ci --reporter=blob --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: yarn test:unit:ci --reporter=blob --reporter=allure-vitest/reporter --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Upload blob report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
@@ -91,10 +91,50 @@ jobs:
 
       - name: "Upload Allure results for pro tests"
         uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() && github.ref == 'refs/heads/master' }}
+        with:
+          name: allure-results-pro-unit-${{ matrix.shardIndex }}
+          path: pro/allure-results
+
+  merge-allure-reports:
+    if: ${{ !cancelled() && github.ref == 'refs/heads/master' }}
+    needs: [run-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download allure reports
+        uses: actions/download-artifact@v4
+        with:
+          path: pro/allure-results
+          pattern: allure-results-pro-unit-*
+
+      - name: "Upload Allure results for pro tests"
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: allure-results-pro-unit
-          path: allure-results
+          path: pro/allure-results
+
+      - name: "Install Allure CLI via Yarn"
+        run: yarn global add allure-commandline
+
+      - name: "Clone Allure Report Repository to Retrieve History"
+        env:
+          TOKEN: ${{ secrets.PAT_ALLURE_REPORTS_TEMP }}
+        run: |
+          git clone https://x-access-token:${TOKEN}@github.com/fseguin-pass/allure-reports-temp.git allure-report-temp
+            mkdir -p allure-results/history
+            if [ -d "allure-report-temp/history" ]; then
+              cp -r allure-report-temp/history/* allure-results/history/
+            fi
+
+      - name: "Generate Allure Report with History"
+        run: allure generate allure-results --single-file --clean -o allure-report
+
+      - name: "Upload Allure Report as artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report/index.html
 
   merge-reports:
     if: ${{ !cancelled() }}
@@ -118,6 +158,7 @@ jobs:
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
       - run: yarn install --immutable
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
