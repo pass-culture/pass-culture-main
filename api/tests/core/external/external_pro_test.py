@@ -317,6 +317,7 @@ def test_update_external_pro_user_attributes(
     assert attributes.dms_application_approved is (create_dms_accepted and not create_dms_draft)
     assert attributes.isVirtual is create_virtual
     assert attributes.isPermanent is create_permanent
+    assert attributes.isOpenToPublic is create_permanent
     assert attributes.has_individual_offers is create_individual_offer
     assert attributes.has_bookings is create_booking
     assert attributes.has_collective_offers == (create_collective_offer or create_template_offer)
@@ -341,8 +342,8 @@ def _check_user_without_validated_offerer(user):
     email = user.email
 
     # no booking or offer to check without offerer
-    # no check for FF WIP_IS_OPEN_TO_PUBLIC
-    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES - 3):
+    # only 2 queries: user and venue
+    with assert_num_queries(2):
         attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
@@ -368,6 +369,7 @@ def _check_user_without_validated_offerer(user):
     assert attributes.dms_application_approved is None
     assert attributes.isVirtual is None
     assert attributes.isPermanent is None
+    assert attributes.isOpenToPublic is None
     assert attributes.has_offers is None
     assert attributes.has_bookings is None
     assert attributes.has_collective_offers is False
@@ -415,6 +417,7 @@ def test_update_external_pro_booking_email_attributes():
     assert attributes.dms_application_approved is False
     assert attributes.isVirtual is False
     assert attributes.isPermanent is True
+    assert attributes.isOpenToPublic is True
     assert attributes.has_banner_url is False
     assert attributes.has_offers is False
     assert attributes.has_bookings is False
@@ -487,8 +490,7 @@ def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_wi
 
 def test_update_external_pro_removed_email_attributes():
     # only 2 queries: user and venue - nothing found
-    # one query for marseille_en_grand
-    with assert_num_queries(3):
+    with assert_num_queries(2):
         attributes = get_pro_attributes("removed@example.net")
 
     assert attributes.is_pro is True
@@ -514,5 +516,6 @@ def test_update_external_pro_removed_email_attributes():
     assert attributes.dms_application_approved is None
     assert attributes.isVirtual is None
     assert attributes.isPermanent is None
+    assert attributes.isOpenToPublic is None
     assert attributes.has_offers is None
     assert attributes.has_bookings is None
