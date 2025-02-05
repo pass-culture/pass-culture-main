@@ -547,25 +547,6 @@ class CreateOffererTest:
         assert actions_list[0].user == user
         assert actions_list[0].offerer == created_offerer
 
-    def test_create_digital_venue_if_siren_is_not_already_registered(self):
-        # Given
-        user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer",
-            siren="418166096",
-            address="123 rue de Paris",
-            postalCode="93100",
-            city="Montreuil",
-        )
-
-        # When
-        created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
-
-        # Then
-        created_offerer = created_user_offerer.offerer
-        assert len(created_offerer.managedVenues) == 1
-        assert created_offerer.managedVenues[0].isVirtual is True
-
     def test_create_new_offerer_attachment_with_validation_token_if_siren_is_already_registered(self):
         # Given
         user = users_factories.UserFactory()
@@ -2099,12 +2080,10 @@ class CreateFromOnboardingDataTest:
         assert created_user_offerer.validationStatus == ValidationStatus.VALIDATED
         # but does not have PRO role yet, because the Offerer is not validated
         assert created_user_offerer.user.has_non_attached_pro_role
-        # 1 virtual Venue + 1 Venue with siret have been created
-        assert len(created_user_offerer.offerer.managedVenues) == 2
-        created_venue, created_virtual_venue = sorted(
-            created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual
-        )
-        assert created_virtual_venue.isVirtual
+        # 1 Venue with siret have been created
+        assert len(created_user_offerer.offerer.managedVenues) == 1
+        created_venue = created_user_offerer.offerer.managedVenues[0]
+
         self.assert_common_venue_attrs(created_venue)
         assert created_venue.isOpenToPublic is None
         assert created_venue.comment is None
@@ -2186,14 +2165,11 @@ class CreateFromOnboardingDataTest:
 
         # Offerer has been created
         created_offerer = created_user_offerer.offerer
-        created_venue, created_virtual_venue = sorted(
-            created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual
-        )
+        created_venue = created_user_offerer.offerer.managedVenues[0]
         assert created_venue.isOpenToPublic is isOpenToPublic
 
     def test_existing_siren_new_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
-        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
 
@@ -2208,8 +2184,8 @@ class CreateFromOnboardingDataTest:
         assert created_user_offerer.validationStatus == ValidationStatus.NEW
         assert created_user_offerer.user.has_non_attached_pro_role
         # 1 venue with siret has been created
-        assert len(offerer.managedVenues) == 2
-        created_venue = next(v for v in offerer.managedVenues if not v.isVirtual)
+        assert len(offerer.managedVenues) == 1
+        created_venue = offerer.managedVenues[0]
         self.assert_common_venue_attrs(created_venue)
         assert created_venue.comment is None
         assert created_venue.siret == "85331845900031"
@@ -2235,7 +2211,6 @@ class CreateFromOnboardingDataTest:
 
     def test_existing_siren_new_venue_without_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
-        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
 
@@ -2250,8 +2225,8 @@ class CreateFromOnboardingDataTest:
         assert created_user_offerer.user.has_non_attached_pro_role
         assert created_user_offerer.validationStatus == ValidationStatus.NEW
         # 1 venue without siret has been created
-        assert len(offerer.managedVenues) == 2
-        created_venue = next(v for v in offerer.managedVenues if not v.isVirtual)
+        assert len(offerer.managedVenues) == 1
+        created_venue = offerer.managedVenues[0]
         self.assert_common_venue_attrs(created_venue)
         assert created_venue.comment == "Lieu sans SIRET car dépend du SIRET d'un autre lieu"
         assert created_venue.siret is None
@@ -2323,9 +2298,9 @@ class CreateFromOnboardingDataTest:
         assert not created_offerer.street
         assert created_offerer.city == "Paris"
         assert created_offerer.postalCode == "75001"
-        # 1 virtual Venue + 1 Venue with siret have been created
-        assert len(created_user_offerer.offerer.managedVenues) == 2
-        created_venue, _ = sorted(created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual)
+        # 1 Venue with siret have been created
+        assert len(created_user_offerer.offerer.managedVenues) == 1
+        created_venue = created_user_offerer.offerer.managedVenues[0]
         assert created_venue.street == "n/d"
         assert created_venue.city == "Paris"
         assert created_venue.latitude == decimal.Decimal("2.30829")
@@ -2347,9 +2322,9 @@ class CreateFromOnboardingDataTest:
         assert created_offerer.street == "3 RUE DE VALOIS"
         assert created_offerer.city == "Paris"
         assert created_offerer.postalCode == "75001"
-        # 1 virtual Venue + 1 Venue with siret have been created
-        assert len(created_user_offerer.offerer.managedVenues) == 2
-        created_venue, _ = sorted(created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual)
+        # 1 Venue with siret have been created
+        assert len(created_user_offerer.offerer.managedVenues) == 1
+        created_venue = created_user_offerer.offerer.managedVenues[0]
         assert created_venue.street == "3 RUE DE VALOIS"
         assert created_venue.banId is None
         assert created_venue.city == "Paris"

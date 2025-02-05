@@ -1286,29 +1286,6 @@ class CreateDraftOfferTest:
         with pytest.raises(exceptions.EanInOfferNameException):
             api.create_draft_offer(body, venue=venue)
 
-    @pytest.mark.features(WIP_SUGGESTED_SUBCATEGORIES=False)
-    def test_create_draft_digitaloffer_with_virtual_venue(self):
-        venue = offerers_factories.VirtualVenueFactory()
-        body = offers_schemas.PostDraftOfferBodyModel(
-            name="La Poudre",
-            subcategoryId=subcategories.PODCAST.id,
-            url="https://coucou.com",
-            venueId=venue.id,
-        )
-        offer = api.create_draft_offer(body, venue=venue)
-        assert offer.name == "La Poudre"
-        assert offer.subcategoryId == subcategories.PODCAST.id
-        assert offer.venue == venue
-        assert not offer.description
-        assert not offer.isActive
-        assert offer.validation == models.OfferValidationStatus.DRAFT
-        assert not offer.product
-        assert models.Offer.query.count() == 1
-        assert offer.audioDisabilityCompliant == None
-        assert offer.mentalDisabilityCompliant == None
-        assert offer.motorDisabilityCompliant == None
-        assert offer.visualDisabilityCompliant == None
-
     def test_create_draft_offer_with_accessibility_provider(self):
         # when venue is synchronized with acceslibre, create draft offer should
         # have acceslibre accessibility informations
