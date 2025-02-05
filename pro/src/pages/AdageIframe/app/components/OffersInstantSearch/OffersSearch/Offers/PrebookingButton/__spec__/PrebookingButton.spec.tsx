@@ -40,6 +40,7 @@ describe('offer item', () => {
       canPrebookOffers: true,
       offerId: 1,
       queryId: 'aez',
+      shouldDisablePrebookButton: false,
       stock: {
         id: 117,
         startDatetime: '03/01/2023',
@@ -59,6 +60,15 @@ describe('offer item', () => {
     })
 
     expect(screen.queryByText('Préréserver l’offre')).not.toBeInTheDocument()
+  })
+
+  it('should be disabled when shouldDisablePrebookButton is true', () => {
+    renderPrebookingButton({
+      ...props,
+      shouldDisablePrebookButton: true,
+    })
+
+    expect(screen.queryByText('Préréserver l’offre')).toBeDisabled()
   })
 
   it('should display when prebooking is activated', () => {
