@@ -108,7 +108,7 @@ export const ModalImageEdit = ({
     if (!initialImageUrl && !initialOriginalImageUrl) {
       setImage(undefined)
     } else {
-      onImageDelete && onImageDelete()
+      onImageDelete?.()
     }
   }
 
