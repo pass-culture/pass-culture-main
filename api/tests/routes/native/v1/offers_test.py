@@ -12,6 +12,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.chronicles.factories as chronicles_factories
 from pcapi.core.geography.factories import AddressFactory
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.factories import OffererAddressFactory
 from pcapi.core.offerers.factories import VenueFactory
 import pcapi.core.offers.factories as offers_factories
@@ -1582,6 +1583,23 @@ class OffersV2Test:
 
         assert response.json["isReleased"] is False
         assert offer.isActive is False
+
+    def test_get_closed_offerer_offer(self, client):
+        offer = offers_factories.EventOfferFactory(venue__managingOfferer=offerers_factories.ClosedOffererFactory())
+        offers_factories.EventStockFactory(offer=offer)
+
+        offer_id = offer.id
+        nb_query = 1  # select offer
+        nb_query += 1  # select stocks
+        nb_query += 1  # select mediations
+        nb_query += 1  # select chronicles
+        nb_query += 1  # select feature
+        nb_query += 1  # select futureOffer
+        with assert_num_queries(nb_query):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+            assert response.status_code == 200
+
+        assert response.json["isReleased"] is False
 
     def should_have_metadata_describing_the_offer(self, client):
         offer = offers_factories.ThingOfferFactory()
