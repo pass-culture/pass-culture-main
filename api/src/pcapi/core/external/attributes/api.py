@@ -168,39 +168,33 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             load_only(
                 users_models.User.firstName, users_models.User.lastName, users_models.User.notificationSubscriptions
             ),
-            # Fetch information about offerers to which user is attached
             joinedload(users_models.User.UserOfferers)
             .load_only(offerers_models.UserOfferer.offererId, offerers_models.UserOfferer.validationStatus)
             .joinedload(offerers_models.UserOfferer.offerer)
-            .load_only(
-                offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
-            )
-            .joinedload(offerers_models.Offerer.tags)
-            .load_only(offerers_models.OffererTag.name),
-            # Fetch all attachments to these offerers, to check if current user is the "creator" (first user)
-            joinedload(users_models.User.UserOfferers)
-            .load_only(offerers_models.UserOfferer.id)
-            .joinedload(offerers_models.UserOfferer.offerer)
-            .load_only(offerers_models.Offerer.id)
-            .joinedload(offerers_models.Offerer.UserOfferers)
-            .load_only(offerers_models.UserOfferer.userId),
-            # Fetch useful information on all venues managed by these offerers
-            joinedload(users_models.User.UserOfferers)
-            .load_only(offerers_models.UserOfferer.id)
-            .joinedload(offerers_models.UserOfferer.offerer)
-            .load_only(offerers_models.Offerer.id)
-            .joinedload(offerers_models.Offerer.managedVenues)
-            .load_only(
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.name,
-                offerers_models.Venue.venueTypeCode,
-                offerers_models.Venue.departementCode,
-                offerers_models.Venue.postalCode,
-                offerers_models.Venue.venueLabelId,
-                offerers_models.Venue.adageId,
-            )
-            .joinedload(offerers_models.Venue.venueLabel)
-            .load_only(offerers_models.VenueLabel.label),
+            .options(
+                # Fetch information about offerers to which user is attached
+                load_only(
+                    offerers_models.Offerer.name,
+                    offerers_models.Offerer.isActive,
+                    offerers_models.Offerer.validationStatus,
+                ),
+                joinedload(offerers_models.Offerer.tags).load_only(offerers_models.OffererTag.name),
+                # Fetch all attachments to these offerers, to check if current user is the "creator" (first user)
+                joinedload(offerers_models.Offerer.UserOfferers).load_only(offerers_models.UserOfferer.userId),
+                # Fetch useful information on all venues managed by these offerers
+                joinedload(offerers_models.Offerer.managedVenues)
+                .load_only(
+                    offerers_models.Venue.publicName,
+                    offerers_models.Venue.name,
+                    offerers_models.Venue.venueTypeCode,
+                    offerers_models.Venue.departementCode,
+                    offerers_models.Venue.postalCode,
+                    offerers_models.Venue.venueLabelId,
+                    offerers_models.Venue.adageId,
+                )
+                .joinedload(offerers_models.Venue.venueLabel)
+                .load_only(offerers_models.VenueLabel.label),
+            ),
         )
         .one_or_none()
     )
@@ -224,22 +218,23 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         # A pro user is flagged EAC when at least one venue of his offerer has an adageId
         is_eac = False
 
-        has_collective_offers = _check_if_pro_attribute_has_collective_offers(user=user)
+        if offerers:
+            has_collective_offers = _check_if_pro_attribute_has_collective_offers(user=user)
 
-        for offerer in offerers:
-            all_venues += offerer.managedVenues
+            for offerer in offerers:
+                all_venues += offerer.managedVenues
 
-            offerers_names.add(offerer.name)
-            offerers_tags.update(tag.name for tag in offerer.tags)
+                offerers_names.add(offerer.name)
+                offerers_tags.update(tag.name for tag in offerer.tags)
 
-            if min((uo.id, uo.userId) for uo in offerer.UserOfferers)[1] == user.id:
-                user_is_creator = True
-            else:
-                user_is_attached = True
+                if min((uo.id, uo.userId) for uo in offerer.UserOfferers)[1] == user.id:
+                    user_is_creator = True
+                else:
+                    user_is_attached = True
 
-            # Avoid offerers_repository.offerer_has_venue_with_adage_id which makes one extra request for each offerer
-            if not is_eac and any(bool(venue.adageId) for venue in offerer.managedVenues):
-                is_eac = True
+                # Avoid offerers_repository.offerer_has_venue_with_adage_id which makes one extra request for each offerer
+                if not is_eac and any(bool(venue.adageId) for venue in offerer.managedVenues):
+                    is_eac = True
 
         attributes.update(
             {
@@ -296,8 +291,10 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
     )
 
     venue_ids = {venue.id for venue in venues}
-    is_eac_meg = has_collective_offers_for_program_and_venue_ids(
-        educational_models.PROGRAM_MARSEILLE_EN_GRAND, venue_ids
+    is_eac_meg = (
+        has_collective_offers_for_program_and_venue_ids(educational_models.PROGRAM_MARSEILLE_EN_GRAND, venue_ids)
+        if venue_ids
+        else False
     )
 
     if venues:
