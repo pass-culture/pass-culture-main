@@ -129,16 +129,18 @@ def test_response_serialization(client):
 def test_response_created_offer_serialization(client):
     user_offerer = offerers_factories.UserOffererFactory()
 
-    venue_with_offer = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    venue_with_offer = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, name="venue 1")
     OfferFactory(venue=venue_with_offer)
 
-    venue_with_collective_offer = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    venue_with_collective_offer = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, name="venue 2")
     CollectiveOfferFactory(venue=venue_with_collective_offer)
 
-    venue_with_collective_offer_template = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    venue_with_collective_offer_template = offerers_factories.VenueFactory(
+        managingOfferer=user_offerer.offerer, name="venue 3"
+    )
     CollectiveOfferTemplateFactory(venue=venue_with_collective_offer_template)
 
-    offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, name="venue 4")
 
     client = client.with_session_auth(user_offerer.user.email)
     num_queries = testing.AUTHENTICATION_QUERIES
