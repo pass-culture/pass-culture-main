@@ -331,8 +331,11 @@ def test_update_external_pro_user_attributes_no_offerer_no_venue():
     _check_user_without_validated_offerer(user)
 
 
-def test_update_external_non_attached_pro_user_attributes():
-    user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+@pytest.mark.parametrize(
+    "offerer_factory", [offerers_factories.NotValidatedOffererFactory, offerers_factories.ClosedOffererFactory]
+)
+def test_update_external_non_attached_pro_user_attributes(offerer_factory):
+    user_offerer = offerers_factories.UserNotValidatedOffererFactory(offerer=offerer_factory())
     offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, bookingEmail=user_offerer.user.email)
 
     _check_user_without_validated_offerer(user_offerer.user)
@@ -489,9 +492,18 @@ def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_wi
 
 
 def test_update_external_pro_removed_email_attributes():
+    _check_no_matching_email("removed@example.net")
+
+
+def test_update_external_pro_booking_email_closed_offerer():
+    venue = offerers_factories.VenueFactory(managingOfferer=offerers_factories.ClosedOffererFactory())
+    _check_no_matching_email(venue.bookingEmail)
+
+
+def _check_no_matching_email(email):
     # only 2 queries: user and venue - nothing found
     with assert_num_queries(2):
-        attributes = get_pro_attributes("removed@example.net")
+        attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
     assert attributes.is_active_pro is False
