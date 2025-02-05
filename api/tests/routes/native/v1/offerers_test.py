@@ -175,6 +175,22 @@ class VenuesTest:
             response = client.get(f"/native/v1/venue/{venue_id}")
             assert response.status_code == 404
 
+    def test_get_venue_closed_offerer(self, client):
+        venue = offerers_factories.VenueFactory(
+            isPermanent=True, isOpenToPublic=True, managingOfferer=offerers_factories.ClosedOffererFactory()
+        )
+        venue_id = venue.id
+        with assert_num_queries(1):  # venue
+            response = client.get(f"/native/v1/venue/{venue_id}")
+            assert response.status_code == 404
+
+    def test_get_venue_suspended_offerer(self, client):
+        venue = offerers_factories.VenueFactory(isPermanent=True, isOpenToPublic=True, managingOfferer__isActive=False)
+        venue_id = venue.id
+        with assert_num_queries(1):  # venue
+            response = client.get(f"/native/v1/venue/{venue_id}")
+            assert response.status_code == 404
+
     def test_get_non_existing_venue(self, client):
         with assert_num_queries(1):  # venue
             response = client.get("/native/v1/venue/123456789")

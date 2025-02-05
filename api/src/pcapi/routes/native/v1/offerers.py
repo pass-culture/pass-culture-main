@@ -1,6 +1,5 @@
 from flask import abort
 
-from pcapi.core.offerers.models import Venue
 import pcapi.core.offerers.repository as offerers_repository
 from pcapi.repository import atomic
 from pcapi.serialization.decorator import spectree_serialize
@@ -13,8 +12,8 @@ from .serialization import offerers as serializers
 @blueprint.native_route("/venue/<int:venue_id>", methods=["GET"])
 @spectree_serialize(response_model=serializers.VenueResponse, api=blueprint.api, on_error_statuses=[404])
 def get_venue(venue_id: int) -> serializers.VenueResponse:
-    venue = Venue.query.get_or_404(venue_id)
-    if not venue.isPermanent:
+    venue = offerers_repository.find_venue_by_id(venue_id)
+    if not venue or not venue.isPermanent or venue.managingOfferer.isClosed or not venue.managingOfferer.isActive:
         abort(404)
 
     return serializers.VenueResponse.from_orm(venue)
