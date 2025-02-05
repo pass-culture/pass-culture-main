@@ -7,6 +7,7 @@ import {
   getDateTimeToFrenchText,
   toDateStrippedOfTimezone,
 } from 'commons/utils/date'
+import fullDeskIcon from 'icons/full-desk.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -71,6 +72,12 @@ export function AdageOfferInstitutionPanel({
           institutionOfferCount={institutionOfferCount}
           shouldDisablePrebookButton={!adageUser?.canPrebook && !isPreview}
         >
+          <SvgIcon
+            src={fullDeskIcon}
+            width="20"
+            alt=""
+            className={styles['institution-panel-prebooking-icon']}
+          />
           Préréserver l’offre
         </PrebookingButton>
       </div>
