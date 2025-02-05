@@ -3120,7 +3120,7 @@ def generate_minimal_beneficiary():
             dateCreated=now,
             content="",
             email="",
-            formId="",
+            externalId="",
         )
     )
     db.session.add(

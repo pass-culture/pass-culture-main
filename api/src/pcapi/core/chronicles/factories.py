@@ -13,4 +13,4 @@ class ChronicleFactory(BaseFactory):
 
     content = "A small chronicle content."
     email = factory.Sequence("chronicle-{}@example.com".format)
-    formId = factory.Sequence(lambda x: sha1(bytes(x)).hexdigest()[0:12])
+    externalId = factory.Sequence(lambda x: sha1(bytes(x)).hexdigest()[0:12])
