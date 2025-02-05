@@ -2337,6 +2337,7 @@ class RegistrationStepTest:
         assert before_ids != after_ids
         assert sorted(before_ids, reverse=True) == after_ids
 
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     def test_get_steps_tunnel_age18(self):
         dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1)
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
