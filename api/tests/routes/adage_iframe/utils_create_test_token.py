@@ -21,6 +21,7 @@ def create_adage_jwt_default_fake_valid_token(
     uai: str | None,
     lat: float | None = None,
     lon: float | None = None,
+    can_prebook: bool | None = None,
 ) -> bytes:
     return create_adage_jwt_fake_valid_token(
         civility=civility,
@@ -31,6 +32,7 @@ def create_adage_jwt_default_fake_valid_token(
         expiration_date=datetime.utcnow() + timedelta(days=1),
         lat=lat,
         lon=lon,
+        can_prebook=can_prebook,
     )
 
 
@@ -43,6 +45,7 @@ def create_adage_jwt_fake_valid_token(
     expiration_date: datetime,
     lat: float | None = None,
     lon: float | None = None,
+    can_prebook: bool | None = None,
 ) -> bytes:
     with open(VALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
         authenticated_informations = {
@@ -53,6 +56,7 @@ def create_adage_jwt_fake_valid_token(
             "uai": uai,
             "lat": lat,
             "lon": lon,
+            "canPrebook": can_prebook,
         }
         if expiration_date:
             authenticated_informations["exp"] = expiration_date

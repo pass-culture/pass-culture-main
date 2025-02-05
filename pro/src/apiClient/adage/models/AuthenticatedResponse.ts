@@ -7,6 +7,7 @@ import type { EducationalInstitutionProgramModel } from './EducationalInstitutio
 import type { InstitutionRuralLevel } from './InstitutionRuralLevel';
 import type { RedactorPreferences } from './RedactorPreferences';
 export type AuthenticatedResponse = {
+  canPrebook?: boolean | null;
   departmentCode?: string | null;
   email?: string | null;
   favoritesCount?: number;

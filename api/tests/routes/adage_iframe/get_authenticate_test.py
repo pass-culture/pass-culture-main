@@ -55,6 +55,7 @@ def expected_serialized_auth_base(redactor, institution):
         "offersCount": 0,
         "institutionRuralLevel": None,
         "programs": [],
+        "canPrebook": True,
     }
 
 
@@ -152,6 +153,7 @@ class AuthenticateTest:
             "offersCount": 0,
             "institutionRuralLevel": None,
             "programs": [],
+            "canPrebook": False,
         }
 
     def test_should_return_error_response_when_jwt_invalid(self, client):
@@ -190,7 +192,7 @@ class AuthenticateTest:
         assert response.status_code == 401
         assert "No expiration date provided" in response.json["msg"]
 
-    def _create_adage_valid_token(self, valid_user, uai_code: str | None) -> bytes:
+    def _create_adage_valid_token(self, valid_user, uai_code: str | None, can_prebook: bool | None = True) -> bytes:
         return create_adage_jwt_default_fake_valid_token(
             civility=valid_user.get("civilite"),
             lastname=valid_user.get("nom"),
@@ -199,6 +201,7 @@ class AuthenticateTest:
             uai=uai_code,
             lat=DEFAULT_LAT,
             lon=DEFAULT_LON,
+            can_prebook=can_prebook,
         )
 
     def _create_adage_valid_token_from_expiration_date(
