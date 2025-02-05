@@ -68,6 +68,8 @@ export const OfferTypeScreen = (): JSX.Element => {
 
   const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
 
+  const isOnboarding = location.pathname.indexOf('onboarding') !== -1
+
   const onSubmit = async (values: OfferTypeFormValues) => {
     if (values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
       const params = new URLSearchParams(location.search)
@@ -79,7 +81,7 @@ export const OfferTypeScreen = (): JSX.Element => {
         pathname: getIndividualOfferUrl({
           step: OFFER_WIZARD_STEP_IDS.DETAILS,
           mode: OFFER_WIZARD_MODE.CREATION,
-          isOnboarding: location.pathname.indexOf('onboarding') !== -1,
+          isOnboarding,
         }),
         search: params.toString(),
       })
@@ -166,38 +168,41 @@ export const OfferTypeScreen = (): JSX.Element => {
 
   return (
     <>
-      <h1 className={styles['offer-type-title']}>Créer une offre</h1>
-      {offerer?.allowedOnAdage && (
+      {!isOnboarding && offerer?.allowedOnAdage && (
         <CollectiveBudgetCallout pageName="offer-creation-hub" />
       )}
       <div className={styles['offer-type-container']}>
+        <h1 className={styles['offer-type-title']}>Créer une offre</h1>
         <FormikProvider value={formik}>
           <form onSubmit={formik.handleSubmit}>
             <FormLayout>
-              <FormLayout.Section title="À qui destinez-vous cette offre ?">
-                <FormLayout.Row inline>
-                  <RadioButtonWithImage
-                    name="offerType"
-                    icon={phoneStrokeIcon}
-                    isChecked={
-                      values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO
-                    }
-                    label="Au grand public"
-                    onChange={handleChange}
-                    value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
-                    className={styles['offer-type-button']}
-                  />
-                  <RadioButtonWithImage
-                    name="offerType"
-                    icon={strokeProfIcon}
-                    isChecked={values.offerType === OFFER_TYPES.EDUCATIONAL}
-                    label="À un groupe scolaire"
-                    onChange={handleChange}
-                    value={OFFER_TYPES.EDUCATIONAL}
-                    className={styles['offer-type-button']}
-                  />
-                </FormLayout.Row>
-              </FormLayout.Section>
+              {/* If we're on boarding process, we don't need to ask for offer type (we already chose individual at previous step) */}
+              {!isOnboarding && (
+                <FormLayout.Section title="À qui destinez-vous cette offre ?">
+                  <FormLayout.Row inline>
+                    <RadioButtonWithImage
+                      name="offerType"
+                      icon={phoneStrokeIcon}
+                      isChecked={
+                        values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO
+                      }
+                      label="Au grand public"
+                      onChange={handleChange}
+                      value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
+                      className={styles['offer-type-button']}
+                    />
+                    <RadioButtonWithImage
+                      name="offerType"
+                      icon={strokeProfIcon}
+                      isChecked={values.offerType === OFFER_TYPES.EDUCATIONAL}
+                      label="À un groupe scolaire"
+                      onChange={handleChange}
+                      value={OFFER_TYPES.EDUCATIONAL}
+                      className={styles['offer-type-button']}
+                    />
+                  </FormLayout.Row>
+                </FormLayout.Section>
+              )}
 
               {!areSuggestedSubcategoriesUsed &&
                 values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
