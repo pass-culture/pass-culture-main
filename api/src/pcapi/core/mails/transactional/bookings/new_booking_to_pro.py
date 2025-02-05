@@ -41,7 +41,7 @@ def get_new_booking_to_pro_email_data(
             .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
             .load_only(finance_models.BankAccount.id, finance_models.BankAccount.status),
             # fetch offerer info to check if caledonian or not
-            sa.orm.contains_eager(offerers_models.Venue.managingOfferer).load_only(
+            sa.orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True).load_only(
                 offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
             ),
         )
