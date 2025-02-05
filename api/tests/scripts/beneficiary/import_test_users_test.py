@@ -109,10 +109,6 @@ class ReadFileTest:
         assert venue.managingOfferer == offerer
         assert venue.adageId is not None
 
-        digital_venue = offerers_models.Venue.query.filter_by(name="Offre numérique").one()
-        assert digital_venue.siret is None
-        assert digital_venue.managingOfferer == offerer
-
         bank_accounts = finance_models.BankAccount.query.order_by(finance_models.BankAccount.id).all()
         for bank_account, status in zip(bank_accounts, finance_models.BankAccountApplicationStatus):
             assert bank_account.offerer == offerer

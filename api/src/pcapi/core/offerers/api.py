@@ -95,17 +95,6 @@ APE_TAG_MAPPING = {"84.11Z": "Collectivité"}
 DMS_TOKEN_REGEX = r"^(?:PRO-)?([a-fA-F0-9]{12})$"
 
 
-def create_digital_venue(offerer: models.Offerer) -> models.Venue:
-    dms_token = generate_dms_token()
-    digital_venue = models.Venue()
-    digital_venue.isVirtual = True
-    digital_venue.name = "Offre numérique"
-    digital_venue.venueTypeCode = models.VenueTypeCode.DIGITAL
-    digital_venue.managingOfferer = offerer
-    digital_venue.dmsToken = dms_token
-    return digital_venue
-
-
 def update_venue(
     venue: models.Venue,
     modifications: dict,
@@ -1019,9 +1008,8 @@ def create_offerer(
         is_new = True
         offerer = models.Offerer()
         _fill_in_offerer(offerer, offerer_informations)
-        digital_venue = create_digital_venue(offerer)
         user_offerer = grant_user_offerer_access(offerer, user)
-        db.session.add_all([offerer, digital_venue, user_offerer])
+        db.session.add_all([offerer, user_offerer])
 
     if is_new:
         assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
