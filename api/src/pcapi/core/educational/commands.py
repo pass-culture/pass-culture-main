@@ -36,11 +36,12 @@ def reindex_all_collective_offers() -> None:
 
 @blueprint.cli.command("generate_fake_adage_token")
 @click.option("--readonly", type=bool, is_flag=True, default=False, help="Generate a readonly token.")
-def generate_fake_adage_token(readonly: bool) -> None:
+@click.option("--cannot-prebook", type=bool, is_flag=True, default=False, help="Generate a token that cannot prebook.")
+def generate_fake_adage_token(readonly: bool, cannot_prebook: bool) -> None:
     """
     TO BE USED IN LOCAL ENV
     """
-    token = create_adage_jwt_fake_valid_token(readonly)
+    token = create_adage_jwt_fake_valid_token(readonly=readonly, can_prebook=not cannot_prebook)
     print(f"Adage localhost URL: http://localhost:3001/adage-iframe?token={token}")
 
 

@@ -55,7 +55,7 @@ def log_information_for_data_purpose(
 UAI_FOR_FAKE_TOKEN = "0910620E"
 
 
-def create_adage_jwt_fake_valid_token(readonly: bool) -> str:
+def create_adage_jwt_fake_valid_token(readonly: bool, can_prebook: bool = True) -> str:
     with open("tests/routes/adage_iframe/private_keys_for_tests/valid_rsa_private_key", "rb") as reader:
         authenticated_informations = {
             "civilite": "M.",
@@ -63,6 +63,7 @@ def create_adage_jwt_fake_valid_token(readonly: bool) -> str:
             "prenom": "COMPTE",
             "mail": "compte.test@education.gouv.fr",
             "exp": datetime.utcnow() + timedelta(days=1),
+            "canPrebook": can_prebook,
         }
         if not readonly:
             authenticated_informations["uai"] = UAI_FOR_FAKE_TOKEN
