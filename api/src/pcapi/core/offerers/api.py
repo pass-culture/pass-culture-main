@@ -56,6 +56,7 @@ import pcapi.core.users.repository as users_repository
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import pc_object
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
@@ -507,6 +508,8 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
 
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
+    if FeatureToggle.WIP_IS_OPEN_TO_PUBLIC.is_active() and (venue.siret or venue.isOpenToPublic):
+        venue.isPermanent = True
 
     on_commit(
         functools.partial(search.async_index_venue_ids, [venue.id], reason=search.IndexationReason.VENUE_CREATION)

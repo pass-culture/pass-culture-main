@@ -127,6 +127,53 @@ class CreateVenueTest:
         assert action.offerer is None
         assert action.venue == venue
 
+    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
+    def test_venue_is_permanent_when_created_with_siret(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        data = venues_serialize.PostVenueBodyModel(**self.base_data(user_offerer.offerer))
+        offerers_api.create_venue(data, user_offerer.user)
+
+        venue = offerers_models.Venue.query.one()
+        assert venue.isPermanent is True
+
+    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
+    def test_venue_is_permanent_when_created_open_to_public(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        init_data = self.base_data(user_offerer.offerer) | {
+            "siret": None,
+            "comment": "no siret",
+            "isOpenToPublic": True,
+        }
+        data = venues_serialize.PostVenueBodyModel(**init_data)
+        offerers_api.create_venue(data, user_offerer.user)
+
+        venue = offerers_models.Venue.query.one()
+        assert venue.isPermanent is True
+
+    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
+    def test_venue_is_permanent_when_created_with_siret_and_open_to_public(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        init_data = self.base_data(user_offerer.offerer) | {"isOpenToPublic": True}
+        data = venues_serialize.PostVenueBodyModel(**init_data)
+        offerers_api.create_venue(data, user_offerer.user)
+
+        venue = offerers_models.Venue.query.one()
+        assert venue.isPermanent is True
+
+    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
+    def test_venue_is_not_permanent_when_created_without_siret_nor_is_open_to_public(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        init_data = self.base_data(user_offerer.offerer) | {
+            "siret": None,
+            "comment": "no siret",
+            "isOpenToPublic": False,
+        }
+        data = venues_serialize.PostVenueBodyModel(**init_data)
+        offerers_api.create_venue(data, user_offerer.user)
+
+        venue = offerers_models.Venue.query.one()
+        assert venue.isPermanent is False
+
     def test_venue_with_no_siret_has_no_pricing_point(self):
         user_offerer = offerers_factories.UserOffererFactory()
         data = self.base_data(user_offerer.offerer) | {"siret": None, "comment": "no siret"}
