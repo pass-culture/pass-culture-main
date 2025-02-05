@@ -98,8 +98,6 @@ export function AdageOfferListCard({
             setOfferPrebooked={(value: boolean) => setOfferPrebooked(value)}
             setInstitutionOfferCount={setInstitutionOfferCount}
             institutionOfferCount={institutionOfferCount}
-            shouldDisablePrebookButton={!adageUser.canPrebook}
-            hideLimitDate={!adageUser.canPrebook}
           />
         </div>
       )}

@@ -7,7 +7,6 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { DisabledPrebookCallout } from '../DisabledPrebookCallout/DisabledPrebookCallout'
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
 import { AdageSkeleton } from '../Skeleton/AdageSkeleton'
 

@@ -40,7 +40,7 @@ export const AdageOffer = ({
 
   return (
     <div className={styles['offer']}>
-      {!offer.isTemplate && !isPreview && (
+      {!offer.isTemplate && (
         <DisabledPrebookCallout
           className={styles['disabled-prebook-callout']}
         />

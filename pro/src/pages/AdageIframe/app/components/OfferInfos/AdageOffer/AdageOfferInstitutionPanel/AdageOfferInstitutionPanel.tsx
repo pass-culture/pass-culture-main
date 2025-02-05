@@ -43,7 +43,7 @@ export function AdageOfferInstitutionPanel({
         {getBookableOfferInstitutionAndTeacherName(offer)}
       </div>
       <div className={styles['institution-panel-prebooking']}>
-        {offer.stock.bookingLimitDatetime && adageUser?.canPrebook && (
+        {offer.stock.bookingLimitDatetime && (
           <div className={styles['institution-panel-prebooking-date']}>
             À préréserver{' '}
             <span
@@ -70,7 +70,6 @@ export function AdageOfferInstitutionPanel({
           isPreview={isPreview}
           setInstitutionOfferCount={setInstitutionOfferCount}
           institutionOfferCount={institutionOfferCount}
-          shouldDisablePrebookButton={!adageUser?.canPrebook && !isPreview}
         >
           <SvgIcon
             src={fullDeskIcon}
