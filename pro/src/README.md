@@ -1,6 +1,6 @@
 # DOCS
 
-## Structure du code
+## Structure du code Structur
 
 Structure du dossier `pro/src/` (générée avec [cet utilitaire](<https://tree.nathanfriend.com/?s=(%27optiMs!(%27fancy!true~fullPathJ~trailingSlashJ~rootDotJ)~N(%27N%277pro37src36apiClientsUIWMfigWMtextWoreWustom_typesLhooksLstoreLutilsOfactories46c9sLT48TH4EC9GFT.KHOKsOIBAB*6pRsBLPR1B*OIOKs4O51Q851HQE5GAQO52Q852HQF52.KH4AQ6icMsUpublicUrepositoryUstylesUui-kit3%27)~versiM!%271%27)*%20%200**73V*4B**5SousPR6V07%F0%9F%93%81%208%F0%9F%93%98%209ompMentA*%E2%80%A6B3*E%F0%9F%93%95%20F%F0%9F%93%97%20G1.module.scss4H.tsxIcommMsJ!falseKspecL30MonNsource!OB0Q4*RageTC91UB6V%5CnWLc%01WVUTRQONMLKJIHGFEBA98765430*>)) :
 
