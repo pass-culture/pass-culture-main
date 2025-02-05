@@ -24,6 +24,7 @@ class AuthenticatedInformation(BaseModel):
     uai: str | None
     lat: float | None
     lon: float | None
+    canPrebook: bool | None
 
 
 class EducationalInstitutionProgramModel(BaseModel):
@@ -51,6 +52,7 @@ class AuthenticatedResponse(BaseModel):
     offersCount: int = 0
     institution_rural_level: educational_models.InstitutionRuralLevel | None = None
     programs: list[EducationalInstitutionProgramModel] = Field(default_factory=list)
+    canPrebook: bool | None = None
 
     class Config:
         use_enum_values = True

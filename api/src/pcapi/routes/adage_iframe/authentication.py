@@ -55,8 +55,9 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
             offersCount=offer_count,
             institution_rural_level=institution.ruralLevel if institution else None,
             programs=programs,
+            canPrebook=authenticated_information.canPrebook,
         )
-    return AuthenticatedResponse(role=AdageFrontRoles.READONLY)
+    return AuthenticatedResponse(role=AdageFrontRoles.READONLY, canPrebook=False)
 
 
 def _get_redactor(authenticated_information: AuthenticatedInformation) -> OptionalRedactor:

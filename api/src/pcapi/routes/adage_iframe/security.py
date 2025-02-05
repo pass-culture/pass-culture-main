@@ -54,6 +54,7 @@ def adage_jwt_required(route_function: typing.Callable) -> typing.Callable:
                 uai=adage_jwt_decoded.get("uai"),
                 lat=adage_jwt_decoded.get("lat"),
                 lon=adage_jwt_decoded.get("lon"),
+                canPrebook=adage_jwt_decoded.get("canPrebook"),
             )
             kwargs["authenticated_information"] = authenticated_information
             return route_function(*args, **kwargs)
