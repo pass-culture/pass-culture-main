@@ -107,7 +107,7 @@ export const HeaderDropdown = () => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       handleChangeOfferer(offererOptions[0]?.value)
     }
-  }, [])
+  })
 
   useEffect(() => {
     const handleResize = () => {
