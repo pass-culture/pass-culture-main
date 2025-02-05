@@ -1,38 +1,55 @@
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
 import { CollectiveSearchFiltersParams, SearchFiltersParams } from '../types'
 
-export const hasSearchFilters = (
-  searchFilters: Partial<SearchFiltersParams>,
-  filterNames: (keyof SearchFiltersParams)[] = Object.keys(
-    searchFilters
-  ) as (keyof SearchFiltersParams)[]
-): boolean => {
-  return filterNames.some(
+type HasSearchFiltersParams = {
+  searchFilters: Partial<SearchFiltersParams>
+  lookup?: (keyof SearchFiltersParams)[]
+  ignore?: (keyof SearchFiltersParams)[]
+}
+export const hasSearchFilters = ({
+  searchFilters,
+  lookup = Object.keys(searchFilters) as (keyof SearchFiltersParams)[],
+  ignore = []
+}: HasSearchFiltersParams): boolean => {
+  // Those "filters" are ignored because none are to be interpreted
+  // as such by the user.
+  const finalIgnore = ['offererId', 'page', ...ignore]
+
+  return lookup.some(
     (filterName) =>
       searchFilters[filterName] &&
-      filterName !== 'offererId' &&
-      filterName !== 'page' &&
-      searchFilters[filterName] !== { ...DEFAULT_SEARCH_FILTERS }[filterName]
+      searchFilters[filterName] !== { ...DEFAULT_SEARCH_FILTERS }[filterName] &&
+      !finalIgnore.includes(filterName)
   )
 }
 
-export const hasCollectiveSearchFilters = (
-  searchFilters: Partial<CollectiveSearchFiltersParams>,
-  defaultFilters: CollectiveSearchFiltersParams,
-  filterNames: (keyof CollectiveSearchFiltersParams)[] = Object.keys(
+type HasCollectiveSearchFiltersParams = {
+  searchFilters: Partial<CollectiveSearchFiltersParams>
+  defaultFilters: CollectiveSearchFiltersParams
+  lookup?: (keyof CollectiveSearchFiltersParams)[]
+  ignore?: (keyof CollectiveSearchFiltersParams)[]
+}
+export const hasCollectiveSearchFilters = ({
+  searchFilters,
+  defaultFilters,
+  lookup = Object.keys(
     searchFilters
-  ) as (keyof CollectiveSearchFiltersParams)[]
-): boolean => {
-  return filterNames.some(
+  ) as (keyof CollectiveSearchFiltersParams)[],
+  ignore = []
+}: HasCollectiveSearchFiltersParams): boolean => {
+  // Those "filters" are ignored because none are to be interpreted
+  // as such by the user.
+  const finalIgnore = ['offererId', 'page', ...ignore]
+
+  return lookup.some(
     (filterName) =>
       searchFilters[filterName] &&
-      filterName !== 'offererId' &&
-      filterName !== 'page' &&
       ((['string', 'number'].includes(typeof searchFilters[filterName]) &&
         searchFilters[filterName] !== { ...defaultFilters }[filterName]) ||
         (Array.isArray(searchFilters[filterName]) &&
           Array.isArray(defaultFilters[filterName]) &&
-          !isSameArray(searchFilters[filterName], defaultFilters[filterName])))
+          !isSameArray(searchFilters[filterName], defaultFilters[filterName]))) &&
+      !finalIgnore.includes(filterName)
   )
 }
 

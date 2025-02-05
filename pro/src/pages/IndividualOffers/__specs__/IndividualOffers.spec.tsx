@@ -837,6 +837,33 @@ describe('route Offers', () => {
         undefined
       )
     })
+
+    it('when clicking on "Réinitialiser les filtres" & WIP_COLLAPSED_MEMORIZED_FILTERS enabled - except nameOrIsbn', async () => {
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+      const nameOrIsbn = 'Any word'
+
+      await renderOffers({
+        nameOrIsbn,
+        venueId: '666',
+      }, ['WIP_COLLAPSED_MEMORIZED_FILTERS'])
+  
+      await userEvent.click(screen.getByText('Réinitialiser les filtres'))
+
+      await waitFor(() => {
+        expect(api.listOffers).toHaveBeenLastCalledWith(
+          nameOrIsbn,
+          '1',
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined
+        )
+      })
+    })
   })
 
   describe('With WIP_ENABLE_OFFER_ADDRESS FF', () => {

@@ -14,6 +14,7 @@ import {
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'commons/custom_types/form'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useColumnSorting } from 'commons/hooks/useColumnSorting'
 import { usePagination } from 'commons/hooks/usePagination'
 import { isSameOffer } from 'commons/utils/isSameOffer'
@@ -59,6 +60,7 @@ export const TemplateCollectiveOffersScreen = ({
     CollectiveOfferResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
+  const isCollapsedMemorizedFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -70,10 +72,10 @@ export const TemplateCollectiveOffersScreen = ({
   const userHasNoOffers =
     !isLoading &&
     !hasOffers &&
-    !hasCollectiveSearchFilters(
-      urlSearchFilters,
-      DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
-    )
+    !hasCollectiveSearchFilters({
+      searchFilters: urlSearchFilters,
+      defaultFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
+    })
 
   const areAllOffersSelected =
     selectedOffers.length > 0 &&
@@ -122,10 +124,14 @@ export const TemplateCollectiveOffersScreen = ({
     })
   }
 
-  const resetFilters = () => {
-    onResetFilters()
-    setSelectedFilters(DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS)
-    applyUrlFiltersAndRedirect(DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS)
+  const resetFilters = (resetNameOrIsbn = true) => {
+    onResetFilters(resetNameOrIsbn)
+    const newFilters = {
+      ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+      ...(!resetNameOrIsbn && { nameOrIsbn: initialSearchFilters.nameOrIsbn }),
+    }
+    setSelectedFilters(newFilters)
+    applyUrlFiltersAndRedirect(newFilters)
   }
 
   function onSetSelectedOffer(offer: CollectiveOfferResponseModel) {
@@ -144,10 +150,13 @@ export const TemplateCollectiveOffersScreen = ({
     }
   }
 
-  const hasFilters = hasCollectiveSearchFilters(
-    initialSearchFilters,
-    DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
-  )
+  const hasFilters = hasCollectiveSearchFilters({
+    searchFilters: initialSearchFilters,
+    defaultFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+    ignore: ['nameOrIsbn'],
+  })
+  const hasFiltersOrNameSearch =
+    hasFilters || !!initialSearchFilters.nameOrIsbn
 
   return (
     <div>
@@ -158,7 +167,7 @@ export const TemplateCollectiveOffersScreen = ({
         categories={categories}
         disableAllFilters={userHasNoOffers}
         offerer={offerer}
-        resetFilters={resetFilters}
+        resetFilters={() => resetFilters(!isCollapsedMemorizedFiltersEnabled)}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
         venues={venues}
@@ -169,7 +178,7 @@ export const TemplateCollectiveOffersScreen = ({
       ) : (
         <>
           <CollectiveOffersTable
-            hasFilters={hasFilters}
+            hasFiltersOrNameSearch={hasFiltersOrNameSearch}
             areAllOffersSelected={areAllOffersSelected}
             hasOffers={hasOffers}
             isLoading={isLoading}
