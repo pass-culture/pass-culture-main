@@ -212,7 +212,9 @@ class UbbleWorkflowV2Test:
         )
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
-            json=build_ubble_identification_v2_response(birth_date=datetime.date.today() - relativedelta(years=16)),
+            json=build_ubble_identification_v2_response(
+                birth_date=datetime.date.today() - relativedelta(years=17), created_on=datetime.datetime.today()
+            ),
         )
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
@@ -341,7 +343,7 @@ class UbbleWorkflowV2Test:
         )
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
-            json=build_ubble_identification_v2_response(age_at_registration=18),
+            json=build_ubble_identification_v2_response(age_at_registration=18, created_on=datetime.datetime.utcnow()),
         )
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)

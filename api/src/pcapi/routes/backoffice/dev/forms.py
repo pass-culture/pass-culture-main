@@ -1,3 +1,5 @@
+import datetime
+
 from flask_wtf import FlaskForm
 import wtforms
 
@@ -63,6 +65,7 @@ class UserGeneratorForm(utils.PCForm):
         ],
         default=GeneratedSubscriptionStep.EMAIL_VALIDATION.name,
     )
+    date_created = fields.PCDateField("Date de dépôt du dossier", default=datetime.date.today())
     transition_17_18 = fields.PCCheckboxField("Transition 17-18")
 
 

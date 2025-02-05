@@ -1,3 +1,4 @@
+import datetime
 import logging
 from urllib.parse import urlencode
 
@@ -113,11 +114,13 @@ def generate_user() -> utils.BackofficeResponse:
         return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
 
     try:
+        raw_date_created = form.date_created.data
         user_data = users_generator.GenerateUserData(
             age=form.age.data,
             id_provider=users_generator.GeneratedIdProvider[form.id_provider.data],
             step=users_generator.GeneratedSubscriptionStep[form.step.data],
             transition_17_18=form.transition_17_18.data,
+            date_created=datetime.datetime(raw_date_created.year, raw_date_created.month, raw_date_created.day),
         )
         user = users_generator.generate_user(user_data=user_data)
     except users_exceptions.UserGenerationForbiddenException:

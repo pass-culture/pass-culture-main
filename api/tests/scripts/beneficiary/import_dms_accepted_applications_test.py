@@ -682,6 +682,7 @@ class GraphQLSourceProcessApplicationTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(
             user=user,
             dateCreated=datetime.utcnow() - relativedelta(years=1, months=2),
+            eligibilityType=users_models.EligibilityType.AGE18,
         )
 
         get_applications_with_details.return_value = [

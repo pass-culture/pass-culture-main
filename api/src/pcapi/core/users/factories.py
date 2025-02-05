@@ -242,11 +242,10 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
         import pcapi.core.fraud.factories as fraud_factories
 
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
-        identity_check_type = kwargs.get("type", fraud_models.FraudCheckType.UBBLE)
+        if not kwargs.get("type"):
+            kwargs["type"] = fraud_models.FraudCheckType.UBBLE
         identity_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=obj,
-            type=identity_check_type,
-            status=fraud_models.FraudCheckStatus.OK,
+            user=obj, status=fraud_models.FraudCheckStatus.OK, **kwargs
         )
         fraud_checks.append(identity_fraud_check)
         return fraud_checks
