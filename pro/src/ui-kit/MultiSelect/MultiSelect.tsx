@@ -41,6 +41,7 @@ type MultiSelectProps = {
   name: string
   /** Label for the dropdown button */
   buttonLabel: string
+  isOptional?: boolean
 } & (
   | {
       /**
@@ -101,6 +102,7 @@ export const MultiSelect = ({
   error,
   name,
   buttonLabel,
+  isOptional = false,
 }: MultiSelectProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedItems, setSelectedItems] = useState<Option[]>(defaultOptions)
@@ -151,7 +153,7 @@ export const MultiSelect = ({
   useOnClickOrFocusOutside(containerRef, () => setIsOpen(false))
 
   return (
-    <FieldLayout label={label} name={name} error={error} showError={!!error}>
+    <FieldLayout label={label} name={name} error={error} showError={!!error} isOptional={isOptional}>
       <fieldset className={styles.container}>
         <div ref={containerRef}>
           <MultiSelectTrigger

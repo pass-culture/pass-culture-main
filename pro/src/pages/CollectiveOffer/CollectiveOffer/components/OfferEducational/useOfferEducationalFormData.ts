@@ -13,9 +13,10 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { serializeEducationalOfferer } from 'commons/core/OfferEducational/utils/serializeEducationalOfferer'
 import { SelectOption } from 'commons/custom_types/form'
+import { Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 type OfferEducationalFormData = {
-  domains: SelectOption[]
+  domains: Option[]
   offerer: GetEducationalOffererResponseModel | null
   nationalPrograms: SelectOption<number>[]
 }
@@ -54,7 +55,7 @@ export const useOfferEducationalFormData = (
     )
 
   const domains = (educationalDomains ?? []).map((domain) => ({
-    value: domain.id.toString(),
+    id: domain.id.toString(),
     label: domain.name,
   }))
 
