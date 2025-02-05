@@ -22,9 +22,9 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from 'ui-kit/form/Select/Select'
-import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 import styles from './CollectiveDataForm.module.scss'
 import { CollectiveDataFormValues } from './type'
@@ -33,12 +33,12 @@ import { validationSchema } from './validationSchema'
 
 type CollectiveDataFormProps = {
   statuses: SelectOption[]
-  domains: SelectOption[]
+  domains: Option[]
   venue: GetVenueResponseModel
 }
 
-const studentLevels = Object.entries(StudentLevels).map(([, value]) => ({
-  value,
+const studentLevels = Object.entries(StudentLevels).map(([id, value]) => ({
+  id,
   label: value,
 }))
 
@@ -63,7 +63,7 @@ export const CollectiveDataForm = ({
   const studentOptions = isMarseilleEnabled
     ? studentLevels
     : studentLevels.filter(
-        (level) => !DEFAULT_MARSEILLE_STUDENTS.includes(level.value)
+        (level) => !DEFAULT_MARSEILLE_STUDENTS.includes(level.label)
       )
 
   const onSubmit = async (values: CollectiveDataFormValues) => {
@@ -130,12 +130,19 @@ export const CollectiveDataForm = ({
                 </FormLayout.Row>
 
                 <FormLayout.Row>
-                  <SelectAutocomplete
-                    multi
+                  <MultiSelect
                     name="collectiveStudents"
                     label="Public cible"
                     options={studentOptions}
-                    hideTags
+                    hasSearch
+                    searchLabel='Public cible'
+                    onSelectedOptionsChanged={(selectedOption) =>
+                        formik.setFieldValue(
+                          'collectiveStudents',
+                          [...selectedOption.map((studentLevel) => studentLevel.label)]
+                        )
+                    }
+                    buttonLabel="Public cible"
                     isOptional
                   />
                 </FormLayout.Row>
@@ -158,23 +165,38 @@ export const CollectiveDataForm = ({
                 }
               >
                 <FormLayout.Row>
-                  <SelectAutocomplete
-                    multi
-                    hideTags
-                    options={domains}
+                <MultiSelect
                     name="collectiveDomains"
                     label="Domaine artistique et culturel"
+                    options={domains}
+                    hasSearch
+                    searchLabel='Domaine artistique et culturel'
+                    onSelectedOptionsChanged={(selectedOption) =>
+                      formik.setFieldValue(
+                        'collectiveDomains',
+                        [...selectedOption.map((domain) => domain.id)]
+                      )
+                  }
+                    buttonLabel="Domaine artistique et culturel"
                     isOptional
                   />
                 </FormLayout.Row>
 
                 <FormLayout.Row>
-                  <SelectAutocomplete
-                    multi
-                    hideTags
-                    options={venueInterventionOptions}
+                <MultiSelect
                     name="collectiveInterventionArea"
                     label="Zone de mobilité"
+                    options={venueInterventionOptions}
+                    hasSelectAllOptions
+                    hasSearch
+                    searchLabel='Zone de mobilité'
+                    onSelectedOptionsChanged={(selectedOption) =>
+                      formik.setFieldValue(
+                        'collectiveInterventionArea',
+                        [...selectedOption.map((interventionArea) => interventionArea.id)]
+                      )
+                    }
+                    buttonLabel="Zone de mobilité"
                     isOptional
                   />
                 </FormLayout.Row>
