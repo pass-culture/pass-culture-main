@@ -27,6 +27,7 @@ export interface PrebookingButtonProps {
   setInstitutionOfferCount?: (value: number) => void
   institutionOfferCount?: number
   setOfferPrebooked?: (value: boolean) => void
+  shouldDisablePrebookButton: boolean
 }
 
 export const PrebookingButton = ({
@@ -42,6 +43,7 @@ export const PrebookingButton = ({
   setInstitutionOfferCount,
   institutionOfferCount,
   setOfferPrebooked,
+  shouldDisablePrebookButton,
 }: PrebookingButtonProps): JSX.Element | null => {
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -118,6 +120,7 @@ export const PrebookingButton = ({
               icon={fullStockIcon}
               className={styles['prebooking-button']}
               onClick={() => handleBookingModalButtonClick(stock.id)}
+              disabled={shouldDisablePrebookButton}
             >
               {children ?? 'Préréserver l’offre'}
             </Button>
