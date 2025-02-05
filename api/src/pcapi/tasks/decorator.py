@@ -67,8 +67,9 @@ def _define_handler(
     @cloud_task_api.route(path, methods=["POST"], endpoint=path)
     @spectree_serialize(on_success_status=204)
     def handle_task(body: payload_type) -> None:  # type: ignore[valid-type]
-        queue_name = request.headers.get("HTTP_X_CLOUDTASKS_QUEUENAME")
-        task_id = request.headers.get("HTTP_X_CLOUDTASKS_TASKNAME")
+        # Documentation: https://cloud.google.com/tasks/docs/creating-http-target-tasks?hl=fr#handler
+        queue_name = request.headers.get("X-CloudTasks-QueueName")
+        task_id = request.headers.get("X-CloudTasks-TaskName")
         retry_attempt = request.headers.get("X-CloudTasks-TaskRetryCount")
 
         job_details = {
