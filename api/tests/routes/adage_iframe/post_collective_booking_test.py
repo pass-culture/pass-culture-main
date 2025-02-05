@@ -32,7 +32,7 @@ class CollectiveBookingTest:
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
 
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
-            email=educational_redactor.email, uai=educational_institution.institutionId
+            email=educational_redactor.email, uai=educational_institution.institutionId, can_prebook=True
         )
 
         # When
@@ -61,6 +61,30 @@ class CollectiveBookingTest:
         assert len(adage_api_testing.adage_requests) == 1
 
     @time_machine.travel("2020-11-17 15:00:00")
+    def test_post_educational_booking_cannot_prebook(self, client):
+        stock = educational_factories.CollectiveStockFactory(startDatetime=stock_date)
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_factories.EducationalYearFactory(
+            beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
+        )
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
+
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
+            email=educational_redactor.email, uai=educational_institution.institutionId, can_prebook=False
+        )
+
+        response = client.with_explicit_token(adage_jwt_fake_valid_token).post(
+            "/adage-iframe/collective/bookings",
+            json={
+                "stockId": stock.id,
+            },
+        )
+
+        assert response.status_code == 403
+        assert response.json == {"global": "Could not book offer: not allowed"}
+        assert CollectiveBooking.query.filter(CollectiveBooking.collectiveStockId == stock.id).count() == 0
+
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_post_educational_booking_with_less_redactor_information(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(startDatetime=stock_date)
@@ -75,6 +99,7 @@ class CollectiveBookingTest:
             civility=None,
             firstname=None,
             lastname=None,
+            can_prebook=True,
         )
 
         # When
@@ -115,7 +140,7 @@ class CollectiveBookingTest:
         # Given
         stock, _, educational_redactor = test_data
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
-            email=educational_redactor.email, uai="Unknown"
+            email=educational_redactor.email, uai="Unknown", can_prebook=True
         )
 
         # When
@@ -138,7 +163,7 @@ class CollectiveBookingTest:
             startDatetime=stock_date, collectiveOffer__validation=OfferValidationStatus.REJECTED
         )
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
-            email=educational_redactor.email, uai=educational_institution.institutionId
+            email=educational_redactor.email, uai=educational_institution.institutionId, can_prebook=True
         )
 
         # When
@@ -157,7 +182,9 @@ class CollectiveBookingTest:
     def test_should_not_allow_booking_when_uai_code_is_not_provided_through_jwt(self, test_data, client):
         # Given
         stock, _, educational_redactor = test_data
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email=educational_redactor.email, uai=None)
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
+            email=educational_redactor.email, uai=None, can_prebook=True
+        )
 
         # When
         response = client.with_explicit_token(adage_jwt_fake_valid_token).post(
@@ -187,7 +214,7 @@ class CollectiveBookingTest:
             beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
         )
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
-            email=educational_redactor.email, uai=educational_institution2.institutionId
+            email=educational_redactor.email, uai=educational_institution2.institutionId, can_prebook=True
         )
 
         # When

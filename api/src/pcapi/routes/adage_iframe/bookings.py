@@ -29,6 +29,9 @@ logger = logging.getLogger(__name__)
 def book_collective_offer(
     body: BookCollectiveOfferRequest, authenticated_information: AuthenticatedInformation
 ) -> BookCollectiveOfferResponse:
+    if not authenticated_information.canPrebook:
+        raise ApiErrors({"global": "Could not book offer: not allowed"}, status_code=403)
+
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="BookingConfirmationButtonClick",
