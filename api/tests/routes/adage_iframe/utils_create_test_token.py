@@ -76,6 +76,7 @@ def create_adage_valid_token_with_email(
     uai: str = "EAU123",
     lat: float | None = None,
     lon: float | None = None,
+    can_prebook: bool | None = None,
 ) -> bytes:
     return create_adage_jwt_fake_valid_token(
         civility=civility,
@@ -86,6 +87,7 @@ def create_adage_valid_token_with_email(
         expiration_date=datetime.utcnow() + timedelta(days=1),
         lat=lat,
         lon=lon,
+        can_prebook=can_prebook,
     )
 
 
