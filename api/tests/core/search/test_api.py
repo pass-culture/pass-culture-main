@@ -16,13 +16,14 @@ from pcapi.core.search.backends import algolia
 import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
+from pcapi.models.validation_status_mixin import ValidationStatus
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def make_bookable_offer() -> offers_models.Offer:
-    return offers_factories.StockFactory().offer
+def make_bookable_offer(venue: offerers_models.Venue | None = None) -> offers_models.Offer:
+    return offers_factories.StockFactory(offer__venue=venue or offerers_factories.VenueFactory()).offer
 
 
 def make_future_offer() -> offers_models.Offer:
@@ -98,14 +99,19 @@ def test_index_offers_of_venues_in_queue(app):
     venue1 = bookable_offer.venue
     unbookable_offer = make_unbookable_offer()
     venue2 = unbookable_offer.venue
+    venue3 = offerers_factories.VenueFactory(managingOfferer=offerers_factories.ClosedOffererFactory())
+    closed_offer = make_bookable_offer(venue3)
     queue = algolia.REDIS_VENUE_IDS_FOR_OFFERS_NAME
-    app.redis_client.sadd(queue, venue1.id, venue2.id)
+    app.redis_client.sadd(queue, venue1.id, venue2.id, venue3.id)
 
     # `index_offers_of_venues_in_queue` pops 1 venue from the queue
     # (REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE).
     print(app.redis_client.smembers(queue))
     search.index_offers_of_venues_in_queue()
     print(app.redis_client.smembers(queue))
+    assert app.redis_client.scard(queue) == 2
+
+    search.index_offers_of_venues_in_queue()
     assert app.redis_client.scard(queue) == 1
 
     search.index_offers_of_venues_in_queue()
@@ -113,6 +119,7 @@ def test_index_offers_of_venues_in_queue(app):
 
     assert bookable_offer.id in search_testing.search_store["offers"]
     assert unbookable_offer.id not in search_testing.search_store["offers"]
+    assert closed_offer.id not in search_testing.search_store["offers"]
 
 
 @pytest.mark.settings(REDIS_VENUE_IDS_CHUNK_SIZE=1)
@@ -155,6 +162,17 @@ class ReindexOfferIdsTest:
         search.reindex_offer_ids([offer.id])
 
         # then
+        assert search_testing.search_store["offers"] == {}
+
+    def test_closed_offerer(self, app):
+        offer = make_bookable_offer(
+            offerers_factories.VenueFactory(managingOfferer=offerers_factories.ClosedOffererFactory())
+        )
+        search_testing.search_store["offers"][offer.id] = "dummy"
+        app.redis_client.hset(algolia.REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer.id, "")
+
+        search.reindex_offer_ids([offer.id])
+
         assert search_testing.search_store["offers"] == {}
 
     def test_that_base_query_is_correct(self, app):
@@ -250,6 +268,14 @@ class ReindexVenueIdsTest:
         assert search_testing.search_store["venues"] == {}
         search.reindex_venue_ids([venue.id])
         assert venue.id in search_testing.search_store["venues"]
+
+    def test_index_closed_venue(self):
+        venue = offerers_factories.VenueFactory(
+            isPermanent=True, managingOfferer=offerers_factories.ClosedOffererFactory()
+        )
+        assert search_testing.search_store["venues"] == {}
+        search.reindex_venue_ids([venue.id])
+        assert venue.id not in search_testing.search_store["venues"]
 
     def test_no_unexpected_query_made(self):
         venues = offerers_factories.VenueFactory.create_batch(3, isPermanent=True)

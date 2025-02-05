@@ -326,7 +326,7 @@ def _reindex_venue_ids(
     logger.info("Starting to index venues", extra={"count": len(venue_ids)})
     venues = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(venue_ids))
-        .options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
+        .options(sa.orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True))
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .options(sa.orm.joinedload(offerers_models.Venue.criteria))
         .options(sa.orm.joinedload(offerers_models.Venue.googlePlacesInfo))

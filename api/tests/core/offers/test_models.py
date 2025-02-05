@@ -517,8 +517,12 @@ class StockIsBookableTest:
         stock = factories.StockFactory(bookingLimitDatetime=past)
         assert not stock.isBookable
 
-    def test_not_bookable_if_offerer_is_not_validated(self):
-        stock = factories.StockFactory(offer__venue__managingOfferer__validationStatus=ValidationStatus.NEW)
+    @pytest.mark.parametrize(
+        "validation_status",
+        [ValidationStatus.NEW, ValidationStatus.PENDING, ValidationStatus.REJECTED, ValidationStatus.CLOSED],
+    )
+    def test_not_bookable_if_offerer_is_not_validated(self, validation_status):
+        stock = factories.StockFactory(offer__venue__managingOfferer__validationStatus=validation_status)
         assert not stock.isBookable
 
     def test_not_bookable_if_offerer_is_not_active(self):
@@ -791,3 +795,19 @@ class OfferIsSearchableTest:
         )
         assert len(results) == 1
         assert results[0].id == offer_1.id
+
+    @pytest.mark.parametrize(
+        "validation_status,is_eligible_for_search",
+        [
+            (ValidationStatus.NEW, False),
+            (ValidationStatus.PENDING, False),
+            (ValidationStatus.VALIDATED, True),
+            (ValidationStatus.REJECTED, False),
+            (ValidationStatus.CLOSED, False),
+        ],
+    )
+    def test_offerer_validation_status(self, validation_status, is_eligible_for_search):
+        offer = factories.OfferFactory(isActive=True, venue__managingOfferer__validationStatus=validation_status)
+        factories.StockFactory(offer=offer)
+
+        assert offer.is_eligible_for_search is is_eligible_for_search

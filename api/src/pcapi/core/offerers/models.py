@@ -484,7 +484,12 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         can_be_searched = bool(self.isPermanent)
         if FeatureToggle.WIP_IS_OPEN_TO_PUBLIC.is_active():
             can_be_searched = bool(self.isOpenToPublic)
-        return can_be_searched and self.managingOfferer.isActive and not_administrative
+        return (
+            can_be_searched
+            and self.managingOfferer.isActive
+            and self.managingOfferer.isValidated
+            and not_administrative
+        )
 
     def store_departement_code(self) -> None:
         if not self.postalCode:
