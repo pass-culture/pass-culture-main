@@ -79,6 +79,7 @@ class UbbleV2EndToEndTest:
 
         assert user.is_beneficiary
 
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
     def _start_ubble_workflow(self, user, client, requests_mock) -> None:
         requests_mock.post(f"{settings.UBBLE_API_URL}/v2/applicants", json=fixtures.APPLICANT_CREATION_RESPONSE)
         requests_mock.post(

@@ -11,7 +11,10 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import young_status
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+    pytest.mark.features(WIP_ENABLE_CREDIT_V3=0),
+]
 
 
 def _with_age(age):

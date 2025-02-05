@@ -1,3 +1,4 @@
+import datetime
 from ssl import SSLError
 from unittest.mock import patch
 
@@ -28,6 +29,7 @@ class EnsurePhoneNumberUnicityTest:
 
         token_utils.Token.token_exists(token_utils.TokenType.PHONE_VALIDATION, in_validation_user.id)
 
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
     @patch(
         "pcapi.notifications.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
     )

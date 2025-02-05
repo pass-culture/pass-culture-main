@@ -518,7 +518,7 @@ class EduconnectTest:
 
 
 class PerformanceTest:
-    @pytest.mark.settings(IS_PERFORMANCE_TESTS=True)
+    @pytest.mark.settings(IS_PERFORMANCE_TESTS=True, CREDIT_V3_DECREE_DATETIME=datetime.datetime(2026, 1, 1))
     def test_performance_tests(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.date.today() - relativedelta(years=15))
 

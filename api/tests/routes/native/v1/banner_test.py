@@ -12,6 +12,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.utils.string import u_nbsp
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 @pytest.mark.usefixtures("db_session")
 class BannerTest:
     # - authenticated user

@@ -43,7 +43,9 @@ from pcapi.notifications.push import testing as batch_testing
 
 MAX_BATCH_PARAMETER_SIZE = 30
 
-pytestmark = pytest.mark.usefixtures("db_session")
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+]
 
 
 @pytest.mark.parametrize("marketing_subscription", [True, False])

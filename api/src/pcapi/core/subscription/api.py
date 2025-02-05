@@ -98,6 +98,7 @@ def activate_beneficiary_for_eligibility(
     return user
 
 
+# TODO: creditv3 - Attention aux overlap d'eligibility UNDERAGE, AGE18 et AGE_17_18
 def _get_filled_dms_fraud_check(
     user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> fraud_models.BeneficiaryFraudCheck | None:
@@ -117,6 +118,7 @@ def _get_filled_dms_fraud_check(
     )
 
 
+# TODO: creditv3 - Attention aux overlap d'eligibility UNDERAGE, AGE18 et AGE_17_18
 def has_completed_profile_for_given_eligibility(
     user: users_models.User, eligibility: users_models.EligibilityType
 ) -> bool:
