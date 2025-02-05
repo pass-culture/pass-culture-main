@@ -25,11 +25,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: "pro/.nvmrc"
-      - name: "OpenID Connect Authentication"
-        uses: "google-github-actions/auth@v2"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
@@ -47,9 +42,13 @@ jobs:
       - run: yarn lint:js
       - run: yarn lint:scss
 
-  tests-pro-unit-tests:
+  run-tests:
     name: "Unit tests"
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        shardIndex: [1, 2]
+        shardTotal: [2]
     steps:
       - uses: actions/checkout@v4.2.2
         with:
@@ -66,13 +65,6 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
-        id: "secrets"
-        uses: "google-github-actions/get-secretmanager-secrets@v2"
-        with:
-          secrets: |-
-            SONAR_TOKEN:passculture-metier-ehp/passculture-main-sonar-token
-            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
@@ -86,7 +78,16 @@ jobs:
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - run: yarn install --immutable
       - name: Run tests with coverage
-        run: yarn test:unit:ci
+        run: yarn test:unit:ci --reporter=blob --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+
+      - name: Upload blob report to GitHub Actions Artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: blob-report-${{ matrix.shardIndex }}
+          path: pro/src/.vitest-reports/
+          include-hidden-files: true
+          retention-days: 1
 
       - name: "Upload Allure results for pro tests"
         uses: actions/upload-artifact@v4
@@ -94,6 +95,53 @@ jobs:
         with:
           name: allure-results-pro-unit
           path: allure-results
+
+  merge-reports:
+    if: ${{ !cancelled() }}
+    needs: [run-tests]
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: "pro/.nvmrc"
+
+      - name: "Cache the node_modules"
+        id: "yarn-modules-cache"
+        uses: pass-culture-github-actions/cache@v1.0.0
+        with:
+          compression-method: "gzip"
+          bucket: ${{ inputs.CACHE_BUCKET_NAME }}
+          path: |
+            **/node_modules
+          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn install --immutable
+      - name: Download blob reports from GitHub Actions Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: pro/.vitest-reports
+          pattern: blob-report-*
+          merge-multiple: true
+
+      - name: Merge reports
+        run: npx vitest --merge-reports
+
+      - name: "OpenID Connect Authentication"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      - name: "Get Secret"
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        with:
+          secrets: |-
+            SONAR_TOKEN:passculture-metier-ehp/passculture-main-sonar-token
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
 
       - name: SonarCloud scan
         uses: SonarSource/sonarcloud-github-action@master
@@ -104,11 +152,11 @@ jobs:
         with:
           projectBaseDir: pro
           args: -Dsonar.qualitygate.wait=${{ github.event_name == 'pull_request' && 'true' || 'false'  }}
+
       - name: "Post failure message to slack"
-        if: ${{ failure() && github.ref == 'refs/heads/master'  }}
+        if: ${{ failure() && github.ref == 'refs/heads/master' }}
         uses: slackapi/slack-github-action@v1.27.0
         with:
-          # channel #dev
           channel-id: "CPZ7U1CNP"
           payload: |
             {
