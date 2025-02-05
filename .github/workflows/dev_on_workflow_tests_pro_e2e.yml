@@ -30,6 +30,15 @@ jobs:
   tests-pro-e2e-tests:
     name: "E2E tests and notifications"
     runs-on: ubuntu-22.04
+    strategy:
+      # when one test fails, DO NOT cancel the other
+      # containers, because this will kill Cypress processes
+      # leaving Cypress Cloud hanging ...
+      # https://github.com/cypress-io/github-action/issues/48
+      fail-fast: false
+      matrix:
+        # run copies of the current job in parallel
+        containers: [1, 2, 3, 4, 5]
     steps:
       - uses: actions/checkout@v4.2.2
       - uses: technote-space/workflow-conclusion-action@v3
