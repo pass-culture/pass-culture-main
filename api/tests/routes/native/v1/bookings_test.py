@@ -36,6 +36,7 @@ from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.models.validation_status_mixin import ValidationStatus
 import pcapi.notifications.push.testing as push_testing
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils.human_ids import humanize
@@ -676,6 +677,21 @@ class PostBookingTest:
         # Fixme: the order is random which is why we use 'in' instead of ==
         assert external_bookings.barcode in ["12123932898127", "12123932898117"]
         assert external_bookings.seat in ["A12", "A13"]
+
+    @pytest.mark.parametrize(
+        "validation_status",
+        [ValidationStatus.NEW, ValidationStatus.PENDING, ValidationStatus.REJECTED, ValidationStatus.CLOSED],
+    )
+    def test_offerer_not_validated(self, client, validation_status):
+        stock = offers_factories.StockFactory(offer__venue__managingOfferer__validationStatus=validation_status)
+        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+
+        client = client.with_token(self.identifier)
+        response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
+
+        assert response.status_code == 400
+        assert response.json == {"code": "STOCK_NOT_BOOKABLE"}
+        assert Booking.query.count() == 0
 
 
 class GetBookingsTest:
