@@ -213,7 +213,7 @@ class SaveBookClubChronicleTest:
         assert chronicle.isIdentityDiffusible
         assert chronicle.isSocialMediaDiffusible
         assert not chronicle.isActive
-        assert chronicle.formId == form.response_id
+        assert chronicle.externalId == form.response_id
         assert chronicle.userId is None
 
     def test_save_book_club_chronicle_empty(self):
@@ -250,7 +250,7 @@ class SaveBookClubChronicleTest:
         assert not chronicle.isIdentityDiffusible
         assert not chronicle.isSocialMediaDiffusible
         assert not chronicle.isActive
-        assert chronicle.formId == form.response_id
+        assert chronicle.externalId == form.response_id
         assert chronicle.userId is None
 
     def test_do_not_save_book_club_chronicle_without_email(self):
@@ -419,7 +419,7 @@ class SaveBookClubChronicleTest:
         ean = "1234567890123"
         ean_choice_id = random_string()
         form = typeform.TypeformResponse(
-            response_id=old_chronicle.formId,
+            response_id=old_chronicle.externalId,
             date_submitted=datetime.datetime(2024, 10, 24),
             phone_number=None,
             email="email@mail.test",

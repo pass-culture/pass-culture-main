@@ -117,7 +117,7 @@ def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
                 eanChoiceId=ean_choice_id,
                 email=form.email,
                 firstName=answer_dict.get(constants.BookClub.NAME_ID.value, EMPTY_ANSWER).text,
-                formId=form.response_id,
+                externalId=form.response_id,
                 isIdentityDiffusible=is_identity_diffusible,
                 isSocialMediaDiffusible=is_social_media_diffusible,
                 products=products,
