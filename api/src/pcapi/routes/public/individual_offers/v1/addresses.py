@@ -99,7 +99,10 @@ def search_addresses(query: AddressModel) -> SearchAddressResponse:
         addresses = geography_repository.search_addresses(
             street=query.street,
             city=municipality_address.city,  # we use normalized data for `city`
-            postal_code=municipality_address.postcode,  # we use normalized data for `postal_code`
+            # we use the postal sent by the client because in the case of a big city like Paris or Lyon
+            # `api_adresse.get_municipality_centroid` returns a default postal code (the postal code of the
+            # 1st neighborhood) which might lead to incoherent addresses
+            postal_code=query.postalCode,
             latitude=query.latitude,
             longitude=query.longitude,
         )
@@ -163,11 +166,14 @@ def create_address(body: AddressModel) -> AddressResponse:
         location_data = offerers_api.LocationData(
             # Data coming from the BAN API
             city=municipality_address.city,
-            postal_code=municipality_address.postcode,
             insee_code=municipality_address.citycode,
             ban_id=None,
             # Data coming from the request body
             street=body.street,
+            # we use the postal sent by the client because in the case of a big city like Paris or Lyon
+            # `api_adresse.get_municipality_centroid` returns a default postal code (the postal code of the
+            # 1st neighborhood) which might lead to incoherent addresses
+            postal_code=body.postalCode,
             latitude=body.latitude,
             longitude=body.longitude,
         )
