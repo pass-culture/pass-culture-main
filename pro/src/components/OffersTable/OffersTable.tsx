@@ -9,7 +9,7 @@ import styles from './OffersTable.module.scss'
 
 type OffersTableProps = {
   hasOffers: boolean
-  hasFilters: boolean
+  hasFiltersOrNameSearch: boolean
   offersCount: number
   isLoading: boolean
   resetFilters: () => void
@@ -19,7 +19,7 @@ type OffersTableProps = {
 
 export const OffersTable = ({
   hasOffers,
-  hasFilters,
+  hasFiltersOrNameSearch,
   offersCount,
   isLoading,
   resetFilters,
@@ -67,7 +67,7 @@ export const OffersTable = ({
               )}
             </>
           )}
-          {!hasOffers && hasFilters && (
+          {!hasOffers && hasFiltersOrNameSearch && (
             <NoResults resetFilters={resetFilters} />
           )}
         </>

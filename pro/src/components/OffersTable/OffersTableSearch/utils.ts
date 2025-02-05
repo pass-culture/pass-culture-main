@@ -68,11 +68,15 @@ export function useStoredFilterConfig<T extends 'individual' | 'collective' | 't
     }
   }
 
-  const onResetFilters = () => {
+  const onResetFilters = (resetNameOrIsbn = true) => {
     const filterConfig = getStoredFilterConfig(type)
     const newFilterConfig: StoredFilterConfig = {
       ...filterConfig,
-      storedFilters: {}
+      storedFilters: {
+        ...(!resetNameOrIsbn ? {
+          nameOrIsbn: filterConfig.storedFilters.nameOrIsbn
+        } : {}),
+      }
     }
 
     if (isSessionStorageAvailable) {

@@ -571,6 +571,36 @@ describe('route CollectiveOffers', () => {
         undefined
       )
     })
+
+    it('when clicking on "Réinitialiser les filtres" & WIP_COLLAPSED_MEMORIZED_FILTERS enabled - except nameOrIsbn', async () => {
+      vi.spyOn(api, 'getCollectiveOffers')
+      const nameOrIsbn = 'Any word'
+
+      await renderOffers(
+        {
+          nameOrIsbn,
+          venueId: '666',
+        },
+        ['WIP_COLLAPSED_MEMORIZED_FILTERS']
+      )
+
+      await userEvent.click(screen.getByText('Réinitialiser les filtres'))
+
+      await waitFor(() => {
+        expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+          nameOrIsbn,
+          '1',
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined
+        )
+      })
+    })
   })
 
   it('should show draft offers ', async () => {

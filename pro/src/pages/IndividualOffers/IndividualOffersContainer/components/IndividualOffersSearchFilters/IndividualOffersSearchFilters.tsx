@@ -112,10 +112,6 @@ export const IndividualOffersSearchFilters = ({
     applyFilters(selectedFilters)
   }
 
-  const requestAllOffers = () => {
-    resetFilters()
-  }
-
   const searchByOfferNameLabel = (
     <span>
       Nom de l’offre ou <abbr title="European Article Numbering">EAN-13</abbr>
@@ -149,7 +145,7 @@ export const IndividualOffersSearchFilters = ({
         onChange: storeNameOrIsbnSearchValue,
         value: selectedFilters.nameOrIsbn,
       }}
-      onResetFilters={requestAllOffers}
+      onResetFilters={resetFilters}
     >
       <FormLayout.Row inline>
         <FieldLayout label="Statut" name="status" isOptional>

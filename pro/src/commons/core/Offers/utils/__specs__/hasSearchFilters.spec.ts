@@ -22,38 +22,51 @@ describe('hasSearchFilters', () => {
 
   it('should confirm whether collective filters are applied or not', () => {
     expect(
-      hasCollectiveSearchFilters(defaultCollectiveFilters, {
-        ...defaultCollectiveFilters,
+      hasCollectiveSearchFilters({
+        searchFilters: defaultCollectiveFilters,
+        defaultFilters: defaultCollectiveFilters
       })
     ).toBeFalsy()
 
     expect(
-      hasCollectiveSearchFilters(defaultCollectiveFilters, {
-        ...defaultCollectiveFilters,
-        format: EacFormat.ATELIER_DE_PRATIQUE,
-      })
+      hasCollectiveSearchFilters({
+        searchFilters: defaultCollectiveFilters,
+        defaultFilters: {
+          ...defaultCollectiveFilters,
+          format: EacFormat.ATELIER_DE_PRATIQUE,
+        }
+    })
     ).toBeTruthy()
 
     expect(
-      hasCollectiveSearchFilters(defaultCollectiveFilters, {
-        ...defaultCollectiveFilters,
-        status: [CollectiveOfferDisplayedStatus.ACTIVE],
+      hasCollectiveSearchFilters({
+        searchFilters: defaultCollectiveFilters,
+        defaultFilters: {
+          ...defaultCollectiveFilters,
+          status: [CollectiveOfferDisplayedStatus.ACTIVE],
+        }
       })
     ).toBeTruthy()
   })
 
   it('should ignore the page number and offerer id', () => {
     expect(
-      hasCollectiveSearchFilters(defaultCollectiveFilters, {
-        ...defaultCollectiveFilters,
-        page: 10,
+      hasCollectiveSearchFilters({
+        searchFilters: defaultCollectiveFilters,
+        defaultFilters: {
+          ...defaultCollectiveFilters,
+          page: 10,
+        }
       })
     ).toBeFalsy()
 
     expect(
-      hasCollectiveSearchFilters(defaultCollectiveFilters, {
-        ...defaultCollectiveFilters,
-        offererId: '816',
+      hasCollectiveSearchFilters({
+        searchFilters: defaultCollectiveFilters,
+        defaultFilters: {
+          ...defaultCollectiveFilters,
+          offererId: '816',
+        }
       })
     ).toBeFalsy()
   })
