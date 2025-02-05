@@ -180,6 +180,53 @@ class CreateAddressTest(PublicAPIEndpointBaseHelper):
 
     @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
     @patch("pcapi.connectors.api_adresse.get_address")
+    def test_should_use_postal_code_sent_by_client_in_case_the_address_not_found_on_the_ban_api(
+        self, get_address_mock, get_municipality_centroid_mock, client: TestClient
+    ):
+        plain_api_key, _ = self.setup_provider()
+
+        get_address_mock.side_effect = NoResultException()  # mock no result from BAN API
+        get_municipality_centroid_mock.return_value = AddressInfo(
+            id="75056",
+            postcode="75001",
+            citycode="75056",
+            latitude=48.859,
+            longitude=2.347,
+            score=0.667307878787879,
+            city="Paris",
+            street=None,
+        )
+
+        result = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={
+                "postalCode": "75016",
+                "city": "Paris",
+                "street": "Carrefour des Tribunes",
+                "latitude": 46.80847,
+                "longitude": 4.70118,
+            },
+        )
+
+        created_address = geography_models.Address.query.filter(
+            geography_models.Address.inseeCode == "75056"
+        ).one_or_none()
+
+        assert created_address is not None
+        assert created_address.isManualEdition
+        assert result.status_code == 200
+        assert result.json == {
+            "id": created_address.id,
+            "banId": None,
+            "postalCode": "75016",  # not 75001
+            "city": "Paris",
+            "street": "Carrefour des Tribunes",
+            "latitude": 46.80847,
+            "longitude": 4.70118,
+        }
+
+    @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
+    @patch("pcapi.connectors.api_adresse.get_address")
     def test_should_raise_400_because_municipality_not_found_on_BAN_API(
         self, get_address_mock, get_municipality_centroid_mock, client: TestClient
     ):

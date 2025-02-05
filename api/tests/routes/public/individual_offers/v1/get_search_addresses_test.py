@@ -175,6 +175,53 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
 
     @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
     @patch("pcapi.connectors.api_adresse.get_address")
+    def test_should_return_existing_address_based_on_municipality_and_client_postal_code(
+        self, get_address_mock, get_municipality_centroid_mock, client: TestClient
+    ):
+        plain_api_key, _ = self.setup_provider()
+
+        manual_address = geography_factories.ManualAddressFactory(
+            postalCode="75016",
+            city="Paris",
+            street="Carrefour des Tribunes",
+            latitude=46.81201,
+            longitude=4.70024,
+        )
+
+        get_address_mock.side_effect = NoResultException()  # mock no result from BAN API
+        get_municipality_centroid_mock.return_value = AddressInfo(
+            id="75056",
+            postcode="75001",  # incorrect postal code
+            citycode="75056",
+            latitude=48.859,
+            longitude=2.347,
+            score=0.667307878787879,
+            city="Paris",
+            street=None,
+        )
+
+        result = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url,
+            params={"postalCode": "75016", "city": "Paris", "street": "Carrefour des Tribunes"},
+        )
+
+        assert result.status_code == 200
+        assert result.json == {
+            "addresses": [
+                {
+                    "id": manual_address.id,
+                    "banId": None,
+                    "postalCode": "75016",
+                    "city": "Paris",
+                    "street": "Carrefour des Tribunes",
+                    "latitude": 46.81201,
+                    "longitude": 4.70024,
+                }
+            ]
+        }
+
+    @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
+    @patch("pcapi.connectors.api_adresse.get_address")
     def test_should_raise_400_because_municipality_not_found_on_BAN_API(
         self, get_address_mock, get_municipality_centroid_mock, client: TestClient
     ):
