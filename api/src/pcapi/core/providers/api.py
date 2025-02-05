@@ -16,6 +16,7 @@ import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
@@ -66,6 +67,7 @@ def create_venue_provider(
             offerers_models.VenueTypeCode.MOVIE,
         )
         and not venue.isPermanent
+        and not FeatureToggle.WIP_IS_OPEN_TO_PUBLIC.is_active()
     ):
         venue.isPermanent = True
         db.session.add(venue)
