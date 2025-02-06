@@ -44,16 +44,17 @@ STOCK_LIMIT_TO_DELETE = 50
 
 OFFER_LOAD_OPTIONS = typing.Iterable[
     typing.Literal[
-        "stock",
-        "mediations",
-        "product",
-        "price_category",
-        "venue",
         "bookings_count",
-        "offerer_address",
         "future_offer",
-        "pending_bookings",
         "headline_offer",
+        "is_non_free_offer",
+        "mediations",
+        "offerer_address",
+        "pending_bookings",
+        "price_category",
+        "product",
+        "stock",
+        "venue",
     ]
 ]
 
@@ -1253,6 +1254,11 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
             query = query.options(
                 sa_orm.with_expression(models.Offer.bookingsCount, get_bookings_count_subquery(offer_id))
             )
+        if "is_non_free_offer" in load_options:
+            query = query.options(
+                sa_orm.with_expression(models.Offer.isNonFreeOffer, is_non_free_offer_subquery(offer_id))
+            )
+
         if "offerer_address" in load_options:
             query = query.options(
                 sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address),

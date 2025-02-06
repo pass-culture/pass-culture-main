@@ -429,8 +429,14 @@ def update_offer(
     if should_send_mail and (withdrawal_updated or oa_updated):
         transactional_mails.send_email_for_each_ongoing_booking(offer)
 
-    reason = search.IndexationReason.OFFER_UPDATE
-    search.async_index_offer_ids([offer.id], reason=reason, log_extra={"changes": updates_set})
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [offer.id],
+            reason=search.IndexationReason.OFFER_UPDATE,
+            log_extra={"changes": updates_set},
+        )
+    )
 
     return offer
 

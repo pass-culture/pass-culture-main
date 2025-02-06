@@ -423,32 +423,34 @@ def patch_all_offers_active_status(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def patch_offer(
     offer_id: int, body: offers_serialize.PatchOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
-    offer = (
-        models.Offer.query.options(
-            sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
-            sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
-            sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.offererAddress),
-            sqla.orm.joinedload(models.Offer.product),
+    try:
+        offer = offers_repository.get_offer_by_id(
+            offer_id,
+            load_options=[
+                "stock",
+                "venue",
+                "offerer_address",
+                "product",
+                "bookings_count",
+                "is_non_free_offer",
+            ],
         )
-        .filter_by(id=offer_id)
-        .one_or_none()
-    )
-    if not offer:
-        raise api_errors.ResourceNotFoundError
+    except exceptions.OfferNotFound:
+        raise api_errors.ResourceNotFoundError()
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     try:
-        with repository.transaction():
-            updates = body.dict(by_alias=True, exclude_unset=True)
-            if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
-                updates["extraData"] = body_extra_data
+        updates = body.dict(by_alias=True, exclude_unset=True)
+        if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
+            updates["extraData"] = body_extra_data
 
-            offer_body = offers_schemas.UpdateOffer(**updates)
+        offer_body = offers_schemas.UpdateOffer(**updates)
 
-            offer = offers_api.update_offer(offer, offer_body, is_from_private_api=True)
+        offer = offers_api.update_offer(offer, offer_body, is_from_private_api=True)
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
