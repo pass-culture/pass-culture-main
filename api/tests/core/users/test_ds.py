@@ -394,18 +394,14 @@ class SyncUserAccountUpdateRequestsTest:
     @patch(
         "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
         side_effect=[
-            ds_fixtures.DS_RESPONSE_EMAIL_CHANGED_WITH_SET_WITHOUT_CONTINUATION,
+            ds_fixtures.DS_RESPONSE_FIRSTNAME_CHANGED_WITH_SET_WITHOUT_CONTINUATION,
             ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_WITHOUT_CONTINUATION,
         ],
     )
-    @pytest.mark.parametrize(
-        "with_found_user,expected_email", [(True, "other@example.com"), (False, "beneficiaire@example.com")]
-    )
-    def test_sync_with_set_without_continuation(
-        self, mocked_execute_query, instructor, with_found_user, expected_email
-    ):
+    @pytest.mark.parametrize("with_found_user", [True, False])
+    def test_sync_with_set_without_continuation(self, mocked_execute_query, instructor, with_found_user):
         if with_found_user:
-            beneficiary = users_factories.BeneficiaryGrant18Factory(email="other@example.com")
+            beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiaire@example.com")
         else:
             beneficiary = None
 
@@ -438,7 +434,7 @@ class SyncUserAccountUpdateRequestsTest:
 
         assert uaur.status == dms_models.GraphQLApplicationStates.without_continuation
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0]["To"] == expected_email
+        assert mails_testing.outbox[0]["To"] == "beneficiaire@example.com"
         assert mails_testing.outbox[0]["template"] == asdict(
             TransactionalEmail.UPDATE_REQUEST_MARKED_WITHOUT_CONTINUATION.value
         )
@@ -489,6 +485,10 @@ class SyncUserAccountUpdateRequestsTest:
 
         assert uaur.status == dms_models.GraphQLApplicationStates.without_continuation
         assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == "nouvelle.adresse@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(
+            TransactionalEmail.UPDATE_REQUEST_MARKED_WITHOUT_CONTINUATION.value
+        )
 
     @time_machine.travel("2025-01-16 17:12")
     @patch(

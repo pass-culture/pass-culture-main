@@ -188,9 +188,8 @@ def check_set_without_continuation(user_request: users_models.UserAccountUpdateR
         except (dms_exceptions.DmsGraphQLApiError, dms_exceptions.DmsGraphQLApiException):
             pass
 
-        transactional_mails.send_beneficiary_update_request_set_to_without_continuation(
-            user_request.user.email if user_request.user else data["email"]
-        )
+        recipient_email = data["newEmail"] or (user_request.user.email if user_request.user else data["email"])
+        transactional_mails.send_beneficiary_update_request_set_to_without_continuation(recipient_email)
 
 
 def _sync_ds_application(
