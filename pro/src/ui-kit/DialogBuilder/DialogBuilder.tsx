@@ -1,23 +1,32 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import cn from 'classnames'
+import { useRef } from 'react'
 
 import styles from './DialogBuilder.module.scss'
 import { DialogBuilderCloseButton } from './DialogBuilderCloseButton'
 
-export type DialogVariant = 'default' | 'drawer'
+type DialogVariant = 'default' | 'drawer'
 
 /**
  * Props for the DialogBuilder component.
  */
-type DialogBuilderProps = {
+export type DialogBuilderProps = {
   /**
    * The trigger element that opens the dialog.
    */
   trigger?: React.ReactNode
   /**
+   * The heading title of the dialog.
+   */
+  title?: string
+  /**
    * The content to be displayed inside the dialog.
    */
   children: React.ReactNode
+  /**
+   * The content to be displayed at the bottom of the dialog, after the separator.
+   */
+  footer?: React.ReactNode
   /**
    * Determines if the dialog is open by default.
    * @default false
@@ -64,7 +73,9 @@ type DialogBuilderProps = {
  */
 export function DialogBuilder({
   trigger,
+  title,
   children,
+  footer,
   defaultOpen = false,
   onOpenChange,
   open,
@@ -72,6 +83,7 @@ export function DialogBuilder({
   className,
   variant = 'default',
 }: DialogBuilderProps) {
+  const contentRef = useRef<HTMLDivElement>(null)
   return (
     <Dialog.Root
       defaultOpen={defaultOpen}
@@ -85,15 +97,48 @@ export function DialogBuilder({
             styles['dialog-builder-overlay'],
             styles[`dialog-builder-overlay-${variant}`]
           )}
+          data-testid="dialog-overlay"
         >
           <Dialog.Content
             className={cn(styles['dialog-builder-content'], className)}
             aria-describedby={undefined}
+            ref={contentRef}
+            onPointerDownOutside={(e) => {
+              if (!contentRef.current) {
+                return
+              }
+              const contentRect = contentRef.current.getBoundingClientRect()
+              // Detect if click actually happened within the bounds of content.
+              // This can happen if click was on an absolutely positioned element overlapping content,
+              // such as a click on the scroll bar (https://github.com/radix-ui/primitives/issues/1280)
+              const actuallyClickedInside =
+                e.detail.originalEvent.clientX > contentRect.left &&
+                e.detail.originalEvent.clientX <
+                  contentRect.left + contentRect.width &&
+                e.detail.originalEvent.clientY > contentRect.top &&
+                e.detail.originalEvent.clientY <
+                  contentRect.top + contentRect.height
+              if (actuallyClickedInside) {
+                e.preventDefault()
+              }
+            }}
           >
             <DialogBuilderCloseButton
               closeButtonClassName={closeButtonClassName}
             />
-            <section>{children}</section>
+            <section className={styles['dialog-builder-section']}>
+              <div>
+                {title && (
+                  <Dialog.Title asChild>
+                    <h1 className={styles['dialog-builder-title']}>{title}</h1>
+                  </Dialog.Title>
+                )}
+                {children}
+              </div>
+              {footer && (
+                <div className={styles['dialog-builder-footer']}>{footer}</div>
+              )}
+            </section>
           </Dialog.Content>
         </Dialog.Overlay>
       </Dialog.Portal>
