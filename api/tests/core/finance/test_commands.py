@@ -25,6 +25,7 @@ pytestmark = [
 ]
 
 
+@pytest.mark.usefixtures("clean_database")
 class AddCustomOfferReimbursementRuleTest:
     def test_basics(self, run_command):
         stock = offers_factories.StockFactory(price=24.68)
@@ -114,6 +115,7 @@ def test_generate_invoices_warning(run_command, caplog):
     )
 
 
+@pytest.mark.usefixtures("clean_database")
 @pytest.mark.usefixtures("css_font_http_request_mock")
 def test_generate_cashflows_calls_generate_invoices(run_command):
     offerer = offerers_factories.OffererFactory()
