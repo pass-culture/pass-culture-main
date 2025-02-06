@@ -118,7 +118,10 @@ export const IndividualActionsCells = ({
   }
 
   const onConfirmReplaceHeadlineOffer = async () => {
-    await upsertHeadlineOffer(offer.id)
+    await upsertHeadlineOffer({
+      offerId: offer.id,
+      context: { actionType: 'replace' }
+    })
     setIsConfirmDialogReplaceHeadlineOfferOpen(false)
   }
 
