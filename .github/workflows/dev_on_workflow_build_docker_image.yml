@@ -23,6 +23,7 @@ on:
 
 env:
   registry: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
+  DOCKER_BUILD_SUMMARY: false
 
 jobs:
   build-docker-image:
