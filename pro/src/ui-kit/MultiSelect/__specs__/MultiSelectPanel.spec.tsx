@@ -13,7 +13,7 @@ describe('<MultiSelectPanel />', () => {
   ]
 
   const onOptionSelect = vi.fn()
-  const onSelectAll = vi.fn()
+  const onSelectAllOptions = vi.fn()
 
   const renderMultiSelectPanel = ({
     hasSelectAllOptions = false,
@@ -29,10 +29,12 @@ describe('<MultiSelectPanel />', () => {
     return render(
       <MultiSelectPanel
         id="1"
-        options={options}
+        mergedOptions={options}
+        options={[{options}]}
         label={''}
+        checkboxStates={{0: false}}
         onOptionSelect={onOptionSelect}
-        onSelectAll={onSelectAll}
+        onSelectAllOptions={onSelectAllOptions}
         hasSelectAllOptions={hasSelectAllOptions}
         isAllChecked={isAllChecked}
         hasSearch={hasSearch}
@@ -166,7 +168,7 @@ describe('<MultiSelectPanel />', () => {
 
     await userEvent.click(selectAllCheckbox)
 
-    expect(onSelectAll).toHaveBeenCalledTimes(1)
+    expect(onSelectAllOptions).toHaveBeenCalledTimes(1)
   })
 
   it('reflects isAllChecked state in "Select All" checkbox', () => {
