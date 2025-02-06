@@ -47,7 +47,7 @@ describe('screens | OfferEducational', () => {
     await screen.findByLabelText(`${VENUE_LABEL} *`)
 
     const inputs = [
-      screen.getByLabelText(`Ajoutez un ou plusieurs formats *`),
+      screen.getByLabelText(`Formats`),
       screen.getByLabelText(`Titre de l’offre *`),
       screen.getByLabelText('Indiquez la durée de l’évènement', {
         exact: false,
@@ -59,7 +59,7 @@ describe('screens | OfferEducational', () => {
       screen.getByLabelText('Téléphone', { exact: false }),
       screen.getByLabelText(`${EMAIL_LABEL} *`),
       screen.getByLabelText(`${NOTIFICATIONS_EMAIL_LABEL} *`),
-      screen.getByLabelText(`${INTERVENTION_AREA_LABEL} *`),
+      screen.getByLabelText(`Zone de mobilité`),
     ]
     const submitButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',
