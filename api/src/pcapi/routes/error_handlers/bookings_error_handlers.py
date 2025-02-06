@@ -73,3 +73,10 @@ def handle_booking_is_already_cancelled(exception: exceptions.BookingIsAlreadyCa
     mark_transaction_as_invalid()
     error = {"booking_cancelled": ["Cette réservation a été annulée"]}
     return app.generate_error_response(error), api_errors.ResourceGoneError.status_code
+
+
+@app.errorhandler(exceptions.OffererIsClosed)
+def handle_offerer_is_closed(exception: exceptions.OffererIsClosed) -> JsonResponse:
+    mark_transaction_as_invalid()
+    error = {"booking": ["Vous ne pouvez plus valider de contremarque sur une structure fermée"]}
+    return app.generate_error_response(error), api_errors.ForbiddenError.status_code

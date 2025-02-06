@@ -28,6 +28,7 @@ from . import bookings_serialization as serialization
 def _get_base_booking_query() -> sqla_orm.Query:
     return (
         booking_models.Booking.query.join(offerers_models.Venue)
+        .join(offerers_models.Venue.managingOfferer)
         .outerjoin(offerers_models.Venue.offererAddress)
         .outerjoin(offerers_models.OffererAddress.address)
         .join(providers_models.VenueProvider)
@@ -43,10 +44,15 @@ def _get_base_booking_query() -> sqla_orm.Query:
                 offerers_models.Venue.street,
                 offerers_models.Venue.departementCode,
             )
-            .contains_eager(offerers_models.Venue.offererAddress)
-            .load_only(offerers_models.OffererAddress.id)
-            .contains_eager(offerers_models.OffererAddress.address)
-            .load_only(geography_models.Address.street, geography_models.Address.departmentCode)
+            .options(
+                sqla_orm.contains_eager(offerers_models.Venue.managingOfferer).load_only(
+                    offerers_models.Offerer.validationStatus
+                ),
+                sqla_orm.contains_eager(offerers_models.Venue.offererAddress)
+                .load_only(offerers_models.OffererAddress.id)
+                .contains_eager(offerers_models.OffererAddress.address)
+                .load_only(geography_models.Address.street, geography_models.Address.departmentCode),
+            )
         )
         .options(
             sqla_orm.contains_eager(booking_models.Booking.stock)
