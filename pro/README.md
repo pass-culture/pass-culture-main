@@ -1,4 +1,4 @@
-# pass-culture-pro
+# pass-culture-pro pass-culture-pro
 
 C'est la version (browser) de l’application PRO frontend du pass Culture. Ce repo contient également [un storybook](https://pass-culture.github.io/pass-culture-main/) des éléments graphiques
 
