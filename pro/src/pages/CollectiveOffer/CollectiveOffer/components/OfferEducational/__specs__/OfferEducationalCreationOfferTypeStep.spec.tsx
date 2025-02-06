@@ -72,9 +72,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
       props = {
         ...props,
         domainsOptions: [
-          { label: 'Domain 1', value: 1 },
-          { label: 'Domain 2', value: 2 },
-          { label: 'Domain 3', value: 3 },
+          { label: 'Domain 1', id: '1' },
+          { label: 'Domain 2', id: '2' },
+          { label: 'Domain 3', id: '3' },
         ],
       }
     })
@@ -82,14 +82,10 @@ describe('screens | OfferEducational : creation offer type step', () => {
     it('should require user to select a domain', async () => {
       renderComponent(props)
       await userEvent.click(
-        await screen.findByLabelText(
-          /Ajoutez un ou plusieurs domaines artistiques */
-        )
+        await screen.findByLabelText('Domaines artistiques')
       )
 
-      await userEvent.click(
-        screen.getByLabelText(/Ajoutez un ou plusieurs formats */)
-      )
+      await userEvent.click(await screen.findByLabelText('Formats'))
 
       expect(
         screen.getByText('Veuillez renseigner un domaine')
@@ -100,16 +96,12 @@ describe('screens | OfferEducational : creation offer type step', () => {
       renderComponent(props)
 
       await userEvent.click(
-        await screen.findByLabelText(
-          /Ajoutez un ou plusieurs domaines artistiques */
-        )
+        await screen.findByLabelText('Domaines artistiques')
       )
 
       await userEvent.click(await screen.findByLabelText(/Domain 2/))
 
-      await userEvent.click(
-        screen.getByLabelText(/Ajoutez un ou plusieurs formats */)
-      )
+      await userEvent.click(await screen.findByLabelText('Formats'))
 
       expect(
         screen.queryByText('Veuillez renseigner un domaine')
@@ -141,9 +133,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
   describe('formats', () => {
     it('should be able to select a format', async () => {
       renderComponent(props)
-      const selectFormat = await screen.findByRole('combobox', {
-        name: 'Ajoutez un ou plusieurs formats *',
-      })
+      const selectFormat = await screen.findByLabelText('Formats')
 
       await userEvent.click(selectFormat)
 

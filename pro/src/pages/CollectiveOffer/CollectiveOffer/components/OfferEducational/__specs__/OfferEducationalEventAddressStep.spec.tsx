@@ -74,7 +74,7 @@ describe('screens | OfferEducational : event address step', () => {
       ).toBeInTheDocument()
 
       expect(
-        screen.queryByLabelText(`${INTERVENTION_AREA_LABEL} *`)
+        screen.queryByLabelText('Zone de mobilité')
       ).toBeInTheDocument()
     })
 
@@ -97,7 +97,7 @@ describe('screens | OfferEducational : event address step', () => {
       ).not.toBeInTheDocument()
 
       expect(
-        screen.queryByLabelText(`${INTERVENTION_AREA_LABEL} *`)
+        screen.queryByLabelText('Zone de mobilité')
       ).toBeInTheDocument()
     })
   })
@@ -195,13 +195,11 @@ describe('screens | OfferEducational : event address step', () => {
 
       expect(screen.getByLabelText('Autre')).toBeChecked()
 
-      const interventionArea = await screen.findByLabelText(
-        `${INTERVENTION_AREA_LABEL} *`
-      )
+      const interventionArea = await screen.findByLabelText('Zone de mobilité')
       await userEvent.click(interventionArea)
 
       const interventionAreaContainer = screen.getByTestId(
-        'wrapper-search-interventionArea'
+        'panel-scrollable'
       )
 
       const checkedItems = within(interventionAreaContainer).getAllByRole(
