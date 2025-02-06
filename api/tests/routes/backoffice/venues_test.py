@@ -317,6 +317,14 @@ class GetVenueTest(GetEndpointHelper):
             contact__website="www.example.com",
             publicName="Le grand Rantanplan 1",
             managingOfferer__allowedOnAdage=False,
+            offererAddress__address__street="1 Boulevard de la Croisette",
+            offererAddress__address__postalCode="06400",
+            offererAddress__address__city="Cannes",
+            offererAddress__address__latitude=43.551407,
+            offererAddress__address__longitude=7.017984,
+            offererAddress__address__inseeCode="06029",
+            offererAddress__address__banId="06029_0880_00001",
+            offererAddress__address__departmentCode="06",
         )
         url = url_for(self.endpoint, venue_id=venue.id)
 
@@ -329,7 +337,7 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Nom d'usage : {venue.publicName} " in response_text
         assert f"Venue ID : {venue.id} " in response_text
         assert f"SIRET : {venue.siret} " in response_text
-        assert "Région : Île-de-France " in response_text
+        assert "Région : Provence-Alpes-Côte d'Azur" in response_text
         assert f"Ville : {venue.offererAddress.address.city} " in response_text
         assert f"Code postal : {venue.offererAddress.address.postalCode} " in response_text
         assert f"Email : {venue.bookingEmail} " in response_text

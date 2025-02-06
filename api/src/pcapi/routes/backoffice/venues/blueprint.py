@@ -175,7 +175,13 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
 def render_venue_details(
     venue: offerers_models.Venue, edit_venue_form: forms.EditVirtualVenueForm | None = None
 ) -> str:
-    region = regions_utils.get_region_name_from_postal_code(venue.postalCode) if venue.postalCode else ""
+    region = ""
+    if venue.offererAddress:
+        region = (
+            regions_utils.get_region_name_from_postal_code(venue.offererAddress.address.postalCode)
+            if venue.offererAddress.address.postalCode
+            else ""
+        )
 
     if not edit_venue_form:
         if venue.isVirtual:
@@ -235,6 +241,7 @@ def render_venue_details(
         search_form=search_form,
         search_dst=url_for("backoffice_web.pro.search_pro"),
         venue=venue,
+        address=venue.offererAddress.address if venue.offererAddress else None,
         edit_venue_form=edit_venue_form,
         region=region,
         delete_form=delete_form,
