@@ -173,11 +173,9 @@ app.config.from_mapping(
         broker_url=settings.REDIS_URL,
         task_acks_late=True,
         task_reject_on_worker_lost=True,
-        # Pickle seems the best pick since we don't support
-        # anything other than python https://docs.celeryq.dev/en/latest/userguide/calling.html#serializers
-        task_serializer="pickle",
-        result_serializer="pickle",
-        accept_content=["pickle"],
+        task_serializer="json",
+        result_serializer="json",
+        accept_content=["json"],
         task_routes={
             "mails.tasks.*": {"queue": "mails"},
         },

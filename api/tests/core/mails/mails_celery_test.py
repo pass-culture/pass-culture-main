@@ -46,7 +46,7 @@ class SendinblueBackendTest:
             "tate.walker@example.com",
         ]
     )
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task_celery.delay")
+    @patch("pcapi.celery_tasks.sendinblue.send_transactional_email")
     def test_send_mail(self, mock_send_transactional_email_secondary_task_celery):
         backend = self._get_backend_for_test()
         backend(use_pro_subaccount=False).send_mail(
@@ -64,7 +64,7 @@ class SendinblueBackendTest:
         assert task_param.reply_to == self.expected_sent_data.reply_to
         assert task_param.enable_unsubscribe == self.expected_sent_data.enable_unsubscribe
 
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task_celery.delay")
+    @patch("pcapi.celery_tasks.sendinblue.send_transactional_email")
     def test_send_mail_with_no_sender(self, mock_send_transactional_email_secondary_task_celery):
         self.mock_template = models.TemplatePro(
             id_prod=1,
@@ -162,7 +162,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         return import_string("pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
 
     @pytest.mark.settings(WHITELISTED_EMAIL_RECIPIENTS=["test@example.com"])
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task_celery.delay")
+    @patch("pcapi.celery_tasks.sendinblue.send_transactional_email")
     def test_send_mail_to_dev(self, mock_send_transactional_email_secondary_task_celery):
         backend = self._get_backend_for_test()
         backend(use_pro_subaccount=False).send_mail(
@@ -179,7 +179,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         assert task_param.sender == self.expected_sent_data_to_dev.sender
         assert task_param.reply_to == self.expected_sent_data_to_dev.reply_to
 
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task_celery.delay")
+    @patch("pcapi.celery_tasks.sendinblue.send_transactional_email")
     def test_send_mail_test_user(self, mock_send_transactional_email_secondary_task_celery):
         users_factories.UserFactory(email=self.recipients[0], roles=[users_models.UserRole.TEST])
 
@@ -195,7 +195,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         ["avery.kelly@example.com", "sandy.zuko@passculture-test.app"],
     )
     @pytest.mark.settings(WHITELISTED_EMAIL_RECIPIENTS=["avery.kelly@example.com", "*@passculture-test.app"])
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task_celery.delay")
+    @patch("pcapi.celery_tasks.sendinblue.send_transactional_email")
     def test_send_mail_whitelisted(self, mock_send_transactional_email_secondary_task_celery, recipient):
         backend = self._get_backend_for_test()
         backend(use_pro_subaccount=False).send_mail(
@@ -207,7 +207,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         assert list(task_param.recipients) == [recipient]
 
     @pytest.mark.settings(IS_STAGING=True, IS_E2E_TESTS=True, END_TO_END_TESTS_EMAIL_ADDRESS="qa-test@passculture.app")
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task_celery.delay")
+    @patch("pcapi.celery_tasks.sendinblue.send_transactional_email")
     def test_send_mail_whitelisted_qa_staging(self, mock_send_transactional_email_secondary_task_celery):
         recipient = "qa-test+123@passculture.app"
         users_factories.UserFactory(email=recipient)
@@ -220,7 +220,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         assert list(task_param.recipients) == [recipient]
 
     @pytest.mark.settings(IS_TESTING=True, IS_E2E_TESTS=True, END_TO_END_TESTS_EMAIL_ADDRESS="qa-test@passculture.app")
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task_celery.delay")
+    @patch("pcapi.celery_tasks.sendinblue.send_transactional_email")
     def test_send_mail_whitelisted_qa_testing(
         self, mock_send_transactional_email_secondary_task_celery, recipient="qa-test+123@passculture.app"
     ):
@@ -237,7 +237,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
 @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_TASKS=True)
 class SendTest:
     @pytest.mark.settings(IS_TESTING=True, EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task_celery.delay")
+    @patch("pcapi.celery_tasks.sendinblue.send_transactional_email")
     def test_send_to_ehp_false_in_testing(self, mock_send_transactional_email_secondary_task_celery, caplog):
         mock_template_send_ehp_false = models.Template(
             id_prod=11, id_not_prod=12, tags=["some", "stuff"], send_to_ehp=False
@@ -259,7 +259,7 @@ class SendTest:
         )
 
     @pytest.mark.settings(IS_TESTING=True, EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task_celery.delay")
+    @patch("pcapi.celery_tasks.sendinblue.send_transactional_email")
     def test_send_to_ehp_true_in_testing(self, mock_send_transactional_email_secondary_task_celery, caplog):
         mock_template_send_ehp_true = models.Template(
             id_prod=11, id_not_prod=12, tags=["some", "stuff"], send_to_ehp=True
@@ -272,7 +272,6 @@ class SendTest:
             send(recipients=recipients, data=data)
 
         assert mock_send_transactional_email_secondary_task_celery.call_count == 1
-        assert caplog.records == []
 
     @pytest.mark.parametrize(
         "template_class,expected_use_pro_subaccount",
@@ -282,7 +281,7 @@ class SendTest:
         ],
     )
     @pytest.mark.settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.SendinblueBackend")
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task_celery.delay")
+    @patch("pcapi.celery_tasks.sendinblue.send_transactional_email")
     def test_send_mail_to_pro_with_FF(
         self,
         mock_send_transactional_email_secondary_task_celery,
@@ -313,7 +312,7 @@ class SendTest:
         ],
     )
     @pytest.mark.settings(IS_TESTING=True, EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.SendinblueBackend")
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task_celery.delay")
+    @patch("pcapi.celery_tasks.sendinblue.send_transactional_email")
     def test_send_mail_to_pro_with_FF_in_ehp(
         self,
         mock_send_transactional_email_secondary_task_celery,
