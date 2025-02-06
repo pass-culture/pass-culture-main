@@ -26,6 +26,7 @@ from requests.auth import _basic_auth_str  # pylint: disable=wrong-requests-impo
 import requests_mock
 import sqlalchemy as sa
 
+from pcapi.celery_tasks.celery import celery_init_app
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
@@ -122,6 +123,15 @@ def build_main_app():
     # Since sqla1.4, in tests teardown, all nested transactions (the way to handle 'savepoints') are closed recursively.
     # But in some tests, there are more recursions than the default accepted number (1000)
     sys.setrecursionlimit(3000)
+
+    app.config.from_mapping(
+        CELERY=dict(
+            # For testing, tasks are run locally
+            task_always_eager=True,
+        ),
+    )
+
+    celery_init_app(app)
 
     with app.app_context():
         app.config["TESTING"] = True
