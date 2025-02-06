@@ -302,7 +302,8 @@ jobs:
     if: |
       always() && 
       (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped') &&
-      needs.pcapi-init-job.outputs.api-changed == 'true'
+      needs.pcapi-init-job.outputs.api-changed == 'true' &&
+      needs.pcapi-init-job.outputs.pro-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
