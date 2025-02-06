@@ -1,4 +1,5 @@
 import strokeCloseIcon from 'icons/stroke-close.svg'
+import { useIndividualOffersContext } from 'pages/IndividualOffers/context/IndividualOffersContext'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -6,11 +7,14 @@ import imgHeadlineOffer from './assets/headlineOffer.png'
 import { HeadlineOfferInformationDialog } from './components/HeadlineOfferInformationDialog'
 import styles from './HeadlineOfferBanner.module.scss'
 
-type HeadlineOfferBannerProps = {
-  close: () => void
-}
+export const HeadlineOfferBanner = () => {
+  const { isHeadlineOfferBannerOpen, closeHeadlineOfferBanner } = useIndividualOffersContext()
 
-export const HeadlineOfferBanner = ({ close }: HeadlineOfferBannerProps) => {
+  if (!isHeadlineOfferBannerOpen) {
+    return null
+  }
+
+
   return (
     <div className={styles['headline-offer-banner']}>
       <div className={styles['headline-offer-text-container']}>
@@ -36,7 +40,7 @@ export const HeadlineOfferBanner = ({ close }: HeadlineOfferBannerProps) => {
           variant={ButtonVariant.TERNARY}
           icon={strokeCloseIcon}
           iconAlt="Fermer la bannière"
-          onClick={close}
+          onClick={closeHeadlineOfferBanner}
         />
       </div>
     </div>

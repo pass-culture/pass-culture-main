@@ -115,7 +115,7 @@ describe('route Offers', () => {
   beforeEach(() => {
     offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
     vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
-    vi.spyOn(api, 'getCategories').mockResolvedValueOnce(
+    vi.spyOn(api, 'getCategories').mockResolvedValue(
       categoriesAndSubcategories
     )
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
@@ -919,13 +919,39 @@ describe('route Offers', () => {
     })
   })
 
-  describe('with FF WIP_HEADLINE_OFFER', () => {
-    it('should render awesome headline offer banner when ff is activated and actor is elligible', async () => {
+  describe('when headline offer feature is available', () => {
+    beforeEach(() => {
+      vi.spyOn(api, 'getVenues').mockResolvedValue({
+        venues: [
+          venueListItemFactory({
+            id: 1,
+            name: 'Une venue physique & permanente',
+          })
+        ]
+      })
+
+      localStorage.clear()
+    })
+
+    it('should render an awesome headline offer banner', async () => {
       await renderOffers(undefined, ['WIP_HEADLINE_OFFER'])
 
-      expect(
-        screen.getByText(/Nouvelle fonctionnalité : l’offre à la une !/)
-      ).toBeInTheDocument()
+      const bannerTitle = await screen.findByText(/Nouvelle fonctionnalité : l’offre à la une !/)
+      expect(bannerTitle).toBeInTheDocument()
+    })
+
+    it('should not render the headline offer banner anymore when the user closes it', async () => {
+      await renderOffers(undefined, ['WIP_HEADLINE_OFFER'])
+
+      let bannerTitle = await screen.findByText(/Nouvelle fonctionnalité : l’offre à la une !/)
+      expect(bannerTitle).toBeInTheDocument()
+
+      const closeButton = screen.getByRole('button', { name: 'Fermer la bannière' })
+      await userEvent.click(closeButton)
+
+      // If the user refreshes the page, the banner should not be displayed anymore.
+      await renderOffers(undefined, ['WIP_HEADLINE_OFFER'])
+      expect(screen.queryByText(/Nouvelle fonctionnalité : l’offre à la une !/)).not.toBeInTheDocument()
     })
   })
 })
