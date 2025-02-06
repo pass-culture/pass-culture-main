@@ -25,7 +25,6 @@ from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.core.offers.validation import check_product_cgu_and_offerer
 from pcapi.models import api_errors
 from pcapi.repository import atomic
-from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
@@ -496,13 +495,13 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def delete_thumbnail(offer_id: int) -> None:
     offer = models.Offer.query.get_or_404(offer_id)
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    with transaction():
-        offers_api.delete_mediation(offer=offer)
+    offers_api.delete_mediation(offer=offer)
 
 
 @private_api.route("/offers/categories", methods=["GET"])
