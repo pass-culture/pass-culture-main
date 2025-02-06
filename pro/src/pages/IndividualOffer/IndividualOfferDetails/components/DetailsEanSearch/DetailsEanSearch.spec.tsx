@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
@@ -264,38 +264,44 @@ describe('DetailsEanSearch', () => {
   describe('when the draft offer has been created and the offer is product-based', () => {
     const initialEan = '9781234567897'
 
-    it('should init the input with the offer EAN', () => {
+    it('should init the input with the offer EAN', async () => {
       renderDetailsEanSearch({
         isDirtyDraftOffer: false,
         wasEanSearchPerformedSuccessfully: true,
         initialEan,
       })
 
-      expect(getInput()).toHaveValue(initialEan)
+      await waitFor(() => {
+        expect(getInput()).toHaveValue(initialEan)
+      })
     })
 
-    it('should not display the clear button anymore', () => {
+    it('should not display the clear button anymore', async () => {
       renderDetailsEanSearch({
         isDirtyDraftOffer: false,
         wasEanSearchPerformedSuccessfully: true,
         initialEan,
       })
 
-      expect(
-        screen.queryByRole('button', {
-          name: clearButtonLabel,
-        })
-      ).not.toBeInTheDocument()
+      await waitFor(() => {
+        expect(
+          screen.queryByRole('button', {
+            name: clearButtonLabel,
+          })
+        ).not.toBeInTheDocument()
+      })
     })
 
-    it('should display an info message', () => {
+    it('should display an info message', async () => {
       renderDetailsEanSearch({
         isDirtyDraftOffer: false,
         wasEanSearchPerformedSuccessfully: true,
         initialEan,
       })
 
-      expect(screen.queryByText(infoMessage)).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.queryByText(infoMessage)).toBeInTheDocument()
+      })
     })
   })
 })
