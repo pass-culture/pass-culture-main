@@ -4,7 +4,8 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { OnboardingDidacticEvents } from 'commons/core/FirebaseEvents/constants'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -17,8 +18,7 @@ import calendarIcon from './assets/calendrier.svg'
 import offerCreationIcon from './assets/creation_offre.svg'
 import fileSubmissionIcon from './assets/depot_dossier.svg'
 import styles from './OnboardingCollectiveModal.module.scss'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { OnboardingDidacticEvents } from 'commons/core/FirebaseEvents/constants'
+
 
 interface OnboardingCollectiveModalProps {
   className?: string
