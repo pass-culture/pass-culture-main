@@ -47,6 +47,7 @@ export const AddRecurrencesButton = ({
       <DialogBuilder
         onOpenChange={setIsRecurrenceModalOpen}
         open={isRecurrenceModalOpen}
+        variant="drawer"
         trigger={
           <Button
             variant={ButtonVariant.PRIMARY}

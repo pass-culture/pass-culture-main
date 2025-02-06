@@ -111,6 +111,7 @@ export function DialogBuilder({
               // Detect if click actually happened within the bounds of content.
               // This can happen if click was on an absolutely positioned element overlapping content,
               // such as a click on the scroll bar (https://github.com/radix-ui/primitives/issues/1280)
+              /* istanbul ignore next */
               const actuallyClickedInside =
                 e.detail.originalEvent.clientX > contentRect.left &&
                 e.detail.originalEvent.clientX <
