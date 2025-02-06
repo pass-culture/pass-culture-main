@@ -133,8 +133,8 @@ export const SelectAutocomplete = ({
   }, [containerRef])
 
   useEffect(() => {
-    onSearch(searchField.value.trim())
-
+    // searchField.value can be undefined
+    onSearch((searchField.value ?? '').trim())
     setHoveredOptionIndex(null)
   }, [searchField.value])
 
