@@ -24,8 +24,8 @@ function renderCollectiveDataForm(options?: RenderWithProvidersOptions) {
         },
       ]}
       domains={[
-        { value: 1, label: 'domain 1' },
-        { value: 2, label: 'domain 2' },
+        { id: '1', label: 'domain 1' },
+        { id: '2', label: 'domain 2' },
       ]}
       venue={defaultGetVenue}
     />,
@@ -41,7 +41,7 @@ describe('CollectiveDataForm', () => {
     renderCollectiveDataForm(featureOverrides)
     await userEvent.click(screen.getByLabelText('Public cible'))
     expect(
-      screen.getByRole('option', { name: 'Écoles Marseille - Maternelle' })
+      screen.getByRole('checkbox', { name: 'Écoles Marseille - Maternelle' })
     ).toBeInTheDocument()
   })
 

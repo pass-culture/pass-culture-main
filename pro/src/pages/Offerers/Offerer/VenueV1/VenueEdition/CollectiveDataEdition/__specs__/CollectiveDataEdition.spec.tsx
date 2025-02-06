@@ -42,11 +42,11 @@ vi.mock('commons/core/shared/interventionOptions', async () => {
   >('commons/core/shared/interventionOptions')
 
   const mockedMainlandOptions = [
-    { value: '01', label: '01 - Ain' },
-    { value: '02', label: '02 - Aisne' },
-    { value: '03', label: '03 - Allier' },
-    { value: '04', label: '04 - Alpes-de-Haute-Provence' },
-    { value: '05', label: '05 - Hautes-Alpes' },
+    { id: '01', label: '01 - Ain' },
+    { id: '02', label: '02 - Aisne' },
+    { id: '03', label: '03 - Allier' },
+    { id: '04', label: '04 - Alpes-de-Haute-Provence' },
+    { id: '05', label: '05 - Hautes-Alpes' },
   ]
 
   return {
@@ -55,7 +55,7 @@ vi.mock('commons/core/shared/interventionOptions', async () => {
     mainlandOptions: mockedMainlandOptions,
     venueInterventionOptions: [
       {
-        value: 'culturalPartner',
+        id: 'culturalPartner',
         label: 'Dans mon lieu',
       },
       originalModule.mainlandInterventionOption,
@@ -63,10 +63,10 @@ vi.mock('commons/core/shared/interventionOptions', async () => {
       ...originalModule.domtomOptions,
     ],
     allDepartmentValues: [
-      ...mockedMainlandOptions.map(({ value }) => value),
-      ...originalModule.domtomOptions.map(({ value }) => value),
+      ...mockedMainlandOptions.map(({ id }) => id),
+      ...originalModule.domtomOptions.map(({ id }) => id),
     ],
-    mainlandValues: mockedMainlandOptions.map(({ value }) => value),
+    mainlandValues: mockedMainlandOptions.map(({ id }) => id),
   }
 })
 
@@ -154,10 +154,8 @@ describe('CollectiveDataEdition', () => {
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Numéro de téléphone/)
       const emailField = screen.getByLabelText(/Email/)
-      const domainsField = screen.getByLabelText(
-        /Domaine artistique et culturel/
-      )
-      const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
+      const domainsField = screen.getByLabelText('Domaines artistiques')
+      const interventionAreaField = screen.getByLabelText('Zone de mobilité')
       const statusField = screen.getByLabelText(/Statut/)
 
       expect(descriptionField).toBeInTheDocument()
@@ -314,13 +312,11 @@ describe('CollectiveDataEdition', () => {
 
       const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
       await userEvent.click(interventionAreaField)
-      await waitFor(() =>
-        expect(
-          screen.queryByRole('option', {
-            name: mainlandInterventionOption.label,
-          })
-        ).toBeInTheDocument()
-      )
+
+      expect(
+        await screen.findByLabelText(mainlandInterventionOption.label)
+      ).toBeInTheDocument()
+
       const mainlandOption = screen.getByLabelText(
         mainlandInterventionOption.label
       )
@@ -378,9 +374,7 @@ describe('CollectiveDataEdition', () => {
       }
 
       await userEvent.click(screen.getByLabelText(mainlandOptions[0].label))
-      expect(
-        screen.getByRole('option', { name: 'France métropolitaine' })
-      ).not.toBeChecked()
+      expect(screen.getByLabelText('France métropolitaine')).not.toBeChecked()
     })
   })
 
@@ -452,7 +446,7 @@ describe('CollectiveDataEdition', () => {
       expect(statusField).toHaveValue('1')
 
       await userEvent.click(
-        await screen.findByLabelText(/Domaine artistique et culturel */)
+        await screen.findByLabelText('Domaines artistiques')
       )
       await waitFor(async () =>
         expect(
