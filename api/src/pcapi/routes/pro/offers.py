@@ -8,7 +8,6 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
 import sqlalchemy.orm.exc as sa_exceptions
 
-from pcapi import repository
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
@@ -24,6 +23,7 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.core.offers.validation import check_product_cgu_and_offerer
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.repository import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
@@ -569,6 +569,7 @@ def _get_offer_for_price_categories_upsert(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def post_price_categories(
     offer_id: int, body: offers_serialize.PriceCategoryBody
 ) -> offers_serialize.GetIndividualOfferResponseModel:
@@ -593,28 +594,31 @@ def post_price_categories(
 
     existing_price_categories_by_id = {category.id: category for category in offer.priceCategories}
 
-    with repository.transaction():
-        for price_category_to_create in price_categories_to_create:
-            offers_api.create_price_category(offer, price_category_to_create.label, price_category_to_create.price)
+    for price_category_to_create in price_categories_to_create:
+        offers_api.create_price_category(offer, price_category_to_create.label, price_category_to_create.price)
 
-        for price_category_to_edit in price_categories_to_edit:
-            if price_category_to_edit.id not in existing_price_categories_by_id:
-                raise api_errors.ApiErrors(
-                    {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % price_category_to_edit.id]},
-                    status_code=400,
-                )
-            data = price_category_to_edit.dict(exclude_unset=True)
-            try:
-                offers_api.edit_price_category(
-                    offer,
-                    price_category=existing_price_categories_by_id[data["id"]],
-                    label=data.get("label", offers_api.UNCHANGED),
-                    price=data.get("price", offers_api.UNCHANGED),
-                )
-            except exceptions.RejectedOrPendingOfferNotEditable:
-                raise api_errors.ApiErrors(
-                    {"offer": ["Offer is not editable (because rejected or pending)"]}, status_code=400
-                )
+    for price_category_to_edit in price_categories_to_edit:
+        if price_category_to_edit.id not in existing_price_categories_by_id:
+            raise api_errors.ApiErrors(
+                {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % price_category_to_edit.id]},
+                status_code=400,
+            )
+        data = price_category_to_edit.dict(exclude_unset=True)
+        try:
+            offers_api.edit_price_category(
+                offer,
+                price_category=existing_price_categories_by_id[data["id"]],
+                label=data.get("label", offers_api.UNCHANGED),
+                price=data.get("price", offers_api.UNCHANGED),
+            )
+        except exceptions.RejectedOrPendingOfferNotEditable:
+            raise api_errors.ApiErrors(
+                {"offer": ["Offer is not editable (because rejected or pending)"]}, status_code=400
+            )
+
+    # Since we modified the price categories, we need to push the changes to the database
+    # so that the response does include them
+    db.session.flush()
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
