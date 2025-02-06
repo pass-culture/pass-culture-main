@@ -140,7 +140,6 @@ describe('IndividualOfferRow', () => {
       offer,
       selectOffer: vi.fn(),
       isSelected: false,
-      isRestrictedAsAdmin: false,
     }
 
     vi.spyOn(api, 'getOffererHeadlineOffer').mockRejectedValue(

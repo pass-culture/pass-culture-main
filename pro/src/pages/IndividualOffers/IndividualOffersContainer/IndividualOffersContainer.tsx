@@ -36,7 +36,6 @@ export type IndividualOffersContainerProps = {
   venues: SelectOption[]
   offererAddresses: SelectOption[]
   categories?: SelectOption[]
-  isRestrictedAsAdmin?: boolean
   offers?: ListOffersOfferResponseModel[]
 }
 
@@ -48,7 +47,6 @@ export const IndividualOffersContainer = ({
   venues,
   offererAddresses,
   categories,
-  isRestrictedAsAdmin,
   offers = [],
 }: IndividualOffersContainerProps): JSX.Element => {
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('individual')
@@ -144,7 +142,6 @@ export const IndividualOffersContainer = ({
         setSelectedFilters={setSelectedFilters}
         venues={venues}
         offererAddresses={offererAddresses}
-        isRestrictedAsAdmin={isRestrictedAsAdmin}
       />
       {userHasNoOffers ? (
         <NoData page="offers" />
@@ -169,7 +166,6 @@ export const IndividualOffersContainer = ({
             hasFilters={hasFilters}
             selectedFilters={selectedFilters}
             isAtLeastOneOfferChecked={selectedOffers.length > 1}
-            isRestrictedAsAdmin={isRestrictedAsAdmin}
           />
           <div role="status">
             {selectedOffers.length > 0 && (
@@ -184,7 +180,6 @@ export const IndividualOffersContainer = ({
                 canDelete={canDelete}
                 canDeactivate={canDeactivate}
                 canPublish={canPublish}
-                isRestrictedAsAdmin={Boolean(isRestrictedAsAdmin)}
               />
             )}
           </div>

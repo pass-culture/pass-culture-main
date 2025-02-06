@@ -210,7 +210,7 @@ describe('SignIn', () => {
   })
 
   describe('when user is signed in', () => {
-    it('should redirect to offerers page if user is not admin', async () => {
+    it('should redirect to offerers page', async () => {
       renderSignIn({ user: sharedCurrentUserFactory() })
 
       await waitFor(() =>

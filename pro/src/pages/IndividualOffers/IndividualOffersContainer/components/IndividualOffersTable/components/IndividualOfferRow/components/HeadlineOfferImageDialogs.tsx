@@ -27,14 +27,12 @@ type HeadlineOfferImageDialogsProps = {
   isFirstDialogOpen: boolean
   offer: ListOffersOfferResponseModel
   setIsFirstDialogOpen: (state: boolean) => void
-  isRestrictedAsAdmin: boolean
 }
 
 export const HeadlineOfferImageDialogs = ({
   isFirstDialogOpen,
   setIsFirstDialogOpen,
   offer,
-  isRestrictedAsAdmin,
 }: HeadlineOfferImageDialogsProps) => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const { mutate } = useSWRConfig()
@@ -56,8 +54,7 @@ export const HeadlineOfferImageDialogs = ({
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedOffererId?.toString(),
-    isRestrictedAsAdmin
+    selectedOffererId?.toString()
   )
 
   const onImageUpload = async ({

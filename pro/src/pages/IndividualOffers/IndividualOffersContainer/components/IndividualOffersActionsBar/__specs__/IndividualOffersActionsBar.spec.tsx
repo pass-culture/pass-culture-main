@@ -72,7 +72,6 @@ describe('ActionsBar', () => {
       clearSelectedOffers: vi.fn(),
       toggleSelectAllCheckboxes: vi.fn(),
       areAllOffersSelected: false,
-      isRestrictedAsAdmin: false,
     }
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,

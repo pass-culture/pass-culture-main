@@ -37,7 +37,7 @@ const renderOfferTypeIndividual = () => {
 }
 
 describe('OfferTypeIndividual', () => {
-  it('should only display macro choices when user is admin and nothing is on url', async () => {
+  it('should only display macro choices when nothing is on url', async () => {
     renderOfferTypeIndividual()
 
     expect(await screen.findByText('Votre offre est :')).toBeInTheDocument()

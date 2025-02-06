@@ -46,7 +46,6 @@ export type CollectiveOffersScreenProps = {
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   venues: SelectOption[]
   categories?: SelectOption[]
-  isRestrictedAsAdmin?: boolean
   offers: CollectiveOfferResponseModel[]
 }
 
@@ -59,7 +58,6 @@ export const CollectiveOffersScreen = ({
   urlSearchFilters,
   venues,
   categories,
-  isRestrictedAsAdmin,
   offers,
 }: CollectiveOffersScreenProps): JSX.Element => {
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('collective')
@@ -165,7 +163,6 @@ export const CollectiveOffersScreen = ({
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
         venues={venues}
-        isRestrictedAsAdmin={isRestrictedAsAdmin}
       />
       {userHasNoOffers ? (
         <NoData page="offers" />
@@ -182,7 +179,6 @@ export const CollectiveOffersScreen = ({
             toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
             urlSearchFilters={urlSearchFilters}
             isAtLeastOneOfferChecked={selectedOffers.length >= 1}
-            isRestrictedAsAdmin={isRestrictedAsAdmin}
             offers={sortedOffers}
             onColumnHeaderClick={onColumnHeaderClick}
             currentSortingColumn={currentSortingColumn}

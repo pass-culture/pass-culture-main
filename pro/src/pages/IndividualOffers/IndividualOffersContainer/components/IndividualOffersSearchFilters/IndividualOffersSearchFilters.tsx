@@ -29,7 +29,6 @@ interface IndividualOffersSearchFiltersProps {
   venues: SelectOption[]
   offererAddresses: SelectOption[]
   categories?: SelectOption[]
-  isRestrictedAsAdmin?: boolean
 }
 
 const individualFilterStatus = [
@@ -53,7 +52,6 @@ export const IndividualOffersSearchFilters = ({
   venues,
   offererAddresses,
   categories,
-  isRestrictedAsAdmin = false,
 }: IndividualOffersSearchFiltersProps): JSX.Element => {
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const areCollectiveNewStatusesEnabled = useActiveFeature(
@@ -159,7 +157,7 @@ export const IndividualOffersSearchFilters = ({
             value={selectedFilters.status as OfferStatus}
             name="status"
             onChange={storeOfferStatus}
-            disabled={disableAllFilters || isRestrictedAsAdmin}
+            disabled={disableAllFilters}
             options={statusFilterOptions}
           />
         </FieldLayout>

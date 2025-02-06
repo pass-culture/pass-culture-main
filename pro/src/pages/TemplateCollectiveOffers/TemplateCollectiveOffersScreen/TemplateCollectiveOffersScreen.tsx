@@ -45,7 +45,6 @@ export type TemplateCollectiveOffersScreenProps = {
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   venues: SelectOption[]
   categories?: SelectOption[]
-  isRestrictedAsAdmin?: boolean
   offers: CollectiveOfferResponseModel[]
 }
 
@@ -58,13 +57,9 @@ export const TemplateCollectiveOffersScreen = ({
   urlSearchFilters,
   venues,
   categories,
-  isRestrictedAsAdmin,
   offers,
 }: TemplateCollectiveOffersScreenProps): JSX.Element => {
-  const {
-    onApplyFilters,
-    onResetFilters,
-  } = useStoredFilterConfig('template')
+  const { onApplyFilters, onResetFilters } = useStoredFilterConfig('template')
   const [selectedOffers, setSelectedOffers] = useState<
     CollectiveOfferResponseModel[]
   >([])
@@ -175,7 +170,6 @@ export const TemplateCollectiveOffersScreen = ({
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
         venues={venues}
-        isRestrictedAsAdmin={isRestrictedAsAdmin}
       />
 
       {userHasNoOffers ? (
@@ -193,7 +187,6 @@ export const TemplateCollectiveOffersScreen = ({
             toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
             urlSearchFilters={urlSearchFilters}
             isAtLeastOneOfferChecked={selectedOffers.length > 1}
-            isRestrictedAsAdmin={isRestrictedAsAdmin}
             offers={sortedOffers}
             onColumnHeaderClick={onColumnHeaderClick}
             currentSortingColumn={currentSortingColumn}

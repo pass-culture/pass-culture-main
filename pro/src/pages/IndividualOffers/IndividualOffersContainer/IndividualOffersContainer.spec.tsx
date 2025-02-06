@@ -183,7 +183,7 @@ describe('IndividualOffersScreen', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display an unchecked by default checkbox to select all offers when user is not admin', () => {
+  it('should display an unchecked by default checkbox to select all offers', () => {
     const firstOffer = listOffersOfferFactory()
     const secondOffer = listOffersOfferFactory()
 
@@ -480,43 +480,6 @@ describe('IndividualOffersScreen', () => {
 
     const noOffersText = screen.getByText('Vous n’avez pas encore créé d’offre')
     expect(noOffersText).toBeInTheDocument()
-  })
-
-  describe('when user is admin', () => {
-    it('should not be able to check all offers for performance reasons', () => {
-      renderOffers({ ...props, isRestrictedAsAdmin: true })
-
-      const selectAllOffersCheckbox = screen.getByLabelText('Tout sélectionner')
-      expect(selectAllOffersCheckbox).toBeDisabled()
-    })
-
-    it('should be able to check all offers because, a venue being filtered, there are no performance issues', async () => {
-      renderOffers({
-        ...props,
-        isRestrictedAsAdmin: false,
-      })
-
-      await userEvent.selectOptions(screen.getByLabelText('Lieu'), 'JI')
-
-      await userEvent.click(screen.getByText('Rechercher'))
-
-      const selectAllOffersCheckbox =
-        await screen.findByLabelText('Tout sélectionner')
-      expect(selectAllOffersCheckbox).not.toBeDisabled()
-    })
-
-    it('should be able to check all offers because, a offerer being filtered, there are no performance issues', () => {
-      renderOffers({
-        ...props,
-        initialSearchFilters: {
-          ...DEFAULT_SEARCH_FILTERS,
-          offererId: 'A4',
-        },
-      })
-
-      const selectAllOffersCheckbox = screen.getByLabelText('Tout sélectionner')
-      expect(selectAllOffersCheckbox).not.toBeDisabled()
-    })
   })
 
   it('should disabled checkbox when offer is rejected or pending for validation', () => {
