@@ -18,7 +18,7 @@ defaults:
 
 jobs:
   type-check:
-    name: "Type check / Quality check / Style quality check"
+    name: "Code/Type/Style Quality check"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.2.2
@@ -42,8 +42,8 @@ jobs:
       - run: yarn lint:js
       - run: yarn lint:scss
 
-  run-tests:
-    name: "Unit tests"
+  pro-run-tests:
+    name: "Pro Unit tests"
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -51,20 +51,17 @@ jobs:
         shardTotal: [2]
     steps:
       - uses: actions/checkout@v4.2.2
-        with:
-          fetch-depth: 0
-      - run: |
-          git config --global --add safe.directory /__w/pass-culture-main/pass-culture-main
-          git fetch --no-tags origin +refs/heads/master:refs/remotes/origin/master
-          git update-ref refs/heads/master refs/remotes/origin/master
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: "pro/.nvmrc"
+
       - name: "OpenID Connect Authentication"
         uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
@@ -76,7 +73,9 @@ jobs:
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
       - run: yarn install --immutable
+
       - name: Run tests with coverage
         run: yarn test:unit:ci --reporter=blob --reporter=allure-vitest/reporter --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
@@ -98,7 +97,7 @@ jobs:
 
   merge-allure-reports:
     if: ${{ !cancelled() && github.ref == 'refs/heads/master' }}
-    needs: [run-tests]
+    needs: [pro-run-tests]
     runs-on: ubuntu-latest
     steps:
       - name: Download allure reports
@@ -138,7 +137,7 @@ jobs:
 
   merge-reports:
     if: ${{ !cancelled() }}
-    needs: [run-tests]
+    needs: [pro-run-tests]
 
     runs-on: ubuntu-latest
     steps:
@@ -185,7 +184,7 @@ jobs:
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
 
       - name: SonarCloud scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@master
         if: ${{ github.actor != 'dependabot[bot]' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
