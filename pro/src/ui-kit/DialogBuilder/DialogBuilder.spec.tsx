@@ -42,7 +42,7 @@ describe('DialogBuilder', () => {
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'Fermer la modale' })
+      screen.getByRole('button', { name: 'Fermer la fenêtre modale' })
     ).toBeInTheDocument()
   })
 
@@ -54,7 +54,7 @@ describe('DialogBuilder', () => {
     )
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Fermer la modale' })
+      screen.getByRole('button', { name: 'Fermer la fenêtre modale' })
     )
     expect(
       screen.queryByRole('heading', { name: 'Dialog title' })
