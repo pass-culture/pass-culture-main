@@ -1,6 +1,6 @@
 {
   "name": "pass-culture-pro",
-  "version": "0.0.0",
+  "version": "326.0.0",
   "private": true,
   "homepage": "/",
   "type": "module",
@@ -77,11 +77,11 @@
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.6",
+    "@hookform/devtools": "^4.3.3",
     "@storybook/addon-a11y": "^8.5.3",
     "@storybook/addon-controls": "^8.5.3",
     "@storybook/addon-docs": "^8.5.3",
     "@storybook/blocks": "^8.5.2",
-    "@hookform/devtools": "^4.3.3",
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/react": "^8.5.1",
     "@storybook/react-vite": "^8.5.3",
