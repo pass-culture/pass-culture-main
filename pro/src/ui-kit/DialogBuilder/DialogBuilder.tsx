@@ -4,6 +4,8 @@ import cn from 'classnames'
 import styles from './DialogBuilder.module.scss'
 import { DialogBuilderCloseButton } from './DialogBuilderCloseButton'
 
+export type DialogVariant = 'default' | 'drawer'
+
 /**
  * Props for the DialogBuilder component.
  */
@@ -34,9 +36,10 @@ type DialogBuilderProps = {
    */
   closeButtonClassName?: string
   /**
-   * Custom CSS class for additional styling of the dialog.
+   * Custom CSS class for additional styling of the dialog content.
    */
   className?: string
+  variant?: DialogVariant
 }
 
 /**
@@ -56,8 +59,8 @@ type DialogBuilderProps = {
  * </DialogBuilder>
  *
  * @accessibility
- * - **Dialog Overlay**: The dialog includes an overlay to ensure the user's focus is directed to the dialog content.
- * - **Keyboard Navigation**: The dialog can be opened and closed using keyboard interactions, ensuring accessibility for all users.
+ * - **Keyboard Navigation**: When using the trigger prop along with the `<Dialog.Close>` tag
+ * around dialog validation buttons, the trigger button will automatically be re-focused on close.
  */
 export function DialogBuilder({
   trigger,
@@ -67,6 +70,7 @@ export function DialogBuilder({
   open,
   closeButtonClassName,
   className,
+  variant = 'default',
 }: DialogBuilderProps) {
   return (
     <Dialog.Root
@@ -76,7 +80,12 @@ export function DialogBuilder({
     >
       {trigger && <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>}
       <Dialog.Portal>
-        <Dialog.Overlay className={styles['dialog-builder-overlay']}>
+        <Dialog.Overlay
+          className={cn(
+            styles['dialog-builder-overlay'],
+            styles[`dialog-builder-overlay-${variant}`]
+          )}
+        >
           <Dialog.Content
             className={cn(styles['dialog-builder-content'], className)}
             aria-describedby={undefined}
