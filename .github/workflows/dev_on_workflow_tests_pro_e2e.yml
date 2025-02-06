@@ -40,6 +40,19 @@ jobs:
         with:
           node-version-file: "pro/.nvmrc"
 
+      - name: "Cache the node_modules"
+        id: "yarn-modules-cache"
+        uses: pass-culture-github-actions/cache@v1.0.0
+        with:
+          compression-method: "gzip"
+          bucket: ${{ inputs.CACHE_BUCKET_NAME }}
+          path: |
+            ~/.cache/Cypress
+            **/node_modules
+          key: v1-yarn-pro-cypress-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            v1-yarn-pro-cypress-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
       - name: install
         run: yarn install --immutable
 
@@ -53,17 +66,6 @@ jobs:
           if-no-files-found: error
           path: pro/build
 
-      # Doc : https://github.com/cypress-io/github-action
-
-      # - name: "Remove Cypress videos from Allure results"
-      #   run: rm -rf ../allure-results/*.mp4
-
-      # - name: "Upload Allure results for pro E2E tests"
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: allure-results-pro-e2e
-      #     path: allure-results
-
   cypress-run:
     runs-on: ubuntu-24.04
     needs: install
@@ -72,7 +74,15 @@ jobs:
       fail-fast: false
       matrix:
         # run copies of the current job in parallel
-        containers: [1, 2, 3, 4, 5]
+        directory:
+          [
+            "cypress/e2e/a*",
+            "cypress/e2e/d*",
+            "cypress/e2e/co*",
+            "cypress/e2e/cr*",
+            "cypress/e2e/s*",
+            "cypress/e2e/[!(c|co|cr|s|a|d)]*",
+          ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -94,13 +104,6 @@ jobs:
             CYPRESS_CLOUD_RECORD_KEY:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-record-key
             CYPRESS_CLOUD_PROJECT_ID:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-project-id
 
-      # - name: "Download artifact"
-      #   if: ${{ inputs.tag != 'latest' }}
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: ${{ inputs.image }}-${{ inputs.tag }}.tar
-      #     path: ${{ runner.temp }}
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: "pro/.nvmrc"
@@ -116,18 +119,7 @@ jobs:
           PCAPI_UID: 1000
           PCAPI_GID: 1000
 
-      - name: "Cache the node_modules"
-        id: "yarn-modules-cache"
-        uses: pass-culture-github-actions/cache@v1.0.0
-        with:
-          compression-method: "gzip"
-          bucket: ${{ inputs.CACHE_BUCKET_NAME }}
-          path: |
-            ~/.cache/Cypress
-            **/node_modules
-          key: v1-yarn-pro-cypress-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            v1-yarn-pro-cypress-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn install --immutable
 
       - name: "OpenID Connect Authentication"
         id: openid-auth
@@ -145,6 +137,7 @@ jobs:
           registry: "europe-west1-docker.pkg.dev"
           username: "oauth2accesstoken"
           password: "${{ steps.openid-auth.outputs.access_token }}"
+
       - name: "Compute docker image name:tag"
         id: compute-image-name
         run: |
@@ -199,15 +192,13 @@ jobs:
       - name: "Cypress run"
         uses: cypress-io/github-action@v6
         with:
-          parallel: true
           wait-on: "http://localhost:5001/health/api,http://localhost:5001/health/database"
           wait-on-timeout: 600
           working-directory: pro
           browser: chrome
           config-file: cypress/cypress.config.ts
           env: TAGS="@P0"
-          record: true
-          spec: "cypress/e2e/*"
+          spec: ${{ matrix.directory }}
         env:
           CYPRESS_RECORD_KEY: ${{ steps.secrets.outputs.CYPRESS_CLOUD_RECORD_KEY }}
           CYPRESS_PROJECT_ID: ${{ steps.secrets.outputs.CYPRESS_CLOUD_PROJECT_ID }}
