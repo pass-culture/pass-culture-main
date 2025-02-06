@@ -15,6 +15,7 @@ from pcapi.core.achievements import api as achievements_api
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import BookingRecreditType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingValidationAuthorType
 from pcapi.core.bookings.models import ExternalBooking
@@ -250,6 +251,12 @@ def _book_offer(
         booking.cancellationLimitDate = compute_booking_cancellation_limit_date(
             stock.beginningDatetime, booking.dateCreated
         )
+        if beneficiary.deposit is not None and beneficiary.deposit_type == finance_models.DepositType.GRANT_17_18:
+            recredit_types = [recredit.recreditType for recredit in beneficiary.deposit.recredits]
+            if finance_models.RecreditType.RECREDIT_18 in recredit_types:
+                booking.usedRecreditType = BookingRecreditType.RECREDIT_18
+            elif finance_models.RecreditType.RECREDIT_17 in recredit_types:
+                booking.usedRecreditType = BookingRecreditType.RECREDIT_17
 
         if is_activation_code_applicable:
             booking.activationCode = offers_repository.get_available_activation_code(stock)

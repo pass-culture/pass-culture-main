@@ -6,6 +6,7 @@ import pytest
 import time_machine
 
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings.models import BookingRecreditType
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import backend as finance_backend
@@ -92,47 +93,95 @@ class DummyFinanceBackendTest:
 
 class BaseBackendTest:
     @pytest.mark.parametrize(
-        "deposit_type,pricing_line_category,product_id,title",
+        "used_recredit_type,deposit_type,pricing_line_category,product_id,title",
         [
             (
+                None,
                 DepositType.GRANT_18,
                 finance_models.PricingLineCategory.OFFERER_REVENUE,
                 "ORINDGRANT_18",
                 "Réservations",
             ),
             (
+                None,
                 DepositType.GRANT_18,
                 finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
                 "OCINDGRANT_18",
                 "Réservations",
             ),
             (
+                None,
                 DepositType.GRANT_18,
                 finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
                 "CGINDGRANT_18",
                 "Gestes commerciaux",
             ),
             (
+                None,
                 DepositType.GRANT_15_17,
                 finance_models.PricingLineCategory.OFFERER_REVENUE,
                 "ORINDGRANT_15_17",
                 "Réservations",
             ),
             (
+                None,
                 DepositType.GRANT_15_17,
                 finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
                 "OCINDGRANT_15_17",
                 "Réservations",
             ),
             (
+                None,
                 DepositType.GRANT_15_17,
                 finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
                 "CGINDGRANT_15_17",
                 "Gestes commerciaux",
             ),
+            (
+                BookingRecreditType.RECREDIT_18,
+                DepositType.GRANT_17_18,
+                finance_models.PricingLineCategory.OFFERER_REVENUE,
+                "ORINDGRANT_18_V3",
+                "Réservations",
+            ),
+            (
+                BookingRecreditType.RECREDIT_18,
+                DepositType.GRANT_17_18,
+                finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+                "OCINDGRANT_18_V3",
+                "Réservations",
+            ),
+            (
+                BookingRecreditType.RECREDIT_18,
+                DepositType.GRANT_17_18,
+                finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
+                "CGINDGRANT_18_V3",
+                "Gestes commerciaux",
+            ),
+            (
+                BookingRecreditType.RECREDIT_17,
+                DepositType.GRANT_17_18,
+                finance_models.PricingLineCategory.OFFERER_REVENUE,
+                "ORINDGRANT_17_V3",
+                "Réservations",
+            ),
+            (
+                BookingRecreditType.RECREDIT_17,
+                DepositType.GRANT_17_18,
+                finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+                "OCINDGRANT_17_V3",
+                "Réservations",
+            ),
+            (
+                BookingRecreditType.RECREDIT_17,
+                DepositType.GRANT_17_18,
+                finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
+                "CGINDGRANT_17_V3",
+                "Gestes commerciaux",
+            ),
         ],
     )
-    def test_get_invoice_line_indiv(self, deposit_type, pricing_line_category, product_id, title):
+    def test_get_invoice_line_indiv(self, used_recredit_type, deposit_type, pricing_line_category, product_id, title):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(
@@ -140,7 +189,9 @@ class BaseBackendTest:
             pricing_point="self",
             bank_account=bank_account,
         )
-        booking = bookings_factories.UsedBookingFactory(user__deposit__type=deposit_type, stock__offer__venue=venue)
+        booking = bookings_factories.UsedBookingFactory(
+            user__deposit__type=deposit_type, stock__offer__venue=venue, usedRecreditType=used_recredit_type
+        )
         pricing = finance_factories.PricingFactory(
             booking=booking, pricingPoint=venue, status=finance_models.PricingStatus.PROCESSED, amount=-42_66
         )

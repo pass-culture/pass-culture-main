@@ -180,6 +180,7 @@ class BookOfferTest:
         assert len(booking.token) == 6
         assert booking.status is BookingStatus.CONFIRMED
         assert booking.cancellationLimitDate is None
+        assert booking.usedRecreditType is None
         assert booking.priceCategoryLabel is None
         assert stock.dnBookedQuantity == 7
 
@@ -221,6 +222,39 @@ class BookOfferTest:
         booking = api.book_offer(beneficiary=ex_beneficiary, stock_id=stock.id, quantity=1)
 
         assert not booking.deposit
+
+    @pytest.mark.parametrize(
+        "deposit_type,recredit_type,expected_result",
+        [
+            (finance_models.DepositType.GRANT_15_17, finance_models.RecreditType.RECREDIT_17, None),
+            (finance_models.DepositType.GRANT_18, None, None),
+            (
+                finance_models.DepositType.GRANT_17_18,
+                finance_models.RecreditType.RECREDIT_17,
+                models.BookingRecreditType.RECREDIT_17,
+            ),
+            (
+                finance_models.DepositType.GRANT_17_18,
+                finance_models.RecreditType.RECREDIT_18,
+                models.BookingRecreditType.RECREDIT_18,
+            ),
+        ],
+    )
+    def test_booking_used_recredit_type(self, deposit_type, recredit_type, expected_result):
+        stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            deposit__type=deposit_type,
+            deposit__amount=500,
+        )
+        beneficiary.deposit.recredits = (
+            [finance_factories.RecreditFactory(recreditType=recredit_type, amount=50)] if recredit_type else []
+        )
+
+        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+
+        assert booking.userId == beneficiary.id
+        assert booking.depositId == beneficiary.deposit.id
+        assert booking.usedRecreditType == expected_result
 
     def test_booked_categories_are_sent_to_batch_backend(self, app):
         offer1 = offers_factories.OfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)

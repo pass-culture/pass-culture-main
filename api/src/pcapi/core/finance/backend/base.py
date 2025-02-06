@@ -12,12 +12,36 @@ from pcapi.core.finance.enum import DepositType
 
 
 INVOICE_LINE_INDIV_DICT = {
-    (finance_models.PricingLineCategory.OFFERER_REVENUE, DepositType.GRANT_18): "ORINDGRANT_18",
-    (finance_models.PricingLineCategory.OFFERER_CONTRIBUTION, DepositType.GRANT_18): "OCINDGRANT_18",
-    (finance_models.PricingLineCategory.COMMERCIAL_GESTURE, DepositType.GRANT_18): "CGINDGRANT_18",
-    (finance_models.PricingLineCategory.OFFERER_REVENUE, DepositType.GRANT_15_17): "ORINDGRANT_15_17",
-    (finance_models.PricingLineCategory.OFFERER_CONTRIBUTION, DepositType.GRANT_15_17): "OCINDGRANT_15_17",
-    (finance_models.PricingLineCategory.COMMERCIAL_GESTURE, DepositType.GRANT_15_17): "CGINDGRANT_15_17",
+    (finance_models.PricingLineCategory.OFFERER_REVENUE, DepositType.GRANT_18.name): "ORINDGRANT_18",
+    (finance_models.PricingLineCategory.OFFERER_CONTRIBUTION, DepositType.GRANT_18.name): "OCINDGRANT_18",
+    (finance_models.PricingLineCategory.COMMERCIAL_GESTURE, DepositType.GRANT_18.name): "CGINDGRANT_18",
+    (finance_models.PricingLineCategory.OFFERER_REVENUE, DepositType.GRANT_15_17.name): "ORINDGRANT_15_17",
+    (finance_models.PricingLineCategory.OFFERER_CONTRIBUTION, DepositType.GRANT_15_17.name): "OCINDGRANT_15_17",
+    (finance_models.PricingLineCategory.COMMERCIAL_GESTURE, DepositType.GRANT_15_17.name): "CGINDGRANT_15_17",
+    (
+        finance_models.PricingLineCategory.OFFERER_REVENUE,
+        bookings_models.BookingRecreditType.RECREDIT_18.name,
+    ): "ORINDGRANT_18_V3",
+    (
+        finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        bookings_models.BookingRecreditType.RECREDIT_18.name,
+    ): "OCINDGRANT_18_V3",
+    (
+        finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
+        bookings_models.BookingRecreditType.RECREDIT_18.name,
+    ): "CGINDGRANT_18_V3",
+    (
+        finance_models.PricingLineCategory.OFFERER_REVENUE,
+        bookings_models.BookingRecreditType.RECREDIT_17.name,
+    ): "ORINDGRANT_17_V3",
+    (
+        finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        bookings_models.BookingRecreditType.RECREDIT_17.name,
+    ): "OCINDGRANT_17_V3",
+    (
+        finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
+        bookings_models.BookingRecreditType.RECREDIT_17.name,
+    ): "CGINDGRANT_17_V3",
 }
 
 INVOICE_LINE_COLLECTIVE_DICT = {
@@ -46,6 +70,12 @@ TITLES = {
     "ORINDGRANT_15_17": "Réservations",
     "OCINDGRANT_15_17": "Réservations",
     "CGINDGRANT_15_17": "Gestes commerciaux",
+    "ORINDGRANT_18_V3": "Réservations",
+    "OCINDGRANT_18_V3": "Réservations",
+    "CGINDGRANT_18_V3": "Gestes commerciaux",
+    "ORINDGRANT_17_V3": "Réservations",
+    "OCINDGRANT_17_V3": "Réservations",
+    "CGINDGRANT_17_V3": "Gestes commerciaux",
     "ORCOLEDUC_NAT": "Réservations",
     "CGCOLEDUC_NAT": "Gestes commerciaux",
     "ORCOLAGRI": "Réservations",
@@ -113,17 +143,21 @@ class BaseFinanceBackend:
             .join(finance_models.Cashflow.invoices)
             .group_by(
                 finance_models.PricingLine.category,
+                bookings_models.Booking.usedRecreditType,
                 finance_models.Deposit.type,
             )
             .with_entities(
                 finance_models.PricingLine.category.label("pricing_category"),
-                finance_models.Deposit.type.label("deposit_type"),
+                sa.func.coalesce(
+                    bookings_models.Booking.usedRecreditType.cast(sa.String),
+                    finance_models.Deposit.type.cast(sa.String),
+                ).label("origin_of_credit"),
                 sqla_func.sum(finance_models.PricingLine.amount).label("pricing_amount"),
             )
             .all()
         )
         for entry in data:
-            product_id = INVOICE_LINE_INDIV_DICT[(entry.pricing_category, entry.deposit_type)]
+            product_id = INVOICE_LINE_INDIV_DICT[(entry.pricing_category, entry.origin_of_credit)]
             res.append(
                 {
                     "product_id": product_id,
