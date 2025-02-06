@@ -36,9 +36,7 @@ const renderOffers = (
   renderWithProviders(<TemplateCollectiveOffersScreen {...props} />, {
     storeOverrides: {
       user: {
-        currentUser: sharedCurrentUserFactory({
-          isAdmin: false,
-        }),
+        currentUser: sharedCurrentUserFactory(),
       },
       offerer: currentOffererFactory(),
     },
@@ -100,14 +98,12 @@ describe('TemplateCollectiveOffersScreen', () => {
   const mockNotifySuccess = vi.fn()
   beforeEach(async () => {
     currentUser = sharedCurrentUserFactory({
-      isAdmin: false,
       roles: [UserRole.PRO],
     })
     offersRecap = [collectiveOfferFactory()]
 
     props = {
       currentPageNumber: 1,
-      currentUser,
       isLoading: false,
       offerer: { ...defaultGetOffererResponseModel },
       offers: offersRecap,
@@ -154,7 +150,6 @@ describe('TemplateCollectiveOffersScreen', () => {
 
     renderOffers({
       ...props,
-      currentUser: { ...props.currentUser, isAdmin: false },
       offers: [firstOffer, secondOffer],
     })
 

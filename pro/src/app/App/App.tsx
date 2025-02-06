@@ -106,7 +106,6 @@ export const App = (): JSX.Element | null => {
     !currentRoute?.meta?.public &&
     !currentRoute?.path.includes('/parcours-inscription') &&
     !!currentUser &&
-    !currentUser.isAdmin &&
     !currentUser.hasUserOfferer
   ) {
     return <Navigate to="/parcours-inscription" replace />

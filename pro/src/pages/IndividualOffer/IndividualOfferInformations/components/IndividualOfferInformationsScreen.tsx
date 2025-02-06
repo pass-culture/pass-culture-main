@@ -196,7 +196,6 @@ export const IndividualOfferInformationsScreen = ({
 
   const conditionalFields = getOfferConditionalFields({
     offerSubCategory,
-    isUserAdmin: false,
     receiveNotificationEmails: true,
   })
 

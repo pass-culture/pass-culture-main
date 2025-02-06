@@ -8,16 +8,13 @@ import { GetVenueResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useNotification } from 'commons/hooks/useNotification'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-
 
 import { Accessibility } from './Accessibility/Accessibility'
 import { OpeningHoursForm } from './OpeningHoursForm/OpeningHoursForm'
@@ -38,7 +35,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
-  const { currentUser } = useCurrentUser()
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const onSubmit: FormikConfig<VenueEditionFormValues>['onSubmit'] = async (
@@ -58,10 +54,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
       navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}`)
-
-      if (currentUser.isAdmin) {
-        notify.success(PATCH_SUCCESS_MESSAGE)
-      }
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
         from: location.pathname,

@@ -132,7 +132,6 @@ export const SummaryScreen = () => {
 
   const offerConditionalFields = getOfferConditionalFields({
     offerSubCategory,
-    isUserAdmin: false,
     receiveNotificationEmails: true,
   })
   const subCategoryConditionalFields = offerSubCategory

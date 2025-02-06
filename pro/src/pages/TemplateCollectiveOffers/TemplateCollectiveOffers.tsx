@@ -19,7 +19,6 @@ import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCol
 import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { TemplateCollectiveOffersScreen } from 'pages/TemplateCollectiveOffers/TemplateCollectiveOffersScreen/TemplateCollectiveOffersScreen'
@@ -42,7 +41,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
-  const { currentUser } = useCurrentUser()
 
   const offererQuery = useSWR(
     [GET_OFFERER_QUERY_KEY, offererId],
@@ -129,7 +127,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
       ) : (
         <TemplateCollectiveOffersScreen
           currentPageNumber={currentPageNumber}
-          currentUser={currentUser}
           initialSearchFilters={apiFilters}
           isLoading={offersQuery.isLoading}
           offerer={offerer}

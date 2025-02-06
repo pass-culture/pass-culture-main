@@ -14,10 +14,8 @@ import {
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useNotification } from 'commons/hooks/useNotification'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import fullBackIcon from 'icons/full-back.svg'
@@ -55,8 +53,6 @@ export const VenueSettingsScreen = ({
   const [isSiretValued, setIsSiretValued] = useState(Boolean(venue.siret))
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
-
-  const { currentUser } = useCurrentUser()
 
   const [isAddressChangeDialogOpen, setIsAddressChangeDialogOpen] =
     useState(false)
@@ -119,10 +115,6 @@ export const VenueSettingsScreen = ({
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
       navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}`)
-
-      if (currentUser.isAdmin) {
-        notify.success(PATCH_SUCCESS_MESSAGE)
-      }
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
         from: location.pathname,
