@@ -1038,10 +1038,13 @@ def edit_stock(
         finance_api.update_finance_event_pricing_date(stock)
 
     repository.add_to_session(stock)
-    search.async_index_offer_ids(
-        [stock.offerId],
-        reason=search.IndexationReason.STOCK_UPDATE,
-        log_extra={"changes": set(modifications.keys())},
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [stock.offerId],
+            reason=search.IndexationReason.STOCK_UPDATE,
+            log_extra={"changes": set(modifications.keys())},
+        ),
     )
 
     log_extra_data: dict[str, typing.Any] = {
