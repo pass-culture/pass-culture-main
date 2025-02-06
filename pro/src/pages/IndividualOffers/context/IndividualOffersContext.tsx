@@ -12,6 +12,9 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { storageAvailable } from 'commons/utils/storageAvailable'
+
+const LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY = 'headlineOfferBannerClosed'
 
 type UpsertHeadlineOfferParams = {
   offerId: number
@@ -25,6 +28,8 @@ type IndividualOffersContextValues = {
   headlineOffer: OffererHeadLineOfferResponseModel | null
   upsertHeadlineOffer: (params: UpsertHeadlineOfferParams) => Promise<void>
   removeHeadlineOffer: () => Promise<void>
+  isHeadlineOfferBannerOpen: boolean
+  closeHeadlineOfferBanner: () => void
   isHeadlineOfferAllowedForOfferer: boolean
 }
 
@@ -32,6 +37,8 @@ const IndividualOffersContext = createContext<IndividualOffersContextValues>({
   headlineOffer: null,
   upsertHeadlineOffer: async () => {},
   removeHeadlineOffer: async () => {},
+  isHeadlineOfferBannerOpen: true,
+  closeHeadlineOfferBanner: () => {},
   isHeadlineOfferAllowedForOfferer: false,
 })
 
@@ -51,6 +58,12 @@ export function IndividualOffersContextProvider({
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const [headlineOffer, setHeadlineOffer] =
     useState<OffererHeadLineOfferResponseModel | null>(null)
+  const initialIsHeadlineOfferBannerOpen = storageAvailable('localStorage') &&
+    localStorage.getItem(LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY) === null
+  const [
+    isHeadlineOfferBannerOpen,
+    setIsHeadlineOfferBannerOpen
+  ] = useState(initialIsHeadlineOfferBannerOpen)
   const isHeadlineOfferEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
   const { mutate } = useSWRConfig()
   const notify = useNotification()
@@ -75,6 +88,13 @@ export function IndividualOffersContextProvider({
     }
   )
 
+  const closeHeadlineOfferBanner = () => {
+    setIsHeadlineOfferBannerOpen(false)
+    if (storageAvailable('localStorage')) {
+      localStorage.setItem(LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY, 'true')
+    }
+  }
+
   const upsertHeadlineOffer = async ({
     offerId,
     context,
@@ -83,11 +103,16 @@ export function IndividualOffersContextProvider({
       await api.upsertHeadlineOffer({ offerId })
       notify.success('Votre offre a été mise à la une !')
       await mutate([GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId])
+
       logEvent(Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
         from: location.pathname,
         actionType: context.actionType,
         requiredImageUpload: !!context.requiredImageUpload,
       })
+
+      if (isHeadlineOfferBannerOpen) {
+        closeHeadlineOfferBanner()
+      }
     } catch {
       notify.error(
         'Une erreur s’est produite lors de l’ajout de votre offre à la une'
@@ -120,6 +145,8 @@ export function IndividualOffersContextProvider({
         headlineOffer,
         upsertHeadlineOffer,
         removeHeadlineOffer,
+        isHeadlineOfferBannerOpen,
+        closeHeadlineOfferBanner,
         isHeadlineOfferAllowedForOfferer,
       }}
     >

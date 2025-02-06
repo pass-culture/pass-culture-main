@@ -11,7 +11,7 @@ const renderHeadlineOfferBaner = () => {
     <Routes>
       <Route
         path="/"
-        element={<HeadlineOfferBanner close={() => {}}/>}
+        element={<HeadlineOfferBanner />}
       />
     </Routes>
   )

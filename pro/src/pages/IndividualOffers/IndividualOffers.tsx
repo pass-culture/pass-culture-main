@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
@@ -21,13 +20,13 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sortByLabel } from 'commons/utils/strings'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
+import { IndividualOffersContextProvider } from 'pages/IndividualOffers/context/IndividualOffersContext'
 import {
   formatAndOrderAddresses,
   formatAndOrderVenues,
 } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import { IndividualOffersContextProvider } from './context/IndividualOffersContext'
 import { HeadlineOfferBanner } from './IndividualOffersContainer/components/HeadlineOfferBanner/HeadlineOfferBanner'
 import { IndividualOffersContainer } from './IndividualOffersContainer/IndividualOffersContainer'
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
@@ -50,8 +49,6 @@ export const IndividualOffers = (): JSX.Element => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const isHeadlineOfferEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
-  const [isHeadlineOfferBannerOpen, setIsHeadlineOfferBannerOpen] =
-    useState(true)
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
@@ -133,28 +130,21 @@ export const IndividualOffers = (): JSX.Element => {
   })
 
   const offers = offersQuery.error ? [] : offersQuery.data || []
+  const isHeadlineOfferBannerAvailable =
+    isHeadlineOfferEnabled &&
+    isHeadlineOfferAllowedForOfferer
 
   return (
-    <Layout
-      mainHeading="Offres individuelles"
-      mainBanner={
-        isHeadlineOfferEnabled &&
-        isHeadlineOfferAllowedForOfferer &&
-        isHeadlineOfferBannerOpen && (
-          <HeadlineOfferBanner
-            close={() => {
-              setIsHeadlineOfferBannerOpen(false)
-            }}
-          />
-        )
-      }
+    <IndividualOffersContextProvider
+      isHeadlineOfferAllowedForOfferer={isHeadlineOfferAllowedForOfferer}
     >
-      {isLoadingVenues || isValidatingVenues ? (
-        <Spinner />
-      ) : (
-        <IndividualOffersContextProvider
-          isHeadlineOfferAllowedForOfferer={isHeadlineOfferAllowedForOfferer}
-        >
+      <Layout
+        mainHeading="Offres individuelles"
+        mainBanner={isHeadlineOfferBannerAvailable && <HeadlineOfferBanner />}
+      >
+        {isLoadingVenues || isValidatingVenues ? (
+          <Spinner />
+        ) : (
           <IndividualOffersContainer
             categories={categoriesOptions}
             currentPageNumber={currentPageNumber}
@@ -165,9 +155,9 @@ export const IndividualOffers = (): JSX.Element => {
             venues={venues}
             offererAddresses={offererAddresses}
           />
-        </IndividualOffersContextProvider>
-      )}
-    </Layout>
+        )}
+      </Layout>
+    </IndividualOffersContextProvider>
   )
 }
 
