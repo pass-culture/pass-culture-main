@@ -1101,9 +1101,13 @@ def publish_offer(
     else:
         if offer.publicationDate:
             offers_repository.delete_future_offer(offer.id)
-        search.async_index_offer_ids(
-            [offer.id],
-            reason=search.IndexationReason.OFFER_PUBLICATION,
+
+        on_commit(
+            partial(
+                search.async_index_offer_ids,
+                [offer.id],
+                reason=search.IndexationReason.OFFER_PUBLICATION,
+            )
         )
         logger.info(
             "Offer has been published",
