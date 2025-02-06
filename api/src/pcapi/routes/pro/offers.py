@@ -382,6 +382,7 @@ def patch_publish_offer(
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBodyModel) -> None:
     query = offers_repository.get_offers_by_ids(current_user, body.ids)
     if body.is_active:
