@@ -20,7 +20,7 @@ describe('<MultiSelect />', () => {
 
     return render(
       <MultiSelect
-        options={options}
+        options={[{options}]}
         label="Select Options"
         defaultOptions={defaultOptions}
         hasSearch={false}
