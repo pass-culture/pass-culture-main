@@ -145,6 +145,9 @@ class FeatureToggle(enum.Enum):
     WIP_HEADLINE_OFFER = "Activer l'offre à la une"
     WIP_IS_OPEN_TO_PUBLIC = "Activer l'utilisation du critère 'ouvert au public' pour les synchro"
     WIP_2025_SIGN_UP = "Activer le nouveau parcours d’inscription au portail pro"
+    WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION = (
+        "Activer la personnalisation tu tableau des offres individuelles dans le BO"
+    )
     WIP_URL_IN_OFFER_DRAFT = "Activer la validation concernant l'url dans la création d'un brouillon d'offre"
 
     def is_active(self) -> bool:
@@ -210,6 +213,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED,
     FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION,
     FeatureToggle.WIP_EAN_CREATION,
+    FeatureToggle.WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION,
     FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,

@@ -123,11 +123,13 @@ class ListOffersTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
-    expected_num_queries = 3
+    # - check FF WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION
+    expected_num_queries = 4
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # no filter => no query to fetch offers
-        with assert_num_queries(self.expected_num_queries - 1):
+        # no offers => no FF WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION
+        with assert_num_queries(self.expected_num_queries - 2):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -550,7 +552,8 @@ class ListOffersTest(GetEndpointHelper):
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
             "search-3-price": 120000.20,
         }
-        with assert_num_queries(self.expected_num_queries):
+        # no offers => no FF WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -858,7 +861,8 @@ class ListOffersTest(GetEndpointHelper):
             "search-2-operator": "IN",
             "search-2-validation": offers_models.OfferValidationStatus.PENDING.value,
         }
-        with assert_num_queries(self.expected_num_queries):
+        # no offers => no FF WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -1445,11 +1449,13 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
-    expected_num_queries = 3
+    # - check FF WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION
+    expected_num_queries = 4
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # no filter => no query to fetch offers
-        with assert_num_queries(self.expected_num_queries - 1):
+        # no offers => no FF WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION
+        with assert_num_queries(self.expected_num_queries - 2):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -1578,7 +1584,8 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
 
         with patch("pcapi.routes.backoffice.offers.blueprint.search_offer_ids", return_value=[]) as algolia_mock:
             # no offers from algolia therefore no request to retrieve their fields
-            with assert_num_queries(self.expected_num_queries - 1):
+            # no offers => no FF WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION
+            with assert_num_queries(self.expected_num_queries - 2):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
 
@@ -1614,7 +1621,8 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
 
         with patch("pcapi.routes.backoffice.offers.blueprint.search_offer_ids", return_value=[]) as algolia_mock:
             # no offers from algolia therefore no request to retrieve their fields
-            with assert_num_queries(self.expected_num_queries - 1):
+            # no offers => no FF WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION
+            with assert_num_queries(self.expected_num_queries - 2):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
 
@@ -1650,7 +1658,8 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
             # one more request to get the venues from offerer id
             # one more request to cherck the offerer id
             # no offers from algolia therefore no request to retrieve their fields
-            with assert_num_queries(self.expected_num_queries + 1):
+            # no offers => no FF WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
 
