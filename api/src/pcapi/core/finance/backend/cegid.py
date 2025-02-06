@@ -270,6 +270,13 @@ class CegidFinanceBackend(BaseFinanceBackend):
 
         return {}
 
+    @staticmethod
+    def _format_amount(amount_in_cent: int) -> str:
+        """Convert from amount in cents (integer) to formatted unsigned string in full unit"""
+        amount = finance_utils.cents_to_full_unit(amount_in_cent)
+        abs_amount = abs(amount)
+        return str(abs_amount)
+
     def push_invoice(self, invoice: finance_models.Invoice) -> dict:
         """
         Create a new invoice.
@@ -279,25 +286,25 @@ class CegidFinanceBackend(BaseFinanceBackend):
         invoice_lines = self.get_invoice_lines(invoice)
         lines = [
             {
-                "Amount": {"value": str(finance_utils.cents_to_full_unit(line["amount"]))},
+                "Amount": {"value": self._format_amount(line["amount"])},
                 "Branch": {"value": "PASSCULT"},
                 "InventoryID": {"value": INVENTORY_IDS[line["product_id"]]},
                 "TransactionDescription": {"value": line["title"]},
                 "Description": {"value": line["title"]},
                 "Qty": {"value": 1},
-                "UnitCost": {"value": str(finance_utils.cents_to_full_unit(line["amount"]))},
+                "UnitCost": {"value": self._format_amount(line["amount"])},
                 "UOM": {"value": "UNITE"},
             }
             for line in invoice_lines
         ]
 
         vendor_location = self._get_vendor_location(invoice.bankAccountId)
-        total_amount = -sum(e["amount"] for e in invoice_lines)
+        total_amount_str = self._format_amount(sum(e["amount"] for e in invoice_lines))
         invoice_date_range = self._get_formatted_invoice_description(invoice.date)
         body = {
-            "Amount": {"value": str(-finance_utils.cents_to_full_unit(total_amount))},
+            "Amount": {"value": total_amount_str},
             "ApprovedForPayment": {"value": False},
-            "Balance": {"value": str(-finance_utils.cents_to_full_unit(total_amount))},
+            "Balance": {"value": total_amount_str},
             "BranchID": {"value": "PASSCULT"},
             "CurrencyID": {"value": "EUR"},
             "Date": {"value": self.format_datetime(invoice.date)},

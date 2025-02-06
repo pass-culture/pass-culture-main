@@ -157,7 +157,7 @@ class BaseBackendTest:
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
         assert len(invoice_line) == 3
-        assert invoice_line["amount"] == 42_66
+        assert invoice_line["amount"] == -42_66
         assert invoice_line["product_id"] == product_id
         assert invoice_line["title"] == title
 
@@ -214,11 +214,11 @@ class BaseBackendTest:
         assert len(invoice_lines) == 2
         assert {"OCINDGRANT_18", "ORINDGRANT_18"} == {e["product_id"] for e in invoice_lines}
         offerer_revenue_line = [e for e in invoice_lines if e["product_id"] == "ORINDGRANT_18"][0]
-        assert offerer_revenue_line["amount"] == 200
+        assert offerer_revenue_line["amount"] == -200
         assert offerer_revenue_line["title"] == "Réservations"
 
         offerer_contribution_line = [e for e in invoice_lines if e["product_id"] == "OCINDGRANT_18"][0]
-        assert offerer_contribution_line["amount"] == 200
+        assert offerer_contribution_line["amount"] == -200
         assert offerer_contribution_line["title"] == "Réservations"
 
     @pytest.mark.parametrize(
@@ -313,7 +313,7 @@ class BaseBackendTest:
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
         assert len(invoice_line) == 3
-        assert invoice_line["amount"] == 39_66
+        assert invoice_line["amount"] == -39_66
         assert invoice_line["product_id"] == product_id
         assert invoice_line["title"] == title
 
@@ -364,9 +364,84 @@ class BaseBackendTest:
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
         assert len(invoice_line) == 3
-        assert invoice_line["amount"] == 538_55
+        assert invoice_line["amount"] == -538_55
         assert invoice_line["product_id"] == product_id
         assert invoice_line["title"] == title
+
+    def test_get_debit_note_line_collective(self):
+        offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            pricing_point="self",
+            bank_account=bank_account,
+        )
+        year = educational_factories.EducationalYearFactory()
+        meg_program = educational_factories.EducationalInstitutionProgramFactory(name="marseille_en_grand")
+        educational_institution = educational_factories.EducationalInstitutionFactory(programs=[meg_program])
+        educational_factories.EducationalDepositFactory(
+            educationalInstitution=educational_institution,
+            educationalYear=year,
+            ministry=educational_models.Ministry.EDUCATION_NATIONALE.name,
+        )
+        booking = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue=venue,
+            educationalInstitution=educational_institution,
+            educationalYear=year,
+        )
+        pricing = finance_factories.CollectivePricingFactory(
+            collectiveBooking=booking,
+            pricingPoint=venue,
+            status=finance_models.PricingStatus.PROCESSED,
+            amount=666_55,
+        )
+        finance_factories.PricingLineFactory(
+            pricing=pricing,
+            category=finance_models.PricingLineCategory.OFFERER_REVENUE,
+            amount=666_55,
+        )
+        cashflow = finance_factories.CashflowFactory(pricings=[pricing])
+        invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
+
+        backend = finance_backend.BaseFinanceBackend()
+        invoice_lines = backend.get_invoice_lines(invoice)
+        assert len(invoice_lines) == 1
+        invoice_line = invoice_lines[0]
+        assert len(invoice_line) == 3
+        assert invoice_line["amount"] == 666_55
+        assert invoice_line["product_id"] == "ORCOLMEG"
+        assert invoice_line["title"] == "Réservations"
+
+    def test_get_debit_note_line_indiv(self):
+        offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            pricing_point="self",
+            bank_account=bank_account,
+        )
+        booking = bookings_factories.UsedBookingFactory(
+            user__deposit__type=DepositType.GRANT_18, stock__offer__venue=venue
+        )
+        pricing = finance_factories.PricingFactory(
+            booking=booking, pricingPoint=venue, status=finance_models.PricingStatus.PROCESSED, amount=55_66
+        )
+        finance_factories.PricingLineFactory(
+            pricing=pricing,
+            category=finance_models.PricingLineCategory.OFFERER_REVENUE,
+            amount=55_66,
+        )
+        cashflow = finance_factories.CashflowFactory(pricings=[pricing])
+        invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
+
+        backend = finance_backend.BaseFinanceBackend()
+        invoice_lines = backend.get_invoice_lines(invoice)
+        assert len(invoice_lines) == 1
+        invoice_line = invoice_lines[0]
+        assert len(invoice_line) == 3
+        assert invoice_line["amount"] == 55_66
+        assert invoice_line["product_id"] == "ORINDGRANT_18"
+        assert invoice_line["title"] == "Réservations"
 
 
 @pytest.mark.settings(
@@ -647,6 +722,161 @@ class CegidFinanceBackendTest:
         invoice_data = finance_backend.get_invoice("F240000095")
         assert request_matcher.call_count == 1
         assert invoice_data == response_data[0]
+
+    @pytest.mark.usefixtures("mock_cegid_auth")
+    def test_push_debit_note(self, cegid_config, requests_mock):
+        test_date = "2025-01-25"
+        with time_machine.travel(test_date, tick=False):
+            now = datetime.datetime.utcnow()
+        offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            pricing_point="self",
+            bank_account=bank_account,
+        )
+        booking = bookings_factories.UsedBookingFactory(
+            user__deposit__type=DepositType.GRANT_18,
+            stock__offer__venue=venue,
+        )
+        pricing = finance_factories.PricingFactory(
+            booking=booking,
+            pricingPoint=venue,
+            status=finance_models.PricingStatus.PROCESSED,
+        )
+        finance_factories.PricingLineFactory(
+            pricing=pricing,
+            category=finance_models.PricingLineCategory.OFFERER_REVENUE,
+            amount=99_60,
+        )
+        cashflow = finance_factories.CashflowFactory(pricings=[pricing])
+        invoice = finance_factories.InvoiceFactory(
+            cashflows=[cashflow], bankAccount=bank_account, date=now, reference="A250000014"
+        )
+
+        ####################################
+        # Mock the VendorLocation API call #
+        ####################################
+        request_vendor_location_matcher = requests_mock.register_uri(
+            "GET",
+            f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/VendorLocation?$expand=RIB&$filter=VendorID%20eq%20'{bank_account.id}'",
+            json=[{"LocationID": {"value": "MAIN"}}],
+            status_code=200,
+            headers={"content-type": "application/json"},
+        )
+
+        #########################################
+        # Mock the response from Cegid XRP Flex #
+        #########################################
+        response_data = {
+            "Amount": {"value": 99.6},
+            "ApprovedForPayment": {"value": False},
+            "Balance": {"value": 99.6},
+            "BranchID": {"value": "PASSCULT"},
+            "CashAccount": {},
+            "CurrencyID": {"value": "EUR"},
+            "Date": {"value": "2024-12-18T00:00:00+00:00"},
+            "Description": {"value": f"{invoice.reference} - 15/01-31/01"},
+            "Details": [
+                {
+                    "Account": {"value": "604000"},
+                    "Amount": {"value": 99.6},
+                    "Branch": {"value": "PASSCULT"},
+                    "CalculateDiscountsOnImport": {},
+                    "Description": {"value": "Charges Pass Culture jeunes"},
+                    "ExtendedCost": {"value": 99.6},
+                    "InventoryID": {"value": "ORIND18P000"},
+                    "POLine": {},
+                    "POOrderNbr": {},
+                    "POOrderType": {},
+                    "POReceiptLine": {},
+                    "POReceiptNbr": {},
+                    "POReceiptType": {},
+                    "Qty": {"value": 1.0},
+                    "ReferenceNbr": {"value": "000014"},
+                    "Subaccount": {"value": "ZZZZZZZZZZZZZZZZZ"},
+                    "TaxCategory": {"value": "SERV TN"},
+                    "TransactionDescription": {"value": "Réservations"},
+                    "UOM": {"value": "UNITE"},
+                    "UnitCost": {"value": 99.6},
+                    "_links": {
+                        "files:put": "/passculture/entity/INTERFACES/23.200.001/files/PX.Objects.AP.APInvoiceEntry/Transactions/8189c293-62bd-ef11-a82c-000d3ae74153/{filename}"
+                    },
+                    "custom": {},
+                    "id": "8189c293-62bd-ef11-a82c-000d3ae74153",
+                    "note": {"value": ""},
+                    "rowNumber": 1,
+                },
+            ],
+            "DueDate": {"value": "2025-01-17T00:00:00+00:00"},
+            "Hold": {"value": False},
+            "IsTaxValid": {},
+            "LastModifiedDateTime": {"value": "2024-12-18T17:07:45.433+00:00"},
+            "LocationID": {"value": "MAIN"},
+            "PostPeriod": {"value": f"{invoice.date:%m%Y}"},
+            "ReferenceNbr": {"value": "000014"},
+            "Status": {"value": "Balanced"},
+            "TaxTotal": {"value": 0.0},
+            "Terms": {"value": "30J"},
+            "Type": {"value": "Debit Adj."},
+            "Vendor": {"value": "200178"},
+            "VendorRef": {"value": "A250000014"},
+            "_links": {
+                "files:put": "/passculture/entity/INTERFACES/23.200.001/files/PX.Objects.AP.APInvoiceEntry/Document/7b89c293-62bd-ef11-a82c-000d3ae74153/{filename}",
+                "self": "/passculture/entity/INTERFACES/23.200.001/Bill/7b89c293-62bd-ef11-a82c-000d3ae74153",
+            },
+            "custom": {},
+            "id": "7b89c293-62bd-ef11-a82c-000d3ae74153",
+            "note": {"value": ""},
+            "rowNumber": 1,
+        }
+        request_matcher = requests_mock.register_uri(
+            "PUT",
+            f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/Bill",
+            json=response_data,
+            status_code=200,
+            headers={"content-type": "application/json"},
+        )
+        with time_machine.travel(test_date, tick=False):
+            invoice_data = finance_backend.push_invoice(invoice.id)
+
+        # VendorLocation related calls
+        assert request_vendor_location_matcher.call_count == 1
+
+        assert request_matcher.call_count == 1
+        assert invoice_data == response_data
+        request_json = request_matcher.request_history[0].json()
+        assert request_json["Amount"] == {"value": "99.60"}
+        assert request_json["ApprovedForPayment"] == {"value": False}
+        assert request_json["Balance"] == {"value": "99.60"}
+        assert request_json["BranchID"] == {"value": "PASSCULT"}
+        assert request_json["CurrencyID"] == {"value": "EUR"}
+        assert request_json["Date"] == {"value": now.strftime("%Y-%m-%dT%H:%M:%S+00:00")}
+        assert request_json["Description"] == {"value": f"{invoice.reference} - 16/01-31/01"}
+        assert "Details" in request_json
+        details = request_json["Details"]
+        assert len(details) == 1
+
+        details_line = [e for e in details if e["Description"]["value"] == "Réservations"][0]
+        assert details_line["Amount"] == {"value": "99.60"}
+        assert details_line["Branch"] == {"value": "PASSCULT"}
+        assert details_line["InventoryID"] == {"value": "ORIND18P0000"}
+        assert details_line["TransactionDescription"] == {"value": "Réservations"}
+        assert details_line["Description"] == {"value": "Réservations"}
+        assert details_line["Qty"] == {"value": 1}
+        assert details_line["UnitCost"] == {"value": "99.60"}
+        assert details_line["UOM"] == {"value": "UNITE"}
+        assert details_line["Description"] == {"value": "Réservations"}
+
+        assert request_json["Hold"] == {"value": False}
+        assert request_json["LocationID"] == {"value": "MAIN"}
+        assert request_json["PostPeriod"] == {"value": f"{invoice.date:%m%Y}"}
+        assert request_json["Status"] == {"value": "Open"}
+        assert request_json["TaxTotal"] == {"value": "0"}
+        assert request_json["Terms"] == {"value": "30J"}
+        assert request_json["Type"] == {"value": "ADR"}
+        assert request_json["Vendor"] == {"value": str(bank_account.id)}
+        assert request_json["VendorRef"] == {"value": invoice.reference}
 
     @pytest.mark.usefixtures("mock_cegid_auth")
     def test_get_invoice_not_found(self, requests_mock, cegid_config):

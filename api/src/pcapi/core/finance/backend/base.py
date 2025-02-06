@@ -127,7 +127,7 @@ class BaseFinanceBackend:
             res.append(
                 {
                     "product_id": product_id,
-                    "amount": -entry.pricing_amount,
+                    "amount": entry.pricing_amount,
                     "title": TITLES[product_id],
                 }
             )
@@ -175,7 +175,7 @@ class BaseFinanceBackend:
             res.append(
                 {
                     "product_id": product_id,
-                    "amount": -entry.pricing_amount,
+                    "amount": entry.pricing_amount,
                     "title": TITLES[product_id],
                 }
             )
