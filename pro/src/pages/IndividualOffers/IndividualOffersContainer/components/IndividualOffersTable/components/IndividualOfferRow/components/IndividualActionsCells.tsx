@@ -42,7 +42,6 @@ interface IndividualActionsCellsProps {
   offer: ListOffersOfferResponseModel
   editionOfferLink: string
   editionStockLink: string
-  isRestrictedAsAdmin: boolean
   className: string
 }
 
@@ -51,7 +50,6 @@ export const IndividualActionsCells = ({
   offer,
   editionOfferLink,
   editionStockLink,
-  isRestrictedAsAdmin,
   className,
 }: IndividualActionsCellsProps) => {
   const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
@@ -95,8 +93,7 @@ export const IndividualActionsCells = ({
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedOffererId?.toString(),
-    isRestrictedAsAdmin
+    selectedOffererId?.toString()
   )
 
   const onConfirmDeleteDraftOffer = async () => {
@@ -160,7 +157,6 @@ export const IndividualActionsCells = ({
                 !offer.isDigital && (
                   <HeadlineOfferCell
                     offer={offer}
-                    isRestrictedAsAdmin={isRestrictedAsAdmin}
                     setIsConfirmReplacementDialogOpen={
                       setIsConfirmDialogReplaceHeadlineOfferOpen
                     }
@@ -197,7 +193,6 @@ export const IndividualActionsCells = ({
         offer={offer}
         isFirstDialogOpen={isDialogForHeadlineOfferWithoutImageOpen}
         setIsFirstDialogOpen={setIsDialogForHeadlineOfferWithoutImageOpen}
-        isRestrictedAsAdmin={isRestrictedAsAdmin}
       />
     </>
   )

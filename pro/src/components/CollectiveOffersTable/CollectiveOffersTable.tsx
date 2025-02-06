@@ -4,7 +4,10 @@ import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { SortingMode } from 'commons/hooks/useColumnSorting'
 import { OffersTable } from 'components/OffersTable/OffersTable'
-import { Columns, OffersTableHead } from 'components/OffersTable/OffersTableHead/OffersTableHead'
+import {
+  Columns,
+  OffersTableHead,
+} from 'components/OffersTable/OffersTableHead/OffersTableHead'
 import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 
 import { CollectiveOffersTableBody } from './CollectiveOffersTableBody/CollectiveOffersTableBody'
@@ -19,7 +22,6 @@ type CollectiveOffersTableProps = {
   toggleSelectAllCheckboxes: () => void
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   isAtLeastOneOfferChecked: boolean
-  isRestrictedAsAdmin?: boolean
   selectedOffers: CollectiveOfferResponseModel[]
   offers: CollectiveOfferResponseModel[]
   onColumnHeaderClick: (
@@ -41,7 +43,6 @@ export const CollectiveOffersTable = ({
   toggleSelectAllCheckboxes,
   urlSearchFilters,
   isAtLeastOneOfferChecked,
-  isRestrictedAsAdmin = false,
   offers,
   onColumnHeaderClick,
   currentSortingColumn,
@@ -54,12 +55,17 @@ export const CollectiveOffersTable = ({
     { ...CELLS_DEFINITIONS.INFO_ON_EXPIRATION, isVisuallyHidden: true },
     { ...CELLS_DEFINITIONS.THUMB, isVisuallyHidden: true },
     { ...CELLS_DEFINITIONS.NAME, isVisuallyHidden: true },
-    { ...CELLS_DEFINITIONS.EVENT_DATE, sortableProps: {
-      onColumnHeaderClick,
-      currentSortingColumn,
-      currentSortingMode,
-    } },
-    (isOfferAddressEnabled ? CELLS_DEFINITIONS.STRUCTURE : CELLS_DEFINITIONS.VENUE),
+    {
+      ...CELLS_DEFINITIONS.EVENT_DATE,
+      sortableProps: {
+        onColumnHeaderClick,
+        currentSortingColumn,
+        currentSortingMode,
+      },
+    },
+    isOfferAddressEnabled
+      ? CELLS_DEFINITIONS.STRUCTURE
+      : CELLS_DEFINITIONS.VENUE,
     CELLS_DEFINITIONS.INSTITUTION,
     CELLS_DEFINITIONS.STATUS,
   ]
@@ -75,7 +81,6 @@ export const CollectiveOffersTable = ({
       <OffersTableHead
         areAllOffersSelected={areAllOffersSelected}
         isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
-        isRestrictedAsAdmin={isRestrictedAsAdmin}
         toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
         columns={columns}
       />

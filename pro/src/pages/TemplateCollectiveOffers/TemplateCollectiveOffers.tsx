@@ -17,7 +17,6 @@ import { useQueryCollectiveSearchFilters } from 'commons/core/Offers/hooks/useQu
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollectiveOffersSwrKeys'
-import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
@@ -28,12 +27,16 @@ import { formatAndOrderVenues } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const TemplateCollectiveOffers = (): JSX.Element => {
-  const isToggleAndMemorizeFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
+  const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
+    'WIP_COLLAPSED_MEMORIZED_FILTERS'
+  )
   const urlSearchFilters = useQueryCollectiveSearchFilters()
   const { storedFilters } = getStoredFilterConfig('template')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...isToggleAndMemorizeFiltersEnabled ? (storedFilters as Partial<CollectiveSearchFiltersParams>) : {}
+    ...(isToggleAndMemorizeFiltersEnabled
+      ? (storedFilters as Partial<CollectiveSearchFiltersParams>)
+      : {}),
   }
   const offererId = useSelector(selectCurrentOffererId)?.toString()
 
@@ -58,7 +61,9 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   )
   const venues = formatAndOrderVenues(data.venues)
 
-  const redirectWithUrlFilters = (filters: Partial<CollectiveSearchFiltersParams>) => {
+  const redirectWithUrlFilters = (
+    filters: Partial<CollectiveSearchFiltersParams>
+  ) => {
     navigate(
       computeCollectiveOffersUrl(
         filters,
@@ -68,14 +73,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
       { replace: true }
     )
   }
-
-  const isFilterByVenueOrOfferer = hasCollectiveSearchFilters(
-    finalSearchFilters,
-    DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-    ['venueId', 'offererId']
-  )
-  //  Admin users are not allowed to check all offers at once or to use the status filter for performance reasons. Unless there is a venue or offerer filter active.
-  const isRestrictedAsAdmin = currentUser.isAdmin && !isFilterByVenueOrOfferer
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
     isNewOffersAndBookingsActive: true,
@@ -87,7 +84,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   const apiFilters: CollectiveSearchFiltersParams = {
     ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
     ...finalSearchFilters,
-    ...(isRestrictedAsAdmin ? { status: [] } : {}),
     ...{ offererId: offererId ?? '' },
   }
   delete apiFilters.page
@@ -141,7 +137,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
           redirectWithUrlFilters={redirectWithUrlFilters}
           urlSearchFilters={urlSearchFilters}
           venues={venues}
-          isRestrictedAsAdmin={isRestrictedAsAdmin}
         />
       )}
     </Layout>

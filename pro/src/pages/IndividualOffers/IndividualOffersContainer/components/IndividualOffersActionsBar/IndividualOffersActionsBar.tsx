@@ -38,7 +38,6 @@ export type IndividualOffersActionsBarProps = {
   canDelete: boolean
   canPublish: boolean
   canDeactivate: boolean
-  isRestrictedAsAdmin: boolean
 }
 
 const computeAllActivationSuccessMessage = (nbSelectedOffers: number) => {
@@ -147,14 +146,17 @@ export const IndividualOffersActionsBar = ({
   canDelete,
   canPublish,
   canDeactivate,
-  isRestrictedAsAdmin,
 }: IndividualOffersActionsBarProps): JSX.Element => {
-  const isToggleAndMemorizeFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
+  const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
+    'WIP_COLLAPSED_MEMORIZED_FILTERS'
+  )
   const urlSearchFilters = useQuerySearchFilters()
   const { storedFilters } = getStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...isToggleAndMemorizeFiltersEnabled ? (storedFilters as Partial<SearchFiltersParams>) : {}
+    ...(isToggleAndMemorizeFiltersEnabled
+      ? (storedFilters as Partial<SearchFiltersParams>)
+      : {}),
   }
 
   const { mutate } = useSWRConfig()
@@ -170,8 +172,7 @@ export const IndividualOffersActionsBar = ({
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedOffererId,
-    isRestrictedAsAdmin
+    selectedOffererId
   )
 
   const handleClose = () => {

@@ -10,7 +10,6 @@ import styles from './HeadlineOfferCell.module.scss'
 
 type HeadlineOfferCellProps = {
   offer: ListOffersOfferResponseModel
-  isRestrictedAsAdmin: boolean
   setIsConfirmReplacementDialogOpen: (state: boolean) => void
   setIsOfferWithoutImageDialogOpen: (state: boolean) => void
 }

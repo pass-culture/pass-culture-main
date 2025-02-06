@@ -30,7 +30,6 @@ interface TemplateOffersSearchFiltersProps {
   resetFilters: () => void
   venues: SelectOption[]
   categories?: SelectOption[]
-  isRestrictedAsAdmin?: boolean
 }
 
 const collectiveFilterStatus = [
@@ -68,7 +67,6 @@ export const TemplateOffersSearchFilters = ({
   offerer,
   disableAllFilters,
   venues,
-  isRestrictedAsAdmin = false,
 }: TemplateOffersSearchFiltersProps): JSX.Element => {
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,
@@ -203,7 +201,7 @@ export const TemplateOffersSearchFilters = ({
           label="Statut"
           options={collectiveFilterStatus}
           isOptional
-          disabled={disableAllFilters || isRestrictedAsAdmin}
+          disabled={disableAllFilters}
         />
       </FormikProvider>
     </OffersTableSearch>

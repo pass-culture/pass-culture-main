@@ -147,7 +147,7 @@ describe('CollectiveOffersScreen', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display an unchecked by default checkbox to select all offers when user is not admin', () => {
+  it('should display an unchecked by default checkbox to select all offers', () => {
     const firstOffer = collectiveOfferFactory()
     const secondOffer = collectiveOfferFactory()
 

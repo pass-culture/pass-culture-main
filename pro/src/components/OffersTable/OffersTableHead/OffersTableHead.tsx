@@ -23,7 +23,6 @@ export type Columns = CellDefinition & {
 type OffersTableHeadProps = {
   areAllOffersSelected: boolean
   isAtLeastOneOfferChecked: boolean
-  isRestrictedAsAdmin: boolean
   toggleSelectAllCheckboxes: () => void
   columns: Columns[]
 }
@@ -31,7 +30,6 @@ type OffersTableHeadProps = {
 export const OffersTableHead = ({
   areAllOffersSelected,
   isAtLeastOneOfferChecked,
-  isRestrictedAsAdmin,
   toggleSelectAllCheckboxes,
   columns,
 }: OffersTableHeadProps): JSX.Element => {
@@ -51,10 +49,7 @@ export const OffersTableHead = ({
               inputClassName={styles['offers-thead-th-checkbox-input']}
               labelClassName={styles['offers-thead-th-checkbox-label']}
               checked={areAllOffersSelected}
-              partialCheck={
-                !areAllOffersSelected && isAtLeastOneOfferChecked
-              }
-              disabled={isRestrictedAsAdmin}
+              partialCheck={!areAllOffersSelected && isAtLeastOneOfferChecked}
               onChange={toggleSelectAllCheckboxes}
               label={
                 areAllOffersSelected
@@ -64,26 +59,27 @@ export const OffersTableHead = ({
             />
           </div>
         </th>
-        {
-          columns.map(({ id, title, isVisuallyHidden, sortableProps }, index) => (
+        {columns.map(
+          ({ id, title, isVisuallyHidden, sortableProps }, index) => (
             <th
               id={id}
               key={index}
               role="columnheader"
               className={styles['offers-thead-th']}
             >
-              {isVisuallyHidden ?
-                <span className={styles['visually-hidden']}>
-                  {title}
-                </span> :
+              {isVisuallyHidden ? (
+                <span className={styles['visually-hidden']}>{title}</span>
+              ) : (
                 <>
                   {title}
-                  {sortableProps && 
+                  {sortableProps && (
                     <>
                       {' '}
                       <SortArrow
                         onClick={() => {
-                          sortableProps.onColumnHeaderClick(CollectiveOffersSortingColumn.EVENT_DATE)
+                          sortableProps.onColumnHeaderClick(
+                            CollectiveOffersSortingColumn.EVENT_DATE
+                          )
                         }}
                         sortingMode={
                           sortableProps.currentSortingColumn ===
@@ -93,11 +89,12 @@ export const OffersTableHead = ({
                         }
                       />
                     </>
-                  }
-                </>}
+                  )}
+                </>
+              )}
             </th>
-          ))
-        }
+          )
+        )}
         <th
           id={CELLS_DEFINITIONS.ACTIONS.id}
           role="columnheader"

@@ -24,7 +24,6 @@ type IndividualOffersTableProps = {
   toggleSelectAllCheckboxes: () => void
   hasFilters: boolean
   isAtLeastOneOfferChecked: boolean
-  isRestrictedAsAdmin?: boolean
   currentPageOffersSubset: ListOffersOfferResponseModel[]
   selectedOffers: ListOffersOfferResponseModel[]
   selectedFilters: SearchFiltersParams
@@ -45,7 +44,6 @@ export const IndividualOffersTable = ({
   toggleSelectAllCheckboxes,
   hasFilters,
   isAtLeastOneOfferChecked,
-  isRestrictedAsAdmin = false,
   selectedFilters,
 }: IndividualOffersTableProps) => {
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
@@ -83,7 +81,6 @@ export const IndividualOffersTable = ({
       <OffersTableHead
         areAllOffersSelected={areAllOffersSelected}
         isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
-        isRestrictedAsAdmin={isRestrictedAsAdmin}
         toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
         columns={[
           CELLS_DEFINITIONS.NAME,
@@ -98,7 +95,6 @@ export const IndividualOffersTable = ({
         offers={currentPageOffersSubset}
         selectOffer={setSelectedOffer}
         selectedOffers={selectedOffers}
-        isRestrictedAsAdmin={isRestrictedAsAdmin}
       />
     </OffersTable>
   )

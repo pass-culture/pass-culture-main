@@ -36,7 +36,6 @@ interface CollectiveOffersSearchFiltersProps {
   resetFilters: () => void
   venues: SelectOption[]
   categories?: SelectOption[]
-  isRestrictedAsAdmin?: boolean
 }
 
 const collectiveFilterStatus = [
@@ -81,7 +80,6 @@ export const CollectiveOffersSearchFilters = ({
   offerer,
   disableAllFilters,
   venues,
-  isRestrictedAsAdmin = false,
 }: CollectiveOffersSearchFiltersProps): JSX.Element => {
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
@@ -233,7 +231,7 @@ export const CollectiveOffersSearchFilters = ({
             label="Statut"
             options={statusFilterOptions}
             isOptional
-            disabled={disableAllFilters || isRestrictedAsAdmin}
+            disabled={disableAllFilters}
           />
         </FormikProvider>
         <FieldLayout

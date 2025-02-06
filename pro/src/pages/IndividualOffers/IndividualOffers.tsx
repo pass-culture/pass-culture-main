@@ -15,11 +15,9 @@ import { DEFAULT_PAGE } from 'commons/core/Offers/constants'
 import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
-import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { serializeApiFilters } from 'commons/core/Offers/utils/serializer'
 import { Audience } from 'commons/core/shared/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sortByLabel } from 'commons/utils/strings'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
@@ -49,7 +47,6 @@ export const IndividualOffers = (): JSX.Element => {
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
-  const { currentUser } = useCurrentUser()
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const isHeadlineOfferEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
@@ -102,16 +99,9 @@ export const IndividualOffers = (): JSX.Element => {
   )
   const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
 
-  const isFilterByVenueOrOfferer = hasSearchFilters(finalSearchFilters, [
-    'venueId',
-  ])
-  //  Admin users are not allowed to check all offers at once or to use the status filter for performance reasons. Unless there is a venue or offerer filter active.
-  const isRestrictedAsAdmin = currentUser.isAdmin && !isFilterByVenueOrOfferer
-
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedOffererId?.toString(),
-    isRestrictedAsAdmin
+    selectedOffererId?.toString()
   )
 
   const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () => {
@@ -174,7 +164,6 @@ export const IndividualOffers = (): JSX.Element => {
             redirectWithSelectedFilters={redirectWithSelectedFilters}
             venues={venues}
             offererAddresses={offererAddresses}
-            isRestrictedAsAdmin={isRestrictedAsAdmin}
           />
         </IndividualOffersContextProvider>
       )}
