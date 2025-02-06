@@ -7,12 +7,8 @@ import {
   GetOffererResponseModel,
   GetOffererStatsResponseModel,
 } from 'apiClient/v1'
-import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
-import fullMoreIcon from 'icons/full-more.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { Card } from '../../../../components/Card/Card'
@@ -29,10 +25,6 @@ interface StatisticsDashboardProps {
 export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
   const [stats, setStats] = useState<GetOffererStatsResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-
-  const { currentUser } = useCurrentUser()
-
-  const displayCreateOfferButton = currentUser.isAdmin
 
   useEffect(() => {
     const loadStats = async () => {
@@ -52,16 +44,6 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
         <h2 className={styles['title']}>
           Présence sur l’application pass Culture
         </h2>
-
-        {displayCreateOfferButton && (
-          <ButtonLink
-            variant={ButtonVariant.PRIMARY}
-            to={'/offre/creation'}
-            icon={fullMoreIcon}
-          >
-            Créer une offre
-          </ButtonLink>
-        )}
       </div>
 
       {!isLoading && (

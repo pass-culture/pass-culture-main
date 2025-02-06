@@ -29,7 +29,7 @@ describe('src | App', () => {
     vi.spyOn(api, 'getProfile').mockResolvedValue({
       id: 1,
       email: 'email@example.com',
-      isAdmin: true,
+      isAdmin: false,
       roles: [UserRole.ADMIN],
       isEmailValidated: true,
       dateCreated: '2022-07-29T12:18:43.087097Z',

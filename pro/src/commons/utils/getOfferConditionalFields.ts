@@ -2,13 +2,11 @@ import { SubcategoryResponseModel } from 'apiClient/v1'
 
 interface GetOfferConditionalFieldsProps {
   offerSubCategory?: SubcategoryResponseModel | null
-  isUserAdmin?: boolean | null
   receiveNotificationEmails?: boolean | null
 }
 
 export const getOfferConditionalFields = ({
   offerSubCategory = null,
-  isUserAdmin = null,
   receiveNotificationEmails = null,
 }: GetOfferConditionalFieldsProps): string[] => {
   const offerConditionalFields = []
@@ -27,10 +25,6 @@ export const getOfferConditionalFields = ({
 
   if (offerSubCategory?.conditionalFields.includes('showType')) {
     offerConditionalFields.push('showSubType')
-  }
-
-  if (isUserAdmin) {
-    offerConditionalFields.push('isNational')
   }
 
   if (receiveNotificationEmails) {

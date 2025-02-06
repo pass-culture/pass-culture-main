@@ -17,7 +17,6 @@ import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCol
 import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { formatAndOrderVenues } from 'repository/venuesService'
@@ -43,7 +42,6 @@ export const CollectiveOffers = (): JSX.Element => {
   )
 
   const navigate = useNavigate()
-  const { currentUser } = useCurrentUser()
   const offererId = useSelector(selectCurrentOffererId)?.toString()
 
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
@@ -140,7 +138,6 @@ export const CollectiveOffers = (): JSX.Element => {
       ) : (
         <CollectiveOffersScreen
           currentPageNumber={currentPageNumber}
-          currentUser={currentUser}
           initialSearchFilters={apiFilters}
           isLoading={offersQuery.isLoading}
           offerer={offerer}

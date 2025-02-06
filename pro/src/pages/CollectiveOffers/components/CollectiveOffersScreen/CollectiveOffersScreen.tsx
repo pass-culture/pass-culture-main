@@ -3,7 +3,6 @@ import { useState } from 'react'
 import {
   CollectiveOfferResponseModel,
   GetOffererResponseModel,
-  UserRole,
 } from 'apiClient/v1'
 import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/types'
 import {
@@ -31,10 +30,6 @@ import { CollectiveOffersSearchFilters } from './CollectiveOffersSearchFilters/C
 
 export type CollectiveOffersScreenProps = {
   currentPageNumber: number
-  currentUser: {
-    roles: Array<UserRole>
-    isAdmin: boolean
-  }
   isLoading: boolean
   offerer: GetOffererResponseModel | null
   initialSearchFilters: CollectiveSearchFiltersParams

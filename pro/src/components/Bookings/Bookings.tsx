@@ -22,7 +22,6 @@ import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
 import { PreFiltersParams } from 'commons/core/Bookings/types'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { Audience } from 'commons/core/shared/types'
-import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { stringify } from 'commons/utils/query-string'
@@ -71,7 +70,6 @@ export const BookingsContainer = <
   getFilteredBookingsAdapter,
   getUserHasBookingsAdapter,
 }: BookingsProps<T>): JSX.Element => {
-  const { currentUser: user } = useCurrentUser()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
 
@@ -137,7 +135,7 @@ export const BookingsContainer = <
   )
 
   const hasBookingsQuery = useSWR(
-    user.isAdmin ? null : [GET_HAS_BOOKINGS_QUERY_KEY],
+    [GET_HAS_BOOKINGS_QUERY_KEY],
     () => getUserHasBookingsAdapter(),
     { fallbackData: true }
   )

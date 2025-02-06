@@ -9,7 +9,6 @@ const renderFooter = (isConnected: boolean = true) => {
   renderWithProviders(<Footer />, {
     user: isConnected
       ? sharedCurrentUserFactory({
-          isAdmin: false,
           hasSeenProTutorials: true,
         })
       : null,

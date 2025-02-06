@@ -69,7 +69,7 @@ export const UsefulInformationForm = ({
     : setFormReadOnlyFields(offer)
 
   const {
-    currentUser: { isAdmin, email },
+    currentUser: { email },
   } = useCurrentUser()
 
   const displayNoRefundWarning =
@@ -217,17 +217,6 @@ export const UsefulInformationForm = ({
               name="bookingContact"
               description="Format : email@exemple.com"
               disabled={readOnlyFields.includes('bookingContact')}
-            />
-          </FormLayout.Row>
-        )}
-        {isAdmin && (
-          <FormLayout.Row>
-            <Checkbox
-              hideFooter
-              label={'Rayonnement national'}
-              name="isNational"
-              value=""
-              disabled={readOnlyFields.includes('isNational')}
             />
           </FormLayout.Row>
         )}

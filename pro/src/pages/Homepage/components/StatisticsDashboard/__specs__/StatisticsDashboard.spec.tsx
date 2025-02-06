@@ -16,8 +16,7 @@ vi.mock('apiClient/api', () => ({
 
 const renderStatisticsDashboard = (
   hasActiveOffer = true,
-  features: string[] = [],
-  isAdmin = false
+  features: string[] = []
 ) =>
   renderWithProviders(
     <StatisticsDashboard
@@ -28,9 +27,7 @@ const renderStatisticsDashboard = (
       }}
     />,
     {
-      user: sharedCurrentUserFactory({
-        isAdmin,
-      }),
+      user: sharedCurrentUserFactory(),
       features,
     }
   )
@@ -116,14 +113,8 @@ describe('StatisticsDashboard', () => {
     expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
   })
 
-  it('should display the create offer button if the user is Admin', async () => {
-    renderStatisticsDashboard(false, [], true)
-
-    expect(await screen.findByText(/Créer une offre/)).toBeInTheDocument()
-  })
-
-  it("should not display the create offer button if the user isn't Admin", async () => {
-    renderStatisticsDashboard(false, [], false)
+  it('should not display the create offer button ', async () => {
+    renderStatisticsDashboard(false, [])
 
     expect(
       await screen.findByText('à destination du grand public')

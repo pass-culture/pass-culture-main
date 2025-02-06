@@ -36,12 +36,8 @@ export const useRedirectLoggedUser = () => {
     }
 
     if (currentUser) {
-      if (!currentUser.isAdmin) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        fetchOfferersNames()
-      } else {
-        redirectToUrl()
-      }
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      fetchOfferersNames()
     } else {
       // Reset the user and selected offerer to prevent issues when connecting
       if (storageAvailable('localStorage')) {
