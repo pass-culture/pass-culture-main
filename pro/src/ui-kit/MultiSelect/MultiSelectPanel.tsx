@@ -66,7 +66,7 @@ export const MultiSelectPanel = ({
         </div>
       )}
 
-      <div className={styles['panel-scrollable']}>
+      <div className={styles['panel-scrollable']} data-testid="panel-scrollable">
         <p className={styles['visually-hidden']} role="status">
           <span>{filteredOptions.length} résultats trouvés</span>
         </p>

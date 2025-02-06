@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -10,8 +10,7 @@ import {
   DEFAULT_MARSEILLE_STUDENTS,
   SENT_DATA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
-import { venueInterventionOptions } from 'commons/core/shared/interventionOptions'
-import { handleAllFranceDepartmentOptions } from 'commons/core/shared/utils/handleAllFranceDepartmentOptions'
+import { domtomOptions, mainlandOptions, venueInterventionOptions } from 'commons/core/shared/interventionOptions'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -94,17 +93,6 @@ export const CollectiveDataForm = ({
     validationSchema,
   })
 
-  useEffect(() => {
-    handleAllFranceDepartmentOptions(
-      formik.values.collectiveInterventionArea,
-      previousInterventionValues,
-      (value: string[]) =>
-        formik.setFieldValue('collectiveInterventionArea', value)
-    )
-
-    setPreviousInterventionValues(formik.values.collectiveInterventionArea)
-  }, [formik.values.collectiveInterventionArea])
-
   return (
     <>
       <FormikProvider value={formik}>
@@ -133,14 +121,18 @@ export const CollectiveDataForm = ({
                   <MultiSelect
                     name="collectiveStudents"
                     label="Public cible"
-                    options={studentOptions}
+                    options={[{ options: studentOptions }]}
+                    defaultOptions={studentOptions.filter((option) =>
+                      formik.values.collectiveStudents.includes(option.label)
+                    )}
                     hasSearch
-                    searchLabel='Public cible'
+                    searchLabel="Public cible"
                     onSelectedOptionsChanged={(selectedOption) =>
-                        formik.setFieldValue(
-                          'collectiveStudents',
-                          [...selectedOption.map((studentLevel) => studentLevel.label)]
-                        )
+                      formik.setFieldValue('collectiveStudents', [
+                        ...selectedOption.map(
+                          (studentLevel) => studentLevel.label
+                        ),
+                      ])
                     }
                     buttonLabel="Public cible"
                     isOptional
@@ -165,36 +157,53 @@ export const CollectiveDataForm = ({
                 }
               >
                 <FormLayout.Row>
-                <MultiSelect
+                  <MultiSelect
                     name="collectiveDomains"
                     label="Domaine artistique et culturel"
-                    options={domains}
+                    options={[{ options: domains }]}
+                    defaultOptions={domains.filter((option) =>
+                      formik.values.collectiveDomains.includes(option.id)
+                    )}
                     hasSearch
-                    searchLabel='Domaine artistique et culturel'
+                    searchLabel="Domaines artistiques et culturel"
                     onSelectedOptionsChanged={(selectedOption) =>
-                      formik.setFieldValue(
-                        'collectiveDomains',
-                        [...selectedOption.map((domain) => domain.id)]
-                      )
-                  }
-                    buttonLabel="Domaine artistique et culturel"
+                      formik.setFieldValue('collectiveDomains', [
+                        ...selectedOption.map((domain) => domain.id),
+                      ])
+                    }
+                    buttonLabel="Domaines artistiques"
                     isOptional
                   />
                 </FormLayout.Row>
 
                 <FormLayout.Row>
-                <MultiSelect
+                  <MultiSelect
                     name="collectiveInterventionArea"
                     label="Zone de mobilité"
-                    options={venueInterventionOptions}
+                    options={[
+                      {
+                        options: mainlandOptions,
+                        hasSelectAllOptions: true,
+                        selectAllLabel: 'France métropolitaine',
+                      },
+                      {
+                        options: domtomOptions,
+                      },
+                    ]}
+                    defaultOptions={venueInterventionOptions.filter((option) =>
+                      formik.values.collectiveInterventionArea.includes(
+                        option.label
+                      )
+                    )}
                     hasSelectAllOptions
                     hasSearch
-                    searchLabel='Zone de mobilité'
+                    searchLabel="Zone de mobilité"
                     onSelectedOptionsChanged={(selectedOption) =>
-                      formik.setFieldValue(
-                        'collectiveInterventionArea',
-                        [...selectedOption.map((interventionArea) => interventionArea.id)]
-                      )
+                      formik.setFieldValue('collectiveInterventionArea', [
+                        ...selectedOption.map(
+                          (interventionArea) => interventionArea.id
+                        ),
+                      ])
                     }
                     buttonLabel="Zone de mobilité"
                     isOptional
