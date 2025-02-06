@@ -59,6 +59,9 @@ def push_bank_accounts(count: int) -> None:
 
 
 def push_invoices(count: int) -> None:
+    if bool(app.redis_client.exists(conf.REDIS_PUSH_INVOICE_LOCK)):
+        return
+
     invoices_query = finance_models.Invoice.query.filter(
         finance_models.Invoice.status == finance_models.InvoiceStatus.PENDING,
     ).with_entities(finance_models.Invoice.id)
@@ -94,5 +97,7 @@ def push_invoices(count: int) -> None:
                     {"status": finance_models.InvoiceStatus.PENDING_PAYMENT},
                     synchronize_session=False,
                 )
+                time_to_sleep = finance_backend.get_time_to_sleep_between_two_sync_requests()
+                time.sleep(time_to_sleep)
     finally:
         app.redis_client.delete(conf.REDIS_PUSH_INVOICE_LOCK)

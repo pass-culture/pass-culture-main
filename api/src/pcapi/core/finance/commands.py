@@ -239,10 +239,7 @@ def import_ds_bank_information_applications(ignore_previous: bool = False, since
 @cron_decorators.log_cron_with_transaction
 def push_bank_accounts(count: int) -> None:
     if not FeatureToggle.ENABLE_BANK_ACCOUNT_SYNC:
-        logger.info(
-            "Sync bank account cronjob will not run. "
-            "Both WIP_ENABLE_NEW_FINANCE_WORKFLOW and ENABLE_BANK_ACCOUNT_SYNC features must be activated"
-        )
+        logger.info("Sync bank account cronjob will not run. ENABLE_BANK_ACCOUNT_SYNC feature must be activated")
         return
 
     finance_external.push_bank_accounts(count)
