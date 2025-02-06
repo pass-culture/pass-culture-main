@@ -48,18 +48,22 @@ export const OfferStatusCell = ({
         <StatusLabel status={status} />
         {isHeadline && (
           <Tooltip
-            content={'Offre à la une'}
+            content={<span id="headline-offer-tooltip">Offre à la une</span>}
             visuallyHidden={isTooltipHidden}
             tooltipContentClassName={styles['headline-offer-tooltip']}
           >
-            <span {...tooltipProps}>
+            <button
+              className={styles['status-column-headline-offer-button']}
+              aria-labelledby="headline-offer-tooltip"
+              {...tooltipProps}
+            >
               <SvgIcon
                 src={fullBoostedIcon}
-                alt="Offre à la une"
+                alt=""
                 width="20"
-                className={styles['status-column-boosted-icon']}
+                className={styles['status-column-headline-offer-icon']}
               />
-            </span>
+            </button>
           </Tooltip>
         )}
       </div>
