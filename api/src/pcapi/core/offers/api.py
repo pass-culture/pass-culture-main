@@ -267,7 +267,7 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
             offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api=True, offer=offer
         )
         # TODO: (pcharlet, 2025-02-04): Delete next line when body schemas contains specific EAN field outside extraData
-        updates.update({"ean": updates["extraData"].get("ean", None)})
+        updates.update({"ean": formatted_extra_data.get("ean", None)})
 
     for key, value in updates.items():
         setattr(offer, key, value)

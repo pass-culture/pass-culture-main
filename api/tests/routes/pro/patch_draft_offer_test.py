@@ -154,6 +154,7 @@ class Returns200Test:
                 "speaker": "",
                 "stageDirector": "",
                 "visa": "",
+                "ean": "",
             },
         }
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
@@ -170,6 +171,7 @@ class Returns200Test:
             "speaker": "",
             "stageDirector": "",
             "visa": "",
+            "ean": "",
         }
 
     @pytest.mark.features(WIP_EAN_CREATION=False)
