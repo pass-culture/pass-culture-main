@@ -23,3 +23,18 @@ export const Default: StoryObj<typeof DialogBuilder> = {
     ),
   },
 }
+
+export const Drawer: StoryObj<typeof DialogBuilder> = {
+  args: {
+    variant: 'drawer',
+    trigger: <Button>Cliquez ici!</Button>,
+    children: (
+      <>
+        <Dialog.Title asChild>
+          <h1>Dialog title</h1>
+        </Dialog.Title>
+        <p>lorem ipsum dolor sit amet</p>
+      </>
+    ),
+  },
+}
