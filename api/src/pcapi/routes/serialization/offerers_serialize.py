@@ -161,6 +161,9 @@ class GetOffererResponseModel(BaseModel):
         res.managedVenues = [
             GetOffererVenueResponseModel.from_orm(venue, ids_of_venues_with_offers) for venue in venues
         ]
+        # Behavior in PC Pro for a closed offerer should be the same as for a suspended validated offerer
+        res.isValidated = offerer.isValidated or offerer.isClosed  # do now show "en attente de traitement"
+        res.isActive = offerer.isActive and not offerer.isClosed
         return res
 
     class Config:
