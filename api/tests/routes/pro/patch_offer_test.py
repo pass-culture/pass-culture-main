@@ -523,7 +523,13 @@ class Returns200Test:
         }
         offer_id = offer.id
         http_client = client.with_session_auth("user@example.com")
-        with assert_num_queries(12):
+        # select user + session + user_offerer (3 queries)
+        # select offer (1 query)
+        # select mediation (1 query)
+        # select future_offer
+        # select price category
+        # update offer
+        with assert_num_queries(8):
             response = http_client.patch(f"/offers/{offer_id}", json=data)
         get_address_mock.assert_not_called()
 
