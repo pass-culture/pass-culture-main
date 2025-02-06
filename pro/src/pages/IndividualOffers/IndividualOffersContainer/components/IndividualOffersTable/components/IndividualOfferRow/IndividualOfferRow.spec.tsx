@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { forwardRef } from 'react'
 import { vi } from 'vitest'
@@ -779,20 +779,23 @@ describe('IndividualOfferRow', () => {
     })
 
     describe('when offer is headline', () => {
-      it('should display the boosted icon', () => {
+      it('should display the boosted icon', async () => {
+        vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue({
+          id: props.offer.id,
+          name: offer.name,
+          venueId: 1,
+        })
+
         renderOfferItem({
           props,
           features: ['WIP_HEADLINE_OFFER'],
-          headlineOffer: {
-            id: offer.id,
-            name: offer.name,
-            venueId: 1,
-          },
         })
 
-        expect(
-          screen.getByRole('img', { name: 'Offre à la une' })
-        ).toBeInTheDocument()
+        await waitFor(() => {
+          expect(
+            screen.getByRole('tooltip', { name: 'Offre à la une' })
+          ).toBeInTheDocument()
+        })
       })
     })
   })

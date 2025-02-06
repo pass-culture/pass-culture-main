@@ -1,27 +1,38 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
+import { useLocation } from 'react-router-dom'
 
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import fullNextIcon from 'icons/full-next.svg'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
 import { Button } from 'ui-kit/Button/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './HeadlineOfferInformationDialog.module.scss'
 import placeholderVideo from './placeholder-video-delete-me-soon.png'
 
-type HeadlineOfferInformationDialogProps = {
-  onCancel: () => void
-  open: boolean
-}
+export const HeadlineOfferInformationDialog = () => {
+  const { logEvent } = useAnalytics()
+  const location = useLocation()
 
-export const HeadlineOfferInformationDialog = ({
-  onCancel,
-  open,
-}: HeadlineOfferInformationDialogProps) => {
   return (
     <DialogBuilder
-      open={open}
-      /* istanbul ignore next */
-      onOpenChange={(open) => !open && onCancel()}
+      trigger={
+        <Button
+          className={styles['headline-offer-button']}
+          variant={ButtonVariant.TERNARY}
+          icon={fullNextIcon}
+          onClick={() => {
+            logEvent(Events.CLICKED_DISCOVERED_HEADLINE_OFFER, {
+              from: location.pathname,
+            })
+          }}
+        >
+          Découvrir
+        </Button>
+      }
     >
       <div className={styles['dialog']}>
         <div className={styles['video-container']}>
@@ -35,7 +46,8 @@ export const HeadlineOfferInformationDialog = ({
         </div>
 
         <RadixDialog.Title className={styles['dialog-title']}>
-          ✨ Nouvelle fonctionnalité : la mise à la une !
+          <span aria-hidden="true">✨</span> Nouvelle fonctionnalité : la mise à
+          la une !
         </RadixDialog.Title>
 
         <div className={styles['dialog-content']}>
@@ -61,9 +73,9 @@ export const HeadlineOfferInformationDialog = ({
           </p>
         </div>
 
-        <Button className={styles['dialog-button']} onClick={onCancel}>
-          Bien noté
-        </Button>
+        <RadixDialog.Close asChild>
+          <Button className={styles['dialog-button']}>Bien noté</Button>
+        </RadixDialog.Close>
       </div>
     </DialogBuilder>
   )

@@ -56,6 +56,14 @@
   display: inline-block;
 }
 
+.headline-offer-button {
+  color: var(--color-white);
+
+  &:focus-visible {
+    outline: rem.torem(1px) solid var(--color-white);
+    outline-offset: rem.torem(2px);
+  }
+}
 
 @media screen and (min-width: size.$tablet) {
   .video-container {

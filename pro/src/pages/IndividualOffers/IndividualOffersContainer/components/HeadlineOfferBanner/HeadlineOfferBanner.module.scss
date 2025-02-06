@@ -31,16 +31,17 @@
   margin-bottom: rem.torem(16px);
 }
 
-.headline-offer-button {
-  color: var(--color-white);
-}
-
 .headline-offer-img {
   display: none;
 }
 
 .headline-offer-close-button {
   color: var(--color-white);
+
+  &:focus-visible {
+    outline: rem.torem(1px) solid var(--color-white);
+    outline-offset: rem.torem(2px);
+  }
 }
 
 // magic value but anyway we will burn this component
