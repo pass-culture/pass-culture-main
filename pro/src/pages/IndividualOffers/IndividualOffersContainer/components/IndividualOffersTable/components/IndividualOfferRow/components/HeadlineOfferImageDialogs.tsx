@@ -36,7 +36,10 @@ export const HeadlineOfferImageDialogs = ({
 }: HeadlineOfferImageDialogsProps) => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const { mutate } = useSWRConfig()
-  const { upsertHeadlineOffer } = useIndividualOffersContext()
+
+  const { headlineOffer, upsertHeadlineOffer } = useIndividualOffersContext()
+  const isReplacingHeadlineOffer = !!headlineOffer?.id
+
   const [isImageUploaderOpen, setIsImageUploaderOpen] = useState(false)
   const [isLastDialogOpen, setIsLastDialogOpen] = useState(false)
   const notify = useNotification()
@@ -128,7 +131,13 @@ export const HeadlineOfferImageDialogs = ({
           setIsLastDialogOpen(false)
         }}
         onConfirm={async () => {
-          await upsertHeadlineOffer(offer.id)
+          await upsertHeadlineOffer({
+            offerId: offer.id,
+            context: {
+              actionType: isReplacingHeadlineOffer ? 'replace' : 'add',
+              requiredImageUpload: true
+            },
+          })
           setIsLastDialogOpen(false)
         }}
         title="Votre offre va être mise à la une !"

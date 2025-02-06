@@ -1,5 +1,8 @@
 import { useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import fullNextIcon from 'icons/full-next.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -15,6 +18,8 @@ type HeadlineOfferBannerProps = {
 
 export const HeadlineOfferBanner = ({ close }: HeadlineOfferBannerProps) => {
   const [openDialog, setOpenDialog] = useState(false)
+  const { logEvent } = useAnalytics()
+  const location = useLocation()
 
   return (
     <div className={styles['headline-offer-banner']}>
@@ -32,6 +37,9 @@ export const HeadlineOfferBanner = ({ close }: HeadlineOfferBannerProps) => {
           icon={fullNextIcon}
           onClick={() => {
             setOpenDialog(true)
+            logEvent(Events.CLICKED_DISCOVERED_HEADLINE_OFFER, {
+              from: location.pathname,
+            })
           }}
         >
           Découvrir

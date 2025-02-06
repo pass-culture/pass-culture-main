@@ -30,7 +30,10 @@ export function HeadlineOfferCell({
         setIsOfferWithoutImageDialogOpen(true)
       } else {
         if (!headlineOffer?.id) {
-          await upsertHeadlineOffer(offer.id)
+          await upsertHeadlineOffer({
+            offerId: offer.id,
+            context: { actionType: 'add' },
+          })
         } else {
           setIsConfirmReplacementDialogOpen(true)
         }
