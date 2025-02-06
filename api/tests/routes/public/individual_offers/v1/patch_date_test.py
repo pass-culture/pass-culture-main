@@ -11,6 +11,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional import sendinblue_template_ids
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 from tests.conftest import TestClient
@@ -408,3 +409,36 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 404
+
+    def test_patch_date_with_the_same_date_should_not_trigger_any_notification(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        event = offers_factories.EventOfferFactory(
+            venue=venue_provider.venue,
+            lastProvider=venue_provider.provider,
+        )
+
+        price_category = offers_factories.PriceCategoryFactory(offer=event)
+
+        start = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
+        stock = offers_factories.EventStockFactory(
+            offer=event,
+            priceCategory=price_category,
+            bookingLimitDatetime=start - datetime.timedelta(days=5),
+            beginningDatetime=start,
+        )
+
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=event.id, stock_id=stock.id),
+            json={"beginningDatetime": start.isoformat()},
+        )
+
+        assert response.status_code == 200
+
+        parsed_date = datetime.datetime.fromisoformat(response.json["beginningDatetime"])
+
+        assert parsed_date.tzinfo == datetime.timezone.utc
+        assert parsed_date.date() == start.date()
+
+        db.session.refresh(stock)
+        assert stock.beginningDatetime == start.replace(tzinfo=None)

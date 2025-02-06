@@ -647,6 +647,12 @@ class EventStockEdition(BaseStockEdition):
     price_category_id: int | None = fields.PRICE_CATEGORY_ID
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
+    @pydantic_v1.validator("beginning_datetime")
+    def format_beginning_datetime(cls, value: datetime.datetime | None) -> datetime.datetime | None:
+        if not value:
+            return None
+        return serialization_utils.as_utc_without_timezone(value)
+
 
 class EventOfferEdition(OfferEditionBase):
     category_related_fields: event_category_edition_fields | None = pydantic_v1.Field(
