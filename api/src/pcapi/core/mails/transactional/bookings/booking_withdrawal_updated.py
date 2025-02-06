@@ -1,3 +1,5 @@
+from functools import partial
+
 import sqlalchemy as sqla
 
 from pcapi.core import mails
@@ -10,6 +12,7 @@ from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
+from pcapi.repository import on_commit
 from pcapi.tasks.mails_tasks import send_withdrawal_detail_changed_emails
 from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailBookingDetail
 from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailRequest
@@ -67,7 +70,12 @@ def send_email_for_each_ongoing_booking(offer: Offer) -> None:
                 offer_address=booking.stock.offer.fullAddress,
             )
         )
-    send_withdrawal_detail_changed_emails.delay(mails_request)
+    on_commit(
+        partial(
+            send_withdrawal_detail_changed_emails.delay,
+            payload=mails_request,
+        )
+    )
 
 
 def send_booking_withdrawal_updated(

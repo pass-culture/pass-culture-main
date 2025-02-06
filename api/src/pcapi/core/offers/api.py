@@ -616,12 +616,7 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
         )
         if send_email_notification and withdrawal_updated:
             for offer in query_to_update.all():
-                on_commit(
-                    partial(
-                        transactional_mails.send_email_for_each_ongoing_booking,
-                        offer,
-                    ),
-                )
+                transactional_mails.send_email_for_each_ongoing_booking(offer)
 
 
 def archive_collective_offers(
