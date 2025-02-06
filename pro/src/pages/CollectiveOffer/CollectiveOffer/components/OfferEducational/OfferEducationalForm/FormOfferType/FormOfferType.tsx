@@ -82,7 +82,8 @@ export const FormOfferType = ({
               name="domains"
               hasSearch
               searchLabel='Recherche'
-              options={domainsOptions}
+              options={[{options: domainsOptions}]}
+              defaultOptions={domainsOptions.filter((option) => values.domains.includes(option.id))}
               buttonLabel='Domaines artistiques'
               onSelectedOptionsChanged={(selectedOptions) => setFieldValue('domains', [...selectedOptions.map((elm) => Number(elm.id))])}
               disabled={disableForm}
@@ -91,7 +92,8 @@ export const FormOfferType = ({
         )}
         <FormLayout.Row>
           <MultiSelect
-            options={eacFormatOptions}
+            options={[{options: eacFormatOptions}]}
+            defaultOptions={eacFormatOptions.filter((option) => values.formats?.includes(option.id))}
             label="Ajoutez un ou plusieurs formats"
             buttonLabel='Formats'
             hasSearch

@@ -8,8 +8,11 @@ import {
 } from 'apiClient/v1'
 import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
-import { handleAllFranceDepartmentOptions } from 'commons/core/shared/utils/handleAllFranceDepartmentOptions'
+import {
+  domtomOptions,
+  mainlandOptions,
+  offerInterventionOptions,
+} from 'commons/core/shared/interventionOptions'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -47,9 +50,6 @@ export const FormPracticalInformation = ({
 
   const [currentVenue, setCurrentVenue] =
     useState<GetEducationalOffererVenueResponseModel | null>(null)
-  const [previousInterventionValues, setPreviousInterventionValues] = useState<
-    string[] | null
-  >(null)
 
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
@@ -137,16 +137,6 @@ export const FormPracticalInformation = ({
     setVenue()
   }, [currentOfferer, values.eventAddress])
 
-  useEffect(() => {
-    handleAllFranceDepartmentOptions(
-      values.interventionArea,
-      previousInterventionValues,
-      (value: string[]) => setFieldValue('interventionArea', value)
-    )
-
-    setPreviousInterventionValues(values.interventionArea)
-  }, [values.interventionArea])
-
   return (
     <FormLayout.Section title="Où se déroule votre offre ?">
       <FormLayout.Row className={styles['address-radio-group']}>
@@ -189,16 +179,34 @@ export const FormPracticalInformation = ({
             </InfoBox>
           }
         >
-          <MultiSelect 
+          <MultiSelect
             label={INTERVENTION_AREA_LABEL}
             name="interventionArea"
-            buttonLabel='Zone de mobilité'
-            options={offerInterventionOptions}
+            buttonLabel="Zone de mobilité"
+            options={[
+              {
+                options: mainlandOptions,
+                hasSelectAllOptions: true,
+                selectAllLabel: 'France métropolitaine'
+              },
+              {
+                options: domtomOptions,
+              }
+            ]}
+            defaultOptions={offerInterventionOptions.filter((option) =>
+              values.interventionArea.includes(option.id)
+            )}
             disabled={disableForm}
             hasSearch
-            searchLabel='Rehercher'
+            searchLabel="Rechercher"
             hasSelectAllOptions
-            onSelectedOptionsChanged={(selectedOptions) => setFieldValue('interventionArea', selectedOptions.map((elm) => elm.id))}
+            onSelectedOptionsChanged={(selectedOption) =>
+              setFieldValue('collectiveInterventionArea', [
+                ...selectedOption.map(
+                  (interventionArea) => interventionArea.id
+                ),
+              ])
+            }
           />
         </FormLayout.Row>
       )}
