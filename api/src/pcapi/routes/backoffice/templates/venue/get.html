@@ -63,29 +63,31 @@
                     {{ region }}
                   </p>
                 {% endif %}
-                {% if venue.street %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Adresse :</span>
-                    {{ venue.street }}
-                  </p>
-                {% endif %}
-                {% if venue.postalCode %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Code postal :</span>
-                    {{ venue.postalCode }}
-                  </p>
-                {% endif %}
-                {% if venue.city %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Ville :</span>
-                    {{ venue.city }}
-                  </p>
-                {% endif %}
-                {% if venue.latitude and venue.longitude %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Coordonnées :</span>
-                    {{ venue.latitude }} (latitude) / {{ venue.longitude }} (longitude)
-                  </p>
+                {% if address %}
+                  {% if address.street %}
+                    <p class="mb-1">
+                      <span class="fw-bold">Adresse :</span>
+                      {{ address.street }}
+                    </p>
+                  {% endif %}
+                  {% if address.postalCode %}
+                    <p class="mb-1">
+                      <span class="fw-bold">Code postal :</span>
+                      {{ address.postalCode }}
+                    </p>
+                  {% endif %}
+                  {% if address.city %}
+                    <p class="mb-1">
+                      <span class="fw-bold">Ville :</span>
+                      {{ address.city }}
+                    </p>
+                  {% endif %}
+                  {% if address.latitude and address.longitude %}
+                    <p class="mb-1">
+                      <span class="fw-bold">Coordonnées :</span>
+                      {{ address.latitude }} (latitude) / {{ address.longitude }} (longitude)
+                    </p>
+                  {% endif %}
                 {% endif %}
                 {% if venue.bookingEmail %}
                   <p class="mb-1">
