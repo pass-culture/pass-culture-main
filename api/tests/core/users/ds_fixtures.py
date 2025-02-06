@@ -893,6 +893,77 @@ DS_RESPONSE_EMAIL_CHANGED_WITH_SET_WITHOUT_CONTINUATION = {
     }
 }
 
+DS_RESPONSE_FIRSTNAME_CHANGED_WITH_SET_WITHOUT_CONTINUATION = {
+    "demarche": {
+        "number": 104118,
+        "dossiers": {
+            "pageInfo": {
+                "hasNextPage": False,
+                "endCursor": "MjAyNC0xMS0yNlQwODozMTozNS4yNzgyMDMwMDBaOzIxMTYzNTU5",
+            },
+            "nodes": [
+                {
+                    "id": "UHJvY4VkdXKlLTI5NTgw",
+                    "number": 21163559,
+                    "archived": False,
+                    "state": "en_instruction",
+                    "dateDerniereModification": "2024-12-10T17:12:00+01:00",
+                    "dateDepot": "2025-01-16T09:31:35+01:00",
+                    "datePassageEnConstruction": "2025-01-16T09:31:35+01:00",
+                    "datePassageEnInstruction": "2025-01-16T10:31:35+01:00",
+                    "dateTraitement": None,
+                    "dateExpiration": "2025-11-26T09:31:35+01:00",
+                    "dateSuppressionParUsager": None,
+                    "dateDerniereCorrectionEnAttente": None,
+                    "dateDerniereModificationChamps": "2024-12-10T17:12:00+01:00",
+                    "dateDerniereModificationAnnotations": "2025-01-16T09:24:22+01:00",
+                    "usager": {"email": "beneficiaire@example.com"},
+                    "prenomMandataire": None,
+                    "nomMandataire": None,
+                    "deposeParUnTiers": False,
+                    "demandeur": {
+                        "nom": "B\u00e9n\u00e9ficiaire",
+                        "prenom": "Jeune",
+                        "email": None,
+                    },
+                    "demarche": {"revision": {"id": "UHJvY2VkdXJlUmV2aXNpb24tMTYyOTUz"}},
+                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@example.com"}],
+                    "champs": [
+                        {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
+                        {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-06-05"},
+                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["changement de pr\u00e9nom"]},
+                        {"id": "Q2hhbXAtMzM0NjEzOA==", "grantType": "piece_justificative"},
+                        {"id": "Q2hhbXAtMzM0NjE0Mw==", "grantType": "piece_justificative"},
+                        {"id": "Q2hhbXAtMzM2MDIwNA==", "value": "Nouveau"},
+                        {"id": "Q2hhbXAtMzM0NjIzNQ==", "value": None},
+                        {"id": "Q2hhbXAtMzM0NjIzOA==", "checked": True},
+                        {"id": "Q2hhbXAtMzM0NjI0MQ==", "checked": True},
+                        {"id": "Q2hhbXAtMzM0NjI1Mw==", "checked": True},
+                        {"id": "Q2hhbXAtMzM0NjI1NA==", "value": None},
+                    ],
+                    "messages": [
+                        {
+                            "email": "contact@demarches-simplifiees.fr",
+                            "createdAt": "2025-01-16T09:31:35+01:00",
+                            "correction": None,
+                        },
+                        {
+                            "email": "instructeur@example.com",
+                            "createdAt": "2024-12-12T12:12:00+01:00",
+                            "correction": None,
+                        },
+                        {
+                            "email": "beneficiaire@example.com",
+                            "createdAt": "2024-12-07T12:12:00+01:00",
+                            "correction": None,
+                        },
+                    ],
+                }
+            ],
+        },
+    }
+}
+
 DS_RESPONSE_EMAIL_CHANGED_FROM_DRAFT_WITH_SET_WITHOUT_CONTINUATION = {
     "demarche": {
         "number": 104118,
