@@ -44,11 +44,14 @@ DS_CHOICE_TO_UPDATE_TYPE = {
     "compte a les mêmes informations": users_models.UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO,
 }
 
-CORRECTION_MESSAGE = """Nous avons bien reçu ta demande, mais nous n'avons pas pu la finaliser car la photo que tu nous as envoyée a été refusée.
-            Pour que nous puissions valider ton authentification, il faudrait renvoyer une nouvelle photo qui respecte ces critères : 
-            Une photo de toi tenant ta carte d'identité (un selfie).
-            
-            Assure-toi d'être dans un endroit bien éclairé, et que ton visage ainsi que ta pièce d'identité soient bien visibles."""
+CORRECTION_MESSAGE = """Nous avons bien reçu ta demande, mais nous n’avons pas pu la finaliser car la photo que tu nous as envoyée a été refusée.
+Elle était peut-être floue, mal cadrée ou trop sombre. Pas d’inquiétude, cela peut arriver !
+
+Pour que nous puissions valider ton authentification, il faudrait renvoyer une nouvelle photo qui respecte ces critères :
+Une photo de toi tenant ta carte d’identité (un selfie).
+Assure-toi d’être dans un endroit bien éclairé, et que ton visage ainsi que ta pièce d’identité soient bien visibles.
+
+Attention : Tu disposes de 30 jours pour nous transmettre ce justificatif. Si tu as besoin de conseils pour prendre une photo conforme, tu peux consulter notre article https://aide.passculture.app/hc/fr/articles/4411991953681--Jeunes-Comment-faire-pour-me-prendre-en-photo-avec-ma-pi%C3%A8ce-d-identit%C3%A9"""
 
 
 def sync_instructor_ids(procedure_number: int) -> None:
