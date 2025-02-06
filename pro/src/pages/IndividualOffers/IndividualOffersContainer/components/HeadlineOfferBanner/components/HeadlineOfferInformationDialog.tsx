@@ -6,7 +6,6 @@ import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './HeadlineOfferInformationDialog.module.scss'
-import placeholderVideo from './placeholder-video-delete-me-soon.png'
 
 type HeadlineOfferInformationDialogProps = {
   onCancel: () => void
@@ -25,13 +24,15 @@ export const HeadlineOfferInformationDialog = ({
     >
       <div className={styles['dialog']}>
         <div className={styles['video-container']}>
-          {/* // TODO feature implement explicative video here */}
-          <img
-            src={placeholderVideo}
-            alt=""
-            className={styles['placeholder-video']}
-            role="presentation"
-          />
+          <iframe
+            width="393"
+            height="228"
+            className={styles['video']}
+            src="https://www.youtube.com/embed/Tg8ETHWG_Zc"
+            title="Vidéo comment mettre une offre à la une"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+          ></iframe>
         </div>
 
         <RadixDialog.Title className={styles['dialog-title']}>

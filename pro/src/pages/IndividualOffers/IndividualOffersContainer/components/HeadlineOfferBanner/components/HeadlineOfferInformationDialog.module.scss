@@ -64,10 +64,10 @@
     border-radius: rem.torem(10px);
   }
 
-  .placeholder-video {
+  .video {
     position: absolute;
     top: -4%;
-    max-width: rem.torem(390px);
     border-radius: rem.torem(6px);
+    border: none;
   }
 }
