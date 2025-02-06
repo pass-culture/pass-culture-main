@@ -19,12 +19,19 @@ export type Option = {
   label: string
 }
 
+export interface Options {
+  options: Option[]
+  selectAllLabel?: string
+  hasSelectAllOptions?: boolean
+  checked?: boolean
+}
+
 /**
  * Props for the MultiSelect component.
  */
 type MultiSelectProps = {
   /** Array of available options */
-  options: Option[]
+  options: Options[]
   /** Array of initially selected options */
   defaultOptions?: Option[]
   /** Label for the MultiSelect field */
@@ -106,7 +113,29 @@ export const MultiSelect = ({
 }: MultiSelectProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedItems, setSelectedItems] = useState<Option[]>(defaultOptions)
-  const isSelectAllChecked = selectedItems.length === options.length
+  const [checkboxStates, setCheckboxStates] = useState(() => {
+    return options.reduce(
+      (acc, group, index) => {
+        if (group.hasSelectAllOptions) {
+          acc[index] = group.checked || false
+        }
+        return acc
+      },
+      {} as Record<number, boolean>
+    )
+  })
+
+  const totalOptionsCount = options.reduce(
+    (total, group) => total + group.options.length,
+    0
+  )
+
+  const isSelectAllChecked = selectedItems.length === totalOptionsCount
+
+  const mergedOptions = options.reduce(
+    (acc, group) => [...acc, ...group.options],
+    [] as Option[]
+  )
 
   const containerRef = useRef<HTMLDivElement>(null)
   const id = useId()
@@ -123,12 +152,52 @@ export const MultiSelect = ({
       ? selectedItems.filter((i) => i.id !== item.id)
       : [...selectedItems, item]
 
+      options.forEach((group, index) => {
+        if (group.options.some((opt) => opt.id === item.id)) {
+          const allGroupItemsSelected = group.options.every(groupItem => 
+            updatedItems.some(selectedItem => selectedItem.id === groupItem.id)
+          )
+    
+          setCheckboxStates((prev) => ({
+            ...prev,
+            [index]: allGroupItemsSelected,
+          }))
+        }
+      })
+
     updateSelectedItems(updatedItems)
   }
 
-  const handleSelectAll = () => {
-    const updatedItems = isSelectAllChecked ? [] : options
-    updateSelectedItems(updatedItems)
+  const handleSelectAll = (option: Option[], index?: number) => {
+    if (index !== undefined) {
+      setCheckboxStates((prev) => ({
+        ...prev,
+        [index]: !prev[index],
+      }))
+
+      const optionIds = new Set(option.map((opt) => opt.id))
+      const remainingItems = selectedItems.filter(
+        (item) => !optionIds.has(item.id)
+      )
+
+      const mergedItems = [...selectedItems, ...option].filter(
+        (item, index, self) => index === self.findIndex((t) => t.id === item.id)
+      )
+
+      updateSelectedItems(checkboxStates[index] ? remainingItems : mergedItems)
+    } else {
+      const updatedItems = isSelectAllChecked ? [] : option
+      setCheckboxStates((prev) =>
+        Object.keys(prev).reduce(
+          (acc, key) => ({
+            ...acc,
+            [key]: isSelectAllChecked ? false : true,
+          }),
+          {}
+        )
+      )
+      updateSelectedItems(updatedItems)
+    }
   }
 
   const handleRemoveTag = (itemId: string) => {
@@ -153,7 +222,13 @@ export const MultiSelect = ({
   useOnClickOrFocusOutside(containerRef, () => setIsOpen(false))
 
   return (
-    <FieldLayout label={label} name={name} error={error} showError={!!error} isOptional={isOptional}>
+    <FieldLayout
+      label={label}
+      name={name}
+      error={error}
+      showError={!!error}
+      isOptional={isOptional}
+    >
       <fieldset className={styles.container}>
         <div ref={containerRef}>
           <MultiSelectTrigger
@@ -171,12 +246,14 @@ export const MultiSelect = ({
             <MultiSelectPanel
               id={id}
               label={label}
-              options={options.map((option) => ({
+              mergedOptions={mergedOptions.map((option) => ({
                 ...option,
                 checked: selectedItems.some((item) => item.id === option.id),
               }))}
+              options={options}
               onOptionSelect={handleSelectItem}
-              onSelectAll={handleSelectAll}
+              onSelectAllOptions={handleSelectAll}
+              checkboxStates={checkboxStates}
               isAllChecked={isSelectAllChecked}
               hasSearch={hasSearch}
               searchLabel={searchLabel}
