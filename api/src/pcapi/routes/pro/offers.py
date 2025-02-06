@@ -24,7 +24,6 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.core.offers.validation import check_product_cgu_and_offerer
 from pcapi.models import api_errors
-from pcapi.models import db
 from pcapi.repository import atomic
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
@@ -349,34 +348,31 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
     api=blueprint.pro_private_schema,
     response_model=offers_serialize.GetIndividualOfferResponseModel,
 )
+@atomic()
 def patch_publish_offer(
     body: offers_serialize.PatchOfferPublishBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
-    with repository.transaction():
-        with db.session.no_autoflush:
-            try:
-                offerer = offerers_repository.get_by_offer_id(body.id)
-            except offerers_exceptions.CannotFindOffererForOfferId:
-                raise api_errors.ApiErrors(
-                    {"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404
-                )
+    try:
+        offerer = offerers_repository.get_by_offer_id(body.id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise api_errors.ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
 
-            rest.check_user_has_access_to_offerer(current_user, offerer.id)
+    rest.check_user_has_access_to_offerer(current_user, offerer.id)
 
-            offer = offers_repository.get_offer_and_extradata(body.id)
-            if offer is None:
-                raise api_errors.ApiErrors({"offer": ["Cette offre n’existe pas"]}, status_code=404)
-            if not offers_repository.offer_has_bookable_stocks(offer.id):
-                raise api_errors.ApiErrors({"offer": "Cette offre n’a pas de stock réservable"}, 400)
+    offer = offers_repository.get_offer_and_extradata(body.id)
+    if offer is None:
+        raise api_errors.ApiErrors({"offer": ["Cette offre n’existe pas"]}, status_code=404)
+    if not offers_repository.offer_has_bookable_stocks(offer.id):
+        raise api_errors.ApiErrors({"offer": "Cette offre n’a pas de stock réservable"}, 400)
 
-            try:
-                offers_api.publish_offer(offer, current_user, publication_date=body.publicationDate)
-            except exceptions.FutureOfferException as exc:
-                raise api_errors.ApiErrors(exc.errors, status_code=400)
-            except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as exc:
-                raise api_errors.ApiErrors(exc.errors, status_code=400)
+    try:
+        offers_api.publish_offer(offer, current_user, publication_date=body.publicationDate)
+    except exceptions.FutureOfferException as exc:
+        raise api_errors.ApiErrors(exc.errors, status_code=400)
+    except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as exc:
+        raise api_errors.ApiErrors(exc.errors, status_code=400)
 
-            return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/offers/active-status", methods=["PATCH"])
