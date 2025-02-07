@@ -4270,14 +4270,14 @@
                         "type": "array"
                     },
                     "isActive": {
-                        "description": "Is your offer active",
+                        "description": "[DEPRECATED] Is your offer active",
                         "example": true,
                         "nullable": true,
                         "title": "Isactive",
                         "type": "boolean"
                     },
                     "isSoldOut": {
-                        "description": "Is your offer sold out",
+                        "description": "[DEPRECATED] Is your offer sold out",
                         "example": false,
                         "title": "Issoldout",
                         "type": "boolean"
@@ -5843,7 +5843,7 @@
                         "type": "array"
                     },
                     "isActive": {
-                        "description": "Is your offer active",
+                        "description": "[DEPRECATED] Is your offer active",
                         "example": true,
                         "nullable": true,
                         "title": "Isactive",
@@ -6082,7 +6082,7 @@
                         "type": "string"
                     },
                     "isActive": {
-                        "description": "Is your offer active",
+                        "description": "[DEPRECATED] Is your offer active",
                         "example": true,
                         "title": "Isactive",
                         "type": "boolean"
