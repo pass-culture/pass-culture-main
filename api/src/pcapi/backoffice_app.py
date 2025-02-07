@@ -61,7 +61,7 @@ with app.app_context():
     import pcapi.routes.backoffice.error_handlers  # pylint: disable=unused-import
     import pcapi.utils.login_manager
 
-    preprocess_scss(settings.BACKOFFICE_WATCH_SCSS_CHANGE)
+    preprocess_scss()
     install_routes(app)
     app.register_blueprint(backoffice_web, url_prefix="/")
 
