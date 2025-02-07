@@ -8,10 +8,8 @@ import fullEditIcon from 'icons/full-edit.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { CinemaProviderFormDialog } from './CinemaProviderFormDialog'
-import style from './ProviderActionButton.module.scss'
 import { CinemaProviderParametersValues } from './types'
 
 export interface CinemaProviderEditProps {
@@ -63,12 +61,7 @@ export const CinemaProviderEdit = ({
   return (
     <DialogBuilder
       trigger={
-        <Button variant={ButtonVariant.TERNARY}>
-          <SvgIcon
-            src={fullEditIcon}
-            alt=""
-            className={style['provider-action-icon']}
-          />
+        <Button variant={ButtonVariant.TERNARY} icon={fullEditIcon}>
           Paramétrer
         </Button>
       }

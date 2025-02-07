@@ -9,9 +9,7 @@ import fullPauseIcon from 'icons/full-pause.svg'
 import fullPlayIcon from 'icons/full-play.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import style from './ProviderActionButton.module.scss'
 import { ToggleVenueProviderStatusDialog } from './ToggleVenueProviderStatusDialog'
 
 interface ToggleVenueProviderStatusButtonProps {
@@ -55,24 +53,18 @@ export const ToggleVenueProviderStatusButton = ({
         <Button
           onClick={() => setIsModalOpen(true)}
           variant={ButtonVariant.TERNARY}
+          icon={fullPauseIcon}
+          iconAlt="Mettre en pause la synchronisation"
         >
-          <SvgIcon
-            src={fullPauseIcon}
-            alt="Mettre en pause la synchronisation"
-            className={style['provider-action-icon']}
-          />
           Mettre en pause
         </Button>
       ) : (
         <Button
           onClick={() => setIsModalOpen(true)}
           variant={ButtonVariant.TERNARY}
+          icon={fullPlayIcon}
+          iconAlt="Réactiver la synchronisation"
         >
-          <SvgIcon
-            src={fullPlayIcon}
-            alt="Réactiver la synchronisation"
-            className={style['provider-action-icon']}
-          />
           Réactiver
         </Button>
       )}

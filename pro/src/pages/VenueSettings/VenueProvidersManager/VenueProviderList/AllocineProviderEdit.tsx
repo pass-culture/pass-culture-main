@@ -13,12 +13,10 @@ import fullEditIcon from 'icons/full-edit.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { FormValuesProps } from '../AllocineProviderForm/AllocineProviderForm'
 
 import { AllocineProviderFormDialog } from './AllocineProviderFormDialog'
-import style from './ProviderActionButton.module.scss'
 
 export interface AllocineProviderEditProps {
   venueProvider: VenueProviderResponse
@@ -70,12 +68,7 @@ export const AllocineProviderEdit = ({
   return (
     <DialogBuilder
       trigger={
-        <Button variant={ButtonVariant.TERNARY}>
-          <SvgIcon
-            src={fullEditIcon}
-            alt=""
-            className={style['provider-action-icon']}
-          />
+        <Button variant={ButtonVariant.TERNARY} icon={fullEditIcon}>
           Paramétrer
         </Button>
       }
