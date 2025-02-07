@@ -1,5 +1,5 @@
+import { useHeadlineOfferContext } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import strokeCloseIcon from 'icons/stroke-close.svg'
-import { useIndividualOffersContext } from 'pages/IndividualOffers/context/IndividualOffersContext'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -8,12 +8,11 @@ import { HeadlineOfferInformationDialog } from './components/HeadlineOfferInform
 import styles from './HeadlineOfferBanner.module.scss'
 
 export const HeadlineOfferBanner = () => {
-  const { isHeadlineOfferBannerOpen, closeHeadlineOfferBanner } = useIndividualOffersContext()
+  const { isHeadlineOfferBannerOpen, closeHeadlineOfferBanner } = useHeadlineOfferContext()
 
   if (!isHeadlineOfferBannerOpen) {
     return null
   }
-
 
   return (
     <div className={styles['headline-offer-banner']}>

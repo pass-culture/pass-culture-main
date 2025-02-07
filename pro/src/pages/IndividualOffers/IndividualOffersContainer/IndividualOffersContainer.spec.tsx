@@ -8,6 +8,7 @@ import {
   ListOffersOfferResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
+import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   ALL_OFFERER_ADDRESS_OPTION,
   ALL_VENUES_OPTION,
@@ -15,7 +16,9 @@ import {
 } from 'commons/core/Offers/constants'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import * as useNotification from 'commons/hooks/useNotification'
-import { listOffersOfferFactory } from 'commons/utils/factories/individualApiFactories'
+import { listOffersOfferFactory ,
+  venueListItemFactory,
+} from 'commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from 'commons/utils/factories/offererAddressFactories'
 import {
   sharedCurrentUserFactory,
@@ -27,7 +30,6 @@ import {
 } from 'commons/utils/renderWithProviders'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
-import { IndividualOffersContextProvider } from '../context/IndividualOffersContext'
 
 import {
   IndividualOffersContainer,
@@ -44,9 +46,9 @@ const renderOffers = (
 ) => {
   const user = sharedCurrentUserFactory()
   renderWithProviders(
-    <IndividualOffersContextProvider isHeadlineOfferAllowedForOfferer={true}>
+    <HeadlineOfferContextProvider>
       <IndividualOffersContainer {...props} />
-    </IndividualOffersContextProvider>,
+    </HeadlineOfferContextProvider>,
 
     {
       user,
@@ -117,6 +119,7 @@ vi.mock('apiClient/api', () => ({
     deleteDraftOffers: vi.fn(),
     patchAllOffersActiveStatus: vi.fn(),
     getOffererHeadlineOffer: vi.fn(),
+    getVenues: vi.fn(),
   },
 }))
 
@@ -654,7 +657,12 @@ describe('IndividualOffersScreen', () => {
     )
   })
 
-  it('should display healine offer block', async () => {
+  it('should display headline offer block when feature is available', async () => {
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [
+        venueListItemFactory({ name: 'Une venue physique & permanente' }),
+      ]
+    })
     vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue({
       id: 42,
       name: 'My offer',

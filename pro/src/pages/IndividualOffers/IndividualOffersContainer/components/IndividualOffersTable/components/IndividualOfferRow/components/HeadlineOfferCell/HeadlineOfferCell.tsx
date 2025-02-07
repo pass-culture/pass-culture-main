@@ -1,6 +1,6 @@
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
+import { useHeadlineOfferContext } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import fullBoostedIcon from 'icons/full-boosted.svg'
-import { useIndividualOffersContext } from 'pages/IndividualOffers/context/IndividualOffersContext'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DropdownItem } from 'ui-kit/DropdownMenuWrapper/DropdownItem'
@@ -20,7 +20,7 @@ export function HeadlineOfferCell({
   setIsOfferWithoutImageDialogOpen,
 }: HeadlineOfferCellProps) {
   const { headlineOffer, upsertHeadlineOffer, removeHeadlineOffer } =
-    useIndividualOffersContext()
+    useHeadlineOfferContext()
 
   async function onSelect() {
     if (offer.id === headlineOffer?.id) {

@@ -1,4 +1,5 @@
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
+import { useHeadlineOfferContext } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   OFFER_STATUS_DRAFT,
   OFFER_WIZARD_MODE,
@@ -10,7 +11,6 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
 import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferNameCell'
 import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
-import { useIndividualOffersContext } from 'pages/IndividualOffers/context/IndividualOffersContext'
 
 import { AddressCell } from './components/AddressCell'
 import { IndividualActionsCells } from './components/IndividualActionsCells'
@@ -30,9 +30,8 @@ export const IndividualOfferRow = ({
   selectOffer,
 }: IndividualOfferRowProps) => {
   const rowId = `collective-offer-${offer.id}`
-  const { headlineOffer } = useIndividualOffersContext()
+  const { headlineOffer, isHeadlineOfferAvailable } = useHeadlineOfferContext()
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-  const offerHeadlineEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
 
   const offerLink = getIndividualOfferUrl({
     offerId: offer.id,
@@ -97,7 +96,7 @@ export const IndividualOfferRow = ({
         status={offer.status}
         className={styles['individual-cell-status']}
         displayLabel
-        isHeadline={offerHeadlineEnabled && offer.id === headlineOffer?.id}
+        isHeadline={isHeadlineOfferAvailable && offer.id === headlineOffer?.id}
       />
       <IndividualActionsCells
         rowId={rowId}

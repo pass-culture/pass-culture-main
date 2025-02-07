@@ -1,6 +1,6 @@
+import { useHeadlineOfferContext } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { WEBAPP_URL } from 'commons/utils/config'
 import fullLinkIcon from 'icons/full-link.svg'
-import { useIndividualOffersContext } from 'pages/IndividualOffers/context/IndividualOffersContext'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
@@ -8,11 +8,12 @@ import { Thumb } from 'ui-kit/Thumb/Thumb'
 import styles from './HeadlineOffer.module.scss'
 
 export function HeadlineOffer() {
-  const { headlineOffer } = useIndividualOffersContext()
+  const {isHeadlineOfferAvailable,  headlineOffer } = useHeadlineOfferContext()
 
-  if (!headlineOffer) {
+  if (!isHeadlineOfferAvailable || !headlineOffer) {
     return
   }
+
   const venuePreviewLink = `${WEBAPP_URL}/lieu/${headlineOffer.venueId}`
 
   return (

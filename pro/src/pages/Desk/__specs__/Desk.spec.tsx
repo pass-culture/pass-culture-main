@@ -1,20 +1,36 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { Route, Routes } from 'react-router-dom'
 
-import { apiContremarque } from 'apiClient/api'
+
+import { api, apiContremarque } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { defaultGetBookingResponse } from 'commons/utils/factories/individualApiFactories'
+import { venueListItemFactory , defaultGetBookingResponse } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { Desk } from '../Desk'
 
-const renderDesk = () => {
-  renderWithProviders(<Desk />)
+const renderDesk = ({ isHeadlineOfferFeatureEnabled = false } = {}) => {
+  renderWithProviders(
+    <Routes>
+      <Route path="/guichet" element={<Desk />} />
+    </Routes>,
+    {
+      initialRouterEntries: ["/guichet"],
+      features: [
+        ...(isHeadlineOfferFeatureEnabled ? ['WIP_HEADLINE_OFFER'] : []),
+      ]
+    }
+  )
 }
 
-describe(' Desk', () => {
+describe('Desk', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+  })
+
   describe('should validate while user is typing', () => {
     it('should remove QRcode prefix', async () => {
       renderDesk()
@@ -23,9 +39,12 @@ describe(' Desk', () => {
       expect(contremarque).toHaveValue('ZERRZ')
     })
 
-    it('should display default messages and disable submit button', () => {
+    it('should display default messages and disable submit button', async () => {
       renderDesk()
-      expect(screen.getByText('Saisissez une contremarque')).toBeInTheDocument()
+      await waitFor(async () => {
+        const message = await screen.findByText('Saisissez une contremarque')
+        expect(message).toBeInTheDocument()
+      })
       expect(
         screen.getByText(
           'Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.'
@@ -204,6 +223,28 @@ describe(' Desk', () => {
       )
 
       expect(errorMessage).toBeInTheDocument()
+    })
+  })
+
+  describe('when headline offer feature is available', () => {
+    beforeEach(() => {
+      vi.spyOn(api, 'getVenues').mockResolvedValue({
+        venues: [
+          venueListItemFactory({
+            id: 1,
+            isVirtual: false,
+            isPermanent: true,
+          })
+        ]
+      })
+    })
+
+    it('should display headline offer banner', async () => {
+      renderDesk({ isHeadlineOfferFeatureEnabled: true })
+      await waitFor(async () => {
+        const banner = await screen.findByText(new RegExp('Nouvelle fonctionnalité : l’offre à la une'))
+        expect(banner).toBeInTheDocument()
+      })
     })
   })
 })
