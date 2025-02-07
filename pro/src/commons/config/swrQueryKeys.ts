@@ -63,5 +63,3 @@ export const GET_VENUES_QUERY_KEY = 'getVenues'
 export const LOG_CATALOG_VIEW_QUERY_KEY = 'logCatalogView'
 export const LOG_TRACKING_FILTER_QUERY_KEY = 'logTrackingFilter'
 export const GET_STATISTICS_QUERY_KEY = 'getStatistics'
-export const GET_DEPRECATED_STATISTIC_DASHBOARD =
-  'getDeprecatedStatisticDashboard'

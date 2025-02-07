@@ -41,12 +41,12 @@ describe('Sitemap', () => {
       { name: 'Guichet', href: '/guichet' },
       { name: 'Offres', href: '/offres/collectives' },
       { name: 'Réservations', href: '/reservations/collectives' },
-      { name: 'Statistiques', href: '/statistiques' },
       { name: 'Justificatifs', href: '/remboursements' },
       {
         name: 'Informations bancaires',
         href: '/remboursements/informations-bancaires',
       },
+      { name: 'Justificatifs', href: '/remboursements/revenus' },
       { name: 'Collaborateurs', href: '/collaborateurs' },
       { name: 'Profil', href: '/profil' },
     ]
@@ -118,33 +118,15 @@ describe('Sitemap', () => {
     })
   })
 
-  // TODO: This should be removed when the feature is permanently enabled.
-  // https://passculture.atlassian.net/browse/PC-32280
-  describe('when the offerer stats v2 feature is active', () => {
-    it('should not render the statistics link', () => {
-      renderSitemap({
-        features: ['WIP_OFFERER_STATS_V2'],
-      })
+  it('should render the revenue page nested link in "Gestion financière" list', () => {
+    renderSitemap()
 
-      const sitemapElement = screen.getByTestId('sitemap')
-      const element = within(sitemapElement).queryByRole('link', {
-        name: 'Statistiques',
-      })
-      expect(element).not.toBeInTheDocument()
+    const sitemapElement = screen.getByTestId('sitemap')
+    const element = within(sitemapElement).getByRole('link', {
+      name: 'Chiffre d’affaires',
     })
 
-    it('should render the revenue page nested link in "Gestion financière" list', () => {
-      renderSitemap({
-        features: ['WIP_OFFERER_STATS_V2'],
-      })
-
-      const sitemapElement = screen.getByTestId('sitemap')
-      const element = within(sitemapElement).getByRole('link', {
-        name: 'Chiffre d’affaires',
-      })
-
-      expect(element).toBeInTheDocument()
-      expect(element).toHaveAttribute('href', '/remboursements/revenus')
-    })
+    expect(element).toBeInTheDocument()
+    expect(element).toHaveAttribute('href', '/remboursements/revenus')
   })
 })

@@ -99,7 +99,6 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_ZENDESK_SELL_CREATION = "Activer la création de nouvelles entrées dans Zendesk Sell (structures et lieux)"
     ENABLE_BOOST_API_INTEGRATION = "Active la réservation de places de cinéma via l'API Boost"
-    ENABLE_OFFERER_STATS = "Active l'affichage des statistiques d'une structure sur le portail pro"
     ENABLE_EMS_INTEGRATION = "Active la synchronisation de stocks et la réservation via EMS"
     ENABLE_CGR_INTEGRATION = "Active la synchonisation de stocks et la réservation via CGR"
     ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC = "Activer le passage automatique des synchronisations Allociné à EMS"
@@ -118,7 +117,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE = "Activer l'association des offres collectives à des adresses."
     WIP_SUGGESTED_SUBCATEGORIES = "Activer les sous-catégories suggérées par IA lors de la création d'offre"
     WIP_EAN_CREATION = "Activer la création d'offre par EAN"
-    WIP_OFFERER_STATS_V2 = "Activer la nouvelle version de la page de statistiques / revenus d'une structure"
     WIP_COLLAPSED_MEMORIZED_FILTERS = "Activer la fonction de masquage et de mémorisation des filtres en sessionStorage"
     ENABLE_COLLECTIVE_NEW_STATUSES = "Activer les nouveaux statuts des offres collectives"
     WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = "Utiliser les OffererAddress comme source de données"
@@ -218,7 +216,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_HEADLINE_OFFER,
     FeatureToggle.WIP_IS_OPEN_TO_PUBLIC,
-    FeatureToggle.WIP_OFFERER_STATS_V2,
     FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES,
     FeatureToggle.WIP_UBBLE_V2,
     FeatureToggle.WIP_URL_IN_OFFER_DRAFT,
