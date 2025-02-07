@@ -6,6 +6,10 @@ class UserPhoneNumberAlreadyValidated(PhoneVerificationException):
     pass
 
 
+class RequiredPhoneNumber(PhoneVerificationException):
+    pass
+
+
 class InvalidPhoneNumber(PhoneVerificationException):
     pass
 
