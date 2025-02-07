@@ -142,8 +142,14 @@ class Returns200Test:
     expected_num_queries += 1  # CTE built over booking, stock and external_booking
     expected_num_queries += 1  # 4.external_booking
 
-    def test_when_user_is_linked_to_a_valid_offerer(self, client: Any):
-        stock = offers_factories.StockFactory(offer__extraData={"ean": "1234567891234"})
+    @pytest.mark.parametrize(
+        "offerer_factory", [offerers_factories.OffererFactory, offerers_factories.ClosedOffererFactory]
+    )
+    def test_when_user_is_linked_to_a_valid_offerer(self, client: Any, offerer_factory):
+        stock = offers_factories.StockFactory(
+            offer__extraData={"ean": "1234567891234"},
+            offer__venue__managingOfferer=offerer_factory(),
+        )
         used_booking = bookings_factories.UsedBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             dateUsed=datetime(2020, 8, 13, 12, 0, 0),

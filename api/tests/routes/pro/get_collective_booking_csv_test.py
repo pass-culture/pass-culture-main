@@ -23,8 +23,11 @@ class Returns200Test:
     num_queries += 1  # Fetch the user
     num_queries += 1  # Select collective_booking
 
-    def test_complete_booking_single(self, client):
-        user_offerer = offerers_factories.UserOffererFactory()
+    @pytest.mark.parametrize(
+        "offerer_factory", [offerers_factories.OffererFactory, offerers_factories.ClosedOffererFactory]
+    )
+    def test_complete_booking_single(self, client, offerer_factory):
+        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer_factory())
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             collectiveStock__startDatetime=datetime(2020, 8, 13, 12, 0, 0),
