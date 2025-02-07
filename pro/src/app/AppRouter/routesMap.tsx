@@ -349,12 +349,6 @@ export const routes: RouteConfig[] = [
     title: 'Profil',
   },
   {
-    lazy: () => import('pages/OffererStats/OffererStats'),
-    path: '/statistiques',
-    title: 'Statistiques',
-    featureName: 'ENABLE_OFFERER_STATS',
-  },
-  {
     lazy: () => import('pages/SignupJourneyRoutes/SignupJourneyRoutes'),
     path: '/parcours-inscription',
     title: 'Parcours de souscription',

@@ -6784,7 +6784,6 @@ INSERT INTO public.feature VALUES (29, 'UPDATE_BOOKING_USED', 'Permettre la vali
 INSERT INTO public.feature VALUES (30, 'ENABLE_UBBLE_SUBSCRIPTION_LIMITATION', 'Active la limitation en fonction de l''âge lors de pic d''inscription', false);
 INSERT INTO public.feature VALUES (34, 'INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS', 'Inclure les anciens modèles de données pour le téléchargement des remboursements ', true);
 INSERT INTO public.feature VALUES (35, 'DISABLE_ENTERPRISE_API', 'Désactiver les appels à l''API entreprise', false);
-INSERT INTO public.feature VALUES (36, 'ENABLE_OFFERER_STATS', 'Active l''affichage des statistiques d''une structure sur le portail pro', false);
 INSERT INTO public.feature VALUES (38, 'SYNCHRONIZE_TITELIVE_PRODUCTS', 'Permettre limport journalier du référentiel des livres', true);
 INSERT INTO public.feature VALUES (40, 'SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS', 'Permettre limport journalier des couvertures de livres', true);
 INSERT INTO public.feature VALUES (44, 'ENABLE_CDS_IMPLEMENTATION', 'Permet la réservation de place de cinéma avec l''API CDS', false);

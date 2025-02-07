@@ -1,5 +1,4 @@
 import { GetOffererResponseModel } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useActiveStep } from 'commons/hooks/useActiveStep'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -20,8 +19,6 @@ type ReimbursementsTabsProps = {
 export const ReimbursementsTabs = ({
   selectedOfferer,
 }: ReimbursementsTabsProps) => {
-  const isOffererStatsV2Active = useActiveFeature('WIP_OFFERER_STATS_V2')
-
   const activeStep = useActiveStep(STEP_NAMES)
   const hasWarning =
     (selectedOfferer &&
@@ -55,16 +52,13 @@ export const ReimbursementsTabs = ({
         url: '/remboursements/informations-bancaires',
         isNew: false,
       },
-    ]
-
-    if (isOffererStatsV2Active) {
-      steps.push({
+      {
         id: STEP_ID_INCOMES,
         label: 'Chiffre d’affaires',
         url: '/remboursements/revenus',
         isNew: true,
-      })
-    }
+      },
+    ]
 
     return steps
   }

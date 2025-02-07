@@ -29,7 +29,6 @@ import strokeCollaboratorIcon from 'icons/stroke-collaborator.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeHomeIcon from 'icons/stroke-home.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
-import strokePieIcon from 'icons/stroke-pie.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
 import { getSavedVenueId } from 'pages/Homepage/components/Offerers/components/PartnerPages/PartnerPages'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -48,9 +47,6 @@ const INDIVIDUAL_LINKS = ['/offres', '/guichet']
 const COLLECTIVE_LINKS = ['/offres/collectives']
 
 export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
-  const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
-  const isOffererStatsV2Active = useActiveFeature('WIP_OFFERER_STATS_V2')
-
   const isNewCollectiveOffersStructureEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
@@ -336,21 +332,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             </ul>
           )}
         </li>
-        {isOffererStatsActive && !isOffererStatsV2Active && (
-          <li>
-            <NavLink
-              to="/statistiques"
-              className={({ isActive }) =>
-                classnames(styles['nav-links-item'], {
-                  [styles['nav-links-item-active']]: isActive,
-                })
-              }
-            >
-              <SvgIcon src={strokePieIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
-              Statistiques
-            </NavLink>
-          </li>
-        )}
       </ul>
       <ul className={styles['nav-links-group']}>
         <li
