@@ -79,16 +79,18 @@ export const BaseCheckbox = forwardRef(
       <div className={containerClasses}>
         <div className={styles['base-checkbox-row']}>
           <span className={styles['base-checkbox-label-row']}>
-            <input
-              ref={forwardedRef ?? innerRef}
-              aria-invalid={hasError}
-              {...(ariaDescribedBy && { 'aria-describedby': ariaDescribedBy })}
-              type="checkbox"
-              {...props}
-              className={cn(styles['base-checkbox-input'], inputClassName)}
-              id={id}
-            />
-            <label className={labelClasses} htmlFor={id}>
+            <label className={labelClasses}>
+              <input
+                ref={forwardedRef ?? innerRef}
+                aria-invalid={hasError}
+                {...(ariaDescribedBy && {
+                  'aria-describedby': ariaDescribedBy,
+                })}
+                type="checkbox"
+                {...props}
+                className={cn(styles['base-checkbox-input'], inputClassName)}
+                id={id}
+              />
               {icon && (
                 <span className={styles['base-checkbox-icon']}>
                   <SvgIcon
