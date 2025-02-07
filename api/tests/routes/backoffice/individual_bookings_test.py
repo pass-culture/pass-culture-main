@@ -215,16 +215,19 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         "query_args",
         [
             {},
-            {"from_to_date": [datetime.datetime(1970, 1, 1), None]},
-            {"from_to_date": [None, datetime.datetime(2037, 12, 31)]},
-            {"from_to_date": [datetime.datetime(1970, 1, 1), datetime.datetime(2037, 12, 31)]},
+            {"event_from_date": datetime.date(1970, 1, 1)},
+            {"event_to_date": datetime.date(2037, 12, 31)},
+            {
+                "event_from_date": datetime.date(1970, 1, 1),
+                "event_to_date": datetime.date(2037, 12, 31),
+            },
         ],
     )
     def test_display_download_link(self, authenticated_client, bookings, query_args):
         venue_id = [bookings[0].venueId]
-        kwargs = {**query_args, "venue_id": venue_id}
+        kwargs = {**query_args, "venue": venue_id, "deposit": "all"}
         response = authenticated_client.get(url_for(self.endpoint, **kwargs))
-        assert b"pc-clipboard" in response.data
+        assert (b"pc-clipboard" in response.data) == (not query_args)
 
     def test_list_bookings_by_offer_name(self, authenticated_client, bookings):
         with assert_num_queries(self.expected_num_queries):

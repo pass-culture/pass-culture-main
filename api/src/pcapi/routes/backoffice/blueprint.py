@@ -6,6 +6,7 @@ from pcapi import settings
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
+from . import static_utils
 from . import utils
 from .forms import empty as empty_forms
 
@@ -49,4 +50,5 @@ def extra_funcs() -> dict:
         "is_user_offerer_action_type": utils.is_user_offerer_action_type,
         "random_hash": utils.random_hash,
         "get_setting": utils.get_setting,
+        "static_hashes": static_utils.get_hashes(),
     }

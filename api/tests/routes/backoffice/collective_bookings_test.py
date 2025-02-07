@@ -238,22 +238,22 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         [
             {},
             {
-                "from_date": datetime.datetime(1970, 1, 1),
+                "event_from_date": datetime.date(1970, 1, 1),
             },
             {
-                "to_date": datetime.datetime(2037, 12, 31),
+                "event_to_date": datetime.date(2037, 12, 31),
             },
             {
-                "from_date": datetime.datetime(1970, 1, 1),
-                "to_date": datetime.datetime(2037, 12, 31),
+                "event_from_date": datetime.date(1970, 1, 1),
+                "event_to_date": datetime.date(2037, 12, 31),
             },
         ],
     )
     def test_display_download_link(self, authenticated_client, collective_bookings, query_args):
         venue_id = [collective_bookings[0].venueId]
-        kwargs = {**query_args, "venue_id": venue_id}
+        kwargs = {**query_args, "venue": venue_id}
         response = authenticated_client.get(url_for(self.endpoint, **kwargs))
-        assert b"pc-clipboard" in response.data
+        assert (b"pc-clipboard" in response.data) == (not query_args)
 
     def test_list_bookings_by_name(self, authenticated_client, collective_bookings):
         with assert_num_queries(self.expected_num_queries):
