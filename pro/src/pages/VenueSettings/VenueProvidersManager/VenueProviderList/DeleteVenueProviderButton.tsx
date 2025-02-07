@@ -8,10 +8,8 @@ import { useNotification } from 'commons/hooks/useNotification'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { DeleteVenueProviderDialog } from './DeleteVenueProviderDialog'
-import style from './ProviderActionButton.module.scss'
 
 interface DeleteVenueProviderButtonProps {
   venueProviderId: number
@@ -48,12 +46,8 @@ export const DeleteVenueProviderButton = ({
       <Button
         onClick={() => setIsModalOpen(true)}
         variant={ButtonVariant.TERNARY}
+        icon={fullTrashIcon}
       >
-        <SvgIcon
-          src={fullTrashIcon}
-          alt=""
-          className={style['provider-action-icon']}
-        />
         Supprimer
       </Button>
 
