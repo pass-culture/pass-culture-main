@@ -6,6 +6,8 @@ import random
 import typing
 from unittest.mock import patch
 
+import sqlalchemy as sa
+
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 from pcapi.core.bookings import api as bookings_api
@@ -267,6 +269,8 @@ def build_many_extra_invoices(count: int = 32) -> None:
         cashflows = finance_models.Cashflow.query.filter_by(bankAccount=bank_account).all()
         cashflow_ids = [c.id for c in cashflows]
 
+        max_invoice_id_before = db.session.query(sa.func.max(finance_models.Invoice.id)).scalar()
+
         finance_api.generate_and_store_invoice_legacy(
             bank_account_id=bank_account.id,
             cashflow_ids=cashflow_ids,
@@ -275,10 +279,15 @@ def build_many_extra_invoices(count: int = 32) -> None:
         # the default date is used when built, which is now()
         # but... we would like something more realistic: an invoice
         # built in the past.
-        invoice = finance_models.Invoice.query.order_by(finance_models.Invoice.id.desc()).first()
-        invoice.date = last_day
-
-        db.session.add(invoice)
+        # But... please do not change invoice date created in other modules!
+        invoice = (
+            finance_models.Invoice.query.filter(finance_models.Invoice.id > max_invoice_id_before)
+            .order_by(finance_models.Invoice.id.desc())
+            .first()
+        )
+        if invoice:
+            invoice.date = last_day
+            db.session.add(invoice)
 
         return booking
 
