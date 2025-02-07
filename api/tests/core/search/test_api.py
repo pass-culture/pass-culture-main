@@ -25,6 +25,13 @@ def make_bookable_offer() -> offers_models.Offer:
     return offers_factories.StockFactory().offer
 
 
+def make_future_offer() -> offers_models.Offer:
+    offer = offers_factories.OfferFactory(isActive=False)
+    publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+    offers_factories.FutureOfferFactory(offerId=offer.id, publicationDate=publication_date)
+    return offer
+
+
 def make_booked_offer() -> offers_models.Offer:
     offer = make_bookable_offer()
     offers_factories.StockFactory(offer=offer)
@@ -126,12 +133,14 @@ def test_index_venues_in_queue(app):
 class ReindexOfferIdsTest:
     def test_index_new_offer(self):
         offer = make_bookable_offer()
+        future_offer = make_future_offer()
         assert search_testing.search_store["offers"] == {}
-        search.reindex_offer_ids([offer.id])
-        assert offer.id in search_testing.search_store["offers"]
+        search.reindex_offer_ids([offer.id, future_offer.id])
+        assert set(search_testing.search_store["offers"]) == {offer.id, future_offer.id}
 
     def test_no_unexpected_query_made(self):
         offer_ids = [make_bookable_offer().id for _ in range(3)]
+        offer_ids.extend([make_future_offer().id for _ in range(3, 6)])
 
         with assert_no_duplicated_queries():
             search.reindex_offer_ids(offer_ids)
@@ -154,12 +163,13 @@ class ReindexOfferIdsTest:
         # `reindex_offer_ids()`.
         unbookable = make_unbookable_offer()
         bookable = make_bookable_offer()
+        future_offer = make_future_offer()
         past = datetime.datetime.utcnow() - datetime.timedelta(days=10)
         future = datetime.datetime.utcnow() + datetime.timedelta(days=10)
         multi_dates_unbookable = offers_factories.EventStockFactory(beginningDatetime=past).offer
         multi_dates_bookable = offers_factories.EventStockFactory(beginningDatetime=past).offer
         offers_factories.EventStockFactory(offer=multi_dates_bookable, beginningDatetime=future)
-        offer_ids = {unbookable.id, bookable.id, multi_dates_unbookable.id, multi_dates_bookable.id}
+        offer_ids = {unbookable.id, bookable.id, future_offer.id, multi_dates_unbookable.id, multi_dates_bookable.id}
         for offer_id in offer_ids:
             search_testing.search_store["offers"][offer_id] = "dummy"
             app.redis_client.hset(algolia.REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer_id, "")
@@ -167,7 +177,7 @@ class ReindexOfferIdsTest:
         with assert_no_duplicated_queries():
             search.reindex_offer_ids(offer_ids)
 
-        assert set(search_testing.search_store["offers"]) == {bookable.id, multi_dates_bookable.id}
+        assert set(search_testing.search_store["offers"]) == {bookable.id, future_offer.id, multi_dates_bookable.id}
 
     @mock.patch("pcapi.core.search.backends.testing.FakeClient.save_objects", fail)
     @pytest.mark.settings(CATCH_INDEXATION_EXCEPTIONS=True)  # as on prod: don't raise errors
