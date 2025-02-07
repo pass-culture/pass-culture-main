@@ -108,8 +108,7 @@ export const domtomOptions: Option[] = [
   { id: '976', label: '976 - Mayotte' },
 ]
 
-export const ALL_FRANCE_OPTION_VALUE = 'all'
-export const MAINLAND_OPTION_VALUE = 'mainland'
+const MAINLAND_OPTION_VALUE = 'mainland'
 const CULTURAL_PARTNER_OPTION_VALUE = 'culturalPartner'
 const MAINLAND_OPTION_LABEL = 'France métropolitaine'
 const CULTURAL_PARTNER_OPTION_LABEL = 'Dans mon lieu'
@@ -134,12 +133,3 @@ export const offerInterventionOptions: Option[] = [
   ...mainlandOptions,
   ...domtomOptions,
 ]
-
-export const allDepartmentValues = [
-  ...mainlandOptions.map(({ id }) => id),
-  ...domtomOptions.map(({ id }) => id),
-] as string[]
-
-export const mainlandValues = mainlandOptions.map(
-  ({ id }) => id
-) as string[]

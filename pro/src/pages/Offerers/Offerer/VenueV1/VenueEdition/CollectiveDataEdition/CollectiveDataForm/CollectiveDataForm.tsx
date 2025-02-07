@@ -1,5 +1,4 @@
 import { FormikProvider, useFormik } from 'formik'
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -51,9 +50,6 @@ export const CollectiveDataForm = ({
 
   const { mutate } = useSWRConfig()
 
-  const [previousInterventionValues, setPreviousInterventionValues] = useState<
-    string[] | null
-  >(null)
   const initialValues = extractInitialValuesFromVenue(venue)
 
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
@@ -136,6 +132,13 @@ export const CollectiveDataForm = ({
                     }
                     buttonLabel="Public cible"
                     isOptional
+                    onBlur={() => formik.setFieldTouched('collectiveStudents', true)}
+                    showError={formik.touched.collectiveStudents && !!formik.errors.collectiveStudents}
+                    error={
+                      formik.touched.collectiveStudents && formik.errors.collectiveStudents
+                        ? String(formik.errors.collectiveStudents)
+                        : undefined
+                    }
                   />
                 </FormLayout.Row>
 
@@ -173,6 +176,13 @@ export const CollectiveDataForm = ({
                     }
                     buttonLabel="Domaines artistiques"
                     isOptional
+                    onBlur={() => formik.setFieldTouched('collectiveDomains', true)}
+                    showError={formik.touched.collectiveDomains && !!formik.errors.collectiveDomains}
+                    error={
+                      formik.touched.collectiveDomains && formik.errors.collectiveDomains
+                        ? String(formik.errors.collectiveDomains)
+                        : undefined
+                    }
                   />
                 </FormLayout.Row>
 
@@ -207,6 +217,13 @@ export const CollectiveDataForm = ({
                     }
                     buttonLabel="Zone de mobilité"
                     isOptional
+                    onBlur={() => formik.setFieldTouched('collectiveDomains', true)}
+                    showError={formik.touched.collectiveInterventionArea && !!formik.errors.collectiveInterventionArea}
+                    error={
+                      formik.touched.collectiveInterventionArea && formik.errors.collectiveInterventionArea
+                        ? String(formik.errors.collectiveInterventionArea)
+                        : undefined
+                    }
                   />
                 </FormLayout.Row>
 

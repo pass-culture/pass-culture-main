@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { MultiSelect } from '../MultiSelect'
+import { MultiSelect, Options } from '../MultiSelect'
 
 describe('<MultiSelect />', () => {
   const options = [
@@ -11,16 +11,24 @@ describe('<MultiSelect />', () => {
     { id: '3', label: 'Option 3' },
   ]
 
+  const otherOptions = [
+    { id: '4', label: 'Option 4' },
+    { id: '5', label: 'Option 5' },
+    { id: '6', label: 'Option 6' },
+  ]
+
   const renderMultiSelect = ({
     hasSelectAllOptions = false,
+    options,
   }: {
     hasSelectAllOptions?: boolean
-  } = {}) => {
+    options: Options[]
+  }) => {
     const defaultOptions = [{ id: '1', label: 'Option 1' }]
 
     return render(
       <MultiSelect
-        options={[{options}]}
+        options={options}
         label="Select Options"
         defaultOptions={defaultOptions}
         hasSearch={false}
@@ -35,13 +43,13 @@ describe('<MultiSelect />', () => {
   }
 
   it('should render correctly', () => {
-    renderMultiSelect()
+    renderMultiSelect({ options: [{ options }] })
 
     expect(screen.getByRole('button', { name: 'Options' })).toBeInTheDocument()
   })
 
   it('should not have accessibility violations', async () => {
-    const { container } = renderMultiSelect()
+    const { container } = renderMultiSelect({ options: [{ options }] })
 
     expect(await axe(container)).toHaveNoViolations()
 
@@ -52,7 +60,7 @@ describe('<MultiSelect />', () => {
   })
 
   it('renders the MultiSelect component with the correct initial selected options', () => {
-    renderMultiSelect()
+    renderMultiSelect({ options: [{ options }] })
 
     const selectedTag = screen.getByRole('button', {
       name: 'Supprimer Option 1',
@@ -62,7 +70,7 @@ describe('<MultiSelect />', () => {
   })
 
   it('toggles the dropdown when the trigger is clicked', async () => {
-    renderMultiSelect({ hasSelectAllOptions: true })
+    renderMultiSelect({ hasSelectAllOptions: true, options: [{ options }] })
 
     const toggleButton = screen.getByRole('button', { name: 'Options' })
     await userEvent.click(toggleButton)
@@ -79,7 +87,7 @@ describe('<MultiSelect />', () => {
   })
 
   it('selects all options when "Select All" is clicked', async () => {
-    renderMultiSelect({ hasSelectAllOptions: true })
+    renderMultiSelect({ hasSelectAllOptions: true, options: [{ options }] })
 
     const toggleButton = screen.getByRole('button', { name: 'Options' })
     await userEvent.click(toggleButton)
@@ -96,7 +104,7 @@ describe('<MultiSelect />', () => {
   })
 
   it('removes an option from the selected items when clicked in SelectedValuesTags', async () => {
-    renderMultiSelect()
+    renderMultiSelect({ options: [{ options }] })
 
     const selectedTag = screen.getByRole('button', {
       name: 'Supprimer Option 1',
@@ -108,7 +116,7 @@ describe('<MultiSelect />', () => {
   })
 
   it('closes the dropdown when clicked outside or when Escape key is pressed', async () => {
-    renderMultiSelect()
+    renderMultiSelect({ options: [{ options }] })
 
     const toggleButton = screen.getByRole('button', { name: 'Options' })
     toggleButton.focus()
@@ -130,7 +138,7 @@ describe('<MultiSelect />', () => {
   })
 
   it('should toggle dropdown with keyboard accessibility', async () => {
-    renderMultiSelect({ hasSelectAllOptions: true })
+    renderMultiSelect({ hasSelectAllOptions: true, options: [{ options }] })
 
     const toggleButton = screen.getByRole('button', { name: 'Options' })
     toggleButton.focus()
@@ -146,5 +154,45 @@ describe('<MultiSelect />', () => {
     await userEvent.keyboard('[Escape]')
 
     await waitFor(() => expect(selectAllCheckbox).not.toBeInTheDocument())
+  })
+
+  it('should select/unselect all value of a specific option', async () => {
+    renderMultiSelect({
+      hasSelectAllOptions: true,
+      options: [
+        {
+          options,
+        },
+        {
+          options: otherOptions,
+          hasSelectAllOptions: true,
+          selectAllLabel: 'Other options',
+        },
+      ],
+    })
+
+    const toggleButton = screen.getByRole('button', { name: 'Options' })
+    toggleButton.focus()
+
+    await userEvent.click(toggleButton)
+
+    const selectOtherOptionsCheckbox = screen.getByRole('checkbox', {
+      name: 'Other options',
+    })
+
+    await waitFor(() => expect(selectOtherOptionsCheckbox).toBeInTheDocument())
+
+    await userEvent.click(selectOtherOptionsCheckbox)
+
+    otherOptions.forEach((option) => {
+      expect(screen.getByLabelText(option.label)).toBeChecked()
+    })
+
+    await userEvent.click(selectOtherOptionsCheckbox)
+
+    otherOptions.forEach((option) => {
+      expect(screen.getByLabelText(option.label)).not.toBeChecked()
+    })
+
   })
 })

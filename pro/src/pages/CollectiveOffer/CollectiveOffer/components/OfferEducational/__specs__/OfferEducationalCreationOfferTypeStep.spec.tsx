@@ -34,7 +34,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
     renderComponent(props)
 
     const formatSelect = await screen.findByLabelText(
-      'Ajoutez un ou plusieurs formats *'
+      'Formats'
     )
     expect(formatSelect).toBeInTheDocument()
     expect(formatSelect).toBeEnabled()

@@ -14,7 +14,6 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { defaultEditionProps } from '../__tests-utils__/defaultProps'
 import {
   EMAIL_LABEL,
-  INTERVENTION_AREA_LABEL,
   NOTIFICATIONS_EMAIL_LABEL,
   VENUE_LABEL,
 } from '../constants/labels'

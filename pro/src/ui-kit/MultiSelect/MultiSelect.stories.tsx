@@ -36,7 +36,7 @@ const defaultOptions = [
 ]
 
 const defaultProps = {
-  options: defaultOptions,
+  options: [{options: defaultOptions}],
   legend: 'Département',
   label: 'Sélectionner un département',
 }
