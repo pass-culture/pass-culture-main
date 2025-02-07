@@ -5,6 +5,7 @@ import { useSWRConfig } from 'swr'
 import { api } from 'apiClient/api'
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { GET_OFFERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { useHeadlineOfferContext } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
@@ -19,7 +20,6 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeVisualArtIcon from 'icons/stroke-visual-art.svg'
-import { useIndividualOffersContext } from 'pages/IndividualOffers/context/IndividualOffersContext'
 import { computeIndividualApiFilters } from 'pages/IndividualOffers/utils/computeIndividualApiFilters'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
@@ -37,7 +37,7 @@ export const HeadlineOfferImageDialogs = ({
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const { mutate } = useSWRConfig()
 
-  const { headlineOffer, upsertHeadlineOffer } = useIndividualOffersContext()
+  const { headlineOffer, upsertHeadlineOffer } = useHeadlineOfferContext()
   const isReplacingHeadlineOffer = !!headlineOffer?.id
 
   const [isImageUploaderOpen, setIsImageUploaderOpen] = useState(false)

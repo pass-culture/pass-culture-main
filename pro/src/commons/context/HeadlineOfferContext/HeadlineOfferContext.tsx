@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import useSWR, { useSWRConfig } from 'swr'
@@ -7,7 +7,7 @@ import useSWR, { useSWRConfig } from 'swr'
 import { api } from 'apiClient/api'
 import { OffererHeadLineOfferResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { GET_OFFERER_HEADLINE_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, GET_VENUES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -24,54 +24,60 @@ type UpsertHeadlineOfferParams = {
   }
 }
 
-type IndividualOffersContextValues = {
+type HeadlineOfferContextValues = {
   headlineOffer: OffererHeadLineOfferResponseModel | null
   upsertHeadlineOffer: (params: UpsertHeadlineOfferParams) => Promise<void>
   removeHeadlineOffer: () => Promise<void>
   isHeadlineOfferBannerOpen: boolean
   closeHeadlineOfferBanner: () => void
-  isHeadlineOfferAllowedForOfferer: boolean
+  isHeadlineOfferAvailable: boolean
 }
 
-const IndividualOffersContext = createContext<IndividualOffersContextValues>({
+const HeadlineOfferContext = createContext<HeadlineOfferContextValues>({
   headlineOffer: null,
   upsertHeadlineOffer: async () => {},
   removeHeadlineOffer: async () => {},
   isHeadlineOfferBannerOpen: true,
   closeHeadlineOfferBanner: () => {},
-  isHeadlineOfferAllowedForOfferer: false,
+  isHeadlineOfferAvailable: false,
 })
 
-export const useIndividualOffersContext = () => {
-  return useContext(IndividualOffersContext)
+export const useHeadlineOfferContext = () => {
+  return useContext(HeadlineOfferContext)
 }
 
-export type IndividualOffersContextProviderProps = {
-  children: React.ReactNode
-  isHeadlineOfferAllowedForOfferer: boolean
-}
-
-export function IndividualOffersContextProvider({
-  children,
-  isHeadlineOfferAllowedForOfferer,
-}: IndividualOffersContextProviderProps) {
-  const selectedOffererId = useSelector(selectCurrentOffererId)
-  const [headlineOffer, setHeadlineOffer] =
-    useState<OffererHeadLineOfferResponseModel | null>(null)
-  const initialIsHeadlineOfferBannerOpen = storageAvailable('localStorage') &&
-    localStorage.getItem(LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY) === null
-  const [
-    isHeadlineOfferBannerOpen,
-    setIsHeadlineOfferBannerOpen
-  ] = useState(initialIsHeadlineOfferBannerOpen)
+export type HeadlineOfferContextProviderProps = { children: React.ReactNode }
+export function HeadlineOfferContextProvider({ children }: HeadlineOfferContextProviderProps) {
   const isHeadlineOfferEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
+  const selectedOffererId = useSelector(selectCurrentOffererId)
   const { mutate } = useSWRConfig()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
+  const { data } = useSWR([GET_VENUES_QUERY_KEY, selectedOffererId], () =>
+    api.getVenues(null, null, selectedOffererId)
+  )
+  const nonVirtualVenues =
+    data?.venues.filter((venue) => !venue.isVirtual) || []
+  const isHeadlineOfferAllowedForOfferer = nonVirtualVenues.length === 1 && nonVirtualVenues[0].isPermanent
+  const isHeadlineOfferAvailable = isHeadlineOfferEnabled && isHeadlineOfferAllowedForOfferer
+  const wasHeadlineOfferPreviouslyClosed = storageAvailable('localStorage') &&
+    localStorage.getItem(LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY) !== null
+  const initialIsHeadlineOfferBannerOpen = isHeadlineOfferAvailable && !wasHeadlineOfferPreviouslyClosed
+
+  const [
+    isHeadlineOfferBannerOpen,
+    setIsHeadlineOfferBannerOpen
+  ] = useState(initialIsHeadlineOfferBannerOpen)
+  const [headlineOffer, setHeadlineOffer] = useState<OffererHeadLineOfferResponseModel | null>(null)
+
+  useEffect(() => {
+    setIsHeadlineOfferBannerOpen(initialIsHeadlineOfferBannerOpen)
+  }, [initialIsHeadlineOfferBannerOpen])
+
   useSWR(
-    selectedOffererId && isHeadlineOfferEnabled
+    selectedOffererId && isHeadlineOfferAvailable
       ? [GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId]
       : null,
     ([, offererId]) => api.getOffererHeadlineOffer(offererId),
@@ -140,17 +146,17 @@ export function IndividualOffersContextProvider({
   }
 
   return (
-    <IndividualOffersContext.Provider
+    <HeadlineOfferContext.Provider
       value={{
         headlineOffer,
         upsertHeadlineOffer,
         removeHeadlineOffer,
         isHeadlineOfferBannerOpen,
         closeHeadlineOfferBanner,
-        isHeadlineOfferAllowedForOfferer,
+        isHeadlineOfferAvailable,
       }}
     >
       {children}
-    </IndividualOffersContext.Provider>
+    </HeadlineOfferContext.Provider>
   )
 }

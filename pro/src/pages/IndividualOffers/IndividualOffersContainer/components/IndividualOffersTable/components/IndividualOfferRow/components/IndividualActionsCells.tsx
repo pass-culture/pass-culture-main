@@ -7,6 +7,7 @@ import { api } from 'apiClient/api'
 import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { useHeadlineOfferContext } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
@@ -24,7 +25,6 @@ import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
-import { useIndividualOffersContext } from 'pages/IndividualOffers/context/IndividualOffersContext'
 import { computeDeletionErrorMessage } from 'pages/IndividualOffers/utils/computeDeletionErrorMessage'
 import { computeDeletionSuccessMessage } from 'pages/IndividualOffers/utils/computeDeletionSuccessMessage'
 import { computeIndividualApiFilters } from 'pages/IndividualOffers/utils/computeIndividualApiFilters'
@@ -56,9 +56,7 @@ export const IndividualActionsCells = ({
     'WIP_COLLAPSED_MEMORIZED_FILTERS'
   )
   const { storedFilters } = getStoredFilterConfig('individual')
-  const { isHeadlineOfferAllowedForOfferer, upsertHeadlineOffer } =
-    useIndividualOffersContext()
-  const isHeadlineOfferEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
+  const { isHeadlineOfferAvailable, upsertHeadlineOffer } = useHeadlineOfferContext()
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const urlSearchFilters = useQuerySearchFilters()
   const finalSearchFilters = {
@@ -154,8 +152,7 @@ export const IndividualActionsCells = ({
                   editionStockLink={editionStockLink}
                 />
               )}{' '}
-              {isHeadlineOfferEnabled &&
-                isHeadlineOfferAllowedForOfferer &&
+              {isHeadlineOfferAvailable &&
                 offer.status === OfferStatus.ACTIVE &&
                 !offer.isDigital && (
                   <HeadlineOfferCell

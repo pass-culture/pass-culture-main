@@ -12,10 +12,12 @@ import {
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { listOffersVenueFactory } from 'commons/utils/factories/collectiveApiFactories'
 import {
   listOffersOfferFactory,
   listOffersStockFactory,
+  venueListItemFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
@@ -23,7 +25,6 @@ import {
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
-import { IndividualOffersContextProvider } from 'pages/IndividualOffers/context/IndividualOffersContext'
 
 import {
   IndividualOfferRowProps,
@@ -38,6 +39,7 @@ vi.mock('apiClient/api', () => ({
     getOffererHeadlineOffer: vi.fn(),
     deleteHeadlineOffer: vi.fn(),
     createThumbnail: vi.fn(),
+    getVenues: vi.fn(),
   },
 }))
 
@@ -82,16 +84,28 @@ const renderOfferItem = ({
   props,
   isHeadlineOfferAllowedForOfferer = true,
   features = [],
-}: RenderOfferItemProps) =>
-  renderWithProviders(
+}: RenderOfferItemProps) => {
+  vi.spyOn(api, 'getVenues').mockResolvedValue({
+    venues: [
+      isHeadlineOfferAllowedForOfferer ?
+        venueListItemFactory({
+          name: 'Une venue physique & permanente',
+          isVirtual: false,
+        }) :
+        venueListItemFactory({
+          name: 'Une venue virtuelle',
+          isVirtual: true,
+        })
+    ]
+  })
+
+  return renderWithProviders(
     <>
       <table>
         <tbody>
-          <IndividualOffersContextProvider
-            isHeadlineOfferAllowedForOfferer={isHeadlineOfferAllowedForOfferer}
-          >
+          <HeadlineOfferContextProvider>
             <IndividualOfferRow {...props} />
-          </IndividualOffersContextProvider>
+          </HeadlineOfferContextProvider>
         </tbody>
       </table>
       <Notification />
@@ -104,6 +118,7 @@ const renderOfferItem = ({
       features,
     }
   )
+}
 
 const LABELS = {
   openActions: /Voir les actions/,
@@ -171,6 +186,7 @@ describe('IndividualOfferRow', () => {
         `/offre/individuelle/${offer.id}/edition/stocks`
       )
     })
+
     describe('draft delete button', () => {
       it('should display a trash icon with a confirm dialog to delete draft offer', async () => {
         props.offer.status = OfferStatus.DRAFT
@@ -244,26 +260,30 @@ describe('IndividualOfferRow', () => {
     })
 
     describe('edit offer link', () => {
-      it('should be displayed when offer is editable', () => {
+      it('should be displayed when offer is editable', async () => {
         renderOfferItem({ props })
 
-        const links = screen.getAllByRole('link')
+        await waitFor(async () => {
+          const links = await screen.findAllByRole('link')
         expect(links[links.length - 1]).toHaveAttribute(
           'href',
           `/offre/individuelle/${offer.id}/recapitulatif/details`
         )
+        })
       })
 
-      it('should not be displayed when offer is no editable', () => {
+      it('should not be displayed when offer is no editable', async () => {
         props.offer.isEditable = false
 
         renderOfferItem({ props })
 
-        const links = screen.getAllByRole('link')
-        expect(links[links.length - 1]).not.toHaveAttribute(
-          'href',
-          `/offre/individuelle/${offer.id}/edition`
-        )
+        await waitFor(async () => {
+          const links = await screen.findAllByRole('link')
+          expect(links[links.length - 1]).not.toHaveAttribute(
+            'href',
+            `/offre/individuelle/${offer.id}/edition`
+          )
+        })
       })
     })
 
@@ -601,21 +621,23 @@ describe('IndividualOfferRow', () => {
   })
 
   describe('offer title', () => {
-    it('should contain a link with the offer name and details link', () => {
+    it('should contain a link with the offer name and details link', async () => {
       renderOfferItem({ props })
 
-      const offerTitleLink = screen.getByRole('link', {
-        name: new RegExp(props.offer.name),
+      await waitFor(async () => {
+        const offerTitleLink = await screen.findByRole('link', {
+          name: new RegExp(props.offer.name),
+        })
+        expect(offerTitleLink).toBeInTheDocument()
+        expect(offerTitleLink).toHaveAttribute(
+          'href',
+          `/offre/individuelle/${props.offer.id}/recapitulatif/details`
+        )
       })
-      expect(offerTitleLink).toBeInTheDocument()
-      expect(offerTitleLink).toHaveAttribute(
-        'href',
-        `/offre/individuelle/${props.offer.id}/recapitulatif/details`
-      )
     })
   })
 
-  it('should display the venue name when venue public name is not given', () => {
+  it('should display the venue name when venue public name is not given', async () => {
     props.offer.venue = listOffersVenueFactory({
       name: 'Paris',
       isVirtual: false,
@@ -624,10 +646,13 @@ describe('IndividualOfferRow', () => {
 
     renderOfferItem({ props })
 
-    expect(screen.queryByText(props.offer.venue.name)).toBeInTheDocument()
+    await waitFor(async () => {
+      const res = await screen.findByText(props.offer.venue.name)
+      expect(res).toBeInTheDocument()
+    })
   })
 
-  it('should display the venue public name when is given', () => {
+  it('should display the venue public name when is given', async () => {
     props.offer.venue = listOffersVenueFactory({
       name: 'Paris',
       publicName: 'lieu de ouf',
@@ -637,10 +662,13 @@ describe('IndividualOfferRow', () => {
 
     renderOfferItem({ props })
 
-    expect(screen.queryByText('lieu de ouf')).toBeInTheDocument()
+    await waitFor(async () => {
+      const res = await screen.findByText('lieu de ouf')
+      expect(res).toBeInTheDocument()
+    })
   })
 
-  it('should display the offerer name with "- Offre numérique" when venue is virtual', () => {
+  it('should display the offerer name with "- Offre numérique" when venue is virtual', async () => {
     props.offer.venue = listOffersVenueFactory({
       isVirtual: true,
       name: 'Gaumont Montparnasse',
@@ -650,25 +678,34 @@ describe('IndividualOfferRow', () => {
 
     renderOfferItem({ props })
 
-    expect(screen.queryByText('Gaumont - Offre numérique')).toBeInTheDocument()
+    await waitFor(async () => {
+      const res = await screen.findByText('Gaumont - Offre numérique')
+      expect(res).toBeInTheDocument()
+    })
   })
 
-  it('should display the ean when given', () => {
+  it('should display the ean when given', async () => {
     props.offer = listOffersOfferFactory({ productIsbn: '123456789' })
 
     renderOfferItem({ props })
 
-    expect(screen.queryByText('123456789')).toBeInTheDocument()
+    await waitFor(async () => {
+      const res = await screen.findByText('123456789')
+      expect(res).toBeInTheDocument()
+    })
   })
 
   describe('offer remaining quantity or institution', () => {
-    it('should be 0 when individual offer has no stock', () => {
+    it('should be 0 when individual offer has no stock', async () => {
       renderOfferItem({ props })
 
-      expect(screen.queryByText('0')).toBeInTheDocument()
+      await waitFor(async () => {
+        const res = await screen.findByText('0')
+        expect(res).toBeInTheDocument()
+      })
     })
 
-    it('should be the sum of individual offer stocks remaining quantity', () => {
+    it('should be the sum of individual offer stocks remaining quantity', async () => {
       props.offer.stocks = [
         listOffersStockFactory({ remainingQuantity: 0 }),
         listOffersStockFactory({ remainingQuantity: 2 }),
@@ -677,10 +714,13 @@ describe('IndividualOfferRow', () => {
 
       renderOfferItem({ props })
 
-      expect(screen.queryByText('5')).toBeInTheDocument()
+      await waitFor(async () => {
+        const res = await screen.findByText('5')
+        expect(res).toBeInTheDocument()
+      })
     })
 
-    it('should be "illimité" when at least one stock of the individual offer is unlimited', () => {
+    it('should be "illimité" when at least one stock of the individual offer is unlimited', async () => {
       props.offer.stocks = [
         listOffersStockFactory({ remainingQuantity: 0 }),
         listOffersStockFactory({ remainingQuantity: 'unlimited' }),
@@ -688,12 +728,15 @@ describe('IndividualOfferRow', () => {
 
       renderOfferItem({ props })
 
-      expect(screen.queryByText('Illimité')).toBeInTheDocument()
+      await waitFor(async () => {
+        const res = await screen.findByText('Illimité')
+        expect(res).toBeInTheDocument()
+      })
     })
   })
 
   describe('when offer is an event product', () => {
-    it('should display the correct text "2 dates"', () => {
+    it('should display the correct text "2 dates"', async () => {
       props.offer.venue = listOffersVenueFactory({ departementCode: '973' })
       props.offer.stocks = [
         listOffersStockFactory({
@@ -708,10 +751,13 @@ describe('IndividualOfferRow', () => {
 
       renderOfferItem({ props })
 
-      expect(screen.queryByText('2 dates')).toBeInTheDocument()
+      await waitFor(async () => {
+        const res = await screen.findByText('2 dates')
+        expect(res).toBeInTheDocument()
+      })
     })
 
-    it('should display the beginning date time when only one date', () => {
+    it('should display the beginning date time when only one date', async () => {
       props.offer.venue = listOffersVenueFactory({ departementCode: '973' })
       props.offer.stocks = [
         listOffersStockFactory({
@@ -722,10 +768,13 @@ describe('IndividualOfferRow', () => {
 
       renderOfferItem({ props })
 
-      expect(screen.getByText('27/05/2021 17:00')).toBeInTheDocument()
+      await waitFor(async () => {
+        const res = await screen.findByText('27/05/2021 17:00')
+        expect(res).toBeInTheDocument()
+      })
     })
 
-    it('should not display a warning when no stocks are sold out', () => {
+    it('should not display a warning when no stocks are sold out', async () => {
       props.offer.stocks = [
         listOffersStockFactory({ remainingQuantity: 'unlimited' }),
         listOffersStockFactory({ remainingQuantity: 13 }),
@@ -733,10 +782,15 @@ describe('IndividualOfferRow', () => {
 
       renderOfferItem({ props })
 
+      await waitFor(async () => {
+        const row = await screen.findByTestId('offer-item-row')
+        expect(row).toBeInTheDocument()
+      })
+
       expect(screen.queryByText(/épuisée/)).not.toBeInTheDocument()
     })
 
-    it('should not display a warning when all stocks are sold out', () => {
+    it('should not display a warning when all stocks are sold out', async () => {
       props.offer.stocks = [
         listOffersStockFactory({ remainingQuantity: 0 }),
         listOffersStockFactory({ remainingQuantity: 0 }),
@@ -744,6 +798,11 @@ describe('IndividualOfferRow', () => {
       offer.status = OfferStatus.SOLD_OUT
 
       renderOfferItem({ props })
+
+      await waitFor(async () => {
+        const row = await screen.findByTestId('offer-item-row')
+        expect(row).toBeInTheDocument()
+      })
 
       expect(screen.queryByText(/épuisées/)).not.toBeInTheDocument()
     })
@@ -800,15 +859,17 @@ describe('IndividualOfferRow', () => {
     })
   })
 
-  it('should have an edit link to detail page when offer is draft', () => {
+  it('should have an edit link to detail page when offer is draft', async () => {
     props.offer.status = OfferStatus.DRAFT
 
     renderOfferItem({ props })
 
-    const links = screen.getAllByRole('link')
-    expect(links[links.length - 1]).toHaveAttribute(
-      'href',
-      `/offre/individuelle/${offer.id}/creation/details`
-    )
+    await waitFor(async () => {
+      const links = await screen.findAllByRole('link')
+      expect(links[links.length - 1]).toHaveAttribute(
+        'href',
+        `/offre/individuelle/${offer.id}/creation/details`
+      )
+    })
   })
 })

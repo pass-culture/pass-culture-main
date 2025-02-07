@@ -5,6 +5,8 @@ import { apiContremarque } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { GetBookingResponse } from 'apiClient/v2'
 import { Layout } from 'app/App/layout/Layout'
+import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
+import { HeadlineOfferBanner } from 'components/HeadlineOfferBanner/HeadlineOfferBanner'
 import { Button } from 'ui-kit/Button/Button'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -143,76 +145,80 @@ export const Desk = (): JSX.Element => {
   }
 
   return (
-    <Layout>
-      <h1 className={styles['title']}>Guichet</h1>
-      <p className={styles.advice}>
-        Saisissez les contremarques présentées par les bénéficiaires afin de les
-        valider ou de les invalider.
-      </p>
-      <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit} className={styles['desk-form']}>
-          <TextInput
-            label="Contremarque"
-            name="token"
-            onChange={handleOnChangeToken}
-            description="Format : 6 caractères alphanumériques en majuscules. Par exemple : AZE123"
-            value={token}
-            classNameLabel={styles['desk-form-label']}
-            className={styles['desk-form-input']}
-            hideFooter
-            isOptional
-            aria-describedby={`${successId} ${errorId}`}
-          />
+    <HeadlineOfferContextProvider>
+      <Layout
+        mainHeading="Guichet"
+        mainBanner={<HeadlineOfferBanner />}
+      >
+        <p className={styles.advice}>
+          Saisissez les contremarques présentées par les bénéficiaires afin de les
+          valider ou de les invalider.
+        </p>
+        <FormikProvider value={formik}>
+          <form onSubmit={formik.handleSubmit} className={styles['desk-form']}>
+            <TextInput
+              label="Contremarque"
+              name="token"
+              onChange={handleOnChangeToken}
+              description="Format : 6 caractères alphanumériques en majuscules. Par exemple : AZE123"
+              value={token}
+              classNameLabel={styles['desk-form-label']}
+              className={styles['desk-form-input']}
+              hideFooter
+              isOptional
+              aria-describedby={`${successId} ${errorId}`}
+            />
 
-          <div role="status">
-            {booking && <BookingDetails booking={booking} />}
-          </div>
+            <div role="status">
+              {booking && <BookingDetails booking={booking} />}
+            </div>
 
-          <div className={styles['desk-button']}>
-            {isTokenValidated ? (
-              <ButtonInvalidateToken
-                onConfirm={() => handleSubmitInvalidate(token)}
-              />
-            ) : (
-              <Button type="submit" disabled={formik.isSubmitting || !booking}>
-                Valider la contremarque
-              </Button>
-            )}
-          </div>
+            <div className={styles['desk-button']}>
+              {isTokenValidated ? (
+                <ButtonInvalidateToken
+                  onConfirm={() => handleSubmitInvalidate(token)}
+                />
+              ) : (
+                <Button type="submit" disabled={formik.isSubmitting || !booking}>
+                  Valider la contremarque
+                </Button>
+              )}
+            </div>
 
-          <div role="alert" id={errorId}>
-            {message.variant === MESSAGE_VARIANT.ERROR && (
-              <DeskInputMessage message={message.message} isError />
-            )}
-          </div>
-          <div role="status" id={successId}>
-            {message.variant === MESSAGE_VARIANT.SUCCESS && (
+            <div role="alert" id={errorId}>
+              {message.variant === MESSAGE_VARIANT.ERROR && (
+                <DeskInputMessage message={message.message} isError />
+              )}
+            </div>
+            <div role="status" id={successId}>
+              {message.variant === MESSAGE_VARIANT.SUCCESS && (
+                <DeskInputMessage message={message.message} />
+              )}
+            </div>
+
+            {message.variant === MESSAGE_VARIANT.DEFAULT && (
               <DeskInputMessage message={message.message} />
             )}
-          </div>
 
-          {message.variant === MESSAGE_VARIANT.DEFAULT && (
-            <DeskInputMessage message={message.message} />
-          )}
-
-          <Callout
-            links={[
-              {
-                href: 'https://aide.passculture.app/hc/fr/articles/4416062183569--Acteurs-Culturels-Modalités-de-retrait-et-CGU',
-                label: 'Modalités de retrait et CGU',
-                isExternal: true,
-              },
-            ]}
-            className={`${styles['desk-callout']}`}
-            title="N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque."
-          >
-            Les pièces d’identité doivent impérativement être présentées
-            physiquement. Merci de ne pas accepter les pièces d’identité au
-            format numérique.
-          </Callout>
-        </form>
-      </FormikProvider>
-    </Layout>
+            <Callout
+              links={[
+                {
+                  href: 'https://aide.passculture.app/hc/fr/articles/4416062183569--Acteurs-Culturels-Modalités-de-retrait-et-CGU',
+                  label: 'Modalités de retrait et CGU',
+                  isExternal: true,
+                },
+              ]}
+              className={`${styles['desk-callout']}`}
+              title="N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque."
+            >
+              Les pièces d’identité doivent impérativement être présentées
+              physiquement. Merci de ne pas accepter les pièces d’identité au
+              format numérique.
+            </Callout>
+          </form>
+        </FormikProvider>
+      </Layout>
+    </HeadlineOfferContextProvider>
   )
 }
 

@@ -11,12 +11,9 @@ import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { Audience } from 'commons/core/shared/types'
 import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isSameOffer } from 'commons/utils/isSameOffer'
 import { NoData } from 'components/NoData/NoData'
 import { useStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
-
-import { useIndividualOffersContext } from '../context/IndividualOffersContext'
 
 import { IndividualOffersActionsBar } from './components/IndividualOffersActionsBar/IndividualOffersActionsBar'
 import { IndividualOffersSearchFilters } from './components/IndividualOffersSearchFilters/IndividualOffersSearchFilters'
@@ -54,8 +51,6 @@ export const IndividualOffersContainer = ({
     ListOffersOfferResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
-  const { isHeadlineOfferAllowedForOfferer } = useIndividualOffersContext()
-  const isHeadlineOfferEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -142,9 +137,7 @@ export const IndividualOffersContainer = ({
         <NoData page="offers" />
       ) : (
         <>
-          {isHeadlineOfferEnabled && isHeadlineOfferAllowedForOfferer && (
-            <HeadlineOffer />
-          )}
+          <HeadlineOffer />
           <IndividualOffersTable
             applySelectedFiltersAndRedirect={applySelectedFiltersAndRedirect}
             areAllOffersSelected={areAllOffersSelected}

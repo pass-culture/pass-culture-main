@@ -10,6 +10,7 @@ import {
   GET_OFFERS_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
+import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { DEFAULT_PAGE } from 'commons/core/Offers/constants'
 import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
@@ -19,15 +20,14 @@ import { Audience } from 'commons/core/shared/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sortByLabel } from 'commons/utils/strings'
+import { HeadlineOfferBanner } from 'components/HeadlineOfferBanner/HeadlineOfferBanner'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
-import { IndividualOffersContextProvider } from 'pages/IndividualOffers/context/IndividualOffersContext'
 import {
   formatAndOrderAddresses,
   formatAndOrderVenues,
 } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import { HeadlineOfferBanner } from './IndividualOffersContainer/components/HeadlineOfferBanner/HeadlineOfferBanner'
 import { IndividualOffersContainer } from './IndividualOffersContainer/IndividualOffersContainer'
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
@@ -48,7 +48,6 @@ export const IndividualOffers = (): JSX.Element => {
   const navigate = useNavigate()
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-  const isHeadlineOfferEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
@@ -81,11 +80,6 @@ export const IndividualOffers = (): JSX.Element => {
     api.getVenues(null, null, selectedOffererId)
   )
   const venues = formatAndOrderVenues(data?.venues ?? [])
-
-  const nonVirtualVenues =
-    data?.venues.filter((venue) => !venue.isVirtual) || []
-  const isHeadlineOfferAllowedForOfferer =
-    nonVirtualVenues.length === 1 && nonVirtualVenues[0].isPermanent
 
   const offererAddressQuery = useSWR(
     selectedOffererId && isOfferAddressEnabled
@@ -130,17 +124,12 @@ export const IndividualOffers = (): JSX.Element => {
   })
 
   const offers = offersQuery.error ? [] : offersQuery.data || []
-  const isHeadlineOfferBannerAvailable =
-    isHeadlineOfferEnabled &&
-    isHeadlineOfferAllowedForOfferer
 
   return (
-    <IndividualOffersContextProvider
-      isHeadlineOfferAllowedForOfferer={isHeadlineOfferAllowedForOfferer}
-    >
+    <HeadlineOfferContextProvider>
       <Layout
         mainHeading="Offres individuelles"
-        mainBanner={isHeadlineOfferBannerAvailable && <HeadlineOfferBanner />}
+        mainBanner={<HeadlineOfferBanner />}
       >
         {isLoadingVenues || isValidatingVenues ? (
           <Spinner />
@@ -157,7 +146,7 @@ export const IndividualOffers = (): JSX.Element => {
           />
         )}
       </Layout>
-    </IndividualOffersContextProvider>
+    </HeadlineOfferContextProvider>
   )
 }
 

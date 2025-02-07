@@ -7,6 +7,7 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import { GET_OFFERER_HEADLINE_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import * as useNotification from 'commons/hooks/useNotification'
+import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
 } from 'commons/utils/factories/storeFactories'
@@ -14,15 +15,15 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY,
-  IndividualOffersContextProvider,
-  IndividualOffersContextProviderProps,
-  useIndividualOffersContext
-} from "./IndividualOffersContext"
+  HeadlineOfferContextProvider,
+  HeadlineOfferContextProviderProps,
+  useHeadlineOfferContext
+} from "./HeadlineOfferContext"
 
 const LABELS = {
   display: {
     headlineOffer: 'Headline Offer Id',
-    isHeadlineOfferAllowedForOfferer: 'Is Headline Offer Allowed For Offerer',
+    isHeadlineOfferAvailable: 'Is Headline Offer Available',
     isHeadlineOfferBannerOpen: 'Is Headline Offer Banner Open',
   },
   controls: {
@@ -61,6 +62,7 @@ vi.mock('apiClient/api', () => ({
     getOffererHeadlineOffer: vi.fn(),
     upsertHeadlineOffer: vi.fn(),
     deleteHeadlineOffer: vi.fn(),
+    getVenues: vi.fn(),
   }
 }))
 
@@ -79,14 +81,14 @@ const TestComponent = () => {
     removeHeadlineOffer,
     isHeadlineOfferBannerOpen,
     closeHeadlineOfferBanner,
-    isHeadlineOfferAllowedForOfferer,
-  } = useIndividualOffersContext()
+    isHeadlineOfferAvailable,
+  } = useHeadlineOfferContext()
 
   return <>
     <h1>Test Component</h1>
     <div id="display">
       <span>{LABELS.display.headlineOffer}: {headlineOffer ? headlineOffer.id : 'null'}</span>
-      <span>{LABELS.display.isHeadlineOfferAllowedForOfferer}: {isHeadlineOfferAllowedForOfferer ? 'true' : 'false'}</span>
+      <span>{LABELS.display.isHeadlineOfferAvailable}: {isHeadlineOfferAvailable ? 'true' : 'false'}</span>
       <span>{LABELS.display.isHeadlineOfferBannerOpen}: {isHeadlineOfferBannerOpen ? 'true' : 'false'}</span>
     </div>
     <div id="controls">
@@ -100,20 +102,17 @@ const TestComponent = () => {
   </>
 }
 
-type IndividualOffersContextProviderTestProps = Partial<IndividualOffersContextProviderProps> & {
+type HeadlineOfferContextProviderTestProps = Partial<HeadlineOfferContextProviderProps> & {
   isFeatureEnabled?: boolean
 }
 
 const renderIndividualOffersContext = ({
   isFeatureEnabled = true,
-  isHeadlineOfferAllowedForOfferer = true
-}: IndividualOffersContextProviderTestProps = {}) => {
+}: HeadlineOfferContextProviderTestProps = {}) => {
   return renderWithProviders(
-    <IndividualOffersContextProvider
-      isHeadlineOfferAllowedForOfferer={isHeadlineOfferAllowedForOfferer}
-    >
+    <HeadlineOfferContextProvider>
       <TestComponent />
-    </IndividualOffersContextProvider>, 
+    </HeadlineOfferContextProvider>,
     {
       features: [
         ...(isFeatureEnabled ? ['WIP_HEADLINE_OFFER'] : [])
@@ -125,35 +124,68 @@ const renderIndividualOffersContext = ({
   )
 }
 
-describe('IndividualOffersContext', () => {
+describe('HeadlineOfferContext', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue(MOCK_DATA.headlineOffer)
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [
+        venueListItemFactory({
+          id: MOCK_DATA.headlineOffer.venueId,
+          isVirtual: false,
+          isPermanent: true,
+        })
+      ]
+    })
     localStorage.clear()
   })
 
   describe('should tell if headline offer is available as a feature', () => {
-    // FIXME: isHeadlineOfferAvailable as a combination of
-    // isHeadlineOfferAllowedForOfferer and isFeatureEnabled should be 
-    // exported instead of isHeadlineOfferAllowedForOfferer alone.
-    // it('should be available if feature is enabled and offerer is allowed to use it', () => {})
-    // it('should not be available if feature is disabled', () => {})
-    // it('should not be available if offerer is not allowed to use it', () => {})
-  
-    // FIXME: we would like to manage isHeadlineOfferAllowedForOfferer in
-    // the context itself. This test should be rewritten.
-    it('should be available if offerer is allowed to use it', async () => {
-      renderIndividualOffersContext({ isHeadlineOfferAllowedForOfferer: true })
+    it('should be available if feature is enabled and offerer is allowed to use it', async () => {
+      renderIndividualOffersContext()
 
-      const display = await screen.findByText(new RegExp(LABELS.display.isHeadlineOfferAllowedForOfferer))
-      expect(display).toBeTruthy()
+      await waitFor(async () => {
+        const display = await screen.findByText(new RegExp(LABELS.display.isHeadlineOfferAvailable))
+        expect(display.textContent).toContain('true')
+      })
+    })
+
+    it('should not be available if feature is disabled', async () => {
+      renderIndividualOffersContext({ isFeatureEnabled: false })
+
+      await waitFor(async () => {
+        const display = await screen.findByText(new RegExp(LABELS.display.isHeadlineOfferAvailable))
+        expect(display.textContent).toContain('false')
+      })
+    })
+
+    it('should not be available if offerer is not allowed to use it', async () => {
+      // Offerer must have only one non-virtual, permanent venue to be allowed to use headline offer.
+      vi.spyOn(api, 'getVenues').mockResolvedValue({
+        venues: [
+          venueListItemFactory({
+            id: MOCK_DATA.headlineOffer.venueId,
+            isVirtual: true,
+            isPermanent: false,
+          })
+        ]
+      })
+
+      renderIndividualOffersContext()
+
+      await waitFor(async () => {
+        const display = await screen.findByText(new RegExp(LABELS.display.isHeadlineOfferAvailable))
+        expect(display.textContent).toContain('false')
+      })
     })
   })
 
   it('should fetch headline offer and make it available', async () => {
     renderIndividualOffersContext()
 
-    const display = await screen.findByText(new RegExp(LABELS.display.headlineOffer))
-    expect(display.textContent).toContain(MOCK_DATA.headlineOffer.id)
+    await waitFor(async () => {
+      const display = await screen.findByText(new RegExp(LABELS.display.headlineOffer))
+      expect(display.textContent).toContain(MOCK_DATA.headlineOffer.id)
+    })
   })
 
   describe('upsertHeadlineOffer', () => {
@@ -247,8 +279,10 @@ describe('IndividualOffersContext', () => {
     it('should close headline offer banner on successful upsert', async () => {
       renderIndividualOffersContext()
 
-      const display = await screen.findByText(new RegExp(LABELS.display.isHeadlineOfferBannerOpen))
-      expect(display.textContent).toContain('true')
+      await waitFor(async () => {
+        const display = await screen.findByText(new RegExp(LABELS.display.isHeadlineOfferBannerOpen))
+        expect(display.textContent).toContain('true')
+      })
 
       const upsertButton = await screen.findByRole('button', {
         name: new RegExp(LABELS.controls.upsertHeadlineOffer)
