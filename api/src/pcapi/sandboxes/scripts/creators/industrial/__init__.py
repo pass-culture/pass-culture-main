@@ -176,9 +176,9 @@ def save_industrial_sandbox() -> None:
 
     create_user_account_update_requests()
 
-    create_closed_offerers()
-
     create_industrial_invoices()
+
+    create_closed_offerers()
 
     # should be the last function called to create invoices
     build_many_extra_invoices()
