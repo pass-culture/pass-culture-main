@@ -573,6 +573,9 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": offer.name,
                 "nativeCategoryId": offer.subcategory.native_category_id,
                 "prices": sorted(prices),
+                "publicationDate": (
+                    offer.publicationDate.isoformat() if offer.publicationDate and not offer.isReleased else None
+                ),
                 "rankingWeight": offer.rankingWeight,
                 "releaseDate": release_date,
                 "bookFormat": extra_data.get("bookFormat"),
