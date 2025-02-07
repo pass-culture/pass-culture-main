@@ -26,6 +26,7 @@ from pcapi.routes.backoffice.offers import forms
 class CollectiveOffersSearchAttributes(enum.Enum):
     FORMATS = "Formats"
     INSTITUTION = "Établissement"
+    INSTITUTION_DEPT = "Département de l'établissement"
     CREATION_DATE = "Date de création"
     EVENT_DATE = "Date de l'évènement"
     BOOKING_LIMIT_DATE = "Date limite de réservation"
@@ -53,6 +54,7 @@ form_field_configuration = {
     "BOOKING_LIMIT_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
     "ID": {"field": "string", "operator": ["IN", "NOT_IN"]},
     "INSTITUTION": {"field": "institution", "operator": ["IN", "NOT_IN"]},
+    "INSTITUTION_DEPT": {"field": "department", "operator": ["IN", "NOT_IN"]},
     "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "NAME_EQUALS", "NAME_NOT_EQUALS"]},
     "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
     "STATUS": {"field": "status", "operator": ["IN", "NOT_IN"]},

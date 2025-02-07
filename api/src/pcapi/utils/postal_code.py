@@ -48,6 +48,7 @@ class PostalCode:
         self.postalCode = postalCode
 
     def get_departement_code(self) -> str:
+        # This method must be kept aligned with SQL function postal_code_to_department_code
         if self._is_overseas_departement():
             if self.postalCode == SAINT_BARTHELEMY_POSTAL_CODE:
                 return SAINT_BARTHELEMY_DEPARTEMENT_CODE

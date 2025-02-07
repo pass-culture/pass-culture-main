@@ -1630,7 +1630,12 @@ class EducationalInstitution(PcObject, Base, Model):
         "CollectivePlaylist", back_populates="institution"
     )
 
-    __table_args__ = (sa.Index("ix_educational_institution_type_name_city", institutionType + " " + name + " " + city),)
+    __table_args__ = (
+        sa.Index("ix_educational_institution_type_name_city", institutionType + " " + name + " " + city),
+        sa.Index(
+            "ix_educational_institution_department_code", sa.func.postal_code_to_department_code(postalCode), "id"
+        ),
+    )
 
     @property
     def full_name(self) -> str:

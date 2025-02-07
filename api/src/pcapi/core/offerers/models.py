@@ -21,8 +21,6 @@ from sqlalchemy import String
 from sqlalchemy import TEXT
 from sqlalchemy import Text
 from sqlalchemy import UniqueConstraint
-from sqlalchemy import case
-from sqlalchemy import cast
 from sqlalchemy import func
 import sqlalchemy.dialects.postgresql as sa_psql
 from sqlalchemy.dialects.postgresql.json import JSONB
@@ -1001,18 +999,7 @@ class Offerer(
 
     @departementCode.expression  # type: ignore[no-redef]
     def departementCode(cls) -> Case:  # pylint: disable=no-self-argument
-        return case(
-            (
-                cls.postalCode == postal_code_utils.SAINT_MARTIN_POSTAL_CODE,
-                postal_code_utils.SAINT_MARTIN_DEPARTEMENT_CODE,
-            ),
-            (
-                cast(func.substring(cls.postalCode, 1, postal_code_utils.MAINLAND_DEPARTEMENT_CODE_LENGTH), Integer)
-                >= postal_code_utils.OVERSEAS_DEPARTEMENT_CODE_START,
-                func.substring(cls.postalCode, 1, postal_code_utils.OVERSEAS_DEPARTEMENT_CODE_LENGTH),
-            ),
-            else_=func.substring(cls.postalCode, 1, postal_code_utils.MAINLAND_DEPARTEMENT_CODE_LENGTH),
-        )
+        return sa.func.postal_code_to_department_code(cls.postalCode)
 
     @hybrid_property
     def rid7(self) -> str | None:

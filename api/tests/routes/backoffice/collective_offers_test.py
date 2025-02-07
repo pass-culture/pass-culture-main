@@ -47,7 +47,7 @@ def collective_offers_fixture() -> tuple:
     last_year = educational_factories.create_educational_year(datetime.datetime.utcnow() - datetime.timedelta(days=365))
     current_year = educational_factories.create_educational_year(datetime.datetime.utcnow())
     institution_1 = educational_factories.EducationalInstitutionFactory()
-    institution_2 = educational_factories.EducationalInstitutionFactory()
+    institution_2 = educational_factories.EducationalInstitutionFactory(postalCode="97600", city="MAMOUDZOU")
     educational_factories.EducationalDepositFactory(
         educationalInstitution=institution_1,
         educationalYear=last_year,
@@ -492,6 +492,19 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[0].id, collective_offers[1].id}
+
+    def test_list_offers_by_institution_department(self, authenticated_client, collective_offers):
+        query_args = {
+            "search-1-search_field": "INSTITUTION_DEPT",
+            "search-1-operator": "IN",
+            "search-1-department": "976",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
 
     @pytest.mark.parametrize(
         "ministry,expected_indexes",

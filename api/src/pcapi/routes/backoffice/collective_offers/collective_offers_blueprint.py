@@ -58,6 +58,11 @@ SEARCH_FIELD_TO_PYTHON = {
         "field": "institution",
         "column": educational_models.CollectiveOffer.institutionId,
     },
+    "INSTITUTION_DEPT": {
+        "field": "department",
+        "inner_join": "institution",
+        "column": sa.func.postal_code_to_department_code(educational_models.EducationalInstitution.postalCode),
+    },
     "CREATION_DATE": {
         "field": "date",
         "column": educational_models.CollectiveOffer.dateCreated,
