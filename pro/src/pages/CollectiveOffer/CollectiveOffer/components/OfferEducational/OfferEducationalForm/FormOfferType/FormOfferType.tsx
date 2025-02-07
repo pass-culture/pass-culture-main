@@ -37,7 +37,8 @@ export const FormOfferType = ({
   disableForm,
   isTemplate,
 }: FormTypeProps): JSX.Element => {
-  const { values, setFieldValue } = useFormikContext<OfferEducationalFormValues>()
+  const { values, setFieldValue, setFieldTouched, touched, errors } =
+    useFormikContext<OfferEducationalFormValues>()
   const { logEvent } = useAnalytics()
 
   const eacFormatOptions = Object.entries(EacFormat).map(([, value]) => ({
@@ -77,30 +78,57 @@ export const FormOfferType = ({
       >
         {domainsOptions.length > 0 && (
           <FormLayout.Row>
-            <MultiSelect 
+            <MultiSelect
               label="Ajoutez un ou plusieurs domaines artistiques"
               name="domains"
               hasSearch
-              searchLabel='Recherche'
-              options={[{options: domainsOptions}]}
-              defaultOptions={domainsOptions.filter((option) => values.domains.includes(option.id))}
-              buttonLabel='Domaines artistiques'
-              onSelectedOptionsChanged={(selectedOptions) => setFieldValue('domains', [...selectedOptions.map((elm) => Number(elm.id))])}
+              searchLabel="Recherche"
+              options={[{ options: domainsOptions }]}
+              defaultOptions={domainsOptions.filter((option) =>
+                values.domains.includes(option.id)
+              )}
+              buttonLabel="Domaines artistiques"
+              onSelectedOptionsChanged={async (selectedOptions) => {
+                await setFieldValue('domains', [
+                  ...selectedOptions.map((elm) => Number(elm.id)),
+                ])
+                await setFieldTouched('domains', true)
+              }}
+              onBlur={() => setFieldTouched('domains', true)}
               disabled={disableForm}
+              showError={touched.domains && !!errors.domains}
+              error={
+                touched.domains && errors.domains
+                  ? String(errors.domains)
+                  : undefined
+              }
             />
           </FormLayout.Row>
         )}
         <FormLayout.Row>
           <MultiSelect
-            options={[{options: eacFormatOptions}]}
-            defaultOptions={eacFormatOptions.filter((option) => values.formats?.includes(option.id))}
+            options={[{ options: eacFormatOptions }]}
+            defaultOptions={eacFormatOptions.filter((option) =>
+              values.formats?.includes(option.id)
+            )}
             label="Ajoutez un ou plusieurs formats"
-            buttonLabel='Formats'
+            buttonLabel="Formats"
             hasSearch
-            searchLabel='Recherche'
+            searchLabel="Recherche"
             name="formats"
-            onSelectedOptionsChanged={(selectedOptions) => setFieldValue('formats', [...selectedOptions.map((elm) => elm.id)])}
+            onSelectedOptionsChanged={(selectedOptions) =>
+              setFieldValue('formats', [
+                ...selectedOptions.map((elm) => elm.id),
+              ])
+            }
             disabled={disableForm}
+            onBlur={() => setFieldTouched('formats', true)}
+            showError={touched.formats && !!errors.formats}
+            error={
+              touched.formats && errors.formats
+                ? String(errors.formats)
+                : undefined
+            }
           />
         </FormLayout.Row>
 

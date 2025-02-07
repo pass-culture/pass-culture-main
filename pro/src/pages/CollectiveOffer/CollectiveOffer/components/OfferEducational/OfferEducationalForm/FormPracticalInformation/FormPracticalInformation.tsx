@@ -45,7 +45,7 @@ export const FormPracticalInformation = ({
   currentOfferer,
   disableForm,
 }: FormPracticalInformationProps): JSX.Element => {
-  const { values, setFieldValue } =
+  const { values, setFieldValue, touched, errors, setFieldTouched } =
     useFormikContext<OfferEducationalFormValues>()
 
   const [currentVenue, setCurrentVenue] =
@@ -201,11 +201,18 @@ export const FormPracticalInformation = ({
             searchLabel="Rechercher"
             hasSelectAllOptions
             onSelectedOptionsChanged={(selectedOption) =>
-              setFieldValue('collectiveInterventionArea', [
+              setFieldValue('interventionArea', [
                 ...selectedOption.map(
                   (interventionArea) => interventionArea.id
                 ),
               ])
+            }
+            onBlur={() => setFieldTouched('interventionArea', true)}
+            showError={touched.interventionArea && !!errors.formats}
+            error={
+              touched.interventionArea && errors.interventionArea
+                ? String(errors.interventionArea)
+                : undefined
             }
           />
         </FormLayout.Row>

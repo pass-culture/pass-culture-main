@@ -55,13 +55,13 @@ describe('Create collective offers', () => {
 
     cy.findByLabelText('Structure *').select(venueName)
 
-    cy.findByLabelText('Ajoutez un ou plusieurs domaines artistiques *').click()
+    cy.findByLabelText('Domaines artistiques').click()
 
-    cy.get('#list-domains').find('#option-display-2').click()
+    cy.findByLabelText('Architecture').click()
     cy.findByText('Quel est le type de votre offre ?').click()
 
-    cy.findByLabelText('Ajoutez un ou plusieurs formats *').click()
-    cy.get('#list-formats').find('#option-display-Concert').click()
+    cy.findByLabelText('Formats').click()
+    cy.findByLabelText('Concert').click()
     cy.findByText('Quel est le type de votre offre ?').click()
 
     cy.findByLabelText('Titre de l’offre *').type(newOfferName)
