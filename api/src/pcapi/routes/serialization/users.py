@@ -86,7 +86,7 @@ class ProUserCreationBodyV2Model(BaseModel):
     first_name: str
     last_name: str
     password: str
-    phone_number: str
+    phone_number: str | None = None
     contact_ok: bool
     token: str
 
