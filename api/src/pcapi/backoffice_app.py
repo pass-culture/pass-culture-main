@@ -13,7 +13,7 @@ from pcapi import settings
 from pcapi.flask_app import app
 from pcapi.flask_app import setup_metrics
 from pcapi.repository import mark_transaction_as_invalid
-from pcapi.routes.backoffice.scss import preprocess_scss
+from pcapi.routes.backoffice import static_utils
 
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -49,7 +49,12 @@ def handle_csrf_error(error: typing.Any) -> tuple[str, int]:
 def generate_error_response(errors: dict, backoffice_template_name: str = "errors/generic.html") -> Response:
     # If the error happens inside a turbo-frame, it's id is reused to insert the error in the correct place
     turbo_frame_id = request.headers.get("Turbo-Frame")
-    content = render_template(backoffice_template_name, errors=errors, turbo_frame_id=turbo_frame_id)
+    content = render_template(
+        backoffice_template_name,
+        errors=errors,
+        turbo_frame_id=turbo_frame_id,
+        static_hashes=static_utils.get_hashes(),
+    )
     return make_response(content)
 
 
@@ -61,7 +66,7 @@ with app.app_context():
     import pcapi.routes.backoffice.error_handlers  # pylint: disable=unused-import
     import pcapi.utils.login_manager
 
-    preprocess_scss(settings.BACKOFFICE_WATCH_SCSS_CHANGE)
+    static_utils.generate_bundles()
     install_routes(app)
     app.register_blueprint(backoffice_web, url_prefix="/")
 
