@@ -100,42 +100,29 @@ class PcTableManager extends PcAddOn {
   /** MENU **/
   #initializeMenu = ($table, configuration) => {
     const div = document.createElement('div')
-    div.classList.add("dropdown")
-    const button = document.createElement('button')
-    div.appendChild(button)
-    button.type = "button"
-    button.dataset.bsToggle = 'dropdown'
-    button.ariaExpanded = "false"
-    button.classList.add('btn', 'p0')
-    const i = document.createElement('i')
-    button.appendChild(i)
-    i.classList.add('bi', 'bi-three-dots-vertical')
-    const ul = document.createElement('ul')
-    div.appendChild(ul)
-    ul.classList.add("dropdown-menu", 'pc-table-manager-draggable')
-    ul.dataset.pcTargetTableId = configuration.id
+    div.classList.add('dropdown')
+    const elements = []
     configuration.columns.forEach((column) => {
-      const li = document.createElement('li')
-      ul.appendChild(li)
-      li.classList.add('dropdown-item', 'me-3')
-      li.draggable = true
-      li.dataset.pcTargetColumnId = column.id
-      const grip = document.createElement('i')
-      li.appendChild(grip)
-      grip.classList.add('bi', 'bi-grip-vertical')
-      const text = document.createTextNode(column.name)
-      li.appendChild(text)
-      const toggleVisibility = document.createElement('i')
-      li.appendChild(toggleVisibility)
-      toggleVisibility.classList.add(
-        'bi', 'pc-table-manager-toggle-visibility', 'link-primary', 'h5', 'position-absolute', 'end-0', 'pe-2'
+      elements.push(
+        `
+          <li class="dropdown-item me-3" draggable="true" data-pc-target-column-id="${column.id}">
+            <i class="bi bi-grip-vertical"></i>
+            ${column.name}
+            <i class="bi pc-table-manager-toggle-visibility link-primary h5 position-absolute end-0 pe-2 bi-eye${column.display?'':'-slash'}"></i>
+          </li>
+        `
       )
-      if (column.display) {
-        toggleVisibility.classList.add('bi-eye')
-      } else {
-        toggleVisibility.classList.add('bi-eye-slash')
-      }
     })
+
+    const innerHTML = `
+      <button class="btn p0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-three-dots-vertical"></i>
+      </button>
+      <ul class="dropdown-menu pc-table-manager-draggable" data-pc-target-table-id="${configuration.id}">
+        ${elements.join("\n")}
+      </ul>
+    `
+    div.innerHTML = innerHTML
     $table.before(div)
   }
 
@@ -296,13 +283,16 @@ class PcTableManager extends PcAddOn {
     const startTime = performance.now()
 
     const previousConfiguration = this.configurations[configuration.id]
+    const $table = document.querySelector(`table[data-pc-table-manager-id="${configuration.id}"]`);
     
     if(! this.#needUpdate(previousConfiguration, configuration)){
       // fast path to not blink the table if nothing changed
+      $table.classList.remove('d-none')
+      this.saveConfiguration(configuration)
+      this.configurations[configuration.id] = configuration
       return
     }
 
-    const $table = document.querySelector(`table[data-pc-table-manager-id="${configuration.id}"]`);
     $table.classList.add('d-none')
     const oldConfigurationMap = {}
 
