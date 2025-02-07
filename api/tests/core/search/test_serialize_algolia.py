@@ -491,7 +491,7 @@ def test_serialize_future_offer():
     offers_factories.FutureOfferFactory(offerId=offer_2.id, publicationDate=publication_date)
 
     serialized = algolia.AlgoliaBackend().serialize_offer(offer_1, 0)
-    assert serialized["offer"]["publicationDate"] == publication_date.isoformat()
+    assert serialized["offer"]["publicationDate"] == publication_date.timestamp()
 
     serialized = algolia.AlgoliaBackend().serialize_offer(offer_2, 0)
     assert "publicationDate" not in serialized["offer"]

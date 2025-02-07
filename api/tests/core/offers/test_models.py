@@ -747,18 +747,19 @@ class HeadlineOfferTest:
 
 class OfferIsSearchableTest:
     def test_offer_is_future(self):
-        offer_1 = factories.OfferFactory(isActive=True)
-        offer_2 = factories.OfferFactory(isActive=True)
-        offer_3 = factories.OfferFactory(isActive=False)
+        offer_1 = factories.OfferFactory(isActive=False)
+        offer_2 = factories.OfferFactory(isActive=False)
+        offer_3 = factories.OfferFactory(isActive=True)
+        factories.StockFactory(offer=offer_3)
         future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
         past_publication_date = datetime.datetime.utcnow() - datetime.timedelta(days=30)
-        _ = factories.FutureOfferFactory(offerId=offer_1.id, publicationDate=future_publication_date)
-        _ = factories.FutureOfferFactory(offerId=offer_2.id, publicationDate=past_publication_date)
-        _ = factories.FutureOfferFactory(offerId=offer_3.id, publicationDate=future_publication_date)
+        factories.FutureOfferFactory(offerId=offer_1.id, publicationDate=future_publication_date)
+        factories.FutureOfferFactory(offerId=offer_2.id, publicationDate=past_publication_date)
+        factories.FutureOfferFactory(offerId=offer_3.id, publicationDate=future_publication_date)
 
         assert offer_1.is_eligible_for_search
         assert not offer_2.is_eligible_for_search
-        assert not offer_3.is_eligible_for_search
+        assert offer_3.is_eligible_for_search
 
         # hybrid property: also check SQL expression
         results = (
@@ -768,13 +769,14 @@ class OfferIsSearchableTest:
             .filter(models.Offer.is_eligible_for_search)
             .all()
         )
-        assert len(results) == 1
+        assert len(results) == 2
         assert results[0].id == offer_1.id
+        assert results[1].id == offer_3.id
 
     def test_offer_is_bookable(self):
         offer_1 = factories.OfferFactory(isActive=True)
         offer_2 = factories.OfferFactory(isActive=False)
-        _ = factories.StockFactory(offer=offer_1)
+        factories.StockFactory(offer=offer_1)
 
         assert offer_1.is_eligible_for_search
         assert not offer_2.is_eligible_for_search
