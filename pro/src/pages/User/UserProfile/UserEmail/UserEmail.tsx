@@ -42,6 +42,9 @@ export const UserEmail = ({
 
   return (
     <BoxFormLayout>
+      {!showForm && pendingEmailValidation && (
+        <BannerPendingEmailValidation email={pendingEmailValidation} />
+      )}
       <BoxRounded onClickModify={onClickModify} showButtonModify={!showForm}>
         {showForm ? (
           <UserEmailForm
@@ -49,21 +52,10 @@ export const UserEmail = ({
             getPendingEmailRequest={getPendingEmailRequest}
           />
         ) : (
-          <>
-            <BoxFormLayout.Header
-              subtitle={initialValues.email}
-              title="Adresse email de connexion"
-            />
-            {pendingEmailValidation && (
-              <BoxFormLayout.Banner
-                banner={
-                  <BannerPendingEmailValidation
-                    email={pendingEmailValidation}
-                  />
-                }
-              />
-            )}
-          </>
+          <BoxFormLayout.Header
+            subtitle={initialValues.email}
+            title="Adresse email de connexion"
+          />
         )}
       </BoxRounded>
     </BoxFormLayout>

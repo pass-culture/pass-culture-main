@@ -1,4 +1,5 @@
+@use "styles/mixins/_rem.scss" as rem;
+
 .banner-email-adress {
-  margin-bottom: 0;
-  margin-top: 16px;
+  margin: rem.torem(16px) 0;
 }
