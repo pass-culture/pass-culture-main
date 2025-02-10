@@ -14,6 +14,7 @@
         {%+ endif +%}
       </th>
       <th scope="col">Permanent</th>
+      {% if is_feature_active("WIP_IS_OPEN_TO_PUBLIC") %}<th scope="col">Ouvert au public</th>{% endif %}
       <th scope="col">Activité principale</th>
       <th scope="col">Présence web</th>
       <th scope="col">Offres cibles</th>
@@ -32,6 +33,13 @@
             <span class="visually-hidden">Partenaire culturel permanent</span><i class="bi bi-check-circle-fill"></i>
           {% endif %}
         </td>
+        {% if is_feature_active("WIP_IS_OPEN_TO_PUBLIC") %}
+          <td>
+            {% if venue.isOpenToPublic %}
+              <span class="visually-hidden">Partenaire culturel ouvert au public</span><i class="bi bi-check-circle-fill"></i>
+            {% endif %}
+          </td>
+        {% endif %}
         <td>{{ venue.venueTypeCode.value }}</td>
         <td>
           {% if venue.web_presence %}

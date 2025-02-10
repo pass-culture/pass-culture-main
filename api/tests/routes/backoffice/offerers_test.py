@@ -1639,13 +1639,15 @@ class GetOffererVenuesTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - venues with joined data (1 query)
-    expected_num_queries = 3
+    # - WIP_IS_OPEN_TO_PUBLIC feature flag (1 query)
+    expected_num_queries = 4
 
+    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
     def test_get_managed_venues(self, authenticated_client, offerer):
         now = datetime.datetime.utcnow()
         other_offerer = offerers_factories.OffererFactory()
         venue_1 = offerers_factories.VenueFactory(
-            name="Deuxième", publicName="Second", managingOfferer=offerer, isPermanent=True
+            name="Deuxième", publicName="Second", managingOfferer=offerer, isPermanent=True, isOpenToPublic=True
         )
         old_bank_account = finance_factories.BankAccountFactory(offerer=offerer, label="Ancien compte")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer, label="Compte actuel")
@@ -1658,7 +1660,9 @@ class GetOffererVenuesTest(GetEndpointHelper):
             bankAccount=bank_account, venue=venue_1, timespan=[now - datetime.timedelta(days=3), None]
         )
 
-        venue_2 = offerers_factories.VenueFactory(name="Premier", publicName=None, managingOfferer=offerer)
+        venue_2 = offerers_factories.VenueFactory(
+            name="Premier", publicName=None, managingOfferer=offerer, isOpenToPublic=False
+        )
         offerers_factories.VenueRegistrationFactory(venue=venue_2)
         educational_factories.CollectiveDmsApplicationFactory(venue=venue_2, application=35)
         offerers_factories.VenueFactory(managingOfferer=other_offerer)
@@ -1675,6 +1679,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(venue_2.id)
         assert rows[0]["SIRET"] == venue_2.siret
         assert rows[0]["Permanent"] == ""
+        assert rows[0]["Ouvert au public"] == ""
         assert rows[0]["Nom"] == venue_2.name
         assert rows[0]["Activité principale"] == venue_2.venueTypeCode.value
         assert not rows[0].get("Type de partenaire culturel")
@@ -1685,6 +1690,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[1]["ID"] == str(venue_1.id)
         assert rows[1]["SIRET"] == venue_1.siret
         assert rows[1]["Permanent"] == "Partenaire culturel permanent"
+        assert rows[1]["Ouvert au public"] == "Partenaire culturel ouvert au public"
         assert rows[1]["Nom"] == venue_1.publicName
         assert rows[1]["Activité principale"] == venue_1.venueTypeCode.value
         assert not rows[0].get("Type de partenaire culturel")
