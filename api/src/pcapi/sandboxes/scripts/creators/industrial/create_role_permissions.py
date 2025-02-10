@@ -42,6 +42,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.READ_INCIDENTS,
         perm_models.Permissions.MANAGE_INCIDENTS,
+        perm_models.Permissions.READ_TECH_PARTNERS,
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
     ],
     "support_pro_n2": [
@@ -78,7 +79,10 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.CREATE_REIMBURSEMENT_RULES,
     ],
-    "partenaire_technique": [],
+    "partenaire_technique": [
+        perm_models.Permissions.READ_TECH_PARTNERS,
+        perm_models.Permissions.MANAGE_TECH_PARTNERS,
+    ],
     "programmation_market": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PRO_ENTITY,
@@ -107,6 +111,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "charge_developpement": [
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.MANAGE_SPECIAL_EVENTS,
+        perm_models.Permissions.READ_TECH_PARTNERS,
     ],
     "lecture_seule": [
         perm_models.Permissions.READ_ADMIN_ACCOUNTS,
@@ -116,6 +121,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.READ_TAGS,
         perm_models.Permissions.READ_CHRONICLE,
+        perm_models.Permissions.READ_TECH_PARTNERS,
     ],
     "qa": [
         perm_models.Permissions.READ_PERMISSIONS,
@@ -153,6 +159,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.CREATE_REIMBURSEMENT_RULES,
         perm_models.Permissions.READ_INCIDENTS,
         perm_models.Permissions.MANAGE_INCIDENTS,
+        perm_models.Permissions.READ_TECH_PARTNERS,
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
         perm_models.Permissions.READ_CHRONICLE,
         perm_models.Permissions.MANAGE_CHRONICLE,
@@ -192,6 +199,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.CREATE_REIMBURSEMENT_RULES,
         perm_models.Permissions.READ_INCIDENTS,
         perm_models.Permissions.MANAGE_INCIDENTS,
+        perm_models.Permissions.READ_TECH_PARTNERS,
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
         perm_models.Permissions.READ_CHRONICLE,
         perm_models.Permissions.MANAGE_CHRONICLE,

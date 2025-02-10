@@ -15,6 +15,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
 
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -26,9 +27,9 @@ pytestmark = [
 ]
 
 
-class ListProvidersPageTest(GetEndpointHelper):
+class ListProvidersTest(GetEndpointHelper):
     endpoint = "backoffice_web.providers.list_providers"
-    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+    needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
     # - fetch session (1 query)
     # - fetch user (1 query)
@@ -75,6 +76,15 @@ class ListProvidersPageTest(GetEndpointHelper):
         assert rows[-1]["Nombre de clés d'API"] == "1"
         assert rows[-1]["Actif pour les pros"] == "Oui"
         assert rows[-1]["Actif"] == "Oui"
+
+
+class CreateProviderButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+    button_label = "Créer un partenaire"
+
+    @property
+    def path(self):
+        return url_for("backoffice_web.providers.list_providers")
 
 
 class CreateProviderTest(PostEndpointHelper):
@@ -207,7 +217,7 @@ class CreateProviderTest(PostEndpointHelper):
 class GetProviderTest(GetEndpointHelper):
     endpoint = "backoffice_web.providers.get_provider"
     endpoint_kwargs = {"provider_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+    needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
     # get session (1 query)
     # get user with profile and permissions (1 query)
@@ -250,7 +260,7 @@ class GetProviderTest(GetEndpointHelper):
 class GetProviderStatsTest(GetEndpointHelper):
     endpoint = "backoffice_web.providers.get_stats"
     endpoint_kwargs = {"provider_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+    needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
     def test_get_stats(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(name="Le videur pro")
@@ -297,7 +307,7 @@ class GetProviderStatsTest(GetEndpointHelper):
 class GetProviderVenuesTest(GetEndpointHelper):
     endpoint = "backoffice_web.providers.get_venues"
     endpoint_kwargs = {"provider_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+    needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
     # - session + authenticated user (2 queries)
     # - venues with joined data (1 query)
@@ -333,6 +343,16 @@ class GetProviderVenuesTest(GetEndpointHelper):
 
         assert rows[1]["ID"] == str(venue_2.id)
         assert rows[1]["Nom"] == venue_2.name
+
+
+class UpdateProviderButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+    button_label = "Modifier les informations"
+
+    @property
+    def path(self):
+        provider = providers_factories.ProviderFactory()
+        return url_for("backoffice_web.providers.get_provider", provider_id=provider.id)
 
 
 class UpdateProviderTest(PostEndpointHelper):
