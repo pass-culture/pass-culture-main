@@ -13,6 +13,10 @@ title: Pass Culture API change logs
 **You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
 :::
 
+## February 2025
+
+- You can specify a `publicationDate` precise to the quarter of hour using the [**Create Product Offer endpoint**](/rest-api#tag/Product-Offers/operation/PostProductOffer) and [**Create Event Offer endpoint**](/rest-api#tag/Event-Offers/operation/PostEventOffer).
+
 ## January 2025
 - The `beginningDatetime` has been removed from the following endpoints:
   - Removed from the return value:
