@@ -86,7 +86,9 @@ def venues_fixture(criteria) -> list[offerers_models.Venue]:
             venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
             venueLabelId=offerers_factories.VenueLabelFactory(label="Cinéma d'art et d'essai").id,
             criteria=criteria[:2],
-            postalCode="82000",
+            offererAddress=offerers_factories.OffererAddressFactory(
+                address__postalCode="82000", address__departmentCode="82"
+            ),
             isPermanent=True,
         ),
         offerers_factories.VenueFactory(
@@ -94,7 +96,9 @@ def venues_fixture(criteria) -> list[offerers_models.Venue]:
             venueTypeCode=offerers_models.VenueTypeCode.GAMES,
             venueLabelId=offerers_factories.VenueLabelFactory(label="Scènes conventionnées").id,
             criteria=criteria[2:],
-            postalCode="45000",
+            offererAddress=offerers_factories.OffererAddressFactory(
+                address__postalCode="45000", address__departmentCode="45"
+            ),
             isPermanent=False,
         ),
     ]
@@ -179,7 +183,11 @@ class ListVenuesTest(GetEndpointHelper):
             assert row["Entité juridique"] == offerer.name
 
     def test_list_venues_by_regions(self, authenticated_client, venues):
-        venue = offerers_factories.VenueFactory(postalCode="82000")
+        venue = offerers_factories.VenueFactory(
+            offererAddress=offerers_factories.OffererAddressFactory(
+                address__postalCode="82000", address__departmentCode="82"
+            ),
+        )
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, regions="Occitanie", order="asc"))
             assert response.status_code == 200
