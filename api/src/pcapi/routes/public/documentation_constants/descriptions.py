@@ -63,3 +63,10 @@ Booking status explanation:
 
 BEGINNING_DATETIME_FIELD_DESCRIPTION = "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)."
 BOOKING_LIMIT_DATETIME_FIELD_DESCRIPTION = "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)."
+PUBLICATION_DATETIME_FIELD_DESCRIPTION = """
+The date and time when the offer will be published in the beneficiary application.
+
+- Must not be in the past
+- Time must be rounded to the nearest quarter-hour
+- Format: **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (timezone-aware datetime)
+"""

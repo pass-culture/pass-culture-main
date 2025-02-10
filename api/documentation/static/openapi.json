@@ -2592,7 +2592,7 @@
                         "type": "array"
                     },
                     "publicationDate": {
-                        "description": "Date and time when we want the offer to be published on the native app. It cannot be a date in the past, and the time must be on the exact hour. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)",
+                        "description": "\nThe date and time when the offer will be published in the beneficiary application.\n\n- Must not be in the past\n- Time must be rounded to the nearest quarter-hour\n- Format: **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (timezone-aware datetime)\n",
                         "example": "2025-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
@@ -3056,7 +3056,7 @@
                         "type": "array"
                     },
                     "publicationDate": {
-                        "description": "Date and time when we want the offer to be published on the native app. It cannot be a date in the past, and the time must be on the exact hour. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)",
+                        "description": "\nThe date and time when the offer will be published in the beneficiary application.\n\n- Must not be in the past\n- Time must be rounded to the nearest quarter-hour\n- Format: **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (timezone-aware datetime)\n",
                         "example": "2025-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
