@@ -4355,7 +4355,7 @@ class CreateDepositV3Test:
 
         expiration_date = api.compute_deposit_expiration_date_v3(user)
 
-        assert expiration_date == datetime.date(2028, 1, 1)
+        assert expiration_date.date() == datetime.date(2028, 1, 1)
 
     @time_machine.travel("2025-03-03")
     def test_create_deposit_v3(self):
@@ -4363,7 +4363,7 @@ class CreateDepositV3Test:
         assert user_v3.age == 18
 
         deposit_v3 = api.create_deposit(user_v3, "created by test", users_models.EligibilityType.AGE17_18)
-        assert deposit_v3.expirationDate == datetime.date(2028, 1, 1)
+        assert deposit_v3.expirationDate.date() == datetime.date(2028, 1, 1)
         assert deposit_v3.type == models.DepositType.GRANT_17_18
         assert deposit_v3.amount == 0
 
