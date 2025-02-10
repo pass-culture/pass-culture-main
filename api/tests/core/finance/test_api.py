@@ -4401,6 +4401,7 @@ class CreateDepositV3Test:
         assert deposit.amount == 30
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 class UserRecreditTest:
     @time_machine.travel("2021-07-01")
     @pytest.mark.parametrize(
@@ -4957,6 +4958,56 @@ class UserRecreditTest:
         assert payload["deposit_type"] == "GRANT_15_17"
         assert payload["deposits_count"] == 1
         assert payload["deposit_expiration_date"] == user.deposit.expirationDate.isoformat()
+
+
+@pytest.mark.feature(WIP_ENABLE_CREDIT_V3=True)
+class CanRecreditTest:
+    @pytest.mark.parametrize("age", (14, 15, 16, 19))
+    def test_users_not_eligible_cannot_be_recredited(self, age):
+        user = users_factories.BaseUserFactory(
+            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, months=1)
+        )
+        assert not api._can_be_recredited(user)
+
+    def test_users_with_no_deposit_cannot_be_recredited(self):
+        user = users_factories.BaseUserFactory(
+            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1)
+        )
+        assert not api._can_be_recredited(user)
+
+    @pytest.mark.parametrize("age", (17, 18))
+    def test_users_with_a_deposit_can_be_recredited(self, age):
+        user = users_factories.BaseUserFactory(
+            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, months=1)
+        )
+        users_factories.DepositGrantFactory(user=user, type=models.DepositType.GRANT_17_18)
+        assert api._can_be_recredited(user)
+
+    def test_user_18_yo_can_be_recredited(self):
+        user = users_factories.BaseUserFactory(
+            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1)
+        )
+        deposit = users_factories.DepositGrantFactory(user=user, type=models.DepositType.GRANT_17_18)
+        factories.RecreditFactory(deposit=deposit, amount=50, recreditType=models.RecreditType.RECREDIT_17)
+
+        assert api._can_be_recredited(user)
+
+    def test_user_18_yo_can_not_be_recredited_twice(self):
+        user = users_factories.BaseUserFactory(
+            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1)
+        )
+        deposit = users_factories.DepositGrantFactory(user=user)
+        factories.RecreditFactory(deposit=deposit, amount=150, recreditType=models.RecreditType.RECREDIT_18)
+
+        assert not api._can_be_recredited(user)
+
+    def test_user_16_yo_can_be_recredited(self):
+        before_decree = datetime.datetime(2024, 12, 1)
+        with time_machine.travel(before_decree):
+            user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
+
+        with time_machine.travel(before_decree + relativedelta(years=1, days=1)):
+            assert api._can_be_recredited(user)
 
 
 class ValidateFinanceIncidentTest:

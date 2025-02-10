@@ -3147,12 +3147,40 @@ def expire_current_deposit_for_user(user: users_models.User) -> None:
 def _can_be_recredited(user: users_models.User, age: int | None = None) -> bool:
     if age is None:
         age = user.age
-    # TODO: 18 ans ?
+    if feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
+        return _can_be_recredited_v3(user, age)
+    return _can_be_recredited_v2(user, age)
+
+
+def _can_be_recredited_v2(user: users_models.User, age: int | None = None) -> bool:
     return (
         age in conf.RECREDIT_TYPE_AGE_MAPPING
         and _has_celebrated_birthday_since_credit_or_registration(user)
         and not _has_been_recredited(user, age)
     )
+
+
+def _can_be_recredited_v3(user: users_models.User, age: int | None = None) -> bool:
+    if age is None:
+        return False
+    if age < 16:
+        return False
+
+    if not user.has_active_deposit:
+        return False
+    assert user.deposit is not None  # always True after the check above. Helps mypy.
+
+    user_recredits = user.deposit.recredits
+
+    # Handle old-new deposits transition
+    if user.deposit.type == models.DepositType.GRANT_15_17:
+        return _can_be_recredited_v2(user, age)
+
+    if user.deposit.type == models.DepositType.GRANT_17_18:
+        return not any(recredit.recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[age] for recredit in user_recredits)
+
+    # models.DepositType.GRANT_18 cannot be recredited
+    return False
 
 
 def _has_celebrated_birthday_since_credit_or_registration(user: users_models.User) -> bool:
