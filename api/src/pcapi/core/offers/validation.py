@@ -162,7 +162,7 @@ def check_stock_price(
     if (
         offer_price_limitation_rule
         and offer.validation is not OfferValidationStatus.DRAFT
-        and (offer.ean is not None)
+        and (not offer.ean)
         and (offer.lastValidationPrice is not None or offer.stocks)
     ):
         reference_price = (

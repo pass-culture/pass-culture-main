@@ -57,7 +57,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             venue=venue_provider.venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
-            extraData={"ean": "1234567890123"},
+            ean="1234567890123",
         )
 
         product_offer_id = product_offer.id
@@ -104,7 +104,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             venue=venue_provider.venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
-            extraData={"ean": "1234567890123"},
+            ean="1234567890123",
         )
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
@@ -862,7 +862,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             venue=venue_provider.venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
-            extraData={"ean": "1234567890123"},
+            ean="1234567890123",
         )
 
         num_queries = 1  # select api_key, offerer and provider

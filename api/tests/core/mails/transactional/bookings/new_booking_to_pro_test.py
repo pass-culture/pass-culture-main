@@ -86,7 +86,7 @@ class OffererBookingRecapTest:
     def test_with_book(self):
         booking = make_booking(
             stock__offer__name="Le récit de voyage",
-            stock__offer__extraData={"ean": "123456789"},
+            stock__offer_ean="123456789",
             stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
 
@@ -110,7 +110,7 @@ class OffererBookingRecapTest:
     def test_non_digital_bookings_can_expire_after_30_days(self):
         booking = make_booking(
             stock__offer__name="Le récit de voyage",
-            stock__offer__extraData={"ean": "123456789"},
+            stock__offer__ean="123456789",
             stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             stock__offer__venue__street=None,
             stock__offer__venue__city=None,
