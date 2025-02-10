@@ -8,19 +8,23 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder, DialogBuilderProps } from './DialogBuilder'
 
 const defaultProps: DialogBuilderProps = {
-  children: <p>Dialog content</p>,
+  children: (
+    <>
+      <p>Dialog content</p>
+      <DialogBuilder.Footer>
+        <div>
+          <Dialog.Close asChild>
+            <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+          </Dialog.Close>
+          <Dialog.Close asChild>
+            <Button>Continuer</Button>
+          </Dialog.Close>
+        </div>
+      </DialogBuilder.Footer>
+    </>
+  ),
   title: 'Dialog title',
   trigger: <Button>Open the dialog</Button>,
-  footer: (
-    <div>
-      <Dialog.Close asChild>
-        <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
-      </Dialog.Close>
-      <Dialog.Close asChild>
-        <Button>Continuer</Button>
-      </Dialog.Close>
-    </div>
-  ),
 }
 
 function renderDialogBuilder(props = defaultProps) {
