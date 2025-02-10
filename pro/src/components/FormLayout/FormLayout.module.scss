@@ -81,6 +81,7 @@ $info-box-margin-left: rem.torem(24px);
       display: flex;
       flex-flow: row wrap;
       flex-direction: row;
+      gap: rem.torem(16px);
     }
   }
 
@@ -124,11 +125,6 @@ $info-box-margin-left: rem.torem(24px);
 
 @media (min-width: size.$laptop) {
   .form-layout {
-    &-row.inline-group {
-      flex-wrap: unset;
-      gap: rem.torem(16px);
-    }
-
     &-row-info-info {
       width: $info-box-width;
       position: absolute;

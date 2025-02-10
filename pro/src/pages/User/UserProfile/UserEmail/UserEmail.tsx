@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { UserEmailForm } from 'components/UserEmailForm/UserEmailForm'
+import { UserEmailForm } from 'pages/User/UserProfile/UserEmail/UserEmailForm/UserEmailForm'
 import { BoxFormLayout } from 'ui-kit/BoxFormLayout/BoxFormLayout'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 
