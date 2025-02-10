@@ -4,6 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import { GetOfferStockResponseModel, StocksOrderedBy } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
@@ -486,6 +487,29 @@ describe('StocksEventList', () => {
       String(filteredPriceCategoryId)
     )
 
-    expect(mockLogEvent).toHaveBeenCalled()
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.UPDATED_EVENT_STOCK_FILTERS,
+      expect.objectContaining({ formType: 'creation' })
+    )
+  })
+
+  it('should trigger an event log when a filter changes in a readonly form', async () => {
+    await renderStocksEventList([stock1], { readonly: true })
+
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [],
+      stockCount: 0,
+      hasStocks: false,
+    })
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Filtrer par tarif'),
+      String(filteredPriceCategoryId)
+    )
+
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.UPDATED_EVENT_STOCK_FILTERS,
+      expect.objectContaining({ formType: 'readonly' })
+    )
   })
 })
