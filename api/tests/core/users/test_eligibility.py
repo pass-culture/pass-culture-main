@@ -390,3 +390,177 @@ class GetExtendedEligibilityTest:
         eligibility = eligibility_api.get_extended_eligibility_at_date(date_of_birth, specified_date)
 
         assert eligibility is None
+
+
+@pytest.mark.usefixtures("db_session")
+class GetFirstRegistrationDateTest:
+    def test_get_first_registration_date_no_check(self):
+        user = users_factories.UserFactory()
+        assert (
+            eligibility_api.get_first_eligible_registration_date(
+                user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE
+            )
+            is None
+        )
+
+    def test_get_first_registration_date_underage(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2002, 1, 15))
+        d1 = datetime(2018, 1, 1)
+        d2 = datetime(2018, 2, 1)
+        d3 = datetime(2018, 3, 1)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            dateCreated=d2,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            dateCreated=d2,
+            resultContent=None,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            dateCreated=d3,
+            resultContent=fraud_factories.DMSContentFactory(registration_datetime=d1),
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        assert (
+            eligibility_api.get_first_eligible_registration_date(
+                user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE
+            )
+            == d1
+        )
+
+    def test_get_first_registration_date_underage_with_timezone(self):
+        user = users_factories.UserFactory(age=17)
+        today_in_utc = date.today() - relativedelta(minutes=15)  # 23:45 in UTC, so 00:45 today in Europe/Paris
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            dateCreated=today_in_utc,
+            resultContent=None,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+
+        first_registration_date = eligibility_api.get_first_eligible_registration_date(
+            user, user.birth_date, users_models.EligibilityType.UNDERAGE
+        )
+
+        assert first_registration_date == today_in_utc
+
+    @pytest.mark.parametrize("age", [20])
+    def test_get_first_registration_date_18_with_timezone(self, age):
+        user = users_factories.UserFactory(age=age)
+        today_in_utc = date.today() - relativedelta(minutes=15)  # 23:45 in UTC, so 00:45 today in Europe/Paris
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            dateCreated=today_in_utc,
+            resultContent=None,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        first_registration_date = eligibility_api.get_first_eligible_registration_date(
+            user, user.birth_date, users_models.EligibilityType.AGE18
+        )
+
+        assert first_registration_date == today_in_utc
+
+    def test_get_first_registration_date_age_18(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2002, 1, 15))
+        d1 = datetime(2018, 1, 1)
+        d2 = datetime(2020, 2, 1)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            dateCreated=d1,
+            resultContent=fraud_factories.DMSContentFactory(registration_datetime=d1),
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            dateCreated=d2,
+            resultContent=fraud_factories.DMSContentFactory(registration_datetime=d2),
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        assert (
+            eligibility_api.get_first_eligible_registration_date(
+                user, user.dateOfBirth, users_models.EligibilityType.AGE18
+            )
+            == d2
+        )
+
+    def test_with_uneligible_age_try(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2005, 1, 15))
+        d1 = datetime(2020, 1, 1)
+        d2 = datetime(2020, 2, 1)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            dateCreated=d1,
+            status=fraud_models.FraudCheckStatus.KO,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            dateCreated=d2,
+            resultContent=fraud_factories.DMSContentFactory(registration_datetime=d2),
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+
+        assert (
+            eligibility_api.get_first_eligible_registration_date(
+                user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE
+            )
+            == d2
+        )
+
+    def test_with_registration_before_opening_try(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2005, 1, 15))
+        d1 = datetime(2020, 1, 1)
+        d2 = datetime(2020, 2, 1)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.INTERNAL_REVIEW,  # this happened with jouve results saying when the age is <18
+            dateCreated=d1,
+            status=fraud_models.FraudCheckStatus.KO,
+            eligibilityType=None,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            dateCreated=d2,
+            resultContent=fraud_factories.DMSContentFactory(registration_datetime=d2),
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+
+        assert (
+            eligibility_api.get_first_eligible_registration_date(
+                user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE
+            )
+            == d2
+        )
+
+    def test_without_eligible_try(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2005, 1, 15))
+        d1 = datetime(2020, 1, 1)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            dateCreated=d1,
+            status=fraud_models.FraudCheckStatus.KO,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+
+        assert (
+            eligibility_api.get_first_eligible_registration_date(
+                user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE
+            )
+            is None
+        )
