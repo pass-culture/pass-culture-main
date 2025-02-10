@@ -12,6 +12,7 @@ from psycopg2.errorcodes import UNIQUE_VIOLATION
 import sentry_sdk
 import sqlalchemy as sa
 from sqlalchemy import func
+from sqlalchemy.dialects.postgresql import insert
 import sqlalchemy.exc as sqla_exc
 from werkzeug.exceptions import BadRequest
 
@@ -1278,7 +1279,7 @@ def add_criteria_to_offers(
     ean: str | None = None,
     visa: str | None = None,
 ) -> bool:
-    if not ean and not visa:
+    if (not ean and not visa) or not criterion_ids:
         return False
 
     query = models.Product.query
@@ -1300,26 +1301,16 @@ def add_criteria_to_offers(
     if not offer_ids:
         return False
 
-    # check existing tags on selected offers to avoid duplicate association which would violate Unique constraint
-    existing_criteria_on_offers = (
-        criteria_models.OfferCriterion.query.filter(criteria_models.OfferCriterion.offerId.in_(offer_ids))
-        .with_entities(criteria_models.OfferCriterion.offerId, criteria_models.OfferCriterion.criterionId)
-        .all()
-    )
-
-    offer_criteria: list[criteria_models.OfferCriterion] = []
+    values: list[dict[str, int]] = []
     for criterion_id in criterion_ids:
         logger.info("Adding criterion %s to %d offers", criterion_id, len(offer_ids))
-        for offer_id in offer_ids:
-            if not (offer_id, criterion_id) in existing_criteria_on_offers:
-                offer_criteria.append(
-                    criteria_models.OfferCriterion(
-                        offerId=offer_id,
-                        criterionId=criterion_id,
-                    )
-                )
+        values += [{"offerId": offer_id, "criterionId": criterion_id} for offer_id in offer_ids]
 
-    db.session.bulk_save_objects(offer_criteria)
+    db.session.execute(
+        insert(criteria_models.OfferCriterion)
+        .values(values)
+        .on_conflict_do_nothing(index_elements=["offerId", "criterionId"])
+    )
     db.session.flush()
 
     on_commit(
