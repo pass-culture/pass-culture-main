@@ -3176,6 +3176,11 @@ def _can_be_recredited_v3(user: users_models.User, age: int | None = None) -> bo
 
     # Handle old-new deposits transition
     if user.deposit.type == models.DepositType.GRANT_15_17:
+        # In this very case, it is OK to aggressively cut the recredit at the exact time of the decree
+        # because the user already has a deposit, this means we are in an automatic recredit process, so the users can't be late
+        decree_datetime = settings.CREDIT_V3_DECREE_DATETIME
+        if age == 16 and datetime.datetime.utcnow() > decree_datetime:
+            return False
         return _can_be_recredited_v2(user, age)
 
     if user.deposit.type == models.DepositType.GRANT_17_18:
