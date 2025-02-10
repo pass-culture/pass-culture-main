@@ -38,6 +38,10 @@ class AdresseApiException(AdresseException):
     pass  # error from the API itself
 
 
+class AdresseApiServerErrorException(AdresseApiException):
+    pass
+
+
 class NoResultException(AdresseException):
     pass  # address is not referenced
 
@@ -272,10 +276,7 @@ class ApiAdresseBackend(BaseBackend):
         files: list | None = None,
         timeout: int | float | None = None,
     ) -> requests.Response:
-        methods = {
-            "GET": requests.get,
-            "POST": requests.post,
-        }
+        methods = {"GET": requests.get, "POST": requests.post}
         try:
             response = methods[method](url, params=params, files=files, timeout=timeout)  # type: ignore
         except requests.exceptions.RequestException as exc:
@@ -284,7 +285,7 @@ class ApiAdresseBackend(BaseBackend):
             raise AdresseApiException(msg) from exc
 
         if response.status_code in (500, 503):
-            raise AdresseApiException("Adresse API is unavailable")
+            raise AdresseApiServerErrorException("Adresse API is unavailable")
         if response.status_code == 400:
             raise InvalidFormatException()
         if response.status_code == 429:
