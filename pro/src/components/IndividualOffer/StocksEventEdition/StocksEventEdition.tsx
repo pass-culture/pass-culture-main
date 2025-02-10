@@ -50,7 +50,7 @@ import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
 import { Select } from 'ui-kit/form/Select/Select'
-import { SelectInput } from 'ui-kit/form/Select/SelectInput'
+import { SelectInput, SelectInputVariant } from 'ui-kit/form/Select/SelectInput'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
@@ -581,7 +581,7 @@ export const StocksEventEdition = ({
                                 setPriceCategoryIdFilter(event.target.value)
                                 onFilterChange()
                               }}
-                              filterVariant
+                              variant={SelectInputVariant.FILTER}
                               aria-label="Filtrer par tarif"
                             />
                           </div>

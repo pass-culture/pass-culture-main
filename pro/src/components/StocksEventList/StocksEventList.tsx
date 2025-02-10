@@ -33,7 +33,7 @@ import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/seriali
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
-import { SelectInput } from 'ui-kit/form/Select/SelectInput'
+import { SelectInput, SelectInputVariant } from 'ui-kit/form/Select/SelectInput'
 import {
   BaseCheckbox,
   PartialCheck,
@@ -466,7 +466,7 @@ export const StocksEventList = ({
                         setPriceCategoryIdFilter(event.target.value)
                         onFilterChange()
                       }}
-                      filterVariant
+                      variant={SelectInputVariant.FILTER}
                       aria-label="Filtrer par tarif"
                     />
                   </div>

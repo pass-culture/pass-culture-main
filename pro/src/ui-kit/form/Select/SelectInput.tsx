@@ -2,30 +2,35 @@ import cn from 'classnames'
 import { ComponentProps } from 'react'
 
 import { SelectOption } from 'commons/custom_types/form'
-import strokeDownIcon from 'icons/stroke-down.svg'
+import fullDownIcon from 'icons/full-down.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Select.module.scss'
+
+export enum SelectInputVariant {
+  FILTER = 'filter',
+  FORM = 'form',
+}
 
 interface SelectInputProps extends ComponentProps<'select'> {
   name: string
   defaultOption?: SelectOption | null
   options: SelectOption[]
   hasError?: boolean
-  filterVariant?: boolean
   hasDescription?: boolean
   value: string
+  variant?: SelectInputVariant
 }
 
 export const SelectInput = ({
   hasError = false,
-  filterVariant,
   hasDescription = false,
   defaultOption = null,
   name,
   disabled,
   options,
   className,
+  variant,
   ...field
 }: SelectInputProps): JSX.Element => (
   <div
@@ -40,7 +45,9 @@ export const SelectInput = ({
         [styles['has-error']]: hasError,
         [styles['has-description']]: hasDescription,
         [styles['select-input-placeholder']]: field.value === '',
-        [styles['filter-variant']]: filterVariant,
+        [styles['filter-variant']]: variant === SelectInputVariant.FILTER,
+        [styles['form-variant']]: variant === SelectInputVariant.FORM,
+        [styles['has-value']]: !!field.value,
       })}
       disabled={disabled}
       id={name}
@@ -58,10 +65,10 @@ export const SelectInput = ({
     </select>
     <div
       className={cn(styles['select-input-icon'], {
-        [styles['filter-variant']]: filterVariant,
+        [styles['filter-variant']]: variant === SelectInputVariant.FILTER,
       })}
     >
-      <SvgIcon src={strokeDownIcon} alt="" width="0" />
+      <SvgIcon src={fullDownIcon} alt="" />
     </div>
   </div>
 )
