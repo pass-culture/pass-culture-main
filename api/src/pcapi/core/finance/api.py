@@ -3083,6 +3083,8 @@ def create_deposit_v3(
     db.session.add(deposit)
     db.session.flush()
 
+    _recredit_user(beneficiary)
+
     return deposit
 
 

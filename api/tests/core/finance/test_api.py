@@ -4365,7 +4365,10 @@ class CreateDepositV3Test:
         deposit_v3 = api.create_deposit(user_v3, "created by test", users_models.EligibilityType.AGE17_18)
         assert deposit_v3.expirationDate.date() == datetime.date(2028, 1, 1)
         assert deposit_v3.type == models.DepositType.GRANT_17_18
-        assert deposit_v3.amount == 0
+        assert deposit_v3.amount == 150
+
+        assert deposit_v3.recredits[0].recreditType == models.RecreditType.RECREDIT_18
+        assert deposit_v3.recredits[0].amount == 150
 
     @time_machine.travel("2025-03-03")
     def test_create_deposit_age_18_even_when_ff_credit_v3_is_active(self):
