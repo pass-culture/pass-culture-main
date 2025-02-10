@@ -2375,6 +2375,18 @@ class AddCriterionToOffersTest:
 
         # Then
         assert is_successful is False
+        mocked_async_index_offer_ids.assert_not_called()
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_add_criteria_when_no_criterion_to_add(self, mocked_async_index_offer_ids):
+        ean = "2221001648"
+        product = factories.ProductFactory(extraData={"ean": ean})
+        factories.OfferFactory(product=product)
+
+        is_successful = api.add_criteria_to_offers([], ean=ean)
+
+        assert is_successful is False
+        mocked_async_index_offer_ids.assert_not_called()
 
 
 @pytest.mark.usefixtures("db_session")
