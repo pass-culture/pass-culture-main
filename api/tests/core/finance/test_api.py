@@ -13,6 +13,7 @@ import pytest
 import pytz
 import time_machine
 
+from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
@@ -5004,13 +5005,22 @@ class CanRecreditTest:
 
         assert not api._can_be_recredited(user)
 
-    def test_user_16_yo_can_be_recredited(self):
-        before_decree = datetime.datetime(2024, 12, 1)
-        with time_machine.travel(before_decree):
+    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime(2025, 1, 1))
+    def test_user_16_yo_can_be_recredited_if_started_before_decree(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        with time_machine.travel(before_decree - relativedelta(years=1)):
             user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
-
-        with time_machine.travel(before_decree + relativedelta(years=1, days=1)):
+        with time_machine.travel(before_decree):
             assert api._can_be_recredited(user)
+
+    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime(2025, 1, 1))
+    def test_user_16_yo_cannot_be_recredited_if_started_after_decree(self):
+        after_decree = settings.CREDIT_V3_DECREE_DATETIME
+        with time_machine.travel(after_decree + relativedelta(days=1)):
+            user = users_factories.HonorStatementValidatedUserFactory(age=16)
+            users_factories.DepositGrantFactory(user=user, amount=20)
+
+        assert not api._can_be_recredited(user)
 
 
 class ValidateFinanceIncidentTest:
