@@ -11,6 +11,7 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
 import { useLogEventOnUnload } from 'commons/hooks/useLogEventOnUnload'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -28,6 +29,8 @@ export const SignupContainer = (): JSX.Element => {
   const navigate = useNavigate()
   const notification = useNotification()
   const { logEvent } = useAnalytics()
+  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
+
   useRedirectLoggedUser()
   useInitReCaptcha()
 
@@ -66,7 +69,7 @@ export const SignupContainer = (): JSX.Element => {
   const formik = useFormik({
     initialValues: SIGNUP_FORM_DEFAULT_VALUES,
     onSubmit: onSubmit,
-    validationSchema,
+    validationSchema: validationSchema(isNewSignupEnabled),
     validateOnChange: true,
   })
 
