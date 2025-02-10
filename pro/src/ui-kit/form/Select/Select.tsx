@@ -8,7 +8,7 @@ import {
   FieldLayoutBaseProps,
 } from '../shared/FieldLayout/FieldLayout'
 
-import { SelectInput } from './SelectInput'
+import { SelectInput, SelectInputVariant } from './SelectInput'
 
 type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> &
   FieldLayoutBaseProps & {
@@ -71,6 +71,7 @@ export const Select = ({
         {...field}
         {...selectAttributes}
         onChange={(e) => onCustomChange(e)}
+        variant={SelectInputVariant.FORM}
       />
 
       {description && <span>{description}</span>}
