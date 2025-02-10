@@ -46,11 +46,12 @@ def get_location_options(venue: offerers_models.Venue) -> list[LocationOption]:
     other_venue = offerers_factories.VenueFactory(
         name="Autre lieu",
         managingOfferer=venue.managingOfferer,
+        street="1 rue du Chat qui Pêche",
     )
 
     return [
         {
-            "name": "La culture chez l'acteur",
+            "name": "La culture dans la structure de l'acteur",
             "offerVenue": {
                 "addressType": educational_models.OfferAddressType.OFFERER_VENUE,
                 "venueId": venue.id,
@@ -69,22 +70,24 @@ def get_location_options(venue: offerers_models.Venue) -> list[LocationOption]:
             "locationType": educational_models.CollectiveLocationType.SCHOOL,
         },
         {
-            "name": "La culture dans un lieu précis (avec edition manuelle)",
+            "name": "La culture à une adresse précise (avec edition manuelle)",
             "offerVenue": {
                 "addressType": educational_models.OfferAddressType.OTHER,
                 "venueId": None,
                 "otherAddress": "35 Bd de Sébastopol, 75001 Paris",
             },
+            "interventionArea": ["75", "92", "93", "94", "95"],
             "locationType": educational_models.CollectiveLocationType.ADDRESS,
             "isManualEdition": True,
         },
         {
-            "name": "La culture dans un lieu précis",
+            "name": "La culture à une adresse précise",
             "offerVenue": {
                 "addressType": educational_models.OfferAddressType.OTHER,
                 "venueId": None,
                 "otherAddress": "35 Bd de Sébastopol, 75001 Paris",
             },
+            "interventionArea": ["75", "92", "93", "94", "95"],
             "locationType": educational_models.CollectiveLocationType.ADDRESS,
         },
         {
@@ -99,13 +102,14 @@ def get_location_options(venue: offerers_models.Venue) -> list[LocationOption]:
             "locationComment": "A coté de la mairie",
         },
         {
-            "name": "La culture chez un autre addresse de l'acteur culturel",
+            "name": "La culture chez une autre structure de l'acteur culturel",
             "offerVenue": {
                 "addressType": educational_models.OfferAddressType.OFFERER_VENUE,
                 "venueId": other_venue.id,
                 "otherAddress": "",
             },
-            "locationType": educational_models.CollectiveLocationType.VENUE,
+            "interventionArea": ["75", "92", "93", "94", "95"],
+            "locationType": educational_models.CollectiveLocationType.ADDRESS,
         },
         {
             "name": "La culture chez l'acteur qui n'existe pas",
@@ -114,7 +118,9 @@ def get_location_options(venue: offerers_models.Venue) -> list[LocationOption]:
                 "venueId": 424242,
                 "otherAddress": "",
             },
-            "locationType": educational_models.CollectiveLocationType.VENUE,
+            "interventionArea": ["75", "92", "93", "94", "95"],
+            "locationType": educational_models.CollectiveLocationType.TO_BE_DEFINED,
+            "locationComment": "Structure inexistante",
         },
     ]
 
@@ -232,23 +238,47 @@ def create_offers(
     )
     create_offers_templates_with_different_displayed_status(domains=domains, venue=venue_pc_pro)
 
-    create_offers_booking_with_different_offer_venues(
-        institutions=institutions, domains=domains, venue=venue_pc_pro, provider=None
-    )
-    create_offers_booking_with_different_offer_venues(
-        institutions=institutions, domains=domains, venue=venue_pc_pro, provider=None, with_new_format=True
-    )
-
-    create_offers_templates_with_different_offer_venues(domains=domains, venue=venue_pc_pro)
-    create_offers_templates_with_different_offer_venues(domains=domains, venue=venue_pc_pro, with_new_format=True)
-
     venue_public_api = next(v for v in offerer.managedVenues if "PUBLIC_API" in v.name)
     create_offers_booking_with_different_displayed_status(
         institutions=institutions, domains=domains, venue=venue_public_api, provider=provider
     )
 
+    # eac_with_addresses_cases
+    offerer_for_addresses = next(o for o in offerers if o.name == "eac_with_addresses_cases")
+    provider_for_addresses = create_collective_api_provider(offerer_for_addresses.managedVenues)
+
+    venue_pc_pro_for_addresses = next(v for v in offerer_for_addresses.managedVenues if "PC_PRO" in v.name)
+
     create_offers_booking_with_different_offer_venues(
-        institutions=institutions, domains=domains, venue=venue_public_api, provider=provider
+        institutions=institutions, domains=domains, venue=venue_pc_pro_for_addresses, provider=None
+    )
+    create_offers_booking_with_different_offer_venues(
+        institutions=institutions,
+        domains=domains,
+        venue=venue_pc_pro_for_addresses,
+        provider=None,
+        with_new_format=True,
+    )
+
+    create_offers_templates_with_different_offer_venues(domains=domains, venue=venue_pc_pro_for_addresses)
+    create_offers_templates_with_different_offer_venues(
+        domains=domains, venue=venue_pc_pro_for_addresses, with_new_format=True
+    )
+
+    venue_public_api_for_addresses = next(v for v in offerer_for_addresses.managedVenues if "PUBLIC_API" in v.name)
+    create_offers_booking_with_different_offer_venues(
+        institutions=institutions,
+        domains=domains,
+        venue=venue_public_api_for_addresses,
+        provider=provider_for_addresses,
+    )
+
+    create_offers_booking_with_different_offer_venues(
+        institutions=institutions,
+        domains=domains,
+        venue=venue_public_api_for_addresses,
+        provider=provider_for_addresses,
+        with_new_format=True,
     )
 
     search.index_all_collective_offers_and_templates()
@@ -794,10 +824,12 @@ def create_offers_booking_with_different_offer_venues(
 
     for location_option in get_location_options(venue):
         name = location_option["name"]
+        name = f"{name}{' (avec OA)' if with_new_format else ''}{' (public api)' if provider is not None else ''}"
+
         offer_venue = location_option["offerVenue"]
 
         collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name=f"{name}{' (avec OA)' if with_new_format else ''}{' (public api)' if provider is not None else ''}",
+            collectiveOffer__name=name,
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=venue,
             collectiveOffer__bookingEmails=["toto@totoland.com"],
@@ -828,6 +860,8 @@ def create_offers_templates_with_different_offer_venues(
 
     for location_option in get_location_options(venue):
         name = location_option["name"]
+        name = f"{name}{' (avec OA)' if with_new_format else ''}"
+
         offer_venue = location_option["offerVenue"]
         collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
             name=name,
