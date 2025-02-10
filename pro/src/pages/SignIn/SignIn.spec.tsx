@@ -249,7 +249,7 @@ describe('SignIn', () => {
 
     expect(
       screen.getAllByText('Identifiant ou mot de passe incorrect.')
-    ).toHaveLength(3)
+    ).toHaveLength(2)
 
     expect(screen.getByLabelText('Adresse email *')).toHaveFocus()
   })

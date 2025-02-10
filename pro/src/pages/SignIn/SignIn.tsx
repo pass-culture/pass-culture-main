@@ -1,5 +1,6 @@
-import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect } from 'react'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { Navigate, useSearchParams } from 'react-router-dom'
 
@@ -29,7 +30,7 @@ import styles from './Signin.module.scss'
 import { SigninForm } from './SigninForm'
 import { validationSchema } from './validationSchema'
 
-interface SigninFormValues {
+export interface SigninFormValues {
   email: string
   password: string
 }
@@ -46,7 +47,9 @@ export const SignIn = (): JSX.Element => {
   const notify = useNotification()
   const dispatch = useDispatch()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [shouldRedirect, setshouldRedirect] = React.useState(false)
+  const [shouldRedirect, setshouldRedirect] = useState(false)
+  const [hasApiError, setHasApiError] = useState(false)
+
   const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
 
   useInitReCaptcha()
@@ -117,12 +120,26 @@ export const SignIn = (): JSX.Element => {
     }
   }
 
-  const formik = useFormik({
-    initialValues: SIGNIN_FORM_DEFAULT_VALUES,
-    onSubmit: (values) => onSubmit(values),
-    validationSchema,
-    validateOnChange: true,
+  const hookForm = useForm({
+    defaultValues: SIGNIN_FORM_DEFAULT_VALUES,
+    resolver: yupResolver(validationSchema),
+    mode: 'onTouched',
   })
+
+  // This is to reproduce a Formik behavior that reset form error status after an API error
+  useEffect(() => {
+    const handleClick = () => {
+      if (hasApiError) {
+        hookForm.clearErrors()
+        hookForm.reset({}, { keepValues: true })
+        setHasApiError(false)
+      }
+    }
+    document.addEventListener('click', handleClick)
+    return () => {
+      document.removeEventListener('click', handleClick)
+    }
+  }, [hookForm, hasApiError])
 
   const onHandleFail = (payload: SigninApiErrorResponse) => {
     const { errors, status } = payload
@@ -131,10 +148,14 @@ export const SignIn = (): JSX.Element => {
         'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
       )
     } else if (Object.values(errors).length > 0) {
-      notify.error('Identifiant ou mot de passe incorrect.')
-      formik.setStatus('apiError')
-      formik.setFieldError('email', 'Identifiant ou mot de passe incorrect.')
-      formik.setFieldError('password', 'Identifiant ou mot de passe incorrect.')
+      hookForm.setError('root', { type: 'apiError' })
+      hookForm.setError('email', {
+        message: 'Identifiant ou mot de passe incorrect.',
+      })
+      hookForm.setError('password', {
+        message: 'Identifiant ou mot de passe incorrect.',
+      })
+      setHasApiError(true)
     }
   }
 
@@ -151,9 +172,9 @@ export const SignIn = (): JSX.Element => {
       <div className={styles['mandatory']}>
         Tous les champs suivis d’un * sont obligatoires.
       </div>
-      <FormikProvider value={formik}>
-        <SigninForm />
-      </FormikProvider>
+      <FormProvider {...hookForm}>
+        <SigninForm onSubmit={hookForm.handleSubmit(onSubmit)} />
+      </FormProvider>
     </Layout>
   )
 }
