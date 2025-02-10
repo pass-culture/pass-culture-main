@@ -1569,7 +1569,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             TransactionalEmail.ACCEPTED_AS_EAC_BENEFICIARY.value
         )
         assert user.deposit.source == f"dossier FraudCheckType.EDUCONNECT [{identity_fraud_check.thirdPartyId}]"
-        assert user.deposit.amount == 0
+        assert user.deposit.amount == 50
 
     def test_rejected_identity(self):
         user = self.eligible_user(validate_phone=False)
@@ -2442,24 +2442,16 @@ class StepperTest:
             user, subscription_api.get_user_subscription_state(user)
         ) == subscription_models.SubscriptionStepperDetails(
             title=f"C'est très rapide{u_nbsp}!",
-            subtitle=f"Pour débloquer tes 300€ tu dois suivre les étapes suivantes{u_nbsp}:",
+            subtitle=f"Pour débloquer tes 150€ tu dois suivre les étapes suivantes{u_nbsp}:",
         )
 
-    @pytest.mark.parametrize(
-        "age,amount",
-        [
-            (15, 20),
-            (16, 30),
-            (17, 30),
-        ],
-    )
-    def test_get_stepper_title_underage_user(self, age, amount):
-        user = users_factories.EligibleUnderageFactory(age=age)
+    def test_get_stepper_title_underage_user(self):
+        user = users_factories.EligibleUnderageFactory(age=17)
         assert subscription_api.get_stepper_title_and_subtitle(
             user, subscription_api.get_user_subscription_state(user)
         ) == subscription_models.SubscriptionStepperDetails(
             title=f"C'est très rapide{u_nbsp}!",
-            subtitle=f"Pour débloquer tes {amount}€ tu dois suivre les étapes suivantes{u_nbsp}:",
+            subtitle=f"Pour débloquer tes 50€ tu dois suivre les étapes suivantes{u_nbsp}:",
         )
 
     def test_get_stepper_title_18_yo_retrying_ubble(self):
