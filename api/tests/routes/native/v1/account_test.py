@@ -217,6 +217,7 @@ class AccountTest:
         assert response.status_code == 200
         assert "activity" not in response.json
 
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     def test_get_user_profile_recredit_amount_to_show(self, client, app):
         with time_machine.travel("2018-01-01"):
             users_factories.UnderageBeneficiaryFactory(email=self.identifier)
