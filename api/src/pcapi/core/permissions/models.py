@@ -74,6 +74,7 @@ class Permissions(enum.Enum):
     MANAGE_INCIDENTS = "gérer les incidents"
     VALIDATE_COMMERCIAL_GESTURE = "valider les gestes commerciaux"
 
+    READ_TECH_PARTNERS = "visualiser les partenaires techniques"
     MANAGE_TECH_PARTNERS = "gérer les partenaires techniques"
 
     EXTRACT_PUBLIC_ACCOUNT = "extraire les données personnelles (RGPD) d'un compte"

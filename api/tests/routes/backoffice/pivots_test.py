@@ -18,6 +18,7 @@ from pcapi.utils.crypto import decrypt
 from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.cgr import fixtures
 
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -29,9 +30,9 @@ pytestmark = [
 ]
 
 
-class GetPivotsPageTest(GetEndpointHelper):
+class GetPivotsTest(GetEndpointHelper):
     endpoint = "backoffice_web.pivots.get_pivots"
-    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+    needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
     def test_get_pivots_page(self, authenticated_client):
         with assert_num_queries(2):
@@ -42,7 +43,7 @@ class GetPivotsPageTest(GetEndpointHelper):
 class ListPivotsTest(GetEndpointHelper):
     endpoint = "backoffice_web.pivots.list_pivots"
     endpoint_kwargs = {"name": "allocine"}
-    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+    needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
     # - fetch session (1 query)
     # - fetch user (1 query)
@@ -279,6 +280,15 @@ class ListPivotsTest(GetEndpointHelper):
         assert ems_rows[0]["Partenaire culturel"] == ems_pivot.cinemaProviderPivot.venue.name
         assert ems_rows[0]["Identifiant cinéma (EMS)"] == ems_pivot.cinemaProviderPivot.idAtProvider
         assert ems_rows[0]["Dernière synchronisation réussie"] == ems_pivot.last_version_as_isoformat
+
+
+class CreatePivotsButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+    button_label = "Créer un pivot"
+
+    @property
+    def path(self):
+        return url_for("backoffice_web.pivots.list_pivots", name="allocine")
 
 
 class GetCreatePivotFormTest(GetEndpointHelper):

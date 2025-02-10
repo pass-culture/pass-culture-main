@@ -34,7 +34,7 @@ providers_blueprint = utils.child_backoffice_blueprint(
     "providers",
     __name__,
     url_prefix="/pro/providers",
-    permission=perm_models.Permissions.MANAGE_TECH_PARTNERS,
+    permission=perm_models.Permissions.READ_TECH_PARTNERS,
 )
 
 
@@ -88,6 +88,7 @@ def list_providers() -> utils.BackofficeResponse:
 
 @providers_blueprint.route("/new", methods=["GET"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def get_create_provider_form() -> utils.BackofficeResponse:
     form = forms.CreateProviderForm()
 
@@ -103,6 +104,7 @@ def get_create_provider_form() -> utils.BackofficeResponse:
 
 @providers_blueprint.route("/", methods=["POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def create_provider() -> utils.BackofficeResponse:
     form = forms.CreateProviderForm()
 
@@ -177,7 +179,7 @@ def _get_or_create_offerer(form: forms.CreateProviderForm) -> tuple[offerers_mod
 def _render_provider_details(
     provider: providers_models.Provider, edit_form: forms.EditProviderForm | None = None
 ) -> str:
-    if not edit_form:
+    if not edit_form and utils.has_current_user_permission(perm_models.Permissions.MANAGE_TECH_PARTNERS):
         edit_form = forms.EditProviderForm(
             name=provider.name,
             logo_url=provider.logoUrl,
@@ -284,6 +286,7 @@ def get_venues(provider_id: int) -> utils.BackofficeResponse:
 
 @providers_blueprint.route("/<int:provider_id>/update", methods=["POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def update_provider(provider_id: int) -> utils.BackofficeResponse:
     provider = providers_models.Provider.query.filter_by(id=provider_id).one_or_none()
     if not provider:

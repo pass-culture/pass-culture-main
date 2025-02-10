@@ -109,11 +109,11 @@
                 {% endcall %}
               </div>
               <hr />
-              {% if has_permission("MOVE_SIRET") or has_permission("MANAGE_TECH_PARTNERS") or has_permission("READ_REIMBURSEMENT_RULES") %}
+              {% if has_permission("MOVE_SIRET") or has_permission("READ_TECH_PARTNERS") or has_permission("READ_REIMBURSEMENT_RULES") %}
                 <div class="nav nav-pills flex-column">
                   {% call menu_section("Support Pro") %}
                     {% if has_permission("MOVE_SIRET") %}{{ menu_section_item('Déplacer un SIRET', 'backoffice_web.move_siret.move_siret') }}{% endif %}
-                    {% if has_permission("MANAGE_TECH_PARTNERS") %}
+                    {% if has_permission("READ_TECH_PARTNERS") %}
                       {{ menu_section_item('Synchronisation Pivot', 'backoffice_web.pivots.get_pivots') }}
                       {{ menu_section_item('Synchronisation partenaires techniques', 'backoffice_web.providers.list_providers') }}
                     {% endif %}

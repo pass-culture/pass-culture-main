@@ -26,7 +26,7 @@ pivots_blueprint = utils.child_backoffice_blueprint(
     "pivots",
     __name__,
     url_prefix="/pro/pivots",
-    permission=perm_models.Permissions.MANAGE_TECH_PARTNERS,
+    permission=perm_models.Permissions.READ_TECH_PARTNERS,
 )
 
 
@@ -58,6 +58,7 @@ def list_pivots(name: str) -> utils.BackofficeResponse:
 
 @pivots_blueprint.route("/<string:name>/create", methods=["GET"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def get_create_pivot_form(name: str) -> utils.BackofficeResponse:
     pivot_context = get_context(name)
 
@@ -74,6 +75,7 @@ def get_create_pivot_form(name: str) -> utils.BackofficeResponse:
 
 @pivots_blueprint.route("/<string:name>/create", methods=["POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def create_pivot(name: str) -> utils.BackofficeResponse:
     pivot_context = get_context(name)
 
@@ -118,6 +120,7 @@ def create_pivot(name: str) -> utils.BackofficeResponse:
 
 @pivots_blueprint.route("/<string:name>/<int:pivot_id>/update", methods=["GET"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def get_update_pivot_form(name: str, pivot_id: int) -> utils.BackofficeResponse:
     pivot_context = get_context(name)
 
@@ -136,6 +139,7 @@ def get_update_pivot_form(name: str, pivot_id: int) -> utils.BackofficeResponse:
 
 @pivots_blueprint.route("/<string:name>/<int:pivot_id>/update", methods=["POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def update_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
     pivot_context = get_context(name)
 
@@ -163,6 +167,7 @@ def update_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
 
 @pivots_blueprint.route("/<string:name>/<int:pivot_id>/delete", methods=["GET"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def get_delete_pivot_form(name: str, pivot_id: int) -> utils.BackofficeResponse:
     return render_template(
         "components/turbo/modal_form.html",
@@ -177,6 +182,7 @@ def get_delete_pivot_form(name: str, pivot_id: int) -> utils.BackofficeResponse:
 
 @pivots_blueprint.route("/<string:name>/<int:pivot_id>/delete", methods=["POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def delete_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
     pivot_context = get_context(name)
 

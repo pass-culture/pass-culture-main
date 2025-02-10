@@ -4,11 +4,13 @@
 {% block page %}
   <div class="pt-3 px-5">
     <h1>Synchronisation partenaires techniques</h1>
-    <button class="btn btn-outline-primary lead fw-bold mt-2"
-            data-bs-toggle="modal"
-            data-bs-target="#create-provider"
-            type="button">Créer un partenaire</button>
-    {{ build_lazy_modal(url_for("backoffice_web.providers.get_create_provider_form") , "create-provider") }}
+    {% if has_permission("MANAGE_TECH_PARTNERS") %}
+      <button class="btn btn-outline-primary lead fw-bold mt-2"
+              data-bs-toggle="modal"
+              data-bs-target="#create-provider"
+              type="button">Créer un partenaire</button>
+      {{ build_lazy_modal(url_for("backoffice_web.providers.get_create_provider_form") , "create-provider") }}
+    {% endif %}
     <div>
       <table class="table mb-4">
         <thead>

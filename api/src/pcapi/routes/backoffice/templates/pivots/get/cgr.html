@@ -1,5 +1,5 @@
 {% import "components/links.html" as links with context %}
-{% import "pivots/get/common.html" as common %}
+{% import "pivots/get/common.html" as common with context %}
 <turbo-frame id="cgr_frame">
 {{ common.build_pivot_bar("cgr", form, dst) }}
 <table class="table table-hover my-4">
