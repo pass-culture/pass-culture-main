@@ -301,6 +301,57 @@ describe('Signup', () => {
           )
           expect(mockLogEvent).toHaveBeenCalledTimes(1)
         })
+
+        it('should enable submit button without phone number', async () => {
+          vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+            remove: vi.fn(),
+          } as unknown as HTMLScriptElement)
+          vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+          renderSignUp({
+            features: ['ENABLE_PRO_ACCOUNT_CREATION', 'WIP_2025_SIGN_UP'],
+          })
+          const submitButton = screen.getByRole('button', {
+            name: /Créer mon compte/,
+          })
+          await userEvent.type(
+            screen.getByRole('textbox', {
+              name: /Adresse email */,
+            }),
+            'test@example.com'
+          )
+          await userEvent.type(
+            screen.getByLabelText(/Mot de passe/),
+            'user@AZERTY123'
+          )
+          await userEvent.type(
+            screen.getByRole('textbox', {
+              name: /Nom/,
+            }),
+            'Nom'
+          )
+          await userEvent.type(
+            screen.getByRole('textbox', {
+              name: /Prénom/,
+            }),
+            'Prénom'
+          )
+          await userEvent.tab()
+
+          expect(submitButton).toBeEnabled()
+          await userEvent.click(submitButton)
+
+          expect(api.signupProV2).toHaveBeenCalledWith({
+            contactOk: false,
+            email: 'test@example.com',
+            firstName: 'Prénom',
+            lastName: 'Nom',
+            password: 'user@AZERTY123', // NOSONAR
+            token: 'token',
+          })
+          await expect(
+            screen.findByText('I’m the confirmation page')
+          ).resolves.toBeInTheDocument()
+        })
       })
 
       it('should show a notification on api call error', async () => {
