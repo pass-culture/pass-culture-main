@@ -24,10 +24,6 @@ export type DialogBuilderProps = {
    */
   children: React.ReactNode
   /**
-   * The content to be displayed at the bottom of the dialog, after the separator.
-   */
-  footer?: React.ReactNode
-  /**
    * Determines if the dialog is open by default.
    * @default false
    */
@@ -75,7 +71,6 @@ export function DialogBuilder({
   trigger,
   title,
   children,
-  footer,
   defaultOpen = false,
   onOpenChange,
   open,
@@ -136,9 +131,6 @@ export function DialogBuilder({
                 )}
                 {children}
               </div>
-              {footer && (
-                <div className={styles['dialog-builder-footer']}>{footer}</div>
-              )}
             </section>
           </Dialog.Content>
         </Dialog.Overlay>
@@ -146,3 +138,9 @@ export function DialogBuilder({
     </Dialog.Root>
   )
 }
+
+function DialogBuilderFooter({ children }: { children: React.ReactNode }) {
+  return <div className={styles['dialog-builder-footer']}>{children}</div>
+}
+
+DialogBuilder.Footer = DialogBuilderFooter
