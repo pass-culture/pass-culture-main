@@ -382,6 +382,36 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         siret="55208131766524",
         pricing_point="self",
     )
+    # eac_with_addresses_cases
+    offerer = next(offerer_iterator)
+    create_venue(
+        managingOfferer=offerer,
+        name=f"{offerer.name} PC_PRO",
+        reimbursement=True,
+        adageId="123549",
+        adageInscriptionDate=datetime.utcnow() - timedelta(days=3),
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        departementCode="57",
+        postalCode="57000",
+        city="Lorient",
+        siret="55208131766525",
+        pricing_point="self",
+    )
+    create_venue(
+        managingOfferer=offerer,
+        name=f"{offerer.name} PUBLIC_API",
+        reimbursement=True,
+        adageId="123550",
+        adageInscriptionDate=datetime.utcnow() - timedelta(days=3),
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        departementCode="57",
+        postalCode="57000",
+        city="Lorient",
+        siret="55208131766526",
+        pricing_point="self",
+    )
 
 
 def create_venue(*, reimbursement: bool = False, **kwargs: typing.Any) -> offerers_models.Venue:
