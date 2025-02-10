@@ -1,4 +1,4 @@
-import { Form, useFormikContext } from 'formik'
+import { Form, useFormContext } from 'react-hook-form'
 import { useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -8,18 +8,23 @@ import { useMediaQuery } from 'commons/hooks/useMediaQuery'
 import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
 import { BannerRGS } from 'components/BannerRGS/BannerRGS'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import fullKeyIcon from 'icons/full-key.svg'
 import iconFullNext from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
-import { PasswordInput } from 'ui-kit/form/PasswordInput/PasswordInput'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { PasswordInput } from 'ui-kit/formV2/PasswordInput/PasswordInput'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
+import { SigninFormValues } from './SignIn'
 import styles from './Signin.module.scss'
 
-export const SigninForm = (): JSX.Element => {
+type SigninFormProps = {
+  onSubmit(): void
+}
+
+export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
   const isAccountCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
@@ -30,21 +35,30 @@ export const SigninForm = (): JSX.Element => {
     ? '/inscription'
     : UNAVAILABLE_ERROR_PAGE
 
-  const formik = useFormikContext()
+  const { formState, register } = useFormContext<SigninFormValues>()
+  const { errors } = formState
 
   return (
-    <Form>
-      <ScrollToFirstErrorAfterSubmit />
+    <Form onSubmit={onSubmit}>
+      <ScrollToFirstHookFormErrorAfterSubmit />
+
       <FormLayout>
         <FormLayout.Row>
           <TextInput
             label="Adresse email"
-            name="email"
+            required={true}
+            error={errors.email?.message}
             description="Format : email@exemple.com"
+            {...register('email')}
           />
         </FormLayout.Row>
         <FormLayout.Row>
-          <PasswordInput name="password" label="Mot de passe" />
+          <PasswordInput
+            label="Mot de passe"
+            required={true}
+            error={errors.password?.message}
+            {...register('password')}
+          />
         </FormLayout.Row>
         <ButtonLink
           icon={fullKeyIcon}
@@ -76,8 +90,8 @@ export const SigninForm = (): JSX.Element => {
           <Button
             type="submit"
             className={styles['buttons']}
-            isLoading={formik.isSubmitting}
-            disabled={!formik.dirty || !formik.isValid}
+            isLoading={formState.isSubmitting}
+            disabled={!formState.isValid}
           >
             Se connecter
           </Button>

@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 import { useEffect } from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import { doesUserPreferReducedMotion } from 'commons/utils/windowMatchMedia'
 
@@ -22,6 +23,7 @@ const scrollToFirstError = () => {
   })
 }
 
+// Specific to Formik
 export const ScrollToFirstErrorAfterSubmit = () => {
   const { isSubmitting, isValid, status } = useFormikContext()
 
@@ -30,6 +32,21 @@ export const ScrollToFirstErrorAfterSubmit = () => {
       scrollToFirstError()
     }
   }, [isValid, isSubmitting, status])
+
+  return null
+}
+
+// Specific to React Hook Form
+export const ScrollToFirstHookFormErrorAfterSubmit = () => {
+  const {
+    formState: { isSubmitting, isValid, errors },
+  } = useFormContext()
+
+  useEffect(() => {
+    if ((isSubmitting && !isValid) || errors.root?.type === 'apiError') {
+      scrollToFirstError()
+    }
+  }, [isValid, isSubmitting, errors.root?.type])
 
   return null
 }
