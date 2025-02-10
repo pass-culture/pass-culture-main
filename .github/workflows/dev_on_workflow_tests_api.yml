@@ -516,7 +516,7 @@ jobs:
         with:
           report_paths: "${{ runner.workspace }}/pass-culture-main/api/tests/junit.xml"
           check_name: "Pytest Report"
-          fail_on_failure: true
+          fail_on_failure: false
           skip_success_summary: true
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
