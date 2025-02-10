@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.connectors.api_adresse import AddressInfo
+from pcapi.connectors.api_adresse import AdresseApiServerErrorException
 from pcapi.connectors.api_adresse import NoResultException
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.geography import models as geography_models
@@ -90,6 +91,33 @@ class CreateAddressTest(PublicAPIEndpointBaseHelper):
 
         assert result.status_code == 400
         assert result.json == expected_json
+
+    @pytest.mark.parametrize(
+        "address_exception,municipality_centroid_exception",
+        [
+            (AdresseApiServerErrorException(), None),  # 1st call fails
+            (NoResultException(), AdresseApiServerErrorException()),  # 2nd call fails
+        ],
+    )
+    @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
+    @patch("pcapi.connectors.api_adresse.get_address")
+    def test_should_raise_500_because_ban_api_is_unavailable(
+        self,
+        get_address_mock,
+        get_municipality_centroid_mock,
+        client: TestClient,
+        address_exception,
+        municipality_centroid_exception,
+    ):
+        plain_api_key, _ = self.setup_provider()
+
+        get_address_mock.side_effect = address_exception
+        get_municipality_centroid_mock.side_effect = municipality_centroid_exception
+
+        result = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=self._get_base_body())
+
+        assert result.status_code == 500
+        assert result.json == {"global": ["BAN API is unavailable"]}
 
     @patch("pcapi.connectors.api_adresse.get_address")
     def test_should_add_an_address_using_the_ban_api(self, get_address_mock, client: TestClient):
