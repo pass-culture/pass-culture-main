@@ -12,6 +12,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.utils import db as db_utils
 
 from . import models
@@ -257,11 +258,9 @@ def remove_siret(
     venue: offerers_models.Venue,
     comment: str,
     *,
-    apply_changes: bool = False,
     override_revenue_check: bool = False,
     new_pricing_point_id: int | None = None,
     author_user_id: int | None = None,
-    new_db_session: bool = True,
 ) -> None:
     check_can_remove_siret(venue, comment, override_revenue_check=override_revenue_check)
     old_siret = venue.siret
@@ -285,70 +284,53 @@ def remove_siret(
             )
         new_siret = new_pricing_point_venue.siret
 
-    with db.session.no_autoflush:  # do not flush anything before commit
-        if new_db_session:
-            db.session.rollback()  # discard any previous transaction to start a fresh new one.
-            db.session.begin()
+    _force_close_custom_reimbursement_rules_for_venue(venue)
+    modified_info_by_venue: dict[int, dict[str, dict]] = defaultdict(dict)
 
-        try:
-            _force_close_custom_reimbursement_rules_for_venue(venue)
-            modified_info_by_venue: dict[int, dict[str, dict]] = defaultdict(dict)
+    venue.siret = None
+    venue.comment = comment
+    db.session.add(venue)
+    modified_info_by_venue[venue.id]["siret"] = {"old_info": old_siret, "new_info": None}
 
-            venue.siret = None
-            venue.comment = comment
-            db.session.add(venue)
-            modified_info_by_venue[venue.id]["siret"] = {"old_info": old_siret, "new_info": None}
+    # must be called before link_venue_to_pricing_point() so that new pricing point is set properly
+    _delete_ongoing_pricings(venue)
 
-            # must be called before link_venue_to_pricing_point() so that new pricing point is set properly
-            _delete_ongoing_pricings(venue)
-
-            # End all active links to this pricing point
-            pricing_point_links = (
-                offerers_models.VenuePricingPointLink.query.filter(
-                    offerers_models.VenuePricingPointLink.pricingPointId == venue.id,
-                    offerers_models.VenuePricingPointLink.timespan.contains(now),
-                )
-                .options(sa.orm.joinedload(offerers_models.VenuePricingPointLink.venue))
-                .all()
-            )
-            for pricing_point_link in pricing_point_links:
-                # Replace with new pricing point (when provided), only for the venue which lost its SIRET
-                if new_pricing_point_id and pricing_point_link.venueId == venue.id:
-                    offerers_api.link_venue_to_pricing_point(
-                        pricing_point_link.venue, new_pricing_point_id, force_link=True, commit=False
-                    )
-                    modified_info_by_venue[pricing_point_link.venueId]["pricingPointSiret"] = {
-                        "old_info": old_siret,
-                        "new_info": new_siret,
-                    }
-                else:
-                    pricing_point_link.timespan = db_utils.make_timerange(pricing_point_link.timespan.lower, end=now)
-                    db.session.add(pricing_point_link)
-                    modified_info_by_venue[pricing_point_link.venueId]["pricingPointSiret"] = {
-                        "old_info": old_siret,
-                        "new_info": None,
-                    }
-
-            for modified_venue_id, modified_info in modified_info_by_venue.items():
-                db.session.add(
-                    history_models.ActionHistory(
-                        actionType=history_models.ActionType.INFO_MODIFIED,
-                        authorUserId=author_user_id,
-                        offererId=venue.managingOffererId,
-                        venueId=modified_venue_id,
-                        comment=comment,
-                        extraData={"modified_info": modified_info},
-                    )
-                )
-
-        except Exception:
-            db.session.rollback()
-            raise
-
-        if apply_changes:
-            db.session.commit()
+    # End all active links to this pricing point
+    pricing_point_links = (
+        offerers_models.VenuePricingPointLink.query.filter(
+            offerers_models.VenuePricingPointLink.pricingPointId == venue.id,
+            offerers_models.VenuePricingPointLink.timespan.contains(now),
+        )
+        .options(sa.orm.joinedload(offerers_models.VenuePricingPointLink.venue))
+        .all()
+    )
+    for pricing_point_link in pricing_point_links:
+        # Replace with new pricing point (when provided), only for the venue which lost its SIRET
+        if new_pricing_point_id and pricing_point_link.venueId == venue.id:
+            offerers_api.link_venue_to_pricing_point(pricing_point_link.venue, new_pricing_point_id, force_link=True)
+            modified_info_by_venue[pricing_point_link.venueId]["pricingPointSiret"] = {
+                "old_info": old_siret,
+                "new_info": new_siret,
+            }
         else:
-            db.session.rollback()
+            pricing_point_link.timespan = db_utils.make_timerange(pricing_point_link.timespan.lower, end=now)
+            db.session.add(pricing_point_link)
+            modified_info_by_venue[pricing_point_link.venueId]["pricingPointSiret"] = {
+                "old_info": old_siret,
+                "new_info": None,
+            }
+
+    for modified_venue_id, modified_info in modified_info_by_venue.items():
+        db.session.add(
+            history_models.ActionHistory(
+                actionType=history_models.ActionType.INFO_MODIFIED,
+                authorUserId=author_user_id,
+                offererId=venue.managingOffererId,
+                venueId=modified_venue_id,
+                comment=comment,
+                extraData={"modified_info": modified_info},
+            )
+        )
 
 
 def _force_close_custom_reimbursement_rules_for_venue(venue: offerers_models.Venue) -> None:
@@ -400,7 +382,6 @@ def check_can_remove_pricing_point(
 def remove_pricing_point_link(
     venue: offerers_models.Venue,
     comment: str,
-    apply_changes: bool = False,
     override_revenue_check: bool = False,
     author_user_id: int | None = None,
 ) -> None:
@@ -408,33 +389,27 @@ def remove_pricing_point_link(
 
     now = datetime.datetime.utcnow()
 
-    with db.session.no_autoflush:  # do not flush anything before commit
-        try:
-            # End this pricing point
-            pricing_point_link = venue.current_pricing_point_link
-            assert pricing_point_link
-            pricing_point_link.timespan = db_utils.make_timerange(pricing_point_link.timespan.lower, end=now)
-            db.session.add(pricing_point_link)
-            modified_info = {"pricingPointSiret": {"old_info": pricing_point_link.pricingPoint.siret, "new_info": None}}
+    try:
+        # End this pricing point
+        pricing_point_link = venue.current_pricing_point_link
+        assert pricing_point_link
+        pricing_point_link.timespan = db_utils.make_timerange(pricing_point_link.timespan.lower, end=now)
+        db.session.add(pricing_point_link)
+        modified_info = {"pricingPointSiret": {"old_info": pricing_point_link.pricingPoint.siret, "new_info": None}}
 
-            _delete_ongoing_pricings(venue)
+        _delete_ongoing_pricings(venue)
 
-            db.session.add(
-                history_models.ActionHistory(
-                    actionType=history_models.ActionType.INFO_MODIFIED,
-                    authorUserId=author_user_id,
-                    offererId=venue.managingOffererId,
-                    venueId=venue.id,
-                    comment=comment,
-                    extraData={"modified_info": modified_info},
-                )
+        db.session.add(
+            history_models.ActionHistory(
+                actionType=history_models.ActionType.INFO_MODIFIED,
+                authorUserId=author_user_id,
+                offererId=venue.managingOffererId,
+                venueId=venue.id,
+                comment=comment,
+                extraData={"modified_info": modified_info},
             )
+        )
 
-        except Exception:
-            db.session.rollback()
-            raise
-
-        if apply_changes:
-            db.session.commit()
-        else:
-            db.session.rollback()
+    except Exception:
+        mark_transaction_as_invalid()
+        raise
