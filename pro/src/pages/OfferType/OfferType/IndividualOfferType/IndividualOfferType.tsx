@@ -1,4 +1,4 @@
-import { useFormikContext } from 'formik'
+import { useForm } from 'react-hook-form'
 
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'commons/core/Offers/constants'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -12,7 +12,9 @@ import styles from '../OfferType.module.scss'
 import { OfferTypeFormValues } from '../types'
 
 export const IndividualOfferType = (): JSX.Element | null => {
-  const { values, handleChange } = useFormikContext<OfferTypeFormValues>()
+  const { register, watch, setValue } = useForm<OfferTypeFormValues>()
+
+  const individualOfferSubtype = watch('individualOfferSubtype')
 
   return (
     <>
@@ -23,68 +25,84 @@ export const IndividualOfferType = (): JSX.Element | null => {
         <FormLayout.Row inline mdSpaceAfter>
           <RadioButtonWithImage
             className={styles['individual-radio-button']}
-            name="individualOfferSubtype"
             icon={thingStrokeIcon}
             isChecked={
-              values.individualOfferSubtype ===
-              INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
+              individualOfferSubtype === INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
             }
             label="Un bien physique"
             description="Livre, instrument de musique, abonnement, cartes et pass…"
-            onChange={handleChange}
+            {...register('individualOfferSubtype')}
             value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}
             dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}`}
+            onChange={() =>
+              setValue(
+                'individualOfferSubtype',
+                INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
+              )
+            }
           />
         </FormLayout.Row>
 
         <FormLayout.Row inline mdSpaceAfter>
           <RadioButtonWithImage
             className={styles['individual-radio-button']}
-            name="individualOfferSubtype"
             icon={strokeVirtualThingIcon}
             isChecked={
-              values.individualOfferSubtype ===
-              INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD
+              individualOfferSubtype === INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD
             }
             label="Un bien numérique"
             description="Ebook, jeu vidéo, abonnement streaming..."
-            onChange={handleChange}
+            {...register('individualOfferSubtype')}
             value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}
             dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}`}
+            onChange={() =>
+              setValue(
+                'individualOfferSubtype',
+                INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD
+              )
+            }
           />
         </FormLayout.Row>
 
         <FormLayout.Row inline mdSpaceAfter>
           <RadioButtonWithImage
             className={styles['individual-radio-button']}
-            name="individualOfferSubtype"
             icon={strokeDateIcon}
             isChecked={
-              values.individualOfferSubtype ===
-              INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT
+              individualOfferSubtype === INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT
             }
             label="Un évènement physique daté"
             description="Concert, représentation, conférence, ateliers..."
-            onChange={handleChange}
+            {...register('individualOfferSubtype')}
             value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}
             dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}`}
+            onChange={() =>
+              setValue(
+                'individualOfferSubtype',
+                INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT
+              )
+            }
           />
         </FormLayout.Row>
 
         <FormLayout.Row inline mdSpaceAfter>
           <RadioButtonWithImage
             className={styles['individual-radio-button']}
-            name="individualOfferSubtype"
             icon={strokeVirtualEventIcon}
             isChecked={
-              values.individualOfferSubtype ===
-              INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
+              individualOfferSubtype === INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
             }
             label="Un évènement numérique daté"
             description="Livestream, cours en ligne, conférence en ligne..."
-            onChange={handleChange}
+            {...register('individualOfferSubtype')}
             value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}
             dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}`}
+            onChange={() =>
+              setValue(
+                'individualOfferSubtype',
+                INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
+              )
+            }
           />
         </FormLayout.Row>
       </FormLayout.Section>

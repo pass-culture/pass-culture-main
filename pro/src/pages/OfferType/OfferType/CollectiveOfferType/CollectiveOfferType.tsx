@@ -1,4 +1,4 @@
-import { useFormikContext } from 'formik'
+import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
@@ -28,7 +28,14 @@ interface CollectiveOfferTypeProps {
 
 export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
   const location = useLocation()
-  const { values, handleChange } = useFormikContext<OfferTypeFormValues>()
+  const { register, watch, setValue, getValues } =
+    useForm<OfferTypeFormValues>()
+
+  // const individualOfferSubtype = watch('individualOfferSubtype')
+  // const collectiveOfferSubtypeDuplicate = watch(
+  //   'collectiveOfferSubtypeDuplicate'
+  // )
+  // console.log(individualOfferSubtype, collectiveOfferSubtypeDuplicate)
 
   const queryParams = new URLSearchParams(location.search)
   const queryOffererId = useSelector(selectCurrentOffererId)
@@ -48,37 +55,47 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
         >
           <FormLayout.Row inline mdSpaceAfter>
             <RadioButtonWithImage
-              name="collectiveOfferSubtype"
+              {...register('collectiveOfferSubtype')}
               icon={strokeBookedIcon}
               isChecked={
-                values.collectiveOfferSubtype ===
+                getValues('individualOfferSubtype') ===
                 COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE
               }
               label="Une offre réservable"
               description="Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé."
-              onChange={handleChange}
               value={COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE}
+              onChange={() =>
+                setValue(
+                  'individualOfferSubtype',
+                  COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE
+                )
+              }
             />
           </FormLayout.Row>
 
           <FormLayout.Row inline mdSpaceAfter>
             <RadioButtonWithImage
-              name="collectiveOfferSubtype"
+              {...register('collectiveOfferSubtype')}
               icon={strokeTemplateOfferIcon}
               isChecked={
-                values.collectiveOfferSubtype ===
+                getValues('individualOfferSubtype') ===
                 COLLECTIVE_OFFER_SUBTYPE.TEMPLATE
               }
               label="Une offre vitrine"
               description={`Cette offre n’est pas réservable. Elle permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.`}
-              onChange={handleChange}
               value={COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
+              onChange={() =>
+                setValue(
+                  'individualOfferSubtype',
+                  COLLECTIVE_OFFER_SUBTYPE.TEMPLATE
+                )
+              }
             />
           </FormLayout.Row>
         </FormLayout.Section>
       )}
       {offerer?.allowedOnAdage &&
-        values.collectiveOfferSubtype ===
+        getValues('individualOfferSubtype') ===
           COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
           <FormLayout.Section
             title="Créer une nouvelle offre ou dupliquer une offre ?"
@@ -86,35 +103,45 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
           >
             <FormLayout.Row inline mdSpaceAfter>
               <RadioButtonWithImage
-                name="collectiveOfferSubtypeDuplicate"
+                {...register('collectiveOfferSubtypeDuplicate')}
                 icon={strokeNewOfferIcon}
                 isChecked={
-                  values.collectiveOfferSubtypeDuplicate ===
+                  getValues('individualOfferSubtypeDuplicate') ===
                   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER
                 }
                 label="Créer une nouvelle offre"
                 description="Créer une nouvelle offre réservable en partant d’un formulaire vierge."
-                onChange={handleChange}
                 value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER}
+                onChange={() =>
+                  setValue(
+                    'collectiveOfferSubtypeDuplicate',
+                    COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER
+                  )
+                }
               />
             </FormLayout.Row>
             <FormLayout.Row inline mdSpaceAfter>
               <RadioButtonWithImage
-                name="collectiveOfferSubtypeDuplicate"
+                {...register('collectiveOfferSubtypeDuplicate')}
                 icon={duplicateOfferIcon}
                 isChecked={
-                  values.collectiveOfferSubtypeDuplicate ===
+                  getValues('collectiveOfferSubtypeDuplicate') ===
                   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
                 }
                 label="Dupliquer les informations d’une offre vitrine"
                 description="Créer une offre réservable en dupliquant les informations d’une offre vitrine existante."
-                onChange={handleChange}
                 value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE}
+                onChange={() =>
+                  setValue(
+                    'collectiveOfferSubtypeDuplicate',
+                    COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
+                  )
+                }
               />
             </FormLayout.Row>
           </FormLayout.Section>
         )}
-      {values.offerType === OFFER_TYPES.EDUCATIONAL &&
+      {getValues('individualOfferSubtype') === OFFER_TYPES.EDUCATIONAL &&
         !offerer?.isValidated && (
           <Callout
             variant={CalloutVariant.INFO}
