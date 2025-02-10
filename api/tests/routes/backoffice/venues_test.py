@@ -290,7 +290,8 @@ class GetVenueTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get venue (1 query)
-    expected_num_queries = 3
+    # get WIP_IS_OPEN_TO_PUBLIC feature flag (1 query)
+    expected_num_queries = 4
 
     def test_keep_search_parameters_on_top(self, authenticated_client, venue):
         url = url_for(self.endpoint, venue_id=venue.id, q=venue.name, departments=["75", "77"])
@@ -319,6 +320,7 @@ class GetVenueTest(GetEndpointHelper):
         selected_departments = html_parser.extract_select_options(response.data, "departments", selected_only=True)
         assert set(selected_departments.keys()) == {"04", "05", "06"}
 
+    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
     def test_get_venue(self, authenticated_client):
         venue = offerers_factories.VenueFactory(
             venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"),
@@ -333,6 +335,7 @@ class GetVenueTest(GetEndpointHelper):
             offererAddress__address__inseeCode="06029",
             offererAddress__address__banId="06029_0880_00001",
             offererAddress__address__departmentCode="06",
+            isOpenToPublic=True,
         )
         url = url_for(self.endpoint, venue_id=venue.id)
 
@@ -353,6 +356,7 @@ class GetVenueTest(GetEndpointHelper):
         assert "Peut créer une offre EAC : Non" in response_text
         assert "Cartographié sur ADAGE : Non" in response_text
         assert "ID ADAGE" not in response_text
+        assert "Ouvert au public : Oui" in response_text
         assert "Site web : https://www.example.com" in response_text
         assert f"Activité principale : {venue.venueTypeCode.value}" in response_text
         assert f"Label : {venue.venueLabel.label} " in response_text
