@@ -509,7 +509,7 @@ jobs:
           shell: bash
           options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -e SQLALCHEMY_WARN_20 -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests
           run: |
-            pytest ${{ matrix.pytest_args }} --durations=10 --junitxml='/tests/junit.xml' -vv
+            pytest ${{ matrix.pytest_args }} --durations=10 --junitxml='/tests/junit.xml' -vv --color=yes
       - name: "Publish Test Report"
         uses: mikepenz/action-junit-report@v5
         if: always() # always run even if the previous step fails
