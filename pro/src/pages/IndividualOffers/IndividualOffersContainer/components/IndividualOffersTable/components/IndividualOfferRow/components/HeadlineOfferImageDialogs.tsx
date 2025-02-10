@@ -117,7 +117,10 @@ export const HeadlineOfferImageDialogs = ({
         title="Ajoutez une image pour mettre votre offre à la une"
         open={isFirstDialogOpen}
       />
-      <DialogBuilder open={isImageUploaderOpen}>
+      <DialogBuilder
+        open={isImageUploaderOpen}
+        onOpenChange={() => setIsImageUploaderOpen(false)}
+      >
         <ModalImageEdit
           mode={UploaderModeEnum.OFFER}
           onImageUpload={onImageUpload}
@@ -135,7 +138,7 @@ export const HeadlineOfferImageDialogs = ({
             offerId: offer.id,
             context: {
               actionType: isReplacingHeadlineOffer ? 'replace' : 'add',
-              requiredImageUpload: true
+              requiredImageUpload: true,
             },
           })
           setIsLastDialogOpen(false)
