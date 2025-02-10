@@ -1,0 +1,8 @@
+@use "styles/mixins/_forms.scss" as forms;
+
+.password-footer {
+  @include forms.field-layout-footer;
+
+  margin-top: 0;
+  flex-direction: column;
+}
