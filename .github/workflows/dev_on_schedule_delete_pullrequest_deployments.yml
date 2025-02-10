@@ -16,15 +16,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.1
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
       # Get github api token
       - name: "Get secrets (github)"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
             API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
@@ -37,14 +37,19 @@ jobs:
           repository: pass-culture/rendered-manifests
           token: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
           path: ./rendered-manifests
-          ref: 'pcapi/pullrequests'
+          ref: "pcapi/pullrequests"
 
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
-          service_account : ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
+          service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
 
+      # Set up Cloud SDK
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
+        with:
+          version: ">= 363.0.0"
 
       - name: "Connect to cluster"
         uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.1.0
@@ -74,6 +79,9 @@ jobs:
             git push
           fi
 
+          #Set active project for DNS entry deletion
+          gcloud config set project passculture-metier-ehp
+
           for id in $pullrequests_ids; do
             while true; do
               kubectl get application -n argocd | grep $id
@@ -82,4 +90,6 @@ jobs:
             # Check for PR namespace and delete it
             kubectl get ns pcapi-pr-$id
             [[ $? -eq 0 ]] && kubectl delete ns pcapi-pr-$id || echo "namespace pcapi-pr-$id does not exist"
+            # Delete DNS entry
+            gcloud dns record-sets delete a-backend-$id.testing.passculture.team. --type=TXT --zone=testing-passculture-team
           done
