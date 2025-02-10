@@ -24,7 +24,7 @@ class DeleteSiretTest:
         assert models.Pricing.query.count() == 5
         old_siret = venue.siret
 
-        siret_api.remove_siret(venue, comment="no SIRET because reasons", apply_changes=True)
+        siret_api.remove_siret(venue, comment="no SIRET because reasons")
 
         assert venue.siret is None
         assert venue.comment == "no SIRET because reasons"
@@ -59,9 +59,7 @@ class DeleteSiretTest:
         new_pricing_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         old_siret = venue.siret
 
-        siret_api.remove_siret(
-            venue, comment="no SIRET because reasons", apply_changes=True, new_pricing_point_id=new_pricing_point.id
-        )
+        siret_api.remove_siret(venue, comment="no SIRET because reasons", new_pricing_point_id=new_pricing_point.id)
 
         db.session.expire_all()
 
@@ -91,15 +89,6 @@ class DeleteSiretTest:
         assert actions[1].extraData["modified_info"]["pricingPointSiret"] == {"old_info": old_siret, "new_info": None}
 
     @pytest.mark.usefixtures("clean_database")
-    def test_dry_run(self):
-        venue = offerers_factories.VenueFactory(pricing_point="self")
-
-        siret_api.remove_siret(venue, comment="xxx", apply_changes=False)
-
-        assert venue.siret is not None
-        assert venue.comment is None
-
-    @pytest.mark.usefixtures("clean_database")
     def test_revenue_check(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         user = users_factories.RichBeneficiaryFactory()
@@ -110,14 +99,13 @@ class DeleteSiretTest:
         )
 
         with pytest.raises(siret_api.CheckError) as err:
-            siret_api.remove_siret(venue, comment="xxx", apply_changes=True)
+            siret_api.remove_siret(venue, comment="xxx")
         assert "Ce partenaire culturel a un chiffre d'affaires de l'année élevé" in str(err.value)
         assert venue.siret is not None
 
         siret_api.remove_siret(
             venue,
             comment="xxx",
-            apply_changes=True,
             override_revenue_check=True,  # <-- override check
         )
         assert venue.siret is None
@@ -128,7 +116,7 @@ class DeleteSiretTest:
         factories.PricingFactory(booking__stock__offer__venue=venue, status=models.PricingStatus.PENDING)
 
         with pytest.raises(siret_api.CheckError) as err:
-            siret_api.remove_siret(venue, comment="xxx", apply_changes=True)
+            siret_api.remove_siret(venue, comment="xxx")
         assert str(err.value) == "Ce partenaire culturel a des valorisations en attente"
 
     @pytest.mark.usefixtures("clean_database")
@@ -136,7 +124,7 @@ class DeleteSiretTest:
         venue = offerers_factories.VenueFactory(pricing_point="self")
 
         with pytest.raises(siret_api.CheckError) as err:
-            siret_api.remove_siret(venue, comment="xxx", new_pricing_point_id=venue.id + 1000, apply_changes=True)
+            siret_api.remove_siret(venue, comment="xxx", new_pricing_point_id=venue.id + 1000)
         assert (
             str(err.value)
             == "Le nouveau point de valorisation doit être un partenaire culturel avec SIRET sur la même entité juridique"
@@ -148,7 +136,7 @@ class DeleteSiretTest:
         new_pricing_point = offerers_factories.VenueWithoutSiretFactory(managingOffererId=venue.managingOffererId)
 
         with pytest.raises(siret_api.CheckError) as err:
-            siret_api.remove_siret(venue, comment="xxx", new_pricing_point_id=new_pricing_point.id, apply_changes=True)
+            siret_api.remove_siret(venue, comment="xxx", new_pricing_point_id=new_pricing_point.id)
         assert (
             str(err.value)
             == "Le nouveau point de valorisation doit être un partenaire culturel avec SIRET sur la même entité juridique"
@@ -160,7 +148,7 @@ class DeleteSiretTest:
         new_pricing_point = offerers_factories.VenueFactory(pricing_point="self")
 
         with pytest.raises(siret_api.CheckError) as err:
-            siret_api.remove_siret(venue, comment="xxx", new_pricing_point_id=new_pricing_point.id, apply_changes=True)
+            siret_api.remove_siret(venue, comment="xxx", new_pricing_point_id=new_pricing_point.id)
         assert (
             str(err.value)
             == "Le nouveau point de valorisation doit être un partenaire culturel avec SIRET sur la même entité juridique"

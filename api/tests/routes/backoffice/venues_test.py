@@ -2872,8 +2872,7 @@ class SetPricingPointTest(PostEndpointHelper):
     # +1 pricing point validation
     # +1 check if the venue already has a link
     # +3 set pricing point
-    # +1 reload venue
-    expected_num_queries = 9
+    expected_num_queries = 8
 
     def test_set_pricing_point(self, authenticated_client):
         venue_with_no_siret = offerers_factories.VirtualVenueFactory()
@@ -3502,7 +3501,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
 
         db.session.expire_all()
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries + 1):  # + rollback
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -3515,7 +3514,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
     def test_venue_not_found(self, authenticated_client):
         url = url_for(self.endpoint, venue_id=1)
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries + 1):  # + rollback
             response = authenticated_client.get(url)
             assert response.status_code == 404
 
@@ -3525,7 +3524,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
 
         db.session.expire_all()
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries + 1):  # + rollback
             response = authenticated_client.get(url)
             assert response.status_code == 404
 
@@ -3535,7 +3534,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
 
         db.session.expire_all()
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries + 1):  # + rollback
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
