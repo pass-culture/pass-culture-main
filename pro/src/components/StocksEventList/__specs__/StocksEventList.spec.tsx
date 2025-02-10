@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import { GetOfferStockResponseModel, StocksOrderedBy } from 'apiClient/v1'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
@@ -77,7 +78,15 @@ const renderStocksEventList = async (
   })
 }
 
+const mockLogEvent = vi.fn()
+
 describe('StocksEventList', () => {
+  beforeEach(() => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+  })
+
   it('should render a table with header and data', async () => {
     await renderStocksEventList([stock1])
 
@@ -461,5 +470,22 @@ describe('StocksEventList', () => {
     await userEvent.click(screen.getByText('Supprimer ces dates'))
     expect(api.deleteAllFilteredStocks).toBeCalledTimes(1)
     expect(mockMutate).toHaveBeenCalledTimes(1)
+  })
+
+  it('should trigger an event log when a filter changes', async () => {
+    await renderStocksEventList([stock1])
+
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [],
+      stockCount: 0,
+      hasStocks: false,
+    })
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Filtrer par tarif'),
+      String(filteredPriceCategoryId)
+    )
+
+    expect(mockLogEvent).toHaveBeenCalled()
   })
 })
