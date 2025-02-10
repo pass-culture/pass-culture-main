@@ -67,10 +67,9 @@ CSS_FILES = [
 
 
 def generate_bundles() -> None:
-    if settings.IS_RUNNING_TESTS is not True:
-        if os.environ.get("WERKZEUG_RUN_MAIN") != "true":
-            preprocess_scss()
-            print("💅auto rebuild bundles by settings ENABLE_BO_BUNDLES_AUTORELOAD to 1", flush=True)
+    if os.environ.get("WERKZEUG_RUN_MAIN") != "true" and settings.IS_RUNNING_TESTS is not True:
+        preprocess_scss()
+        print("💅auto rebuild bundles by settings ENABLE_BO_BUNDLES_AUTORELOAD to 1", flush=True)
         generate_bundle(JS_FILES, JS_BUNDLE)
         generate_bundle(CSS_FILES, CSS_BUNDLE)
 
