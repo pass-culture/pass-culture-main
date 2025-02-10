@@ -33,7 +33,7 @@ export const isPasswordValid = (password: string | undefined): boolean => {
   return false
 }
 
-enum PasswordValidationCheck {
+export enum PasswordValidationCheck {
   LENGTH = 'LENGTH',
   UPPER_CASE = 'UPPER_CASE',
   LOWER_CASE = 'LOWER_CASE',
