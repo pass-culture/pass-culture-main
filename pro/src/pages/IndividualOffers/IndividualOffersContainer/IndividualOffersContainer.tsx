@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import {
@@ -57,10 +57,6 @@ export const IndividualOffersContainer = ({
   const { isHeadlineOfferAllowedForOfferer } = useIndividualOffersContext()
   const isHeadlineOfferEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
 
-  useEffect(() => {
-    setSelectedFilters(initialSearchFilters)
-  }, [initialSearchFilters])
-
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
     currentPageNumber * NUMBER_OF_OFFERS_PER_PAGE
@@ -98,9 +94,8 @@ export const IndividualOffersContainer = ({
 
   const resetFilters = () => {
     onResetFilters()
-    applySelectedFiltersAndRedirect({
-      ...DEFAULT_SEARCH_FILTERS,
-    })
+    setSelectedFilters(DEFAULT_SEARCH_FILTERS)
+    applySelectedFiltersAndRedirect(DEFAULT_SEARCH_FILTERS)
   }
 
   function onSetSelectedOffer(offer: ListOffersOfferResponseModel) {

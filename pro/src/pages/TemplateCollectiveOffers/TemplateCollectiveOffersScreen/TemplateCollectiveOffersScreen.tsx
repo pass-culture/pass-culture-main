@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 import {
   CollectiveOfferResponseModel,
@@ -59,10 +59,6 @@ export const TemplateCollectiveOffersScreen = ({
     CollectiveOfferResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
-
-  useEffect(() => {
-    setSelectedFilters(initialSearchFilters)
-  }, [initialSearchFilters])
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -128,6 +124,7 @@ export const TemplateCollectiveOffersScreen = ({
 
   const resetFilters = () => {
     onResetFilters()
+    setSelectedFilters(DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS)
     applyUrlFiltersAndRedirect(DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS)
   }
 
