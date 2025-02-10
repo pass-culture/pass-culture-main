@@ -41,19 +41,16 @@ def decide_eligibility(
     if eligibility_today == users_models.EligibilityType.AGE18:
         return users_models.EligibilityType.AGE18
 
-    eligibility_at_registration = (
-        get_extended_eligibility_at_date(birth_date, registration_datetime, user.departementCode)
-        if registration_datetime
-        else None
-    )
-    if eligibility_at_registration is None and eligibility_today is None and user_age_today == 19:
-        earliest_identity_check_date = subscription_api.get_first_registration_date_with_eligibility(
+    if user_age_today == 19:
+        first_eligible_registration_datetime = get_first_eligible_registration_date(
             user, birth_date, users_models.EligibilityType.AGE18
         )
-        if earliest_identity_check_date:
-            return get_extended_eligibility_at_date(birth_date, earliest_identity_check_date, user.departementCode)
+        if first_eligible_registration_datetime:
+            return get_extended_eligibility_at_date(
+                birth_date, first_eligible_registration_datetime, user.departementCode
+            )
 
-    return eligibility_at_registration
+    return None
 
 
 def decide_v3_credit_eligibility(
@@ -75,17 +72,14 @@ def decide_v3_credit_eligibility(
         return None
 
     eligibility: users_models.EligibilityType | None = None
-
     if registration_datetime:
         eligibility = get_eligibility_at_date(birth_date, registration_datetime, user.departementCode)
     if eligibility:
         return eligibility
 
-    earliest_identity_check_date = subscription_api.get_first_registration_date_with_age(user, birth_date)
-    if earliest_identity_check_date:
-        eligibility = get_extended_eligibility_at_date(birth_date, earliest_identity_check_date, user.departementCode)
-    if eligibility:
-        return eligibility
+    first_eligible_registration_datetime = get_first_eligible_registration_date(user, birth_date)
+    if first_eligible_registration_datetime:
+        return get_extended_eligibility_at_date(birth_date, first_eligible_registration_datetime, user.departementCode)
 
     if 17 <= user_age <= 18:
         eligibility = users_models.EligibilityType.AGE17_18
@@ -110,6 +104,31 @@ def get_eligibility_at_date(
     return None
 
 
+def get_first_eligible_registration_date(
+    user: users_models.User,
+    birth_date: datetime.date | None,
+    eligibility: users_models.EligibilityType | None = None,
+) -> datetime.datetime | None:
+    fraud_checks = user.beneficiaryFraudChecks
+    if not fraud_checks or not birth_date:
+        return None
+
+    registration_dates = sorted(
+        fraud_check.get_min_date_between_creation_and_registration()
+        for fraud_check in fraud_checks
+        if (eligibility is None or fraud_check.eligibilityType == eligibility)
+    )
+    eligible_registration_dates = [
+        registration_date
+        for registration_date in registration_dates
+        if get_extended_eligibility_at_date(birth_date, registration_date, user.departementCode) is not None
+    ]
+    if eligible_registration_dates:
+        return eligible_registration_dates[0]
+
+    return None
+
+
 def get_extended_eligibility_at_date(
     date_of_birth: datetime.date | None, specified_datetime: datetime.datetime, department_code: str | None = None
 ) -> users_models.EligibilityType | None:
@@ -119,6 +138,7 @@ def get_extended_eligibility_at_date(
 
     This is summed up as this pseudocode:  eligibility_start < specified_datetime < eligibility_end
     """
+    # TODO timezone these functions
     eligibility_start = get_eligibility_start_datetime(date_of_birth)
     eligibility_end = get_eligibility_end_datetime(date_of_birth)
 

@@ -3221,17 +3221,16 @@ def _can_be_recredited_v3(user: users_models.User, age: int | None = None) -> bo
 
 
 def _has_celebrated_birthday_since_credit_or_registration(user: users_models.User) -> bool:
-    import pcapi.core.subscription.api as subscription_api
+    from pcapi.core.users import eligibility_api
 
     latest_birthday_date = typing.cast(datetime.date, user.latest_birthday)
     if user.deposit and user.deposit.dateCreated and (user.deposit.dateCreated.date() < latest_birthday_date):
         return True
 
-    first_registration_datetime = subscription_api.get_first_registration_date_with_eligibility(
+    first_registration_datetime = eligibility_api.get_first_eligible_registration_date(
         user, user.validatedBirthDate, users_models.EligibilityType.UNDERAGE
     )
     if first_registration_datetime is None:
-        logger.error("No registration date for user to be recredited", extra={"user_id": user.id})
         return False
 
     return first_registration_datetime.date() < latest_birthday_date
@@ -3276,7 +3275,7 @@ def _has_been_recredited(user: users_models.User, age: int | None = None) -> boo
 
 
 def _get_known_age_at_deposit(user: users_models.User) -> int | None:
-    import pcapi.core.subscription.api as subscription_api
+    from pcapi.core.users import eligibility_api
 
     if user.deposit is None:
         return None
@@ -3285,7 +3284,7 @@ def _get_known_age_at_deposit(user: users_models.User) -> int | None:
     if known_birthday_at_deposit is None:
         return None
 
-    first_registration_date = subscription_api.get_first_registration_date_with_eligibility(
+    first_registration_date = eligibility_api.get_first_eligible_registration_date(
         user, known_birthday_at_deposit, users_models.EligibilityType.UNDERAGE
     )
     if first_registration_date is not None:

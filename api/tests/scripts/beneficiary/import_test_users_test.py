@@ -49,8 +49,8 @@ class ReadFileTest:
         assert "jea***@example.com" in caplog.messages[1]
         if update_if_exists:
             assert "jea***@example.com" in caplog.messages[2]
-            assert "jeu***@example.com" in caplog.messages[5]
-            assert "p***@example.com" in caplog.messages[10]
+            assert "jeu***@example.com" in caplog.messages[4]
+            assert "p***@example.com" in caplog.messages[9]
 
         if update_if_exists:
             assert len(users) == 4

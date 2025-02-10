@@ -44,7 +44,7 @@ def _get_age_at_first_registration(user: users_models.User, eligibility: users_m
     if not user.birth_date:
         return None
 
-    first_registration_date = get_first_registration_date_with_eligibility(user, user.birth_date, eligibility)
+    first_registration_date = eligibility_api.get_first_eligible_registration_date(user, user.birth_date, eligibility)
     if not first_registration_date:
         return user.age
 
@@ -706,53 +706,6 @@ def update_user_birth_date_if_not_beneficiary(user: users_models.User, birth_dat
     ):
         user.validatedBirthDate = birth_date
         pcapi_repository.repository.save(user)
-
-
-def get_first_registration_date_with_age(
-    user: users_models.User,
-    birth_date: datetime.date | None,
-) -> datetime.datetime | None:
-    fraud_checks = user.beneficiaryFraudChecks
-    if not fraud_checks or not birth_date:
-        return None
-
-    def _is_user_eligible_at_fraud_check(fraud_check: fraud_models.BeneficiaryFraudCheck) -> bool:
-        age_at_fraud_check = users_utils.get_age_at_date(
-            birth_date, fraud_check.get_min_date_between_creation_and_registration(), user.departementCode
-        )
-        return 15 <= age_at_fraud_check <= 18
-
-    registration_dates_when_eligible = [
-        fraud_check.get_min_date_between_creation_and_registration()
-        for fraud_check in fraud_checks
-        if _is_user_eligible_at_fraud_check(fraud_check)
-    ]
-
-    return min(registration_dates_when_eligible) if registration_dates_when_eligible else None
-
-
-def get_first_registration_date_with_eligibility(
-    user: users_models.User,
-    birth_date: datetime.date | None,
-    eligibility: users_models.EligibilityType,
-) -> datetime.datetime | None:
-    fraud_checks = user.beneficiaryFraudChecks
-    if not fraud_checks or not birth_date:
-        return None
-
-    registration_dates_when_eligible = [
-        fraud_check.get_min_date_between_creation_and_registration()
-        for fraud_check in fraud_checks
-        if fraud_check.eligibilityType == eligibility
-        and eligibility_api.is_user_age_compatible_with_eligibility(
-            users_utils.get_age_at_date(
-                birth_date, fraud_check.get_min_date_between_creation_and_registration(), user.departementCode
-            ),
-            eligibility,
-        )
-    ]
-
-    return min(registration_dates_when_eligible) if registration_dates_when_eligible else None
 
 
 def _get_subscription_message(
