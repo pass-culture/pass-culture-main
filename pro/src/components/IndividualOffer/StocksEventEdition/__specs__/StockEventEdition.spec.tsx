@@ -17,6 +17,7 @@ import {
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import {
@@ -114,6 +115,7 @@ const renderStockEventScreen = async (
 
 const priceCategoryId = '1'
 const otherPriceCategoryId = '2'
+const mockLogEvent = vi.fn()
 
 describe('screens:StocksEventEdition', () => {
   let apiOffer: GetIndividualOfferWithAddressResponseModel
@@ -171,6 +173,10 @@ describe('screens:StocksEventEdition', () => {
       withdrawalDelay: null,
       bookingsCount: 0,
     })
+
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
   })
 
   it('render stock event row', async () => {
@@ -581,5 +587,16 @@ describe('screens:StocksEventEdition', () => {
     )
     await userEvent.click(screen.getByText('Quitter la page'))
     expect(screen.getByText('Page 3/6')).toBeInTheDocument()
+  })
+
+  it('should trigger an event log when a filter changes', async () => {
+    await renderStockEventScreen(apiOffer, apiStocks)
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Filtrer par tarif'),
+      '1'
+    )
+
+    expect(mockLogEvent).toHaveBeenCalled()
   })
 })

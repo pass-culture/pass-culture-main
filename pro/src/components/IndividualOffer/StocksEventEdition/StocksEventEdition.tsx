@@ -12,7 +12,9 @@ import {
   StocksOrderedBy,
   OfferStatus,
 } from 'apiClient/v1'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
@@ -126,6 +128,7 @@ export const StocksEventEdition = ({
   offer,
 }: StocksEventEditionProps): JSX.Element => {
   // utilities
+  const { logEvent } = useAnalytics()
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -414,6 +417,9 @@ export const StocksEventEdition = ({
 
   const onFilterChange = () => {
     firstPage()
+    logEvent(Events.UPDATED_EVENT_STOCK_FILTERS, {
+      formType: 'edition',
+    })
   }
   const isDisabled = isOfferDisabled(offer.status)
   const isSynchronized = Boolean(offer.lastProvider)

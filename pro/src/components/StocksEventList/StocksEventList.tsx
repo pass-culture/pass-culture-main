@@ -216,6 +216,9 @@ export const StocksEventList = ({
   // Handlers
   const onFilterChange = () => {
     firstPage()
+    logEvent(Events.UPDATED_EVENT_STOCK_FILTERS, {
+      formType: readonly ? 'readonly' : 'creation',
+    })
   }
 
   const onStockCheckChange = (index: number) => {

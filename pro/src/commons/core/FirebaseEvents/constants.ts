@@ -70,6 +70,7 @@ export enum Events {
   CLICKED_CONSULT_HELP = 'hasClickedConsultHelp',
   UPDATED_BOOKING_LIMIT_DATE = 'hasUpdatedBookingLimitDate',
   CLICKED_GENERATE_TEMPLATE_DESCRIPTION = 'hasClickedGenerateTemplateDescription',
+  UPDATED_EVENT_STOCK_FILTERS = 'hasUpdatedEventStockFilters',
 }
 
 export enum VenueEvents {
