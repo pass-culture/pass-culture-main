@@ -214,18 +214,24 @@ def update_venue(
     repository.save(venue)
 
     if modifications:
-        search.async_index_venue_ids(
-            [venue.id],
-            reason=search.IndexationReason.VENUE_UPDATE,
-            log_extra={"changes": set(modifications.keys())},
+        on_commit(
+            functools.partial(
+                search.async_index_venue_ids,
+                [venue.id],
+                reason=search.IndexationReason.VENUE_UPDATE,
+                log_extra={"changes": set(modifications.keys())},
+            )
         )
 
         indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
         if indexing_modifications_fields:
-            search.async_index_offers_of_venue_ids(
-                [venue.id],
-                reason=search.IndexationReason.VENUE_UPDATE,
-                log_extra={"changes": set(indexing_modifications_fields)},
+            on_commit(
+                functools.partial(
+                    search.async_index_offers_of_venue_ids,
+                    [venue.id],
+                    reason=search.IndexationReason.VENUE_UPDATE,
+                    log_extra={"changes": set(indexing_modifications_fields)},
+                )
             )
 
         # Former booking email address shall no longer receive emails about data related to this venue.
@@ -709,7 +715,6 @@ def link_venue_to_pricing_point(
     pricing_point_id: int,
     timestamp: datetime | None = None,
     force_link: bool = False,
-    commit: bool = True,
 ) -> None:
     """
     Creates a VenuePricingPointLink if the venue had not been previously linked to a pricing point.
@@ -795,7 +800,6 @@ def link_venue_to_pricing_point(
             "new_pricing_point": pricing_point_id,
             "previous_pricing_point": current_link.pricingPointId if current_link else None,
             "updated_finance_events": ppoint_update_result.rowcount,
-            "commit": commit,
         },
     )
 
@@ -1386,7 +1390,6 @@ def add_comment_to_offerer(offerer: offerers_models.Offerer, author_user: users_
 
 def add_comment_to_venue(venue: offerers_models.Venue, author_user: users_models.User, comment: str) -> None:
     history_api.add_action(history_models.ActionType.COMMENT, author=author_user, venue=venue, comment=comment)
-    db.session.commit()
 
 
 def get_timestamp_from_url(image_url: str) -> str:

@@ -40,6 +40,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
@@ -262,14 +263,17 @@ def render_venue_details(
 
 
 @venue_blueprint.route("", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def list_venues() -> utils.BackofficeResponse:
     form = forms.GetVenuesListForm(formdata=utils.get_query_params())
 
     if not form.validate():
+        mark_transaction_as_invalid()
         return render_template("venue/list.html", rows=[], form=form), 400
 
     if form.is_empty():
+        mark_transaction_as_invalid()
         return render_template("venue/list.html", rows=[], form=form)
 
     venues = _get_venues(form)
@@ -285,6 +289,7 @@ def list_venues() -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>", methods=["GET"])
+@atomic()
 def get(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue(venue_id)
 
@@ -359,6 +364,7 @@ def get_stats_data(venue_id: int) -> dict:
 
 
 @venue_blueprint.route("/<int:venue_id>/stats", methods=["GET"])
+@atomic()
 def get_stats(venue_id: int) -> utils.BackofficeResponse:
     venue_query = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
@@ -401,6 +407,7 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/revenue-details", methods=["GET"])
+@atomic()
 def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
     venue = (
         offerers_models.Venue.query.filter_by(id=venue_id)
@@ -435,6 +442,7 @@ def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
             if sum(future.values()) > 0:
                 details["En cours"] = future
         except ApiErrors as api_error:
+            mark_transaction_as_invalid()
             return render_template(
                 "components/revenue_details.html",
                 information=Markup(
@@ -472,6 +480,7 @@ def _fetch_venue_provider(venue_id: int, provider_id: int) -> providers_models.V
 
 
 @venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/active", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def toggle_venue_provider_is_active(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
     venue_provider = _fetch_venue_provider(venue_id, provider_id)
@@ -480,7 +489,7 @@ def toggle_venue_provider_is_active(venue_id: int, provider_id: int) -> utils.Ba
     providers_api.activate_or_deactivate_venue_provider(
         venue_provider, set_active, author=current_user, send_email=False
     )
-    db.session.commit()
+    db.session.flush()
 
     flash(
         Markup("La synchronisation du partenaire culturel avec le provider a été {verb}.").format(
@@ -493,12 +502,14 @@ def toggle_venue_provider_is_active(venue_id: int, provider_id: int) -> utils.Ba
 
 
 @venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/delete", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
     venue_provider = _fetch_venue_provider(venue_id, provider_id)
 
     if venue_provider.isFromAllocineProvider:
         flash("Impossible de supprimer le lien entre le partenaire culturel et Allociné.", "warning")
+        mark_transaction_as_invalid()
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
     providers_api.delete_venue_provider(venue_provider, author=current_user, send_email=False)
@@ -533,6 +544,7 @@ def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
 
 
 @venue_blueprint.route("/<int:venue_id>/history", methods=["GET"])
+@atomic()
 def get_history(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue_with_history(venue_id)
     actions = sorted(venue.action_history, key=lambda action: action.actionDate, reverse=True)
@@ -550,6 +562,7 @@ def get_history(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/protected-info", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
 def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
     venue = offerers_models.Venue.query.get_or_404(venue_id)
@@ -558,6 +571,7 @@ def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
         raise NotFound()
 
     if not is_valid_siret(venue.siret):
+        mark_transaction_as_invalid()
         return render_template("venue/get/entreprise_info.html", is_invalid_siret=True, venue=venue)
 
     siret_info = None
@@ -566,14 +580,17 @@ def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
     try:
         siret_info = entreprise_api.get_siret(venue.siret, raise_if_non_public=False)
     except entreprise_exceptions.UnknownEntityException:
+        mark_transaction_as_invalid()
         siret_error = "Ce SIRET est inconnu dans la base de données Sirene, y compris dans les non-diffusibles"
     except entreprise_exceptions.SireneException:
+        mark_transaction_as_invalid()
         siret_error = "Une erreur s'est produite lors de l'appel à API Entreprise"
 
     return render_template("venue/get/entreprise_info.html", siret_info=siret_info, siret_error=siret_error)
 
 
 @venue_blueprint.route("/<int:venue_id>/collective-dms-applications", methods=["GET"])
+@atomic()
 def get_collective_dms_applications(venue_id: int) -> utils.BackofficeResponse:
 
     collective_dms_applications = (
@@ -600,6 +617,7 @@ def get_collective_dms_applications(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/delete", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
 def delete_venue(venue_id: int) -> utils.BackofficeResponse:
     venue = offerers_models.Venue.query.filter_by(id=venue_id).populate_existing().with_for_update().one_or_none()
@@ -613,9 +631,11 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
     try:
         offerers_api.delete_venue(venue.id)
     except offerers_exceptions.CannotDeleteVenueWithBookingsException:
+        mark_transaction_as_invalid()
         flash("Impossible de supprimer un partenaire culturel pour lequel il existe des réservations", "warning")
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
     except offerers_exceptions.CannotDeleteVenueUsedAsPricingPointException:
+        mark_transaction_as_invalid()
         flash(
             "Impossible de supprimer un partenaire culturel utilisé comme point de valorisation d'un autre partenaire culturel",
             "warning",
@@ -631,11 +651,11 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
         ),
         "success",
     )
-    db.session.commit()
     return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_venue(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue(venue_id)
@@ -646,6 +666,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         form = forms.EditVenueForm(venue)
 
     if not form.validate():
+        mark_transaction_as_invalid()
         msg = Markup(
             """
             <button type="button"
@@ -677,11 +698,13 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
                 f"Vous ne pouvez pas {'modifier' if venue.siret else 'ajouter'} le SIRET d'un partenaire culturel. Contactez le support pro N2.",
                 "warning",
             )
+            mark_transaction_as_invalid()
             return render_venue_details(venue, form), 400
 
         if venue.siret:
             if not new_siret:
                 flash("Vous ne pouvez pas retirer le SIRET d'un partenaire culturel.", "warning")
+                mark_transaction_as_invalid()
                 return render_venue_details(venue, form), 400
         elif new_siret:
             # Remove comment because of constraint check_has_siret_xor_comment_xor_isVirtual
@@ -692,6 +715,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
                 Markup("Un autre partenaire culturel existe déjà avec le SIRET {siret}").format(siret=new_siret),
                 "warning",
             )
+            mark_transaction_as_invalid()
             return render_venue_details(venue, form), 400
 
         existing_pricing_point_id = venue.current_pricing_point_id
@@ -703,11 +727,13 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
                 f"mais le changement de point de valorisation n'est pas autorisé",
                 "warning",
             )
+            mark_transaction_as_invalid()
             return render_venue_details(venue, form), 400
 
         try:
             if not sirene.siret_is_active(new_siret):
                 flash("Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce partenaire culturel", "warning")
+                mark_transaction_as_invalid()
                 return render_venue_details(venue, form), 400
         except entreprise_exceptions.SireneException:
             unavailable_sirene = True
@@ -756,6 +782,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
                     Markup("[{error_key}] {error_detail}").format(error_key=error_key, error_detail=error_detail),
                     "warning",
                 )
+        mark_transaction_as_invalid()
         return render_venue_details(venue, form), 400
 
     if not venue_was_permanent and new_permanent and venue.thumbCount == 0:
@@ -772,6 +799,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/fraud", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def update_for_fraud(venue_id: int) -> utils.BackofficeResponse:
     venue = (
@@ -784,6 +812,7 @@ def update_for_fraud(venue_id: int) -> utils.BackofficeResponse:
 
     form = forms.FraudForm()
     if not form.validate():
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
     elif offerers_api.update_fraud_info(
         None,
@@ -792,13 +821,13 @@ def update_for_fraud(venue_id: int) -> utils.BackofficeResponse:
         offerers_models.OffererConfidenceLevel(form.confidence_level.data) if form.confidence_level.data else None,
         form.comment.data,
     ):
-        db.session.commit()
         flash("Les informations ont été mises à jour", "success")
 
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>/comment", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_venue(venue_id: int) -> utils.BackofficeResponse:
     venue = offerers_models.Venue.query.filter_by(id=venue_id).with_for_update(key_share=True, read=True).one_or_none()
@@ -808,6 +837,7 @@ def comment_venue(venue_id: int) -> utils.BackofficeResponse:
     form = forms.CommentForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
+        mark_transaction_as_invalid()
     else:
         offerers_api.add_comment_to_venue(venue, current_user, comment=form.comment.data)
         flash("Le commentaire a été enregistré", "success")
@@ -816,12 +846,14 @@ def comment_venue(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/batch-edit-form", methods=["GET", "POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def get_batch_edit_venues_form() -> utils.BackofficeResponse:
     form = forms.BatchEditVenuesForm()
     if form.object_ids.data:
         if not form.validate():
             flash(utils.build_form_error_msg(form), "warning")
+            mark_transaction_as_invalid()
             return redirect(request.referrer or url_for(".list_venues"), code=303)
 
         venues = (
@@ -856,6 +888,7 @@ def batch_edit_venues() -> utils.BackofficeResponse:
     form = forms.BatchEditVenuesForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
+        mark_transaction_as_invalid()
         return redirect(request.referrer or url_for(".list_venues"), code=303)
 
     venues = (
@@ -989,6 +1022,7 @@ def _render_remove_pricing_point_content(
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-pricing-point", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_remove_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
     venue = _load_venue_for_removing_pricing_point(venue_id)
@@ -996,6 +1030,7 @@ def get_remove_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
     try:
         siret_api.check_can_remove_pricing_point(venue)
     except siret_api.CheckError as exc:
+        mark_transaction_as_invalid()
         return _render_remove_pricing_point_content(venue, error=str(exc))
 
     form = forms.RemovePricingPointForm()
@@ -1003,29 +1038,32 @@ def get_remove_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-pricing-point", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def remove_pricing_point(venue_id: int) -> utils.BackofficeResponse:
     venue = _load_venue_for_removing_pricing_point(venue_id)
 
     form = forms.RemovePricingPointForm()
     if not form.validate():
+        mark_transaction_as_invalid()
         return _render_remove_pricing_point_content(venue, form=form)
 
     try:
         siret_api.remove_pricing_point_link(
             venue,
             form.comment.data,
-            apply_changes=True,
             override_revenue_check=bool(form.override_revenue_check.data),
             author_user_id=current_user.id,
         )
     except siret_api.CheckError as exc:
+        mark_transaction_as_invalid()
         return _render_remove_pricing_point_content(venue, form=form, error=str(exc))
 
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>/set-pricing-point", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_set_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
     aliased_venue = sa.orm.aliased(offerers_models.Venue)
@@ -1067,6 +1105,7 @@ def get_set_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/set-pricing-point", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def set_pricing_point(venue_id: int) -> utils.BackofficeResponse:
     aliased_venue = sa.orm.aliased(offerers_models.Venue)
@@ -1098,16 +1137,19 @@ def set_pricing_point(venue_id: int) -> utils.BackofficeResponse:
     form = forms.PricingPointForm(venue=venue)
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
+        mark_transaction_as_invalid()
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
     try:
         offerers_api.link_venue_to_pricing_point(venue, form.new_pricing_point.data)
         flash("Ce partenaire culturel a été lié à un point de valorisation", "info")
     except ApiErrors as exc:
+        mark_transaction_as_invalid()
         if not exc.errors or "pricingPointId" not in exc.errors:
             flash(escape(str(exc.errors)) if exc.errors else "Erreur inconue", "warning")
         else:
             flash(escape(exc.errors["pricingPointId"][0]), "warning")
     except offerers_exceptions.CannotLinkVenueToPricingPoint:
+        mark_transaction_as_invalid()
         flash("Ce partenaire culturel est déja lié à un point de valorisation", "warning")
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
@@ -1195,6 +1237,7 @@ def _render_remove_siret_content(
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-siret", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MOVE_SIRET)
 def get_remove_siret_form(venue_id: int) -> utils.BackofficeResponse:
     venue = _load_venue_for_removing_siret(venue_id)
@@ -1204,6 +1247,7 @@ def get_remove_siret_form(venue_id: int) -> utils.BackofficeResponse:
             venue, "comment", override_revenue_check=True, check_offerer_has_other_siret=True
         )
     except siret_api.CheckError as exc:
+        mark_transaction_as_invalid()
         return _render_remove_siret_content(venue, error=str(exc))
 
     form = forms.RemoveSiretForm(venue)
@@ -1211,24 +1255,26 @@ def get_remove_siret_form(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-siret", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MOVE_SIRET)
 def remove_siret(venue_id: int) -> utils.BackofficeResponse:
     venue = _load_venue_for_removing_siret(venue_id)
 
     form = forms.RemoveSiretForm(venue)
     if not form.validate():
+        mark_transaction_as_invalid()
         return _render_remove_siret_content(venue, form=form)
 
     try:
         siret_api.remove_siret(
             venue,
             form.comment.data,
-            apply_changes=True,
             override_revenue_check=bool(form.override_revenue_check.data),
             new_pricing_point_id=form.new_pricing_point.data,
             author_user_id=current_user.id,
         )
     except siret_api.CheckError as exc:
+        mark_transaction_as_invalid()
         return _render_remove_siret_content(venue, form=form, error=str(exc))
 
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
