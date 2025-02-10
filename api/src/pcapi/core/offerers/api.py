@@ -3094,8 +3094,8 @@ def update_offerer_address(offerer_address_id: int, address_id: int, label: str 
 
 def synchronize_from_adage_and_check_registration(offerer_id: int) -> bool:
     # FIXME: to be modified when adage sync cron frequency is updated
-    since_date = datetime.utcnow() - timedelta(days=1)
-    adage_api.synchronize_adage_ids_on_venues(debug=False, since_date=since_date)
+    since_date = datetime.utcnow() - timedelta(days=2)
+    adage_api.synchronize_adage_ids_on_venues(debug=True, since_date=since_date)
     return offerers_repository.offerer_has_venue_with_adage_id(offerer_id)
 
 
