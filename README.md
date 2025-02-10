@@ -1,5 +1,5 @@
 <div align=center>
-  <img src="https://pass.culture.fr/wp-content/uploads/2020/11/RVB_PASS_CULTURE_HD.png" style="width: 360px">
+  <img src="https://storage.googleapis.com/passculture-metier-prod-production-assets-fine-grained/assets/passculture.gif" style="width: 360px">
   <br />
   <a href="https://apps.apple.com/fr/app/pass-culture/id1557887412">
     <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/Download_on_the_App_Store_Badge_FRCA_RGB_blk.svg" style="height: 50px">
