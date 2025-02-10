@@ -2963,7 +2963,9 @@ def compute_deposit_expiration_date_v3(beneficiary: users_models.User) -> dateti
     if not beneficiary.birth_date:
         raise ValueError(f"Beneficiary {beneficiary.id} has no birth date")
 
-    return beneficiary.birth_date + relativedelta(years=21)
+    # We add here an 11h buffer for the french territories overseas.
+    # TODO: use the actual department code of the user
+    return beneficiary.birth_date + relativedelta(years=21, hours=11)
 
 
 def compute_underage_deposit_expiration_datetime(birth_date: datetime.date | None) -> datetime.datetime:
