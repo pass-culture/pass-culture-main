@@ -1619,7 +1619,11 @@ def search_venue(search_query: str, departments: typing.Iterable[str] = ()) -> B
         return venues.filter(False)
 
     if departments:
-        venues = venues.filter(models.Venue.departementCode.in_(departments))
+        venues = (
+            venues.outerjoin(models.Venue.offererAddress)
+            .outerjoin(models.OffererAddress.address)
+            .filter(geography_models.Address.departmentCode.in_(departments))
+        )
 
     if search_query.isnumeric():
         numeric_filter = models.Venue.id == int(search_query)

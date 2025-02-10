@@ -509,7 +509,12 @@ class SearchVenueTest:
                 name=f"{name_part1[i % len(name_part1)]} {name_part2_admin[i % len(name_part2_admin)]}",
                 publicName=f"{name_part1[i % len(name_part1)]} {name_part2_public[i % len(name_part2_public)]}",
                 siret=f"123456{i:03}{i:05}",
-                postalCode=postal_codes[i % len(postal_codes)],
+                offererAddress=offerers_factories.OffererAddressFactory(
+                    address__postalCode=postal_codes[i % len(postal_codes)],
+                    address__departmentCode=regions_utils.get_department_code_from_city_code(
+                        postal_codes[i % len(postal_codes)]
+                    ),
+                ),
                 isPermanent=bool(i % 2 == 0),
                 contact=None,
                 managingOfferer__validationStatus=validation_statuses[i % len(validation_statuses)],

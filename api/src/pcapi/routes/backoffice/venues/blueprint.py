@@ -24,6 +24,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import siret_api
+from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 from pcapi.core.history.api import add_action
 from pcapi.core.mails import transactional as transactional_mails
@@ -74,8 +75,6 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
             offerers_models.Venue.name,
             offerers_models.Venue.publicName,
             offerers_models.Venue.dateCreated,
-            offerers_models.Venue.postalCode,
-            offerers_models.Venue.departementCode,
             offerers_models.Venue.isPermanent,
         ),
         sa.orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.name),
@@ -101,14 +100,19 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
     if form.venue_label.data:
         base_query = base_query.filter(offerers_models.Venue.venueLabelId.in_(form.venue_label.raw_data))
 
-    if form.department.data:
-        base_query = base_query.filter(offerers_models.Venue.departementCode.in_(form.department.data))
+    if form.department.data or form.regions.data:
+        base_query = base_query.outerjoin(offerers_models.Venue.offererAddress).outerjoin(
+            offerers_models.OffererAddress.address
+        )
 
-    if form.regions.data:
-        department_codes: list[str] = []
-        for region in form.regions.data:
-            department_codes += regions_utils.get_department_codes_for_region(region)
-        base_query = base_query.filter(offerers_models.Venue.departementCode.in_(department_codes))
+        if form.department.data:
+            base_query = base_query.filter(geography_models.Address.departmentCode.in_(form.department.data))
+
+        if form.regions.data:
+            department_codes: list[str] = []
+            for region in form.regions.data:
+                department_codes += regions_utils.get_department_codes_for_region(region)
+            base_query = base_query.filter(geography_models.Address.departmentCode.in_(department_codes))
 
     if form.type.data:
         base_query = base_query.filter(offerers_models.Venue.venueTypeCode.in_(form.type.data))
