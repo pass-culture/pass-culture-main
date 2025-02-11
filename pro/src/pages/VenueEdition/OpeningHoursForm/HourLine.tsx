@@ -51,7 +51,6 @@ export function HourLine({ day }: HourLineProps) {
             label="Horaire d’ouverture 1"
             name={`${day}.morningStartingHour`}
             isLabelHidden
-            hideFooter
             className={styles['time-picker']}
           />
         </td>
@@ -66,7 +65,6 @@ export function HourLine({ day }: HourLineProps) {
               label="Horaire de fermeture 1"
               name={`${day}.morningEndingHour`}
               isLabelHidden
-              hideFooter
               className={styles['time-picker']}
               min={values[day]?.morningStartingHour}
             />
@@ -102,7 +100,6 @@ export function HourLine({ day }: HourLineProps) {
               label="Horaire d’ouverture 2"
               name={`${day}.afternoonStartingHour`}
               isLabelHidden
-              hideFooter
               className={styles['time-picker']}
               min={values[day]?.morningEndingHour}
             />
@@ -114,7 +111,6 @@ export function HourLine({ day }: HourLineProps) {
                 label="Horaire de fermeture 2"
                 name={`${day}.afternoonEndingHour`}
                 isLabelHidden
-                hideFooter
                 className={styles['time-picker']}
                 min={values[day]?.afternoonStartingHour}
               />

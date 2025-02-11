@@ -80,7 +80,6 @@ export const FormDates = ({
               label="Date de début"
               disabled={disableForm}
               minDate={minBeginningDate}
-              hideFooter
               onChange={handleBeginningDateChange}
             />
             <DatePicker
@@ -88,14 +87,12 @@ export const FormDates = ({
               label="Date de fin"
               disabled={disableForm}
               minDate={minDateForEndingDate}
-              hideFooter
             />
             <TimePicker
               name="hour"
               label="Horaire"
               disabled={disableForm}
               isOptional
-              hideFooter
             />
           </FormLayout.Row>
         </>
