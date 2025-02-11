@@ -1831,6 +1831,7 @@ class HasCompletedProfileTest:
             dateCreated=year_when_user_was_17,
         )
         assert subscription_api.has_completed_profile_for_given_eligibility(user, user.eligibility) is False
+        assert subscription_api._has_completed_profile_for_previous_eligibility_only(user)
 
     def test_has_completed_17_profile(self):
         user = users_factories.UserFactory(age=18, activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value)
