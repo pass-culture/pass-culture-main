@@ -1589,7 +1589,6 @@ class OffersV2Test:
         nb_query += 1  # select stocks
         nb_query += 1  # select mediations
         nb_query += 1  # select chronicles
-        nb_query += 1  # select feature
         nb_query += 1  # select futureOffer
         with assert_num_queries(nb_query):
             response = client.get(f"/native/v2/offer/{offer_id}")
