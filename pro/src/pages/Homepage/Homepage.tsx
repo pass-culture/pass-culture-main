@@ -131,7 +131,7 @@ export const Homepage = (): JSX.Element => {
 
   return (
     <>
-      <Layout mainHeading="Bienvenue dans l’espace acteurs culturels">
+      <Layout mainHeading="Bienvenue sur votre espace partenaire">
         <div className={styles['reimbursements-banners']}>
           <AddBankAccountCallout offerer={selectedOfferer} />
           <LinkVenueCallout offerer={selectedOfferer} />
