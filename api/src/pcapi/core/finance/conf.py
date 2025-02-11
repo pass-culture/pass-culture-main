@@ -35,6 +35,8 @@ GRANT_18_DIGITAL_CAP_V1 = decimal.Decimal(200)
 GRANT_18_DIGITAL_CAP_V2 = decimal.Decimal(100)
 GRANT_18_PHYSICAL_CAP_V1 = decimal.Decimal(200)
 GRANT_18_PHYSICAL_CAP_V2: decimal.Decimal | None = None
+GRANT_17_18_DIGITAL_CAP = decimal.Decimal(100)
+GRANT_17_18_PHYSICAL_CAP: decimal.Decimal | None = None
 
 WALLIS_AND_FUTUNA_DEPARTMENT_CODE = "986"
 MAYOTTE_DEPARTMENT_CODE = "976"

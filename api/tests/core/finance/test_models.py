@@ -9,6 +9,7 @@ import sqlalchemy.exc as sa_exc
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
+from pcapi.core.finance.enum import DepositType
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
@@ -147,31 +148,38 @@ class DepositSpecificCapsTest:
         assert specific_caps.PHYSICAL_CAP is None
 
     def should_have_digital_cap_if_grant_18_v2(self):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryGrant18Factory(deposit__type=DepositType.GRANT_18)
         specific_caps = user.deposit.specific_caps
 
         assert specific_caps.DIGITAL_CAP == Decimal(100)
         assert specific_caps.PHYSICAL_CAP is None
 
     def should_have_both_caps_when_18_v1(self):
-        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
+        user = users_factories.BeneficiaryGrant18Factory(deposit__type=DepositType.GRANT_18, deposit__version=1)
         specific_caps = user.deposit.specific_caps
 
         assert specific_caps.DIGITAL_CAP == Decimal(200)
         assert specific_caps.PHYSICAL_CAP == Decimal(200)
 
     def should_have_150_euros_cap_when_from_mayotte(self):
-        user = users_factories.BeneficiaryGrant18Factory(departementCode=976)
+        user = users_factories.BeneficiaryGrant18Factory(deposit__type=DepositType.GRANT_18, departementCode=976)
         specific_caps = user.deposit.specific_caps
 
         assert specific_caps.DIGITAL_CAP == Decimal(150)
         assert specific_caps.PHYSICAL_CAP is None
 
     def should_have_200_euros_cap_when_from_saint_pierre_et_miquelon(self):
-        user = users_factories.BeneficiaryGrant18Factory(departementCode=975)
+        user = users_factories.BeneficiaryGrant18Factory(deposit__type=DepositType.GRANT_18, departementCode=975)
         specific_caps = user.deposit.specific_caps
 
         assert specific_caps.DIGITAL_CAP == Decimal(200)
+        assert specific_caps.PHYSICAL_CAP is None
+
+    def should_have_100_euros_cap_when_deposit_17_18(self):
+        user = users_factories.BeneficiaryGrant18Factory(deposit__type=DepositType.GRANT_17_18, deposit__version=1)
+        specific_caps = user.deposit.specific_caps
+
+        assert specific_caps.DIGITAL_CAP == Decimal(100)
         assert specific_caps.PHYSICAL_CAP is None
 
 
