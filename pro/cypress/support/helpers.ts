@@ -123,7 +123,7 @@ export function sessionLogInAndGoToPage(
  *
  */
 export function homePageLoaded() {
-  cy.findByText('Bienvenue dans l’espace acteurs culturels')
+  cy.findByText('Bienvenue sur votre espace partenaire')
   cy.findAllByText(/Votre page partenaire|Vos pages partenaire/)
   cy.findByText('Ajouter une structure')
   cy.findAllByTestId('spinner').should('not.exist')
@@ -188,8 +188,9 @@ export function collectiveFormatEventDate(date: string) {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
-    timeZone: 'Europe/Paris'
-    }).format(new Date(date))
+    timeZone: 'Europe/Paris',
+  })
+    .format(new Date(date))
     .replace(/[,:]/g, 'h')
     .replace(' ', '')
 }
