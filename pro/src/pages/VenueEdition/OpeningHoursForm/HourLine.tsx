@@ -86,10 +86,8 @@ export function HourLine({ day }: HourLineProps) {
                 await setFieldTouched(`${day}.afternoonEndingHour`, false)
                 setIsFullLineDisplayed(true)
               }}
-              hasTooltip
-            >
-              Ajouter une plage horaire
-            </Button>
+              tooltipContent={<>Ajouter une plage horaire</>}
+            />
           )}
         </td>
       </tr>
@@ -122,10 +120,8 @@ export function HourLine({ day }: HourLineProps) {
               variant={ButtonVariant.TERNARY}
               icon={fullLessIcon}
               onClick={removeAfternoon}
-              hasTooltip
-            >
-              Supprimer la plage horaire
-            </Button>
+              tooltipContent={<>Supprimer la plage horaire</>}
+            />
           </td>
         </tr>
       )}

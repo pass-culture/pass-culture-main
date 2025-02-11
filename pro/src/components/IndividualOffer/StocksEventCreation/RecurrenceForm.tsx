@@ -26,6 +26,7 @@ import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 
 import { getPriceCategoryOptions } from '../StocksEventEdition/getPriceCategoryOptions'
 
@@ -377,18 +378,17 @@ export const RecurrenceForm = ({
                         />
 
                         <div className={styles['align-icon']}>
-                          <Button
-                            variant={ButtonVariant.TERNARY}
-                            icon={fullTrashIcon}
-                            iconPosition={IconPositionEnum.CENTER}
-                            disabled={
-                              values.quantityPerPriceCategories.length <= 1
-                            }
-                            onClick={() => arrayHelpers.remove(index)}
-                            hasTooltip
-                          >
-                            Supprimer les places
-                          </Button>
+                          <Tooltip content={<>Supprimer les places</>}>
+                            <Button
+                              variant={ButtonVariant.TERNARY}
+                              icon={fullTrashIcon}
+                              iconPosition={IconPositionEnum.CENTER}
+                              disabled={
+                                values.quantityPerPriceCategories.length <= 1
+                              }
+                              onClick={() => arrayHelpers.remove(index)}
+                            />
+                          </Tooltip>
                         </div>
                       </FormLayout.Row>
                     ))}

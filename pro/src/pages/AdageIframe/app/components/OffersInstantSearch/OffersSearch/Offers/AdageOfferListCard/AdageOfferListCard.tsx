@@ -154,14 +154,7 @@ export function AdageOfferListCard({
                 viewType={viewType}
               />
             )}
-            {isOfferTemplate && (
-              <OfferShareLink
-                offer={offer}
-                tooltipContentClassName={
-                  styles['offer-card-share-button-tooltip-content']
-                }
-              />
-            )}
+            {isOfferTemplate && <OfferShareLink offer={offer} />}
           </div>
         </div>
       </div>

@@ -165,13 +165,11 @@ export const DetailsEanSearch = ({
               onClick={onEanClear}
               aria-describedby={tooltipId}
               className={styles['clear-button']}
-              hasTooltip={true}
               type="button"
               icon={fullCloseIcon}
               variant={ButtonVariant.TERNARY}
-            >
-              Effacer
-            </Button>
+              tooltipContent={<>Effacer</>}
+            />
           </div>
         )}
         <div role="status" className={styles['details-ean-search-callout']}>
