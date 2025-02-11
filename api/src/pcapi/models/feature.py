@@ -135,6 +135,9 @@ class FeatureToggle(enum.Enum):
     WIP_DISABLE_TODAY_STOCK_NOTIFICATION = (
         "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
     )
+    WIP_ENABLE_BREVO_RECOMMENDATION_ROUTE = (
+        "Exposer la route utilisée par Brevo pour récupérer les recommandations d'un utilisateur"
+    )
     WIP_ENABLE_PRO_DIDACTIC_ONBOARDING = "Activer le parcours d'onboarding didactique des acteurs culturels"
     WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST = "Activer l'A/B test du parcours d'onboarding didactique"
     WIP_ENABLE_CLICKHOUSE_IN_BO = "Utiliser Clickhouse pour les statistiques des acteurs culturels dans le BO"

@@ -74,6 +74,7 @@ KNOWN_PUBLIC_ENDPOINTS = [
     "Public API.openapi_apidoc",  # → response.status_code = 200
     "Public API.send_storage_file",  # →  response.status_code = 404
     "Public API.sendinblue_notify_importcontacts",  # →  response.status_code = 204
+    "Public API.brevo_get_user_recommendations",  # →  response.status_code = 200
     "public_api_deprecated.openapi_/deprecated_collective",  # → response.status_code = 200
     "saml_blueprint.on_educonnect_authentication_response",  # → response.status_code = 302
     "static",  # →  response.status_code = 404
