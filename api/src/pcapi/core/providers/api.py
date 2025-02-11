@@ -389,7 +389,14 @@ def update_venue_provider_external_urls(
 def disable_offers_linked_to_provider(provider_id: int, current_user: typing.Any) -> None:
     venue_providers = providers_models.VenueProvider.query.filter_by(providerId=provider_id).all()
     for venue_provider in venue_providers:
-        update_venue_synchronized_offers_active_status_job.delay(venue_provider.venueId, provider_id, False)
+        on_commit(
+            functools.partial(
+                update_venue_synchronized_offers_active_status_job.delay,
+                venue_provider.venueId,
+                provider_id,
+                False,
+            ),
+        )
         collective_offers_filters = {
             "user_id": current_user.id,
             "is_user_admin": current_user.has_admin_role,
@@ -403,5 +410,11 @@ def disable_offers_linked_to_provider(provider_id: int, current_user: typing.Any
             "period_beginning_date": None,
             "period_ending_date": None,
         }
-        update_all_collective_offers_active_status_job.delay(collective_offers_filters, False)
+        on_commit(
+            functools.partial(
+                update_all_collective_offers_active_status_job.delay,
+                collective_offers_filters,
+                False,
+            ),
+        )
         venue_provider.isActive = False

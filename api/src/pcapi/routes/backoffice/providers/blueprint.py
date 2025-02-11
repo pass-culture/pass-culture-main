@@ -317,7 +317,7 @@ def update_provider(provider_id: int) -> utils.BackofficeResponse:
         db.session.add(provider)
         db.session.flush()
         if not form.is_active.data:
-            on_commit(partial(providers_api.disable_offers_linked_to_provider, provider_id, current_user))
+            providers_api.disable_offers_linked_to_provider(provider_id, current_user)
     except sa.exc.IntegrityError:
         mark_transaction_as_invalid()
         flash("Ce partenaire existe déjà", "warning")

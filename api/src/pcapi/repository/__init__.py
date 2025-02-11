@@ -169,10 +169,15 @@ def _manage_session() -> None:
     g.pop("_session_to_commit", None)
     g.pop("_managed_session", None)
     if success:
-        on_commit_callbacks = getattr(g, "_on_commit_callbacks", [])
-        for callback in on_commit_callbacks:
-            if not callback():
-                break
+        try:
+            on_commit_callbacks = getattr(g, "_on_commit_callbacks", [])
+            for callback in on_commit_callbacks:
+                if not callback():
+                    break
+        finally:
+            # rollback twice because of the nested session
+            db.session.rollback()
+            db.session.rollback()
     g.pop("_on_commit_callbacks", None)
 
 
