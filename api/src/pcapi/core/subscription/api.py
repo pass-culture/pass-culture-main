@@ -305,7 +305,7 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
         )
 
     # Early return if user is beneficiary
-    if user.is_beneficiary and not eligibility_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
+    if user.is_beneficiary and not eligibility_api.is_eligible_for_next_recredit_activation_steps(user):
         if user.has_active_deposit:
             return subscription_models.UserSubscriptionState(
                 fraud_status=models.SubscriptionItemStatus.OK,
@@ -697,7 +697,7 @@ def update_user_birth_date_if_not_beneficiary(user: users_models.User, birth_dat
     if (
         birth_date
         and user.validatedBirthDate != birth_date
-        and (eligibility_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility) or not user.validatedBirthDate)
+        and (eligibility_api.is_eligible_for_next_recredit_activation_steps(user) or not user.validatedBirthDate)
     ):
         user.validatedBirthDate = birth_date
         pcapi_repository.repository.save(user)
