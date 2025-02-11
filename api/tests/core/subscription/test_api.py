@@ -1351,7 +1351,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.lastName == identity_lastname
         assert user.validatedBirthDate == identity_birth_date
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
-            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
+            TransactionalEmail.ACCEPTED_AS_BENEFICIARY_V3.value
         )
 
     def test_activation_fails_when_no_result_content(self):
@@ -1566,7 +1566,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.lastName == "Nard"
         assert user.dateOfBirth.date() == self.UNDERAGE_ELIGIBLE_BIRTH_DATE.date()
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
-            TransactionalEmail.ACCEPTED_AS_EAC_BENEFICIARY.value
+            TransactionalEmail.ACCEPTED_AS_BENEFICIARY_V3.value
         )
         assert user.deposit.source == f"dossier FraudCheckType.EDUCONNECT [{identity_fraud_check.thirdPartyId}]"
         assert user.deposit.amount == 50
@@ -1645,7 +1645,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.lastName == identity_lastname
         assert user.validatedBirthDate == identity_birth_date
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
-            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
+            TransactionalEmail.ACCEPTED_AS_BENEFICIARY_V3.value
         )
 
     def test_underage_dms_valid_for_18(self):
@@ -1696,7 +1696,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.lastName == identity_lastname
         assert user.validatedBirthDate == identity_birth_date
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
-            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
+            TransactionalEmail.ACCEPTED_AS_BENEFICIARY_V3.value
         )
 
     def test_manual_review_is_required_for_post_19yo_dms(self):

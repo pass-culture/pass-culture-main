@@ -351,7 +351,10 @@ class RunIntegrationTest:
         assert len(push_testing.requests) == 4
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0]["template"]["id_prod"] == 96  # accepted as beneficiary email
+        assert (
+            mails_testing.outbox[0]["template"]["id_prod"]
+            == TransactionalEmail.ACCEPTED_AS_BENEFICIARY_V3.value.id_prod
+        )
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_makes_user_beneficiary_after_19_birthday(self, get_applications_with_details):
@@ -505,7 +508,7 @@ class RunIntegrationTest:
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
-            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
+            TransactionalEmail.ACCEPTED_AS_BENEFICIARY_V3.value
         )
 
         assert len(push_testing.requests) == 4
