@@ -10,8 +10,8 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import imagePopinDiscover from './discover-popin.png'
 import styles from './HeadlineOfferInformationDialog.module.scss'
-import placeholderVideo from './placeholder-video-delete-me-soon.png'
 
 export const HeadlineOfferInformationDialog = () => {
   const { logEvent } = useAnalytics()
@@ -35,15 +35,12 @@ export const HeadlineOfferInformationDialog = () => {
       }
     >
       <div className={styles['dialog']}>
-        <div className={styles['video-container']}>
-          {/* // TODO feature implement explicative video here */}
-          <img
-            src={placeholderVideo}
-            alt=""
-            className={styles['placeholder-video']}
-            role="presentation"
-          />
-        </div>
+        <img
+          src={imagePopinDiscover}
+          alt=""
+          className={styles['image']}
+          role="presentation"
+        />
 
         <RadixDialog.Title className={styles['dialog-title']}>
           <span aria-hidden="true">✨</span> Nouvelle fonctionnalité : la mise à
