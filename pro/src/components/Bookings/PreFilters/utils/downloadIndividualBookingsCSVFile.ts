@@ -9,6 +9,7 @@ export const downloadIndividualBookingsCSVFile = async (
 ) => {
   const bookingsCsvText = await api.getBookingsCsv(
     filters.page,
+    filters.offererId !== DEFAULT_PRE_FILTERS.offererId ? Number(filters.offererId) : null,
     filters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId
       ? Number(filters.offerVenueId)
       : null,

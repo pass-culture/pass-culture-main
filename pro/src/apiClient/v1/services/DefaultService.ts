@@ -127,6 +127,7 @@ export class DefaultService {
   /**
    * get_bookings_csv <GET>
    * @param page
+   * @param offererId
    * @param venueId
    * @param offerId
    * @param eventDate
@@ -140,6 +141,7 @@ export class DefaultService {
    */
   public getBookingsCsv(
     page: number = 1,
+    offererId?: number | null,
     venueId?: number | null,
     offerId?: number | null,
     eventDate?: string | null,
@@ -154,6 +156,7 @@ export class DefaultService {
       url: '/bookings/csv',
       query: {
         'page': page,
+        'offererId': offererId,
         'venueId': venueId,
         'offerId': offerId,
         'eventDate': eventDate,
@@ -193,6 +196,7 @@ export class DefaultService {
   /**
    * get_bookings_excel <GET>
    * @param page
+   * @param offererId
    * @param venueId
    * @param offerId
    * @param eventDate
@@ -206,6 +210,7 @@ export class DefaultService {
    */
   public getBookingsExcel(
     page: number = 1,
+    offererId?: number | null,
     venueId?: number | null,
     offerId?: number | null,
     eventDate?: string | null,
@@ -220,6 +225,7 @@ export class DefaultService {
       url: '/bookings/excel',
       query: {
         'page': page,
+        'offererId': offererId,
         'venueId': venueId,
         'offerId': offerId,
         'eventDate': eventDate,
@@ -296,6 +302,7 @@ export class DefaultService {
   /**
    * get_bookings_pro <GET>
    * @param page
+   * @param offererId
    * @param venueId
    * @param offerId
    * @param eventDate
@@ -309,6 +316,7 @@ export class DefaultService {
    */
   public getBookingsPro(
     page: number = 1,
+    offererId?: number | null,
     venueId?: number | null,
     offerId?: number | null,
     eventDate?: string | null,
@@ -323,6 +331,7 @@ export class DefaultService {
       url: '/bookings/pro',
       query: {
         'page': page,
+        'offererId': offererId,
         'venueId': venueId,
         'offerId': offerId,
         'eventDate': eventDate,

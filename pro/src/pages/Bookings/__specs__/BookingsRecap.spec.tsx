@@ -7,6 +7,7 @@ import { ApiRequestOptions } from 'apiClient/v2/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v2/core/ApiResult'
 import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
 import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { RootState } from 'commons/store/rootReducer'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
@@ -15,7 +16,7 @@ import {
   bookingRecapFactory,
   venueListItemFactory,
 } from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory, currentOffererFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 
@@ -40,22 +41,22 @@ vi.mock('commons/utils/date', async () => {
 
 const NTH_ARGUMENT_GET_BOOKINGS = {
   page: 1,
-  venueId: 2,
-  eventDate: 4,
-  bookingBeginningDate: 6,
-  bookingEndingDate: 7,
+  venueId: 3,
+  eventDate: 5,
+  bookingBeginningDate: 7,
+  bookingEndingDate: 8,
 }
 
 const user = sharedCurrentUserFactory()
 const venue = venueListItemFactory()
 
-const renderBookingsRecap = () => {
+const renderBookingsRecap = (overrides?: Partial<RootState>) => {
   return renderWithProviders(
     <>
       <Bookings />
       <Notification />
     </>,
-    { initialRouterEntries: ['/reservations'], user }
+    { initialRouterEntries: ['/reservations'], user, storeOverrides: overrides}
   )
 }
 
@@ -279,6 +280,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     expect(api.getBookingsCsv).toHaveBeenCalledWith(
       1,
+      null,
       null,
       null,
       null,
@@ -650,4 +652,29 @@ describe('components | BookingsRecap | Pro user', () => {
       await screen.findByText('Vous n’avez aucune réservation pour le moment')
     ).toBeInTheDocument()
   })
+
+  it('should fetch API for CSV using selectedOffererId', async () => {
+    renderBookingsRecap({offerer: currentOffererFactory({selectedOffererId: 42})})
+    await waitForCompleteLoading()
+
+    // submit utils method wait for button to become disabled then enabled.
+    await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
+    const downloadSubButton = await screen.findByRole('button', {
+      name: 'Fichier CSV (.csv)',
+    })
+    await userEvent.click(downloadSubButton)
+
+    expect(api.getBookingsCsv).toHaveBeenCalledWith(
+      1,
+      42,
+      null,
+      null,
+      null,
+      DEFAULT_PRE_FILTERS.bookingStatusFilter,
+      DEFAULT_PRE_FILTERS.bookingBeginningDate,
+      DEFAULT_PRE_FILTERS.bookingEndingDate,
+      null
+    )
+  })
+
 })
