@@ -105,7 +105,8 @@ export const FieldLayout = ({
   const tooltipId = useId()
 
   const showFooter =
-    !hideFooter || hasError || hasCounter || Boolean(ErrorDetails)
+    !hideFooter && (hasError || hasCounter || Boolean(ErrorDetails))
+
   const clearButtonDisplay = clearButtonProps?.display || 'clear'
 
   return (
