@@ -77,14 +77,17 @@ jobs:
       - run: yarn install --immutable
 
       - name: Run tests with coverage
-        run: yarn test:unit:ci --reporter=blob --reporter=allure-vitest/reporter --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: yarn test:unit:ci --reporter=verbose --reporter=allure-vitest/reporter --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - name: Upload blob report to GitHub Actions Artifacts
+      - name: Rename coverage
+        run: mv coverage/coverage-final.json coverage/coverage-${{matrix.shardIndex}}.json
+
+      - name: Upload coverage report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: blob-report-${{ matrix.shardIndex }}
-          path: pro/src/.vitest-reports/
+          name: coverage-report-${{ matrix.shardIndex }}
+          path: pro/coverage/*.json
           include-hidden-files: true
           retention-days: 1
 
@@ -142,6 +145,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+      - run: |
+          git config --global --add safe.directory /__w/pass-culture-main/pass-culture-main
+          git fetch --no-tags origin +refs/heads/master:refs/remotes/origin/master
+          git update-ref refs/heads/master refs/remotes/origin/master
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: "pro/.nvmrc"
@@ -159,15 +169,17 @@ jobs:
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - run: yarn install --immutable
-      - name: Download blob reports from GitHub Actions Artifacts
+      - name: Download coverage reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: pro/.vitest-reports
-          pattern: blob-report-*
+          path: pro/coverage
+          pattern: coverage-report-*
           merge-multiple: true
 
-      - name: Merge reports
-        run: npx vitest --merge-reports
+      - name: Merge coverage reports
+        run: |
+          npx nyc merge coverage coverage/coverage-merged.json
+          npx nyc report -t coverage --report-dir coverage --reporter lcov
 
       - name: "OpenID Connect Authentication"
         uses: "google-github-actions/auth@v2"

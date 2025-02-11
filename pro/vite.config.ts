@@ -47,7 +47,7 @@ export default defineConfig(({ mode }) => {
       coverage: {
         provider: 'istanbul',
         reportsDirectory: '../coverage',
-        reporter: ['text', 'html', 'lcov'],
+        reporter: ['text', 'json'],
         exclude: ['**/*.stories.tsx', 'apiClient/adage/*','apiClient/adresse/*','apiClient/v1/*','apiClient/v2/*',...coverageConfigDefaults.exclude],
       },
       minThreads: 4,
