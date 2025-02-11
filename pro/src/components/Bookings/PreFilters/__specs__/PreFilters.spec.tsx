@@ -110,6 +110,7 @@ describe('filter bookings by bookings period', () => {
       offerId: undefined,
       offerVenueId: '12',
       offererAddressId: 'all',
+      offererId: 'all'
     })
   })
 
@@ -128,6 +129,7 @@ describe('filter bookings by bookings period', () => {
       offerId: DEFAULT_PRE_FILTERS.offerId,
       offerVenueId: DEFAULT_PRE_FILTERS.offerVenueId,
       offererAddressId: '21',
+      offererId: 'all'
     })
   })
 
