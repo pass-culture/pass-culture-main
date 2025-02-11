@@ -629,7 +629,10 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
             self.type in (FraudCheckType.UBBLE, FraudCheckType.DMS)
             and self.status == FraudCheckStatus.OK
             and self.eligibilityType in [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE17_18]
-            and (self.user.has_beneficiary_role or self.user.age == users_constants.ELIGIBILITY_AGE_18)
+            and (
+                self.user.has_beneficiary_role
+                or (self.user.age is not None and self.user.age >= users_constants.ELIGIBILITY_AGE_18)
+            )
         )
 
 
