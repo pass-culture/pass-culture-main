@@ -65,19 +65,21 @@ export const IconRadioGroup = ({
             L’échelle de sélection va de {scale[0]} à {scale[1]}
           </p>
         )}
-        <div className={styles['icon-radio-group-items']}>
-          {group.map((item) => (
-            <IconRadio
-              name={name}
-              className={styles['icon-radio-group-item']}
-              key={item.label}
-              icon={item.icon}
-              label={item.label}
-              value={item.value}
-              hasError={hasError}
-              {...(hasError ? { 'aria-describedby': `error-${name}` } : {})}
-            />
-          ))}
+        <div className={styles['icon-radio-group-items-container']}>
+          <div className={styles['icon-radio-group-items']}>
+            {group.map((item) => (
+              <IconRadio
+                name={name}
+                className={styles['icon-radio-group-item']}
+                key={item.label}
+                icon={item.icon}
+                label={item.label}
+                value={item.value}
+                hasError={hasError}
+                {...(hasError ? { 'aria-describedby': `error-${name}` } : {})}
+              />
+            ))}
+          </div>
           {displayScale && (
             <div
               className={styles['icon-radio-group-scale']}

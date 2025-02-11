@@ -32,17 +32,12 @@ const IncomeResultsSubBox = ({ title, number, help }: IncomeSubBoxProps) => {
         {help && (
           <Button
             className={styles['income-results-block-tooltip']}
-            tooltipContentClassName={
-              styles['income-results-block-tooltip-content']
-            }
             icon={fullHelpIcon}
             iconAlt="À propos"
             type="button"
-            hasTooltip
+            tooltipContent={<>{help}</>}
             variant={ButtonVariant.SECONDARY}
-          >
-            {help}
-          </Button>
+          />
         )}
       </div>
       <div className={styles['income-results-block-number']}>{numberStr}</div>

@@ -72,13 +72,11 @@ export function DropdownMenuWrapper({
       <DropdownMenu.Trigger
         className={cn(styles['menu-button'], triggerClassName)}
         data-testid="dropdown-menu-trigger"
-        {...triggerTooltip ? { asChild: true } : {}}
+        {...(triggerTooltip ? { asChild: true } : {})}
       >
         {triggerTooltip ? (
-          <ListIconButton icon={icon}>
-            {title}
-          </ListIconButton>
-        ) :  (
+          <ListIconButton icon={icon} tooltipContent={<>{title}</>} />
+        ) : (
           <SvgIcon
             src={icon}
             alt={title}
@@ -87,7 +85,10 @@ export function DropdownMenuWrapper({
         )}
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content className={cn(styles['menu-list'], contentClassName)} align="end">
+        <DropdownMenu.Content
+          className={cn(styles['menu-list'], contentClassName)}
+          align="end"
+        >
           {children}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

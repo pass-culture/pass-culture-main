@@ -17,18 +17,6 @@
     margin-bottom: rem.torem(10px);
   }
 
-  &-tooltip {
-    margin-left: rem.torem(10px);
-    min-height: auto;
-    border: 0;
-    padding: 0;
-    background: none;
-
-    &-content {
-      top: calc(100% - rem.torem(10px));
-    }
-  }
-
   &-number {
     @include fonts.title2;
 

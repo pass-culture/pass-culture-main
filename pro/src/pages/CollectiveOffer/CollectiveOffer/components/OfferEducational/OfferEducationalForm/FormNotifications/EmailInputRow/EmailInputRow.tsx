@@ -5,6 +5,7 @@ import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 
 import { NOTIFICATIONS_EMAIL_LABEL } from '../../../constants/labels'
 
@@ -33,16 +34,15 @@ export const EmailInputRow = forwardRef<HTMLInputElement, EmailInputRowProps>(
         />
         {displayTrash && (
           <div className={styles['trash']}>
-            <Button
-              onClick={onDelete}
-              icon={fullTrashIcon}
-              iconPosition={IconPositionEnum.CENTER}
-              variant={ButtonVariant.TERNARY}
-              disabled={disableForm}
-              hasTooltip
-            >
-              Supprimer l’email
-            </Button>
+            <Tooltip content="Supprimer l’email">
+              <Button
+                onClick={onDelete}
+                icon={fullTrashIcon}
+                iconPosition={IconPositionEnum.CENTER}
+                variant={ButtonVariant.TERNARY}
+                disabled={disableForm}
+              />
+            </Tooltip>
           </div>
         )}
       </FormLayout.Row>

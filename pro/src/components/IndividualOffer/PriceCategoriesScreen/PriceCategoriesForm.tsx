@@ -179,14 +179,12 @@ export const PriceCategoriesForm = ({
                             values.priceCategories
                           )
                         }
-                        hasTooltip={
-                          values.priceCategories.length > 1 && !isDisabled
+                        tooltipContent={
+                          values.priceCategories.length > 1 && !isDisabled ? (
+                            <>Supprimer le tarif</>
+                          ) : undefined
                         }
-                      >
-                        {values.priceCategories.length > 1 &&
-                          !isDisabled &&
-                          'Supprimer le tarif'}
-                      </Button>
+                      />
                     )}
                   </FormLayout.Row>
                 </fieldset>
