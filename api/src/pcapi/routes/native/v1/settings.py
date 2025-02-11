@@ -45,4 +45,7 @@ def get_settings() -> serializers.SettingsResponse:
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],
         object_storage_url=OBJECT_STORAGE_URL,
         wip_enable_credit_v3=features[FeatureToggle.WIP_ENABLE_CREDIT_V3],
+        deposit_amounts_by_age=serializers.get_deposit_amounts_by_age(
+            enable_credit_v3=features[FeatureToggle.WIP_ENABLE_CREDIT_V3]
+        ),
     )

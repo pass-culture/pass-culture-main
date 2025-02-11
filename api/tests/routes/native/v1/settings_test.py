@@ -26,7 +26,7 @@ class SettingsTest:
         assert response.json == {
             "accountCreationMinimumAge": 15,
             "appEnableAutocomplete": True,
-            "depositAmountsByAge": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
+            "depositAmountsByAge": {"age_15": 0, "age_16": 0, "age_17": 5000, "age_18": 15000},
             "displayDmsRedirection": True,
             "enableFrontImageResizing": True,
             "enableNativeCulturalSurvey": True,
