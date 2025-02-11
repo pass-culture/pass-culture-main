@@ -40,12 +40,10 @@
   margin: 0 auto;
 }
 
-.video-container {
-  display: none;
-}
-
-.placeholder-video {
-  display: none;
+.image {
+  margin-top: rem.torem(32px);
+  max-width: rem.torem(532px);
+  width: 100%
 }
 
 .options-icon {
@@ -62,25 +60,5 @@
 
   &:focus-visible {
     @include outline.focus-outline(rem.torem(2px), var(--color-white));
-  }
-}
-
-@media screen and (min-width: size.$tablet) {
-  .video-container {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    background: var(--color-secondary-light);
-    max-width: rem.torem(500px);
-    min-height: rem.torem(252px);
-    border-radius: rem.torem(10px);
-  }
-
-  .placeholder-video {
-    display: block;
-    position: absolute;
-    top: -4%;
-    max-width: rem.torem(390px);
-    border-radius: rem.torem(6px);
   }
 }
