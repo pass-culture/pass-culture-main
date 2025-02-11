@@ -60,7 +60,7 @@ def _find_users_to_remind(
     users_with_reasons: list[tuple[users_models.User, fraud_models.FraudReasonCode]] = []
     for user in users:
         if not (
-            eligibility_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
+            eligibility_api.is_eligible_for_next_recredit_activation_steps(user)
             and subscription_api.get_user_subscription_state(user).fraud_status
             == subscription_models.SubscriptionItemStatus.TODO
         ):

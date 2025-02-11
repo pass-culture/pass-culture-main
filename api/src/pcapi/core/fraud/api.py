@@ -510,7 +510,7 @@ def has_user_pending_identity_check(user: users_models.User) -> bool:
 
 
 def has_user_performed_identity_check(user: users_models.User) -> bool:
-    if user.is_beneficiary and not eligibility_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
+    if user.is_beneficiary and not eligibility_api.is_eligible_for_next_recredit_activation_steps(user):
         return True
 
     user_subscription_state = subscription_api.get_user_subscription_state(user)

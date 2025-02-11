@@ -187,33 +187,17 @@ def get_eligibility_end_datetime(
 def is_eligibility_activable(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
     return (
         user.eligibility == eligibility
-        and is_eligible_for_beneficiary_upgrade(user, eligibility)
+        and is_eligible_for_next_recredit_activation_steps(user)
         and is_user_age_compatible_with_eligibility(user.age, eligibility)
     )
 
 
-def is_eligible_for_beneficiary_upgrade(
-    user: users_models.User, eligibility: users_models.EligibilityType | None
-) -> bool:
-    if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-        return is_eligible_for_next_recredit_activation_steps(user)
-    return (eligibility == users_models.EligibilityType.UNDERAGE and not user.is_beneficiary) or (
-        eligibility == users_models.EligibilityType.AGE18 and not user.has_beneficiary_role
-    )
-
-
 def is_eligible_for_next_recredit_activation_steps(user: users_models.User) -> bool:
-    """
-    Returns whether a user can undertake the activation steps to unlock the next deposit recredit
-    """
-    if not user.age:
-        return False
-
     if not user.is_beneficiary:
-        return 17 <= user.age
+        return user.is_eligible
 
     if not user.has_beneficiary_role:
-        return 18 <= user.age < 21
+        return user.is_18_or_above_eligible
 
     return False
 

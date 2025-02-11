@@ -123,15 +123,15 @@ class DecideV3CreditEligibilityTest:
     def test_user_underage_eligibility_with_registration_datetime_before_decree(self, age):
         birth_date = date.today() - relativedelta(years=age, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
+        day_before_decree = datetime.utcnow() - relativedelta(days=1)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1),
+            dateCreated=day_before_decree,
         )
 
-        yesterday = datetime.utcnow() - relativedelta(days=1)
-        eligibility = eligibility_api.decide_eligibility(user, birth_date, yesterday)
+        eligibility = eligibility_api.decide_eligibility(user, birth_date, day_before_decree)
 
         assert eligibility == users_models.EligibilityType.UNDERAGE
 
@@ -185,6 +185,25 @@ class DecideV3CreditEligibilityTest:
         eligibility = eligibility_api.decide_eligibility(user, birth_date, year_when_user_was_eighteen)
 
         assert eligibility is None
+
+
+@pytest.mark.usefixtures("db_session")
+class EligibilityForNextRecreditActivationStepsTest:
+    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
+    @pytest.mark.parametrize("age", [15, 16])
+    def test_user_underage_activation_when_registered_before_decree(self, age):
+        birth_date = date.today() - relativedelta(years=age, months=1)
+        user = users_factories.UserFactory(dateOfBirth=birth_date)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1),
+        )
+
+        can_do_next_activation_steps = eligibility_api.is_eligible_for_next_recredit_activation_steps(user)
+
+        assert can_do_next_activation_steps
 
 
 @pytest.mark.usefixtures("db_session")
