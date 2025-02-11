@@ -5,7 +5,7 @@ export const useTooltipProps = ({
   onMouseOut,
   onFocus,
   onBlur,
-}: Partial<React.HTMLProps<HTMLButtonElement | HTMLAnchorElement>>) => {
+}: Partial<React.HTMLProps<HTMLElement>>) => {
   const [isTooltipHidden, setIsTooltipHidden] = useState(true)
 
   useEffect(() => {
@@ -24,15 +24,11 @@ export const useTooltipProps = ({
 
   return {
     isTooltipHidden,
-    onMouseOver: (
-      event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>
-    ) => {
+    onMouseOver: (event: React.MouseEvent<HTMLElement>) => {
       setIsTooltipHidden(false)
       onMouseOver?.(event)
     },
-    onMouseOut: (
-      event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>
-    ) => {
+    onMouseOut: (event: React.MouseEvent<HTMLElement>) => {
       setIsTooltipHidden(true)
       onMouseOut?.(event)
     },
