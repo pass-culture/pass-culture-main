@@ -1,6 +1,7 @@
 import { BookingStatusFilter, CollectiveBookingStatusFilter } from 'apiClient/v1'
 
 export type PreFiltersParams = {
+  offererId: string
   offerVenueId: string
   offererAddressId: string
   offerEventDate: string
@@ -21,6 +22,7 @@ export type CollectivePreFiltersParams = {
 }
 
 export type APIFilters = {
+  offererId: string
   venueId: string
   offererAddressId: string
   eventDate: string
