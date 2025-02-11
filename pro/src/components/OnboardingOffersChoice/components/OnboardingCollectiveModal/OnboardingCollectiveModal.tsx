@@ -1,11 +1,12 @@
 import cn from 'classnames'
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from 'commons/core/FirebaseEvents/constants'
+import { updateOffererIsOnboarded } from 'commons/store/offerer/reducer'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -19,7 +20,6 @@ import offerCreationIcon from './assets/creation_offre.svg'
 import fileSubmissionIcon from './assets/depot_dossier.svg'
 import styles from './OnboardingCollectiveModal.module.scss'
 
-
 interface OnboardingCollectiveModalProps {
   className?: string
 }
@@ -32,6 +32,7 @@ export const OnboardingCollectiveModal = ({
   const currentOffererId = useSelector(selectCurrentOffererId)
   const navigate = useNavigate()
   const { logEvent } = useAnalytics()
+  const dispatch = useDispatch()
 
   if (currentOffererId === null) {
     return <Spinner />
@@ -46,6 +47,7 @@ export const OnboardingCollectiveModal = ({
       setIsLoading(true)
       const eligibility = await api.getOffererEligibility(currentOffererId)
       if (eligibility.isOnboarded) {
+        dispatch(updateOffererIsOnboarded(true))
         return navigate('/accueil')
       }
 
