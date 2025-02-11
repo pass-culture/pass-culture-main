@@ -1,4 +1,5 @@
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 
@@ -27,7 +28,7 @@ def has_admin_ko_review(user: users_models.User) -> bool:
 
 
 def get_latest_completed_profile_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
-    if profile_completion_checks := get_completed_profile_checks(user):
+    if profile_completion_checks := _get_completed_profile_checks(user):
         return profile_completion_checks[0]
 
     return None
@@ -36,27 +37,32 @@ def get_latest_completed_profile_check(user: users_models.User) -> fraud_models.
 def get_completed_profile_check(
     user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> fraud_models.BeneficiaryFraudCheck | None:
-    """
-    This function assumes that the user.beneficiaryFraudChecks relationship is already loaded to avoid additional
-    queries.
-
-    Example: User.query.options(selectinload(User.beneficiaryFraudChecks))
-    """
-    profile_completion_checks = get_completed_profile_checks(user)
+    profile_completion_checks = _get_completed_profile_checks(user)
 
     relevant_checks = [
         fraud_check
         for fraud_check in profile_completion_checks
-        if _is_fraud_check_relevant_for_eligibility(fraud_check, user, eligibility)
+        if _is_fraud_check_relevant_for_eligibility(fraud_check, eligibility)
     ]
-
     if relevant_checks:
         return relevant_checks[0]
 
     return None
 
 
-def get_completed_profile_checks(user: users_models.User) -> list[fraud_models.BeneficiaryFraudCheck]:
+def get_completed_underage_profile_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
+    profile_completion_checks = _get_completed_profile_checks(user)
+
+    relevant_checks = [
+        fraud_check for fraud_check in profile_completion_checks if _is_fraud_check_relevant_for_underage(fraud_check)
+    ]
+    if relevant_checks:
+        return relevant_checks[0]
+
+    return None
+
+
+def _get_completed_profile_checks(user: users_models.User) -> list[fraud_models.BeneficiaryFraudCheck]:
     """
     This function assumes that the user.beneficiaryFraudChecks relationship is already loaded to avoid additional
     queries.
@@ -76,26 +82,52 @@ def get_filled_dms_fraud_check(
 ) -> fraud_models.BeneficiaryFraudCheck | None:
     """
     If a pending or started DMS fraud check exists, the user has already completed their profile.
+    """
+    filled_dms_fraud_checks = _get_filled_pending_or_started_dms_fraud_checks(user)
 
+    relevant_checks = [
+        fraud_check
+        for fraud_check in filled_dms_fraud_checks
+        if _is_fraud_check_relevant_for_eligibility(fraud_check, eligibility)
+    ]
+    if relevant_checks:
+        return relevant_checks[0]
+
+    return None
+
+
+def get_filled_underage_dms_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
+    """
+    If a pending or started DMS fraud check exists, the user has already completed their profile.
+    """
+    filled_dms_fraud_checks = _get_filled_pending_or_started_dms_fraud_checks(user)
+
+    relevant_checks = [
+        fraud_check for fraud_check in filled_dms_fraud_checks if _is_fraud_check_relevant_for_underage(fraud_check)
+    ]
+    if relevant_checks:
+        return relevant_checks[0]
+
+    return None
+
+
+def _get_filled_pending_or_started_dms_fraud_checks(
+    user: users_models.User,
+) -> list[fraud_models.BeneficiaryFraudCheck]:
+    """
     This function assumes that the user.beneficiaryFraudChecks relationship is already loaded to avoid additional
     queries.
 
     Example: User.query.options(selectinload(User.beneficiaryFraudChecks))
     """
-    filled_pending_or_started_dms_fraud_checks = [
+    return [
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
         if fraud_check.type == fraud_models.FraudCheckType.DMS
         and fraud_check.status in (fraud_models.FraudCheckStatus.PENDING, fraud_models.FraudCheckStatus.STARTED)
-        and _is_fraud_check_relevant_for_eligibility(fraud_check, user, eligibility)
         and fraud_check.resultContent
         and fraud_check.source_data().city is not None
     ]
-
-    if filled_pending_or_started_dms_fraud_checks:
-        return filled_pending_or_started_dms_fraud_checks[0]
-
-    return None
 
 
 def get_relevant_identity_fraud_check(
@@ -111,7 +143,7 @@ def get_relevant_identity_fraud_check(
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
         if fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
-        and _is_identity_fraud_check_relevant_for_eligibility(fraud_check, user, eligibility)
+        and _is_identity_fraud_check_relevant_for_eligibility(fraud_check, eligibility)
     ]
     identity_fraud_checks.sort(key=lambda fraud_check: fraud_check.dateCreated, reverse=True)
 
@@ -136,14 +168,13 @@ def get_relevant_identity_fraud_check(
 
 def _is_identity_fraud_check_relevant_for_eligibility(
     fraud_check: fraud_models.BeneficiaryFraudCheck,
-    user: users_models.User,
     eligibility: users_models.EligibilityType | None,
 ) -> bool:
     if fraud_check.is_id_check_ok_across_eligibilities_or_age:
         return eligibility in fraud_check.applicable_eligibilities
 
     if eligibility == users_models.EligibilityType.AGE17_18:
-        return is_fraud_check_relevant_for_age(fraud_check, user)
+        return _is_fraud_check_relevant_for_age(fraud_check)
 
     return eligibility in fraud_check.applicable_eligibilities
 
@@ -162,7 +193,7 @@ def get_completed_honor_statement(
         for fraud_check in user.beneficiaryFraudChecks
         if fraud_check.type == fraud_models.FraudCheckType.HONOR_STATEMENT
         and fraud_check.status == fraud_models.FraudCheckStatus.OK
-        and _is_fraud_check_relevant_for_eligibility(fraud_check, user, eligibility)
+        and _is_fraud_check_relevant_for_eligibility(fraud_check, eligibility)
     ]
 
     if completed_fraud_checks:
@@ -173,25 +204,40 @@ def get_completed_honor_statement(
 
 def _is_fraud_check_relevant_for_eligibility(
     fraud_check: fraud_models.BeneficiaryFraudCheck,
-    user: users_models.User,
     eligibility: users_models.EligibilityType | None,
 ) -> bool:
     if eligibility == users_models.EligibilityType.AGE17_18:
-        return is_fraud_check_relevant_for_age(fraud_check, user)
+        return _is_fraud_check_relevant_for_age(fraud_check)
 
     return fraud_check.eligibilityType == eligibility
 
 
-def is_fraud_check_relevant_for_age(
-    fraud_check: fraud_models.BeneficiaryFraudCheck,
-    user: users_models.User,
-) -> bool:
-    current_age = user.age
-    if not current_age or not user.birth_date:
+def _is_fraud_check_relevant_for_age(fraud_check: fraud_models.BeneficiaryFraudCheck) -> bool:
+    current_age = fraud_check.user.age
+    if not current_age:
+        return False
+
+    if current_age < 18:
+        return _is_fraud_check_relevant_for_underage(fraud_check)
+
+    return _is_fraud_check_relevant_for_18_or_above(fraud_check)
+
+
+def _is_fraud_check_relevant_for_underage(fraud_check: fraud_models.BeneficiaryFraudCheck) -> bool:
+    user = fraud_check.user
+    if not user.birth_date:
         return False
 
     age_at_fraud_check = users_utils.get_age_at_date(user.birth_date, fraud_check.dateCreated, user.departementCode)
-    if current_age < 18:
-        return age_at_fraud_check < 18
+    return eligibility_api.is_underage_eligibility(fraud_check.eligibilityType, age_at_fraud_check)
 
-    return age_at_fraud_check >= 18
+
+def _is_fraud_check_relevant_for_18_or_above(
+    fraud_check: fraud_models.BeneficiaryFraudCheck,
+) -> bool:
+    user = fraud_check.user
+    if not user.birth_date:
+        return False
+
+    age_at_fraud_check = users_utils.get_age_at_date(user.birth_date, fraud_check.dateCreated, user.departementCode)
+    return eligibility_api.is_18_or_above_eligibility(fraud_check.eligibilityType, age_at_fraud_check)

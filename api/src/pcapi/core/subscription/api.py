@@ -108,6 +108,14 @@ def has_completed_profile_for_given_eligibility(
     return False
 
 
+def has_completed_underage_profile(user: users_models.User) -> bool:
+    if fraud_repository.get_completed_underage_profile_check(user) is not None:
+        return True
+    if fraud_repository.get_filled_underage_dms_fraud_check(user) is not None:
+        return True
+    return False
+
+
 def get_declared_names(user: users_models.User) -> tuple[str, str] | None:
     profile_completion_check = fraud_repository.get_completed_profile_check(user, user.eligibility)
     if profile_completion_check and profile_completion_check.resultContent:
@@ -816,21 +824,17 @@ def requires_identity_check_step(user: users_models.User) -> bool:
 
 
 def _has_completed_profile_for_previous_eligibility_only(user: users_models.User) -> bool:
+    if not user.is_18_or_above_eligible:
+        return False
+
     if user.eligibility == users_models.EligibilityType.AGE18:
         return has_completed_profile_for_given_eligibility(
             user, users_models.EligibilityType.UNDERAGE
         ) and not has_completed_profile_for_given_eligibility(user, users_models.EligibilityType.AGE18)
-    if user.eligibility == users_models.EligibilityType.AGE17_18 and user.age and user.age >= 18:
-        completed_profile_checks = fraud_repository.get_completed_profile_checks(user)
-        return any(
-            not fraud_repository.is_fraud_check_relevant_for_age(fraud_check, user)
-            for fraud_check in completed_profile_checks
-        ) and not any(
-            fraud_repository.is_fraud_check_relevant_for_age(fraud_check, user)
-            for fraud_check in completed_profile_checks
-        )
 
-    return False
+    return has_completed_underage_profile(user) and not has_completed_profile_for_given_eligibility(
+        user, users_models.EligibilityType.AGE17_18
+    )
 
 
 def _get_step_subtitle(
