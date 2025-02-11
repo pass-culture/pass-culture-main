@@ -5,6 +5,7 @@ import uuid
 import flask
 from flask import current_app as app
 from flask_login import logout_user
+from sqlalchemy.exc import InternalError
 import werkzeug.datastructures
 
 import pcapi.core.users.backoffice.api as backoffice_api
@@ -39,7 +40,12 @@ def get_request_authorization() -> werkzeug.datastructures.Authorization | None:
 def get_user_with_id(user_id: str) -> users_models.User | None:
     flask.session.permanent = True
     session_uuid = flask.session.get("session_uuid")
-    if not users_models.UserSession.query.filter_by(userId=user_id, uuid=session_uuid).one_or_none():
+    try:
+        user_session = users_models.UserSession.query.filter_by(userId=user_id, uuid=session_uuid).one_or_none()
+    except InternalError:
+        db.session.rollback()
+        raise
+    if not user_session:
         return None
 
     try:
