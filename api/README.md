@@ -1,5 +1,3 @@
-# TRIGGER WORKFLOW
-
 # PASS-CULTURE-API
 
 Voici le backend de l'application pass Culture; il est lancé via `docker compose` en utilisant le fichier
@@ -64,7 +62,7 @@ La génération de PDF via `weasyprint` nécessite également de suivre ces [ét
 
 ### 2. Lancement de l'api
 
-Un fois installé les dépendances, on peut utiliser les commandes suivantes (qui utilisent `docker compose`) 
+Une fois installé les dépendances, on peut utiliser les commandes suivantes (qui utilisent `docker compose`) 
 ```shell
 # Start api and backoffice
 pc start-backend
@@ -119,7 +117,7 @@ pc test-backend tests/core/offers/test_api.py::CreateOfferTest::test_create_offe
   pytest -m backoffice /tests/routes/backoffice/pivots_test.py::GetPivotsPageTest::test_get_pivots_page # Pour lancer un test du backoffice
   ```
 
-Il également possible d'accéder à `stdin`/`stdout` via le paramètre  `-s`, par exemple pour utiliser des breakpoints.
+Il est également possible d'accéder à `stdin`/`stdout` via le paramètre  `-s`, par exemple pour utiliser des breakpoints.
 
 ---
 
@@ -168,7 +166,7 @@ Les différentes fixtures utilisées dans les tests sont définies dans `tests/c
 
 ## Secrets et variables d'environnement
 
-Les variables d'environnement nécessaires au bon fonctionnement mais qui porte des données sensibles (identifiants, clés d'API, ...)
+Les variables d'environnement nécessaires au bon fonctionnement mais qui portent des données sensibles (identifiants, clés d'API, ...)
 ne sont pas enregistrés dans les fichiers d'environnement du dépôt.
 Il faut les ajouter dans le fichier `api/.env.local.secret` .
 
@@ -181,7 +179,7 @@ cf https://github.com/GitGuardian/ggshield#in-code
 ## Authentification Backend pour Flask-Admin
 
 Le backend ne permet pas (encore) de s'authentifier directement.
-On peut s'authentifier de deux manières:
+On peut s'authentifier de deux manières :
 - En se connectant sur Pro. Une fois authentifié, un cookie de session est stocké et le back validera le cookie.
 - Sans session depuis le front **Pro**, une authentification est proposée via Google Account. Seuls les utilisateurs du projet **passculture.app** sont autorisés.
 
@@ -206,7 +204,7 @@ Il est possible de se connecter aux bases de données lancées via docker compos
 - Lancer python avec docker: `pc python`
 - Dans l'éditeur de code, identifier la factory `pcapi.core`.
   Tous les arguments sont renseignés par défaut et peuvent être surchargés.
-- importer la factory et l'utiliser: les données sont disponibles en localhost
+- importer la factory et l'utiliser : les données sont disponibles en localhost
 
 ### exemple 1 - créer un utilisateur
 
@@ -253,7 +251,7 @@ Si les hooks ne se lancent pas, lancer `pc install-hooks` (commande incluse dans
 
 ## Ecriture d'une tâche automatique (cron)
 
-Les commandes à lancer régulièrement (par example des synchro journalières) sont définies dans les fichiers `src/pcapi/*/commands.py`
+Les commandes à lancer régulièrement (par example des synchronisations journalières) sont définies dans les fichiers `src/pcapi/*/commands.py`
 Pour que les commandes soient enregistrées par Flask, il faut que le fichier `path/to/commands.py` soit référencé dans la fonction `install_commands` de `api/src/pcapi/scripts/install.py`
 
 Pour que les commandes soient exécutées, il faut ouvrir une PR sur le repo pass-culture/pass-culture-deployment
@@ -285,7 +283,7 @@ Afin de passer uniquement par les commandes flask, les dépendances suivantes do
 
 - Postgis
 
-  Verifier que `PostGIS` est bien installé. Pour cela, connectez vous à votre base de données créé ci dessus et faites: 
+  Verifier que `PostGIS` est bien installé. Pour cela, connectez-vous à votre base de données créé ci dessus et faites: 
 
       ```sql
       CREATE EXTENSION IF NOT EXISTS postgis;
@@ -305,7 +303,7 @@ Afin de passer uniquement par les commandes flask, les dépendances suivantes do
 
 - Redis
 
-  Le lien officiel pour l'installation: https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/
+  Le lien officiel pour l'installation : https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/
 
 ### Initialisations
 
@@ -317,7 +315,7 @@ Pour initialiser l'application, vous devez suivre les étapes suivantes :
   pc setup-no-docker
   ```
 
-* Soit en réalisant les étapes suivantes une par une:
+* Soit en réalisant les étapes suivantes une par une :
   
   - Créer les _users_ suivants depuis `psql`:
 
@@ -375,7 +373,7 @@ pc reset-db-test-no-docker
 
 Pour lancer les tests, utiliser directement `pytest`, cf [lancement des tests depuis la ligne de commandes](#2-lancement-des-tests-depuis-la-ligne-de-commande-dans-lenvironnement-poetry)
 
-Pour recréer la sandbox, utiliser la commande:
+Pour recréer la sandbox, utiliser la commande :
 ```shell
 flask sandbox -n industrial
 ```
