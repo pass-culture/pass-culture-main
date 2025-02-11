@@ -70,8 +70,8 @@ class atomic:
     - begin: enter a new atomic managed context. It will create nested session and savepoint in the
         sql session
     - commit: just flush the session, it will commit when exiting the managed code.
-    - rollback: use the mark_transaction_as_invalid() function. The session will be rolledback
-        instead of being committed
+    - rollback: use the atomic.mark_transaction_as_invalid() function. The session will be
+        rolledback instead of being committed
 
     If you need to do something after the managed code an only if the commit is a success you can
     use on_commit
@@ -114,93 +114,108 @@ class atomic:
     def __call__(self, func: typing.Callable) -> typing.Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):  # type: ignore[no-untyped-def]
-            if _is_managed_session():
+            if atomic._is_managed_session():
                 # use the context manager part to make the decorator reeantrant.
                 with atomic():
                     return func(*args, **kwargs)
             else:
-                _mark_session_management()
+                atomic._mark_session_management()
                 with db.session.no_autoflush:
                     try:
                         return func(*args, **kwargs)
                     except Exception as exp:
-                        mark_transaction_as_invalid()
+                        atomic.mark_transaction_as_invalid()
                         raise exp
                     finally:
-                        _manage_session()
+                        atomic._manage_session()
 
         return wrapper
 
+    @staticmethod
+    def mark_transaction_as_invalid() -> None:
+        """Mark the transaction as to be rolled back by the `atomic_view` decorator or context manager"""
+        atomic_contexts = getattr(g, "_atomic_contexts", [])
+        if atomic_contexts:
+            atomic_contexts[-1].invalid_transaction = True
+        elif atomic._is_managed_session():
+            g._session_to_commit = False
+
+    @staticmethod
+    def _mark_session_management() -> None:
+        g._session_to_commit = True
+        g._managed_session = True
+        g._on_commit_callbacks = []
+
+    @staticmethod
+    def is_managed_transaction() -> bool:
+        """check if we are in a managed transaction block either with `@atomic()` or `with atomic:`"""
+        return bool(getattr(g, "_atomic_contexts", False)) or atomic._is_managed_session()
+
+    @staticmethod
+    def _is_managed_session() -> bool:
+        return getattr(g, "_managed_session", False)
+
+    @staticmethod
+    def _manage_session() -> None:
+        if not atomic._is_managed_session():
+            return
+        success = False
+        if g._session_to_commit:
+            db.session.commit()
+            success = True
+        else:
+            db.session.rollback()
+
+        g.pop("_session_to_commit", None)
+        g.pop("_managed_session", None)
+        if success:
+            on_commit_callbacks = getattr(g, "_on_commit_callbacks", [])
+            for callback in on_commit_callbacks:
+                if not callback():
+                    break
+        g.pop("_on_commit_callbacks", None)
+
+    @staticmethod
+    def on_commit(func: typing.Callable[[], typing.Any], *, robust: bool = False) -> None:
+        """
+        Hook to execute code after the transaction has been commit. This code will be called outside any
+        sql transaction. If we are not in a managed session it executes the callback immediately.
+
+        func: a function taking no arguments to call. If your function takes argument you can use the
+            function `partial` from `functools` to add the arguments.
+        robust: whether or not we should continue to call the other functions after this one failed.
+
+        example
+        ```
+        from functools import partial
+        from pcapi.repository import on_commit
+
+        def function(argument1, argument2):
+            ...
+
+        # inside the atomic block:
+        on_commit(
+            func=partial(function, argument1=1, argument2='foo'),
+            robust=False,
+        )
+        ```
+        """
+        if not atomic._is_managed_session():
+            func()
+        else:
+            g._on_commit_callbacks.append(OnCommitCallback(func=func, robust=robust))
+
 
 def mark_transaction_as_invalid() -> None:
-    """Mark the transaction as to be rolled back by the `atomic_view` decorator or context manager"""
-    atomic_contexts = getattr(g, "_atomic_contexts", [])
-    if atomic_contexts:
-        atomic_contexts[-1].invalid_transaction = True
-    elif _is_managed_session():
-        g._session_to_commit = False
-
-
-def _mark_session_management() -> None:
-    g._session_to_commit = True
-    g._managed_session = True
-    g._on_commit_callbacks = []
+    """deprecated use atomic.mark_transaction_as_invalid instead"""
+    atomic.mark_transaction_as_invalid()
 
 
 def is_managed_transaction() -> bool:
-    """check if we are in a managed transaction block either with `@atomic()` or `with atomic:`"""
-    return bool(getattr(g, "_atomic_contexts", False)) or _is_managed_session()
-
-
-def _is_managed_session() -> bool:
-    return getattr(g, "_managed_session", False)
-
-
-def _manage_session() -> None:
-    if not _is_managed_session():
-        return
-    success = False
-    if g._session_to_commit:
-        db.session.commit()
-        success = True
-    else:
-        db.session.rollback()
-
-    g.pop("_session_to_commit", None)
-    g.pop("_managed_session", None)
-    if success:
-        on_commit_callbacks = getattr(g, "_on_commit_callbacks", [])
-        for callback in on_commit_callbacks:
-            if not callback():
-                break
-    g.pop("_on_commit_callbacks", None)
+    """deprecated use atomic.is_managed_transaction instead"""
+    return atomic.is_managed_transaction()
 
 
 def on_commit(func: typing.Callable[[], typing.Any], *, robust: bool = False) -> None:
-    """
-    Hook to execute code after the transaction has been commit. This code will be called outside any
-    sql transaction. If we are not in a managed session it executes the callback immediately.
-
-    func: a function taking no arguments to call. If your function takes argument you can use the
-        function `partial` from `functools` to add the arguments.
-    robust: whether or not we should continue to call the other functions after this one failed.
-
-    example
-    ```
-    from functools import partial
-    from pcapi.repository import on_commit
-
-    def function(argument1, argument2):
-        ...
-
-    # inside the atomic block:
-    on_commit(
-        func=partial(function, argument1=1, argument2='foo'),
-        robust=False,
-    )
-    ```
-    """
-    if not _is_managed_session():
-        func()
-    else:
-        g._on_commit_callbacks.append(OnCommitCallback(func=func, robust=robust))
+    """deprecated use atomic.on_commit instead"""
+    atomic.on_commit(func=func, robust=robust)
