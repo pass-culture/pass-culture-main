@@ -625,11 +625,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
                 if obj.eligibility == models.EligibilityType.UNDERAGE
                 else fraud_factories.UbbleContentFactory(first_name=obj.firstName, last_name=obj.lastName)
             ),
-            eligibilityType=(
-                models.EligibilityType.UNDERAGE
-                if obj.eligibility == models.EligibilityType.UNDERAGE
-                else models.EligibilityType.AGE18
-            ),
+            eligibilityType=obj.eligibility,
         )
 
     @factory.post_generation
