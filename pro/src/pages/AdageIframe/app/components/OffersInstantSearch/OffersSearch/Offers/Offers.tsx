@@ -43,9 +43,6 @@ import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import styles from './Offers.module.scss'
 import { offerIsBookable } from './utils/offerIsBookable'
 
-
-
-
 export interface OffersProps {
   displayStats?: boolean
   displayShowMore?: boolean
@@ -173,33 +170,31 @@ export const Offers = ({
 
   return (
     <>
+      <ToggleButtonGroup
+        className={styles['offer-type-vue']}
+        groupLabel="Choix du type de vue des offres"
+        buttons={[
+          {
+            label: 'Vue liste',
+            id: 'list',
+            content: <SvgIcon width="24" src={fullList} alt="" />,
+            onClick: toggleButtonClicked,
+          },
+          {
+            label: 'Vue grille',
+            id: 'grid',
+            content: <SvgIcon width="24" src={fullGrid} alt="" />,
+            onClick: toggleButtonClicked,
+          },
+        ]}
+        activeButton={adageViewType}
+      />
       <div className={styles['offers-view']}>
         {displayStats && (
           <div className={styles['offers-stats']}>
             {new Intl.NumberFormat('fr-FR').format(nbHits)}{' '}
             {nbHits === 1 ? 'offre' : 'offres'} au total
           </div>
-        )}
-        {!isInSuggestions && (
-          <ToggleButtonGroup
-            className={styles['offer-type-vue']}
-            groupLabel="Choix du type de vue des offres"
-            buttons={[
-              {
-                label: 'Vue liste',
-                id: 'list',
-                content: <SvgIcon width="24" src={fullList} alt="" />,
-                onClick: toggleButtonClicked,
-              },
-              {
-                label: 'Vue grille',
-                id: 'grid',
-                content: <SvgIcon width="24" src={fullGrid} alt="" />,
-                onClick: toggleButtonClicked,
-              },
-            ]}
-            activeButton={adageViewType}
-          />
         )}
       </div>
       <ul
@@ -233,7 +228,11 @@ export const Offers = ({
                   "Pour certaines offres, le pass Culture peut prendre en charge certains coûts accessoires nécessaires à la réalisation d'activités d'éducation artistique et culturelle menées en classe ou hors les murs. Cela peut inclure par exemple les frais de transport d’un intervenant ou le matériel consommable d’un atelier artistique. Cette prise en charge doit bien sûr faire l’objet d’un accord entre vous et le partenaire qui porte le projet. Il n’est en revanche pas possible d'acheter des livres ou des équipements pérennes avec les crédits pass Culture ou de financer le transport des élèves."
                 }
                 localStorageKey={'DIFFUSE_HELP_ADAGE_SEEN'}
-                img={<ShadowTipsHelpIcon className={styles['highlight-banner-icon']} />}
+                img={
+                  <ShadowTipsHelpIcon
+                    className={styles['highlight-banner-icon']}
+                  />
+                }
               />
             )}
             {adageViewType === 'list' &&

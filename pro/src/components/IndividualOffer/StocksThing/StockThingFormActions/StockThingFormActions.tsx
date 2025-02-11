@@ -23,10 +23,8 @@ export const StockThingFormActions = ({
           variant={ButtonVariant.TERNARY}
           icon={action.icon}
           onClick={action.callback}
-          hasTooltip={!isMobileScreen}
-        >
-          {action.label}
-        </Button>
+          tooltipContent={!isMobileScreen ? <>{action.label}</> : undefined}
+        />
       ))}
     </div>
   )

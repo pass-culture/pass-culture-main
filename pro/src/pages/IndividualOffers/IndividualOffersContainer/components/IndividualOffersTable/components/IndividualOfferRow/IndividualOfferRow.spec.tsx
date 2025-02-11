@@ -87,16 +87,16 @@ const renderOfferItem = ({
 }: RenderOfferItemProps) => {
   vi.spyOn(api, 'getVenues').mockResolvedValue({
     venues: [
-      isHeadlineOfferAllowedForOfferer ?
-        venueListItemFactory({
-          name: 'Une venue physique & permanente',
-          isVirtual: false,
-        }) :
-        venueListItemFactory({
-          name: 'Une venue virtuelle',
-          isVirtual: true,
-        })
-    ]
+      isHeadlineOfferAllowedForOfferer
+        ? venueListItemFactory({
+            name: 'Une venue physique & permanente',
+            isVirtual: false,
+          })
+        : venueListItemFactory({
+            name: 'Une venue virtuelle',
+            isVirtual: true,
+          }),
+    ],
   })
 
   return renderWithProviders(
@@ -265,10 +265,10 @@ describe('IndividualOfferRow', () => {
 
         await waitFor(async () => {
           const links = await screen.findAllByRole('link')
-        expect(links[links.length - 1]).toHaveAttribute(
-          'href',
-          `/offre/individuelle/${offer.id}/recapitulatif/details`
-        )
+          expect(links[links.length - 1]).toHaveAttribute(
+            'href',
+            `/offre/individuelle/${offer.id}/recapitulatif/details`
+          )
         })
       })
 
@@ -816,9 +816,7 @@ describe('IndividualOfferRow', () => {
       renderOfferItem({ props })
       await userEvent.click(screen.getAllByRole('button')[0])
 
-      const numberOfStocks = screen.getByText('1 date épuisée', {
-        selector: 'span',
-      })
+      const numberOfStocks = screen.getByText('1 date épuisée')
       expect(numberOfStocks).toBeInTheDocument()
     })
 
@@ -832,9 +830,7 @@ describe('IndividualOfferRow', () => {
       renderOfferItem({ props })
       await userEvent.click(screen.getAllByRole('button')[0])
 
-      expect(
-        screen.queryByText('2 dates épuisées', { selector: 'span' })
-      ).toBeInTheDocument()
+      expect(screen.queryByText('2 dates épuisées')).toBeInTheDocument()
     })
 
     describe('when offer is headline', () => {
@@ -851,9 +847,7 @@ describe('IndividualOfferRow', () => {
         })
 
         await waitFor(() => {
-          expect(
-            screen.getByRole('tooltip', { name: 'Offre à la une' })
-          ).toBeInTheDocument()
+          expect(screen.getByText('Offre à la une')).toBeInTheDocument()
         })
       })
     })

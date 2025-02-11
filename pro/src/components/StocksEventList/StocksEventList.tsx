@@ -666,10 +666,8 @@ export const StocksEventList = ({
                             }
                           }}
                           icon={fullTrashIcon}
-                          hasTooltip
-                        >
-                          Supprimer
-                        </Button>
+                          tooltipContent={<>Supprimer</>}
+                        />
                       </td>
                     )}
                   </tr>

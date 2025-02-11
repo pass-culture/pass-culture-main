@@ -238,7 +238,9 @@ describe('ollectiveOfferRow', () => {
 
     renderOfferItem(props)
 
-    await userEvent.click(screen.getByText('Voir les actions'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
 
     const duplicateButton = screen.getByRole('button', {
       name: 'Créer une offre réservable',
@@ -256,7 +258,9 @@ describe('ollectiveOfferRow', () => {
     Storage.prototype.getItem = vi.fn(() => 'true')
     renderOfferItem(props)
 
-    await userEvent.click(screen.getByText('Voir les actions'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
 
     const duplicateButton = screen.getByRole('button', {
       name: 'Créer une offre réservable',
@@ -363,7 +367,9 @@ describe('ollectiveOfferRow', () => {
     })
     renderOfferItem(props, { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] })
 
-    await userEvent.click(screen.getByText('Voir les actions'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
 
     const cancelBookingButton = screen.getByText('Annuler la réservation')
     await userEvent.click(cancelBookingButton)
@@ -402,7 +408,9 @@ describe('ollectiveOfferRow', () => {
 
     renderOfferItem(props, { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] })
 
-    await userEvent.click(screen.getByText('Voir les actions'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
 
     const cancelBookingButton = screen.getByText('Annuler la réservation')
     await userEvent.click(cancelBookingButton)

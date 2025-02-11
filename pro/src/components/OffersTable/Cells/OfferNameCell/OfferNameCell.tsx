@@ -16,7 +16,7 @@ import styles from 'styles/components/Cells.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
-import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
+import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 
 import { CELLS_DEFINITIONS } from '../../utils/cellDefinitions'
 
@@ -37,8 +37,6 @@ export const OfferNameCell = ({
   displayThumb = false,
   className,
 }: OfferNameCellProps) => {
-  const { isTooltipHidden, ...tooltipProps } = useTooltipProps({})
-
   const getDateInformations = () => {
     const startDatetime = offer.stocks[0]
       ? isOfferEducational(offer)
@@ -129,12 +127,13 @@ export const OfferNameCell = ({
                 offer.isEvent &&
                 getDateInformations()}
               {shouldShowIndividualWarning && (
-                <>
-                  <button
-                    type="button"
-                    {...tooltipProps}
-                    className={styles['sold-out-button']}
-                  >
+                <Tooltip
+                  content={pluralize(
+                    computeNumberOfSoldOutStocks(),
+                    'date épuisée'
+                  )}
+                >
+                  <button type="button" className={styles['sold-out-button']}>
                     <SvgIcon
                       className={styles['sold-out-icon']}
                       src={fullErrorIcon}
@@ -142,21 +141,7 @@ export const OfferNameCell = ({
                       width="16"
                     />
                   </button>
-                  {!isTooltipHidden && (
-                    <span className={styles['sold-out-dates']}>
-                      <SvgIcon
-                        className={styles['sold-out-icon']}
-                        src={fullErrorIcon}
-                        alt="Attention"
-                        width="16"
-                      />
-                      {pluralize(
-                        computeNumberOfSoldOutStocks(),
-                        'date épuisée'
-                      )}
-                    </span>
-                  )}
-                </>
+                </Tooltip>
               )}
             </span>
           )}
