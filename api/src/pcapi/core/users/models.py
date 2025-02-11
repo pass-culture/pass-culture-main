@@ -390,6 +390,18 @@ class User(PcObject, Base, Model, DeactivableMixin):
         return self.deposit.version if self.deposit else None
 
     @property
+    def is_underage_eligible(self) -> bool:
+        from pcapi.core.users import eligibility_api
+
+        return eligibility_api.is_underage_eligibility(self.eligibility, self.age)
+
+    @property
+    def is_18_or_above_eligible(self) -> bool:
+        from pcapi.core.users import eligibility_api
+
+        return eligibility_api.is_18_or_above_eligibility(self.eligibility, self.age)
+
+    @property
     def eligibility(self) -> EligibilityType | None:
         from pcapi.core.users import eligibility_api
 

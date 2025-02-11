@@ -62,20 +62,17 @@ def activate_beneficiary_for_eligibility(
     fraud_check: fraud_models.BeneficiaryFraudCheck,
     eligibility: users_models.EligibilityType,
 ) -> users_models.User:
-    if eligibility == users_models.EligibilityType.UNDERAGE or (
-        eligibility == users_models.EligibilityType.AGE17_18 and user.age and user.age <= 17
-    ):
+    if eligibility_api.is_underage_eligibility(eligibility, user.age):
         user.add_underage_beneficiary_role()
         age_at_registration = _get_age_at_first_registration(user, users_models.EligibilityType.UNDERAGE)
 
         if age_at_registration not in users_constants.ELIGIBILITY_UNDERAGE_RANGE:
             raise exceptions.InvalidAgeException(age=age_at_registration)
 
-    elif eligibility == users_models.EligibilityType.AGE18 or (
-        eligibility == users_models.EligibilityType.AGE17_18 and user.age and user.age >= 18
-    ):
+    elif eligibility_api.is_18_or_above_eligibility(eligibility, user.age):
         user.add_beneficiary_role()
         age_at_registration = users_constants.ELIGIBILITY_AGE_18
+
     else:
         raise exceptions.InvalidEligibilityTypeException()
 
@@ -142,9 +139,7 @@ def get_email_validation_subscription_item(
 def get_phone_validation_subscription_item(
     user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
-    should_fill_phone = (eligibility == users_models.EligibilityType.AGE18) or (
-        eligibility == users_models.EligibilityType.AGE17_18 and user.age and user.age >= 18
-    )
+    should_fill_phone = eligibility_api.is_18_or_above_eligibility(eligibility, user.age)
     if not should_fill_phone:
         return models.SubscriptionItem(
             type=models.SubscriptionStep.PHONE_VALIDATION, status=models.SubscriptionItemStatus.NOT_APPLICABLE
@@ -524,9 +519,7 @@ def complete_profile(
 def get_allowed_identity_check_methods(user: users_models.User) -> list[models.IdentityCheckMethod]:
     allowed_methods = []
 
-    is_educonnect_allowed = user.eligibility == users_models.EligibilityType.UNDERAGE or (
-        user.eligibility == users_models.EligibilityType.AGE17_18 and user.age and user.age < 18
-    )
+    is_educonnect_allowed = user.is_underage_eligible
     if is_educonnect_allowed and FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION.is_active():
         allowed_methods.append(models.IdentityCheckMethod.EDUCONNECT)
 
@@ -561,16 +554,10 @@ def get_maintenance_page_type(user: users_models.User) -> models.MaintenancePage
     if allowed_identity_check_methods or not user.age:
         return None
 
-    is_user_eighteen = user.eligibility == users_models.EligibilityType.AGE18 or (
-        user.eligibility == users_models.EligibilityType.AGE17_18 and user.age >= 18
-    )
-    if is_user_eighteen and FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18.is_active():
+    if user.is_18_or_above_eligible and FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18.is_active():
         return models.MaintenancePageType.WITH_DMS
 
-    is_user_underage = user.eligibility == users_models.EligibilityType.UNDERAGE or (
-        user.eligibility == users_models.EligibilityType.AGE17_18 and user.age < 18
-    )
-    if is_user_underage and FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE.is_active():
+    if user.is_underage_eligible and FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE.is_active():
         return models.MaintenancePageType.WITH_DMS
 
     return models.MaintenancePageType.WITHOUT_DMS
@@ -760,9 +747,7 @@ def get_subscription_steps_to_display(
 
 def _get_ordered_steps(user: users_models.User) -> list[models.SubscriptionStep]:
     ordered_steps = []
-    should_fill_phone = (user.eligibility == users_models.EligibilityType.AGE18) or (
-        user.eligibility == users_models.EligibilityType.AGE17_18 and user.age and user.age >= 18
-    )
+    should_fill_phone = user.is_18_or_above_eligible
     if should_fill_phone:
         ordered_steps.append(models.SubscriptionStep.PHONE_VALIDATION)
     ordered_steps.append(models.SubscriptionStep.PROFILE_COMPLETION)

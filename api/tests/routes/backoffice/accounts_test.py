@@ -1964,7 +1964,7 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             (18, fraud_models.FraudCheckType.EDUCONNECT, SubscriptionItemStatus.TODO, SubscriptionItemStatus.TODO),
             (19, fraud_models.FraudCheckType.EDUCONNECT, SubscriptionItemStatus.VOID, SubscriptionItemStatus.VOID),
             (18, fraud_models.FraudCheckType.UBBLE, SubscriptionItemStatus.TODO, SubscriptionItemStatus.OK),
-            (19, fraud_models.FraudCheckType.UBBLE, SubscriptionItemStatus.VOID, SubscriptionItemStatus.VOID),
+            (19, fraud_models.FraudCheckType.UBBLE, SubscriptionItemStatus.VOID, SubscriptionItemStatus.OK),
             (18, fraud_models.FraudCheckType.DMS, SubscriptionItemStatus.TODO, SubscriptionItemStatus.OK),
         ],
     )

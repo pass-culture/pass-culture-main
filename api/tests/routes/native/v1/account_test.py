@@ -1898,8 +1898,8 @@ class ShowEligibleCardTest:
         )
         assert account_serializers.UserProfileResponse.from_orm(user).show_eligible_card == expected
 
-    def test_user_eligible_but_created_after_18(self):
-        date_of_birth = datetime.utcnow() - relativedelta(years=18, days=5)
+    def test_user_eligible_but_created_after_19(self):
+        date_of_birth = datetime.utcnow() - relativedelta(years=19, days=5)
         date_of_creation = datetime.utcnow()
         user = users_factories.UserFactory(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
         assert account_serializers.UserProfileResponse.from_orm(user).show_eligible_card is False

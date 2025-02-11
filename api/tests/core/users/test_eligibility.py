@@ -468,7 +468,7 @@ class GetFirstRegistrationDateTest:
             user, user.birth_date, users_models.EligibilityType.AGE18
         )
 
-        assert first_registration_date == today_in_utc
+        assert first_registration_date is None
 
     def test_get_first_registration_date_age_18(self):
         user = users_factories.UserFactory(dateOfBirth=datetime(2002, 1, 15))
