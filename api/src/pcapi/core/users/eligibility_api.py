@@ -3,7 +3,6 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
-from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -230,4 +229,24 @@ def is_user_age_compatible_with_eligibility(
         return user_age >= constants.ELIGIBILITY_AGE_18
     if eligibility == users_models.EligibilityType.AGE17_18:
         return user_age >= 17
+    return False
+
+
+def is_underage_eligibility(eligibility: users_models.EligibilityType | None, age: int | None) -> bool:
+    if eligibility == users_models.EligibilityType.UNDERAGE:
+        return True
+
+    if eligibility == users_models.EligibilityType.AGE17_18 and age:
+        return age < 18
+
+    return False
+
+
+def is_18_or_above_eligibility(eligibility: users_models.EligibilityType | None, age: int | None) -> bool:
+    if eligibility == users_models.EligibilityType.AGE18:
+        return True
+
+    if eligibility == users_models.EligibilityType.AGE17_18 and age:
+        return age >= 18
+
     return False
