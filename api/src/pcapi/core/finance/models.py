@@ -89,12 +89,17 @@ class Deposit(PcObject, Base, Model):
         if self.type == DepositType.GRANT_15_17:
             return conf.SpecificCaps(digital_cap=digital_cap, physical_cap=physical_cap)
 
-        if self.version == 1:
-            physical_cap = conf.GRANT_18_PHYSICAL_CAP_V1
-            digital_cap = conf.GRANT_18_DIGITAL_CAP_V1
-        elif self.version == 2:
-            physical_cap = conf.GRANT_18_PHYSICAL_CAP_V2
-            digital_cap = conf.GRANT_18_DIGITAL_CAP_V2
+        if self.type == DepositType.GRANT_18:
+            if self.version == 1:
+                physical_cap = conf.GRANT_18_PHYSICAL_CAP_V1
+                digital_cap = conf.GRANT_18_DIGITAL_CAP_V1
+            elif self.version == 2:
+                physical_cap = conf.GRANT_18_PHYSICAL_CAP_V2
+                digital_cap = conf.GRANT_18_DIGITAL_CAP_V2
+
+        if self.type == DepositType.GRANT_17_18:
+            physical_cap = conf.GRANT_17_18_PHYSICAL_CAP
+            digital_cap = conf.GRANT_17_18_DIGITAL_CAP
 
         if self.user.departementCode in conf.SPECIFIC_DIGITAL_CAPS_BY_DEPARTMENT_CODE:
             digital_cap = conf.SPECIFIC_DIGITAL_CAPS_BY_DEPARTMENT_CODE[self.user.departementCode]
