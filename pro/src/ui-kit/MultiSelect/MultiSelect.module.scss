@@ -36,7 +36,8 @@
   &:disabled {
     background-color: var(--color-grey-light);
     border: none;
-    color: var(--color-black);
+    color: var(--color-grey-dark);
+    cursor: auto;
   }
 
   &:hover {

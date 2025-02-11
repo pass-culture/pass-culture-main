@@ -43,6 +43,8 @@
 
     &:disabled {
       border: none;
+      color: var(--color-grey-dark);
+      cursor: auto;
     }
   }
 
