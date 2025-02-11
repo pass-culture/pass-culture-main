@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.mails.transactional.users.accepted_as_beneficiary import get_accepted_as_beneficiary_email_data
+from pcapi.core.mails.transactional.users.accepted_as_beneficiary import get_accepted_as_beneficiary_email_v3_data
 from pcapi.core.mails.transactional.users.accepted_as_beneficiary import get_accepted_as_underage_beneficiary_email_data
 from pcapi.core.users import factories as users_factories
 
@@ -15,10 +15,10 @@ class GetAcceptedAsBeneficiaryEmailSendinblueTest:
         user = users_factories.BeneficiaryGrant18Factory.create(email="fabien+test@example.net")
 
         # When
-        email = get_accepted_as_beneficiary_email_data(user)
+        email = get_accepted_as_beneficiary_email_v3_data(user)
 
         # Then
-        assert email.template == TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
+        assert email.template == TransactionalEmail.ACCEPTED_AS_BENEFICIARY_V3.value
         assert email.params == {"CREDIT": 300}
 
 
