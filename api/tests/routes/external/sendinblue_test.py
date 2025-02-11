@@ -1,8 +1,17 @@
 import logging
+from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors.recommendation import RecommendationApiException
+from pcapi.connectors.recommendation import RecommendationApiTimeoutException
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.history import models as history_models
+from pcapi.core.offers.factories import OfferFactory
+from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.offers.factories import ProductMediationFactory
+from pcapi.core.offers.models import TiteliveImageType
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.factories import UserFactory
 from pcapi.models import db
 
@@ -89,3 +98,67 @@ class NotifyImportContactsTest:
             "list_id": 18,
             "iteration": 1,
         }
+
+
+@pytest.mark.usefixtures("db_session")
+@pytest.mark.features(WIP_ENABLE_BREVO_RECOMMENDATION_ROUTE=True)
+class GetUserRecommendationsTest:
+    @patch(
+        "pcapi.connectors.recommendation.get_playlist",
+        return_value=b'{"playlist_recommended_offers": ["1", "2"], "params": {}}',
+    )
+    def test_get_user_recommendations(self, _get_playlist_mock, client):
+        user_id = UserFactory(id=1).id
+        product = ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        ProductMediationFactory(product=product, uuid="12345678", imageType=TiteliveImageType.RECTO)
+        OfferFactory(id=1, product=product)
+        OfferFactory(id=2)
+
+        expected_num_queries = 1  # feature
+        expected_num_queries += 1  # user
+        expected_num_queries += 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/webhooks/brevo/recommendations/{user_id}")
+
+        assert response.status_code == 200
+        assert sorted(response.json["offers"], key=lambda item: item["name"]) == [
+            {"image": None, "name": "Offer 1", "url": "https://webapp-v2.example.com/offre/2"},
+            {
+                "image": "http://localhost/storage/thumbs/12345678",
+                "name": "Product 0",
+                "url": "https://webapp-v2.example.com/offre/1",
+            },
+        ]
+
+    def test_fails_on_user_not_found(self, client):
+        response = client.get("/webhooks/brevo/recommendations/0")
+
+        assert response.status_code == 404
+
+    @pytest.mark.features(WIP_ENABLE_BREVO_RECOMMENDATION_ROUTE=False)
+    def test_404_on_feature_flag_disabled(self, client):
+        user_id = UserFactory(id=1).id
+        response = client.get(f"/webhooks/brevo/recommendations/{user_id}")
+
+        assert response.status_code == 404
+
+    @patch("pcapi.connectors.recommendation.get_playlist", return_value=b"invalid JSON}")
+    def test_fails_on_decode_error(self, get_playlist_mock, client):
+        user_id = UserFactory(id=1).id
+        response = client.get(f"/webhooks/brevo/recommendations/{user_id}")
+
+        assert response.status_code == 500
+
+    @patch("pcapi.connectors.recommendation.get_playlist", side_effect=RecommendationApiException)
+    def test_fails_on_api_error(self, get_playlist_mock, client):
+        user_id = UserFactory(id=1).id
+        response = client.get(f"/webhooks/brevo/recommendations/{user_id}")
+
+        assert response.status_code == 502
+
+    @patch("pcapi.connectors.recommendation.get_playlist", side_effect=RecommendationApiTimeoutException)
+    def test_fails_on_api_timeout(self, get_playlist_mock, client):
+        user_id = UserFactory(id=1).id
+        response = client.get(f"/webhooks/brevo/recommendations/{user_id}")
+
+        assert response.status_code == 504
