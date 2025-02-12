@@ -19,10 +19,6 @@ from pcapi.routes.adage_iframe.serialization.redactor import RedactorPreferences
 from pcapi.serialization.decorator import spectree_serialize
 
 
-OptionalRedactor = educational_models.EducationalRedactor | None
-OptionalInstitution = educational_models.EducationalInstitution | None
-
-
 @blueprint.adage_iframe.route("/authenticate", methods=["GET"])
 @atomic()
 @spectree_serialize(api=blueprint.api, response_model=AuthenticatedResponse)
@@ -60,7 +56,7 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
     return AuthenticatedResponse(role=AdageFrontRoles.READONLY, canPrebook=False)
 
 
-def _get_redactor(authenticated_information: AuthenticatedInformation) -> OptionalRedactor:
+def _get_redactor(authenticated_information: AuthenticatedInformation) -> educational_models.EducationalRedactor | None:
     try:
         redactor_informations = get_redactor_information_from_adage_authentication(authenticated_information)
     except MissingRequiredRedactorInformation:
@@ -68,19 +64,19 @@ def _get_redactor(authenticated_information: AuthenticatedInformation) -> Option
     return educational_repository.find_or_create_redactor(redactor_informations)
 
 
-def _get_preferences(redactor: OptionalRedactor) -> RedactorPreferences | None:
+def _get_preferences(redactor: educational_models.EducationalRedactor | None) -> RedactorPreferences | None:
     if redactor:
         return RedactorPreferences(**redactor.preferences)
     return None
 
 
-def _get_favorites_count(redactor: OptionalRedactor) -> int:
+def _get_favorites_count(redactor: educational_models.EducationalRedactor | None) -> int:
     if redactor:
-        return educational_api_favorite.get_redactor_all_favorites_count(redactor.id)
+        return educational_api_favorite.get_redactor_favorites_count(redactor.id)
     return 0
 
 
-def _get_programs(institution: OptionalInstitution) -> list:
+def _get_programs(institution: educational_models.EducationalInstitution | None) -> list:
     if not institution:
         return []
     return [EducationalInstitutionProgramModel.from_orm(program) for program in institution.programs]
