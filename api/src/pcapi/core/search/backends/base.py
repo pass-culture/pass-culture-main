@@ -45,7 +45,7 @@ class SearchBackend:
     def count_offers_to_index_from_queue(self, from_error_queue: bool = False) -> int:
         raise NotImplementedError()
 
-    def check_offer_is_indexed(self, offer: "offers_models.Offer") -> bool:
+    def check_offer_id_is_indexed(self, offer_id: int) -> bool:
         raise NotImplementedError()
 
     def index_offers(
