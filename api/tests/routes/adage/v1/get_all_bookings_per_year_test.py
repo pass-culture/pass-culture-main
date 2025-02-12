@@ -19,7 +19,6 @@ def expected_serialized_booking(booking) -> dict:
         "cancellationReason": booking.cancellationReason.value if booking.cancellationReason else None,
         "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
         "totalAmount": booking.collectiveStock.price,
-        "beginningDatetime": format_into_utc_date(booking.collectiveStock.beginningDatetime),
         "startDatetime": format_into_utc_date(booking.collectiveStock.startDatetime),
         "endDatetime": format_into_utc_date(booking.collectiveStock.endDatetime),
         "venueTimezone": booking.collectiveStock.collectiveOffer.venue.timezone,
