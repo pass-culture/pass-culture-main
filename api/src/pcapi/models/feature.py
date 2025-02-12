@@ -105,6 +105,7 @@ class FeatureToggle(enum.Enum):
     LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC = "Stocker dans Google Drive les cinémas EMS activables"
     ENABLE_PRO_FEEDBACK = "Activer l'envoi des commentaires du portail pro vers Harvestr"
     ENABLE_MOVIE_FESTIVAL_RATE = "Activer les tarifs spéciaux pour un festival cinéma"
+    ONLY_MOVE_EVENT_OFFERS = "Ne déplacer que les offres liées à un événement"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
     WIP_ENABLE_NEW_FINANCE_WORKFLOW = "Active le nouveau workflow finance"
