@@ -13,7 +13,6 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "get"
 
     num_queries_400 = 1  # select api_key, offerer and provider
-    num_queries_400 += 1  # select features
     num_queries_404 = num_queries_400 + 1  # check venue_provider exists
     num_queries_success = num_queries_404 + 1  # select offers
 
