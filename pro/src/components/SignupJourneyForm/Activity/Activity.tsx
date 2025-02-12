@@ -10,6 +10,7 @@ import {
   ActivityContext,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { FORM_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
@@ -18,12 +19,13 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { ActionBar } from '../ActionBar/ActionBar'
 
 import { ActivityForm, ActivityFormValues } from './ActivityForm'
-import { DEFAULT_ACTIVITY_FORM_VALUES } from './constants'
+import { defaultActivityFormValues } from './constants'
 import { validationSchema } from './validationSchema'
 
 export const Activity = (): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
+  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
   const { activity, setActivity, offerer } = useSignupJourneyContext()
 
   const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
@@ -71,7 +73,7 @@ export const Activity = (): JSX.Element => {
 
   const initialValues: ActivityFormValues = activity
     ? serializeActivityContext(activity)
-    : DEFAULT_ACTIVITY_FORM_VALUES
+    : defaultActivityFormValues(isNewSignupEnabled)
 
   const handleNextStep = () => {
     if (Object.keys(formik.errors).length !== 0) {
@@ -88,7 +90,7 @@ export const Activity = (): JSX.Element => {
   const formik = useFormik({
     initialValues,
     onSubmit: onSubmitActivity,
-    validationSchema,
+    validationSchema: validationSchema(isNewSignupEnabled),
     enableReinitialize: true,
   })
 

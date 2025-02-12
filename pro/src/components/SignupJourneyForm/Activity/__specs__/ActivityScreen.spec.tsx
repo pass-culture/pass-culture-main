@@ -104,6 +104,7 @@ describe('screens:SignupJourney::Activity', () => {
       venueTypeCode: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL_AND_EDUCATIONAL,
+      phoneNumber: undefined,
     }
     renderActivityScreen(contextValue)
     expect(await screen.findByText('Activité')).toBeInTheDocument()
@@ -119,6 +120,7 @@ describe('screens:SignupJourney::Activity', () => {
       venueTypeCode: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL,
+      phoneNumber: undefined,
     }
     renderActivityScreen(contextValue)
     expect(await screen.findByText('Activité')).toBeInTheDocument()
@@ -137,6 +139,7 @@ describe('screens:SignupJourney::Activity', () => {
       venueTypeCode: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.EDUCATIONAL,
+      phoneNumber: undefined,
     }
     renderActivityScreen(contextValue)
     expect(await screen.findByText('Activité')).toBeInTheDocument()
