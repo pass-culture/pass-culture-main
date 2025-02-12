@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from 'url'
 
 import react from '@vitejs/plugin-react'
-import * as preloads from 'design-system/dist/build/ts/font-preloads'
+import * as preloads from 'design-system/dist/build/global/font-preloads'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, PluginOption } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
@@ -48,7 +48,14 @@ export default defineConfig(({ mode }) => {
         provider: 'istanbul',
         reportsDirectory: '../coverage',
         reporter: ['text', 'json'],
-        exclude: ['**/*.stories.tsx', 'apiClient/adage/*','apiClient/adresse/*','apiClient/v1/*','apiClient/v2/*',...coverageConfigDefaults.exclude],
+        exclude: [
+          '**/*.stories.tsx',
+          'apiClient/adage/*',
+          'apiClient/adresse/*',
+          'apiClient/v1/*',
+          'apiClient/v2/*',
+          ...coverageConfigDefaults.exclude,
+        ],
       },
       minThreads: 4,
       maxThreads: 6,

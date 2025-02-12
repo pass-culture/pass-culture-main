@@ -1,6 +1,6 @@
 import { Chart } from 'chart.js/auto'
 import 'chartjs-adapter-date-fns'
-import * as designSystemTokens from 'design-system/dist/build/ts/index.web'
+import * as designSystemTokens from 'design-system/dist/build/pro/index.light.web'
 
 import { FORMAT_DD_MM_YYYY } from 'commons/utils/date'
 
