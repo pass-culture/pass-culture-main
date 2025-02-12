@@ -1,7 +1,9 @@
 import typing
 
+from pcapi.core.core_exception import CoreException
 
-class ProviderException(Exception):
+
+class ProviderException(CoreException):
     pass
 
 
@@ -66,13 +68,3 @@ class UnknownProvider(VenueProviderException):
 
 class ShowIdNotFound(VenueProviderException):
     pass
-
-
-class TicketingUrlsMustBeBothSet(ProviderException):
-    pass
-
-
-class TicketingUrlsCannotBeUnset(ProviderException):
-    def __init__(self, *args: object, blocking_events_ids: list[int]) -> None:
-        super().__init__(*args)
-        self.blocking_events_ids = blocking_events_ids
