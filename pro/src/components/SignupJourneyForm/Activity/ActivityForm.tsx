@@ -3,6 +3,7 @@ import { FieldArray, useFormikContext } from 'formik'
 import { useRef } from 'react'
 
 import { VenueTypeResponseModel } from 'apiClient/v1'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -10,6 +11,7 @@ import { buildVenueTypesOptions } from 'pages/VenueEdition/buildVenueTypesOption
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
+import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
@@ -24,6 +26,7 @@ export interface ActivityFormValues {
     individual: boolean
     educational: boolean
   }
+  phoneNumber: string | undefined
 }
 
 export interface ActivityFormProps {
@@ -36,6 +39,7 @@ export const ActivityForm = ({
   const { values, errors } = useFormikContext<ActivityFormValues>()
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
 
   return (
     <FormLayout.Section>
@@ -54,6 +58,16 @@ export const ActivityForm = ({
           className={styles['venue-type-select']}
         />
       </FormLayout.Row>
+      {isNewSignupEnabled && (
+        <FormLayout.Row>
+          <PhoneNumberInput
+            name="phoneNumber"
+            label={
+              'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
+            }
+          />
+        </FormLayout.Row>
+      )}
       <FieldArray
         name="socialUrls"
         render={(arrayHelpers) => (
@@ -85,7 +99,7 @@ export const ActivityForm = ({
                     onClick={() => {
                       const newIndex = index - 1
                       inputRefs.current[newIndex]?.focus();
-                      
+
                       arrayHelpers.remove(index)
                     }}
                     disabled={values.socialUrls.length <= 1}

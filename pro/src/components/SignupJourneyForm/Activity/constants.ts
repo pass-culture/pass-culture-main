@@ -1,12 +1,13 @@
-import { ActivityFormValues } from './ActivityForm'
-
-export const DEFAULT_ACTIVITY_FORM_VALUES: ActivityFormValues = {
-  venueTypeCode: '',
-  socialUrls: [''],
-  targetCustomer: {
-    individual: false,
-    educational: false,
-  },
+export const defaultActivityFormValues = (isNewSignupEnabled: boolean) => {
+  return {
+    venueTypeCode: '',
+    socialUrls: [''],
+    targetCustomer: {
+      individual: false,
+      educational: false,
+    },
+    phoneNumber: isNewSignupEnabled ? '' : undefined,
+  }
 }
 
 export const activityTargetCustomerCheckboxGroup = [

@@ -1,9 +1,10 @@
 import { useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
+import { defaultActivityValues } from 'commons/context/SignupJourneyContext/constants'
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useActiveStep } from 'commons/hooks/useActiveStep'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
@@ -14,11 +15,12 @@ import styles from './SignupJourneyStepper.module.scss'
 
 export const SignupJourneyStepper = () => {
   const { activity, offerer } = useSignupJourneyContext()
+  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
 
   const { logEvent } = useAnalytics()
 
   const isActivityStepDisabled =
-    activity === null || activity === DEFAULT_ACTIVITY_VALUES
+    activity === null || activity === defaultActivityValues(isNewSignupEnabled)
 
   const isOffererStepDisabled =
     offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES

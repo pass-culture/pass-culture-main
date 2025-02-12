@@ -347,6 +347,7 @@ describe('Signup', () => {
             lastName: 'Nom',
             password: 'user@AZERTY123', // NOSONAR
             token: 'token',
+            phoneNumber: null,
           })
           await expect(
             screen.findByText('I’m the confirmation page')

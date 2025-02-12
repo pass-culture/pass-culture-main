@@ -12,6 +12,7 @@ import {
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { defaultActivityFormValues } from 'components/SignupJourneyForm/Activity/constants'
 import { Button } from 'ui-kit/Button/Button'
 
 import {
@@ -19,7 +20,6 @@ import {
   ActivityFormProps,
   ActivityFormValues,
 } from '../ActivityForm'
-import { DEFAULT_ACTIVITY_FORM_VALUES } from '../constants'
 import { validationSchema } from '../validationSchema'
 
 vi.mock('apiClient/api', () => ({
@@ -73,7 +73,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
   let initialValues: Partial<ActivityFormValues>
   beforeEach(() => {
     activity = DEFAULT_ACTIVITY_VALUES
-    initialValues = DEFAULT_ACTIVITY_FORM_VALUES
+    initialValues = defaultActivityFormValues(false)
     props = {
       venueTypes: venueTypes,
     }
