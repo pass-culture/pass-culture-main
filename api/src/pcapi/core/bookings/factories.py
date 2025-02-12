@@ -30,6 +30,13 @@ class BookingFactory(BaseFactory):
         "stock.priceCategory", factory.SelfAttribute("stock.priceCategory.priceCategoryLabel.label"), None
     )
 
+    @factory.lazy_attribute
+    def usedRecreditType(self) -> models.BookingRecreditType | None:
+        sorted_recredits = sorted(self.deposit.recredits, key=lambda r: r.dateCreated, reverse=True)
+        if sorted_recredits:
+            return models.BookingRecreditType[sorted_recredits[0].recreditType.name]
+        return None
+
     @factory.post_generation
     def cancellation_limit_date(
         self,

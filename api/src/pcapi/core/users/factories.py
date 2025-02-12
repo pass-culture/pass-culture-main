@@ -3,6 +3,7 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from decimal import Decimal
 import random
 import string
 import typing
@@ -18,7 +19,6 @@ from pcapi.connectors.beneficiaries.educonnect import models as educonnect_model
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.factories import BaseFactory
-from pcapi.core.finance import conf
 import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import utils as users_utils
@@ -952,7 +952,6 @@ class DepositGrantFactory(BaseFactory):
 
     dateCreated = LazyAttribute(lambda _: datetime.utcnow())
     source = "factory"
-    version = 1
     user = factory.SubFactory(UserFactory)
 
     @classmethod
@@ -965,18 +964,28 @@ class DepositGrantFactory(BaseFactory):
         user = kwargs["user"]
         age = users_utils.get_age_from_birth_date(user.birth_date)
 
-        if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-            kwargs["type"] = finance_models.DepositType.GRANT_17_18
-        else:
-            kwargs["type"] = (
-                finance_models.DepositType.GRANT_15_17
-                if age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
-                else finance_models.DepositType.GRANT_18
-            )
-        if not kwargs.get("amount"):
-            kwargs["amount"] = conf.get_credit_amount_per_age(age)
-        if not kwargs.get("expirationDate"):
+        if "type" not in kwargs:
+            if (
+                FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active()
+                and datetime.utcnow() >= settings.CREDIT_V3_DECREE_DATETIME
+            ):
+                kwargs["type"] = finance_models.DepositType.GRANT_17_18
+            else:
+                kwargs["type"] = (
+                    finance_models.DepositType.GRANT_15_17
+                    if age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
+                    else finance_models.DepositType.GRANT_18
+                )
+        if "amount" not in kwargs:
+            if kwargs["type"] == finance_models.DepositType.GRANT_17_18:
+                amount = {17: Decimal(50), 18: Decimal(150)}[age]
+            else:
+                amount = {15: Decimal(20), 16: Decimal(30), 17: Decimal(30), 18: Decimal(300)}[age]
+            kwargs["amount"] = amount
+        if "expirationDate" not in kwargs:
             kwargs["expirationDate"] = user.birth_date + relativedelta(years=21)
+        if "version" not in kwargs:
+            kwargs["version"] = 2 if kwargs["type"] == finance_models.DepositType.GRANT_18 else 1
 
         return super()._create(model_class, *args, **kwargs)
 
@@ -1078,7 +1087,7 @@ class UserAccountUpdateRequestFactory(BaseFactory):
     email = factory.Sequence(lambda n: f"demandeur_{n+1}@example.com")
     birthDate = factory.Sequence(lambda n: date.today() - timedelta(days=18 * 366 + 10 * n))
     user = factory.SubFactory(
-        BeneficiaryGrant18Factory,
+        BeneficiaryFactory,
         firstName=factory.SelfAttribute("..firstName"),
         lastName=factory.SelfAttribute("..lastName"),
         email=factory.SelfAttribute("..email"),
