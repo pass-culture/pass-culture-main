@@ -1,8 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
-@use "styles/variables/_forms.scss" as forms;
-@use "styles/mixins/_outline.scss" as outline;
 
 $cardlink-max-width: rem.torem(565px);
 
@@ -50,33 +48,6 @@ $cardlink-max-width: rem.torem(565px);
       inset: 0;
       z-index: 1;
     }
-
-    &:hover {
-      box-shadow: forms.$input-hover-shadow;
-      cursor: pointer;
-    }
-
-    &-icon {
-      flex-shrink: 0;
-      width: rem.torem(44px);
-      height: rem.torem(44px);
-      color: var(--color-secondary-light);
-      margin-left: rem.torem(12px);
-      order: 1;
-    }
-
-    &:focus-within {
-      @include outline.focus-outline(rem.torem(4px));
-    }
-
-    &-disabled {
-      pointer-events: none;
-    }
-
-    &:active {
-      outline: $border-size-selected solid var(--color-secondary-light);
-      background-color: var(--color-background-secondary);
-    }
   }
 
   &-description {
@@ -86,52 +57,27 @@ $cardlink-max-width: rem.torem(565px);
     margin-top: rem.torem(4px);
   }
 
-  // Error state
-  &.cardlink-error {
-    border-color: var(--color-error);
-
-    .cardlink-icon {
-      color: var(--color-error);
-    }
-
-    .cardlink-error-message {
-      @include fonts.body-xs;
-
-      max-width: 33%;
-      color: var(--color-error);
-      align-self: flex-start;
-    }
+  // Other states
+  &:hover {
+    border-color: var(--color-secondary-lighter);
+    background-color: var(--color-background-secondary);
+    cursor: pointer;
   }
 
-  // Disabled state
-  &.cardlink-disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+  &:focus-within {
+    border-color: var(--color-grey-dark);
+    outline: rem.torem(2px) solid var(--color-grey-dark);
   }
 
-  // Other states (when not disabled)
-  &:not(.cardlink-disabled) {
-    &:hover {
-      border-color: var(--color-secondary-lighter);
-      background-color: var(--color-background-secondary);
-      cursor: pointer;
-    }
+  &:active {
+    border-color: var(--color-secondary-lighter);
+    outline: none;
+    background-color: var(--color-background-secondary);
 
-    &:focus-within {
-      border-color: var(--color-grey-dark);
-      outline: rem.torem(2px) solid var(--color-grey-dark);
-    }
-
-    &:active {
-      border-color: var(--color-secondary-lighter);
-      outline: none;
-      background-color: var(--color-background-secondary);
-
-      .cardlink-icon,
-      .cardlink-link,
-      .cardlink-description {
-        color: var(--color-secondary-light);
-      }
+    .cardlink-icon,
+    .cardlink-link,
+    .cardlink-description {
+      color: var(--color-secondary-light);
     }
   }
 
@@ -161,13 +107,6 @@ $cardlink-max-width: rem.torem(565px);
     }
 
     .cardlink-description {
-      text-align: center;
-    }
-
-    &.cardlink-error .cardlink-error-message {
-      align-self: initial;
-      margin-top: rem.torem(4px);
-      max-width: initial;
       text-align: center;
     }
   }

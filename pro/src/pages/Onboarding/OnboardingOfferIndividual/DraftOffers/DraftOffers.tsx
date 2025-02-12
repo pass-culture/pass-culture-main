@@ -7,6 +7,7 @@ import {
   SubcategoryResponseModel,
 } from 'apiClient/v1'
 import { GET_CATEGORIES_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import strokOfferIcon from 'icons/stroke-offer.svg'
 import { CardLink } from 'pages/Onboarding/OnboardingOfferIndividual/CardLink/CardLink'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -63,6 +64,7 @@ export const DraftOffers = ({ offers }: DraftOffersProps): JSX.Element => {
               label={offer.name}
               description={categoryLabel}
               direction="horizontal"
+              icon={strokOfferIcon}
             />
           )
         })}
