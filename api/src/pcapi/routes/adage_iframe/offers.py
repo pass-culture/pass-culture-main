@@ -9,7 +9,6 @@ import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api.categories import get_educational_categories
-import pcapi.core.educational.api.favorites as favorites_api
 import pcapi.core.educational.api.institution as educational_institution_api
 import pcapi.core.educational.api.offer as educational_api_offer
 from pcapi.core.educational.models import AdageFrontRoles
@@ -80,7 +79,7 @@ def get_collective_offer(
 
     redactor = _get_redactor(authenticated_information)
     if redactor:
-        is_favorite = favorites_api.is_offer_a_redactor_favorite(offer.id, redactor.id)
+        is_favorite = offer in redactor.favoriteCollectiveOffers
     else:
         is_favorite = False
 
@@ -108,7 +107,7 @@ def get_collective_offer_template(
 
     redactor = _get_redactor(authenticated_information)
     if redactor:
-        is_favorite = favorites_api.is_offer_template_a_redactor_favorite(offer.id, redactor.id)
+        is_favorite = offer in redactor.favoriteCollectiveOfferTemplates
     else:
         is_favorite = False
 
@@ -143,18 +142,14 @@ def get_collective_offer_templates(
         return serializers.ListCollectiveOfferTemplateResponseModel(collectiveOffers=[])
 
     redactor = _get_redactor(authenticated_information)
-    if redactor:
-        favorites = favorites_api.get_redactors_favorite_templates_subset(redactor, {offer.id for offer in offers})
-        is_favorite = {offer.id: offer.id in favorites for offer in offers}
-    else:
-        is_favorite = {offer.id: False for offer in offers}
+    favorite_offers = set(redactor.favoriteCollectiveOfferTemplates) if redactor else set()
 
     offers_venues = _get_all_offer_venues(offers)
 
     return serializers.ListCollectiveOfferTemplateResponseModel(
         collectiveOffers=[
             serializers.CollectiveOfferTemplateResponseModel.build(
-                offer=offer, is_favorite=is_favorite[offer.id], offerVenue=offers_venues[offer.id]
+                offer=offer, is_favorite=offer in favorite_offers, offerVenue=offers_venues[offer.id]
             )
             for offer in offers
         ]
