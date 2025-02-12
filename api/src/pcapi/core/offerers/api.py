@@ -815,10 +815,7 @@ def generate_and_save_api_key(offerer_id: int) -> str:
 def generate_offerer_api_key(offerer_id: int) -> tuple[models.ApiKey, str]:
     clear_secret = secrets.token_hex(32)
     prefix = _generate_api_key_prefix()
-    if feature.FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM.is_active():
-        key = models.ApiKey(offererId=offerer_id, prefix=prefix, secret=crypto.hash_public_api_key(clear_secret))
-    else:
-        key = models.ApiKey(offererId=offerer_id, prefix=prefix, secret=crypto.hash_password(clear_secret))
+    key = models.ApiKey(offererId=offerer_id, prefix=prefix, secret=crypto.hash_public_api_key(clear_secret))
 
     return key, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
 
@@ -830,14 +827,9 @@ def generate_provider_api_key(provider: providers_models.Provider) -> tuple[mode
 
     clear_secret = secrets.token_hex(32)
     prefix = _generate_api_key_prefix()
-    if feature.FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM.is_active():
-        key = models.ApiKey(
-            offerer=offerer, provider=provider, prefix=prefix, secret=crypto.hash_public_api_key(clear_secret)
-        )
-    else:
-        key = models.ApiKey(
-            offerer=offerer, provider=provider, prefix=prefix, secret=crypto.hash_password(clear_secret)
-        )
+    key = models.ApiKey(
+        offerer=offerer, provider=provider, prefix=prefix, secret=crypto.hash_public_api_key(clear_secret)
+    )
 
     return key, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
 

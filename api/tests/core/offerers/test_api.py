@@ -530,16 +530,18 @@ class ApiKeyTest:
         assert found_api_key.offerer == offerer
 
     def test_get_provider_from_api_key(self):
-        value = "a very secret legacy key"
+        value = "development_prefix_a very secret key"
         offerer = offerers_factories.OffererFactory()
         provider = providers_factories.ProviderFactory(localClass=None, name="RiotRecords")
         providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
         offerers_factories.ApiKeyFactory(
-            offerer=offerer, provider=provider, prefix="development_a very s", secret="ecret legacy key"
+            offerer=offerer, provider=provider, prefix="development_prefix", secret="a very secret key"
         )
+
         with assert_num_queries(1):
             found_api_key = offerers_api.find_api_key(value)
-            assert found_api_key.provider == provider
+
+        assert found_api_key.provider == provider
 
     def test_legacy_api_key(self):
         value = "a very secret legacy key"

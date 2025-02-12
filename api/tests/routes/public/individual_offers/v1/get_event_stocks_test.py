@@ -19,7 +19,6 @@ class GetEventStocksTest(PublicAPIVenueEndpointHelper):
     default_path_params = {"event_id": 1}
 
     num_queries = 1  # select api_key, offerer and provider
-    num_queries += 1  # select features
     num_queries += 1  # select offers
     num_queries_with_stocks = num_queries + 1  # Select stock ids
     num_queries_with_stocks += 1  # Select stocks

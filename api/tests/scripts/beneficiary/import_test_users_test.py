@@ -136,6 +136,7 @@ class ReadFileTest:
         assert not admin.has_beneficiary_role
         assert not admin.has_test_role
 
+    @pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=True)
     def test_create_provider_for_bounty_users(self, client):
         csv_file = io.StringIO(BOUNTY_CSV)
         import_test_users.create_users_from_csv(csv_file)

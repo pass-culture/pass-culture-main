@@ -10,7 +10,6 @@ from . import utils
 pytestmark = pytest.mark.usefixtures("db_session")
 
 num_queries = 1  # select api_key, offerer and provider
-num_queries += 1  # select features
 
 
 def test_returns_all_selectable_categories(client):

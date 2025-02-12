@@ -19,7 +19,6 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
     default_path_params = {"product_id": 1}
 
     num_queries = 1  # select api_key, offerer and provider
-    num_queries += 1  # select features
     num_queries += 1  # select offers
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client):

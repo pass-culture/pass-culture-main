@@ -102,6 +102,7 @@ class CreateTestCasesTest:
                 assert not user.is_beneficiary
                 assert not user.deposit
 
+    @pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=True)
     def test_create_users_for_credit_v3_tests_with_underage_deposits(self):
         create_users_for_credit_v3_tests()
 

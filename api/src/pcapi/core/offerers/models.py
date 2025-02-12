@@ -1124,10 +1124,9 @@ class ApiKey(PcObject, Base, Model):
         if self.secret.decode("utf-8").startswith("$sha3_512$"):
             return crypto.check_public_api_key(clear_text, self.secret)
         if crypto.check_password(clear_text, self.secret):
-            if FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM.is_active():
-                self.secret = crypto.hash_public_api_key(clear_text)
-                db.session.commit()
-                logger.info("Switched hash of API key from bcrypt to SHA3-512", extra={"key_id": self.id})
+            self.secret = crypto.hash_public_api_key(clear_text)
+            db.session.commit()
+            logger.info("Switched hash of API key from bcrypt to SHA3-512", extra={"key_id": self.id})
             return True
         return False
 
