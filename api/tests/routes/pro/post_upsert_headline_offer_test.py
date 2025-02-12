@@ -1,7 +1,9 @@
 import datetime
+from unittest import mock
 
 import pytest
 
+from pcapi.core import search
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
@@ -12,7 +14,9 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns200Test:
-    def test_make_offer_headline(self, client):
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_make_offer_headline(self, mocked_async_index_offer_ids, client):
         pro_user = users_factories.ProFactory()
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
@@ -30,7 +34,13 @@ class Returns200Test:
         assert offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.one()
 
-    def test_make_new_offer_headline(self, client):
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {offer.id},
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_make_new_offer_headline(self, mocked_async_index_offer_ids, client):
         pro_user = users_factories.ProFactory()
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
@@ -55,7 +65,13 @@ class Returns200Test:
         assert offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.count() == 2
 
-    def test_make_another_offer_headline(self, client):
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {offer.id},
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_make_another_offer_headline(self, mocked_async_index_offer_ids, client):
         pro_user = users_factories.ProFactory()
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
@@ -77,7 +93,16 @@ class Returns200Test:
         assert another_offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.count() == 2
 
-    def test_make_another_offer_headline_when_first_offer_is_not_active_anymore(self, client):
+        expected_reindexation_calls = [
+            mock.call({offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
+            mock.call({another_offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
+        ]
+        mocked_async_index_offer_ids.assert_has_calls(expected_reindexation_calls)
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_make_another_offer_headline_when_first_offer_is_not_active_anymore(
+        self, mocked_async_index_offer_ids, client
+    ):
         pro_user = users_factories.ProFactory()
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
@@ -99,9 +124,17 @@ class Returns200Test:
         assert another_offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.count() == 2
 
+        expected_reindexation_calls = [
+            mock.call({offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
+            mock.call({another_offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
+        ]
+        mocked_async_index_offer_ids.assert_has_calls(expected_reindexation_calls)
+
 
 class Returns400Test:
-    def test_make_several_headline_offers_should_fail(self, client):
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_make_several_headline_offers_should_fail(self, mocked_async_index_offer_ids, client):
         pro_user = users_factories.ProFactory()
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
@@ -120,7 +153,10 @@ class Returns400Test:
         assert offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.one()
 
-    def test_make_inactive_offer_headline_should_fail(self, client):
+        mocked_async_index_offer_ids.assert_not_called()
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_make_inactive_offer_headline_should_fail(self, mocked_async_index_offer_ids, client):
         pro_user = users_factories.ProFactory()
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
@@ -140,7 +176,10 @@ class Returns400Test:
         assert not offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.count() == 0
 
-    def test_ineligible_offerer_can_not_create_headline_offer(self, client):
+        mocked_async_index_offer_ids.assert_not_called()
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_ineligible_offerer_can_not_create_headline_offer(self, mocked_async_index_offer_ids, client):
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -164,7 +203,10 @@ class Returns400Test:
         assert not offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.count() == 0
 
-    def test_virtual_offer_can_not_be_headline(self, client):
+        mocked_async_index_offer_ids.assert_not_called()
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_virtual_offer_can_not_be_headline(self, mocked_async_index_offer_ids, client):
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -185,7 +227,10 @@ class Returns400Test:
         assert not offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.count() == 0
 
-    def test_offer_without_image_can_not_be_headline(self, client):
+        mocked_async_index_offer_ids.assert_not_called()
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_offer_without_image_can_not_be_headline(self, mocked_async_index_offer_ids, client):
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -203,3 +248,5 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["global"] == ["Une offre doit avoir une image pour être mise à la une"]
+
+        mocked_async_index_offer_ids.assert_not_called()

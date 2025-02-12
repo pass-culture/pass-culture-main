@@ -10,6 +10,7 @@ import os
 import pathlib
 import re
 from unittest import mock
+from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
@@ -2016,7 +2017,9 @@ class ActivateFutureOffersTest:
 
 @pytest.mark.usefixtures("db_session")
 class HeadlineOfferTest:
-    def test_make_new_offer_headline(self):
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_make_new_offer_headline(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
@@ -2029,17 +2032,28 @@ class HeadlineOfferTest:
         assert headline_offer.timespan.lower
         assert not headline_offer.timespan.upper
 
-    def test_create_offer_headline_when_another_is_still_active_should_fail(self):
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {offer.id},
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_create_offer_headline_when_another_is_still_active_should_fail(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
         factories.MediationFactory(offer=offer)
         api.make_offer_headline(offer=offer)
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {offer.id},
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
         with pytest.raises(exceptions.OfferHasAlreadyAnActiveHeadlineOffer) as error:
             api.make_offer_headline(offer=offer)
             assert error.value.errors["headlineOffer"] == ["This offer is already an active headline offer"]
 
-    def test_remove_headline_offer(self):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_remove_headline_offer(self, mocked_async_index_offer_ids):
         offer = factories.OfferFactory(isActive=True)
         headline_offer = factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
 
@@ -2050,8 +2064,14 @@ class HeadlineOfferTest:
         assert not headline_offer.isActive
         assert not offer.is_headline_offer
 
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {offer.id},
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
     @time_machine.travel("2024-12-13 15:44:00")
-    def test_make_offer_headline_again(self):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_make_offer_headline_again(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer = factories.OfferFactory(isActive=True, venue=venue)
         creation_time = datetime.utcnow()
@@ -2070,8 +2090,14 @@ class HeadlineOfferTest:
             assert new_headline_offer.timespan.lower.date() != creation_time.date()
             assert new_headline_offer.timespan.upper == None
 
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {offer.id},
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
     @time_machine.travel("2024-12-13 15:44:00")
-    def test_make_another_offer_headline_on_same_venue(self):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_make_another_offer_headline_on_same_venue(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer_1 = factories.OfferFactory(isActive=True, venue=venue)
         offer_2 = factories.OfferFactory(isActive=True, venue=venue)
@@ -2091,7 +2117,13 @@ class HeadlineOfferTest:
         assert offer_2.is_headline_offer
         assert venue.has_headline_offer
 
-    def test_headline_offer_on_offer_turned_inactive_is_inactive(self):
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {offer_2.id},
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_headline_offer_on_offer_turned_inactive_is_inactive(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         active_offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=active_offer)
@@ -2102,7 +2134,13 @@ class HeadlineOfferTest:
         active_offer.isActive = False
         assert not active_offer.is_headline_offer
 
-    def test_headline_offer_on_sold_out_offer_is_inactive(self):
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {active_offer.id},
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_headline_offer_on_sold_out_offer_is_inactive(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         stock = factories.StockFactory(quantity=10)
         mediation = factories.MediationFactory()
@@ -2114,7 +2152,13 @@ class HeadlineOfferTest:
         stock.quantity = 0
         assert not offer.is_headline_offer
 
-    def test_headline_offer_on_expired_offer_is_inactive(self):
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {offer.id},
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_headline_offer_on_expired_offer_is_inactive(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         tomorrow = date.today() + timedelta(days=1)
         stock = factories.StockFactory(bookingLimitDatetime=tomorrow)
@@ -2133,7 +2177,13 @@ class HeadlineOfferTest:
         with time_machine.travel(tomorrow + timedelta(days=1)):
             assert not offer.is_headline_offer
 
-    def test_headline_offer_on_rejected_offer_is_inactive(self):
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {offer.id},
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_headline_offer_on_rejected_offer_is_inactive(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         offer = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
@@ -2143,7 +2193,13 @@ class HeadlineOfferTest:
         offer.validation = models.OfferValidationStatus.REJECTED
         assert not offer.is_headline_offer
 
-    def test_set_upper_timespan_of_inactive_headline_offers(self):
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {offer.id},
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_set_upper_timespan_of_inactive_headline_offers(self, mocked_async_index_offer_ids):
         headline_offer_1 = factories.HeadlineOfferFactory(create_mediation=True)
         headline_offer_3 = factories.HeadlineOfferFactory(create_mediation=True)
         headline_offer_2 = factories.HeadlineOfferFactory(create_mediation=True)
@@ -2165,7 +2221,13 @@ class HeadlineOfferTest:
         assert headline_offer_3.isActive
         assert headline_offer_3.timespan.upper is None
 
-    def test_do_not_deactivate_headline_offer_with_product_mediation(self):
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {headline_offer_1.offerId, headline_offer_2.offerId},
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_do_not_deactivate_headline_offer_with_product_mediation(self, mocked_async_index_offer_ids):
         product_without_mediation = factories.ProductFactory()
         product_with_mediation = factories.ProductFactory()
         factories.ProductMediationFactory(product=product_with_mediation)
@@ -2188,7 +2250,15 @@ class HeadlineOfferTest:
         assert not headline_offer_without_product_mediation.isActive
         assert not headline_offer_without_product_mediation.timespan.upper is None
 
-    def test_do_not_update_upper_timespan_of_already_inactive_headline_offers(self):
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {
+                headline_offer_without_product_mediation.offerId,
+            },
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_do_not_update_upper_timespan_of_already_inactive_headline_offers(self, mocked_async_index_offer_ids):
         creation_time = datetime.utcnow() - timedelta(days=20)
         finished_timespan = (creation_time, creation_time + timedelta(days=10))
         old_headline_offer = factories.HeadlineOfferFactory(timespan=finished_timespan, create_mediation=True)
@@ -2197,7 +2267,13 @@ class HeadlineOfferTest:
         assert old_headline_offer.timespan.lower.date() == creation_time.date()
         assert old_headline_offer.timespan.upper.date() == (creation_time + timedelta(days=10)).date()
 
-    def test_should_not_change_upper_timespan_of_already_deactivated_offers(self):
+        mocked_async_index_offer_ids.assert_called_once_with(
+            set(),
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_should_not_change_upper_timespan_of_already_deactivated_offers(self, mocked_async_index_offer_ids):
         creation_time_1 = datetime.utcnow() - timedelta(days=3)
         ending_time_1 = datetime.utcnow() - timedelta(days=2)
         creation_time_2 = datetime.utcnow() - timedelta(days=1)
@@ -2213,7 +2289,15 @@ class HeadlineOfferTest:
         assert current_headline_offer.timespan.lower == creation_time_2
         assert current_headline_offer.timespan.upper is not None
 
-    def test_set_upper_timespan_of_inactive_headline_offers_without_image(self):
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {
+                current_headline_offer.offerId,
+            },
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_set_upper_timespan_of_inactive_headline_offers_without_image(self, mocked_async_index_offer_ids):
         offer = factories.OfferFactory(isActive=True)
         factories.StockFactory(offer=offer)
 
@@ -2225,10 +2309,16 @@ class HeadlineOfferTest:
         assert not headline_offer.isActive
         assert headline_offer.timespan.upper is not None
 
-    def test_upsert_headline_offer_on_another_offer(self):
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {headline_offer.offerId},
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_upsert_headline_offer_on_another_offer(self, mocked_async_index_offer_ids):
         offer = factories.OfferFactory(venue__venueTypeCode=VenueTypeCode.LIBRARY)
         another_offer = factories.OfferFactory(venue=offer.venue)
-        api.create_stock(offer=another_offer, price=10, quantity=7)
+        factories.StockFactory(offer=another_offer)
         factories.MediationFactory(offer=another_offer)
         headline_offer = factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
 
@@ -2242,7 +2332,14 @@ class HeadlineOfferTest:
         assert new_headline_offer.isActive
         assert new_headline_offer.timespan.upper is None
 
-    def test_upsert_headline_offer_on_same_offer(self):
+        expected_reindexation_calls = [
+            call({offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
+            call({another_offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
+        ]
+        mocked_async_index_offer_ids.assert_has_calls(expected_reindexation_calls)
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_upsert_headline_offer_on_same_offer(self, mocked_async_index_offer_ids):
         offer = factories.OfferFactory(venue__venueTypeCode=VenueTypeCode.LIBRARY)
         creation_time = datetime.utcnow() - timedelta(days=20)
         finished_timespan = (creation_time, creation_time + timedelta(days=10))
@@ -2254,6 +2351,11 @@ class HeadlineOfferTest:
         assert headline_offer.timespan.upper is not None
         assert new_headline_offer.isActive
         assert new_headline_offer.timespan.upper is None
+
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {headline_offer.offerId},
+            reason=search.IndexationReason.OFFER_REINDEXATION,
+        )
 
 
 @pytest.mark.usefixtures("db_session")
