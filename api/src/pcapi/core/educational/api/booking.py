@@ -26,6 +26,7 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
+from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.repository import repository
@@ -137,27 +138,28 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
 
     educational_institution_id = collective_booking.educationalInstitutionId
     educational_year_id = collective_booking.educationalYearId
-    with transaction():
-        deposit = educational_repository.get_and_lock_educational_deposit(
-            educational_institution_id, educational_year_id
-        )
-        validation.check_institution_fund(
-            educational_institution_id,
-            educational_year_id,
-            decimal.Decimal(collective_booking.collectiveStock.price),
-            deposit,
-        )
-        if FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION.is_active():
-            validation.check_ministry_fund(
-                educational_year_id=educational_year_id,
-                booking_amount=decimal.Decimal(collective_booking.collectiveStock.price),
-                booking_date=collective_booking.collectiveStock.startDatetime,
-                ministry=deposit.ministry,
-            )
+    deposit = educational_repository.get_and_lock_educational_deposit(educational_institution_id, educational_year_id)
 
-        collective_booking.mark_as_confirmed()
+    validation.check_institution_fund(
+        educational_institution_id,
+        educational_year_id,
+        decimal.Decimal(collective_booking.collectiveStock.price),
+        deposit,
+    )
+    if FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION.is_active():
+        validation.check_ministry_fund(
+            educational_year_id=educational_year_id,
+            booking_amount=decimal.Decimal(collective_booking.collectiveStock.price),
+            booking_date=collective_booking.collectiveStock.startDatetime,
+            ministry=deposit.ministry,
+        )
 
-        db.session.add(collective_booking)
+    collective_booking.mark_as_confirmed()
+
+    db.session.add(collective_booking)
+    if is_managed_transaction():
+        db.session.flush()
+    else:
         db.session.commit()
 
     # re-fetch collective booking with some joinedload that will
@@ -188,23 +190,23 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
     if collective_booking.status == educational_models.CollectiveBookingStatus.CANCELLED:
         return collective_booking
 
-    with transaction():
-        try:
-            collective_booking.mark_as_refused()
-        except (
-            exceptions.EducationalBookingNotRefusable,
-            exceptions.CollectiveBookingAlreadyCancelled,
-        ) as exception:
-            logger.info(
-                "User from adage trying to refuse collective booking that cannot be refused",
-                extra={
-                    "collective_booking_id": collective_booking.id,
-                    "exception_type": exception.__class__.__name__,
-                },
-            )
-            raise exception
+    try:
+        collective_booking.mark_as_refused()
+    except (
+        exceptions.EducationalBookingNotRefusable,
+        exceptions.CollectiveBookingAlreadyCancelled,
+    ) as exception:
+        logger.info(
+            "User from adage trying to refuse collective booking that cannot be refused",
+            extra={
+                "collective_booking_id": collective_booking.id,
+                "exception_type": exception.__class__.__name__,
+            },
+        )
+        raise exception
 
-        repository.save(collective_booking)
+    db.session.add(collective_booking)
+    db.session.flush()
 
     # re-fetch collective booking with some joinedload that will
     # very-likely be useful later
@@ -494,7 +496,7 @@ def update_collective_bookings_for_new_institution(
     bookings = bookings.filter_by(educationalInstitution=institution_source)
     bookings.update({"educationalInstitutionId": institution_destination.id})
 
-    db.session.commit()
+    db.session.flush()
 
 
 def notify_redactor_that_booking_has_been_cancelled(booking: educational_models.CollectiveBooking) -> None:

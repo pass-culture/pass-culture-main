@@ -5,6 +5,7 @@ from sqlalchemy.orm import exc as orm_exc
 from pcapi.core.educational.api import venue as educational_api_venue
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.serialization import venue as venue_serialization
 from pcapi.serialization.decorator import spectree_serialize
@@ -16,6 +17,7 @@ from . import blueprint
 
 
 @blueprint.adage_v1.route("/venues/<string:venues_siret>", methods=["GET"])
+@atomic()
 @spectree_serialize(
     api=blueprint.api,
     response_model=venue_serialization.GetVenuesResponseModel,
@@ -41,6 +43,7 @@ def get_venues_from_siret(
 
 
 @blueprint.adage_v1.route("/venues/name/<string:venues_name>", methods=["GET"])
+@atomic()
 @spectree_serialize(
     api=blueprint.api,
     response_model=venue_serialization.GetVenuesResponseModel,
@@ -64,6 +67,7 @@ def get_venues_from_name(
 
 
 @blueprint.adage_v1.route("/venues", methods=["GET"])
+@atomic()
 @spectree_serialize(
     api=blueprint.api,
     response_model=venue_serialization.GetVenuesResponseModel,
@@ -82,6 +86,7 @@ def get_all_venues(
 
 
 @blueprint.adage_v1.route("/venues/id/<int:venue_id>", methods=["GET"])
+@atomic()
 @spectree_serialize(
     api=blueprint.api,
     response_model=venue_serialization.VenueModel,
@@ -97,6 +102,7 @@ def get_venue_by_id(venue_id: int) -> venue_serialization.VenueModel:
 
 
 @blueprint.adage_v1.route("/venues/relative/id/<int:venue_id>", methods=["GET"])
+@atomic()
 @spectree_serialize(
     api=blueprint.api,
     response_model=venue_serialization.GetVenuesResponseModel,

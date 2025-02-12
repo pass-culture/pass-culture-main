@@ -7,6 +7,7 @@ from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api.institution import create_missing_educational_institution_from_adage
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
 from pcapi.routes.adage.v1.serialization import constants
@@ -20,6 +21,7 @@ from . import blueprint
 
 
 @blueprint.adage_v1.route(educational_institution_path + "/prebookings", methods=["GET"])
+@atomic()
 @spectree_serialize(
     api=blueprint.api, response_model=prebooking_serialization.EducationalBookingsResponse, tags=("get prebookings",)
 )
@@ -39,6 +41,7 @@ def get_educational_bookings(
 
 
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/confirm", methods=["POST"])
+@atomic()
 @spectree_serialize(
     api=blueprint.api,
     response_model=educational_schemas.EducationalBookingResponse,
@@ -68,6 +71,7 @@ def confirm_prebooking(educational_booking_id: int) -> educational_schemas.Educa
 
 
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/refuse", methods=["POST"])
+@atomic()
 @spectree_serialize(
     api=blueprint.api,
     response_model=educational_schemas.EducationalBookingResponse,
@@ -92,6 +96,7 @@ def refuse_pre_booking(educational_booking_id: int) -> educational_schemas.Educa
 
 
 @blueprint.adage_v1.route("/years/<string:educational_year_id>/prebookings", methods=["GET"])
+@atomic()
 @spectree_serialize(
     api=blueprint.api,
     response_model=prebooking_serialization.EducationalBookingsPerYearResponse,
@@ -111,6 +116,7 @@ def get_all_bookings_per_year(
 
 
 @blueprint.adage_v1.route("/prebookings/move", methods=["POST"])
+@atomic()
 @spectree_serialize(
     api=blueprint.api,
     on_success_status=204,
