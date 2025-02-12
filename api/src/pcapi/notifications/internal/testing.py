@@ -2,5 +2,5 @@ requests: list[dict] = []
 
 
 def reset_requests() -> None:
-    global requests  # pylint: disable=global-statement
+    global requests  # pylint: disable=global-statement  # noqa: PLW0603 (global-statement)
     requests = []

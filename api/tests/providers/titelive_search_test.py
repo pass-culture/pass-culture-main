@@ -878,7 +878,7 @@ class TiteliveBookSearchTest:
         product = self.build_previously_synced_book_product(
             gcuCompatibilityType=offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
         )
-        offer = offers_factories.ThingOfferFactory(
+        offers_factories.ThingOfferFactory(
             product=product,
             validation=OfferValidationStatus.REJECTED,
             lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,

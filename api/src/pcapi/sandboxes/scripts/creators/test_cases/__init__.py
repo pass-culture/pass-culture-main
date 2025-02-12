@@ -43,8 +43,12 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices impo
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import create_free_invoice
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import create_specific_invoice
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_price_limitation_rules import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_price_limitation_rules import (
+    create_industrial_offer_price_limitation_rules,
+)
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import (
+    create_industrial_offer_validation_rules,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_custom_reimbursement_rule import (
     create_industrial_offerer_with_custom_reimbursement_rule,
 )
@@ -53,6 +57,10 @@ from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 import pcapi.sandboxes.thumbs.generic_pictures as generic_picture_thumbs
 from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.offers import models as offers_models
 
 
 Fake = faker.Faker(locale="fr_FR")
@@ -517,7 +525,7 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
 
 
 def create_offer_and_stocks_for_cinemas(
-    venues: list[offerers_models.Venue], products: list[offers_models.Product]
+    venues: list[offerers_models.Venue], products: list["offers_models.Product"]
 ) -> None:
     for venue in venues:
         for idx, product in enumerate(products):
@@ -563,7 +571,7 @@ def create_cinema_data() -> None:
     create_offer_and_stocks_for_cinemas(venues, products)
 
 
-def create_movie_products(offset: int = 0) -> list[offers_models.Product]:
+def create_movie_products(offset: int = 0) -> list["offers_models.Product"]:
     return [
         offers_factories.ProductFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,

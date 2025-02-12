@@ -4,6 +4,8 @@ This file is NOT run by pytest, which is why it does not contain any
 assertion.
 """
 
+# ruff: noqa
+
 import requests  # should yield a warning
 from requests import Session  # should yield a warning
 import requests.session as requests_session  # should yield a warning

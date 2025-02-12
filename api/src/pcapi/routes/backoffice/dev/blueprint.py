@@ -22,7 +22,6 @@ from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
 
 from . import forms
-from .. import utils
 
 
 logger = logging.getLogger(__name__)

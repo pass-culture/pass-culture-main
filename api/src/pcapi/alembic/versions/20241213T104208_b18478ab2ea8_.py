@@ -1,4 +1,4 @@
-"""validate foreign key constarint on 
+"""validate foreign key constarint on
 """
 
 from alembic import op

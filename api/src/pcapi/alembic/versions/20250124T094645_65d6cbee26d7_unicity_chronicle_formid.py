@@ -21,23 +21,23 @@ DELETE FROM
 WHERE
     -- delete when more than one is present
     c."formId" IN (
-        SELECT 
+        SELECT
             form_id
         FROM (
-            SELECT 
-                "formId" AS form_id, 
-                count(id) AS count_id 
-            FROM 
-                chronicle 
-            GROUP BY 
+            SELECT
+                "formId" AS form_id,
+                count(id) AS count_id
+            FROM
+                chronicle
+            GROUP BY
                 "formId"
-        ) AS count_sub WHERE count_id>1 
+        ) AS count_sub WHERE count_id>1
     )
     -- keep one from delete
     AND c.id != (
         SELECT
             id
-        FROM 
+        FROM
             chronicle
         WHERE
             "formId"=c."formId"

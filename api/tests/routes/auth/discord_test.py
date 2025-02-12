@@ -321,9 +321,7 @@ class DiscordSigninTest:
             "email": "user@test.com",
             "password": settings.TEST_DEFAULT_PASSWORD,
         }
-        user = users_factories.BeneficiaryFactory(
-            email=form_data["email"], password=form_data["password"], isActive=True
-        )
+        users_factories.BeneficiaryFactory(email=form_data["email"], password=form_data["password"], isActive=True)
 
         response = self.post_to_endpoint(client, form=form_data)
 

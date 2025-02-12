@@ -207,7 +207,7 @@ class GetChronicleDetailsTest(GetEndpointHelper):
 
         content_as_text = html_parser.content_as_text(response.data)
 
-        assert f"Chronique de {chronicle.firstName}, {chronicle.age} ans"
+        assert f"Chronique de {chronicle.firstName}, {chronicle.age} ans" in content_as_text
         assert "Publié" in content_as_text
         assert f"Prénom : {chronicle.firstName} (Voir le profil du jeune)" in content_as_text
         assert f"Âge : {chronicle.age} ans" in content_as_text

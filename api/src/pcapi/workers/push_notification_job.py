@@ -26,9 +26,7 @@ def send_today_stock_notification(stock_id: int) -> None:
     """
     Send a notification to all bookings linked to a stock.
     """
-    offer = offer = (
-        offers_models.Offer.query.join(offers_models.Offer.stocks).filter(offers_models.Stock.id == stock_id).one()
-    )
+    offer = offers_models.Offer.query.join(offers_models.Offer.stocks).filter(offers_models.Stock.id == stock_id).one()
     bookings = bookings_api.get_individual_bookings_from_stock(stock_id)
 
     for booking in bookings:
