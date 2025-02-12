@@ -159,10 +159,11 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
     type = models.FraudCheckType.UBBLE
     thirdPartyId = factory.LazyFunction(lambda: str(uuid.uuid4()))
     status = models.FraudCheckStatus.PENDING
+    dateCreated = factory.LazyFunction(datetime.utcnow)
 
     @factory.lazy_attribute
     def eligibilityType(self) -> users_models.EligibilityType:
-        if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and datetime.utcnow() >= settings.CREDIT_V3_DECREE_DATETIME:
+        if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and self.dateCreated >= settings.CREDIT_V3_DECREE_DATETIME:
             return users_models.EligibilityType.AGE17_18
         if self.user.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE:
             return users_models.EligibilityType.UNDERAGE
