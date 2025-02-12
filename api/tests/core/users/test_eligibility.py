@@ -1,5 +1,7 @@
 from datetime import date
 from datetime import datetime
+from datetime import time
+from zoneinfo import ZoneInfo
 
 from dateutil.relativedelta import relativedelta
 import pytest
@@ -11,6 +13,7 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -233,13 +236,9 @@ class DecideEligibilityTest:
         assert result == users_models.EligibilityType.AGE18
 
     def test_19yo_not_eligible(self):
-        today = date.today()
-        birth_date = today - relativedelta(years=19, days=1)
+        birth_date = date.today() - relativedelta(years=19, days=1)
         user = users_factories.UserFactory()
-
-        dms_content = fraud_factories.DMSContentFactory(
-            registration_datetime=datetime.combine(today, datetime.min.time()), birth_date=birth_date
-        )
+        dms_content = fraud_factories.DMSContentFactory(birth_date=birth_date)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
         )
@@ -396,17 +395,43 @@ class DecideEligibilityTest:
         assert eligibility_api.decide_eligibility(user, birth_date, None) == users_models.EligibilityType.AGE18
 
 
+class EligibilityStartTest:
+    def test_eligibility_start_after_decree(self):
+        birth_date = datetime(2008, 1, 1)
+
+        eligibility_start = eligibility_api.get_eligibility_start_datetime(birth_date, datetime.utcnow())
+
+        assert eligibility_start == datetime(2025, 1, 1, tzinfo=ZoneInfo("Europe/Paris"))
+
+    def test_eligibility_start_before_decree(self):
+        birth_date = datetime(2008, 1, 1)
+
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        eligibility_start = eligibility_api.get_eligibility_start_datetime(birth_date, before_decree)
+
+        assert eligibility_start == datetime(2023, 1, 1, tzinfo=ZoneInfo("Europe/Paris"))
+
+
+class EligibilityEndTest:
+    def test_eligibility_end(self):
+        birth_date = datetime(2008, 1, 1)
+
+        eligibility_end = eligibility_api.get_eligibility_end_datetime(birth_date, datetime.utcnow())
+
+        assert eligibility_end == datetime(2027, 1, 1, tzinfo=ZoneInfo("Europe/Paris"))
+
+
 class GetExtendedEligibilityTest:
     def test_get_eligibility_at_date_timezones_tolerance(self):
         date_of_birth = datetime(2000, 2, 1, 0, 0)
 
         specified_date = date_of_birth + relativedelta(years=19, hours=8)
-        eligibility = eligibility_api.get_extended_eligibility_at_date(date_of_birth, specified_date)
+        eligibility = eligibility_api.get_extended_eligibility_at_date(date_of_birth, specified_date, "987")  # utc-10
 
         assert eligibility == users_models.EligibilityType.AGE18
 
         specified_date = date_of_birth + relativedelta(years=19, hours=12)
-        eligibility = eligibility_api.get_extended_eligibility_at_date(date_of_birth, specified_date)
+        eligibility = eligibility_api.get_extended_eligibility_at_date(date_of_birth, specified_date, "75")  # utc+1
 
         assert eligibility is None
 
@@ -471,14 +496,16 @@ class GetFirstRegistrationDateTest:
 
         assert first_registration_date == today_in_utc
 
-    @pytest.mark.parametrize("age", [20])
-    def test_get_first_registration_date_18_with_timezone(self, age):
-        user = users_factories.UserFactory(age=age)
-        today_in_utc = date.today() - relativedelta(minutes=15)  # 23:45 in UTC, so 00:45 today in Europe/Paris
+    @pytest.mark.parametrize("age", [19, 20])
+    def test_get_first_registration_barely_too_late_with_timezone(self, age):
+        birth_date = date.today() - relativedelta(years=age, months=1)
+        user = users_factories.UserFactory(dateOfBirth=birth_date)
+        # 23:45 in UTC, so 00:45 today in Europe/Paris, meaning the user is now 19
+        after_19th_birthday = birth_date + relativedelta(years=19) - relativedelta(minutes=15)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
-            dateCreated=today_in_utc,
+            dateCreated=after_19th_birthday,
             resultContent=None,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
@@ -487,7 +514,7 @@ class GetFirstRegistrationDateTest:
             user, user.birth_date, users_models.EligibilityType.AGE18
         )
 
-        assert first_registration_date == today_in_utc
+        assert first_registration_date is None
 
     def test_get_first_registration_date_age_18(self):
         user = users_factories.UserFactory(dateOfBirth=datetime(2002, 1, 15))

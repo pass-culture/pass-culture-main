@@ -92,14 +92,17 @@ def get_department_timezone(departement_code: str | None) -> str:
 
 
 def utc_datetime_to_department_timezone(date_time: datetime, departement_code: str | None) -> datetime:
-    from_zone = ZoneInfo(DEFAULT_STORED_TIMEZONE)
-    to_zone = ZoneInfo(get_department_timezone(departement_code))
-    utc_datetime = date_time.replace(tzinfo=from_zone)
-    return utc_datetime.astimezone(to_zone)
+    department_timezone = get_department_timezone(departement_code)
+    return default_timezone_to_local_datetime(date_time, department_timezone)
 
 
 def format_into_utc_date(date_to_format: datetime) -> str:
-    return date_to_format.isoformat() + "Z"
+    if date_to_format.tzinfo is None:
+        timezone_naive_date = date_to_format
+    else:
+        timezone_naive_date = date_to_format.astimezone(ZoneInfo(DEFAULT_STORED_TIMEZONE)).replace(tzinfo=None)
+
+    return timezone_naive_date.isoformat() + "Z"
 
 
 def get_date_formatted_for_email(date_time: datetime | date) -> str:
@@ -168,6 +171,11 @@ def date_to_localized_datetime(date_: date | None, time_: time) -> datetime | No
         return None
     naive_utc_datetime = datetime.combine(date_, time_)
     return pytz.timezone(METROPOLE_TIMEZONE).localize(naive_utc_datetime).astimezone(pytz.utc)
+
+
+def to_department_midnight(dt: datetime | date, department_code: str | None) -> datetime:
+    local_tz = get_department_timezone(department_code)
+    return datetime.combine(date(dt.year, dt.month, dt.day), time.min, ZoneInfo(local_tz))
 
 
 def parse_french_date(date_str: str | None) -> datetime | None:
