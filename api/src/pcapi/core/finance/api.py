@@ -3353,7 +3353,7 @@ def _get_known_birthday_at_deposit(user: users_models.User) -> datetime.date | N
     return known_birthday_at_deposit
 
 
-def recredit_underage_users() -> None:
+def recredit_users() -> None:
     import pcapi.core.users.api as users_api
 
     sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)

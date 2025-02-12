@@ -193,10 +193,17 @@ def add_custom_offer_reimbursement_rule(
     print(f"Created new rule: {rule.id}")
 
 
+# TODO: Remove this command when recredit_users replaces recredit_underage_users in passculture-deployement
 @blueprint.cli.command("recredit_underage_users")
 @cron_decorators.log_cron_with_transaction
 def recredit_underage_users() -> None:
-    finance_api.recredit_underage_users()
+    finance_api.recredit_users()
+
+
+@blueprint.cli.command("recredit_users")
+@cron_decorators.log_cron_with_transaction
+def recredit_users() -> None:
+    finance_api.recredit_users()
 
 
 @blueprint.cli.command("import_ds_bank_information_applications")

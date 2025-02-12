@@ -223,7 +223,7 @@ class AccountTest:
             users_factories.UnderageBeneficiaryFactory(email=self.identifier)
 
         with time_machine.travel("2019-01-02"):
-            finance_api.recredit_underage_users()
+            finance_api.recredit_users()
 
         expected_num_queries = 1  # user
         expected_num_queries += 1  # achievements
