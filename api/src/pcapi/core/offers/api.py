@@ -787,6 +787,10 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
         )
 
     db.session.commit()
+    search.async_index_offer_ids(
+        {headline_offer.offerId for headline_offer in inactive_headline_offers},
+        reason=search.IndexationReason.OFFER_REINDEXATION,
+    )
 
 
 def upsert_headline_offer(offer: models.Offer) -> models.HeadlineOffer:
@@ -820,6 +824,13 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
         # before any session commit. To fix this error, you need to commit your session
         # as the TSRANGE object saves the timespan as a datetime in the database
         db.session.flush()
+        on_commit(
+            partial(
+                search.async_index_offer_ids,
+                {offer.id},
+                reason=search.IndexationReason.OFFER_REINDEXATION,
+            ),
+        )
     except sqla_exc.IntegrityError as error:
         if "exclude_offer_timespan" in str(error.orig):
             raise exceptions.OfferHasAlreadyAnActiveHeadlineOffer
@@ -847,6 +858,13 @@ def remove_headline_offer(offerer_id: int) -> None:
                     "Reason": "Headline offer has been deactivated by user",
                 },
                 technical_message_id="headline_offer_deactivation",
+            )
+            on_commit(
+                partial(
+                    search.async_index_offer_ids,
+                    {active_headline_offer.offerId},
+                    reason=search.IndexationReason.OFFER_REINDEXATION,
+                ),
             )
         except sqla_exc.IntegrityError:
             raise exceptions.CannotRemoveHeadlineOffer
