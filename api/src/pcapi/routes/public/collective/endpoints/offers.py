@@ -11,7 +11,6 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
-from pcapi.core.providers import exceptions as provider_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
@@ -189,13 +188,6 @@ def post_collective_offer_public(
                 "global": ["Non éligible pour les offres collectives."],
             },
             status_code=403,
-        )
-    except provider_exceptions.ProviderNotFound:
-        raise ApiErrors(
-            errors={
-                "Provider": ["Le fournisseur n'à pas été trouvé."],
-            },
-            status_code=404,
         )
     except offerers_exceptions.VenueNotFoundException:
         raise ApiErrors(

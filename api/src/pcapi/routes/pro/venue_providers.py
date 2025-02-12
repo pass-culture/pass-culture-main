@@ -9,6 +9,7 @@ from pcapi import repository
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
+from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.models.api_errors import ApiErrors
@@ -26,6 +27,13 @@ def _get_venue_or_404(venue_id: int) -> offerers_models.Venue:
     if not venue:
         raise NotFound
     return venue
+
+
+def _get_provider_or_404(provider_id: int) -> providers_models.Provider:
+    provider = providers_models.Provider.query.filter_by(id=provider_id).one_or_none()
+    if not provider:
+        raise NotFound
+    return provider
 
 
 @private_api.route("/venueProviders", methods=["GET"])
@@ -64,12 +72,13 @@ def create_venue_provider(
 ) -> venue_provider_serialize.VenueProviderResponse:
     body.venueIdAtOfferProvider = None
     venue = _get_venue_or_404(body.venueId)
+    provider = _get_provider_or_404(body.providerId)
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     try:
         new_venue_provider = api.create_venue_provider(
-            provider_id=body.providerId,
-            venue_id=body.venueId,
+            provider=provider,
+            venue=venue,
             current_user=current_user,
             payload=VenueProviderCreationPayload(
                 isDuo=body.isDuo,
@@ -77,22 +86,6 @@ def create_venue_provider(
                 quantity=body.quantity,
                 venueIdAtOfferProvider=body.venueIdAtOfferProvider,
             ),
-        )
-    except exceptions.VenueSiretNotRegistered as exc:
-        raise ApiErrors(
-            {
-                "venue": [
-                    f"L’importation d’offres avec {exc.provider_name} n’est pas disponible pour le SIRET {exc.siret}."
-                ]
-            }
-        )
-    except exceptions.VenueNotFound:
-        raise ApiErrors({"venue": ["Lieu introuvable."]}, 404)
-    except exceptions.NoSiretSpecified:
-        raise ApiErrors({"venue": ["Le siret du lieu n'est pas défini, veuillez en définir un."]})
-    except exceptions.ProviderWithoutApiImplementation:
-        raise ApiErrors(
-            {"provider": ["Le fournisseur choisi n'est pas correctement implémenté, veuillez contacter le support."]}
         )
     except exceptions.UnknownVenueToAlloCine:
         raise ApiErrors(
