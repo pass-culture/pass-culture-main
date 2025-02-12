@@ -256,6 +256,14 @@ ignore = [
     "PLW0603",    # Global statement (global-statement)
     "TRY003",     # Avoid specifying long messages outside exception class (raise-missing-from)
     "UP032",      # Use f-strings instead of format calls (consider-using-f-string)
+
+    # New rules
+    "E721",       # Replace `== False` with `is False` -> several imcompatibilities with SQLAlchemy
+    "E731",       # Do not assign a `lambda` expression, use a `def`
+    "E712",       # Avoid equality comparisons to `True`; use `if offer.audioDisabilityCompliant:` for truth checks (issue in assert)
+    "E711",       # Use 'is' instead of '==' to test for None -> several imcompatibilities with SQLAlchemy
+    "F405",       # Several `import *` used in industrial scripts
+    "E402",       # Module level import not at top of file
 ]
 
 [tool.pytest.ini_options]
