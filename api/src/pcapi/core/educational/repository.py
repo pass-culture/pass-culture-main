@@ -213,7 +213,6 @@ def _get_bookings_for_adage_base_query() -> BaseQuery:
     query = query.options(
         sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
         .load_only(
-            educational_models.CollectiveStock.beginningDatetime,
             educational_models.CollectiveStock.startDatetime,
             educational_models.CollectiveStock.endDatetime,
             educational_models.CollectiveStock.numberOfTickets,
@@ -367,7 +366,6 @@ def get_paginated_collective_bookings_for_educational_year(
         # fetch a collective booking's stock...
         sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
         .load_only(
-            educational_models.CollectiveStock.beginningDatetime,
             educational_models.CollectiveStock.startDatetime,
             educational_models.CollectiveStock.endDatetime,
             educational_models.CollectiveStock.collectiveOfferId,
@@ -445,7 +443,6 @@ def find_expired_collective_bookings() -> list[educational_models.CollectiveBook
         .options(
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
             .load_only(
-                educational_models.CollectiveStock.beginningDatetime,
                 educational_models.CollectiveStock.startDatetime,
                 educational_models.CollectiveStock.endDatetime,
                 educational_models.CollectiveStock.collectiveOfferId,
@@ -685,7 +682,6 @@ def list_public_collective_offers(
         sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock)
         .load_only(
             educational_models.CollectiveStock.bookingLimitDatetime,
-            educational_models.CollectiveStock.beginningDatetime,
             educational_models.CollectiveStock.startDatetime,
             educational_models.CollectiveStock.endDatetime,
         )

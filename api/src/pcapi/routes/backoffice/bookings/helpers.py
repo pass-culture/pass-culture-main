@@ -33,7 +33,7 @@ def get_bookings(
 ) -> list[bookings_models.Booking] | list[educational_models.CollectiveBooking]:
     start_column = (
         stock_class.startDatetime
-        if isinstance(stock_class, educational_models.CollectiveStock)
+        if stock_class is educational_models.CollectiveStock
         else stock_class.beginningDatetime
     )
 
