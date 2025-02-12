@@ -8,7 +8,6 @@ from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers.repository import find_venue_by_id
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.exceptions as providers_exceptions
@@ -37,22 +36,13 @@ UNCHANGED = T_UNCHANGED.TOKEN
 
 
 def create_venue_provider(
-    provider_id: int,
-    venue_id: int,
+    provider: providers_models.Provider,
+    venue: offerers_models.Venue,
     current_user: users_models.User,
     payload: providers_models.VenueProviderCreationPayload = providers_models.VenueProviderCreationPayload(),
 ) -> providers_models.VenueProvider:
-    provider = providers_repository.get_provider_enabled_for_pro_by_id(provider_id)
-    if not provider:
-        raise providers_exceptions.ProviderNotFound()
-
-    venue = find_venue_by_id(venue_id)
-
-    if not venue:
-        raise providers_exceptions.VenueNotFound()
-
     if provider.localClass == "AllocineStocks":
-        new_venue_provider = connect_venue_to_allocine(venue, provider_id, payload)
+        new_venue_provider = connect_venue_to_allocine(venue, provider.id, payload)
     elif provider.localClass in providers_constants.CINEMA_PROVIDER_NAMES:
         new_venue_provider = connect_venue_to_cinema_provider(venue, provider, payload)
     else:
@@ -73,7 +63,7 @@ def create_venue_provider(
         db.session.add(venue)
         on_commit(
             functools.partial(
-                search.async_index_venue_ids, [venue_id], reason=search.IndexationReason.VENUE_PROVIDER_CREATION
+                search.async_index_venue_ids, [venue.id], reason=search.IndexationReason.VENUE_PROVIDER_CREATION
             )
         )
 
@@ -87,7 +77,7 @@ def create_venue_provider(
 
     logger.info(
         "La synchronisation d'offre a été activée",
-        extra={"venue_id": venue_id, "provider_id": provider_id},
+        extra={"venue_id": venue.id, "provider_id": provider.id},
         technical_message_id="offer.sync.activated",
     )
     return new_venue_provider
