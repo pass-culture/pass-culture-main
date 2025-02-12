@@ -216,36 +216,27 @@ def _get_future_provider_events_requiring_a_ticketing_system_query(
     return events_query
 
 
-def get_future_events_requiring_provider_ticketing_system(
+def get_future_events_requiring_ticketing_system(
     provider: models.Provider,
+    venue: models.Venue | None = None,
 ) -> list[offers_models.Offer]:
     # base query
     future_provider_events_with_ticketing_query = _get_future_provider_events_requiring_a_ticketing_system_query(
         provider
     )
 
-    # Events not linked to a Venue specific ticketing system
-    final_query = future_provider_events_with_ticketing_query.filter(
-        or_(
-            Venue.venueProviders == None,
-            models.VenueProviderExternalUrls.bookingExternalUrl == None,
+    if venue:
+        # Events linked to the provider and venue, requiring a ticketing system
+        final_query = future_provider_events_with_ticketing_query.filter(
+            offers_models.Offer.venue == venue,
         )
-    )
-
-    return final_query.all()
-
-
-def get_future_venue_events_requiring_a_ticketing_system(
-    venue_provider: models.VenueProvider,
-) -> list[offers_models.Offer]:
-    # base query
-    future_provider_events_with_ticketing_query = _get_future_provider_events_requiring_a_ticketing_system_query(
-        venue_provider.provider
-    )
-
-    # Events linked to the provider and venue, requiring a ticketing system
-    final_query = future_provider_events_with_ticketing_query.filter(
-        offers_models.Offer.venue == venue_provider.venue,
-    )
+    else:
+        # Events not linked to a Venue specific ticketing system
+        final_query = future_provider_events_with_ticketing_query.filter(
+            or_(
+                Venue.venueProviders == None,
+                models.VenueProviderExternalUrls.bookingExternalUrl == None,
+            )
+        )
 
     return final_query.all()

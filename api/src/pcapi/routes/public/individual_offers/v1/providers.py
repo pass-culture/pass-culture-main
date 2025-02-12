@@ -68,19 +68,8 @@ def update_provider(body: providers_serialization.ProviderUpdate) -> providers_s
             booking_external_url=update_body.get("booking_url", providers_api.UNCHANGED),
             cancel_external_url=update_body.get("cancel_url", providers_api.UNCHANGED),
         )
-    except providers_exceptions.TicketingUrlsCannotBeUnset as e:
-        raise api_errors.ApiErrors(
-            {
-                "ticketing_urls": {
-                    "description": "You cannot unset your `booking_url` and `cancel_url` because you have event(s) with stocks linked to your ticketing system",
-                    "blocking_events_ids": e.blocking_events_ids,
-                }
-            }
-        )
-    except providers_exceptions.TicketingUrlsMustBeBothSet:
-        raise api_errors.ApiErrors(
-            {"ticketing_urls": "Your `booking_url` and `cancel_url` must be either both set or both unset"}
-        )
+    except providers_exceptions.ProviderException as e:
+        raise api_errors.ApiErrors(e.errors)
 
     return providers_serialization.ProviderResponse.build_model(provider)
 
@@ -128,16 +117,5 @@ def update_venue_external_urls(
             booking_external_url=update_body.get("booking_url", providers_api.UNCHANGED),
             cancel_external_url=update_body.get("cancel_url", providers_api.UNCHANGED),
         )
-    except providers_exceptions.TicketingUrlsCannotBeUnset as e:
-        raise api_errors.ApiErrors(
-            {
-                "ticketing_urls": {
-                    "description": "You cannot unset your `booking_url` and `cancel_url` because you have event(s) with stocks linked to your ticketing system",
-                    "blocking_events_ids": e.blocking_events_ids,
-                }
-            }
-        )
-    except providers_exceptions.TicketingUrlsMustBeBothSet:
-        raise api_errors.ApiErrors(
-            {"ticketing_urls": "Your `booking_url` and `cancel_url` must be either both set or both unset"}
-        )
+    except providers_exceptions.ProviderException as e:
+        raise api_errors.ApiErrors(e.errors)

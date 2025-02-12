@@ -82,7 +82,7 @@ def test_get_allocine_theater():
     assert repository.get_allocine_theater(venue_without_theater) is None
 
 
-class GetFutureEventsRequiringProviderTicketingSystemTest:
+class GetFutureEventsRequiringTicketingSystemTest:
 
     def test_should_return_a_one_event_list(self):
         provider = factories.PublicApiProviderFactory()
@@ -103,7 +103,7 @@ class GetFutureEventsRequiringProviderTicketingSystemTest:
 
         offers_factories.StockFactory(offer=expected_event_offer)
 
-        future_events = repository.get_future_events_requiring_provider_ticketing_system(provider)
+        future_events = repository.get_future_events_requiring_ticketing_system(provider)
 
         assert len(future_events) == 1
         assert future_events[0] == expected_event_offer
@@ -119,7 +119,7 @@ class GetFutureEventsRequiringProviderTicketingSystemTest:
         )
         offers_factories.StockFactory(offer=event_offer)
 
-        future_events = repository.get_future_events_requiring_provider_ticketing_system(provider)
+        future_events = repository.get_future_events_requiring_ticketing_system(provider)
 
         assert len(future_events) == 0
 
@@ -134,18 +134,15 @@ class GetFutureEventsRequiringProviderTicketingSystemTest:
         one_day_ago = datetime.utcnow() - timedelta(days=1)
         offers_factories.StockFactory(offer=event_offer, beginningDatetime=one_day_ago)
 
-        future_events = repository.get_future_events_requiring_provider_ticketing_system(provider)
+        future_events = repository.get_future_events_requiring_ticketing_system(provider)
 
         assert len(future_events) == 0
 
-
-class GetFutureVenueEventsRequiringATicketingSystemTest:
-
-    def test_should_return_a_one_event_list(self):
+    def test_should_return_a_one_event_list_when_given_a_venue(self):
         provider = factories.PublicApiProviderFactory()
         venue = offerers_factories.VenueFactory()
         venue_2 = offerers_factories.VenueFactory()
-        venue_provider = factories.VenueProviderFactory(provider=provider, venue=venue)
+        factories.VenueProviderFactory(provider=provider, venue=venue)
 
         expected_event_offer = offers_factories.EventOfferFactory(
             lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
@@ -175,7 +172,7 @@ class GetFutureVenueEventsRequiringATicketingSystemTest:
         one_day_ago = datetime.utcnow() - timedelta(days=1)
         offers_factories.StockFactory(offer=event_with_old_sock, beginningDatetime=one_day_ago)
 
-        future_events = repository.get_future_venue_events_requiring_a_ticketing_system(venue_provider)
+        future_events = repository.get_future_events_requiring_ticketing_system(provider, venue)
 
         assert len(future_events) == 1
         assert future_events[0] == expected_event_offer

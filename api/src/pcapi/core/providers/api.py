@@ -328,6 +328,9 @@ def update_venue_provider_external_urls(
 ) -> None:
     ticketing_urls_are_unset = booking_external_url is None and cancel_external_url is None
     ticketing_urls_are_updated = booking_external_url != UNCHANGED or cancel_external_url != UNCHANGED
+    ticketing_urls_are_set_at_provider_level = (
+        venue_provider.provider.bookingExternalUrl and venue_provider.provider.cancelExternalUrl
+    )
 
     venue_provider_external_urls = venue_provider.externalUrls
     # Existing URLs
@@ -342,8 +345,8 @@ def update_venue_provider_external_urls(
     )
 
     # Validation
-    if ticketing_urls_are_unset:
-        validation.check_venue_ticketing_urls_can_be_unset(venue_provider)
+    if ticketing_urls_are_unset and not ticketing_urls_are_set_at_provider_level:
+        validation.check_ticketing_urls_can_be_unset(venue_provider.provider, venue_provider.venue)
     elif ticketing_urls_are_updated:
         validation.check_ticketing_urls_are_coherently_set(
             existing_booking_external_url if booking_external_url == UNCHANGED else booking_external_url,
