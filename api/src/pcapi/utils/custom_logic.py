@@ -12,8 +12,8 @@ def sanitize_str(a: typing.Any) -> typing.Any:
     return a
 
 
-def sanitize_list(myList: list) -> list:
-    return list(map(sanitize_str, myList))
+def sanitize_list(my_list: list) -> list:
+    return list(map(sanitize_str, my_list))
 
 
 def soft_equals(a: object, b: object) -> bool:
