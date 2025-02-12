@@ -657,7 +657,7 @@ class AcceslibreBackend(BaseBackend):
                                 for item in new_entries["results"]
                             ]
                         )
-                except:
+                except Exception:
                     raise AccesLibreApiException("Could not find required informations")
             return activity_results
         return None
