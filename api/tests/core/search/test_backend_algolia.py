@@ -130,11 +130,11 @@ def test_count_offers_to_index_from_error_queue(app):
     assert backend.count_offers_to_index_from_queue(from_error_queue=True) == 3
 
 
-def test_check_offer_is_indexed(app):
+def test_check_offer_id_is_indexed(app):
     backend = get_backend()
     app.redis_client.hset("indexed_offers", "1", "")
-    assert backend.check_offer_is_indexed(FakeOffer(id=1))
-    assert not backend.check_offer_is_indexed(FakeOffer(id=2))
+    assert backend.check_offer_id_is_indexed(1)
+    assert not backend.check_offer_id_is_indexed(2)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -147,7 +147,7 @@ def test_index_offers(app):
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "updateObject"
         assert posted_json["requests"][0]["body"]["objectID"] == offer.id
-    assert backend.check_offer_is_indexed(offer)
+    assert backend.check_offer_id_is_indexed(offer.id)
 
 
 def test_unindex_offer_ids(app):
@@ -159,7 +159,7 @@ def test_unindex_offer_ids(app):
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "deleteObject"
         assert posted_json["requests"][0]["body"]["objectID"] == 1
-    assert not backend.check_offer_is_indexed(FakeOffer(id=1))
+    assert not backend.check_offer_id_is_indexed(1)
 
 
 def test_unindex_all_offers(app):
@@ -169,7 +169,7 @@ def test_unindex_all_offers(app):
         posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/offers/clear", json={})
         backend.unindex_all_offers()
         assert posted.called
-    assert not backend.check_offer_is_indexed(FakeOffer(id=1))
+    assert not backend.check_offer_id_is_indexed(1)
 
 
 def test_index_venues(app):

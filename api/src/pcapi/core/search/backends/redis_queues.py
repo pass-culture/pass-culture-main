@@ -7,7 +7,6 @@ from flask import current_app
 import redis
 
 from pcapi import settings
-import pcapi.core.offers.models as offers_models
 
 
 logger = logging.getLogger(__name__)
@@ -227,17 +226,16 @@ class AlgoliaIndexingQueuesMixin:
             logger.exception("Could not count offers left to index from queue")
             return 0
 
-    # TODO: use offer_ids instead of offers here
-    def check_offer_is_indexed(self, offer: offers_models.Offer) -> bool:
+    def check_offer_id_is_indexed(self, offer_id: int) -> bool:
         try:
             return self.redis_client.hexists(
                 REDIS_HASHMAP_INDEXED_OFFERS_NAME,
-                str(offer.id),
+                str(offer_id),
             )
         except redis.exceptions.RedisError:
             if settings.IS_RUNNING_TESTS:
                 raise
-            logger.exception("Could not check whether offer exists in cache", extra={"offer": offer.id})
+            logger.exception("Could not check whether offer exists in cache", extra={"offer": offer_id})
             # This function is only used to avoid an unnecessary
             # deletion request to Algolia if the offer is not in the
             # cache. Here we don't know, so we'll say it's in the
