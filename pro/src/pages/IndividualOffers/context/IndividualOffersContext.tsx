@@ -14,7 +14,7 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 
-const LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY = 'headlineOfferBannerClosed'
+export const LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY = 'headlineOfferBannerClosed'
 
 type UpsertHeadlineOfferParams = {
   offerId: number
@@ -46,7 +46,7 @@ export const useIndividualOffersContext = () => {
   return useContext(IndividualOffersContext)
 }
 
-type IndividualOffersContextProviderProps = {
+export type IndividualOffersContextProviderProps = {
   children: React.ReactNode
   isHeadlineOfferAllowedForOfferer: boolean
 }
@@ -126,7 +126,7 @@ export function IndividualOffersContextProvider({
         await api.deleteHeadlineOffer({ offererId: selectedOffererId })
         notify.success('Votre offre n’est plus à la une')
         await mutate([GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId])
-        setHeadlineOffer(null)
+
         logEvent(Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
           from: location.pathname,
           actionType: 'delete',
