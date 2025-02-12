@@ -2158,9 +2158,9 @@ class HeadlineOfferTest:
 
         api.set_upper_timespan_of_inactive_headline_offers()
         assert not headline_offer_1.isActive
-        assert not headline_offer_1.timespan.upper is None
+        assert headline_offer_1.timespan.upper is not None
         assert not headline_offer_2.isActive
-        assert not headline_offer_2.timespan.upper is None
+        assert headline_offer_2.timespan.upper is not None
 
         assert headline_offer_3.isActive
         assert headline_offer_3.timespan.upper is None
@@ -2186,7 +2186,7 @@ class HeadlineOfferTest:
         assert headline_offer_with_product_mediation.timespan.upper is None
 
         assert not headline_offer_without_product_mediation.isActive
-        assert not headline_offer_without_product_mediation.timespan.upper is None
+        assert headline_offer_without_product_mediation.timespan.upper is not None
 
     def test_do_not_update_upper_timespan_of_already_inactive_headline_offers(self):
         creation_time = datetime.utcnow() - timedelta(days=20)

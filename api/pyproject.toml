@@ -226,6 +226,33 @@ msg-template = "{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
 [tool.pylint.FORMAT]
 max-line-length = 120
 
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+exclude = ["api/src/pcapi/alembic/versions"]
+
+
+# Pylint rules mapped to Ruff rules
+ignore = [
+    "ARG002",     # Unused method argument (unused-argument)
+    "ARG003",     # Unused class method argument
+    "ARG004",     # Unused static method argument
+    "C901",       # Too complex (too-many-branches)
+    "E501",       # Line too long (line-too-long)
+    "F401",       # Unused import (unused-import)
+    "F403",       # Import *' used (wildcard-import)
+    "F841",       # Unused variable (unused-variable)
+    "N",          # PEP8 naming conventions (invalid-name)
+    "PLR0904",    # Too many public methods (too-many-public-methods)
+    "PLR0911",    # Too many return statements (too-many-return-statements)
+    "PLR0912",    # Too many branches (too-many-branches)
+    "PLR0913",    # Too many arguments (too-many-arguments)
+    "PLR0915",    # Too many statements (too-many-statements)
+    "PLR0917",    # Too many positional arguments
+    "PLW0603",    # Global statement (global-statement)
+    "TRY003",     # Avoid specifying long messages outside exception class (raise-missing-from)
+    "UP032",      # Use f-strings instead of format calls (consider-using-f-string)
+]
 
 [tool.pytest.ini_options]
 addopts = [
