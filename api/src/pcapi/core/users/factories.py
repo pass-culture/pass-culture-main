@@ -18,7 +18,7 @@ from pcapi.connectors.beneficiaries.educonnect import models as educonnect_model
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.factories import BaseFactory
-import pcapi.core.finance.api as finance_api
+from pcapi.core.finance import conf
 import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import utils as users_utils
@@ -28,6 +28,7 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.utils import crypto
 
@@ -950,8 +951,9 @@ class DepositGrantFactory(BaseFactory):
         model = finance_models.Deposit
 
     dateCreated = LazyAttribute(lambda _: datetime.utcnow())
-    user = factory.SubFactory(UserFactory)  # BeneficiaryGrant18Factory is already creating a deposit
-    source = "public"
+    source = "factory"
+    version = 1
+    user = factory.SubFactory(UserFactory)
 
     @classmethod
     def _create(
@@ -960,25 +962,22 @@ class DepositGrantFactory(BaseFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> finance_models.Deposit:
-        age = None
-        if kwargs["user"].birth_date:
-            age = users_utils.get_age_from_birth_date(kwargs["user"].birth_date)
-        eligibility = (
-            models.EligibilityType.UNDERAGE
-            if age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
-            else models.EligibilityType.AGE18
-        )
-        granted_deposit = finance_api.get_granted_deposit(kwargs["user"], eligibility, age_at_registration=age)
-        assert granted_deposit is not None
+        user = kwargs["user"]
+        age = users_utils.get_age_from_birth_date(user.birth_date)
 
-        if "version" not in kwargs:
-            kwargs["version"] = granted_deposit.version
-        if "amount" not in kwargs:
-            kwargs["amount"] = granted_deposit.amount
-        if "expirationDate" not in kwargs:
-            kwargs["expirationDate"] = granted_deposit.expiration_date
-        if "type" not in kwargs:
-            kwargs["type"] = granted_deposit.type
+        if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
+            kwargs["type"] = finance_models.DepositType.GRANT_17_18
+        else:
+            kwargs["type"] = (
+                finance_models.DepositType.GRANT_15_17
+                if age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
+                else finance_models.DepositType.GRANT_18
+            )
+        if not kwargs.get("amount"):
+            kwargs["amount"] = conf.get_credit_amount_per_age(age)
+        if not kwargs.get("expirationDate"):
+            kwargs["expirationDate"] = user.birth_date + relativedelta(years=21)
+
         return super()._create(model_class, *args, **kwargs)
 
 
