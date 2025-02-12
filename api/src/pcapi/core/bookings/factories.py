@@ -5,6 +5,7 @@ import uuid
 import factory
 
 from pcapi.core.factories import BaseFactory
+from pcapi.core.finance.enum import DepositType
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.factories as users_factories
@@ -29,6 +30,15 @@ class BookingFactory(BaseFactory):
     priceCategoryLabel = factory.Maybe(
         "stock.priceCategory", factory.SelfAttribute("stock.priceCategory.priceCategoryLabel.label"), None
     )
+
+    @factory.lazy_attribute
+    def usedRecreditType(self) -> models.BookingRecreditType | None:
+        if self.deposit.type in (DepositType.GRANT_15_17, DepositType.GRANT_18):
+            return None
+        sorted_recredits = sorted(self.deposit.recredits, key=lambda r: r.dateCreated, reverse=True)
+        if sorted_recredits:
+            return models.BookingRecreditType[sorted_recredits[0].recreditType.name]
+        return None
 
     @factory.post_generation
     def cancellation_limit_date(
