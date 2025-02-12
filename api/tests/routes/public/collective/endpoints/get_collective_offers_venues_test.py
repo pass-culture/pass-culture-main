@@ -13,7 +13,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class CollectiveOffersGetVenuesTest:
     num_queries = 1  # select api_key, offerer and provider
-    num_queries += 1  # select features
     num_queries += 1  # select venue
 
     def test_list_venues(self, client):
@@ -79,7 +78,6 @@ class CollectiveOffersGetVenuesTest:
 
 class GetOfferersVenuesTest:
     num_queries = 1  # select api_key, offerer and provider
-    num_queries += 1  # select features
     num_queries += 1  # select offerer
     num_queries += 1  # select provider
     num_queries += 1  # select venue_provider_external_urls

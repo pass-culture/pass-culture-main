@@ -17,7 +17,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
     default_path_params = {"offer_id": 1}
 
     num_queries = 1  # select api_key, offerer and provider
-    num_queries += 1  # select features
     num_queries += 1  # select collective_offer and collective_stock
 
     def test_get_offer(self, client):

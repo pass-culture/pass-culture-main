@@ -79,7 +79,6 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         ) = self.create_multiple_venue_providers()
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offerer
         num_queries += 1  # check provider exists
         num_queries += 1  # select venue_provider_external_urls
@@ -188,7 +187,6 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         providers_factories.VenueProviderFactory(venue=venue, provider=provider, isActive=False)
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offerer
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
@@ -208,7 +206,6 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         offerer_with_two_venues_siren = offerer_with_two_venues.siren
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offerer
         num_queries += 1  # check provider exists
         num_queries += 1  # select venue_provider_external_urls
@@ -230,7 +227,6 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         plain_api_key, _ = self.setup_provider()
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"siren": "1234567890"})
             assert response == 400
@@ -241,7 +237,6 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         plain_api_key, _ = self.setup_provider()
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"siren": "1234890"})
             assert response == 400
@@ -252,7 +247,6 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         plain_api_key, _ = self.setup_provider()
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offerer
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)

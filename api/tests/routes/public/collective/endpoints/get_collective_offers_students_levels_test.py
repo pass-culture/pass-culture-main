@@ -16,8 +16,7 @@ class CollectiveOffersGetStudentsLevelsTest(PublicAPIEndpointBaseHelper):
         plain_api_key, _ = self.setup_provider()
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
-        with testing.assert_num_queries(2):
+        with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
             assert response.status_code == 200
 

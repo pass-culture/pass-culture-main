@@ -56,7 +56,6 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         _, _, booking = self.setup_base_resource(venue=venue)
         token = booking.token
         num_queries = 1  # select api_key
-        num_queries += 1  # select features
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
         num_queries += 1  # select user
@@ -89,7 +88,6 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
 
         token = booking.token
         num_queries = 1  # select api_key
-        num_queries += 1  # select features
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
         num_queries += 1  # select user
@@ -105,7 +103,6 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         _, _, booking = self.setup_base_resource()
         token = booking.token
         num_queries = 1  # select api_key
-        num_queries += 1  # select features
         num_queries += 1  # select booking
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=token))
@@ -116,7 +113,6 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         _, _, booking = self.setup_base_resource(venue=venue_provider.venue)
         token = booking.token
         num_queries = 1  # select api_key
-        num_queries += 1  # select features
         num_queries += 1  # select booking
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=token))
@@ -133,7 +129,6 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
 
         token = booking.token
         num_queries = 1  # select api_key
-        num_queries += 1  # select features
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
         num_queries += 1  # select user
@@ -185,7 +180,6 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         )
         booking_token = booking.token
         num_queries = 1  # select api_key
-        num_queries += 1  # select features
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
         num_queries += 1  # select user
@@ -230,7 +224,6 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
 
         booking_token = booking.token
         num_queries = 1  # select api_key
-        num_queries += 1  # select features
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
         with testing.assert_num_queries(num_queries):
@@ -256,7 +249,6 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         booking_token = bookings_factories.ReimbursedBookingFactory(stock=stock).token
 
         num_queries = 1  # select api_key
-        num_queries += 1  # select features
         num_queries += 1  # select booking
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
@@ -278,7 +270,6 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         booking_token = booking.token
 
         num_queries = 1  # select api_key
-        num_queries += 1  # select features
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
         with testing.assert_num_queries(num_queries):
@@ -295,7 +286,6 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         booking_token = bookings_factories.UsedBookingFactory(stock=product_stock).token
 
         num_queries = 1  # select api_key
-        num_queries += 1  # select features
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
         with testing.assert_num_queries(num_queries):
@@ -312,7 +302,6 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         booking_token = booking.token
 
         num_queries = 1  # select api_key
-        num_queries += 1  # select features
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
         with testing.assert_num_queries(num_queries):
