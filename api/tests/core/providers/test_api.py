@@ -30,19 +30,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class CreateVenueProviderTest:
-    def test_prevent_creation_for_non_existing_provider(self):
-        # Given
-        providerId = 1
-        venueId = 2
-        author = users_factories.UserFactory()
-
-        # When
-        with pytest.raises(exceptions.ProviderNotFound):
-            api.create_venue_provider(providerId, venueId, current_user=author)
-
-        # Then
-        assert not providers_models.VenueProvider.query.first()
-
     @pytest.mark.parametrize(
         "venue_type, is_permanent",
         (
@@ -68,7 +55,7 @@ class CreateVenueProviderTest:
         author = users_factories.UserFactory()
 
         # When
-        api.create_venue_provider(provider.id, venue.id, current_user=author)
+        api.create_venue_provider(provider, venue, current_user=author)
 
         # Then
         assert venue.isPermanent == is_permanent
@@ -95,7 +82,7 @@ class CreateVenueProviderTest:
             localClass=None,
         )
         author = users_factories.UserFactory()
-        api.create_venue_provider(provider.id, venue.id, current_user=author)
+        api.create_venue_provider(provider, venue, current_user=author)
 
         assert venue.isPermanent is False
 
