@@ -1887,7 +1887,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             compliance_reasons=["stock_price", "offer_subcategory_id", "offer_description"],
         )
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1924,7 +1924,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, name="good book")
         offer = offers_factories.OfferFactory(product=product)
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -2044,7 +2044,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -2061,7 +2061,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -2075,7 +2075,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
         authenticated_client = client.with_bo_session_auth(user)
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -2099,7 +2099,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
         authenticated_client = client.with_bo_session_auth(user)
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -2120,7 +2120,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -2137,7 +2137,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1), price=6.66
         )
 
-        query_count = self.expected_num_queries
+        query_count = self.expected_num_queries_with_ff
         query_count += 1  # _get_editable_stock
         query_count += 1  # check_can_move_event_offer
 
@@ -2170,7 +2170,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
         )
 
-        query_count = self.expected_num_queries
+        query_count = self.expected_num_queries_with_ff
         query_count += 1  # _get_editable_stock
         query_count += 1  # check_can_move_event_offer
 
@@ -2347,7 +2347,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         # - count stocks with beginningDatetime in the past
         # - count reimbursed bookings
         # - fetch destination venue candidates
-        with assert_num_queries(self.expected_num_queries + 4):
+        with assert_num_queries(self.expected_num_queries_with_ff + 4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -2371,7 +2371,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -2383,7 +2383,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(venue__managingOfferer=rule.offerer)
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -2395,7 +2395,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(venue=rule.venue)
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -2409,7 +2409,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
