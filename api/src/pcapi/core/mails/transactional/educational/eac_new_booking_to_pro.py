@@ -1,8 +1,11 @@
+from functools import partial
+
 from pcapi.core import mails
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.utils import format_price
+from pcapi.repository import on_commit
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
@@ -14,7 +17,8 @@ def send_eac_new_booking_email_to_pro(booking: CollectiveBooking) -> None:
         return
     data = get_eac_new_booking_to_pro_email_data(booking)
     main_recipient, bcc_recipients = [booking_emails[0]], booking_emails[1:]
-    mails.send(recipients=main_recipient, bcc_recipients=bcc_recipients, data=data)
+
+    on_commit(partial(mails.send, recipients=main_recipient, bcc_recipients=bcc_recipients, data=data))
 
 
 def get_eac_new_booking_to_pro_email_data(booking: CollectiveBooking) -> models.TransactionalEmailData:

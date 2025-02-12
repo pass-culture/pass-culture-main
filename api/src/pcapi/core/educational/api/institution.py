@@ -20,7 +20,6 @@ from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.repository import find_educational_year_by_date
 import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
-from pcapi.repository import repository
 import pcapi.utils.postal_code as postal_code_utils
 
 
@@ -279,7 +278,8 @@ def create_educational_institution_from_adage(institution: AdageEducationalInsti
         isActive=True,
     )
 
-    repository.save(educational_institution)
+    db.session.add(educational_institution)
+    db.session.flush()
     return educational_institution
 
 
