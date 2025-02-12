@@ -58,7 +58,7 @@ class PriceEventTest:
         offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
         author_user = users_factories.UserFactory()
 
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryGrant18Factory(deposit__amount=300)
         assert user.wallet_balance == Decimal("300")
         ###############################
         # Create an offer and book it #
@@ -232,7 +232,7 @@ class PriceEventTest:
 
     def test_compute_commercial_gesture_new_total_amount_multiple_bookings(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryGrant18Factory(deposit__amount=300)
         author_user = users_factories.UserFactory()
         price_amount = Decimal("5.1")
         commercial_gesture_amount = Decimal("15.1")
@@ -296,7 +296,7 @@ class PriceEventTest:
         venue = offerers_factories.VenueFactory(pricing_point="self")
         author_user = users_factories.UserFactory()
 
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryGrant18Factory(deposit__amount=300)
         assert user.wallet_balance == Decimal("300")
         ############################
         # Empty the user's balance #
@@ -1135,7 +1135,7 @@ def test_invoices_csv_commercial_gesture():
     )
     author_user = users_factories.UserFactory()
 
-    user = users_factories.BeneficiaryGrant18Factory()
+    user = users_factories.BeneficiaryGrant18Factory(deposit__amount=300)
     assert user.wallet_balance == Decimal("300")
     # Empty the user's balance
     initial_booking = bookings_factories.BookingFactory(
@@ -1273,7 +1273,7 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch, with_oa):
     )
     author_user = users_factories.UserFactory()
 
-    user = users_factories.BeneficiaryGrant18Factory()
+    user = users_factories.BeneficiaryGrant18Factory(deposit__amount=300)
     # Empty the user's balance
     initial_booking = bookings_factories.BookingFactory(
         user=user,
@@ -1972,7 +1972,7 @@ class GenerateInvoicesTest:
         normal_venue = offerers_factories.VenueFactory(pricing_point="self")
         normal_bank_account = factories.BankAccountFactory(offerer=normal_venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory(venue=normal_venue, bankAccount=normal_bank_account)
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryGrant18Factory(deposit__amount=300)
         normal_booking = bookings_factories.BookingFactory(
             user=user,
             quantity=1,
@@ -1997,7 +1997,7 @@ class GenerateInvoicesTest:
         free_venue = offerers_factories.VenueFactory(pricing_point="self")
         free_bank_account = factories.BankAccountFactory(offerer=free_venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory(venue=free_venue, bankAccount=free_bank_account)
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryGrant18Factory(deposit__amount=300)
         free_booking = bookings_factories.BookingFactory(
             user=user,
             quantity=1,
@@ -2120,12 +2120,10 @@ class GenerateInvoiceTest:
         offer = offers_factories.ThingOfferFactory(venue=venue2)
         stock1 = offers_factories.ThingStockFactory(offer=offer, price=19_850)
         stock2 = offers_factories.ThingStockFactory(offer=offer, price=160)
-        user = users_factories.RichBeneficiaryFactory()
-        finance_event1 = factories.UsedBookingFinanceEventFactory(
-            booking__stock=stock1,
-            booking__user=user,
-        )
-        finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock2)
+        user_1 = users_factories.RichBeneficiaryFactory()
+        user_2 = users_factories.RichBeneficiaryFactory()
+        finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock1, booking__user=user_1)
+        finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock2, booking__user=user_2)
         api.price_event(finance_event1)
         api.price_event(finance_event2)
         batch = api.generate_cashflows(datetime.datetime.utcnow())
