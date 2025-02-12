@@ -160,10 +160,9 @@ class PatchVenueProviderExternalUrlsTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert response.json == {
-            "ticketing_urls": {
-                "description": "You cannot unset your `booking_url` and `cancel_url` because you have event(s) with stocks linked to your ticketing system",
-                "blocking_events_ids": [event_offer.id],
-            }
+            "ticketing_urls": [
+                f"You cannot unset your `booking_url` and `cancel_url` because you have event(s) with stocks linked to your ticketing system. Blocking event ids: {[event_offer.id]}",
+            ]
         }
 
         assert venue_provider_external_urls.bookingExternalUrl == previous_booking_url
@@ -181,7 +180,7 @@ class PatchVenueProviderExternalUrlsTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert response.json == {
-            "ticketing_urls": "Your `booking_url` and `cancel_url` must be either both set or both unset"
+            "ticketing_urls": ["Your `booking_url` and `cancel_url` must be either both set or both unset"]
         }
 
         assert venue_provider.externalUrls == None
@@ -201,7 +200,7 @@ class PatchVenueProviderExternalUrlsTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert response.json == {
-            "ticketing_urls": "Your `booking_url` and `cancel_url` must be either both set or both unset"
+            "ticketing_urls": ["Your `booking_url` and `cancel_url` must be either both set or both unset"]
         }
         assert venue_provider_external_urls.bookingExternalUrl == previous_booking_url
         assert venue_provider_external_urls.cancelExternalUrl == previous_cancel_url

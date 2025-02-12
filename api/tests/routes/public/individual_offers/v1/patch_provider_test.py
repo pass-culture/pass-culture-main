@@ -133,10 +133,9 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
 
         assert response.status_code == 400
         assert response.json == {
-            "ticketing_urls": {
-                "description": "You cannot unset your `booking_url` and `cancel_url` because you have event(s) with stocks linked to your ticketing system",
-                "blocking_events_ids": [event_offer.id],
-            }
+            "ticketing_urls": [
+                f"You cannot unset your `booking_url` and `cancel_url` because you have event(s) with stocks linked to your ticketing system. Blocking event ids: {[event_offer.id]}",
+            ]
         }
 
         assert provider.notificationExternalUrl == previous_notification_url
@@ -154,7 +153,7 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
 
         assert response.status_code == 400
         assert response.json == {
-            "ticketing_urls": "Your `booking_url` and `cancel_url` must be either both set or both unset"
+            "ticketing_urls": ["Your `booking_url` and `cancel_url` must be either both set or both unset"]
         }
 
         assert provider.notificationExternalUrl == previous_notification_url

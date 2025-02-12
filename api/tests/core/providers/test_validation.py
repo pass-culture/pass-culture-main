@@ -14,10 +14,10 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class CheckTicketingUrlsAreCoherentlySetTest:
 
     def test_should_raise(self):
-        with pytest.raises(exceptions.TicketingUrlsMustBeBothSet):
+        with pytest.raises(exceptions.ProviderException):
             validation.check_ticketing_urls_are_coherently_set("https://coucou.com", None)
 
-        with pytest.raises(exceptions.TicketingUrlsMustBeBothSet):
+        with pytest.raises(exceptions.ProviderException):
             validation.check_ticketing_urls_are_coherently_set(None, "https://aurevoir.com")
 
     def test_should_not_raise(self):
@@ -36,10 +36,14 @@ class CheckTicketingUrlsCanBeUnsetTest:
         )
         offers_factories.StockFactory(offer=event_offer)
 
-        with pytest.raises(exceptions.TicketingUrlsCannotBeUnset) as e:
+        with pytest.raises(exceptions.ProviderException) as e:
             validation.check_ticketing_urls_can_be_unset(provider)
 
-        assert e.value.blocking_events_ids == [event_offer.id]
+        assert e.value.errors == {
+            "ticketing_urls": [
+                f"You cannot unset your `booking_url` and `cancel_url` because you have event(s) with stocks linked to your ticketing system. Blocking event ids: {[event_offer.id ]}"
+            ]
+        }
 
     def test_should_not_raise(self):
         provider = factories.PublicApiProviderFactory()
@@ -51,13 +55,10 @@ class CheckTicketingUrlsCanBeUnsetTest:
 
         validation.check_ticketing_urls_can_be_unset(provider)
 
-
-class CheckVenueTicketingUrlsCanBeUnsetTest:
-
-    def test_should_raise(self):
+    def test_should_raise_when_trying_to_unset_at_venue_level(self):
         provider_without_ticketing_urls = factories.ProviderFactory()
         venue = offerers_factories.VenueFactory()
-        venue_provider = factories.VenueProviderFactory(provider=provider_without_ticketing_urls, venue=venue)
+        factories.VenueProviderFactory(provider=provider_without_ticketing_urls, venue=venue)
         event_offer = offers_factories.EventOfferFactory(
             lastProvider=provider_without_ticketing_urls,
             venue=venue,
@@ -65,32 +66,23 @@ class CheckVenueTicketingUrlsCanBeUnsetTest:
         )
         offers_factories.StockFactory(offer=event_offer)
 
-        with pytest.raises(exceptions.TicketingUrlsCannotBeUnset) as e:
-            validation.check_venue_ticketing_urls_can_be_unset(venue_provider)
+        with pytest.raises(exceptions.ProviderException) as e:
+            validation.check_ticketing_urls_can_be_unset(provider=provider_without_ticketing_urls, venue=venue)
 
-        assert e.value.blocking_events_ids == [event_offer.id]
-
-    def test_should_not_raise_because_provider_has_ticketing_urls(self):
-        provider_with_ticketing_urls = factories.PublicApiProviderFactory()
-        venue = offerers_factories.VenueFactory()
-        venue_provider = factories.VenueProviderFactory(provider=provider_with_ticketing_urls, venue=venue)
-        event_offer = offers_factories.EventOfferFactory(
-            lastProvider=provider_with_ticketing_urls,
-            venue=venue,
-            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
-        )
-        offers_factories.StockFactory(offer=event_offer)
-
-        validation.check_venue_ticketing_urls_can_be_unset(venue_provider)
+        assert e.value.errors == {
+            "ticketing_urls": [
+                f"You cannot unset your `booking_url` and `cancel_url` because you have event(s) with stocks linked to your ticketing system. Blocking event ids: {[event_offer.id ]}"
+            ]
+        }
 
     def test_should_not_raise_because_there_is_no_future_stock(self):
         provider_without_ticketing_urls = factories.ProviderFactory()
         venue = offerers_factories.VenueFactory()
-        venue_provider = factories.VenueProviderFactory(provider=provider_without_ticketing_urls, venue=venue)
+        factories.VenueProviderFactory(provider=provider_without_ticketing_urls, venue=venue)
         offers_factories.EventOfferFactory(
             lastProvider=provider_without_ticketing_urls,
             venue=venue,
             withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
         )
 
-        validation.check_venue_ticketing_urls_can_be_unset(venue_provider)
+        validation.check_ticketing_urls_can_be_unset(provider_without_ticketing_urls, venue)
