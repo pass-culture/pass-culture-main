@@ -13,7 +13,6 @@ class CollectiveOffersGetEducationalInstitutionTest(PublicAPIEndpointBaseHelper)
     endpoint_method = "get"
 
     num_queries = 1  # select api_key, offerer and provider
-    num_queries += 1  # select features
     num_queries += 1  # select educational_institution
 
     def test_list_educational_institutions(self, client: TestClient):
