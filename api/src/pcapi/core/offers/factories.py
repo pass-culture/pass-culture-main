@@ -200,7 +200,10 @@ class OfferFactory(BaseFactory):
             kwargs["name"] = product.name
             kwargs["subcategoryId"] = product.subcategoryId
             kwargs["description"] = None
-            kwargs["extraData"] = product.extraData
+            product_extra_data = product.extraData.copy()
+            if "ean" in product.extraData:
+                kwargs["ean"] = product_extra_data.pop("ean")
+            kwargs["extraData"] = product_extra_data
             kwargs["durationMinutes"] = None
         else:
             if "extraData" not in kwargs:
@@ -211,11 +214,17 @@ class OfferFactory(BaseFactory):
                 kwargs["extraData"] = build_extra_data_from_subcategory(
                     subcategory_id, kwargs.pop("set_all_fields", False)
                 )
+                if "ean" in kwargs["extraData"]:
+                    kwargs["ean"] = kwargs["extraData"].pop("ean")
+
         if "offererAddress" not in kwargs and "offererAddressId" not in kwargs:
             venue = kwargs.get("venue")
             if venue:
                 kwargs["offererAddress"] = venue.offererAddress
 
+        # TODO mageoffray - 10/02/2024 : delete this after some time has passed and everybody know new ean column
+        if kwargs["extraData"] and "ean" in kwargs["extraData"].keys():
+            raise ValueError("ean should not be unsed inside extraData field")
         return super()._create(model_class, *args, **kwargs)
 
 

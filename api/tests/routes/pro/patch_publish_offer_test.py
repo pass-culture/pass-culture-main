@@ -262,7 +262,7 @@ class Returns400Test:
             venue=venue,
             product=product,
             validation=OfferValidationStatus.APPROVED,
-            extraData={"ean": ean},
+            ean=ean,
         )
 
         offer = offers_factories.StockFactory(
@@ -270,7 +270,7 @@ class Returns400Test:
             offer__isActive=False,
             offer__validation=OfferValidationStatus.DRAFT,
             offer__product=product,
-            offer__extraData={"ean": ean},
+            offer__ean=ean,
         ).offer
 
         client = client.with_session_auth(email)

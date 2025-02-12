@@ -630,7 +630,7 @@ class EditStockTest:
             price=110,
             offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
             offer__lastValidationPrice=decimal.Decimal("100"),
-            offer__extraData={"ean": "1234567890123"},
+            offer__ean="1234567890123",
         )
 
         # When
@@ -1590,7 +1590,8 @@ class UpdateOfferTest:
     def test_update_offer_with_existing_ean(self):
         offer = factories.OfferFactory(
             name="Old name",
-            extraData={"ean": "1234567890123", "gtl_id": "02000000"},
+            ean="1234567890123",
+            extraData={"gtl_id": "02000000"},
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
         body = offers_schemas.UpdateOffer(name="New name", description="new Description")
@@ -1601,7 +1602,7 @@ class UpdateOfferTest:
         assert offer.description == "new Description"
 
     def test_cannot_update_with_name_too_long(self):
-        offer = factories.OfferFactory(name="Old name", extraData={"ean": "1234567890124"})
+        offer = factories.OfferFactory(name="Old name", ean="1234567890124")
         body = offers_schemas.UpdateOffer(name="Luftballons" * 99)
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_offer(offer, body)
@@ -1610,7 +1611,7 @@ class UpdateOfferTest:
         assert models.Offer.query.one().name == "Old name"
 
     def test_cannot_update_with_name_containing_ean(self):
-        offer = factories.OfferFactory(name="Old name", extraData={"ean": "1234567890124"})
+        offer = factories.OfferFactory(name="Old name", ean="1234567890124")
         body = offers_schemas.UpdateOffer(name="Luftballons 1234567890124")
         with pytest.raises(exceptions.EanInOfferNameException) as error:
             api.update_offer(offer, body)
@@ -1650,7 +1651,7 @@ class UpdateOfferTest:
             externalTicketOfficeUrl="http://example.org",
             lastProvider=provider,
             name="Old name",
-            extraData={"ean": "1234567890124"},
+            ean="1234567890124",
         )
         body = offers_schemas.UpdateOffer(externalTicketOfficeUrl="https://example.com")
         api.update_offer(offer, body)
@@ -1691,7 +1692,8 @@ class UpdateOfferTest:
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             lastProvider=provider,
             idAtProviders="1234567890123",
-            extraData={"gtl_id": "01020602", "author": "Asimov", "ean": "1234567890123"},
+            ean="1234567890123",
+            extraData={"gtl_id": "01020602", "author": "Asimov"},
         )
         offer = factories.OfferFactory(
             product=product,
@@ -1762,7 +1764,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=provider,
             name="Offer linked to a provider",
-            extraData={"ean": "1234567890124"},
+            ean="1234567890124",
         )
         body = offers_schemas.UpdateOffer(idAtProvider="some_id_at_provider")
         api.update_offer(offer, body)
@@ -1775,7 +1777,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=None,
             name="Offer linked to a provider",
-            extraData={"ean": "1234567890124"},
+            ean="1234567890124",
         )
         body = offers_schemas.UpdateOffer(idAtProvider="some_id_at_provider")
         with pytest.raises(exceptions.CannotSetIdAtProviderWithoutAProvider) as error:
@@ -1802,7 +1804,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=provider,
             name="Offer linked to a provider",
-            extraData={"ean": "1234567890124"},
+            ean="1234567890124",
             venue=venue,
         )
 
@@ -2383,12 +2385,11 @@ class AddCriterionToOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_from_ean(self, mocked_async_index_offer_ids):
         # Given
-        ean = "2-221-00164-8"
-        product1 = factories.ProductFactory(extraData={"ean": "2221001648"})
+        ean = "2221001648123"
+        product1 = factories.ProductFactory(extraData={"ean": "2221001648123"})
         offer11 = factories.OfferFactory(product=product1)
         offer12 = factories.OfferFactory(product=product1)
-        product2 = factories.ProductFactory(extraData={"ean": "2221001648"})
-        offer21 = factories.OfferFactory(product=product2)
+
         inactive_offer = factories.OfferFactory(product=product1, isActive=False)
         unmatched_offer = factories.OfferFactory()
         criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
@@ -2401,11 +2402,10 @@ class AddCriterionToOffersTest:
         assert is_successful is True
         assert set(offer11.criteria) == {criterion1, criterion2}
         assert set(offer12.criteria) == {criterion1, criterion2}
-        assert set(offer21.criteria) == {criterion1, criterion2}
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
         mocked_async_index_offer_ids.assert_called_once_with(
-            {offer11.id, offer12.id, offer21.id},
+            {offer11.id, offer12.id},
             reason=search.IndexationReason.CRITERIA_LINK,
             log_extra={"criterion_ids": [criterion1.id, criterion2.id]},
         )
@@ -2413,7 +2413,7 @@ class AddCriterionToOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_from_ean_when_one_has_criteria(self, mocked_async_index_offer_ids):
         # Given
-        ean = "2221001648"
+        ean = "2221001648123"
         criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
         criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
         product1 = factories.ProductFactory(extraData={"ean": ean})
@@ -2470,8 +2470,8 @@ class AddCriterionToOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_when_no_offers_is_found(self, mocked_async_index_offer_ids):
         # Given
-        ean = "2-221-00164-8"
-        factories.OfferFactory(extraData={"ean": "2221001647"})
+        ean = "2221001648213"
+        factories.OfferFactory(ean="2221001647123")
         criterion = criteria_factories.CriterionFactory(name="Pretty good books")
 
         # When
@@ -2503,10 +2503,10 @@ class RejectInappropriateProductTest:
         # Given
         provider = providers_factories.PublicApiProviderFactory()
         product1 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}, lastProvider=provider
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "2221001648213"}, lastProvider=provider
         )
         product2 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test-2"}, lastProvider=provider
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "2221001647123"}, lastProvider=provider
         )
         offers = {
             factories.OfferFactory(product=product1),
@@ -2520,16 +2520,16 @@ class RejectInappropriateProductTest:
             bookings_factories.BookingFactory(stock__offer=offer)
 
         # When
-        api.reject_inappropriate_products(["ean-de-test"], user, send_booking_cancellation_emails=False)
+        api.reject_inappropriate_products(["2221001648213"], user, send_booking_cancellation_emails=False)
 
         # Then
         offers = models.Offer.query.all()
         bookings = bookings_models.Booking.query.all()
 
-        product1 = models.Product.query.filter(models.Product.extraData["ean"].astext == "ean-de-test").one()
+        product1 = models.Product.query.filter(models.Product.extraData["ean"].astext == "2221001648213").one()
         assert product1.gcuCompatibilityType == models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
 
-        product2 = models.Product.query.filter(models.Product.extraData["ean"].astext == "ean-de-test-2").one()
+        product2 = models.Product.query.filter(models.Product.extraData["ean"].astext == "2221001647123").one()
         assert product2.isGcuCompatible
 
         assert all(
@@ -2556,10 +2556,10 @@ class RejectInappropriateProductTest:
         # Given
         provider = providers_factories.PublicApiProviderFactory()
         product1 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}, lastProvider=provider
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "2221001648213"}, lastProvider=provider
         )
         product2 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test-2"}, lastProvider=provider
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "2221001647125"}, lastProvider=provider
         )
         offers = {
             factories.OfferFactory(product=product1),
@@ -2576,7 +2576,7 @@ class RejectInappropriateProductTest:
         assert bookings_models.Booking.query.count() == len(offers)
 
         # When
-        api.reject_inappropriate_products(["ean-de-test"], user)
+        api.reject_inappropriate_products(["2221001648213"], user)
 
         # Then
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_called()
@@ -2590,18 +2590,18 @@ class RejectInappropriateProductTest:
         provider = providers_factories.PublicApiProviderFactory()
         factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"ean": "ean-de-test"},
+            extraData={"ean": "2221001647123"},
             lastProvider=provider,
             gcuCompatibilityType=models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
         )
         user = users_factories.UserFactory()
 
         # When
-        api.reject_inappropriate_products(["ean-de-test"], user, send_booking_cancellation_emails=False)
+        api.reject_inappropriate_products(["2221001647123"], user, send_booking_cancellation_emails=False)
 
         # Then
 
-        product = models.Product.query.filter(models.Product.extraData["ean"].astext == "ean-de-test").one()
+        product = models.Product.query.filter(models.Product.extraData["ean"].astext == "2221001647123").one()
         assert product.gcuCompatibilityType == models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
 
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_not_called()
@@ -3982,7 +3982,7 @@ class ApproveProductAndRejectedOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_no_approve_product_and_offers_with_unknown_product(self, mocked_async_index_offer_ids):
         # Given
-        ean = "ean-de-test"
+        ean = "2221001647123"
 
         # When
         with pytest.raises(ProductNotFound):
@@ -3995,7 +3995,7 @@ class ApproveProductAndRejectedOffersTest:
     def test_should_approve_product_and_offers_with_no_offers(self, mocked_async_index_offer_ids):
         # Given
         provider = providers_factories.PublicApiProviderFactory()
-        ean = "ean-de-test"
+        ean = "2221001647123"
         factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": ean},
@@ -4017,7 +4017,7 @@ class ApproveProductAndRejectedOffersTest:
     def test_should_approve_product_and_offers_on_approved_offers(self, mocked_async_index_offer_ids):
         # Given
         provider = providers_factories.PublicApiProviderFactory()
-        ean = "ean-de-test"
+        ean = "2221001647123"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": ean},
@@ -4046,7 +4046,7 @@ class ApproveProductAndRejectedOffersTest:
     ):
         # Given
         provider = providers_factories.PublicApiProviderFactory()
-        ean = "ean-de-test"
+        ean = "2221001648213"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": ean},
@@ -4084,7 +4084,7 @@ class ApproveProductAndRejectedOffersTest:
     def test_should_approve_product_and_offers_with_one_offer_manually_rejected(self, mocked_async_index_offer_ids):
         # Given
         provider = providers_factories.PublicApiProviderFactory()
-        ean = "ean-de-test"
+        ean = "2221001647123"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": ean},
@@ -4111,7 +4111,7 @@ class ApproveProductAndRejectedOffersTest:
     def test_should_approve_product_and_offers_with_one_offer_auto_rejected(self, mocked_async_index_offer_ids):
         # Given
         provider = providers_factories.PublicApiProviderFactory()
-        ean = "ean-de-test"
+        ean = "2221001647123"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": ean},
@@ -4137,7 +4137,7 @@ class ApproveProductAndRejectedOffersTest:
     def test_should_approve_product_and_offers_with_update_exception(self):
         # Given
         provider = providers_factories.PublicApiProviderFactory()
-        ean = "ean-de-test"
+        ean = "2221001647123"
         product = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"ean": ean},

@@ -318,7 +318,7 @@ class Returns200Test:
                     }
                 ],
                 "thumbUrl": None,
-                "productIsbn": None,
+                "ean": None,
                 "subcategoryId": "SEANCE_CINE",
                 "venue": {
                     "id": venue.id,
@@ -393,7 +393,7 @@ class Returns200Test:
                     }
                 ],
                 "thumbUrl": None,
-                "productIsbn": None,
+                "ean": None,
                 "subcategoryId": "SEANCE_CINE",
                 "venue": {
                     "id": venue.id,
@@ -442,7 +442,7 @@ class Returns200Test:
                 "name": event_offer.name,
                 "stocks": [],
                 "thumbUrl": None,
-                "productIsbn": None,
+                "ean": None,
                 "subcategoryId": "SEANCE_CINE",
                 "venue": {
                     "id": venue.id,
@@ -525,7 +525,7 @@ class Returns200Test:
                 "isShowcase": False,
                 "isThing": False,
                 "name": event_offer2.name,
-                "productIsbn": None,
+                "ean": None,
                 "status": "SOLD_OUT",
                 "stocks": [],
                 "subcategoryId": "CONCERT",
@@ -566,7 +566,7 @@ class Returns200Test:
                 "isShowcase": False,
                 "isThing": False,
                 "name": event_offer1.name,
-                "productIsbn": None,
+                "ean": None,
                 "status": "SOLD_OUT",
                 "stocks": [],
                 "subcategoryId": "CONCERT",
@@ -633,7 +633,7 @@ class Returns200Test:
                 "name": "The Weeknd",
                 "stocks": [],
                 "thumbUrl": None,
-                "productIsbn": None,
+                "ean": None,
                 "subcategoryId": "CONCERT",
                 "venue": {
                     "id": venue.id,
@@ -701,7 +701,7 @@ class Returns200Test:
                 "name": "The Weeknd",
                 "stocks": [],
                 "thumbUrl": None,
-                "productIsbn": None,
+                "ean": None,
                 "subcategoryId": "CONCERT",
                 "venue": {
                     "id": venue.id,

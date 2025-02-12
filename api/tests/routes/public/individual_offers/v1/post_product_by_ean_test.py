@@ -32,7 +32,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         product_provider = providers_factories.ProviderFactory()
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            extraData={"ean": ean},
+            ean=ean,
             lastProviderId=product_provider.id,
             idAtProviders=ean,
         )
@@ -99,9 +99,9 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         venue, _ = utils.create_offerer_provider_linked_to_venue(venue_data)
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            extraData={"ean": "1234567890123"},
             lastProviderId=product_provider.id,
             idAtProviders="1234567890123",
+            extraData={"ean": "1234567890123"},
         )
         unknown_ean = "1234567897123"
 
@@ -219,7 +219,9 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         )
 
         offer = offers_factories.ThingOfferFactory(
-            product=product, venue=venue, lastProvider=api_key.provider, extraData=product.extraData
+            product=product,
+            venue=venue,
+            lastProvider=api_key.provider,
         )
         stock = offers_factories.ThingStockFactory(offer=offer, quantity=10, price=100)
         bookings_factories.BookingFactory(stock=stock, quantity=2)
@@ -253,7 +255,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
         )
         offer = offers_factories.ThingOfferFactory(
-            product=product, venue=venue, lastProvider=old_provider, extraData=product.extraData, isActive=False
+            product=product, venue=venue, lastProvider=old_provider, isActive=False
         )
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
@@ -286,9 +288,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
         )
 
-        offer = offers_factories.ThingOfferFactory(
-            product=product, venue=venue, lastProvider=api_key.provider, extraData=product.extraData
-        )
+        offer = offers_factories.ThingOfferFactory(product=product, venue=venue, lastProvider=api_key.provider)
         stock = offers_factories.ThingStockFactory(offer=offer, quantity=10, price=100)
         bookings_factories.BookingFactory(stock=stock, quantity=2)
 
@@ -330,11 +330,10 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "1234527890123"}
         )
 
-        cd_offer = offers_factories.ThingOfferFactory(product=cd_product, venue=venue, extraData=cd_product.extraData)
+        cd_offer = offers_factories.ThingOfferFactory(product=cd_product, venue=venue)
         book_offer = offers_factories.ThingOfferFactory(
             product=book_product,
             venue=venue,
-            extraData=book_product.extraData,
             validation=offers_models.OfferValidationStatus.REJECTED,
         )
 

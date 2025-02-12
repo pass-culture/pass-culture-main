@@ -707,7 +707,7 @@ class CheckOfferExtraDataTest:
         assert error.value.errors["showType"] == ["should be an int or an int string"]
 
     def test_ean_already_exists(self):
-        offer = offers_factories.OfferFactory(extraData={"ean": "1234567891234"})
+        offer = offers_factories.OfferFactory(ean="1234567891234")
 
         with pytest.raises(ApiErrors) as error:
             validation.check_offer_extra_data(
@@ -719,7 +719,7 @@ class CheckOfferExtraDataTest:
         ]
 
     def test_allow_creation_with_inactive_ean(self):
-        offer = offers_factories.OfferFactory(extraData={"ean": "1234567891234"}, isActive=False)
+        offer = offers_factories.OfferFactory(ean="1234567891234", isActive=False)
         assert (
             validation.check_offer_extra_data(
                 subcategories.LIVRE_PAPIER.id, {"ean": "1234567891234"}, offer.venue, False

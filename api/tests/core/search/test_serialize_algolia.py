@@ -59,9 +59,9 @@ def test_serialize_offer():
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
         description="Un LIVRE qu'il est bien pour le lire",
+        ean="2221001648",
         extraData={
             "author": "Author",
-            "ean": "2221001648",
             "performer": "Performer",
             "speaker": "Speaker",
             "stageDirector": "Stage Director",
@@ -155,9 +155,9 @@ def test_serialize_offer_legacy():
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
         description="Un LIVRE qu'il est bien pour le lire",
+        ean="2221001648",
         extraData={
             "author": "Author",
-            "ean": "2221001648",
             "performer": "Performer",
             "speaker": "Speaker",
             "stageDirector": "Stage Director",

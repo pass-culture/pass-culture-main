@@ -339,7 +339,7 @@ class OfferMetadataTest:
 
             def should_define_an_isbn(self):
                 offer = offers_factories.OfferFactory(
-                    subcategoryId=subcategories_v2.LIVRE_PAPIER.id, extraData={"ean": 9782371266124}
+                    subcategoryId=subcategories_v2.LIVRE_PAPIER.id, ean="9782371266124"
                 )
 
                 metadata = get_metadata_from_offer(offer)
