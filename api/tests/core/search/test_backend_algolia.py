@@ -10,6 +10,8 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.search.backends import algolia
+from pcapi.core.search.backends import redis_queues
+from pcapi.core.search.backends import serialization
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -27,19 +29,19 @@ class FakeOffer:
 @pytest.mark.parametrize(
     "enqueue_function_name, queue",
     [
-        ("enqueue_offer_ids", algolia.REDIS_OFFER_IDS_NAME),
-        ("enqueue_offer_ids_in_error", algolia.REDIS_OFFER_IDS_IN_ERROR_NAME),
+        ("enqueue_offer_ids", redis_queues.REDIS_OFFER_IDS_NAME),
+        ("enqueue_offer_ids_in_error", redis_queues.REDIS_OFFER_IDS_IN_ERROR_NAME),
         (
             "enqueue_collective_offer_template_ids",
-            algolia.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX,
+            redis_queues.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX,
         ),
         (
             "enqueue_collective_offer_template_ids_in_error",
-            algolia.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX,
+            redis_queues.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX,
         ),
-        ("enqueue_venue_ids_for_offers", algolia.REDIS_VENUE_IDS_FOR_OFFERS_NAME),
-        ("enqueue_venue_ids", algolia.REDIS_VENUE_IDS_TO_INDEX),
-        ("enqueue_venue_ids_in_error", algolia.REDIS_VENUE_IDS_IN_ERROR_TO_INDEX),
+        ("enqueue_venue_ids_for_offers", redis_queues.REDIS_VENUE_IDS_FOR_OFFERS_NAME),
+        ("enqueue_venue_ids", redis_queues.REDIS_VENUE_IDS_TO_INDEX),
+        ("enqueue_venue_ids_in_error", redis_queues.REDIS_VENUE_IDS_IN_ERROR_TO_INDEX),
     ],
 )
 def test_enqueue_functions(enqueue_function_name, queue):
@@ -55,32 +57,32 @@ def test_enqueue_functions(enqueue_function_name, queue):
 @pytest.mark.parametrize(
     "pop_function_name, from_error_queue, queue",
     [
-        ("pop_offer_ids_from_queue", False, algolia.REDIS_OFFER_IDS_NAME),
-        ("pop_offer_ids_from_queue", True, algolia.REDIS_OFFER_IDS_IN_ERROR_NAME),
+        ("pop_offer_ids_from_queue", False, redis_queues.REDIS_OFFER_IDS_NAME),
+        ("pop_offer_ids_from_queue", True, redis_queues.REDIS_OFFER_IDS_IN_ERROR_NAME),
         (
             "pop_collective_offer_template_ids_from_queue",
             False,
-            algolia.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX,
+            redis_queues.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX,
         ),
         (
             "pop_collective_offer_template_ids_from_queue",
             True,
-            algolia.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX,
+            redis_queues.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX,
         ),
         (
             "pop_venue_ids_from_queue",
             False,
-            algolia.REDIS_VENUE_IDS_TO_INDEX,
+            redis_queues.REDIS_VENUE_IDS_TO_INDEX,
         ),
         (
             "pop_venue_ids_from_queue",
             True,
-            algolia.REDIS_VENUE_IDS_IN_ERROR_TO_INDEX,
+            redis_queues.REDIS_VENUE_IDS_IN_ERROR_TO_INDEX,
         ),
         (
             "pop_venue_ids_for_offers_from_queue",
             None,
-            algolia.REDIS_VENUE_IDS_FOR_OFFERS_NAME,
+            redis_queues.REDIS_VENUE_IDS_FOR_OFFERS_NAME,
         ),
     ],
 )
@@ -116,7 +118,7 @@ def test_count_offers_to_index_from_queue(app):
     backend = get_backend()
     assert backend.count_offers_to_index_from_queue() == 0
 
-    app.redis_client.sadd(algolia.REDIS_OFFER_IDS_NAME, 1, 2, 3)
+    app.redis_client.sadd(redis_queues.REDIS_OFFER_IDS_NAME, 1, 2, 3)
     assert backend.count_offers_to_index_from_queue() == 3
 
 
@@ -124,7 +126,7 @@ def test_count_offers_to_index_from_error_queue(app):
     backend = get_backend()
     assert backend.count_offers_to_index_from_queue(from_error_queue=True) == 0
 
-    app.redis_client.sadd(algolia.REDIS_OFFER_IDS_IN_ERROR_NAME, 1, 2, 3)
+    app.redis_client.sadd(redis_queues.REDIS_OFFER_IDS_IN_ERROR_NAME, 1, 2, 3)
     assert backend.count_offers_to_index_from_queue(from_error_queue=True) == 3
 
 
@@ -256,7 +258,7 @@ def test_unindex_collective_offer_templates_ids():
 def test_remove_stopwords():
     description = "Il était une fois, dans la ville de Foix. Voilà Foix !"
     expected = "fois ville foix voilà foix"
-    assert algolia.remove_stopwords(description) == expected
+    assert serialization.remove_stopwords(description) == expected
 
 
 class IndexationLimitTest:
@@ -265,19 +267,19 @@ class IndexationLimitTest:
         backend = get_backend()
         backend.enqueue_offer_ids([1, 2])
         backend.enqueue_offer_ids([3, 4])
-        assert backend.redis_client.smembers(algolia.REDIS_OFFER_IDS_NAME) == {"1", "2", "3", "4"}
+        assert backend.redis_client.smembers(redis_queues.REDIS_OFFER_IDS_NAME) == {"1", "2", "3", "4"}
 
     @pytest.mark.settings(ALGOLIA_OFFERS_INDEX_MAX_SIZE=0)
     def should_not_index_offers_if_limit_is_already_exceeded(self):
         backend = get_backend()
         backend.enqueue_offer_ids([1])
-        assert backend.redis_client.smembers(algolia.REDIS_OFFER_IDS_NAME) == set()
+        assert backend.redis_client.smembers(redis_queues.REDIS_OFFER_IDS_NAME) == set()
 
     @pytest.mark.settings(ALGOLIA_OFFERS_INDEX_MAX_SIZE=2)
     def should_index_offers_if_limit_is_not_reached(self):
         backend = get_backend()
         backend.enqueue_offer_ids([1, 2, 3])
-        assert backend.redis_client.smembers(algolia.REDIS_OFFER_IDS_NAME) == {"1", "2", "3"}
+        assert backend.redis_client.smembers(redis_queues.REDIS_OFFER_IDS_NAME) == {"1", "2", "3"}
 
 
 class ProcessingQueueTest:
@@ -287,7 +289,7 @@ class ProcessingQueueTest:
     def test_processing_queue_is_deleted_if_no_error(self):
         backend = get_backend()
         redis = backend.redis_client
-        queue = algolia.REDIS_OFFER_IDS_NAME
+        queue = redis_queues.REDIS_OFFER_IDS_NAME
         redis.sadd(queue, "1", "2", "3")
 
         with backend.pop_offer_ids_from_queue(10):
@@ -301,7 +303,7 @@ class ProcessingQueueTest:
     def test_processing_queue_is_kept_upon_error(self):
         backend = get_backend()
         redis = backend.redis_client
-        queue = algolia.REDIS_OFFER_IDS_NAME
+        queue = redis_queues.REDIS_OFFER_IDS_NAME
         redis.sadd(queue, "1", "2", "3")
 
         try:
@@ -318,7 +320,7 @@ class ProcessingQueueTest:
     def test_clean_processing_queues(self):
         backend = get_backend()
         redis = backend.redis_client
-        main_queue = algolia.REDIS_OFFER_IDS_NAME
+        main_queue = redis_queues.REDIS_OFFER_IDS_NAME
         now = datetime.datetime.utcnow()
         timestamp_old_enough = (now - datetime.timedelta(hours=1)).timestamp()
         processing_old_enough = f"{main_queue}:processing:{timestamp_old_enough}"
