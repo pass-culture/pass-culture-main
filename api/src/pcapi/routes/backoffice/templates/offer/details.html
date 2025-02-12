@@ -85,6 +85,10 @@
                 {% set edit_offer_venue_aria_described_by_id = random_hash() %}
                 {{ build_modal_form("edit-offer-venue", url_for("backoffice_web.offer.edit_offer_venue", offer_id=offer.id) , edit_offer_venue_form, "Modifier le partenaire culturel", "Modifier le partenaire culturel", "Enregistrer") }}
               {% endif %}
+              {% if move_offer_form %}
+                {% set edit_offer_venue_aria_described_by_id = random_hash() %}
+                {{ build_modal_form("move-offer", url_for("backoffice_web.offer.move_offer", offer_id=offer.id) , move_offer_form, "Déplacer l'offre", "Déplacer l'offre", "Enregistrer") }}
+              {% endif %}
             </div>
             <div class="col-2"></div>
           </div>
