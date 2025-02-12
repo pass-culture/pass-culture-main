@@ -237,7 +237,3 @@ class ApplyMoveSiretTest(MoveSiretTestHelper):
 
         assert response.status_code == 303
         assert finance_models.CustomReimbursementRule.query.count() == 0
-
-    @pytest.mark.skip("TODO: fix issue with test 'A transaction is already begun on this Session.'")
-    def test_move_siret_ok(self, authenticated_client, override_revenue_check):
-        pass

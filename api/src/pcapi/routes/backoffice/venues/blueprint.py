@@ -1227,7 +1227,6 @@ def remove_siret(venue_id: int) -> utils.BackofficeResponse:
             override_revenue_check=bool(form.override_revenue_check.data),
             new_pricing_point_id=form.new_pricing_point.data,
             author_user_id=current_user.id,
-            new_db_session=False,
         )
     except siret_api.CheckError as exc:
         return _render_remove_siret_content(venue, form=form, error=str(exc))
