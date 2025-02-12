@@ -182,8 +182,6 @@ class CollectiveStockFactory(BaseFactory):
     startDatetime = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=1))
     endDatetime = factory.LazyAttribute(lambda o: o.startDatetime)
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.startDatetime - datetime.timedelta(minutes=60))
-    # TODO: beginningDatetime required for now, the field will be removed later
-    beginningDatetime = factory.LazyAttribute(lambda o: o.startDatetime)
     dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=3))
     dateModified = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
     numberOfTickets = 25
