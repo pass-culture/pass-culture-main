@@ -120,7 +120,7 @@ class AccountTest:
         booking = BookingFactory(user=user, amount=Decimal("123.45"))
         CancelledBookingFactory(user=user, amount=Decimal("123.45"))
 
-        expected_num_queries = 6  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + feature + achievement
+        expected_num_queries = 7  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + feature + achievement + fraud check
         client.with_token(self.identifier)
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
@@ -140,8 +140,8 @@ class AccountTest:
             "firstDepositActivationDate": "2015-02-03T00:00:00Z",
             "depositExpirationDate": "2040-01-01T00:00:00Z",
             "eligibility": "age-18",
-            "eligibilityEndDatetime": "2019-01-11T11:00:00Z",
-            "eligibilityStartDatetime": "2015-01-11T00:00:00Z",
+            "eligibilityEndDatetime": "2019-01-10T23:00:00Z",
+            "eligibilityStartDatetime": "2015-01-10T23:00:00Z",
             "hasPassword": True,
             "isBeneficiary": True,
             "isEligibleForBeneficiaryUpgrade": False,
@@ -182,7 +182,7 @@ class AccountTest:
     def test_get_user_not_beneficiary(self, client, app):
         users_factories.UserFactory(email=self.identifier)
 
-        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud_review
+        expected_num_queries = 7  # user + achievement + booking + deposit + ff + fraud_review + fraud check
 
         client.with_token(email=self.identifier)
 
@@ -195,7 +195,7 @@ class AccountTest:
     def test_get_user_profile_empty_first_name(self, client, app):
         users_factories.UserFactory(email=self.identifier, firstName="")
 
-        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud_review
+        expected_num_queries = 7  # user + achievement + booking + deposit + ff + fraud_review + fraud check
 
         client.with_token(email=self.identifier)
         with assert_num_queries(expected_num_queries):
@@ -210,7 +210,7 @@ class AccountTest:
     def test_get_user_profile_legacy_activity(self, client):
         users_factories.UserFactory(email=self.identifier, activity="activity not in enum")
 
-        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud_review
+        expected_num_queries = 7  # user + achievement + booking + deposit + ff + fraud_review + fraud check
         with assert_num_queries(expected_num_queries):
             response = client.with_token(email=self.identifier).get("/native/v1/me")
 
@@ -327,7 +327,7 @@ class AccountTest:
     def test_not_eligible_user_should_not_need_to_fill_cultural_survey(self, client):
         user = users_factories.UserFactory(age=4)
 
-        expected_num_queries = 6  # user + achievement + booking + deposit + ff + beneficiary_fraud_review
+        expected_num_queries = 7  # user + achievement + booking + deposit + ff + beneficiary_fraud_review + fraud check
 
         client.with_token(user.email)
         with assert_num_queries(expected_num_queries):
@@ -385,6 +385,7 @@ class AccountTest:
         n_queries += 1  # deposit bookings
         n_queries += 1  # feature
         n_queries += 1  # achievement
+        n_queries += 1  # fraud check
         with assert_num_queries(n_queries):
             response = client.get("/native/v1/me")
             assert response.status_code == 200
@@ -392,7 +393,7 @@ class AccountTest:
     def should_display_cultural_survey_if_beneficiary(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
 
-        expected_num_queries = 6  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + feature + achievement
+        expected_num_queries = 7  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + feature + achievement + fraud check
 
         client.with_token(user.email)
 
@@ -406,7 +407,9 @@ class AccountTest:
         user = sso.user
         user.password = None
 
-        expected_num_queries = 7  # user(update) + user + achievements + bookings + deposit + ff + fraud review
+        expected_num_queries = (
+            8  # user(update) + user + achievements + bookings + deposit + ff + fraud review + fraud check
+        )
         with assert_num_queries(expected_num_queries):
             response = client.with_token(user.email).get("/native/v1/me")
             assert response.status_code == 200, response.json
@@ -416,7 +419,7 @@ class AccountTest:
     def test_currency_pacific_franc(self, client):
         user = users_factories.UserFactory(departementCode="988", postalCode="98818")
 
-        expected_num_queries = 7  # user*2 + achievements + bookings + deposit + ff + fraud reviews
+        expected_num_queries = 8  # user*2 + achievements + bookings + deposit + ff + fraud reviews + fraud check
         with assert_num_queries(expected_num_queries):
             response = client.with_token(user.email).get("/native/v1/me")
 
@@ -1418,7 +1421,7 @@ class UpdateUserEmailTest:
         # Ensure the access token is valid
         access_token = response.json["accessToken"]
 
-        expected_num_queries = 6  # user + achievement + booking + deposit + ff + beneficiary_fraud_review
+        expected_num_queries = 7  # user + achievement + booking + deposit + ff + beneficiary_fraud_review + fraud check
 
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
         with assert_num_queries(expected_num_queries):
@@ -1899,7 +1902,7 @@ class ShowEligibleCardTest:
         assert account_serializers.UserProfileResponse.from_orm(user).show_eligible_card == expected
 
     def test_user_eligible_but_created_after_18(self):
-        date_of_birth = datetime.utcnow() - relativedelta(years=18, days=5)
+        date_of_birth = datetime.utcnow() - relativedelta(years=19, days=5)
         date_of_creation = datetime.utcnow()
         user = users_factories.UserFactory(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
         assert account_serializers.UserProfileResponse.from_orm(user).show_eligible_card is False

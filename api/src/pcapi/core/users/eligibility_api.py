@@ -7,6 +7,7 @@ from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils import date as date_utils
 
 
 class EligibilityError(Exception):
@@ -137,11 +138,18 @@ def get_extended_eligibility_at_date(
 
     This is summed up as this pseudocode:  eligibility_start < specified_datetime < eligibility_end
     """
-    # TODO timezone these functions
-    eligibility_start = get_eligibility_start_datetime(date_of_birth)
-    eligibility_end = get_eligibility_end_datetime(date_of_birth)
+    tz_aware_datetime = specified_datetime
+    if not tz_aware_datetime.tzinfo:
+        tz_aware_datetime = tz_aware_datetime.replace(tzinfo=datetime.timezone.utc)
 
-    if not date_of_birth or not (eligibility_start <= specified_datetime < eligibility_end):  # type: ignore[operator]
+    eligibility_start = get_eligibility_start_datetime(date_of_birth, specified_datetime, department_code)
+    eligibility_end = get_eligibility_end_datetime(date_of_birth, department_code)
+    if (
+        not date_of_birth
+        or not eligibility_start
+        or not eligibility_end
+        or not (eligibility_start <= tz_aware_datetime < eligibility_end)
+    ):
         return None
 
     age = users_utils.get_age_at_date(date_of_birth, specified_datetime, department_code)
@@ -152,7 +160,7 @@ def get_extended_eligibility_at_date(
         if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
             return users_models.EligibilityType.UNDERAGE
         # If the user is older than 18 in UTC timezone, we consider them eligible until they reach eligibility_end
-        if constants.ELIGIBILITY_AGE_18 <= age and specified_datetime < eligibility_end:  # type: ignore[operator]
+        if constants.ELIGIBILITY_AGE_18 <= age:
             return users_models.EligibilityType.AGE18
 
     if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and age >= 17:
@@ -163,25 +171,31 @@ def get_extended_eligibility_at_date(
 
 def get_eligibility_start_datetime(
     date_of_birth: datetime.date | datetime.datetime | None,
+    specified_datetime: datetime.datetime,
+    department_code: str | None = None,
 ) -> datetime.datetime | None:
     if not date_of_birth:
         return None
 
-    date_of_birth = datetime.datetime.combine(date_of_birth, datetime.time(0, 0))
+    date_of_birth = date_utils.to_department_midnight(date_of_birth, department_code)
     fifteenth_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_UNDERAGE_RANGE[0])
+    seventeenth_birthday = date_of_birth + relativedelta(years=17)
 
-    return fifteenth_birthday
+    if specified_datetime < settings.CREDIT_V3_DECREE_DATETIME or not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
+        return fifteenth_birthday
+
+    return seventeenth_birthday
 
 
 def get_eligibility_end_datetime(
-    date_of_birth: datetime.date | datetime.datetime | None,
+    date_of_birth: datetime.date | datetime.datetime | None, department_code: str | None = None
 ) -> datetime.datetime | None:
     if not date_of_birth:
         return None
 
-    return datetime.datetime.combine(date_of_birth, datetime.time(0, 0)) + relativedelta(
-        years=constants.ELIGIBILITY_AGE_18 + 1, hour=11
-    )
+    date_of_birth = date_utils.to_department_midnight(date_of_birth, department_code)
+    nineteenth_birthday = date_of_birth + relativedelta(years=19)
+    return nineteenth_birthday
 
 
 def is_eligibility_activable(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:

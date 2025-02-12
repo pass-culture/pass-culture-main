@@ -641,16 +641,13 @@ class GetPublicAccountTest(GetEndpointHelper):
             user = users_factories.UserFactory()
             return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
 
-    @pytest.mark.parametrize(
-        "index,expected_badge, ff_count",
-        [(0, "Pass 15-17", 1), (1, "Pass 18", 1), (3, None, 0)],
-    )
-    def test_get_public_account(self, authenticated_client, index, expected_badge, ff_count):
+    @pytest.mark.parametrize("index,expected_badge", [(0, "Pass 15-17"), (1, "Pass 18"), (3, None)])
+    def test_get_public_account(self, authenticated_client, index, expected_badge):
         users = create_bunch_of_accounts()
         user = users[index]
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries + ff_count):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -694,7 +691,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -711,7 +708,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         users_factories.NewEmailSelectionEntryFactory(user=user)
         user_id = user.id
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -726,7 +723,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         users_factories.EmailValidationEntryFactory(user=user)
         user_id = user.id
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -738,7 +735,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         users_factories.EmailAdminUpdateEntryFactory(user=user)
         user_id = user.id
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -870,7 +867,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         _, _, _, random, _ = create_bunch_of_accounts()
         user_id = random.id
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1084,7 +1081,7 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         user_id = user.id
         # expected_num_queries depends on the number of feature flags checked (2 + user + FF)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1964,7 +1961,7 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             (18, fraud_models.FraudCheckType.EDUCONNECT, SubscriptionItemStatus.TODO, SubscriptionItemStatus.TODO),
             (19, fraud_models.FraudCheckType.EDUCONNECT, SubscriptionItemStatus.VOID, SubscriptionItemStatus.VOID),
             (18, fraud_models.FraudCheckType.UBBLE, SubscriptionItemStatus.TODO, SubscriptionItemStatus.OK),
-            (19, fraud_models.FraudCheckType.UBBLE, SubscriptionItemStatus.VOID, SubscriptionItemStatus.VOID),
+            (19, fraud_models.FraudCheckType.UBBLE, SubscriptionItemStatus.VOID, SubscriptionItemStatus.OK),
             (18, fraud_models.FraudCheckType.DMS, SubscriptionItemStatus.TODO, SubscriptionItemStatus.OK),
         ],
     )

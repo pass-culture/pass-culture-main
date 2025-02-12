@@ -148,9 +148,13 @@ class UserProfileGetterDict(GetterDict):
         if key == "domainsCredit":
             return users_api.get_domains_credit(user)
         if key == "eligibilityEndDatetime":
-            return eligibility_api.get_eligibility_end_datetime(user.birth_date)
+            return eligibility_api.get_eligibility_end_datetime(user.birth_date, user.departementCode)
         if key == "eligibilityStartDatetime":
-            return eligibility_api.get_eligibility_start_datetime(user.birth_date)
+            first_eligible_registration_date = eligibility_api.get_first_eligible_registration_date(
+                user, user.birth_date
+            )
+            time_marker = first_eligible_registration_date or datetime.datetime.utcnow()
+            return eligibility_api.get_eligibility_start_datetime(user.birth_date, time_marker, user.departementCode)
         if key == "firstDepositActivationDate":
             return user.first_deposit_activation_date
         if key == "firstName":
