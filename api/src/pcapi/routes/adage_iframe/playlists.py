@@ -7,7 +7,6 @@ from sqlalchemy.sql.expression import func
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository
-import pcapi.core.educational.api.favorites as favorites_api
 import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.api.playlists as playlists_api
 from pcapi.core.educational.models import OfferAddressType
@@ -76,10 +75,6 @@ def get_classroom_playlist(
             .all()
         )
 
-    favorite_ids = favorites_api.get_redactors_favorite_templates_subset(
-        redactor, [item.collective_offer_template.id for item in playlist_items]
-    )
-
     return serializers.ListCollectiveOfferTemplateResponseModel(
         collectiveOffers=[
             typing.cast(
@@ -87,7 +82,7 @@ def get_classroom_playlist(
                 serialize_collective_offer(
                     offer=item.collective_offer_template,
                     serializer=serializers.CollectiveOfferTemplateResponseModel,
-                    is_favorite=item.collective_offer_template.id in favorite_ids,
+                    is_favorite=item.collective_offer_template in redactor.favoriteCollectiveOfferTemplates,
                     venue_distance=item.distanceInKm,
                 ),
             )
@@ -175,10 +170,6 @@ def new_template_offers_playlist(
             .all()
         )
 
-    favorite_ids = favorites_api.get_redactors_favorite_templates_subset(
-        redactor, [item.collective_offer_template.id for item in playlist_items]
-    )
-
     return serializers.ListCollectiveOfferTemplateResponseModel(
         collectiveOffers=[
             typing.cast(
@@ -186,7 +177,7 @@ def new_template_offers_playlist(
                 serialize_collective_offer(
                     offer=item.collective_offer_template,
                     serializer=serializers.CollectiveOfferTemplateResponseModel,
-                    is_favorite=item.collective_offer_template.id in favorite_ids,
+                    is_favorite=item.collective_offer_template in redactor.favoriteCollectiveOfferTemplates,
                     event_distance=(
                         item.distanceInKm
                         if item.collective_offer_template.offerVenue["addressType"]

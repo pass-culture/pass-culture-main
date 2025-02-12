@@ -609,7 +609,7 @@ class CollectiveOffer(
         "OfferValidationRule", secondary="validation_rule_collective_offer_link", back_populates="collectiveOffers"
     )
 
-    educationalRedactorsFavorite: sa.orm.Mapped["EducationalRedactor"] = relationship(
+    educationalRedactorsFavorite: sa_orm.Mapped[list["EducationalRedactor"]] = relationship(
         "EducationalRedactor",
         secondary="collective_offer_educational_redactor",
         back_populates="favoriteCollectiveOffers",
@@ -1124,7 +1124,7 @@ class CollectiveOfferTemplate(
 
     nationalProgram: sa_orm.Mapped["NationalProgram"] = relationship("NationalProgram", foreign_keys=nationalProgramId)
 
-    educationalRedactorsFavorite: sa.orm.Mapped["EducationalRedactor"] = relationship(
+    educationalRedactorsFavorite: sa_orm.Mapped[list["EducationalRedactor"]] = relationship(
         "EducationalRedactor",
         secondary="collective_offer_template_educational_redactor",
         back_populates="favoriteCollectiveOfferTemplates",
@@ -1728,13 +1728,13 @@ class EducationalRedactor(PcObject, Base, Model):
         "CollectiveOfferRequest", back_populates="educationalRedactor"
     )
 
-    favoriteCollectiveOffers: sa.orm.Mapped["CollectiveOffer"] = relationship(
+    favoriteCollectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = relationship(
         "CollectiveOffer",
         secondary="collective_offer_educational_redactor",
         back_populates="educationalRedactorsFavorite",
     )
 
-    favoriteCollectiveOfferTemplates: sa.orm.Mapped["CollectiveOfferTemplate"] = relationship(
+    favoriteCollectiveOfferTemplates: sa_orm.Mapped[list["CollectiveOfferTemplate"]] = relationship(
         "CollectiveOfferTemplate",
         secondary="collective_offer_template_educational_redactor",
         back_populates="educationalRedactorsFavorite",
