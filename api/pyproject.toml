@@ -19,7 +19,7 @@ dependencies = [
 "click-option-group==0.5.6",
 "click==8.1.8",
 "clickhouse-sqlalchemy==0.2.7",
-"cryptography==44.0.0",
+"cryptography==44.0.1",
 "ecdsa (>=0.19.0,<0.20.0)",
 "email-validator==2.2.0",
 "factory-boy==3.3.1",
@@ -80,7 +80,7 @@ dependencies = [
 "wtforms-sqlalchemy==0.4.2",
 "wtforms==3.2.1",
 "xlsxwriter==3.2.2",
-"zeep==4.3.1"
+"zeep==4.3.1",
 ]
 
 [tool.poetry.group.dev]
