@@ -16,7 +16,7 @@ def is_latin(s: str, accepted_chars: list[str]) -> bool:
         if char in accepted_chars:
             continue
         try:
-            if not "LATIN" in unicodedata.name(char):
+            if "LATIN" not in unicodedata.name(char):
                 return False
         # if unicodedata.name does not recognize char, it raises a ValueError
         except ValueError:

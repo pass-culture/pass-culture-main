@@ -28,8 +28,8 @@ def cases_warning(self):
     markupsafe.Markup(f"{variable}")
     Markup(f"{variable}")
     # string.format()
-    markupsafe.Markup("variable".format(variable=variable))
-    Markup("variable".format(variable=variable))
+    markupsafe.Markup("variable".format())
+    Markup("variable".format())
     # percent formatting
     markupsafe.Markup("%s" % variable)
     Markup("%s" % variable)
