@@ -4573,7 +4573,7 @@ class UserRecreditTest:
             # User turned 16. They can be recredited
             assert api._can_be_recredited(user) is True
 
-            api.recredit_underage_users()
+            api.recredit_users()
             assert user.deposit.amount == 50
             assert user.deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_16
             assert user.recreditAmountToShow == 30
@@ -4583,7 +4583,7 @@ class UserRecreditTest:
             # User turned 17. They can be recredited
             assert api._can_be_recredited(user) is True
 
-            api.recredit_underage_users()
+            api.recredit_users()
             assert user.deposit.amount == 80
             assert user.deposit.recredits[1].recreditType == models.RecreditType.RECREDIT_17
             assert user.recreditAmountToShow == 30
@@ -4768,8 +4768,8 @@ class UserRecreditTest:
             assert api._has_been_recredited(user) is False
             assert caplog.records[0].extra["user_id"] == user.id
 
-    def test_recredit_underage_users(self):
-        # This test aims to check all the possible use cases for recredit_underage_users
+    def test_recredit_users(self):
+        # This test aims to check all the possible use cases for recredit_users
         # We create users with different ages (15, 16, 17) with different stages of activation
         # Each user that is credited is supposed to have the corresponding fraud_checks.
         # - We create the fraud_checks manually to override the registration_datetime
@@ -4933,7 +4933,7 @@ class UserRecreditTest:
 
         # Run the task
         with time_machine.travel("2020, 5, 2"):
-            api.recredit_underage_users()
+            api.recredit_users()
 
         # Check the results:
         # Assert we created new Recredits for user_16_not_recredited, user_17_not_recredited and user_17_only_recredited_at_16
@@ -4975,7 +4975,7 @@ class UserRecreditTest:
 
         # recredit the following year
         with time_machine.travel("2016-05-01"):
-            api.recredit_underage_users()
+            api.recredit_users()
 
         assert user_activated_at_15.deposit.amount == 50
         assert user_activated_at_16.deposit.amount == 60
@@ -4986,7 +4986,7 @@ class UserRecreditTest:
 
         # recrediting the day after does not affect the amount
         with time_machine.travel("2016-05-02"):
-            api.recredit_underage_users()
+            api.recredit_users()
 
         assert user_activated_at_15.deposit.amount == 50
         assert user_activated_at_16.deposit.amount == 60
@@ -4997,7 +4997,7 @@ class UserRecreditTest:
 
         # recredit the following year
         with time_machine.travel("2017-05-01"):
-            api.recredit_underage_users()
+            api.recredit_users()
 
         assert user_activated_at_15.deposit.amount == 80
         assert user_activated_at_16.deposit.amount == 60
@@ -5015,7 +5015,7 @@ class UserRecreditTest:
             assert user.recreditAmountToShow is None
 
             # Should not recredit if the account was created the same day as the birthday
-            api.recredit_underage_users()
+            api.recredit_users()
             assert user.deposit.amount == 30
             assert user.recreditAmountToShow is None
 
@@ -5052,7 +5052,7 @@ class UserRecreditTest:
         db.session.add(deposit)
         db.session.flush()
 
-        api.recredit_underage_users()
+        api.recredit_users()
 
         assert set(recredit.recreditType for recredit in deposit.recredits) == {
             models.RecreditType.RECREDIT_16,
@@ -5066,7 +5066,7 @@ class UserRecreditTest:
             assert user.deposit.amount == 20
 
         with time_machine.travel("2021-05-01"):
-            api.recredit_underage_users()
+            api.recredit_users()
             assert user.deposit.amount == 50
 
         push_data = push_testing.requests[-1]
