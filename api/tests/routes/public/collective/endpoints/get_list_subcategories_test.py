@@ -12,12 +12,11 @@ class CollectiveOffersGetCategoriesTest(PublicAPIEndpointBaseHelper):
     endpoint_method = "get"
 
     num_queries = 1  # select api_key, offerer and provider
-    num_queries += 1  # select features
 
     def test_list_sub_categories(self, client):
         plain_api_key, _ = self.setup_provider()
 
-        with testing.assert_num_queries(2):
+        with testing.assert_num_queries(self.num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
             assert response.status_code == 200
 

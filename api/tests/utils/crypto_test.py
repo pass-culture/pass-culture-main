@@ -4,6 +4,7 @@ from pcapi.utils import crypto
 
 
 class DevEnvironmentPasswordHasherTest:
+    @pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=True)
     def test_hash_password_uses_md5(self):
         hashed = crypto.hash_password("secret")
         assert hashed == b"5ebe2294ecd0e0f08eab7690d2a6ee69"
@@ -27,7 +28,6 @@ class DevEnvironmentPasswordHasherTest:
         assert "user@AZERTY123" not in str(exception), str(exception)
 
 
-@pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=False)
 class ProdEnvironmentPasswordHasherTest:
     def test_hash_password_uses_bcrypt(self):
         hashed = crypto.hash_password("secret")

@@ -33,7 +33,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
 
         offer_id = offer.id
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offer
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"offer_id": offer_id})
@@ -45,7 +44,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
 
         offer_id = offer.id
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offer
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"offer_id": offer_id})
@@ -62,7 +60,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
 
         product_offer_id = product_offer.id
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offer
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(
@@ -86,7 +83,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
 
         offer_id = offer.id
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
         booking_id = booking.id
@@ -118,7 +114,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
 
         product_offer_id = product_offer.id
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
         num_queries += 1  # select user
@@ -183,7 +178,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
 
         event_offer_id = event_offer.id
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
         num_queries += 1  # select user
@@ -280,7 +274,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         event_offer_id = event_offer.id
         price_category_id = price_category.id
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
         num_queries += 1  # select user
@@ -381,7 +374,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         event_offer_id = event_offer.id
         event_stock_id = event_stock.id
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
         num_queries += 1  # select user
@@ -455,7 +447,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
 
         event_offer_id = event_offer.id
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
         num_queries += 1  # select user
@@ -529,7 +520,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         )
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
         num_queries += 1  # select user
@@ -610,7 +600,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         )
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
         num_queries += 1  # select user
@@ -689,7 +678,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         )
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
         num_queries += 1  # select user
@@ -788,7 +776,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         )
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
         num_queries += 1  # select user
@@ -866,7 +853,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         )
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         num_queries += 1  # select offer
         num_queries += 1  # select bookings
         product_offer_id = product_offer.id
@@ -885,7 +871,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         bookings_factories.UsedBookingFactory(stock=product_stock)
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
 
