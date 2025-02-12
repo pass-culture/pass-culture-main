@@ -12,7 +12,7 @@ adage_requests: list[dict[str, AdageRequestItem | None]] = []
 
 
 def reset_requests() -> None:
-    global adage_requests  # pylint: disable=global-statement
+    global adage_requests  # pylint: disable=global-statement  # noqa: PLW0603 (global-statement)
     adage_requests = []
 
 

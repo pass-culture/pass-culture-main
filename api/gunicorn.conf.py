@@ -31,7 +31,7 @@ def child_exit(server, worker):
         GunicornPrometheusMetrics.mark_process_dead_on_child_exit(worker.pid)
         try:
             _clean_up_prometheus_metrics_directory(worker)
-        except:
+        except Exception:  # pylint: disable=broad-exception-caught
             logger.exception("Got error while cleaning up Prometheus metrics directory")
 
 

@@ -51,7 +51,7 @@ class GetRemindersTest:
         for user, expected_reminders in [(user_1, expected_reminders_1), (user_2, expected_reminders_2)]:
             user_email = user.email
             with assert_num_queries(self.num_queries_success):
-                response = response = client.with_token(user_email).get("/native/v1/me/reminders")
+                response = client.with_token(user_email).get("/native/v1/me/reminders")
                 assert response.status_code == 200
 
             assert response.json == expected_reminders

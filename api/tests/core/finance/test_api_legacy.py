@@ -1368,15 +1368,15 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
     assert len(invoices) == 1
     invoice = invoices[0]
     assert len(invoice.lines) == 2
-    assert {l.label for l in invoice.lines} == {"Réservations", "Gestes commerciaux"}
+    assert {line.label for line in invoice.lines} == {"Réservations", "Gestes commerciaux"}
 
-    bookings_line = [l for l in invoice.lines if l.label == "Réservations"][0]
+    bookings_line = [line for line in invoice.lines if line.label == "Réservations"][0]
     assert bookings_line.contributionAmount == 0
     assert bookings_line.group == {"label": "Barème général", "position": 1}
     assert bookings_line.rate == Decimal("1.0")
     assert bookings_line.reimbursedAmount == -298_30
 
-    commercial_gestures_line = [l for l in invoice.lines if l.label == "Gestes commerciaux"][0]
+    commercial_gestures_line = [line for line in invoice.lines if line.label == "Gestes commerciaux"][0]
     assert commercial_gestures_line.contributionAmount == 0
     assert commercial_gestures_line.group == {"label": "Barème général", "position": 1}
     assert commercial_gestures_line.rate == Decimal("1.0")

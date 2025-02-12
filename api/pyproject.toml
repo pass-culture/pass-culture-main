@@ -107,6 +107,7 @@ pytest-mock = "^3.14.0"
 pytest-socket = "^0.7.0"
 pytest-split = "^0.10.0"
 requests-mock = "^1.12.1"
+ruff = "^0.11.4"
 types-protobuf = "^5.29.1.20241207"
 types-python-dateutil = "^2.9.0.20241206"
 types-pytz = "^2024.2.0.20241221"
@@ -226,6 +227,87 @@ msg-template = "{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
 [tool.pylint.FORMAT]
 max-line-length = 120
 
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+extend-select = [
+  "D419",  # empty-docstring
+  "W291",  # trailing-whitespace
+  "PLC0414",  # useless-import-alias
+  "PLC2401",  # non-ascii-name
+  "PLC3002",  # unnecessary-direct-lambda-call
+  "PLE0101",  # return-in-init
+  "F706",  # return-outside-function
+  "F704",  # yield-outside-function
+  "PLE0115",  # nonlocal-and-global
+  "PLE0116",  # continue-in-finally
+  "PLE0117",  # nonlocal-without-binding
+  "PLE0241",  # duplicate-bases
+  "PLE0302",  # unexpected-special-method-signature
+  "PLE0604",  # invalid-all-object
+  "PLE0605",  # invalid-all-format
+  "PLE0643",  # potential-index-error
+  "PLE0704",  # misplaced-bare-raise
+  "PLE1205",  # logging-too-many-args
+  "PLE1206",  # logging-too-few-args
+  "PLE1307",  # bad-string-format-type
+  "PLE1310",  # bad-str-strip-call
+  "PLE1507",  # invalid-envvar-value
+  "PLE1519",  # singledispatch-method
+  "PLE1520",  # singledispatchmethod-function
+  "PLE2502",  # bidirectional-unicode
+  "PLE2510",  # invalid-character-backspace
+  "PLE2512",  # invalid-character-sub
+  "PLE2513",  # invalid-character-esc
+  "PLE2514",  # invalid-character-nul
+  "PLE2515",  # invalid-character-zero-width-space
+  "UP004",  # useless-object-inheritance
+  "PLR0206",  # property-with-parameters
+  "PLR1704",  # redefined-argument-from-local
+  "PLR1711",  # useless-return
+  "C416",  # unnecessary-comprehension
+  "PLR1736",  # unnecessary-list-index-lookup
+  "PLW0120",  # useless-else-on-loop
+  "PLW0127",  # self-assigning-variable
+  "PLW0128",  # redeclared-assigned-name
+  "PLW0129",  # assert-on-string-literal
+  "B033",  # duplicate-value
+  "PLW0131",  # named-expr-without-context
+  "PLW0211",  # bad-staticmethod-argument
+  "PLW0245",  # super-without-brackets
+  "PLW0406",  # import-self
+  "PLW0602",  # global-variable-not-assigned
+  "PLW0603",  # global-statement
+  "PLW0604",  # global-at-module-level
+  "F401",  # unused-import
+  "F841",  # unused-variable
+  "E722",  # bare-except
+  "PLW0711",  # binary-op-exception
+  "PLW1501",  # bad-open-mode
+  # "PLW1508",  # invalid-envvar-default not compatible by what is done in settings.py
+  "PLW1509",  # subprocess-popen-preexec-fn
+  "PLW2101",  # useless-with-lock
+  "PLW3301",  # nested-min-max
+  # "E501",  # line-too-long
+  # "PLR0904",  # too-many-public-methods
+  # "PLR0911",  # too-many-return-statements
+  # "PLR0912",  # too-many-branches
+  # "PLR0913",  # too-many-arguments
+  # "PLR0914",  # too-many-locals
+  # "PLR0915"  # too-many-statements
+]
+
+# Pylint rules mapped to Ruff rules
+ignore = [
+    # New rules
+    "E731",       # Do not assign a `lambda` expression, use a `def`
+    "E712",       # Avoid equality comparisons to `True`; use `if offer.audioDisabilityCompliant:` for truth checks (issue in assert)
+    "E711",       # Use 'is' instead of '==' to test for None -> several imcompatibilities with SQLAlchemy
+    "E402",       # Module level import not at top of file
+    "F401",       # FIXME: Unused import -> will required a dedicated work
+]
 
 [tool.pytest.ini_options]
 addopts = [

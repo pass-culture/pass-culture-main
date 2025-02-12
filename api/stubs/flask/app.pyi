@@ -11,7 +11,7 @@ from . import cli as cli, json as json
 from .blueprints import Blueprint as Blueprint
 from .config import Config as Config, ConfigAttribute as ConfigAttribute
 from .ctx import AppContext as AppContext, RequestContext as RequestContext
-from .globals import g as g, request as request, session as session
+from .globals import g as g, session
 from .helpers import (
     get_debug_flag as get_debug_flag,
     get_env as get_env,
@@ -42,6 +42,7 @@ from .typing import (
     TemplateGlobalCallable as TemplateGlobalCallable,
     TemplateTestCallable as TemplateTestCallable,
 )
+
 from .wrappers import Request as Request, Response as Response
 from _typeshed import Incomplete
 import redis

@@ -1761,7 +1761,7 @@ class CollectiveBooking(PcObject, models.Base, models.Model):
         self.dateUsed = None
 
     def uncancel_booking(self) -> None:
-        if not (self.status is CollectiveBookingStatus.CANCELLED):
+        if self.status is not CollectiveBookingStatus.CANCELLED:
             raise booking_exceptions.BookingIsNotCancelledCannotBeUncancelled()
 
         self.cancellationDate = None

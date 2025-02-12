@@ -95,7 +95,7 @@ def preprocess_scss() -> None:
 
 
 def get_hashes() -> HashesContainer:
-    global hashes  # pylint: disable=global-statement
+    global hashes  # pylint: disable=global-statement  # noqa: PLW0603 (global-statement)
     if settings.ENABLE_BO_BUNDLES_AUTORELOAD:
         # make it easier to debug js and css files in bo (but it takes a few ms for each http call)
         generate_bundle(JS_FILES, JS_BUNDLE)

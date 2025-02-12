@@ -1,6 +1,4 @@
 import datetime
-from datetime import datetime
-from datetime import timedelta
 import logging
 from unittest.mock import patch
 
@@ -35,7 +33,7 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
             None,
         ]
 
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
         stock = offers_factories.EventStockFactory(
             beginningDatetime=tomorrow,
         )
@@ -50,7 +48,7 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
         self,
         mock_get_booking_event_reminder_to_beneficiary_email_data,
     ):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
         stock = offers_factories.EventStockFactory(
             beginningDatetime=tomorrow,
         )
@@ -70,7 +68,7 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
         "pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficiary.get_booking_event_reminder_to_beneficiary_email_data"
     )
     def should_log_errors(self, mock_get_booking_event_reminder_to_beneficiary_email_data, caplog):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
         stock = offers_factories.EventStockFactory(
             beginningDatetime=tomorrow,
         )
@@ -85,7 +83,7 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
             assert caplog.records[0].extra["userId"] == individual_booking_with_error.userId
 
     def should_execute_one_query_only(self):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
         stock = offers_factories.EventStockFactory(beginningDatetime=tomorrow)
         bookings_factories.BookingFactory.create_batch(3, stock=stock)
 

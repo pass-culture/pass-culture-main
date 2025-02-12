@@ -132,7 +132,7 @@ class Return200Test:
 
         # Try with the same data without the filter. We should get both OffererAddress
         with assert_num_queries(self.num_queries):
-            response = response = client.get(f"/offerers/{offerer_id}/offerer_addresses")
+            response = client.get(f"/offerers/{offerer_id}/offerer_addresses")
             assert response.status_code == 200
             assert len(response.json) == 2
 

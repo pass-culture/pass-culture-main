@@ -815,8 +815,8 @@ class EMSSyncSitesTest:
             reader = DictReader(f)
 
             for line, cinema in zip(
-                sorted(reader, key=lambda r: r["ems_id"]),
-                sorted(fixtures.SITES_DATA_VERSION_0["sites"], key=lambda l: l["id"]),
+                sorted(reader, key=lambda row: row["ems_id"]),
+                sorted(fixtures.SITES_DATA_VERSION_0["sites"], key=lambda site: site["id"]),
             ):
                 assert line == {
                     "siret": cinema["siret"],

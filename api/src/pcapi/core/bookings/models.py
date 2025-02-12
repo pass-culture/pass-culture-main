@@ -231,7 +231,7 @@ class Booking(PcObject, Base, Model):
         self.dateUsed = None
 
     def uncancel_booking_set_used(self) -> None:
-        if not (self.status is BookingStatus.CANCELLED):
+        if self.status is not BookingStatus.CANCELLED:
             raise exceptions.BookingIsNotCancelledCannotBeUncancelled()
         self.cancellationDate = None
         self.cancellationReason = None

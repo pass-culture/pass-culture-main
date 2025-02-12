@@ -1,4 +1,5 @@
 import datetime
+from typing import TYPE_CHECKING
 
 import factory
 import pytest
@@ -18,6 +19,10 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+
+
+if TYPE_CHECKING:
+    from pcapi.tests.conftest import TestClient
 
 
 pytestmark = [

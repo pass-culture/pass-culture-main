@@ -79,11 +79,11 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "field": "category",
         "column": offers_models.Offer.subcategoryId,
         "facet": "offer.subcategoryId",
-        "special": lambda l: [
-            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id in l
+        "special": lambda categories: [
+            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id in categories
         ],
-        "algolia_special": lambda l: [
-            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id in l
+        "algolia_special": lambda categories: [
+            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id in categories
         ],
     },
     "CREATION_DATE": {

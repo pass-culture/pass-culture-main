@@ -28,7 +28,7 @@ def downgrade() -> None:
     op.execute(
         """
         ALTER TABLE user_pro_flags DROP CONSTRAINT IF EXISTS "user_pro_flags_userId_fkey";
-        ALTER TABLE user_pro_flags 
+        ALTER TABLE user_pro_flags
         ADD CONSTRAINT "user_pro_flags_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user" ("id") ON DELETE CASCADE NOT VALID;
         """
     )

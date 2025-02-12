@@ -117,6 +117,40 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+  ruff-checks:
+    name: "Ruff"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - name: "Run ruff"
+        uses: astral-sh/ruff-action@v3
+        with:
+          src: "./api/src"
+      - name: "Slack Notification"
+        if: ${{ failure() && github.ref == 'refs/heads/master'  }}
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          # channel #dev
+          channel-id: "CPZ7U1CNP"
+          payload: |
+            {
+            "attachments": [
+              {
+                "mrkdwn_in": ["text"],
+                "color": "#A30002",
+                "author_name": "${{github.actor}}",
+                "author_link": "https://github.com/${{github.actor}}",
+                "author_icon": "https://github.com/${{github.actor}}.png",
+                "title": "Api tests",
+                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                "text": "Les tests ruff-checks échouent sur `master` :boom:"
+              }
+            ],
+            "unfurl_links": false,
+            "unfurl_media": false
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
 
   pylint-check:
     name: "Pylint"

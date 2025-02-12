@@ -2725,14 +2725,14 @@ class OfferChroniclesTest:
         long_text = """
         Vesper is a world built on the ruins of older ones: in the dark of that colossal cavern no one has ever known the edges of, empires rise and fall like flickering candles.
 
-        Civilization huddles around pits of the light that falls through the cracks in firmament, known by men as the Glare. 
-        It is the unblinking stare of the never-setting sun that destroyed the Old World, the cruel mortar that allows survival far below. 
-        Few venture beyond its cast, for in the monstrous and primordial darkness of the Gloam old gods and devils prowl as men made into darklings worship hateful powers. 
+        Civilization huddles around pits of the light that falls through the cracks in firmament, known by men as the Glare.
+        It is the unblinking stare of the never-setting sun that destroyed the Old World, the cruel mortar that allows survival far below.
+        Few venture beyond its cast, for in the monstrous and primordial darkness of the Gloam old gods and devils prowl as men made into darklings worship hateful powers.
         So it has been for millennia, from the fabled reign of the Antediluvians to these modern nights of blackpowder and sail. And now the times are changing again.
 
-        The fragile peace that emerged after the last of the Succession Wars is falling apart, the great powers squabbling over trade and colonies. 
-        Conspiracies bloom behind every throne, gods of the Old Night offer wicked pacts to those who would tear down the order things and of all Vesper only the Watch has seen the signs of the madness to come. 
-        God-killers whose duty is to enforce the peace between men and monsters, the Watch would hunt the shadows. 
+        The fragile peace that emerged after the last of the Succession Wars is falling apart, the great powers squabbling over trade and colonies.
+        Conspiracies bloom behind every throne, gods of the Old Night offer wicked pacts to those who would tear down the order things and of all Vesper only the Watch has seen the signs of the madness to come.
+        God-killers whose duty is to enforce the peace between men and monsters, the Watch would hunt the shadows.
         Yet its captain-generals know the strength of their companies has waned, and to meet the coming doom measures will have to be taken.
 
         It will begin with Scholomance, the ancient school of the order opened again for the first time in over a century, and the students who will walk its halls."""

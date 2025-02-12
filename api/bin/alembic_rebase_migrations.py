@@ -85,7 +85,7 @@ def get_alembic_heads_on_local(git_root: pathlib.Path) -> dict[str, str]:
     Alembic branch.
     """
     path = git_root / ALEMBIC_VERSION_CONFLICT_DETECTION_PATH
-    lines = [l.strip() for l in path.read_text().splitlines()]
+    lines = [line.strip() for line in path.read_text().splitlines()]
     # Expected format:
     #     <<<<<< HEAD
     #     f830372aa947 (pre) (head)

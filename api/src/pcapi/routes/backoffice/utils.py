@@ -349,7 +349,7 @@ def _manage_joins(
     join_containers = sorted((joins_definition[join] for join in joins), key=len, reverse=True)
     for join_container in join_containers:
         for join_dict in join_container:
-            if not join_dict["name"] in join_log:
+            if join_dict["name"] not in join_log:
                 if join_type == "inner_join":
                     query = query.join(*join_dict["args"])
                 elif join_type == "outer_join":

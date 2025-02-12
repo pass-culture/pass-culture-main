@@ -589,12 +589,12 @@ class HasUserPerformedIdentityCheckTest:
             assert not fraud_api.has_user_performed_identity_check(user)
 
     def test_has_user_performed_identity_check_without_identity_fraud_check(self):
-        user = user = build_user_at_id_check(18)
+        user = build_user_at_id_check(18)
 
         assert not fraud_api.has_user_performed_identity_check(user)
 
     def test_has_user_performed_identity_check_status_initiated(self):
-        user = user = build_user_at_id_check(18)
+        user = build_user_at_id_check(18)
         ubble_content = fraud_factories.UbbleContentFactory(
             status=ubble_serializers.UbbleIdentificationStatus.INITIATED
         )

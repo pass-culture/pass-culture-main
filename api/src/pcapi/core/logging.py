@@ -233,7 +233,7 @@ class JsonFormatter(logging.Formatter):
 
 
 def install_logging() -> None:
-    global _internal_logger  # pylint: disable=global-statement
+    global _internal_logger  # pylint: disable=global-statement  # noqa: PLW0603 (global-statement)
 
     # Avoid side effects of calling this function more than once.
     if _internal_logger is not None:
