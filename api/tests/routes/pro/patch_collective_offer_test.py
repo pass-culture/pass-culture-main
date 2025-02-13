@@ -10,6 +10,7 @@ import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.educational.schemas import EducationalBookingEdition
 import pcapi.core.educational.testing as educational_testing
@@ -283,47 +284,182 @@ class Returns200Test:
         assert offer.interventionArea == ["01", "2A"]
         assert offer.formats == [subcategories.EacFormat.CONCERT]
 
-    def test_offerer_address_venue(self, client):
+    def test_offer_venue_offerer_venue(self, client):
         offer = educational_factories.CollectiveOfferFactory()
+        assert len(offer.interventionArea) > 0
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
         data = {"offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": offer.venue.id}}
-
         client = client.with_session_auth("user@example.com")
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
         offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
-        assert offer.offererAddressId == offer.venue.offererAddressId
-        assert offer.locationType == CollectiveLocationType.VENUE
+        assert offer.offerVenue == data["offerVenue"]
+        assert offer.interventionArea == []
 
-    def test_offerer_address_school(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-        data = {"offerVenue": {"addressType": "school", "otherAddress": "", "venueId": None}}
-
-        client = client.with_session_auth("user@example.com")
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
-
-        assert response.status_code == 200
-        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
-        assert offer.offererAddressId == None
-        assert offer.locationType == CollectiveLocationType.SCHOOL
-
-    def test_offerer_address_other(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-        data = {"offerVenue": {"addressType": "other", "otherAddress": "In Paris", "venueId": None}}
-
-        client = client.with_session_auth("user@example.com")
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
-
-        assert response.status_code == 200
-        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
         assert offer.offererAddressId == None
         assert offer.locationType == None
+        assert offer.locationComment == None
+
+    def test_offer_venue_school(self, client):
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        initial_intervention_area = offer.interventionArea
+        assert len(initial_intervention_area) > 0
+
+        data = {"offerVenue": {"addressType": "school", "otherAddress": "", "venueId": None}}
+        client = client.with_session_auth("user@example.com")
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+        assert offer.offerVenue == data["offerVenue"]
+        assert offer.interventionArea == initial_intervention_area
+
+        assert offer.offererAddressId == None
+        assert offer.locationType == None
+        assert offer.locationComment == None
+
+    def test_offer_venue_other(self, client):
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        initial_intervention_area = offer.interventionArea
+        assert len(initial_intervention_area) > 0
+
+        data = {"offerVenue": {"addressType": "other", "otherAddress": "In Paris", "venueId": None}}
+        client = client.with_session_auth("user@example.com")
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+        assert offer.offerVenue == data["offerVenue"]
+        assert offer.interventionArea == initial_intervention_area
+
+        assert offer.offererAddressId == None
+        assert offer.locationType == None
+        assert offer.locationComment == None
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_location_venue(self, client):
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        oa = offer.venue.offererAddress
+        data = {
+            "location": {
+                "locationType": CollectiveLocationType.VENUE.value,
+                "locationComment": None,
+                "address": {
+                    "isVenueAddress": True,
+                    "isManualEdition": False,
+                    "city": oa.address.city,
+                    "latitude": oa.address.latitude,
+                    "longitude": oa.address.longitude,
+                    "postalCode": oa.address.postalCode,
+                    "street": oa.address.street,
+                },
+            },
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+
+        assert offer.offererAddressId == oa.id
+        assert offer.locationType == CollectiveLocationType.VENUE
+        assert offer.locationComment is None
+
+        assert offer.offerVenue == {"addressType": "offererVenue", "otherAddress": "", "venueId": offer.venue.id}
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_location_school(self, client):
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {
+            "location": {"locationType": CollectiveLocationType.SCHOOL.value, "locationComment": None, "address": None},
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+
+        assert offer.offererAddressId is None
+        assert offer.locationType == CollectiveLocationType.SCHOOL
+        assert offer.locationComment is None
+
+        assert offer.offerVenue == {"addressType": "school", "otherAddress": "", "venueId": None}
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_location_address(self, client):
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {
+            "location": {
+                "locationType": CollectiveLocationType.ADDRESS.value,
+                "locationComment": None,
+                "address": {
+                    "isVenueAddress": False,
+                    "isManualEdition": False,
+                    "city": "Paris",
+                    "label": "My address",
+                    "latitude": "48.87171",
+                    "longitude": "2.308289",
+                    "postalCode": "75001",
+                    "street": "3 Rue de Valois",
+                },
+            },
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+
+        assert offer.offererAddress.label == "My address"
+        assert offer.offererAddress.address.city == "Paris"
+        assert offer.offererAddress.address.postalCode == "75001"
+        assert offer.offererAddress.address.street == "3 Rue de Valois"
+        assert offer.offererAddress.address.isManualEdition == False
+        assert offer.locationType == CollectiveLocationType.ADDRESS
+        assert offer.locationComment is None
+
+        assert offer.offerVenue == {
+            "addressType": "other",
+            "otherAddress": "3 Rue de Valois 75001 Paris",
+            "venueId": None,
+        }
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_location_to_be_defined(self, client):
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {
+            "location": {
+                "locationType": CollectiveLocationType.TO_BE_DEFINED.value,
+                "locationComment": "Right here",
+                "address": None,
+            },
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+
+        assert offer.offererAddressId is None
+        assert offer.locationType == CollectiveLocationType.TO_BE_DEFINED
+        assert offer.locationComment == "Right here"
+
+        assert offer.offerVenue == {"addressType": "other", "otherAddress": "Right here", "venueId": None}
 
 
 class Returns400Test:
@@ -569,6 +705,32 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_patch_collective_offer_cannot_receive_offer_venue(self, auth_client, venue):
+        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+
+        payload = {
+            "offerVenue": {"addressType": OfferAddressType.SCHOOL.value, "venueId": None, "otherAddress": ""},
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"offerVenue": ["Cannot receive offerVenue, use location instead"]}
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=False)
+    def test_patch_collective_offer_cannot_receive_location(self, auth_client, venue):
+        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+
+        payload = {
+            "location": {"locationType": CollectiveLocationType.SCHOOL.value, "locationComment": None, "address": None},
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"location": ["Cannot receive location, use offerVenue instead"]}
 
 
 @pytest.mark.usefixtures("db_session")
@@ -831,20 +993,27 @@ class Returns404Test:
         assert response.json == {"Partner": "User not in Adage can't edit the offer"}
 
     def test_patch_collective_offer_replacing_by_unknown_venue(self, client):
-        # Given
         offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offerer,
-        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offerer)
         offer = educational_factories.CollectiveOfferFactory(venue__managingOfferer=offerer)
         data = {"venueId": 0}
 
-        # WHEN
         client = client.with_session_auth("user@example.com")
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 404
-        assert response.json["venueId"] == "The venue does not exist."
+        assert response.json == {"venueId": "The venue does not exist."}
+
+    def test_patch_collective_offer_replacing_by_unknown_venue_in_offer_venue(self, client):
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offerer)
+        offer = educational_factories.CollectiveOfferFactory(venue__managingOfferer=offerer)
+        data = {"offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": 0}}
+
+        client = client.with_session_auth("user@example.com")
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 404
+        assert response.json == {"venueId": "The venue does not exist."}

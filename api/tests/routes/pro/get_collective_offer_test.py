@@ -95,9 +95,7 @@ class Returns200Test:
         assert response_json["isTemplate"] is False
         assert response_json["isActive"] is True
 
-        assert response_json["locationType"] is None
-        assert response_json["locationComment"] is None
-        assert response_json["address"] is None
+        assert response_json["location"] is None
 
     def test_location_venue(self, client):
         venue = offerers_factories.VenueFactory()
@@ -118,12 +116,12 @@ class Returns200Test:
             assert response.status_code == 200
 
         response_json = response.json
-        assert response_json["locationType"] == "VENUE"
-        assert response_json["locationComment"] is None
-        assert response_json["address"] is not None
-        assert response_json["address"]["id_oa"] == venue.offererAddressId
-        assert response_json["address"]["isLinkedToVenue"] is True
-        assert response_json["address"]["banId"] == venue.offererAddress.address.banId
+        response_location = response_json["location"]
+        assert response_location["locationType"] == "VENUE"
+        assert response_location["locationComment"] is None
+        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["isLinkedToVenue"] is True
+        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
         assert response_json["interventionArea"] == []
 
     def test_location_school(self, client):
@@ -143,9 +141,10 @@ class Returns200Test:
             assert response.status_code == 200
 
         response_json = response.json
-        assert response_json["locationType"] == "SCHOOL"
-        assert response_json["locationComment"] is None
-        assert response_json["address"] is None
+        response_location = response_json["location"]
+        assert response_location["locationType"] == "SCHOOL"
+        assert response_location["locationComment"] is None
+        assert response_location["address"] is None
         assert response_json["interventionArea"] == ["33", "75", "93"]
 
     def test_location_address(self, client):
@@ -168,12 +167,13 @@ class Returns200Test:
             assert response.status_code == 200
 
         response_json = response.json
-        assert response_json["locationType"] == "ADDRESS"
-        assert response_json["locationComment"] is None
-        assert response_json["address"] is not None
-        assert response_json["address"]["id_oa"] == oa.id
-        assert response_json["address"]["isLinkedToVenue"] is False
-        assert response_json["address"]["banId"] == oa.address.banId
+        response_location = response_json["location"]
+        assert response_location["locationType"] == "ADDRESS"
+        assert response_location["locationComment"] is None
+        assert response_location["address"] is not None
+        assert response_location["address"]["id_oa"] == oa.id
+        assert response_location["address"]["isLinkedToVenue"] is False
+        assert response_location["address"]["banId"] == oa.address.banId
         assert response_json["interventionArea"] == []
 
     def test_location_to_be_defined(self, client):
@@ -193,9 +193,10 @@ class Returns200Test:
             assert response.status_code == 200
 
         response_json = response.json
-        assert response_json["locationType"] == "TO_BE_DEFINED"
-        assert response_json["locationComment"] == "In space"
-        assert response_json["address"] is None
+        response_location = response_json["location"]
+        assert response_location["locationType"] == "TO_BE_DEFINED"
+        assert response_location["locationComment"] == "In space"
+        assert response_location["address"] is None
         assert response_json["interventionArea"] == ["33", "75", "93"]
 
     def test_sold_out(self, client):

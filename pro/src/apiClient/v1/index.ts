@@ -47,6 +47,7 @@ export { CollectiveLocationType } from './models/CollectiveLocationType';
 export { CollectiveOfferAllowedAction } from './models/CollectiveOfferAllowedAction';
 export { CollectiveOfferDisplayedStatus } from './models/CollectiveOfferDisplayedStatus';
 export type { CollectiveOfferInstitutionModel } from './models/CollectiveOfferInstitutionModel';
+export type { CollectiveOfferLocationModel } from './models/CollectiveOfferLocationModel';
 export type { CollectiveOfferOfferVenueResponseModel } from './models/CollectiveOfferOfferVenueResponseModel';
 export type { CollectiveOfferRedactorModel } from './models/CollectiveOfferRedactorModel';
 export type { CollectiveOfferResponseIdModel } from './models/CollectiveOfferResponseIdModel';
@@ -101,6 +102,7 @@ export type { FinanceBankAccountResponseModel } from './models/FinanceBankAccoun
 export { GenderEnum } from './models/GenderEnum';
 export type { GetActiveEANOfferResponseModel } from './models/GetActiveEANOfferResponseModel';
 export type { GetCollectiveOfferCollectiveStockResponseModel } from './models/GetCollectiveOfferCollectiveStockResponseModel';
+export type { GetCollectiveOfferLocationModel } from './models/GetCollectiveOfferLocationModel';
 export type { GetCollectiveOfferManagingOffererResponseModel } from './models/GetCollectiveOfferManagingOffererResponseModel';
 export type { GetCollectiveOfferProviderResponseModel } from './models/GetCollectiveOfferProviderResponseModel';
 export type { GetCollectiveOfferRequestResponseModel } from './models/GetCollectiveOfferRequestResponseModel';

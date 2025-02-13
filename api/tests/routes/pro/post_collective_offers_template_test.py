@@ -200,7 +200,7 @@ class Returns200Test:
         assert offer.dateRange.lower == now
         assert offer.dateRange.upper == now + timedelta(seconds=1)
 
-    def test_offerer_address_venue(self, pro_client, payload, venue):
+    def test_offer_venue_offerer_venue(self, pro_client, payload, venue):
         data = {**payload, "offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}}
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -208,10 +208,14 @@ class Returns200Test:
 
         assert response.status_code == 201
         offer = models.CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
-        assert offer.offererAddressId == venue.offererAddressId
-        assert offer.locationType == models.CollectiveLocationType.VENUE
+        assert offer.offerVenue == data["offerVenue"]
+        assert offer.interventionArea == []
 
-    def test_offerer_address_school(self, pro_client, payload):
+        assert offer.offererAddressId == None
+        assert offer.locationType == None
+        assert offer.locationComment == None
+
+    def test_offer_venue_school(self, pro_client, payload):
         data = {**payload, "offerVenue": {"addressType": "school", "otherAddress": "", "venueId": None}}
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -219,10 +223,14 @@ class Returns200Test:
 
         assert response.status_code == 201
         offer = models.CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
-        assert offer.offererAddressId == None
-        assert offer.locationType == models.CollectiveLocationType.SCHOOL
+        assert offer.offerVenue == data["offerVenue"]
+        assert len(offer.interventionArea) > 0
 
-    def test_offerer_address_other(self, pro_client, payload):
+        assert offer.offererAddressId == None
+        assert offer.locationType == None
+        assert offer.locationComment == None
+
+    def test_offer_venue_other(self, pro_client, payload):
         data = {**payload, "offerVenue": {"addressType": "other", "otherAddress": "In Paris", "venueId": None}}
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -230,8 +238,134 @@ class Returns200Test:
 
         assert response.status_code == 201
         offer = models.CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
+        assert offer.offerVenue == data["offerVenue"]
+        assert len(offer.interventionArea) > 0
+
         assert offer.offererAddressId == None
         assert offer.locationType == None
+        assert offer.locationComment == None
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_location_venue(self, pro_client, payload, venue):
+        oa = venue.offererAddress
+        data = {
+            **payload,
+            "offerVenue": None,
+            "location": {
+                "locationType": models.CollectiveLocationType.VENUE.value,
+                "locationComment": None,
+                "address": {
+                    "isVenueAddress": True,
+                    "isManualEdition": False,
+                    "city": oa.address.city,
+                    "latitude": oa.address.latitude,
+                    "longitude": oa.address.longitude,
+                    "postalCode": oa.address.postalCode,
+                    "street": oa.address.street,
+                },
+            },
+        }
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 201
+        offer = models.CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
+
+        assert offer.offererAddressId == oa.id
+        assert offer.locationType == models.CollectiveLocationType.VENUE
+        assert offer.locationComment is None
+
+        assert offer.offerVenue == {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_location_school(self, pro_client, payload):
+        data = {
+            **payload,
+            "offerVenue": None,
+            "location": {
+                "locationType": models.CollectiveLocationType.SCHOOL.value,
+                "locationComment": None,
+                "address": None,
+            },
+        }
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 201
+        offer = models.CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
+
+        assert offer.offererAddressId is None
+        assert offer.locationType == models.CollectiveLocationType.SCHOOL
+        assert offer.locationComment is None
+
+        assert offer.offerVenue == {"addressType": "school", "otherAddress": "", "venueId": None}
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_location_address(self, pro_client, payload):
+        data = {
+            **payload,
+            "offerVenue": None,
+            "location": {
+                "locationType": models.CollectiveLocationType.ADDRESS.value,
+                "locationComment": None,
+                "address": {
+                    "isVenueAddress": False,
+                    "isManualEdition": False,
+                    "city": "Paris",
+                    "label": "My address",
+                    "latitude": "48.87171",
+                    "longitude": "2.308289",
+                    "postalCode": "75001",
+                    "street": "3 Rue de Valois",
+                },
+            },
+        }
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 201
+        offer = models.CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
+
+        assert offer.offererAddress.label == "My address"
+        assert offer.offererAddress.address.city == "Paris"
+        assert offer.offererAddress.address.postalCode == "75001"
+        assert offer.offererAddress.address.street == "3 Rue de Valois"
+        assert offer.offererAddress.address.isManualEdition == False
+        assert offer.locationType == models.CollectiveLocationType.ADDRESS
+        assert offer.locationComment is None
+
+        assert offer.offerVenue == {
+            "addressType": "other",
+            "otherAddress": "3 Rue de Valois 75001 Paris",
+            "venueId": None,
+        }
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_location_to_be_defined(self, pro_client, payload):
+        data = {
+            **payload,
+            "offerVenue": None,
+            "location": {
+                "locationType": models.CollectiveLocationType.TO_BE_DEFINED.value,
+                "locationComment": "Right here",
+                "address": None,
+            },
+        }
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 201
+        offer = models.CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
+
+        assert offer.offererAddressId is None
+        assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
+        assert offer.locationComment == "Right here"
+
+        assert offer.offerVenue == {"addressType": "other", "otherAddress": "Right here", "venueId": None}
 
 
 class Returns403Test:
@@ -384,6 +518,60 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}
 
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_cannot_receive_offer_venue(self, pro_client, payload):
+        data = {
+            **payload,
+            "location": {
+                "locationType": models.CollectiveLocationType.SCHOOL.value,
+                "locationComment": None,
+                "address": None,
+            },
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"offerVenue": ["Cannot receive offerVenue, use location instead"]}
+        assert models.CollectiveOfferTemplate.query.count() == 0
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_must_receive_location(self, pro_client, payload):
+        data = {**payload, "offerVenue": None, "location": None}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"location": ["location must be provided"]}
+        assert models.CollectiveOfferTemplate.query.count() == 0
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=False)
+    def test_cannot_receive_location(self, pro_client, payload):
+        data = {
+            **payload,
+            "location": {
+                "locationType": models.CollectiveLocationType.SCHOOL.value,
+                "locationComment": None,
+                "address": None,
+            },
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"location": ["Cannot receive location, use offerVenue instead"]}
+        assert models.CollectiveOfferTemplate.query.count() == 0
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=False)
+    def test_must_receive_offer_venue(self, pro_client, payload):
+        data = {**payload, "offerVenue": None, "location": None}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"offerVenue": ["offerVenue must be provided"]}
+        assert models.CollectiveOfferTemplate.query.count() == 0
+
 
 class InvalidDatesTest:
     def test_missing_start(self, pro_client, payload, template_end):
@@ -444,3 +632,20 @@ class Returns404Test:
 
         assert response.status_code == 400
         assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"}
+
+    def test_unknown_venue(self, pro_client, payload):
+        data = {**payload, "venueId": -1}
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 404
+
+    def test_unknown_venue_in_offer_venue(self, pro_client, payload):
+        data = {**payload, "offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": -1}}
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 404
+        assert response.json == {"venueId": "The venue does not exist."}
