@@ -35,7 +35,7 @@
   display: none;
 }
 
-.headline-offer-close-button {
+.headline-offer-button {
   color: var(--color-white);
 
   &:focus-visible {
@@ -53,4 +53,12 @@
     bottom: 0;
     max-width: rem.torem(184px);
   }
+}
+
+.headline-offer-callout{
+  margin-bottom: rem.torem(32px);
+}
+
+.headline-offer-callout-discover-button {
+  margin-top: rem.torem(4px);
 }
