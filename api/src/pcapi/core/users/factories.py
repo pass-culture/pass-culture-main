@@ -19,6 +19,7 @@ from pcapi.connectors.beneficiaries.educonnect import models as educonnect_model
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.factories import BaseFactory
+from pcapi.core.finance.conf import RECREDIT_TYPE_AGE_MAPPING
 import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import utils as users_utils
@@ -978,9 +979,9 @@ class DepositGrantFactory(BaseFactory):
                 )
         if "amount" not in kwargs:
             if kwargs["type"] == finance_models.DepositType.GRANT_17_18:
-                amount = {17: Decimal(50), 18: Decimal(150)}[age]
+                amount = {17: Decimal(50), 18: Decimal(150)}.get(age, Decimal(150))
             else:
-                amount = {15: Decimal(20), 16: Decimal(30), 17: Decimal(30), 18: Decimal(300)}[age]
+                amount = {15: Decimal(20), 16: Decimal(30), 17: Decimal(30), 18: Decimal(300)}.get(age, Decimal(300))
             kwargs["amount"] = amount
         if "expirationDate" not in kwargs:
             kwargs["expirationDate"] = user.birth_date + relativedelta(years=21)
@@ -988,6 +989,39 @@ class DepositGrantFactory(BaseFactory):
             kwargs["version"] = 2 if kwargs["type"] == finance_models.DepositType.GRANT_18 else 1
 
         return super()._create(model_class, *args, **kwargs)
+
+    @factory.post_generation
+    def recredits(
+        self,
+        create: bool,
+        extracted: finance_models.Recredit | None,
+        **kwargs: typing.Any,
+    ) -> list[finance_models.Recredit]:
+        from pcapi.core.finance.factories import RecreditFactory
+
+        if not create:
+            return []
+        if not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() or datetime.utcnow() < settings.CREDIT_V3_DECREE_DATETIME:
+            return []
+        if getattr(self, "recredits", None):
+            # do not create new recredits if they already exist
+            return getattr(self, "recredits", [])
+        # Immediately create the recredit that gives the first credit to the user
+        user = self.user
+        if not user.age:
+            return []
+
+        if self.type in (finance_models.DepositType.GRANT_15_17, finance_models.DepositType.GRANT_18):
+            return []
+        # Immediately create the recredit that gives the first credit to the user.
+        # Only for deposits of type GRANT_17_18 for now
+        immediate_recredit = RecreditFactory(
+            deposit=self,
+            amount=self.amount,
+            recreditType=RECREDIT_TYPE_AGE_MAPPING.get(user.age, finance_models.RecreditType.RECREDIT_18),
+        )
+
+        return [immediate_recredit]
 
 
 class EduconnectUserFactory(factory.Factory):
