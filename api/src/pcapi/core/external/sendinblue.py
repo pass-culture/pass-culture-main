@@ -263,7 +263,6 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
 
 def format_pro_attributes(attributes: attributes_models.ProAttributes) -> dict:
     return {
-        SendinblueAttributes.DEPARTMENT_CODE.value: _get_attr(attributes, "departement_code", format_list_or_str),
         SendinblueAttributes.DMS_APPLICATION_APPROVED.value: _get_attr(attributes, "dms_application_approved"),
         SendinblueAttributes.DMS_APPLICATION_SUBMITTED.value: _get_attr(attributes, "dms_application_submitted"),
         SendinblueAttributes.FIRSTNAME.value: _get_attr(attributes, "first_name"),
@@ -285,7 +284,6 @@ def format_pro_attributes(attributes: attributes_models.ProAttributes) -> dict:
         SendinblueAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: _get_attr(attributes, "marketing_email_subscription"),
         SendinblueAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerers_names", format_list),
         SendinblueAttributes.OFFERER_TAG.value: _get_attr(attributes, "offerers_tags", format_list),
-        SendinblueAttributes.POSTAL_CODE.value: _get_attr(attributes, "postal_code", format_list_or_str),
         SendinblueAttributes.USER_ID.value: _get_attr(attributes, "user_id"),
         SendinblueAttributes.USER_IS_ATTACHED.value: _get_attr(attributes, "user_is_attached"),
         SendinblueAttributes.USER_IS_CREATOR.value: _get_attr(attributes, "user_is_creator"),
