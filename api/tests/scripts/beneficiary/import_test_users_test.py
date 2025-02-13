@@ -23,6 +23,7 @@ CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Date de naissanc
 Doux,Jeanne,jeanne.doux@example.com,0102030405,86,86140,{AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},BENEFICIARY,,,interne:test
 Smisse,Jean,jean.smisse@example.com,0102030406,44,44000,{AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},BENEFICIARY,,,interne:test
 Vienne,Jeune17,jeune17.vienne@example.com,0102030407,44,44000,{AGE17_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},UNDERAGE_BENEFICIARY,,,interne:test
+Pro,Premier,premier.pro@example.com,0123456798,06,06000,2000-01-01,PRO,11223344,PremierPro$123,interne:test
 Pro,Pierre,pro@example.com,0123456789,06,06000,2000-01-01,PRO,11122233,PierrePro$123,interne:test
 """
 
@@ -35,7 +36,7 @@ Dur,{BOUNTY_FIRST_NAME},another_hunter@bugbounty.ninja,0102030405,86,86140,2000-
 """
 
 
-@pytest.mark.usefixtures("db_session")
+@pytest.mark.usefixtures("clean_database")
 class ReadFileTest:
     @pytest.mark.parametrize("update_if_exists", [True, False])
     def test_read_file(self, update_if_exists, caplog):
@@ -50,13 +51,14 @@ class ReadFileTest:
         if update_if_exists:
             assert "jea***@example.com" in caplog.messages[2]
             assert "jeu***@example.com" in caplog.messages[4]
-            assert "p***@example.com" in caplog.messages[9]
+            assert "pre***@example.com" in caplog.messages[9]
+            assert "p***@example.com" in caplog.messages[14]
 
         if update_if_exists:
-            assert len(users) == 4
-            jeanne, jean, jeune17, pierre = users  # pylint: disable=unbalanced-tuple-unpacking
+            assert len(users) == 5
+            jeanne, jean, jeune17, _, pierre = users  # pylint: disable=unbalanced-tuple-unpacking
         else:
-            jeanne, jeune17, pierre = users  # pylint: disable=unbalanced-tuple-unpacking
+            jeanne, jeune17, _, pierre = users  # pylint: disable=unbalanced-tuple-unpacking
             jean = None
 
         assert jeanne.firstName == "Jeanne"
@@ -94,9 +96,8 @@ class ReadFileTest:
         assert pierre.has_test_role
         assert len(pierre.deposits) == 0
 
-        offerer = offerers_models.Offerer.query.one()
+        offerer = offerers_models.Offerer.query.filter_by(name="Test Pierre Pro").one()
         assert offerer.siren == "111222337"
-        assert offerer.name == "Test Pierre Pro"
         assert offerer.postalCode == "75001"
         assert offerer.city == "PARIS"
         assert offerer.isValidated
@@ -109,7 +110,11 @@ class ReadFileTest:
         assert venue.managingOfferer == offerer
         assert venue.adageId is not None
 
-        bank_accounts = finance_models.BankAccount.query.order_by(finance_models.BankAccount.id).all()
+        bank_accounts = (
+            finance_models.BankAccount.query.filter_by(offererId=offerer.id)
+            .order_by(finance_models.BankAccount.id)
+            .all()
+        )
         for bank_account, status in zip(bank_accounts, finance_models.BankAccountApplicationStatus):
             assert bank_account.offerer == offerer
             assert bank_account.status == status
@@ -122,7 +127,7 @@ class ReadFileTest:
         offerer_addresses = offerers_models.OffererAddress.query.options(
             sa.orm.joinedload(offerers_models.OffererAddress.address)
         ).all()
-        assert len(offerer_addresses) == 2
+        assert len(offerer_addresses) == 4
         assert {oa.address.postalCode for oa in offerer_addresses} == {"75001", "06400"}
 
         assert pierre.checkPassword("PierrePro$123")  # ggignore
