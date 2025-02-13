@@ -23,6 +23,7 @@ from werkzeug.middleware.profiler import ProfilerMiddleware
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from pcapi import settings
+from pcapi.celery_tasks.celery import celery_init_app
 from pcapi.core import monkeypatches
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.logging import get_or_set_correlation_id
@@ -166,6 +167,23 @@ orm.configure_mappers()
 login_manager.init_app(app)
 install_commands(app)
 finance_utils.install_template_filters(app)
+
+app.config.from_mapping(
+    CELERY=dict(
+        broker_url=settings.REDIS_URL,
+        task_acks_late=True,
+        task_reject_on_worker_lost=True,
+        task_serializer="json",
+        result_serializer="json",
+        accept_content=["json"],
+        task_routes={
+            "mails.tasks.*": {"queue": "mails"},
+        },
+        task_ignore_result=True,
+    ),
+)
+
+celery_init_app(app)
 
 
 backoffice_oauth = OAuth(app)

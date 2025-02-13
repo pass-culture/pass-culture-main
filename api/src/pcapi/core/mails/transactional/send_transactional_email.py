@@ -58,6 +58,8 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> None:
 
     try:
         configuration = brevo_python.Configuration()
+        if settings.PROXY_CERT_BUNDLE is not None:
+            configuration.ssl_ca_cert = settings.PROXY_CERT_BUNDLE
         if payload.use_pro_subaccount:
             configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
         else:
