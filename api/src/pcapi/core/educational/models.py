@@ -622,7 +622,7 @@ class CollectiveOffer(
     offererAddressId: sa_orm.Mapped[int | None] = sa.Column(
         sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True
     )
-    offererAddress: sa_orm.Mapped["OffererAddress"] = relationship(
+    offererAddress: sa_orm.Mapped["OffererAddress | None"] = relationship(
         "OffererAddress", foreign_keys=offererAddressId, uselist=False
     )
 

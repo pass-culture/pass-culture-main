@@ -48,6 +48,7 @@ import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
+from pcapi.core.offerers import schemas as offerers_schemas
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.validation as offers_validation
@@ -72,7 +73,6 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
-from pcapi.utils import rest
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.custom_logic import OPERATIONS
@@ -85,6 +85,9 @@ from . import repository as offers_repository
 from . import schemas as offers_schemas
 from . import validation
 
+
+if typing.TYPE_CHECKING:
+    from pcapi.routes.serialization import collective_offers_serialize
 
 logger = logging.getLogger(__name__)
 
@@ -322,6 +325,18 @@ def create_offer(
     return offer
 
 
+def _get_offerer_address_from_address_body(
+    address_body: offerers_schemas.AddressBodyModel | None, venue: offerers_models.Venue
+) -> offerers_models.OffererAddress | None:
+    if not address_body:
+        return None
+
+    if address_body.isVenueAddress:
+        return venue.offererAddress
+
+    return offerers_api.get_offerer_address_from_address(venue.managingOffererId, address_body)
+
+
 def update_offer(
     offer: models.Offer,
     body: offers_schemas.UpdateOffer,
@@ -333,14 +348,12 @@ def update_offer(
     fields = body.dict(by_alias=True, exclude_unset=True)
 
     # updated using the pro interface
-    if address := body.address:
-        if address.isVenueAddress:
-            fields["offererAddress"] = offer.venue.offererAddress
-        else:
-            fields["offererAddress"] = offerers_api.get_offerer_address_from_address(
-                offer.venue.managingOffererId, body.address
-            )
-        fields.pop("address", None)
+    if body.address:
+        offerer_address_from_body = _get_offerer_address_from_address_body(address_body=body.address, venue=offer.venue)
+
+        if offerer_address_from_body is not None:
+            fields["offererAddress"] = offerer_address_from_body
+            fields.pop("address", None)
 
     should_send_mail = fields.pop("shouldSendMail", False)
 
@@ -439,7 +452,11 @@ def update_offer(
     return offer
 
 
-def update_collective_offer(offer_id: int, new_values: dict, user: users_models.User) -> None:
+def update_collective_offer(
+    offer_id: int, body: "collective_offers_serialize.PatchCollectiveOfferBodyModel", user: users_models.User
+) -> None:
+    new_values = body.dict(exclude_unset=True)
+
     offer_to_update = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.id == offer_id
     ).first()
@@ -467,7 +484,9 @@ def update_collective_offer(offer_id: int, new_values: dict, user: users_models.
     if new_venue:
         move_collective_offer_venue(offer_to_update, new_venue)
 
-    updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values, user=user)
+    updated_fields = _update_collective_offer(
+        offer=offer_to_update, new_values=new_values, location_body=body.location, user=user
+    )
 
     on_commit(
         partial(
@@ -478,7 +497,11 @@ def update_collective_offer(offer_id: int, new_values: dict, user: users_models.
     )
 
 
-def update_collective_offer_template(offer_id: int, new_values: dict, user: users_models.User) -> None:
+def update_collective_offer_template(
+    offer_id: int, body: "collective_offers_serialize.PatchCollectiveOfferTemplateBodyModel", user: users_models.User
+) -> None:
+    new_values = body.dict(exclude_unset=True)
+
     offer_to_update: educational_models.CollectiveOfferTemplate = (
         educational_models.CollectiveOfferTemplate.query.filter(
             educational_models.CollectiveOfferTemplate.id == offer_id
@@ -514,7 +537,7 @@ def update_collective_offer_template(offer_id: int, new_values: dict, user: user
         else:
             offer_to_update.dateRange = None
 
-    _update_collective_offer(offer=offer_to_update, new_values=new_values, user=user)
+    _update_collective_offer(offer=offer_to_update, new_values=new_values, location_body=body.location, user=user)
 
     on_commit(
         partial(
@@ -526,27 +549,42 @@ def update_collective_offer_template(offer_id: int, new_values: dict, user: user
 
 
 def _update_collective_offer(
-    offer: educational_api_offer.AnyCollectiveOffer, new_values: dict, user: users_models.User
+    offer: educational_api_offer.AnyCollectiveOffer,
+    new_values: dict,
+    location_body: "collective_offers_serialize.CollectiveOfferLocationModel | None",
+    user: users_models.User,
 ) -> list[str]:
     validation.check_validation_status(offer)
     validation.check_contact_request(offer, new_values)
 
-    offer_venue = new_values.get("offerVenue")
-    if offer_venue:
-        match offer_venue["addressType"]:
-            case educational_models.OfferAddressType.SCHOOL:
-                new_values["locationType"] = educational_models.CollectiveLocationType.SCHOOL
-                new_values["offererAddressId"] = None
+    edit_offer_venue = "offerVenue" in new_values
+    edit_location = "location" in new_values
+    if edit_offer_venue and edit_location:
+        raise ValueError("Cannot receive offerVenue and location at the same time")
 
-            case educational_models.OfferAddressType.OFFERER_VENUE:
-                new_values["locationType"] = educational_models.CollectiveLocationType.VENUE
-                location_venue = offerers_repository.get_venue_by_id(offer_venue["venueId"])
-                rest.check_user_has_access_to_offerer(user, offerer_id=location_venue.managingOffererId)
-                new_values["offererAddressId"] = location_venue.offererAddressId
+    if edit_offer_venue:
+        offer_venue = new_values["offerVenue"]
+        if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
+            educational_api_offer.check_venue_user_access(offer_venue["venueId"], user)
+            new_values["interventionArea"] = []
 
-            case _:
-                new_values["locationType"] = None
-                new_values["offererAddressId"] = None
+    # receive location -> extract location field and write to offerVenue to keep the field up to date
+    if edit_location:
+        assert location_body is not None
+        offerer_address = _get_offerer_address_from_address_body(address_body=location_body.address, venue=offer.venue)
+        new_values["offererAddress"] = offerer_address
+
+        offer_venue = educational_api_offer.get_offer_venue_from_location(
+            location_type=location_body.locationType,
+            location_comment=location_body.locationComment,
+            offerer_address=offerer_address,
+            venue_id=offer.venueId,
+        )
+        new_values["offerVenue"] = offer_venue
+
+        new_values["locationType"] = location_body.locationType
+        new_values["locationComment"] = location_body.locationComment
+        new_values.pop("location", None)
 
     # This variable is meant for Adage mailing
     updated_fields = []

@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { CollectiveOfferLocationModel } from './CollectiveOfferLocationModel';
 import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
 import type { DateRangeModel } from './DateRangeModel';
 import type { EacFormat } from './EacFormat';
@@ -21,6 +22,7 @@ export type PatchCollectiveOfferTemplateBodyModel = {
   durationMinutes?: number | null;
   formats?: Array<EacFormat> | null;
   interventionArea?: Array<string> | null;
+  location?: CollectiveOfferLocationModel | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;

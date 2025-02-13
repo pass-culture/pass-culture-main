@@ -16,7 +16,9 @@ from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import validation as offers_validation
+from pcapi.models import feature
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -298,6 +300,18 @@ class CollectiveOfferOfferVenueResponseModel(BaseModel):
     _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
 
 
+class GetCollectiveOfferLocationModel(BaseModel):
+    locationType: educational_models.CollectiveLocationType
+    locationComment: str | None
+    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+
+
+class CollectiveOfferLocationModel(BaseModel):
+    locationType: educational_models.CollectiveLocationType
+    locationComment: str | None
+    address: offerers_schemas.AddressBodyModel | None
+
+
 class PriceDetail(ConstrainedStr):
     max_length: int = 1_000
 
@@ -320,25 +334,30 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
-def collective_offer_address_getter_dict_helper(
+def collective_offer_location_getter_dict_helper(
     offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
-) -> address_serialize.AddressResponseIsLinkedToVenueModel | None:
-    oa = offer.offererAddress
-    if oa is None:
+) -> GetCollectiveOfferLocationModel | None:
+    if offer.locationType is None:
         return None
 
-    label = offer.venue.common_name if oa._isLinkedToVenue else oa.label
-    return address_serialize.AddressResponseIsLinkedToVenueModel(
-        **address_serialize.retrieve_address_info_from_oa(oa),
-        label=label,
-        isLinkedToVenue=oa._isLinkedToVenue,
+    address = None
+    oa = offer.offererAddress
+    if oa is not None:
+        address = address_serialize.AddressResponseIsLinkedToVenueModel(
+            **address_serialize.retrieve_address_info_from_oa(oa),
+            label=offer.venue.common_name if oa._isLinkedToVenue else oa.label,
+            isLinkedToVenue=oa._isLinkedToVenue,
+        )
+
+    return GetCollectiveOfferLocationModel(
+        locationType=offer.locationType, locationComment=offer.locationComment, address=address
     )
 
 
 class GetCollectiveOfferBaseResponseGetterDict(pydantic_utils.GetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
-        if key == "address":
-            return collective_offer_address_getter_dict_helper(self._obj)
+        if key == "location":
+            return collective_offer_location_getter_dict_helper(self._obj)
         return super().get(key, default)
 
 
@@ -348,7 +367,9 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     description: str
     durationMinutes: int | None
     students: list[educational_models.StudentLevels]
+    # offerVenue will be replaced with location, for now we send both
     offerVenue: CollectiveOfferOfferVenueResponseModel
+    location: GetCollectiveOfferLocationModel | None
     contactEmail: str | None
     contactPhone: str | None
     hasBookingLimitDatetimesPassed: bool
@@ -369,10 +390,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     nationalProgram: NationalProgramModel | None
     formats: typing.Sequence[subcategories.EacFormat] | None
     isNonFreeOffer: bool | None
-
-    locationType: educational_models.CollectiveLocationType | None
-    locationComment: str | None
-    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
 
     class Config:
         allow_population_by_field_name = True
@@ -550,7 +567,9 @@ class PostCollectiveOfferBodyModel(BaseModel):
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
     students: list[educational_models.StudentLevels]
-    offer_venue: CollectiveOfferVenueBodyModel
+    # offerVenue will be replaced with location, for now we accept one or the other (but not both)
+    offer_venue: CollectiveOfferVenueBodyModel | None
+    location: CollectiveOfferLocationModel | None
     contact_email: EmailStrOrEmpty | None
     contact_phone: str | None
     intervention_area: list[str] | None
@@ -623,6 +642,28 @@ class PostCollectiveOfferBodyModel(BaseModel):
             raise ValueError("Un email doit etre renseigné.")
         return booking_emails
 
+    @validator("offer_venue")
+    def validate_offer_venue(
+        cls, offer_venue: CollectiveOfferVenueBodyModel | None
+    ) -> CollectiveOfferVenueBodyModel | None:
+        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active():
+            if offer_venue is not None:
+                raise ValueError("Cannot receive offerVenue, use location instead")
+        elif offer_venue is None:
+            raise ValueError("offerVenue must be provided")
+
+        return offer_venue
+
+    @validator("location")
+    def validate_location(cls, location: CollectiveOfferLocationModel | None) -> CollectiveOfferLocationModel | None:
+        if not feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active():
+            if location is not None:
+                raise ValueError("Cannot receive location, use offerVenue instead")
+        elif location is None:
+            raise ValueError("location must be provided")
+
+        return location
+
     class Config:
         alias_generator = to_camel
         extra = "forbid"
@@ -662,7 +703,9 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     description: str | None
     name: str | None
     students: list[educational_models.StudentLevels] | None
+    # offerVenue will be replaced with location, for now we accept one or the other (but not both)
     offerVenue: CollectiveOfferVenueBodyModel | None
+    location: CollectiveOfferLocationModel | None
     contactEmail: EmailStr | None
     contactPhone: str | None
     durationMinutes: int | None
@@ -724,6 +767,22 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         if venue_id is None:
             raise ValueError("venue_id cannot be NULL.")
         return venue_id
+
+    @validator("offerVenue")
+    def validate_offer_venue(
+        cls, offer_venue: CollectiveOfferVenueBodyModel | None
+    ) -> CollectiveOfferVenueBodyModel | None:
+        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active() and offer_venue is not None:
+            raise ValueError("Cannot receive offerVenue, use location instead")
+
+        return offer_venue
+
+    @validator("location")
+    def validate_location(cls, location: CollectiveOfferLocationModel | None) -> CollectiveOfferLocationModel | None:
+        if not feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active() and location is not None:
+            raise ValueError("Cannot receive location, use offerVenue instead")
+
+        return location
 
     class Config:
         alias_generator = to_camel

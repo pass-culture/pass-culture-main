@@ -69,7 +69,6 @@ class Returns200Test:
         assert response.json["imageUrl"] == duplicate.imageUrl
 
     def test_duplicate_collective_offer(self, client):
-        # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -84,10 +83,8 @@ class Returns200Test:
         offer_id = offer.id
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        # When
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 
-        # Then
         assert response.status_code == 201
         duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
         assert response.json == {
@@ -177,9 +174,7 @@ class Returns200Test:
                 "CAN_EDIT_DISCOUNT",
                 "CAN_ARCHIVE",
             ],
-            "address": None,
-            "locationType": None,
-            "locationComment": None,
+            "location": None,
         }
 
     def test_duplicate_collective_offer_without_subcategoryId(self, client):

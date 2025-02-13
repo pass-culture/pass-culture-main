@@ -183,6 +183,12 @@ def create_collective_offer(
             "Could not create offer: This offerer has not been found in Adage", extra={"venue_id": body.venue_id}
         )
         raise ApiErrors({"offerer": "not found in adage"}, 403)
+    except educational_exceptions.VenueIdDontExist:
+        logger.info(
+            "Could not create offer: the venue id does not exist",
+            extra={"venue_id": body.venue_id, "offer_venue": body.offer_venue},
+        )
+        raise ApiErrors({"venueId": "The venue does not exist."}, 404)
     except educational_exceptions.AdageException:
         logger.info("Could not create offer: Adage api call failed", extra={"venue_id": body.venue_id})
         raise ApiErrors({"adage_api": "error"}, 500)
@@ -274,13 +280,11 @@ def edit_collective_offer(
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
-    new_values = body.dict(exclude_unset=True)
-
     if not offerers_api.can_offerer_create_educational_offer(offerer.id):
         raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
 
     try:
-        offers_api.update_collective_offer(offer_id=offer_id, new_values=new_values, user=current_user)
+        offers_api.update_collective_offer(offer_id=offer_id, body=body, user=current_user)
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
     except offers_exceptions.OfferUsedOrReimbursedCantBeEdit:
@@ -358,13 +362,11 @@ def edit_collective_offer_template(
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
-    new_values = body.dict(exclude_unset=True)
-
     if not offerers_api.can_offerer_create_educational_offer(offerer.id):
         raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
 
     try:
-        offers_api.update_collective_offer_template(offer_id=offer_id, new_values=new_values, user=current_user)
+        offers_api.update_collective_offer_template(offer_id=offer_id, body=body, user=current_user)
     except educational_exceptions.CollectiveOfferTemplateForbiddenAction:
         raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, 403)
     except educational_exceptions.UpdateCollectiveOfferTemplateError as err:
@@ -616,6 +618,12 @@ def create_collective_offer_template(
             "Could not create offer: This offerer has not been found in Adage", extra={"venue_id": body.venue_id}
         )
         raise ApiErrors({"offerer": "not found in adage"}, 403)
+    except educational_exceptions.VenueIdDontExist:
+        logger.info(
+            "Could not create offer: the venue id does not exist",
+            extra={"venue_id": body.venue_id, "offer_venue": body.offer_venue},
+        )
+        raise ApiErrors({"venueId": "The venue does not exist."}, 404)
     except educational_exceptions.AdageException:
         logger.info("Could not create offer: Adage api call failed", extra={"venue_id": body.venue_id})
         raise ApiErrors({"adage_api": "error"}, 500)

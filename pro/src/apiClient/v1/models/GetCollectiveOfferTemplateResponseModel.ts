@@ -2,13 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLinkedToVenueModel';
-import type { CollectiveLocationType } from './CollectiveLocationType';
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
 import type { CollectiveOfferStatus } from './CollectiveOfferStatus';
 import type { CollectiveOfferTemplateAllowedAction } from './CollectiveOfferTemplateAllowedAction';
 import type { EacFormat } from './EacFormat';
+import type { GetCollectiveOfferLocationModel } from './GetCollectiveOfferLocationModel';
 import type { GetCollectiveOfferVenueResponseModel } from './GetCollectiveOfferVenueResponseModel';
 import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferContactFormEnum } from './OfferContactFormEnum';
@@ -17,7 +16,6 @@ import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 import type { TemplateDatesModel } from './TemplateDatesModel';
 export type GetCollectiveOfferTemplateResponseModel = {
-  address?: AddressResponseIsLinkedToVenueModel | null;
   allowedActions: Array<CollectiveOfferTemplateAllowedAction>;
   audioDisabilityCompliant?: boolean | null;
   bookingEmails: Array<string>;
@@ -43,8 +41,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   isEditable: boolean;
   isNonFreeOffer?: boolean | null;
   isTemplate?: boolean;
-  locationComment?: string | null;
-  locationType?: CollectiveLocationType | null;
+  location?: GetCollectiveOfferLocationModel | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
