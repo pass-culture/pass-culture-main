@@ -307,7 +307,7 @@ export const RecurrenceForm = ({
                 render={(arrayHelpers) => (
                   <>
                     <div className={styles['beginning-time-list']}>
-                      {values.beginningTimes.map((beginningTime, index) => (
+                      {values.beginningTimes.map((_beginningTime, index) => (
                         <TimePicker
                           key={index}
                           label={`Horaire ${index + 1}`}
@@ -319,7 +319,6 @@ export const RecurrenceForm = ({
                             disabled: values.beginningTimes.length <= 1,
                             onClick: () => arrayHelpers.remove(index),
                           }}
-                          hideFooter
                         />
                       ))}
                     </div>
@@ -366,7 +365,6 @@ export const RecurrenceForm = ({
                         label="Nombre de places"
                         name={`quantityPerPriceCategories[${index}].quantity`}
                         className={styles['quantity-input']}
-                        hideFooter
                         isOptional
                         min={1}
                       />
@@ -379,7 +377,6 @@ export const RecurrenceForm = ({
                           value: '',
                         }}
                         className={styles['price-category-input']}
-                        hideFooter
                       />
 
                       <div className={styles['align-icon']}>

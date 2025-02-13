@@ -47,7 +47,6 @@ export const SelectAutocomplete = ({
   disabled = false,
   name,
   hideArrow,
-  hideFooter = false,
   hideTags = false,
   inline,
   isOptional = false,
@@ -266,7 +265,6 @@ export const SelectAutocomplete = ({
     <FieldLayout
       className={className}
       error={meta.error}
-      hideFooter={!hideTags && hideFooter}
       isOptional={isOptional}
       label={label}
       name={`search-${name}`}

@@ -92,7 +92,6 @@ export const TextInput = ({
   classNameInput,
   disabled,
   readOnly,
-  hideFooter,
   label,
   isLabelHidden = false,
   countCharacters,
@@ -174,7 +173,6 @@ export const TextInput = ({
       showError={showError}
       smallLabel={smallLabel}
       inline={inline}
-      hideFooter={hideFooter}
       description={description}
       clearButtonProps={clearButtonProps}
       ErrorDetails={ErrorDetails}

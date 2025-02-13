@@ -151,7 +151,6 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
             onChange={formik.handleChange}
             label={`${isOfferAddressEnabled ? 'Structure avec SIRET utilisée' : 'Lieu avec SIRET utilisé'} pour le calcul de votre barème de remboursement`}
             options={pricingPointOptions}
-            hideFooter
           />
         </div>
         {!isInputDisabled && !venue.pricingPoint && (

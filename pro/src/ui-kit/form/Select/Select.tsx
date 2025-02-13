@@ -25,7 +25,6 @@ export const Select = ({
   disabled,
   label,
   smallLabel,
-  hideFooter,
   description,
   inline,
   onChange,
@@ -50,7 +49,6 @@ export const Select = ({
     <FieldLayout
       className={className}
       error={meta.error}
-      hideFooter={hideFooter}
       isOptional={isOptional}
       label={label}
       name={name}

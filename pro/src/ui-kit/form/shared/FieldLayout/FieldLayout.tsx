@@ -53,11 +53,7 @@ export type FieldLayoutBaseProps = {
    * A flag to display a smaller label.
    */
   smallLabel?: boolean
-  /**
-   * A flag to hide the footer.
-   * To be used with caution, as it can affect accessibility.
-   */
-  hideFooter?: boolean
+
   inline?: boolean
   clearButtonProps?: React.ButtonHTMLAttributes<HTMLButtonElement> & {
     tooltip: string
@@ -90,7 +86,6 @@ export const FieldLayout = ({
   isOptional = false,
   showMandatoryAsterisk = true,
   smallLabel,
-  hideFooter = false,
   inline = false,
   classNameLabel,
   classNameFooter,
@@ -104,8 +99,7 @@ export const FieldLayout = ({
   const hasCounter = count !== undefined && maxLength !== undefined
   const tooltipId = useId()
 
-  const showFooter =
-    !hideFooter && (hasError || hasCounter || Boolean(ErrorDetails))
+  const showFooter = hasError || hasCounter || Boolean(ErrorDetails)
 
   const clearButtonDisplay = clearButtonProps?.display || 'clear'
 

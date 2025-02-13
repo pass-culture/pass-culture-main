@@ -65,7 +65,6 @@ export const OffersTableSearch = ({
           label={nameInputProps.label}
           name="offre"
           isOptional
-          hideFooter
         >
           <BaseInput
             type="search"

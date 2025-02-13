@@ -49,7 +49,6 @@ const defaultProps: Args = {
   ],
   initialValues: { departement: '01', 'search-departement': '' },
   label: 'Département',
-  hideFooter: false,
   hideTags: false,
   isOptional: false,
   smallLabel: false,
