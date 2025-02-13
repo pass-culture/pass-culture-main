@@ -770,3 +770,15 @@ class ReturnErrorTest:
                 educational_api_stock.edit_collective_stock(
                     stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
                 )
+
+    @time_machine.travel("2020-11-17 15:00:00")
+    def test_cannot_set_end_before_stock_start(self):
+        start = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
+        educational_factories.create_educational_year(date_time=start)
+        stock = educational_factories.CollectiveStockFactory(startDatetime=start)
+
+        new_end = start - datetime.timedelta(days=1)
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(endDatetime=new_end)
+
+        with pytest.raises(exceptions.EndDatetimeBeforeStartDatetime):
+            educational_api_stock.edit_collective_stock(stock=stock, stock_data=new_stock_data.dict(exclude_unset=True))
