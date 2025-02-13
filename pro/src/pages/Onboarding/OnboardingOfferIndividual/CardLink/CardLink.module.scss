@@ -3,6 +3,7 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_size.scss" as size;
 @use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_outline.scss" as outline;
 
 $border-size-selected: rem.torem(2px);
 
@@ -57,8 +58,7 @@ $border-size-selected: rem.torem(2px);
   }
 
   &:focus-within {
-    outline: rem.torem(1px) solid var(--color-black);
-    outline-offset: rem.torem(4px);
+    @include outline.focus-outline(rem.torem(4px));
   }
 
   &:active {

@@ -1,13 +1,14 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_outline.scss" as outline;
 
 .button-filter {
   @include fonts.body;
 
   display: inline-flex;
   justify-content: center;
-  align-items: center;    
+  align-items: center;
   width: auto;
   background-color: var(--color-white);
   padding: rem.torem(6px) rem.torem(8px);
@@ -42,8 +43,7 @@
   }
 
   &:focus-visible {
-    outline: rem.torem(1px) solid var(--color-input-text-color);
-    outline-offset: rem.torem(2px);
+    @include outline.focus-outline;
   }
 
   &:hover {

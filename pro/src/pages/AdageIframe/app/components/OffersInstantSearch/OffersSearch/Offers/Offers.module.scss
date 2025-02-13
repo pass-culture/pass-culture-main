@@ -1,6 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_outline.scss" as outline;
 
 .offers-view {
   display: flex;
@@ -89,8 +90,8 @@
   }
 
   &:focus-visible {
-    outline: solid rem.torem(2px) var(--color-black);
-    outline-offset: rem.torem(2px);
+    @include outline.focus-outline;
+
     text-decoration: underline;
   }
 }
@@ -105,7 +106,6 @@
   bottom: 0;
   right: 15%;
 }
-
 
 .highlight-banner-button {
   background-color: var(--color-secondary-light);

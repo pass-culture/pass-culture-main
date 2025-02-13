@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_outline.scss" as outline;
 
 .selected-tags {
   display: flex;
@@ -18,33 +19,32 @@
 }
 
 .tag-button {
-    @include fonts.body-accent-xs;
+  @include fonts.body-accent-xs;
 
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    background-color: var(--color-background-secondary);
-    border-radius: rem.torem(4px);
-    border: none;
-    white-space: normal;
-    text-align: left;
-    padding: rem.torem(4px) rem.torem(8px);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  background-color: var(--color-background-secondary);
+  border-radius: rem.torem(4px);
+  border: none;
+  white-space: normal;
+  text-align: left;
+  padding: rem.torem(4px) rem.torem(8px);
 
-    &-icon {
-      margin: rem.torem(1px) 0 0 rem.torem(4px);
-      height: rem.torem(16px);
-    }
+  &-icon {
+    margin: rem.torem(1px) 0 0 rem.torem(4px);
+    height: rem.torem(16px);
+  }
 
-    &:hover:not([disabled]) {
-      background-color: var(--color-grey-medium);
-    }
+  &:hover:not([disabled]) {
+    background-color: var(--color-grey-medium);
+  }
 
-    &:focus {
-      outline: rem.torem(1px) solid var(--color-input-text-color);
-      outline-offset: rem.torem(2px);
-    }
+  &:focus-visible {
+    @include outline.focus-outline;
+  }
 
-    :disabled {
-      cursor: default;
-    }
+  :disabled {
+    cursor: default;
+  }
 }

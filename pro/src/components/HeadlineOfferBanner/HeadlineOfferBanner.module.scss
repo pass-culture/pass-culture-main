@@ -1,13 +1,17 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_outline.scss" as outline;
 
 .headline-offer-banner {
   width: 100%;
   min-height: rem.torem(175px);
   padding: rem.torem(24px);
   border-radius: rem.torem(10px);
-  background: var(--gradient, linear-gradient(180deg, var(--color-secondary-light) 30%, #320096 70%));
+  background: var(
+    --gradient,
+    linear-gradient(180deg, var(--color-secondary-light) 30%, #320096 70%)
+  );
   display: flex;
   justify-content: space-between;
   margin-bottom: rem.torem(24px);
@@ -39,8 +43,7 @@
   color: var(--color-white);
 
   &:focus-visible {
-    outline: rem.torem(1px) solid var(--color-white);
-    outline-offset: rem.torem(2px);
+    @include outline.focus-outline(rem.torem(2px), var(--color-white));
   }
 }
 
