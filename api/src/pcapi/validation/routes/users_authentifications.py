@@ -9,6 +9,7 @@ from flask import request
 from flask_login import current_user
 from werkzeug.local import LocalProxy
 
+from pcapi import settings
 from pcapi.core.offerers.api import find_api_key
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.users import exceptions as users_exceptions
@@ -48,19 +49,20 @@ def login_or_api_key_required(function: typing.Callable) -> typing.Callable:
     return wrapper
 
 
-def api_key_required(route_function: typing.Callable) -> typing.Callable:
+def brevo_webhook(route_function: typing.Callable) -> typing.Callable:
     add_security_scheme(route_function, API_KEY_AUTH_NAME)
 
     @wraps(route_function)
     def wrapper(*args: typing.Any, **kwds: typing.Any) -> flask.Response:
-        _fill_current_api_key()
-
-        if not g.current_api_key:
+        mandatory_authorization_type = "Bearer "
+        authorization_header = request.headers.get("Authorization")
+        if not authorization_header:
             raise api_errors.UnauthorizedError(errors={"auth": "API key required"})
-        _check_active_offerer(g.current_api_key)
 
-        if g.current_api_key.provider:
-            _check_active_provider(g.current_api_key)
+        bearer = authorization_header.replace(mandatory_authorization_type, "")
+        if bearer != settings.BREVO_WEBHOOK_SECRET:
+            raise api_errors.UnauthorizedError(errors={"auth": "Invalid bearer token"})
+
         return route_function(*args, **kwds)
 
     return wrapper

@@ -18,6 +18,7 @@ from pcapi.repository import repository
 from pcapi.routes.apis import public_api
 from pcapi.routes.external.serialization import sendinblue as serializers
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.validation.routes.users_authentifications import brevo_webhook
 
 
 logger = logging.getLogger(__name__)
@@ -84,6 +85,7 @@ def sendinblue_notify_importcontacts(list_id: int, iteration: int) -> None:
 
 
 @public_api.route("/webhooks/brevo/recommendations/<int:user_id>", methods=["GET"])
+@brevo_webhook
 @spectree_serialize(
     on_success_status=200, response_model=serializers.BrevoOffersResponse, on_error_statuses=[404, 500, 502, 504]
 )
