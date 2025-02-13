@@ -2778,8 +2778,6 @@ LocationData = typing.TypedDict(
 
 
 def get_or_create_address(location_data: LocationData, is_manual_edition: bool = False) -> geography_models.Address:
-    department_code = None
-    timezone = None
     insee_code = location_data.get("insee_code")
     postal_code = location_data["postal_code"]
     latitude = decimal.Decimal(location_data["latitude"]).quantize(decimal.Decimal("1.00000"))
