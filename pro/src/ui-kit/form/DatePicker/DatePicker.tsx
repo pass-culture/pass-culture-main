@@ -30,7 +30,6 @@ export const DatePicker = ({
   hasLabelLineBreak = true,
   smallLabel,
   isOptional = false,
-  hideFooter = false,
   filterVariant,
   onChange,
   help,
@@ -62,7 +61,6 @@ export const DatePicker = ({
       showError={showError}
       smallLabel={smallLabel}
       isOptional={isOptional}
-      hideFooter={hideFooter}
       help={help}
     >
       <BaseDatePicker

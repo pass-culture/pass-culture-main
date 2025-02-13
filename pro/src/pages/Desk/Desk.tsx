@@ -146,13 +146,10 @@ export const Desk = (): JSX.Element => {
 
   return (
     <HeadlineOfferContextProvider>
-      <Layout
-        mainHeading="Guichet"
-        mainBanner={<HeadlineOfferBanner />}
-      >
+      <Layout mainHeading="Guichet" mainBanner={<HeadlineOfferBanner />}>
         <p className={styles.advice}>
-          Saisissez les contremarques présentées par les bénéficiaires afin de les
-          valider ou de les invalider.
+          Saisissez les contremarques présentées par les bénéficiaires afin de
+          les valider ou de les invalider.
         </p>
         <FormikProvider value={formik}>
           <form onSubmit={formik.handleSubmit} className={styles['desk-form']}>
@@ -164,7 +161,6 @@ export const Desk = (): JSX.Element => {
               value={token}
               classNameLabel={styles['desk-form-label']}
               className={styles['desk-form-input']}
-              hideFooter
               isOptional
               aria-describedby={`${successId} ${errorId}`}
             />
@@ -179,7 +175,10 @@ export const Desk = (): JSX.Element => {
                   onConfirm={() => handleSubmitInvalidate(token)}
                 />
               ) : (
-                <Button type="submit" disabled={formik.isSubmitting || !booking}>
+                <Button
+                  type="submit"
+                  disabled={formik.isSubmitting || !booking}
+                >
                   Valider la contremarque
                 </Button>
               )}

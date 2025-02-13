@@ -9,7 +9,7 @@ export type Quantity = number | ''
 /**
  * Props for the QuantityInput component.
  *
- * @extends Pick<TextInputProps, 'disabled' | 'className' | 'classNameFooter' | 'isLabelHidden' | 'smallLabel' | 'hideFooter' | 'isOptional'>
+ * @extends Pick<TextInputProps, 'disabled' | 'className' | 'classNameFooter' | 'isLabelHidden' | 'smallLabel' | 'isOptional'>
  */
 export type QuantityInputProps = Pick<
   TextInputProps,
@@ -18,7 +18,6 @@ export type QuantityInputProps = Pick<
   | 'classNameFooter'
   | 'isLabelHidden'
   | 'smallLabel'
-  | 'hideFooter'
   | 'isOptional'
 > & {
   /**
@@ -70,7 +69,6 @@ export const QuantityInput = ({
   classNameFooter,
   isLabelHidden,
   smallLabel,
-  hideFooter,
   isOptional,
   min = 0,
 }: QuantityInputProps) => {
@@ -147,7 +145,6 @@ export const QuantityInput = ({
       min={min}
       max={1_000_000}
       isLabelHidden={isLabelHidden}
-      hideFooter={hideFooter}
       step={1}
       InputExtension={inputExtension}
       {...(onChange && { onChange: onQuantityChange })}

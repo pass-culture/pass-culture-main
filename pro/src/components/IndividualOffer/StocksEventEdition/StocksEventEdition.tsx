@@ -713,7 +713,6 @@ export const StocksEventEdition = ({
                                 disabled={readOnlyFields.includes(
                                   'beginningDate'
                                 )}
-                                hideFooter
                               />
                             </td>
 
@@ -726,7 +725,6 @@ export const StocksEventEdition = ({
                                 disabled={readOnlyFields.includes(
                                   'beginningTime'
                                 )}
-                                hideFooter
                               />
                             </td>
 
@@ -745,7 +743,6 @@ export const StocksEventEdition = ({
                                   priceCategoriesOptions.length === 1 ||
                                   readOnlyFields.includes('priceCategoryId')
                                 }
-                                hideFooter
                               />
                             </td>
 
@@ -762,7 +759,6 @@ export const StocksEventEdition = ({
                                 disabled={readOnlyFields.includes(
                                   'bookingLimitDatetime'
                                 )}
-                                hideFooter
                               />
                             </td>
 
@@ -770,7 +766,6 @@ export const StocksEventEdition = ({
                               <QuantityInput
                                 smallLabel
                                 isLabelHidden
-                                hideFooter
                                 label={
                                   mode === OFFER_WIZARD_MODE.EDITION
                                     ? 'Quantité restante'
@@ -794,7 +789,6 @@ export const StocksEventEdition = ({
                                 label="Réservations"
                                 isLabelHidden
                                 smallLabel
-                                hideFooter
                               />
                             </td>
 
