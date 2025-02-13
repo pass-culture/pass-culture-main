@@ -2,6 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_outline.scss" as outline;
 
 .adage-header-menu {
   display: flex;
@@ -58,8 +59,8 @@
     outline: none;
 
     .adage-header-link-focus {
-      outline: 1px solid var(--color-black);
-      outline-offset: rem.torem(4px);
+      @include outline.focus-outline(rem.torem(4px));
+
       border-radius: rem.torem(4px);
     }
   }

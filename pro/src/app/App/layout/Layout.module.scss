@@ -2,6 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 @use "styles/variables/_z-index.scss" as zIndex;
+@use "styles/mixins/_outline.scss" as outline;
 
 $connect-as-header-height: rem.torem(52px);
 
@@ -247,6 +248,8 @@ $connect-as-header-height: rem.torem(52px);
   }
 
   &-back-to-nav-link {
+    @include outline.focus-outline;
+
     margin-left: rem.torem(16px);
   }
 }

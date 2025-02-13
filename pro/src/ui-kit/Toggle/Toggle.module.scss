@@ -1,5 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_outline.scss" as outline;
 
 .toggle {
   @include fonts.title4;
@@ -52,9 +53,8 @@
   transition: inherit;
 }
 
-.toggle:focus .toggle-display {
-  outline: rem.torem(1px) dotted var(--color-black);
-  outline-offset: rem.torem(2px);
+.toggle:focus-visible .toggle-display {
+  @include outline.focus-outline;
 }
 
 .toggle:focus,

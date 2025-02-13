@@ -2,6 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 @use "styles/variables/_z-index.scss" as zIndex;
+@use "styles/mixins/_outline.scss" as outline;
 
 $profil-button-size: rem.torem(34px);
 $sub-popin-full-width-breakpoint: rem.torem(673px);
@@ -60,8 +61,8 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
     justify-content: center;
 
     &:focus-visible {
-      outline: rem.torem(1px) solid var(--color-input-text-color);
-      outline-offset: rem.torem(2px);
+      @include outline.focus-outline;
+
       border-radius: rem.torem(8px);
     }
 
@@ -204,8 +205,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   }
 
   &:focus-visible {
-    outline: rem.torem(1px) solid var(--color-input-text-color);
-    outline-offset: rem.torem(2px);
+    @include outline.focus-outline;
   }
 }
 
@@ -223,8 +223,8 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   width: 100%;
 
   &:focus-visible {
-    outline: rem.torem(1px) solid var(--color-input-text-color);
-    outline-offset: rem.torem(2px);
+    @include outline.focus-outline;
+
     border-radius: rem.torem(4px);
   }
 

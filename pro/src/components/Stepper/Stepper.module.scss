@@ -2,6 +2,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_outline.scss" as outline;
 
 $step-label-height: rem.torem(12px);
 $number-size: rem.torem(30px);
@@ -24,7 +25,7 @@ $number-size: rem.torem(30px);
     &:last-child {
       flex: 0;
     }
-  
+
     .step {
       display: flex;
       position: relative;
@@ -102,8 +103,8 @@ $number-size: rem.torem(30px);
       .label {
         .inner {
           span {
-            outline: rem.torem(1px) solid var(--color-input-text-color);
-            outline-offset: rem.torem(4px);
+            @include outline.focus-outline(rem.torem(4px));
+
             border-radius: rem.torem(4px);
           }
         }
@@ -124,7 +125,7 @@ $number-size: rem.torem(30px);
 
     .step-container {
       flex-direction: row;
-      
+
       .step {
         justify-content: center;
       }
