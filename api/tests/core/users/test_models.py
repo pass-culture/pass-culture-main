@@ -43,15 +43,17 @@ class UserTest:
             yesterday = datetime.utcnow() - timedelta(days=1)
             users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
 
-            assert user.deposit.type == finance_models.DepositType.GRANT_18
+            assert user.deposit.type == finance_models.DepositType.GRANT_17_18
 
         def test_return_last_expired_deposit_if_only_expired_deposits_exists(self):
             with time_machine.travel(datetime.utcnow() - relativedelta(years=3)):
-                user = users_factories.UnderageBeneficiaryFactory()
+                user = users_factories.UnderageBeneficiaryFactory(
+                    deposit__expirationDate=datetime.utcnow() + relativedelta(years=2)
+                )
 
             users_factories.DepositGrantFactory(user=user)
 
-            assert user.deposit.type == finance_models.DepositType.GRANT_18
+            assert user.deposit.type == finance_models.DepositType.GRANT_17_18
 
     class UserRoleTest:
         def test_has_admin_role(self):
@@ -234,6 +236,7 @@ class UserTest:
             with time_machine.travel(today):
                 assert user_models._get_latest_birthday(birth_date) == latest_birthday
 
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     class EligibilityTest:
         def test_received_pass_15_17(self):
             dateOfBirth = datetime.utcnow() - relativedelta(years=16, days=1)
@@ -420,7 +423,7 @@ class UserWalletBalanceTest:
         assert user.wallet_balance == 0
 
     def test_balance(self):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory(deposit__amount=300)
         bookings_factories.UsedBookingFactory(user=user, quantity=1, amount=10)
         bookings_factories.UsedBookingFactory(user=user, quantity=2, amount=20)
         bookings_factories.BookingFactory(user=user, quantity=3, amount=30)
@@ -429,7 +432,7 @@ class UserWalletBalanceTest:
         assert user.wallet_balance == 300 - (10 + 2 * 20 + 3 * 30)
 
     def test_real_balance_with_only_used_bookings(self):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory(deposit__amount=300)
         bookings_factories.BookingFactory(user=user, quantity=1, amount=30)
 
         assert user.wallet_balance == 300 - 30
@@ -443,12 +446,14 @@ class UserWalletBalanceTest:
         assert user.wallet_balance == 0
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 @pytest.mark.usefixtures("db_session")
 class SQLFunctionsTest:
     def test_wallet_balance(self):
         with time_machine.travel(datetime.utcnow() - relativedelta(years=2, days=2)):
-            user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
+            user = users_factories.UnderageBeneficiaryFactory(
+                subscription_age=16, deposit__expirationDate=datetime.utcnow() + relativedelta(months=2)
+            )
             # disable trigger because deposit.expirationDate > now() is False in database time
             db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))
             bookings_factories.BookingFactory(user=user, amount=18)
@@ -468,7 +473,7 @@ class SQLFunctionsTest:
         assert db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0] == 0
 
     def test_wallet_balance_multiple_deposits(self):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(age=18)
         users_factories.DepositGrantFactory(user=user, type=finance_models.DepositType.GRANT_15_17)
         users_factories.DepositGrantFactory(user=user, type=finance_models.DepositType.GRANT_18)
 
@@ -480,7 +485,9 @@ class SQLFunctionsTest:
 
     def test_wallet_balance_expired_deposit(self):
         with time_machine.travel(datetime.utcnow() - relativedelta(years=2, days=2)):
-            user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
+            user = users_factories.UnderageBeneficiaryFactory(
+                subscription_age=16, deposit__expirationDate=datetime.utcnow() + relativedelta(months=2)
+            )
             # disable trigger because deposit.expirationDate > now() is False in database time
             db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))
             bookings_factories.BookingFactory(user=user, amount=18)
@@ -489,31 +496,37 @@ class SQLFunctionsTest:
         assert db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0] == 0
 
     def test_deposit_balance(self):
-        deposit = users_factories.DepositGrantFactory()
+        user = users_factories.BeneficiaryFactory(age=18)
+        deposit = user.deposit
+        initial_amount = deposit.amount
 
         bookings_factories.UsedBookingFactory(deposit=deposit, amount=10)
         bookings_factories.BookingFactory(deposit=deposit, amount=1)
 
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 289
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 290
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == initial_amount - 11
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == initial_amount - 10
 
     def test_deposit_balance_on_cancelled_bookings(self):
-        deposit = users_factories.DepositGrantFactory()
+        user = users_factories.BeneficiaryFactory(age=18)
+        deposit = user.deposit
+        initial_amount = deposit.amount
 
         bookings_factories.CancelledBookingFactory(deposit=deposit, amount=10)
         bookings_factories.CancelledBookingFactory(deposit=deposit, amount=20)
 
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 300
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 300
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == initial_amount
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == initial_amount
 
     def test_deposit_balance_on_only_used_bookings(self):
-        deposit = users_factories.DepositGrantFactory()
+        user = users_factories.BeneficiaryFactory(age=18)
+        deposit = user.deposit
+        initial_amount = deposit.amount
 
         bookings_factories.BookingFactory(deposit=deposit, amount=10)
         bookings_factories.BookingFactory(deposit=deposit, amount=20)
 
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 300
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 270  # 300 - 10 - 20
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == initial_amount
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == initial_amount - 10 - 20
 
     def test_deposit_balance_wrong_id(self):
         with pytest.raises(sa_exc.InternalError) as exc:
@@ -523,7 +536,7 @@ class SQLFunctionsTest:
         assert "the deposit was not found" in str(exc)
 
     def test_deposit_bookings_with_incident(self):
-        deposit = users_factories.DepositGrantFactory()
+        deposit = users_factories.BeneficiaryFactory(age=18).deposit
 
         bookings_factories.BookingFactory(deposit=deposit, amount=20)
         bookings_factories.UsedBookingFactory(deposit=deposit, amount=45)
@@ -558,7 +571,7 @@ class SQLFunctionsTest:
 
     def test_deposit_bookings_without_associated_incident(self):
         # Given
-        deposit = users_factories.DepositGrantFactory()
+        deposit = users_factories.BeneficiaryFactory(age=18).deposit
         incident = finance_factories.FinanceIncidentFactory()
 
         bookings_factories.BookingFactory(deposit=deposit, amount=20)
@@ -575,7 +588,7 @@ class SQLFunctionsTest:
         assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 230  # 300 - 40 - 30
 
     def test_deposit_bookings_when_incident_is_cancelled(self):
-        deposit = users_factories.DepositGrantFactory()
+        deposit = users_factories.BeneficiaryFactory(age=18).deposit
         incident = finance_factories.FinanceIncidentFactory()
 
         bookings_factories.BookingFactory(deposit=deposit, amount=20)

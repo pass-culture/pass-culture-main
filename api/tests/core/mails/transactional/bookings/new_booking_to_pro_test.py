@@ -62,7 +62,7 @@ def get_expected_base_email_data(booking, **overrides):
         "USER_EMAIL": "john@example.com",
         "USER_FIRSTNAME": "John",
         "USER_LASTNAME": "Doe",
-        "USER_PHONENUMBER": "",
+        "USER_PHONENUMBER": booking.user.phoneNumber,
         "VENUE_NAME": "Lieu de l'offreur",
         "WITHDRAWAL_PERIOD": 30,
         "FEATURES": "",

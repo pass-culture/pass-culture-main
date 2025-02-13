@@ -300,7 +300,6 @@ class DigitalOffersSendinblueTest:
             IS_DIGITAL_BOOKING_WITH_ACTIVATION_CODE_AND_NO_EXPIRATION_DATE=True,
             HAS_OFFER_URL=True,
             DIGITAL_OFFER_URL="http://example.com",
-            USER_FIRST_NAME="Jeanne",
             VENUE_ADDRESS="1 boulevard Poissonnière",
             VENUE_CITY="Paris",
             VENUE_POSTAL_CODE="75002",

@@ -18,6 +18,7 @@ from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.attributes.models import BookingsAttributes
 from pcapi.core.external.attributes.models import UserAttributes
 import pcapi.core.finance.conf as finance_conf
+from pcapi.core.finance.enum import DepositType
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers.factories import EventOfferFactory
@@ -27,6 +28,7 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import FavoriteFactory
 from pcapi.core.users.factories import ProFactory
@@ -109,12 +111,12 @@ def test_update_external_pro_user():
 
 
 def test_get_user_attributes_beneficiary_with_v1_deposit():
-    user = BeneficiaryGrant18Factory(
+    user = BeneficiaryFactory(
         deposit__version=1,
         deposit__amount=500,
+        deposit__type=DepositType.GRANT_18,
         departementCode="75",
         phoneNumber="0746050403",
-        phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
     )
     offer = OfferFactory(
         product=ProductFactory(
@@ -164,24 +166,24 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         ),
         booking_categories=["CINEMA", "FILM"],
         booking_venues_count=1,  # three bookings on the same venue
-        city="Paris",
+        city=user.city,
         date_created=user.dateCreated,
         date_of_birth=user.dateOfBirth,
         departement_code="75",
         deposits_count=1,
         deposit_expiration_date=user.deposit_expiration_date,
         eligibility=EligibilityType.AGE17_18,
-        first_name="Jeanne",
+        first_name=user.firstName,
         is_active=True,
         is_beneficiary=True,
         is_current_beneficiary=True,
         is_former_beneficiary=False,
         is_pro=False,
         last_booking_date=last_date_created,
-        last_name="Doux",
+        last_name=user.lastName,
         marketing_push_subscription=True,
         phone_number="+33746050403",
-        postal_code=None,
+        postal_code=user.postalCode,
         products_use_date={"product_brut_x_use": datetime(2023, 12, 7, 0, 0)},
         booking_count=3,
         booking_subcategories=["SEANCE_CINE", "SUPPORT_PHYSIQUE_FILM"],
@@ -205,14 +207,9 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
     )
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 def test_get_user_attributes_ex_beneficiary_because_of_expiration():
-    with time_machine.travel(datetime.utcnow() - relativedelta(years=2, days=2)):
-        user = BeneficiaryGrant18Factory(
-            departementCode="75",
-            phoneNumber="+33605040302",
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-        )
+    with time_machine.travel(datetime.utcnow() - relativedelta(years=3, days=2)):
+        user = BeneficiaryFactory()
 
     with assert_no_duplicated_queries():
         attributes = get_user_attributes(user)
@@ -228,7 +225,7 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
         city=user.city,
         date_created=user.dateCreated,
         date_of_birth=user.dateOfBirth,
-        departement_code="75",
+        departement_code=user.departementCode,
         deposits_count=1,
         deposit_expiration_date=user.deposit_expiration_date,
         eligibility=None,
@@ -242,7 +239,7 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
         last_name=user.lastName,
         marketing_push_subscription=True,
         phone_number=user.phoneNumber,
-        postal_code=None,
+        postal_code=user.postalCode,
         products_use_date={},
         booking_count=0,
         booking_subcategories=[],
@@ -267,19 +264,20 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
 
 
 def test_get_user_attributes_beneficiary_because_of_credit():
-    user = BeneficiaryGrant18Factory(
-        departementCode="75",
-        phoneNumber="+33607080901",
-        phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-    )
+    user = BeneficiaryFactory()
+    initial_amount = user.deposit.amount
     offer1 = OfferFactory(
         product=ProductFactory(id=list(TRACKED_PRODUCT_IDS.keys())[0], subcategoryId=subcategories.SEANCE_CINE.id)
     )
     offer2 = EventOfferFactory(venue=offer1.venue, isDuo=True)
     offer3 = OfferFactory()
-    BookingFactory(user=user, amount=100, dateCreated=datetime(2022, 12, 6, 11), stock__offer=offer1)
-    BookingFactory(user=user, amount=120, dateCreated=datetime(2023, 12, 6, 12), stock__offer=offer2)
-    last_booking = BookingFactory(user=user, amount=80, dateCreated=datetime(2023, 12, 6, 13), stock__offer=offer3)
+    # Create 3 bookings with various amounts totalling to the initial amount
+    various_amounts = [initial_amount / 3 + 10, initial_amount / 3 - 10, initial_amount / 3]
+    BookingFactory(user=user, amount=various_amounts[0], dateCreated=datetime(2022, 12, 6, 11), stock__offer=offer1)
+    BookingFactory(user=user, amount=various_amounts[1], dateCreated=datetime(2023, 12, 6, 12), stock__offer=offer2)
+    last_booking = BookingFactory(
+        user=user, amount=various_amounts[2], dateCreated=datetime(2023, 12, 6, 13), stock__offer=offer3
+    )
     favorite = FavoriteFactory(user=user, offer=OfferFactory(subcategoryId=subcategories.CONCERT.id))
 
     with assert_no_duplicated_queries():
@@ -287,7 +285,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
 
     assert attributes == UserAttributes(
         domains_credit=DomainsCredit(
-            all=Credit(initial=Decimal("300"), remaining=Decimal("0.00")),
+            all=Credit(initial=Decimal(initial_amount), remaining=Decimal("0.00")),
             digital=Credit(initial=Decimal("100"), remaining=Decimal("0.00")),
             physical=None,
         ),
@@ -296,7 +294,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         city=user.city,
         date_created=user.dateCreated,
         date_of_birth=user.dateOfBirth,
-        departement_code="75",
+        departement_code=user.departementCode,
         deposits_count=1,
         deposit_expiration_date=user.deposit_expiration_date,
         eligibility=EligibilityType.AGE17_18,
@@ -310,7 +308,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         last_name=user.lastName,
         marketing_push_subscription=True,
         phone_number=user.phoneNumber,
-        postal_code=None,
+        postal_code=user.postalCode,
         products_use_date={},
         booking_count=3,
         booking_subcategories=["SEANCE_CINE", "SUPPORT_PHYSIQUE_FILM"],
@@ -358,7 +356,9 @@ def test_get_user_attributes_underage_beneficiary_before_18(credit_spent: bool):
 def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18_yet():
     # At 17 years old
     with time_machine.travel(datetime.utcnow() - relativedelta(years=1)):
-        user = UnderageBeneficiaryFactory(subscription_age=17)
+        user = UnderageBeneficiaryFactory(
+            subscription_age=17, deposit__expirationDate=datetime.utcnow() + relativedelta(years=1)
+        )
 
     # At 18 years old
     user = User.query.get(user.id)
@@ -371,11 +371,15 @@ def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18
     assert attributes.deposits_count == 1
 
 
+# This test will be removed when WIP_ENABLE_CREDIT_V3 is removed.
+# It is not the expected behavior anymore, the underage deposits no longer expire at 18 years old.
 @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18_on_time():
     # At 17 years old
     with time_machine.travel(datetime.utcnow() - relativedelta(years=2)):
-        user = UnderageBeneficiaryFactory(subscription_age=17)
+        user = UnderageBeneficiaryFactory(
+            subscription_age=17, deposit__expirationDate=datetime.utcnow() + relativedelta(years=1)
+        )
 
     # At 19 years old
     user = User.query.get(user.id)
@@ -391,7 +395,9 @@ def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18
 def test_get_user_attributes_double_beneficiary():
     # At 17 years old
     with time_machine.travel(datetime.utcnow() - relativedelta(years=1)):
-        user = UnderageBeneficiaryFactory(subscription_age=17)
+        user = UnderageBeneficiaryFactory(
+            subscription_age=17, deposit__expirationDate=datetime.utcnow() + relativedelta(years=1)
+        )
 
     # At 18 years old
     user = User.query.get(user.id)

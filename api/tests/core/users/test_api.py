@@ -696,6 +696,7 @@ class UpdateUserInfoTest:
             "lastName": {"new_info": "Bonisseur de la Bath", "old_info": "Flantier"},
         }
 
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     def test_update_user_info_also_updates_underage_deposit_expiration_date(self):
         # Given a user with an underage deposit
         underaged_beneficiary_birthday = datetime.datetime.utcnow() - relativedelta(years=17, months=4)
@@ -772,17 +773,17 @@ class DomainsCreditTest:
 
     def test_get_domains_credit_deposit_expired(self):
         user = users_factories.BeneficiaryGrant18Factory()
+        deposit_expiration_date = user.deposit.expirationDate
+        deposit_initial_amount = user.deposit.amount
         bookings_factories.BookingFactory(
             user=user,
             amount=250,
             stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
         )
 
-        with time_machine.travel(
-            datetime.datetime.utcnow() + relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, days=2)
-        ):
+        with time_machine.travel(deposit_expiration_date):
             assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
-                all=users_models.Credit(initial=Decimal(300), remaining=Decimal(0)),
+                all=users_models.Credit(initial=Decimal(deposit_initial_amount), remaining=Decimal(0)),
                 digital=users_models.Credit(initial=Decimal(100), remaining=Decimal(0)),
                 physical=None,
             )
@@ -2587,12 +2588,14 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
     def test_anonymize_user_tagged_when_he_is_21(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
-            validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=21, days=1),
+            validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=18, days=1),
         )
         users_factories.GdprUserAnonymizationFactory(user=user_to_anonymize)
 
-        users_api.anonymize_beneficiary_users(force=True)
-        db.session.refresh(user_to_anonymize)
+        when_user_is_21 = datetime.datetime.utcnow() + relativedelta(years=3)
+        with time_machine.travel(when_user_is_21):
+            users_api.anonymize_beneficiary_users(force=True)
+            db.session.refresh(user_to_anonymize)
 
         assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
         assert users_models.GdprUserAnonymization.query.count() == 0
@@ -2600,12 +2603,14 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
     def test_do_not_anonymize_user_tagged_when_he_is_less_than_21(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
             lastConnectionDate=datetime.datetime.utcnow(),
-            validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=20, days=360),
+            validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=18),
         )
         users_factories.GdprUserAnonymizationFactory(user=user_to_anonymize)
 
-        users_api.anonymize_beneficiary_users(force=True)
-        db.session.refresh(user_to_anonymize)
+        when_user_is_21 = datetime.datetime.utcnow() + relativedelta(years=3)
+        with time_machine.travel(when_user_is_21 - relativedelta(days=1)):
+            users_api.anonymize_beneficiary_users(force=True)
+            db.session.refresh(user_to_anonymize)
 
         assert user_to_anonymize.firstName != f"Anonymous_{user_to_anonymize.id}"
         assert users_models.GdprUserAnonymization.query.count() == 1
@@ -2627,6 +2632,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             users_constants.SuspensionReason.SUSPENSION_FOR_INVESTIGATION_TEMP,
         ],
     )
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     def test_do_not_anonymize_user_tagged_when_he_is_21_and_recently_tagged_as_fraud(self, reason) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
             lastConnectionDate=datetime.datetime.utcnow(),
@@ -2646,6 +2652,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         assert user_to_anonymize.firstName != f"Anonymous_{user_to_anonymize.id}"
         assert users_models.GdprUserAnonymization.query.count() == 1
 
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     def test_do_not_anonymize_user_tagged_when_he_is_21_and_tagged_as_fraud_5_years_ago(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
             lastConnectionDate=datetime.datetime.utcnow(),

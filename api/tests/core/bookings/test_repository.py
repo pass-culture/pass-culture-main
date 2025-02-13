@@ -1103,8 +1103,8 @@ class FindExpiringBookingsTest:
 
 @pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 def test_get_bookings_from_deposit():
-    deposit1 = users_factories.DepositGrantFactory()
-    deposit2 = users_factories.DepositGrantFactory()
+    deposit1 = users_factories.BeneficiaryFactory().deposit
+    deposit2 = users_factories.BeneficiaryFactory().deposit
     booking1 = bookings_factories.BookingFactory(deposit=deposit1)
     booking2 = bookings_factories.BookingFactory(deposit=deposit2)
     _cancelled_booking = bookings_factories.CancelledBookingFactory(deposit=deposit2)

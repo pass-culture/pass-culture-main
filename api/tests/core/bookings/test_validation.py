@@ -13,6 +13,7 @@ from pcapi.core.bookings import validation
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.finance.enum import DepositType
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
@@ -130,7 +131,9 @@ class CheckStockIsBookableTest:
 @pytest.mark.usefixtures("db_session")
 class CheckExpenseLimitsDepositVersion1Test:
     def _get_beneficiary(self):
-        return users_factories.BeneficiaryGrant18Factory(deposit__version=1, deposit__amount=500)
+        return users_factories.BeneficiaryGrant18Factory(
+            deposit__version=1, deposit__amount=500, deposit__type=DepositType.GRANT_18
+        )
 
     def test_physical_limit(self):
         beneficiary = self._get_beneficiary()
@@ -206,8 +209,9 @@ class CheckExpenseLimitsDepositVersion2Test:
 
     def test_physical_limit(self):
         beneficiary = self._get_beneficiary()
+        price = beneficiary.deposit.amount - 10
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
-        factories.BookingFactory(user=beneficiary, stock__price=290, stock__offer=offer)
+        factories.BookingFactory(user=beneficiary, stock__price=price, stock__offer=offer)
 
         validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
 
@@ -231,14 +235,16 @@ class CheckExpenseLimitsDepositVersion2Test:
     def test_digital_limit_on_uncapped_type(self):
         beneficiary = self._get_beneficiary()
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.OEUVRE_ART.id)
-        factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
+        price = beneficiary.deposit.specific_caps.DIGITAL_CAP - 10
+        factories.BookingFactory(user=beneficiary, stock__price=price, stock__offer=offer)
 
         # should not raise because OEUVRE_ART is not capped
         validation.check_expenses_limits(beneficiary, 11, offer)
 
     def test_global_limit(self):
         beneficiary = self._get_beneficiary()
-        factories.BookingFactory(user=beneficiary, stock__price=290)
+        price = beneficiary.deposit.amount - 10
+        factories.BookingFactory(user=beneficiary, stock__price=price)
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CARTE_CINE_ILLIMITE.id)
 
         validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
@@ -257,11 +263,10 @@ class InsufficientFundsSQLCheckTest:
         deposit.expirationDate = datetime.utcnow() - timedelta(days=1)
         repository.save(deposit)
 
-    def test_insufficient_funds_when_user_has_negative_deposit(self):
+    def test_insufficient_funds_when_user_has_expired_deposit(self):
         # The user once booked.
         user = users_factories.BeneficiaryGrant18Factory()
         factories.BookingFactory(user=user)
-        assert user.wallet_balance == decimal.Decimal("289.90")
 
         # But now their deposit expired.
         self._expire_deposit(user)
