@@ -151,7 +151,6 @@ export const TemplateCollectiveOffersScreen = ({
 
   return (
     <div>
-      <h1 className={styles['title']}>Offres vitrines</h1>
       <TemplateOffersSearchFilters
         hasFilters={hasFilters}
         applyFilters={applyFilters}

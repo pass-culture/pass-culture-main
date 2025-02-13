@@ -10,12 +10,6 @@
   margin-bottom: rem.torem(16px);
 }
 
-.title {
-  @include fonts.title1;
-
-  margin-bottom: rem.torem(16px);
-}
-
 .buttons-field {
   display: flex;
   flex-direction: column-reverse;

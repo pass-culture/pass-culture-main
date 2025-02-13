@@ -9,8 +9,8 @@ describe('screens:EmailChangeValidation', () => {
     renderWithProviders(<EmailChangeValidationScreen isSuccess={true} />)
 
     expect(
-      screen.getByText('Et voilà !', {
-        selector: 'h1',
+      screen.getByText('Merci d’avoir confirmé votre changement d’adresse email.', {
+        selector: 'p',
       })
     ).toBeInTheDocument()
   })
@@ -18,8 +18,8 @@ describe('screens:EmailChangeValidation', () => {
   it('renders component successfully when not success', () => {
     renderWithProviders(<EmailChangeValidationScreen isSuccess={false} />)
     expect(
-      screen.getByText('Votre lien a expiré !', {
-        selector: 'h1',
+      screen.getByText('Connectez-vous avec votre ancienne adresse email.', {
+        selector: 'p',
       })
     ).toBeInTheDocument()
   })

@@ -121,7 +121,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   )
 
   return (
-    <Layout>
+    <Layout mainHeading='Offres vitrines'>
       {offersQuery.isLoading ? (
         <Spinner />
       ) : (

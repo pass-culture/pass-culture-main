@@ -35,7 +35,6 @@ import {
 } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import styles from './Bookings.module.scss'
 import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'
 import { PreFilters } from './PreFilters/PreFilters'
 
@@ -233,15 +232,9 @@ export const BookingsContainer = <
     )
   }
 
-  const title =
-    audience === Audience.COLLECTIVE
-      ? 'Réservations collectives'
-      : 'Réservations individuelles'
 
   return (
     <div className="bookings-page">
-      <h1 className={styles['title']}>{title}</h1>
-
       {audience === Audience.COLLECTIVE && offerer?.allowedOnAdage && (
         <CollectiveBudgetCallout
           variant="COLLECTIVE_TABLE"
