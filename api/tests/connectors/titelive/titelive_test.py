@@ -49,6 +49,7 @@ class TiteliveTest:
 
         product = titelive.get_new_product_from_ean13(ean)
 
+        assert product.ean == ean
         assert product.idAtProviders == ean
         assert product.description == html.unescape(article["resume"])
         assert product.thumbCount == article["image"]
@@ -77,6 +78,7 @@ class TiteliveTest:
 
         product = titelive.get_new_product_from_ean13(ean)
 
+        assert product.ean == ean
         assert product.idAtProviders == ean
         assert product.description is None
 
