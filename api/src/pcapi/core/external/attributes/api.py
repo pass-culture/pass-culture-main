@@ -17,6 +17,7 @@ from pcapi.core.external.attributes import models
 from pcapi.core.external.batch import update_user_attributes as update_batch_user
 from pcapi.core.external.sendinblue import update_contact_attributes as update_sendinblue_user
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import models as offers_models
@@ -187,13 +188,16 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                     offerers_models.Venue.publicName,
                     offerers_models.Venue.name,
                     offerers_models.Venue.venueTypeCode,
-                    offerers_models.Venue.departementCode,
-                    offerers_models.Venue.postalCode,
                     offerers_models.Venue.venueLabelId,
                     offerers_models.Venue.adageId,
                 )
-                .joinedload(offerers_models.Venue.venueLabel)
-                .load_only(offerers_models.VenueLabel.label),
+                .options(
+                    joinedload(offerers_models.Venue.venueLabel).load_only(offerers_models.VenueLabel.label),
+                    joinedload(offerers_models.Venue.offererAddress)
+                    .load_only(offerers_models.OffererAddress.id)
+                    .joinedload(offerers_models.OffererAddress.address)
+                    .load_only(geography_models.Address.departmentCode, geography_models.Address.postalCode),
+                ),
             ),
         )
         .one_or_none()
@@ -269,8 +273,6 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.name,
                 offerers_models.Venue.venueTypeCode,
-                offerers_models.Venue.departementCode,
-                offerers_models.Venue.postalCode,
                 offerers_models.Venue.venueLabelId,
                 offerers_models.Venue.isVirtual,
                 offerers_models.Venue.isPermanent,
@@ -286,6 +288,10 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             .joinedload(offerers_models.VenueBankAccountLink.bankAccount)
             .load_only(finance_models.BankAccount.status),
             joinedload(offerers_models.Venue.venueLabel).load_only(offerers_models.VenueLabel.label),
+            joinedload(offerers_models.Venue.offererAddress)
+            .load_only(offerers_models.OffererAddress.id)
+            .joinedload(offerers_models.OffererAddress.address)
+            .load_only(geography_models.Address.departmentCode, geography_models.Address.postalCode),
         )
         .all()
     )
@@ -344,8 +350,16 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         venues_names={venue.publicName or venue.name for venue in all_venues},
         venues_types={venue.venueTypeCode.name for venue in all_venues},
         venues_labels={venue.venueLabel.label for venue in all_venues if venue.venueLabelId},
-        departement_code={venue.departementCode for venue in all_venues if venue.departementCode},
-        postal_code={venue.postalCode for venue in all_venues if venue.postalCode},
+        departement_code={
+            venue.offererAddress.address.departmentCode
+            for venue in all_venues
+            if venue.offererAddress and venue.offererAddress.address.departmentCode
+        },
+        postal_code={
+            venue.offererAddress.address.postalCode
+            for venue in all_venues
+            if venue.offererAddress and venue.offererAddress.address.postalCode
+        },
         has_collective_offers=has_collective_offers,
         is_eac_meg=is_eac_meg,
         **attributes,
