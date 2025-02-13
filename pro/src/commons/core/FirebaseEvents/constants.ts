@@ -47,6 +47,7 @@ export enum Events {
   CLICKED_CONTACT_OUR_TEAMS = 'hasClickedContactOurTeams',
   CLICKED_ARCHIVE_COLLECTIVE_OFFER = 'hasClickedArchiveCollectiveOffer',
   CLICKED_SAVE_DRAFT_AND_EXIT_COLLECTIVE_OFFER = 'hasClickedSaveDraftAndExitCollectiveOffer',
+  CLICKED_SEE_TEMPLATE_OFFER_EXAMPLE = 'hasClickedSeeTemplateOfferExample',
   FIRST_LOGIN = 'firstLogin',
   PAGE_VIEW = 'page_view',
   SIGNUP_FORM_ABORT = 'signupFormAbort',

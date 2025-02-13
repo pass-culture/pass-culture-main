@@ -34,3 +34,9 @@
 .duration-input {
   width: rem.torem(127px);
 }
+
+.description-info-boxes {
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(36px);
+}

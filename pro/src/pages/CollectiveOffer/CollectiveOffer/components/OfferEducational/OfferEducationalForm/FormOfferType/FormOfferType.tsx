@@ -12,6 +12,8 @@ import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { SelectOption } from 'commons/custom_types/form'
 import { useFunctionOnce } from 'commons/hooks/useFunctionOnce'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { Select } from 'ui-kit/form/Select/Select'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
@@ -56,6 +58,16 @@ export const FormOfferType = ({
       }),
     })
   })
+
+  const logHasClickedSeeTemplateOfferExample = () => {
+    logEvent(Events.CLICKED_SEE_TEMPLATE_OFFER_EXAMPLE, {
+      venueId: values.venueId,
+      offererId: values.offererId,
+      ...(values.domains.length > 0 && {
+        domainIds: values.domains.map((id) => Number(id)),
+      }),
+    })
+  }
 
   return (
     <>
@@ -122,15 +134,37 @@ export const FormOfferType = ({
         </FormLayout.Row>
         <FormLayout.Row
           sideComponent={
-            <InfoBox>
-              Vous pouvez modifier la mise en forme de votre texte.
-              <br />
-              Utilisez des doubles astérisques pour mettre en{' '}
-              <strong>gras</strong> : **exemple** et des tirets bas pour l’
-              <em>italique</em> : _exemple_
-              <br />
-              Vous pourrez vérifier l’affichage à l’étape "Aperçu".
-            </InfoBox>
+            <div className={styles['description-info-boxes']}>
+              {isTemplate && (
+                <InfoBox>
+                  Vous avez du mal a rédiger votre offre ?
+                  <br />
+                  Nous vous proposons des exemples d’offres vitrines réalisées
+                  par d’autres acteurs culturels.
+                  <br />
+                  <ButtonLink
+                    isExternal
+                    opensInNewTab
+                    variant={ButtonVariant.QUATERNARY}
+                    to={
+                      'https://aide.passculture.app/hc/fr/articles/17467449038876--Acteurs-Culturels-Consulter-des-exemples-d-offres-vitrine'
+                    }
+                    onClick={logHasClickedSeeTemplateOfferExample}
+                  >
+                    Voir des exemples d’offres vitrines
+                  </ButtonLink>
+                </InfoBox>
+              )}
+              <InfoBox>
+                Vous pouvez modifier la mise en forme de votre texte.
+                <br />
+                Utilisez des doubles astérisques pour mettre en{' '}
+                <strong>gras</strong> : **exemple** et des tirets bas pour l’
+                <em>italique</em> : _exemple_
+                <br />
+                Vous pourrez vérifier l’affichage à l’étape "Aperçu".
+              </InfoBox>
+            </div>
           }
         >
           <TextArea
