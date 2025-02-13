@@ -30,7 +30,7 @@ class SubcategorySuggestionBackend(BaseBackend):
         url = settings.SUBCATEGORY_SUGGESTION_API_URL
         try:
             id_token = self.get_id_token_for_suggestion(settings.COMPLIANCE_API_CLIENT_ID)
-        except:
+        except Exception:
             raise SubcategorySuggestionApiException("Couldn't get authentication token for subcategory suggestion API")
         headers = {
             "Authorization": f"Bearer {id_token}",
@@ -68,7 +68,7 @@ class SubcategorySuggestionBackend(BaseBackend):
             )
         try:
             results = MostProbableSubcategories(**response.json())
-        except:
+        except Exception:
             raise SubcategorySuggestionApiException("Serialization failed while requesting subcategory suggestion API")
 
         return results

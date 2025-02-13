@@ -72,7 +72,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
         # This should not happen, unless offerer has been deleted between cron task and this task
         return
 
-    if not siren_info.active and not CLOSED_OFFERER_TAG_NAME in (tag.name for tag in offerer.tags):
+    if not siren_info.active and CLOSED_OFFERER_TAG_NAME not in (tag.name for tag in offerer.tags):
         logger.info("SIREN is no longer active", extra={"offerer_id": offerer.id, "siren": offerer.siren})
 
         if payload.tag_when_inactive:

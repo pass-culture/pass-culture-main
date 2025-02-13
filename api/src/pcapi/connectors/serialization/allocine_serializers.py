@@ -374,7 +374,7 @@ class AllocineShowtime(pydantic.BaseModel):
     @pydantic.field_validator("languages", mode="before")
     def drop_none_values(cls, languages: list | None) -> list | None:
         if languages:
-            return [l for l in languages if l is not None]
+            return [lang for lang in languages if lang is not None]
         return languages
 
 
