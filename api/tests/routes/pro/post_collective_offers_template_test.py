@@ -207,8 +207,12 @@ class Returns200Test:
 
         assert response.status_code == 201
         offer = models.CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
-        assert offer.offererAddressId == venue.offererAddressId
-        assert offer.locationType == models.CollectiveLocationType.VENUE
+        assert offer.offerVenue == data["offerVenue"]
+        assert offer.interventionArea == []
+
+        assert offer.offererAddressId == None
+        assert offer.locationType == None
+        assert offer.locationComment == None
 
     def test_offerer_address_school(self, pro_client, payload):
         data = {**payload, "offerVenue": {"addressType": "school", "otherAddress": "", "venueId": None}}
@@ -218,8 +222,12 @@ class Returns200Test:
 
         assert response.status_code == 201
         offer = models.CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
+        assert offer.offerVenue == data["offerVenue"]
+        assert len(offer.interventionArea) > 0
+
         assert offer.offererAddressId == None
-        assert offer.locationType == models.CollectiveLocationType.SCHOOL
+        assert offer.locationType == None
+        assert offer.locationComment == None
 
     def test_offerer_address_other(self, pro_client, payload):
         data = {**payload, "offerVenue": {"addressType": "other", "otherAddress": "In Paris", "venueId": None}}
@@ -229,8 +237,12 @@ class Returns200Test:
 
         assert response.status_code == 201
         offer = models.CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one()
+        assert offer.offerVenue == data["offerVenue"]
+        assert len(offer.interventionArea) > 0
+
         assert offer.offererAddressId == None
         assert offer.locationType == None
+        assert offer.locationComment == None
 
 
 class Returns403Test:
@@ -362,6 +374,18 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
 
+    def test_location_invalid(self, pro_client, payload):
+        data = {
+            **payload,
+            "offerVenue": {"addressType": "school", "otherAddress": "", "venueId": None},
+            "locationType": models.CollectiveLocationType.SCHOOL.value,
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"__root__": ["Cannot receive offerVenue and OA fields at the same time"]}
+
 
 class InvalidDatesTest:
     def test_missing_start(self, pro_client, payload, template_end):
@@ -422,3 +446,20 @@ class Returns404Test:
 
         assert response.status_code == 400
         assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"}
+
+    def test_unknown_venue(self, pro_client, payload):
+        data = {**payload, "venueId": -1}
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 404
+
+    def test_unknown_venue_in_offer_venue(self, pro_client, payload):
+        data = {**payload, "offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": -1}}
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 404
+        assert response.json == {"venueId": "The venue does not exist."}
