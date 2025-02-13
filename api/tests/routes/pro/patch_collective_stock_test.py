@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 
 import pytest
 import time_machine
@@ -800,3 +801,25 @@ class Return400Test:
             edited_stock = CollectiveStock.query.get(stock.id)
             assert edited_stock.startDatetime == startDatetime
             assert edited_stock.endDatetime == endDatetime
+
+    @time_machine.travel("2020-11-17 15:00:00")
+    def should_not_accept_payload_with_endDatetime_before_stock_startDatetime(self, client):
+        start = datetime.now(timezone.utc) + timedelta(days=10)
+        educational_factories.create_educational_year(date_time=start)
+        stock = educational_factories.CollectiveStockFactory(startDatetime=start, endDatetime=start)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
+        )
+
+        new_end = start - timedelta(days=1)
+        stock_edition_payload = {"endDatetime": new_end.isoformat()}
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "educationalStock": ["La date de fin de l'évènement ne peut précéder la date de début."]
+        }
+        edited_stock = CollectiveStock.query.get(stock.id)
+        assert edited_stock.startDatetime == start.replace(tzinfo=None)
+        assert edited_stock.endDatetime == start.replace(tzinfo=None)
