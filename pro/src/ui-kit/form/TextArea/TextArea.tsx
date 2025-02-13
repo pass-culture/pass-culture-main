@@ -63,7 +63,7 @@ type TextAreaProps = FieldLayoutBaseProps &
     | {
         hasTemplateButton: boolean
         wordingTemplate: string
-        onPressTemplateButton:() => void
+        onPressTemplateButton: () => void
       }
     | {
         hasTemplateButton?: false | undefined
@@ -131,7 +131,7 @@ export const TextArea = ({
       textAreaRef.current.style.height = 'unset'
 
       const scrollHeight = textAreaRef.current.scrollHeight
-      textAreaRef.current.style.height = `${hasTemplateButton ? scrollHeight + 68 : scrollHeight}px`
+      textAreaRef.current.style.height = `${hasTemplateButton ? scrollHeight + 92 : scrollHeight}px`
     }
   }
 
