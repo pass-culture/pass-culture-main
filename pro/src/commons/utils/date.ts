@@ -161,3 +161,5 @@ export function mapDayToFrench(
       return 'Dimanche'
   }
 }
+
+export const DAYS_IN_ORDER = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']

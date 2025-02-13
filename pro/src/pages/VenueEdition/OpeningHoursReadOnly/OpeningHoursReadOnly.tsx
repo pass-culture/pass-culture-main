@@ -1,5 +1,5 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { mapDayToFrench } from 'commons/utils/date'
+import { mapDayToFrench , DAYS_IN_ORDER } from 'commons/utils/date'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 
@@ -18,12 +18,21 @@ type HoursProps = {
   hours: Array<OpenClose>
 }
 
-export function OpeningHoursReadOnly({ openingHours }: OpeningHours) {
-  const filledDays = Object.entries(openingHours ?? {}).filter((dateAndHour) =>
-    Boolean(dateAndHour[1])
-  )
+type Entries<T> = T extends Record<infer W, infer U> ? [W, U][] : never;
+type OpeningHoursEntries = Entries<GetVenueResponseModel['openingHours']>;
 
-  if (!openingHours || filledDays.length === 0) {
+export function OpeningHoursReadOnly({ openingHours }: OpeningHours) {
+  const filledDays = Object.entries(openingHours ?? {})
+    .filter((dateAndHour) =>
+      Boolean(dateAndHour[1])
+    )
+
+  const orderedFilledDays = DAYS_IN_ORDER.map(d => {
+    const index = filledDays.findIndex(([day]) => day === d)
+    return index === -1 ? null : filledDays[index]
+  }).filter(Boolean) as OpeningHoursEntries
+
+  if (!openingHours || orderedFilledDays.length === 0) {
     return (
       <SummarySubSection
         title={'Horaires d’ouverture'}
@@ -40,7 +49,7 @@ export function OpeningHoursReadOnly({ openingHours }: OpeningHours) {
   return (
     <SummarySubSection title={'Horaires d’ouverture'} shouldShowDivider={false}>
       <SummaryDescriptionList
-        descriptions={filledDays.map((dateAndHour) => {
+        descriptions={orderedFilledDays.map((dateAndHour) => {
           return {
             title: mapDayToFrench(dateAndHour[0]),
             text: <Hours hours={dateAndHour[1]} />,
