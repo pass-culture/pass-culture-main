@@ -18,7 +18,6 @@ from pcapi.core.users import repository as users_repo
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-import pcapi.routes.auth.exceptions as auth_exceptions
 from pcapi.routes.auth.forms.forms import SigninForm
 from pcapi.utils import requests
 
@@ -71,15 +70,15 @@ def discord_success() -> Response | str:
         )
     try:
         update_discord_user(user_id, user_discord_id)
-    except auth_exceptions.DiscordUserAlreadyLinked:
+    except users_exceptions.DiscordUserAlreadyLinked:
         return redirect_with_error("Ce compte Discord est déjà lié à un autre compte pass Culture.")
-    except auth_exceptions.UserUnderage:
+    except users_exceptions.UserUnderage:
         return redirect_with_error("Accès refusé au serveur Discord. Tu dois être majeur pour accéder à ce serveur.")
-    except auth_exceptions.UserNotABeneficiary:
+    except users_exceptions.UserNotABeneficiary:
         return redirect_with_error(
             "Accès refusé au serveur Discord. Tu dois être bénéficiaire du pass Culture pour accéder à ce serveur."
         )
-    except auth_exceptions.UserNotAllowed:
+    except users_exceptions.UserNotAllowed:
         return redirect_with_error("Accès refusé au serveur Discord. Contacte le support pour plus d'informations")
 
     try:
@@ -120,7 +119,7 @@ def discord_call_back() -> str | Response | None:
 def update_discord_user(user_id: str, discord_id: str) -> None:
     already_linked_user = user_models.DiscordUser.query.filter_by(discordId=discord_id).first()
     if already_linked_user:
-        raise auth_exceptions.DiscordUserAlreadyLinked()
+        raise users_exceptions.DiscordUserAlreadyLinked()
 
     user: user_models.User = user_models.User.query.get(user_id)
     discord_user = user.discordUser
@@ -134,11 +133,11 @@ def update_discord_user(user_id: str, discord_id: str) -> None:
 
     if not discord_user.hasAccess:
         if not user.is_beneficiary:
-            raise auth_exceptions.UserNotABeneficiary()
+            raise users_exceptions.UserNotABeneficiary()
 
         if user.age and user.age < 18:
-            raise auth_exceptions.UserUnderage()
-        raise auth_exceptions.UserNotAllowed()
+            raise users_exceptions.UserUnderage()
+        raise users_exceptions.UserNotAllowed()
 
     discord_user.discordId = discord_id
 
