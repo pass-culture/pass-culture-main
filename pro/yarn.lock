@@ -2035,10 +2035,10 @@
     "@storybook/icons" "^1.2.12"
     ts-dedent "^2.0.0"
 
-"@storybook/blocks@^8.5.4":
-  version "8.5.4"
-  resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-8.5.4.tgz#cf91a257ab8e756d53393126251708149cfa8d26"
-  integrity sha512-QLfQ5KX6m2FAsz1zjB+mUp9jEA+LCzIHo3BxLr/tWN3pIwSURoHs2wrHDXT2r+wu5CBesGvTKI4KUWlsxsOF9g==
+"@storybook/blocks@^8.5.5":
+  version "8.5.5"
+  resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-8.5.5.tgz#72e5dcd4c1359bc91ad48c3f5f4c55b66b630943"
+  integrity sha512-O/59Dj2E4t3QtJkUyRgO0X4anAC5dx0M0gfsYACEUWFubhog9x5gw3xgPhFtc1UhezKBedM1nguqdPXHus1mTg==
   dependencies:
     "@storybook/csf" "0.1.12"
     "@storybook/icons" "^1.2.12"
