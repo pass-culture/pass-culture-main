@@ -125,6 +125,10 @@ $info-box-margin-left: rem.torem(24px);
 
 @media (min-width: size.$laptop) {
   .form-layout {
+    &-row.inline-group {
+      flex-wrap: unset;
+    }
+
     &-row-info-info {
       width: $info-box-width;
       position: absolute;
