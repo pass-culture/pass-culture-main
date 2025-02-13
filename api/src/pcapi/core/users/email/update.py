@@ -401,7 +401,7 @@ def check_user_password(user: models.User, password: str) -> None:
 
 def check_email_address_does_not_exist(email: str) -> None:
     if users_repository.find_user_by_email(email):
-        raise exceptions.EmailExistsError(email)
+        raise exceptions.EmailExistsError()
 
 
 def check_no_ongoing_email_update_request(user: models.User) -> None:
