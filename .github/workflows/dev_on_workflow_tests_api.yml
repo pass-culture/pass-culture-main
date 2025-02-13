@@ -396,17 +396,34 @@ jobs:
   restore-test-durations:
     name: Restore pytest durations
     runs-on: ubuntu-22.04
+    outputs:
+      # This output will be used to know if we had a cache hit (exact match or not), or no cache hit at all.
+      # See documentation about the `cache-hit` output:
+      # https://github.com/actions/cache/blob/main/README.md#outputs
+      # > cache-hit - A string value to indicate an exact match was found for the key.
+      # > If there's a cache hit, this will be 'true' or 'false' to indicate if there's an exact match for key.
+      # > If there's a cache miss, this will be an empty string.
+      restored: ${{ steps.restore-test-durations.outputs.cache-hit == '' && 'false' || 'true' }}
+      date: ${{ steps.get-date.outputs.date }}
     steps:
+      # http://man7.org/linux/man-pages/man1/date.1.html
+      - name: Get Date
+        working-directory: /
+        id: get-date
+        run: |
+          echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
+        shell: bash
+
     # It's mandatory to use the exact same path when saving/restoring cache, otherwise it won't work
-    # (the same key is not enough - cf  https://github.com/actions/cache/blob/main/README.md#cache-version).
+    # (the same key is not enough - cf https://github.com/actions/cache/blob/main/README.md#cache-version).
       - name: Restore test durations
         id: restore-test-durations
         uses: actions/cache/restore@v4
         with:
           path: /tests/.test_durations
-          key: tests-durations-${{ github.sha }}
+          key: tests-durations-${{ steps.get-date.outputs.date }}
           restore-keys: |
-            tests-durations-${{ github.sha }}-
+            tests-durations-${{ steps.get-date.outputs.date }}-
             tests-durations-
           fail-on-cache-miss: false
 
@@ -419,15 +436,6 @@ jobs:
         with:
           name: test-durations-before
           path: /tests/.test_durations
-
-    outputs:
-      # This output will be used to know if we had a cache hit (exact match or not), or no cache hit at all.
-      # See documentation about the `cache-hit` output:
-      # https://github.com/actions/cache/blob/main/README.md#outputs
-      # > cache-hit - A string value to indicate an exact match was found for the key.
-      # > If there's a cache hit, this will be 'true' or 'false' to indicate if there's an exact match for key.
-      # > If there's a cache miss, this will be an empty string.
-      restored: ${{ steps.restore-test-durations.outputs.cache-hit == '' && 'false' || 'true' }}
 
   pytest:
     name: "Pytest ${{ matrix.pytest_args.description }} : ${{ matrix.group }}/4"
@@ -631,7 +639,7 @@ jobs:
           > ${{ runner.temp }}/.test_durations
 
       # This step uploads the final file as an artifact.
-      # We can download it from the Github GUI, and we would then commit it if we implemented a fallback mechanism
+      # We can download it from the GitHub GUI, and we would then commit it if we implemented a fallback mechanism
       - name: Upload final test durations
         uses: actions/upload-artifact@v4
         with:
@@ -640,10 +648,17 @@ jobs:
           if-no-files-found: warn
           include-hidden-files: true
 
+      - name: Get Date
+        working-directory: /
+        id: get-date
+        run: |
+          echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
+        shell: bash
+
       # Finally, we cache the new test durations. This file will be restored in next CI execution
       # (see step "Restore test durations" above).
       - name: Cache final test durations
         uses: actions/cache/save@v4
         with:
           path: ${{ runner.temp }}/.test_durations
-          key: tests-durations-${{ github.sha }}
+          key: tests-durations-${{ steps.get-date.outputs.date }}-${{ github.run_id }}
