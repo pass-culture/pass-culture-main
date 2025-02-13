@@ -22,7 +22,7 @@ type IndividualOffersTableProps = {
   resetFilters: () => void
   setSelectedOffer: (offer: ListOffersOfferResponseModel) => void
   toggleSelectAllCheckboxes: () => void
-  hasFilters: boolean
+  hasFiltersOrNameSearch: boolean
   isAtLeastOneOfferChecked: boolean
   currentPageOffersSubset: ListOffersOfferResponseModel[]
   selectedOffers: ListOffersOfferResponseModel[]
@@ -42,7 +42,7 @@ export const IndividualOffersTable = ({
   applySelectedFiltersAndRedirect,
   setSelectedOffer,
   toggleSelectAllCheckboxes,
-  hasFilters,
+  hasFiltersOrNameSearch,
   isAtLeastOneOfferChecked,
   selectedFilters,
 }: IndividualOffersTableProps) => {
@@ -72,7 +72,7 @@ export const IndividualOffersTable = ({
   return (
     <OffersTable
       hasOffers={hasOffers}
-      hasFilters={hasFilters}
+      hasFiltersOrNameSearch={hasFiltersOrNameSearch}
       offersCount={offersCount}
       isLoading={isLoading}
       resetFilters={resetFilters}

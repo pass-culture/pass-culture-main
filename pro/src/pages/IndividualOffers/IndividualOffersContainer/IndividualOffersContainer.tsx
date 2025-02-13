@@ -11,6 +11,7 @@ import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { Audience } from 'commons/core/shared/types'
 import { SelectOption } from 'commons/custom_types/form'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isSameOffer } from 'commons/utils/isSameOffer'
 import { NoData } from 'components/NoData/NoData'
 import { useStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
@@ -51,6 +52,7 @@ export const IndividualOffersContainer = ({
     ListOffersOfferResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
+  const isCollapsedMemorizedFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -59,8 +61,9 @@ export const IndividualOffersContainer = ({
 
   const hasOffers = currentPageOffersSubset.length > 0
 
-  const hasFilters = hasSearchFilters(initialSearchFilters)
-  const userHasNoOffers = !isLoading && !hasOffers && !hasFilters
+  const hasFilters = hasSearchFilters({ searchFilters: initialSearchFilters, ignore: ['nameOrIsbn'] })
+  const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.nameOrIsbn
+  const userHasNoOffers = !isLoading && !hasOffers && !hasFiltersOrNameSearch
 
   const areAllOffersSelected =
     selectedOffers.length > 0 && selectedOffers.length === offers.length
@@ -87,10 +90,14 @@ export const IndividualOffersContainer = ({
     applySelectedFiltersAndRedirect({ ...filters, page: DEFAULT_PAGE })
   }
 
-  const resetFilters = () => {
-    onResetFilters()
-    setSelectedFilters(DEFAULT_SEARCH_FILTERS)
-    applySelectedFiltersAndRedirect(DEFAULT_SEARCH_FILTERS)
+  const resetFilters = (resetNameOrIsbn = true) => {
+    onResetFilters(resetNameOrIsbn)
+     const newFilters = {
+      ...DEFAULT_SEARCH_FILTERS,
+      ...(!resetNameOrIsbn && { nameOrIsbn: initialSearchFilters.nameOrIsbn }),
+    }
+    setSelectedFilters(newFilters)
+    applySelectedFiltersAndRedirect(newFilters)
   }
 
   function onSetSelectedOffer(offer: ListOffersOfferResponseModel) {
@@ -127,7 +134,7 @@ export const IndividualOffersContainer = ({
         applyFilters={applyFilters}
         categories={categories}
         disableAllFilters={userHasNoOffers}
-        resetFilters={resetFilters}
+        resetFilters={() => resetFilters(!isCollapsedMemorizedFiltersEnabled)}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
         venues={venues}
@@ -151,7 +158,7 @@ export const IndividualOffersContainer = ({
             selectedOffers={selectedOffers}
             setSelectedOffer={onSetSelectedOffer}
             toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-            hasFilters={hasFilters}
+            hasFiltersOrNameSearch={hasFiltersOrNameSearch}
             selectedFilters={selectedFilters}
             isAtLeastOneOfferChecked={selectedOffers.length > 1}
           />

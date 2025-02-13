@@ -13,7 +13,7 @@ import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 import { CollectiveOffersTableBody } from './CollectiveOffersTableBody/CollectiveOffersTableBody'
 
 type CollectiveOffersTableProps = {
-  hasFilters: boolean
+  hasFiltersOrNameSearch: boolean
   areAllOffersSelected: boolean
   hasOffers: boolean
   isLoading: boolean
@@ -33,7 +33,7 @@ type CollectiveOffersTableProps = {
 }
 
 export const CollectiveOffersTable = ({
-  hasFilters,
+  hasFiltersOrNameSearch,
   areAllOffersSelected,
   hasOffers,
   isLoading,
@@ -73,7 +73,7 @@ export const CollectiveOffersTable = ({
   return (
     <OffersTable
       hasOffers={hasOffers}
-      hasFilters={hasFilters}
+      hasFiltersOrNameSearch={hasFiltersOrNameSearch}
       offersCount={offers.length}
       isLoading={isLoading}
       resetFilters={resetFilters}
