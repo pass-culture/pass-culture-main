@@ -69,6 +69,7 @@ class TiteliveSearchTest:
         assert cd_product.name == "Les dernières volontés de Mozart (symphony)"
         assert cd_product.description == 'GIMS revient avec " Les dernières volontés de Mozart ", un album de tubes.'
         assert cd_product.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id
+        assert cd_product.ean == "3700187679323"
         assert cd_product.extraData["artist"] == "Gims"
         assert cd_product.extraData["author"] == "Gims"
         assert cd_product.extraData["contenu_explicite"] == "0"
@@ -99,6 +100,7 @@ class TiteliveSearchTest:
             == 'GIMS revient avec " Les dernières volontés de Mozart ", un album de tubes.'
         )
         assert shared_gtl_product.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id
+        assert shared_gtl_product.ean == "3700187679324"
         assert shared_gtl_product.extraData["artist"] == "Gims"
         assert shared_gtl_product.extraData["author"] == "Gims"
         assert shared_gtl_product.extraData["contenu_explicite"] == "0"
@@ -129,6 +131,7 @@ class TiteliveSearchTest:
             == "Ce huitième album studio de Gorillaz est une collection énergique, optimiste et riche en genres de 10 titres mettant en vedette un line-up stellaire de collaborateurs : Thundercat, Tame Impala, Bad Bunny, Stevie Nicks, Adeleye Omotayo, Bootie Brown et Beck."
         )
         assert vinyle_product.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id
+        assert vinyle_product.ean == "5054197199738"
         assert vinyle_product.extraData["artist"] == "Gorillaz"
         assert vinyle_product.extraData["author"] == "Gorillaz"
         assert vinyle_product.extraData["contenu_explicite"] == "0"
@@ -440,6 +443,7 @@ class TiteliveBookSearchTest:
         product = offers_models.Product.query.one()
 
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
+        assert product.ean == self.EAN_TEST
         assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.value
         assert product.extraData.get("ean") == self.EAN_TEST
 
@@ -483,6 +487,7 @@ class TiteliveBookSearchTest:
         product = offers_models.Product.query.one()
 
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
+        assert product.ean == self.EAN_TEST
         assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.value
         assert product.extraData.get("ean") == self.EAN_TEST
 
@@ -680,6 +685,7 @@ class TiteliveBookSearchTest:
 
         # Then
         product = offers_models.Product.query.one()
+        assert product.ean == self.EAN_TEST
         assert product.extraData.get("ean") == self.EAN_TEST
 
     # UPDATE
@@ -695,6 +701,7 @@ class TiteliveBookSearchTest:
 
         # Then
         product = offers_models.Product.query.one()
+        assert product.ean == self.EAN_TEST
         assert product.extraData.get("ean") == self.EAN_TEST
         assert product.name == fixture_data["result"][0]["titre"]
 
@@ -846,6 +853,7 @@ class TiteliveBookSearchTest:
 
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.value
+        assert product.ean == self.EAN_TEST
         assert product.extraData.get("ean") == self.EAN_TEST
 
         assert product.extraData.get("gtl_id") == "03020300"
@@ -1001,7 +1009,7 @@ class TiteliveBookSearchTest:
 
         assert len(products) == 2
 
-        product_by_ean = {product.extraData.get("ean"): product for product in products}
+        product_by_ean = {product.ean: product for product in products}
 
         product_without_verso_image = product_by_ean.get(ean_no_verso_image)
         product_with_verso_image = product_by_ean.get(ean_verso_image)
