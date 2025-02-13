@@ -68,6 +68,10 @@
   grid-area: venue;
 }
 
+.institution-column {
+  min-width: rem.torem(160px);
+}
+
 .institution-column,
 .stock-column {
   grid-area: stock-or-institution;
