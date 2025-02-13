@@ -2677,7 +2677,7 @@ class RegistrationStepTest:
         assert tunnel["type"] == TunnelType.UNDERAGE
         assert tunnel["progress"] == 75
 
-        users_factories.DepositGrantFactory(user=user)
+        users_factories.DepositGrantFactory(user=user, type=finance_models.DepositType.GRANT_15_17)
         tunnel_end = _get_tunnel(user, eligibility_history, fraud_reviews_desc)
         assert tunnel_end["progress"] == 100
 

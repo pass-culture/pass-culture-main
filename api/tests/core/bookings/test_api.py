@@ -23,6 +23,7 @@ from pcapi.core.bookings.api import cancel_unstored_external_bookings
 from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import BookingRecreditType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.educational.factories as educational_factories
@@ -163,7 +164,7 @@ class BookOfferTest:
         assert len(push_testing.requests) == 3
 
         data = push_testing.requests[1]
-        assert data["attribute_values"]["u.credit"] == 29_000  # values in cents
+        assert data["attribute_values"]["u.credit"] == 14_000  # values in cents
         assert data["attribute_values"]["ut.booking_categories"] == ["FILM"]
 
         expected_date = booking.dateCreated.strftime(BATCH_DATETIME_FORMAT)
@@ -180,7 +181,7 @@ class BookOfferTest:
         assert len(booking.token) == 6
         assert booking.status is BookingStatus.CONFIRMED
         assert booking.cancellationLimitDate is None
-        assert booking.usedRecreditType is None
+        assert booking.usedRecreditType == BookingRecreditType.RECREDIT_18
         assert booking.priceCategoryLabel is None
         assert stock.dnBookedQuantity == 7
 
@@ -242,12 +243,11 @@ class BookOfferTest:
     )
     def test_booking_used_recredit_type(self, deposit_type, recredit_type, expected_result):
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
-        beneficiary = users_factories.BeneficiaryGrant18Factory(
+        age = 17 if recredit_type == finance_models.RecreditType.RECREDIT_17 else 18
+        beneficiary = users_factories.BeneficiaryFactory(
+            age=age,
             deposit__type=deposit_type,
             deposit__amount=500,
-        )
-        beneficiary.deposit.recredits = (
-            [finance_factories.RecreditFactory(recreditType=recredit_type, amount=50)] if recredit_type else []
         )
 
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
@@ -318,7 +318,7 @@ class BookOfferTest:
         assert len(push_testing.requests) == 3
 
         data = push_testing.requests[1]
-        assert data["attribute_values"]["u.credit"] == 29_000  # values in cents
+        assert data["attribute_values"]["u.credit"] == 14_000  # values in cents
 
         expected_date = booking.dateCreated.strftime(BATCH_DATETIME_FORMAT)
         assert data["attribute_values"]["date(u.last_booking_date)"] == expected_date

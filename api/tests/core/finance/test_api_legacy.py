@@ -744,6 +744,7 @@ def test_generate_legacy_bank_accounts_file(clean_temp_files):
         }
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 def test_generate_payments_file(clean_temp_files):
     actual_year = datetime.date.today().year
     used_date = datetime.datetime(actual_year, 2, 5)
@@ -1434,6 +1435,7 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch, with_oa):
     assert reimbursement_by_venue_row["Montant remboursé (TTC)"] == "308,40 €"
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 def test_generate_invoice_file(clean_temp_files):
     first_siret = "12345678900"
     venue = offerers_factories.VenueFactory(siret=first_siret, pricing_point="self")

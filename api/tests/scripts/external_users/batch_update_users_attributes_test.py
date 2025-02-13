@@ -84,7 +84,7 @@ def test_format_batch_user():
     assert len(res) == 1
     assert res[0].attributes == {
         "date(u.date_created)": user.dateCreated.strftime(BATCH_DATETIME_FORMAT),
-        "date(u.date_of_birth)": user.dateOfBirth.strftime(BATCH_DATETIME_FORMAT),
+        "date(u.date_of_birth)": user.birth_date.strftime(BATCH_DATETIME_FORMAT),
         "date(u.deposit_activation_date)": user.deposit_activation_date.strftime(BATCH_DATETIME_FORMAT),
         "date(u.deposit_expiration_date)": user.deposit_expiration_date.strftime(BATCH_DATETIME_FORMAT),
         "date(u.last_booking_date)": booking.dateCreated.strftime(BATCH_DATETIME_FORMAT),
@@ -92,15 +92,15 @@ def test_format_batch_user():
         "u.booking_count": 1,
         "u.booking_venues_count": 1,
         "u.city": "Paris",
-        "u.credit": 28990,
+        "u.credit": 13990,
         "u.departement_code": "75",
         "u.deposits_count": 1,
         "u.is_beneficiary": True,
         "u.is_current_beneficiary": True,
         "u.is_former_beneficiary": False,
-        "u.first_name": "Jeanne",
+        "u.first_name": user.firstName,
         "u.has_completed_id_check": True,
-        "u.last_name": "Doux",
+        "u.last_name": user.lastName,
         "u.marketing_email_subscription": True,
         "u.marketing_push_subscription": True,
         "u.most_booked_movie_genre": None,
@@ -120,8 +120,10 @@ def test_format_batch_user():
 @pytest.mark.usefixtures("db_session")
 def test_format_sendinblue_user():
     user = BeneficiaryGrant18Factory(departementCode="75")
+    initial_credit = user.deposit.amount
     booking = BookingFactory(user=user)
     favorite = FavoriteFactory(user=user)
+    credit_after_booking = initial_credit - booking.total_amount
 
     res = format_sendinblue_users([user])
 
@@ -133,7 +135,7 @@ def test_format_sendinblue_user():
         "BOOKED_OFFER_SUBCATEGORIES": "SUPPORT_PHYSIQUE_FILM",
         "BOOKING_COUNT": 1,
         "BOOKING_VENUES_COUNT": 1,
-        "CREDIT": Decimal("289.90"),
+        "CREDIT": Decimal(credit_after_booking),
         "DATE_CREATED": user.dateCreated,
         "DATE_OF_BIRTH": user.dateOfBirth,
         "DEPARTMENT_CODE": "75",
@@ -151,7 +153,7 @@ def test_format_sendinblue_user():
         "HAS_COMPLETED_ID_CHECK": True,
         "HAS_INDIVIDUAL_OFFERS": None,
         "HAS_OFFERS": None,
-        "INITIAL_CREDIT": Decimal("300.00"),
+        "INITIAL_CREDIT": Decimal(initial_credit),
         "IS_ACTIVE_PRO": None,
         "IS_BENEFICIARY": True,
         "IS_BENEFICIARY_18": True,

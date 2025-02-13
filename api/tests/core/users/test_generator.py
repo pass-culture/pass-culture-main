@@ -59,17 +59,16 @@ class UserGeneratorTest:
         self.assert_user_passed_identity_check(user)
         assert self.has_fraud_check_validated(user, fraud_models.FraudCheckType.HONOR_STATEMENT)
 
-    def assert_user_is_beneficiary(self, user: users_models.User):
+    def assert_user_is_beneficiary(
+        self,
+        user: users_models.User,
+        expected_deposit_type: users_models.DepositType = users_models.DepositType.GRANT_17_18,
+    ):
         self.assert_user_passed_honor_statement(user)
         expected_role = (
             users_models.UserRole.BENEFICIARY
             if user.age == users_constants.ELIGIBILITY_AGE_18
             else users_models.UserRole.UNDERAGE_BENEFICIARY
-        )
-        expected_deposit_type = (
-            users_models.DepositType.GRANT_18
-            if user.age == users_constants.ELIGIBILITY_AGE_18
-            else users_models.DepositType.GRANT_15_17
         )
         assert user.is_beneficiary is True
         assert expected_role in user.roles
@@ -92,8 +91,6 @@ class UserGeneratorTest:
     @pytest.mark.parametrize(
         "age",
         [
-            users_constants.ELIGIBILITY_UNDERAGE_RANGE[0],
-            users_constants.ELIGIBILITY_UNDERAGE_RANGE[1],
             users_constants.ELIGIBILITY_UNDERAGE_RANGE[2],
             users_constants.ELIGIBILITY_AGE_18,
         ],
@@ -143,6 +140,7 @@ class UserGeneratorTest:
             users_constants.ELIGIBILITY_UNDERAGE_RANGE[2],
         ],
     )
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     def test_generate_underage_beneficiary_user(self, age):
         user_data = users_generator.GenerateUserData(
             age=age,
@@ -151,7 +149,7 @@ class UserGeneratorTest:
         user = users_generator.generate_user(user_data)
 
         assert user.age == age
-        self.assert_user_is_beneficiary(user)
+        self.assert_user_is_beneficiary(user, expected_deposit_type=users_models.DepositType.GRANT_15_17)
 
     def test_email_is_consistent_with_user_data_when_no_names(self):
         user_data = users_generator.GenerateUserData(
@@ -202,7 +200,7 @@ class UserGeneratorTest:
         assert identity_check.resultContent["last_name"] == user.lastName
         assert identity_check.resultContent["birth_date"] == str(user.birth_date)
 
-    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     def test_user_in_transition_17_18(self):
         user_data = users_generator.GenerateUserData(transition_17_18=True)
         user = users_generator.generate_user(user_data)

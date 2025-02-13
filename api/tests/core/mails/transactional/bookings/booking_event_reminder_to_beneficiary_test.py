@@ -82,7 +82,7 @@ class GetBookingEventReminderToBeneficiaryEmailDataTest:
             "OFFER_WITHDRAWAL_TYPE": None,
             "QR_CODE": "PASSCULTURE:v3;TOKEN:N2XPV5",
             "SUBCATEGORY": "SEANCE_CINE",
-            "USER_FIRST_NAME": "Jeanne",
+            "USER_FIRST_NAME": booking.firstName,
             "VENUE_ADDRESS": "1 boulevard Poissonnière",
             "VENUE_CITY": "Paris",
             "VENUE_NAME": "Le Petit Rintintin",

@@ -12,14 +12,14 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class GetAcceptedAsBeneficiaryEmailSendinblueTest:
     def test_return_correct_email_metadata(self):
         # Given
-        user = users_factories.BeneficiaryGrant18Factory.create(email="fabien+test@example.net")
+        user = users_factories.BeneficiaryFactory.create(email="fabien+test@example.net", deposit__amount=42)
 
         # When
         email = get_accepted_as_beneficiary_email_v3_data(user)
 
         # Then
         assert email.template == TransactionalEmail.ACCEPTED_AS_BENEFICIARY_V3.value
-        assert email.params == {"CREDIT": 300}
+        assert email.params == {"CREDIT": 42}
 
 
 class GetAcceptedAsUnderageBeneficiaryEmailSendinblueTest:

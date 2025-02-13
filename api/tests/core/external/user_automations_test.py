@@ -15,7 +15,6 @@ from pcapi.core.users.models import UserRole
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 class UserAutomationsTest:
     def _create_users_around_18(self):
         today = datetime.combine(date.today(), datetime.min.time())
@@ -51,51 +50,51 @@ class UserAutomationsTest:
             assert user0.deposit is None
 
         with time_machine.travel("2032-10-31 15:00:00"):
-            user1 = users_factories.BeneficiaryGrant18Factory(
+            user1 = users_factories.BeneficiaryFactory(
                 email="beneficiary1+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=1),
+                deposit__expirationDate=datetime(2034, 10, 31, 23, 59, 59, 999999),
             )
-            assert user1.deposit.expirationDate == datetime(2034, 10, 31, 23, 59, 59, 999999)
 
         with time_machine.travel("2032-11-01 15:00:00"):
-            user2 = users_factories.BeneficiaryGrant18Factory(
+            user2 = users_factories.BeneficiaryFactory(
                 email="beneficiary2+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=2),
+                deposit__expirationDate=datetime(2034, 11, 1, 23, 59, 59, 999999),
             )
-            assert user2.deposit.expirationDate == datetime(2034, 11, 1, 23, 59, 59, 999999)
             bookings_factories.UsedBookingFactory(user=user2, quantity=1, amount=10)
 
         with time_machine.travel("2032-12-01 15:00:00"):
-            user3 = users_factories.BeneficiaryGrant18Factory(
+            user3 = users_factories.BeneficiaryFactory(
                 email="beneficiary3+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=3),
+                deposit__expirationDate=datetime(2034, 12, 1, 23, 59, 59, 999999),
             )
-            assert user3.deposit.expirationDate == datetime(2034, 12, 1, 23, 59, 59, 999999)
 
         with time_machine.travel("2033-01-30 15:00:00"):
-            user4 = users_factories.BeneficiaryGrant18Factory(
+            user4 = users_factories.BeneficiaryFactory(
                 email="beneficiary4+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=4),
+                deposit__expirationDate=datetime(2035, 1, 30, 23, 59, 59, 999999),
             )
-            assert user4.deposit.expirationDate == datetime(2035, 1, 30, 23, 59, 59, 999999)
 
         with time_machine.travel("2033-01-31 15:00:00"):
-            user5 = users_factories.BeneficiaryGrant18Factory(
+            user5 = users_factories.BeneficiaryFactory(
                 email="beneficiary5+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=5),
+                deposit__expirationDate=datetime(2035, 1, 31, 23, 59, 59, 999999),
             )
-            assert user5.deposit.expirationDate == datetime(2035, 1, 31, 23, 59, 59, 999999)
 
         with time_machine.travel("2033-03-10 15:00:00"):
-            user6 = users_factories.BeneficiaryGrant18Factory(
+            user6 = users_factories.BeneficiaryFactory(
                 email="beneficiary6+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=5),
+                deposit__expirationDate=datetime(2035, 3, 10, 23, 59, 59, 999999),
             )
-            assert user6.deposit.expirationDate == datetime(2035, 3, 10, 23, 59, 59, 999999)
 
         with time_machine.travel("2033-05-01 17:00:00"):
             # user6 becomes ex-beneficiary
-            bookings_factories.UsedBookingFactory(user=user6, quantity=1, amount=300)
+            bookings_factories.UsedBookingFactory(user=user6, quantity=1, amount=user6.deposit.amount)
 
         return [user0, user1, user2, user3, user4, user5, user6]
 
@@ -220,8 +219,8 @@ class UserAutomationsTest:
             user = users_factories.UnderageBeneficiaryFactory(
                 email="underage+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=17, months=1),
+                deposit__expirationDate=datetime(2034, 8, 10),  # at birthday, to emulate the behaviour before credit V3
             )
-            assert user.deposit.expirationDate == datetime(2034, 8, 10)  # at birthday
 
         with time_machine.travel("2034-08-10 05:00:00"):
             results = list(user_automations.get_ex_underage_beneficiaries_who_can_no_longer_recredit())

@@ -1123,9 +1123,9 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         assert other_booking.status is bookings_models.BookingStatus.USED
 
     def test_batch_mark_as_used_bookings_with_insufficient_funds(self, legit_user, authenticated_client):
+        poor_user = users_factories.BeneficiaryFactory(deposit__amount=1)
         insufficient_funds_booking = bookings_factories.BookingFactory(
-            status=bookings_models.BookingStatus.CANCELLED,
-            deposit=users_factories.DepositGrantFactory(amount=1),
+            status=bookings_models.BookingStatus.CANCELLED, user=poor_user
         )
         other_booking = bookings_factories.BookingFactory()
         parameter_ids = str(insufficient_funds_booking.id) + "," + str(other_booking.id)
@@ -1145,7 +1145,9 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
     def test_batch_mark_as_used_bookings_insufficient_stock(self, legit_user, authenticated_client):
         insufficient_stock_booking = bookings_factories.BookingFactory(
             status=bookings_models.BookingStatus.CANCELLED,
-            deposit=users_factories.DepositGrantFactory(),
+            deposit=users_factories.DepositGrantFactory(
+                expirationDate=datetime.datetime.utcnow() + datetime.timedelta(days=1)
+            ),
             stock__quantity=0,
         )
         other_booking = bookings_factories.BookingFactory()
@@ -1168,7 +1170,9 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         cancelled_booking = bookings_factories.CancelledBookingFactory()
         insufficient_stock_booking = bookings_factories.BookingFactory(
             status=bookings_models.BookingStatus.CANCELLED,
-            deposit=users_factories.DepositGrantFactory(),
+            deposit=users_factories.DepositGrantFactory(
+                expirationDate=datetime.datetime.utcnow() + datetime.timedelta(days=1)
+            ),
             stock__quantity=0,
         )
         already_reimbursed_booking = bookings_factories.ReimbursedBookingFactory()

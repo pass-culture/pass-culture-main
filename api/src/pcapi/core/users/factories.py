@@ -146,7 +146,8 @@ class PhoneValidatedUserFactory(EmailValidatedUserFactory):
 
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
         if obj.age == users_constants.ELIGIBILITY_AGE_18:
-            obj.phoneNumber = f"+336{obj.id:08}"  # type: ignore[method-assign]
+            if not obj.phoneNumber:
+                obj.phoneNumber = f"+336{obj.id:08}"  # type: ignore[method-assign]
             obj.phoneValidationStatus = models.PhoneValidationStatusType.VALIDATED
             fraud_checks.append(fraud_factories.PhoneValidationFraudCheckFactory(user=obj))
         return fraud_checks
@@ -368,6 +369,9 @@ class Transition1718Factory(BeneficiaryFactory):
         with time_machine.travel(datetime.today() - relativedelta(years=1)):
             if "dateCreated" not in kwargs:
                 kwargs["dateCreated"] = obj.dateCreated
+
+            if "expirationDate" not in kwargs:
+                kwargs["expirationDate"] = datetime.today()
 
             deposit = DepositGrantFactory(user=obj, **kwargs)
 
@@ -965,11 +969,12 @@ class DepositGrantFactory(BaseFactory):
         user = kwargs["user"]
         age = users_utils.get_age_from_birth_date(user.birth_date)
 
+        if age not in users_constants.ELIGIBILITY_UNDERAGE_RANGE + [users_constants.ELIGIBILITY_AGE_18]:
+            age = 18  # The calling functions are responsible for setting the correct age. If age is not in the range, we generate a deposit for 18yo.
+
         if "type" not in kwargs:
-            if (
-                FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active()
-                and datetime.utcnow() >= settings.CREDIT_V3_DECREE_DATETIME
-            ):
+            date_created = kwargs.get("dateCreated", datetime.utcnow())
+            if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and date_created >= settings.CREDIT_V3_DECREE_DATETIME:
                 kwargs["type"] = finance_models.DepositType.GRANT_17_18
             else:
                 kwargs["type"] = (
@@ -1001,7 +1006,7 @@ class DepositGrantFactory(BaseFactory):
 
         if not create:
             return []
-        if not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() or datetime.utcnow() < settings.CREDIT_V3_DECREE_DATETIME:
+        if not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() or self.dateCreated < settings.CREDIT_V3_DECREE_DATETIME:
             return []
         if getattr(self, "recredits", None):
             # do not create new recredits if they already exist
