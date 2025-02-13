@@ -17,6 +17,7 @@ from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_account
 from pcapi.core.finance.backend.dummy import invoices as dummy_invoices
 from pcapi.core.finance.enum import DepositType
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.users.factories import BeneficiaryFactory
 
 
 pytestmark = [
@@ -535,7 +536,7 @@ class CegidFinanceBackendTest:
         )
         booking_finance_incident = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
             newTotalAmount=-23_20,
-            booking__deposit__type=DepositType.GRANT_18,
+            booking__user=BeneficiaryFactory(deposit__type=DepositType.GRANT_18),
             booking__stock__offer__venue=venue,
         )
         finance_event = finance_factories.FinanceEventFactory(

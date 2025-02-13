@@ -2109,6 +2109,7 @@ def test_generate_legacy_bank_accounts_file(clean_temp_files):
         }
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 def test_generate_payments_file(clean_temp_files):
     actual_year = datetime.date.today().year
     used_date = datetime.datetime(actual_year, 2, 5)
@@ -2796,6 +2797,7 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch, with_oa):
     assert reimbursement_by_venue_row["Montant remboursé (TTC)"] == "308,40 €"
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 def test_generate_invoice_file(clean_temp_files):
     first_siret = "12345678900"
     venue = offerers_factories.VenueFactory(siret=first_siret, pricing_point="self")
@@ -5093,22 +5095,11 @@ class CanRecreditTest:
         )
         assert not api._can_be_recredited(user)
 
-    @pytest.mark.parametrize("age", (17, 18))
-    def test_users_with_a_deposit_can_be_recredited(self, age):
-        user = users_factories.BaseUserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, months=1)
-        )
-        users_factories.DepositGrantFactory(user=user, type=models.DepositType.GRANT_17_18)
-        assert api._can_be_recredited(user)
-
     def test_user_18_yo_can_be_recredited(self):
-        user = users_factories.BaseUserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1)
-        )
-        deposit = users_factories.DepositGrantFactory(user=user, type=models.DepositType.GRANT_17_18)
-        factories.RecreditFactory(deposit=deposit, amount=50, recreditType=models.RecreditType.RECREDIT_17)
+        user = users_factories.BeneficiaryFactory(age=17)
 
-        assert api._can_be_recredited(user)
+        with time_machine.travel(datetime.datetime.utcnow() + relativedelta(years=1)):
+            assert api._can_be_recredited(user)
 
     def test_user_18_yo_can_not_be_recredited_twice(self):
         user = users_factories.BaseUserFactory(

@@ -283,6 +283,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
             firstName=fake.first_name(),
             lastName=fake.last_name(),
             needsToFillCulturalSurvey=False,
+            deposit__expirationDate=datetime.utcnow() + relativedelta(years=3),
         )
         if settings.IS_DEV:
             db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))

@@ -65,6 +65,7 @@ from pcapi.domain.password import check_password_strength
 from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
 from pcapi.repository import is_managed_transaction
@@ -706,7 +707,7 @@ def update_user_info(
         if validated_birth_date != user.validatedBirthDate:
             snapshot.set("validatedBirthDate", old=user.validatedBirthDate, new=validated_birth_date)
             user.validatedBirthDate = validated_birth_date
-            if _has_underage_deposit(user):
+            if _has_underage_deposit(user) and not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
                 _update_underage_beneficiary_deposit_expiration_date(user)
     if id_piece_number is not UNCHANGED:
         if id_piece_number != user.idPieceNumber:

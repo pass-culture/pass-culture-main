@@ -1955,7 +1955,7 @@ class GetOffererTotalRevenueTest:
         educational_factories.CancelledCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=offerer, collectiveStock__price=6000
         )
-        bookings_factories.UsedBookingFactory(stock__price=180)  # ignored
+        bookings_factories.UsedBookingFactory(stock__price=180, user__deposit__amount=300)  # ignored
         educational_factories.UsedCollectiveBookingFactory(collectiveStock__price=7000)  # ignored
         return offerer
 

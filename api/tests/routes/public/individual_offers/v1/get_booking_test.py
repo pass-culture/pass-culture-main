@@ -157,8 +157,8 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
             "venueDepartementCode": venue_provider.venue.departementCode,
             "venueId": venue_provider.venue.id,
             "venueName": venue_provider.venue.name,
-            "userFirstName": "Jeanne",
-            "userLastName": "Doux",
+            "userFirstName": booking.user.firstName,
+            "userLastName": booking.user.lastName,
             "userPhoneNumber": "+33101010101",
             "userPostalCode": "75001",
         }
@@ -211,8 +211,8 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
             "venueDepartementCode": venue_provider.venue.departementCode,
             "venueId": venue_provider.venue.id,
             "venueName": venue_provider.venue.name,
-            "userFirstName": "Jeanne",
-            "userLastName": "Doux",
+            "userFirstName": booking.user.firstName,
+            "userLastName": booking.user.lastName,
             "userPhoneNumber": "+33101010101",
             "userPostalCode": "69100",
         }

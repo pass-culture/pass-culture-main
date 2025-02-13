@@ -7,7 +7,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users imp
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 class CreateIndustrialWebappUsersTest:
     def test_create_industrial_app_users(self):
         create_industrial_app_users()
@@ -21,12 +20,12 @@ class CreateIndustrialWebappUsersTest:
         assert ex_underage.age == 18
         assert ex_underage.roles == [UserRole.UNDERAGE_BENEFICIARY]
         assert ex_underage.deposit
-        assert not ex_underage.has_active_deposit
+        assert ex_underage.has_active_deposit
 
         assert ex_beneficiary.age == 20
         assert ex_beneficiary.roles == [UserRole.BENEFICIARY]
         assert ex_beneficiary.deposit
-        assert not ex_beneficiary.has_active_deposit
+        assert ex_beneficiary.has_active_deposit
 
         assert beneficiary_and_exunderage.has_active_deposit
-        assert beneficiary_and_exunderage.deposit.amount == 300
+        assert beneficiary_and_exunderage.deposit.amount == 150

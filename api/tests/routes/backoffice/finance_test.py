@@ -2,6 +2,7 @@ import datetime
 import decimal
 from secrets import compare_digest
 
+from dateutil.relativedelta import relativedelta
 from flask import url_for
 import pytest
 import sqlalchemy as sa
@@ -15,6 +16,7 @@ from pcapi.core.finance import api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
+from pcapi.core.finance.enum import DepositType
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
@@ -518,7 +520,9 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
 
     @pytest.mark.parametrize("force_debit_note", [True, False])
     def test_incident_validation_with_several_bookings(self, authenticated_client, force_debit_note):
-        deposit = users_factories.DepositGrantFactory()
+        deposit = users_factories.DepositGrantFactory(
+            amount=300, expirationDate=datetime.datetime.utcnow() + relativedelta(years=2)
+        )
         incident = finance_factories.FinanceIncidentFactory()
 
         assert incident.status == finance_models.IncidentStatus.CREATED
@@ -698,7 +702,9 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
         }
 
     def test_commercial_gesture_validation_with_several_bookings(self, authenticated_client):
-        deposit = users_factories.DepositGrantFactory()
+        deposit = users_factories.DepositGrantFactory(
+            amount=300, expirationDate=datetime.datetime.utcnow() + relativedelta(years=2)
+        )
         incident = finance_factories.FinanceCommercialGestureFactory()
         # make the participant poor because commercial gesture is not meant to be taken from the user's balance
         bookings_factories.UsedBookingFactory(stock__price=decimal.Decimal("299.9"), user=deposit.user)
@@ -1163,7 +1169,11 @@ class GetCommercialGestureTest(GetEndpointHelper):
         )
         bank_account = finance_factories.BankAccountFactory(offerer=finance_incident.venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory(venue=finance_incident.venue, bankAccount=bank_account)
-        finance_factories.IndividualBookingFinanceCommercialGestureFactory(incident=finance_incident, newTotalAmount=0)
+        finance_factories.IndividualBookingFinanceCommercialGestureFactory(
+            incident=finance_incident,
+            newTotalAmount=0,
+            booking__user__deposit__type=DepositType.GRANT_18,
+        )
         url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
 
         with assert_num_queries(self.expected_num_queries):
