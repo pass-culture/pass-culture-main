@@ -25,6 +25,8 @@ export type Option = {
 type MultiSelectProps = {
   /** Array of available options */
   options: Option[]
+  /** Array of available options */
+  selectedOptions?: Option[]
   /** Array of initially selected options */
   defaultOptions?: Option[]
   /** Label for the MultiSelect field */
@@ -34,7 +36,11 @@ type MultiSelectProps = {
   /** Whether the MultiSelect is disabled */
   disabled?: boolean
   /** Callback function called when selected options change */
-  onSelectedOptionsChanged: (options: Option[]) => void
+  onSelectedOptionsChanged: (
+    selectedOptions: Option[],
+    addedOptions: Option[],
+    removedOptions: Option[]
+  ) => void
   /** Error message to display */
   error?: string
   /** Name attribute for the form field */
@@ -91,6 +97,7 @@ type MultiSelectProps = {
  */
 export const MultiSelect = ({
   options,
+  selectedOptions,
   defaultOptions = [],
   hasSearch = false,
   searchLabel,
@@ -111,9 +118,27 @@ export const MultiSelect = ({
 
   const toggleDropdown = () => setIsOpen((prev) => !prev)
 
+  useEffect(() => {
+    if (selectedOptions) {
+      setSelectedItems(selectedOptions)
+    }
+  }, [selectedOptions])
+
   function updateSelectedItems(updatedSelectedItems: Option[]) {
+    const removedOptionsIds = new Set(
+      selectedItems.map((item) => item.id)
+    ).difference(new Set(updatedSelectedItems.map((item) => item.id)))
+
+    const addedOptionsIds = new Set(
+      updatedSelectedItems.map((item) => item.id)
+    ).difference(new Set(selectedItems.map((item) => item.id)))
+
+    onSelectedOptionsChanged(
+      updatedSelectedItems,
+      options.filter((op) => addedOptionsIds.has(op.id)),
+      options.filter((op) => removedOptionsIds.has(op.id))
+    )
     setSelectedItems(updatedSelectedItems)
-    onSelectedOptionsChanged(updatedSelectedItems)
   }
 
   const handleSelectItem = (item: Option) => {

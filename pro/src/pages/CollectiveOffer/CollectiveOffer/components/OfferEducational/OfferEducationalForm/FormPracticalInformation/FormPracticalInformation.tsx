@@ -8,16 +8,18 @@ import {
 } from 'apiClient/v1'
 import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
-import { handleAllFranceDepartmentOptions } from 'commons/core/shared/utils/handleAllFranceDepartmentOptions'
+import {
+  mainlandOptions,
+  offerInterventionOptions,
+} from 'commons/core/shared/interventionOptions'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
-import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+import { MultiSelect } from 'ui-kit/MultiSelect/MultiSelect'
 
 import {
   EVENT_ADDRESS_OFFERER_LABEL,
@@ -42,14 +44,11 @@ export const FormPracticalInformation = ({
   currentOfferer,
   disableForm,
 }: FormPracticalInformationProps): JSX.Element => {
-  const { values, setFieldValue } =
+  const { values, setFieldValue, setFieldTouched, touched, errors } =
     useFormikContext<OfferEducationalFormValues>()
 
   const [currentVenue, setCurrentVenue] =
     useState<GetEducationalOffererVenueResponseModel | null>(null)
-  const [previousInterventionValues, setPreviousInterventionValues] = useState<
-    string[] | null
-  >(null)
 
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
@@ -137,16 +136,6 @@ export const FormPracticalInformation = ({
     setVenue()
   }, [currentOfferer, values.eventAddress])
 
-  useEffect(() => {
-    handleAllFranceDepartmentOptions(
-      values.interventionArea,
-      previousInterventionValues,
-      (value: string[]) => setFieldValue('interventionArea', value)
-    )
-
-    setPreviousInterventionValues(values.interventionArea)
-  }, [values.interventionArea])
-
   return (
     <FormLayout.Section title="Où se déroule votre offre ?">
       <FormLayout.Row className={styles['address-radio-group']}>
@@ -189,14 +178,67 @@ export const FormPracticalInformation = ({
             </InfoBox>
           }
         >
-          <SelectAutocomplete
-            multi
+          <MultiSelect
             label={INTERVENTION_AREA_LABEL}
+            selectedOptions={offerInterventionOptions
+              .map((o) => ({
+                label: o.label,
+                id: String(o.value),
+              }))
+              .filter((op) => values.interventionArea.includes(op.id))}
             name="interventionArea"
-            hideTags
-            options={offerInterventionOptions}
-            className={styles.row}
+            buttonLabel="Zone de mobilité"
+            options={offerInterventionOptions.map((o) => ({
+              label: o.label,
+              id: String(o.value),
+            }))}
             disabled={disableForm}
+            hasSearch
+            searchLabel="Rechercher"
+            hasSelectAllOptions
+            onSelectedOptionsChanged={(
+              selectedOption,
+              addedOptions,
+              removedOptions
+            ) => {
+              const newSelectedOptions = new Set(
+                selectedOption.map((op) => op.id)
+              )
+
+              if (addedOptions.map((op) => op.id).includes('mainland')) {
+                //  If mainland is selected, check all mainland depatments
+                for (const mainlandOp of mainlandOptions) {
+                  newSelectedOptions.add(String(mainlandOp.value))
+                }
+              }
+              if (removedOptions.map((op) => op.id).includes('mainland')) {
+                //  If mainland is removed, uncheck all mainland departments
+                for (const mainlandOp of mainlandOptions) {
+                  newSelectedOptions.delete(String(mainlandOp.value))
+                }
+              }
+
+              if (
+                removedOptions
+                  .map((op) => op.id)
+                  .some((removedOp) =>
+                    mainlandOptions.map((op) => op.value).includes(removedOp)
+                  )
+              ) {
+                //  If a mainland department is not selected, remove the mainland from selected options
+                newSelectedOptions.delete('mainland')
+              }
+
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              setFieldValue('interventionArea', Array.from(newSelectedOptions))
+            }}
+            onBlur={() => setFieldTouched('interventionArea', true)}
+            showError={touched.interventionArea && !!errors.formats}
+            error={
+              touched.interventionArea && errors.interventionArea
+                ? String(errors.interventionArea)
+                : undefined
+            }
           />
         </FormLayout.Row>
       )}
