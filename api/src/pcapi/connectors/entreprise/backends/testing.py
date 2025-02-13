@@ -173,6 +173,40 @@ class TestingBackend(BaseBackend):
             legal_category_code=self._legal_category_code(siret),
         )
 
+    def get_head_quarter(self, siren: str, raise_if_non_public: bool = False) -> models.SiretInfo:
+        assert len(siren) == siren_utils.SIREN_LENGTH
+
+        self._check_siren(siren)
+        siret = siren + "09876"
+
+        ape_code, ape_label = self._ape_code_and_label(siret)
+
+        # allows to get a non-diffusible offerer in dev/testing environments: any SIRET which starts with '9'
+        if not self._is_diffusible(siret):
+            if raise_if_non_public:
+                raise exceptions.NonPublicDataException()
+            return models.SiretInfo(
+                siret=siret,
+                active=self._is_active(siret),
+                diffusible=False,
+                name="[ND]",
+                address=self.nd_address,
+                ape_code=ape_code,
+                ape_label=ape_label,
+                legal_category_code=self._legal_category_code(siret),
+            )
+
+        return models.SiretInfo(
+            siret=siret,
+            active=self._is_active(siret),
+            diffusible=True,
+            name="MINISTERE DE LA CULTURE",
+            address=self.address,
+            ape_code=ape_code,
+            ape_label=ape_label,
+            legal_category_code=self._legal_category_code(siret),
+        )
+
     def get_rcs(self, siren: str) -> models.RCSInfo:
         try:
             self._check_siren(siren)
