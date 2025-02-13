@@ -1988,15 +1988,14 @@
     "@sentry/core" "8.54.0"
     hoist-non-react-statics "^3.3.2"
 
-"@storybook/addon-a11y@^8.5.3":
-  version "8.5.3"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.5.3.tgz#8370f4070e8b6fa99e146784f008d0c34751f465"
-  integrity sha512-5dUzcLdStpv39mTemW1uLc47RZH3SzieOWUNdQfg0cW2O5LeV9Nr698YDr3Lnf9PveZ9tpNXvTS8vNdRHTj0bw==
+"@storybook/addon-a11y@^8.5.4":
+  version "8.5.4"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.5.4.tgz#9e7deae78a6c412bb5e26862c0b8e13472890467"
+  integrity sha512-Ex+bIoQAI3xRUXwxXhBjLJ1pz0ksqd32UVzWe+qjFw+llPqsybkl5bsKt6YnitqxRRQVghwUEkdeyES6HAq7og==
   dependencies:
-    "@storybook/addon-highlight" "8.5.3"
-    "@storybook/test" "8.5.3"
+    "@storybook/addon-highlight" "8.5.4"
+    "@storybook/test" "8.5.4"
     axe-core "^4.2.0"
-    vitest-axe "^0.1.0"
 
 "@storybook/addon-controls@^8.5.3":
   version "8.5.3"
@@ -2020,10 +2019,10 @@
     react-dom "^16.8.0 || ^17.0.0 || ^18.0.0"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-highlight@8.5.3":
-  version "8.5.3"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.5.3.tgz#ff3f51733f6c23272faeadb79df07f2e8b991c72"
-  integrity sha512-xhsr3W6KTvlOIIe+8JE9/sEOAgkW0yjMZzs47A+bWcxKwcFhAUgVLbAgEzjJ0u248rjGKlCJ2pswWefO+ZKJeg==
+"@storybook/addon-highlight@8.5.4":
+  version "8.5.4"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.5.4.tgz#62d63e946059fe3249ee093aad57812794f20964"
+  integrity sha512-llrxTpzJs+F61nU9ZPaVhw8iHE3hVSc5bVRuEFSRRroJC/wSNGBHz9nLBfmZ7w+06dXK4S5DRHbYehBLRRzj3Q==
   dependencies:
     "@storybook/global" "^5.0.0"
 
@@ -2091,10 +2090,10 @@
   resolved "https://registry.yarnpkg.com/@storybook/icons/-/icons-1.2.12.tgz#3e4c939113b67df7ab17b78f805dbb57f4acf0db"
   integrity sha512-UxgyK5W3/UV4VrI3dl6ajGfHM4aOqMAkFLWe2KibeQudLf6NJpDrDMSHwZj+3iKC4jFU7dkKbbtH2h/al4sW3Q==
 
-"@storybook/instrumenter@8.5.3":
-  version "8.5.3"
-  resolved "https://registry.yarnpkg.com/@storybook/instrumenter/-/instrumenter-8.5.3.tgz#7bace56ad9a920d1ba4a80707f985828d7895451"
-  integrity sha512-pxaTbGeju8MkwouIiaWX5DMWtpRruxqig8W3nZPOvzoSCCbQY+sLMQoyXxFlpGxLBjcvXivkL7AMVBKps5sFEQ==
+"@storybook/instrumenter@8.5.4":
+  version "8.5.4"
+  resolved "https://registry.yarnpkg.com/@storybook/instrumenter/-/instrumenter-8.5.4.tgz#002e79b6d1d618c6249cfa82a1adf79e298535ad"
+  integrity sha512-6Y2d6SNZslZl2UhkfH8Ml6SzKX5b2x/QRBwkLAAXc/xZcFdK5luAOPk/fW1BU7jEAPAjtn493V3oo2nGA5D22A==
   dependencies:
     "@storybook/global" "^5.0.0"
     "@vitest/utils" "^2.1.1"
@@ -2146,14 +2145,14 @@
     "@storybook/react-dom-shim" "8.5.3"
     "@storybook/theming" "8.5.3"
 
-"@storybook/test@8.5.3":
-  version "8.5.3"
-  resolved "https://registry.yarnpkg.com/@storybook/test/-/test-8.5.3.tgz#96f51046182e026a89e923404733bf8968d5f290"
-  integrity sha512-2smoDbtU6Qh4yk0uD18qGfW6ll7lZBzKlF58Ha1CgWR4o+jpeeTQcfDLH9gG6sNrpojF7AVzMh/aN9BDHD+Chg==
+"@storybook/test@8.5.4":
+  version "8.5.4"
+  resolved "https://registry.yarnpkg.com/@storybook/test/-/test-8.5.4.tgz#700d9fdd08c3ce76dc0f3d98fd35a7c68b9a8b1e"
+  integrity sha512-H7zV39GLiUSz/M7fJtv/NWOF1J99CTAqqXMaETwJU5wEpkj1Q3jzmWss+UFtl5x7f/OZC4niP9s9A3G8rZHpKw==
   dependencies:
     "@storybook/csf" "0.1.12"
     "@storybook/global" "^5.0.0"
-    "@storybook/instrumenter" "8.5.3"
+    "@storybook/instrumenter" "8.5.4"
     "@testing-library/dom" "10.4.0"
     "@testing-library/jest-dom" "6.5.0"
     "@testing-library/user-event" "14.5.2"
@@ -3315,12 +3314,7 @@ camelcase@^6.3.0:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-6.3.0.tgz#5685b95eb209ac9c0c177467778c9c84df58ba9a"
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
-caniuse-lite@^1.0.30001517:
-  version "1.0.30001699"
-  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001699.tgz"
-  integrity sha512-b+uH5BakXZ9Do9iK+CkDmctUSEqZl+SP056vc5usa0PL+ev5OHw003rZXcnjNDv3L8P5j6rwT6C0BPKSikW08w==
-
-caniuse-lite@^1.0.30001669:
+caniuse-lite@^1.0.30001517, caniuse-lite@^1.0.30001669:
   version "1.0.30001699"
   resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001699.tgz"
   integrity sha512-b+uH5BakXZ9Do9iK+CkDmctUSEqZl+SP056vc5usa0PL+ev5OHw003rZXcnjNDv3L8P5j6rwT6C0BPKSikW08w==
