@@ -186,6 +186,9 @@ def _create_pro_user(row: dict) -> User:
         if status is finance_models.BankAccountApplicationStatus.ACCEPTED:
             db.session.add(offerers_models.VenueBankAccountLink(venue=venue, bankAccount=bank_account, timespan=(now,)))
 
+    # Avoid rollback() on objects above when re-using an existing address in get_or_create_address
+    db.session.commit()
+
     # Create a second address linked to the offerer in another region
     address = offerers_api.get_or_create_address(
         offerers_api.LocationData(
