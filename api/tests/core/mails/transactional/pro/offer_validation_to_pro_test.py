@@ -43,7 +43,7 @@ class SendinblueSendOfferValidationTest:
         # Given
         offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
         publication_date = datetime.utcnow() + timedelta(days=30)
-        offers_factories.FutureOfferFactory(offerId=offer.id, publicationDate=publication_date)
+        offers_factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
 
         # When
         new_offer_validation_email = retrieve_data_for_offer_approval_email(offer)

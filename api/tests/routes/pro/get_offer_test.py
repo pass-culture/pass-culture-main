@@ -411,7 +411,7 @@ class Returns200Test:
         )
         offer_id = offer.id
         offers_factories.FutureOfferFactory(
-            offerId=offer_id,
+            offer=offer,
             publicationDate=publication_date,
         )
 

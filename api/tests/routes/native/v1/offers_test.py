@@ -1998,7 +1998,7 @@ class OffersV2Test:
     def test_future_offer(self, client):
         offer = offers_factories.OfferFactory()
         publication_date = datetime(2050, 1, 1)
-        _ = offers_factories.FutureOfferFactory(offerId=offer.id, publicationDate=publication_date)
+        _ = offers_factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
 
         offer_id = offer.id
         nb_queries = 1  # select offer

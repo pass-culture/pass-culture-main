@@ -757,9 +757,9 @@ class OfferIsSearchableTest:
         factories.StockFactory(offer=offer_3)
         future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
         past_publication_date = datetime.datetime.utcnow() - datetime.timedelta(days=30)
-        factories.FutureOfferFactory(offerId=offer_1.id, publicationDate=future_publication_date)
-        factories.FutureOfferFactory(offerId=offer_2.id, publicationDate=past_publication_date)
-        factories.FutureOfferFactory(offerId=offer_3.id, publicationDate=future_publication_date)
+        factories.FutureOfferFactory(offer=offer_1, publicationDate=future_publication_date)
+        factories.FutureOfferFactory(offer=offer_2, publicationDate=past_publication_date)
+        factories.FutureOfferFactory(offer=offer_3, publicationDate=future_publication_date)
 
         assert offer_1.is_eligible_for_search
         assert not offer_2.is_eligible_for_search
