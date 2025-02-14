@@ -9,6 +9,7 @@ import {
   currentOffererFactory,
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { Button } from 'ui-kit/Button/Button'
 
 import { UserReviewDialog } from './UserReviewDialog'
 
@@ -24,7 +25,8 @@ const renderUserReviewDialog = () => {
   return renderWithProviders(
     <Dialog.Root defaultOpen>
       <Dialog.Content aria-describedby={undefined}>
-        <UserReviewDialog />
+        <Dialog.Title>Title</Dialog.Title>
+        <UserReviewDialog dialogTrigger={<Button>Trigger</Button>} />
       </Dialog.Content>
     </Dialog.Root>,
     { storeOverrides }
@@ -34,6 +36,8 @@ const renderUserReviewDialog = () => {
 describe('UserReviewDialog', () => {
   it('should close dialog on cancel button click', async () => {
     renderUserReviewDialog()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
 
     const cancelButton = screen.getByRole('button', { name: 'Annuler' })
     await userEvent.click(cancelButton)
@@ -46,6 +50,8 @@ describe('UserReviewDialog', () => {
   it('should submit data when submit button is clicked', async () => {
     vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
     renderUserReviewDialog()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
 
     await userEvent.type(screen.getByRole('textbox'), 'Commentaire utilisateur')
 
@@ -67,6 +73,8 @@ describe('UserReviewDialog', () => {
     vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
     renderUserReviewDialog()
 
+    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
+
     await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
     await userEvent.type(screen.getByRole('textbox'), 'description')
 
@@ -81,6 +89,8 @@ describe('UserReviewDialog', () => {
   it('should close confirmation dialog when close button is clicked', async () => {
     vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
     renderUserReviewDialog()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
 
     await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
     await userEvent.type(screen.getByRole('textbox'), 'description')
@@ -105,6 +115,8 @@ describe('UserReviewDialog', () => {
     }))
 
     renderUserReviewDialog()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
 
     await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
     await userEvent.type(screen.getByRole('textbox'), 'description')
