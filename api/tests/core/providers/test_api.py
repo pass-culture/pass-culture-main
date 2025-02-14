@@ -30,19 +30,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class CreateVenueProviderTest:
-    def test_prevent_creation_for_non_existing_provider(self):
-        # Given
-        providerId = 1
-        venueId = 2
-        author = users_factories.UserFactory()
-
-        # When
-        with pytest.raises(exceptions.ProviderNotFound):
-            api.create_venue_provider(providerId, venueId, current_user=author)
-
-        # Then
-        assert not providers_models.VenueProvider.query.first()
-
     @pytest.mark.parametrize(
         "venue_type, is_permanent",
         (
@@ -68,7 +55,7 @@ class CreateVenueProviderTest:
         author = users_factories.UserFactory()
 
         # When
-        api.create_venue_provider(provider.id, venue.id, current_user=author)
+        api.create_venue_provider(provider, venue, current_user=author)
 
         # Then
         assert venue.isPermanent == is_permanent
@@ -95,7 +82,7 @@ class CreateVenueProviderTest:
             localClass=None,
         )
         author = users_factories.UserFactory()
-        api.create_venue_provider(provider.id, venue.id, current_user=author)
+        api.create_venue_provider(provider, venue, current_user=author)
 
         assert venue.isPermanent is False
 
@@ -261,10 +248,14 @@ class UpdateProviderExternalUrlsTest:
         )
         offers_factories.StockFactory(offer=event_offer)
 
-        with pytest.raises(exceptions.TicketingUrlsCannotBeUnset) as e:
+        with pytest.raises(exceptions.ProviderException) as e:
             api.update_provider_external_urls(provider, booking_external_url=None, cancel_external_url=None)
 
-        assert e.value.blocking_events_ids == [event_offer.id]
+        assert e.value.errors == {
+            "ticketing_urls": [
+                f"You cannot unset your `booking_url` and `cancel_url` because you have event(s) with stocks linked to your ticketing system. Blocking event ids: {[event_offer.id]}"
+            ]
+        }
         # Should not have changed
         assert provider.bookingExternalUrl == previous_booking_url
         assert provider.cancelExternalUrl == previous_cancel_url
@@ -276,7 +267,7 @@ class UpdateProviderExternalUrlsTest:
 
         # ---- UNSET
         # Try to unset only `bookingExternalUrl`
-        with pytest.raises(exceptions.TicketingUrlsMustBeBothSet):
+        with pytest.raises(exceptions.ProviderException):
             api.update_provider_external_urls(provider, booking_external_url=None)
 
         # Should not have changed
@@ -284,7 +275,7 @@ class UpdateProviderExternalUrlsTest:
         assert provider.cancelExternalUrl == previous_cancel_url
 
         # Try to unset only `cancelExternalUrl`
-        with pytest.raises(exceptions.TicketingUrlsMustBeBothSet):
+        with pytest.raises(exceptions.ProviderException):
             api.update_provider_external_urls(provider, cancel_external_url=None)
 
         # Should not have changed
@@ -294,7 +285,7 @@ class UpdateProviderExternalUrlsTest:
         # ---- SET
         provider_with_no_ticketing_urls = providers_factories.ProviderFactory()
         # Try to set only `bookingExternalUrl`
-        with pytest.raises(exceptions.TicketingUrlsMustBeBothSet):
+        with pytest.raises(exceptions.ProviderException):
             api.update_provider_external_urls(
                 provider_with_no_ticketing_urls, booking_external_url="https://coucou.com"
             )
@@ -304,7 +295,7 @@ class UpdateProviderExternalUrlsTest:
         assert provider_with_no_ticketing_urls.cancelExternalUrl == None
 
         # Try to set only `cancelExternalUrl`
-        with pytest.raises(exceptions.TicketingUrlsMustBeBothSet):
+        with pytest.raises(exceptions.ProviderException):
             api.update_provider_external_urls(
                 provider_with_no_ticketing_urls, cancel_external_url="https://aurevoir.com"
             )
@@ -410,10 +401,14 @@ class UpdateVenueProviderExternalUrlsTest:
         )
         offers_factories.StockFactory(offer=event_offer)
 
-        with pytest.raises(exceptions.TicketingUrlsCannotBeUnset) as e:
+        with pytest.raises(exceptions.ProviderException) as e:
             api.update_venue_provider_external_urls(venue_provider, booking_external_url=None, cancel_external_url=None)
 
-        assert e.value.blocking_events_ids == [event_offer.id]
+        assert e.value.errors == {
+            "ticketing_urls": [
+                f"You cannot unset your `booking_url` and `cancel_url` because you have event(s) with stocks linked to your ticketing system. Blocking event ids: {[event_offer.id]}"
+            ]
+        }
         # Should not have changed
         assert venue_provider_external_urls.bookingExternalUrl == previous_booking_url
         assert venue_provider_external_urls.cancelExternalUrl == previous_cancel_url
@@ -429,12 +424,18 @@ class UpdateVenueProviderExternalUrlsTest:
         previous_cancel_url = venue_provider_external_urls.cancelExternalUrl
 
         # Try to unset only `booking_external_url`
-        with pytest.raises(exceptions.TicketingUrlsMustBeBothSet):
+        with pytest.raises(exceptions.ProviderException) as e:
             api.update_venue_provider_external_urls(venue_provider, booking_external_url=None)
+        assert e.value.errors == {
+            "ticketing_urls": ["Your `booking_url` and `cancel_url` must be either both set or both unset"]
+        }
 
         # Try to unset only `cancel_external_url`
-        with pytest.raises(exceptions.TicketingUrlsMustBeBothSet):
+        with pytest.raises(exceptions.ProviderException) as e:
             api.update_venue_provider_external_urls(venue_provider, cancel_external_url=None)
+        assert e.value.errors == {
+            "ticketing_urls": ["Your `booking_url` and `cancel_url` must be either both set or both unset"]
+        }
 
         # Should not have changed
         assert venue_provider_external_urls.bookingExternalUrl == previous_booking_url
@@ -446,11 +447,11 @@ class UpdateVenueProviderExternalUrlsTest:
         venue_provider = providers_factories.VenueProviderFactory(provider=provider_without_ticketing_urls, venue=venue)
 
         # Try to set only `booking_external_url`
-        with pytest.raises(exceptions.TicketingUrlsMustBeBothSet):
+        with pytest.raises(exceptions.ProviderException):
             api.update_venue_provider_external_urls(venue_provider, booking_external_url="https://coucou.com")
 
         # Try to set only `cancel_external_url`
-        with pytest.raises(exceptions.TicketingUrlsMustBeBothSet):
+        with pytest.raises(exceptions.ProviderException):
             api.update_venue_provider_external_urls(venue_provider, cancel_external_url="https://aurevoir.com")
 
     def test_should_do_nothing(self):
