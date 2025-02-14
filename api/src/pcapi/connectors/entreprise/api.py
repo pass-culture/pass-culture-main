@@ -22,6 +22,14 @@ def get_siret(siret: str, raise_if_non_public: bool = True) -> models.SiretInfo:
     return get_backend(settings.ENTREPRISE_BACKEND).get_siret(siret, raise_if_non_public=raise_if_non_public)
 
 
+def get_head_quarter(siren: str, raise_if_non_public: bool = False) -> models.SiretInfo:
+    """
+    Get offerer head quarters information from Entreprise API
+    Returned data is public, except name and address when "non-diffusible"
+    """
+    return get_backend(settings.ENTREPRISE_BACKEND).get_head_quarter(siren, raise_if_non_public=raise_if_non_public)
+
+
 def get_rcs(siren: str) -> models.RCSInfo:
     """
     Get information from the Registre du Commerce et des Sociétés (Kbis).

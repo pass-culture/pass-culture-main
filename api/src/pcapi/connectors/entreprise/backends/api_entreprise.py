@@ -283,6 +283,28 @@ class EntrepriseBackend(BaseBackend):
             legal_category_code=data["unite_legale"]["forme_juridique"]["code"],
         )
 
+    def get_head_quarter(self, siren: str, raise_if_non_public: bool = False) -> models.SiretInfo:
+        """
+        Documentation: https://entreprise.api.gouv.fr/developpeurs/openapi#tag/Informations-generales/paths/~1v3~1insee~1sirene~1unites_legales~1diffusibles~1%7Bsiren%7D~1siege_social/get
+        """
+        subpath = f"/v3/insee/sirene/unites_legales/diffusibles/{siren}/siege_social"
+        data = self._cached_get(subpath)["data"]
+
+        is_diffusible = self._is_diffusible(data)
+        if raise_if_non_public and not is_diffusible:
+            raise exceptions.NonPublicDataException()
+
+        return models.SiretInfo(
+            siret=data["siret"],
+            active=data["etat_administratif"] == "A",
+            diffusible=is_diffusible,
+            name=data["enseigne"],
+            address=self._get_address_from_sirene_data(data["adresse"]),
+            ape_code=data["activite_principale"]["code"],
+            ape_label=data["activite_principale"]["libelle"],
+            legal_category_code=data["forme_juridique"]["code"],
+        )
+
     def get_rcs(self, siren: str) -> models.RCSInfo:
         """
         Documentation: https://entreprise.api.gouv.fr/catalogue/infogreffe/rcs/extrait

@@ -17,6 +17,9 @@ class BaseBackend:
     def get_siret(self, siret: str, raise_if_non_public: bool = False) -> models.SiretInfo:
         raise NotImplementedError()
 
+    def get_head_quarter(self, siren: str, raise_if_non_public: bool = False) -> models.SiretInfo:
+        raise NotImplementedError()
+
     def get_rcs(self, siren: str) -> models.RCSInfo:
         raise NotImplementedError()
 

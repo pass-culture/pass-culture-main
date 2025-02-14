@@ -22,6 +22,10 @@ logger = logging.getLogger(__name__)
 CACHE_DURATION = datetime.timedelta(minutes=15)
 
 
+class CannotGetHeadQuarter(Exception):
+    pass
+
+
 # pylint: disable=abstract-method
 class InseeBackend(BaseBackend):
     base_url = settings.INSEE_SIRENE_API_URL
@@ -197,6 +201,9 @@ class InseeBackend(BaseBackend):
         if raise_if_non_public:
             self._check_non_public_data(info)
         return info
+
+    def get_head_quarter(self, siren: str, raise_if_non_public: bool = False) -> models.SiretInfo:
+        raise CannotGetHeadQuarter()
 
     def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
         results = []
