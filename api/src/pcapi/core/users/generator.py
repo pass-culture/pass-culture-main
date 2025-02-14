@@ -38,7 +38,12 @@ class GenerateUserData:
 
 def generate_user(user_data: GenerateUserData) -> users_models.User:
     if not settings.ENABLE_TEST_USER_GENERATION:
-        raise exceptions.UserGenerationForbiddenException("Test user generation is disabled")
+        generation_exception = exceptions.UserGenerationForbiddenException()
+        generation_exception.add_error(
+            "settings",
+            "Test user generation is disabled",
+        )
+        raise generation_exception
 
     factory = users_factories.BaseUserFactory
     match user_data.step:

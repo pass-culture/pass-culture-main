@@ -557,8 +557,6 @@ def get_account_suspension_status(user: users_models.User) -> serializers.UserSu
 def unsuspend_account(user: users_models.User) -> None:
     try:
         api.check_can_unsuspend(user)
-    except exceptions.UnsuspensionNotEnabled:
-        raise api_errors.ForbiddenError({"code": "ACCOUNT_UNSUSPENSION_NOT_ENABLED"})
     except exceptions.NotSuspended:
         raise api_errors.ForbiddenError({"code": "ALREADY_UNSUSPENDED"})
     except exceptions.CantAskForUnsuspension:
