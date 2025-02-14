@@ -85,6 +85,10 @@ def edit_collective_stock(
         raise ApiErrors({"global": ["Les stocks créés par l'api publique ne sont pas editables."]}, 403)
     except educational_exceptions.CollectiveOfferForbiddenAction:
         raise ApiErrors({"global": ["Cette action n'est pas autorisée sur l'offre collective liée à ce stock."]}, 403)
+    except educational_exceptions.EndDatetimeBeforeStartDatetime:
+        raise ApiErrors(
+            {"educationalStock": ["La date de fin de l'évènement ne peut précéder la date de début."]}, status_code=400
+        )
     except offers_exceptions.BookingLimitDatetimeTooLate:
         raise ApiErrors(
             {"educationalStock": ["La date limite de confirmation ne peut être fixée après la date de l évènement"]},

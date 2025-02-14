@@ -107,6 +107,10 @@ def edit_collective_stock(
             after_update_start_datetime, after_update_end_datetime
         )
 
+        validation.check_start_is_before_end(
+            start_datetime=after_update_start_datetime, end_datetime=after_update_end_datetime
+        )
+
     booking_limit = stock_data.get("bookingLimitDatetime")
     booking_limit = serialization_utils.as_utc_without_timezone(booking_limit) if booking_limit else None
 
