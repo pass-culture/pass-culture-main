@@ -699,7 +699,7 @@ class GetBookingsTest:
 
     def test_get_bookings(self, client):
         OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
-        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
 
         permanent_booking = booking_factories.UsedBookingFactory(
             user=user,
@@ -1044,6 +1044,17 @@ class GetBookingsTest:
         assert response.json["ongoing_bookings"][0]["stock"]["offer"]["address"]["label"] == venue.offererAddress.label
         assert response.json["ongoing_bookings"][0]["stock"]["offer"]["address"]["city"] == address.city
 
+    def test_get_bookings_user_19_yo(self, client):
+        user = users_factories.BeneficiaryFactory(age=19)
+        booking_factories.BookingFactory(user=user)
+
+        client = client.with_token(user.email)
+        with assert_num_queries(2):  # user + booking
+            response = client.get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        assert response.json["hasBookingsAfter18"] is True
+
 
 class CancelBookingTest:
     identifier = "pascal.ture@example.com"
@@ -1065,6 +1076,7 @@ class CancelBookingTest:
 
     def test_cancel_booking_trigger_recredit_event(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        initial_deposit_amount = user.deposit.amount
         booking = booking_factories.BookingFactory(user=user)
 
         client = client.with_token(self.identifier)
@@ -1079,7 +1091,7 @@ class CancelBookingTest:
             "can_be_asynchronously_retried": True,
             "event_name": "recredit_account_cancellation",
             "event_payload": {
-                "credit": Decimal("300"),
+                "credit": Decimal(initial_deposit_amount),
                 "offer_id": booking.stock.offer.id,
                 "offer_name": booking.stock.offer.name,
                 "offer_price": Decimal("10.1"),
