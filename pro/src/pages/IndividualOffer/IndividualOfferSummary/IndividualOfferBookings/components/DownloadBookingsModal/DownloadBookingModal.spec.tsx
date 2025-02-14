@@ -50,10 +50,6 @@ describe('DownloadBookingModal', () => {
       },
     ])
 
-    expect(
-      screen.getByText('Téléchargement de vos réservations')
-    ).toBeInTheDocument()
-
     // 3 lines = 9 cells
     const tableCells = screen.getAllByRole('cell')
     expect(tableCells).toHaveLength(9)
@@ -80,10 +76,10 @@ describe('DownloadBookingModal', () => {
 
     expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'Télécharger au format CSV' })
+      screen.getByRole('button', { name: 'Télécharger format CSV' })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'Télécharger au format Excel' })
+      screen.getByRole('button', { name: 'Télécharger format Excel' })
     ).toBeInTheDocument()
   })
 
@@ -96,10 +92,6 @@ describe('DownloadBookingModal', () => {
       },
     ])
 
-    expect(
-      screen.getByText('Téléchargement de vos réservations')
-    ).toBeInTheDocument()
-
     expect(screen.queryByRole('cell')).not.toBeInTheDocument()
 
     expect(
@@ -110,7 +102,7 @@ describe('DownloadBookingModal', () => {
     await userEvent.click(allBookings)
 
     expect(
-      screen.getByRole('button', { name: 'Télécharger au format CSV' })
+      screen.getByRole('button', { name: 'Télécharger format CSV' })
     ).toBeEnabled()
   })
 
@@ -138,10 +130,6 @@ describe('DownloadBookingModal', () => {
       },
     ])
 
-    expect(
-      screen.getByText('Téléchargement de vos réservations')
-    ).toBeInTheDocument()
-
     // 3 lines = 9 cells
     const tableCells = screen.getAllByRole('cell')
     expect(tableCells).toHaveLength(9)
@@ -154,7 +142,7 @@ describe('DownloadBookingModal', () => {
     )
     await userEvent.click(validatedBookings)
     const downLoadCsvButton = screen.getByRole('button', {
-      name: 'Télécharger au format CSV',
+      name: 'Télécharger format CSV',
     })
 
     await userEvent.click(downLoadCsvButton)
@@ -196,10 +184,6 @@ describe('DownloadBookingModal', () => {
       },
     ])
 
-    expect(
-      screen.getByText('Téléchargement de vos réservations')
-    ).toBeInTheDocument()
-
     // 3 lines = 9 cells
     const tableCells = screen.getAllByRole('cell')
     expect(tableCells).toHaveLength(9)
@@ -211,7 +195,7 @@ describe('DownloadBookingModal', () => {
     await userEvent.click(allBookings)
 
     const downLoadXlsxButton = screen.getByRole('button', {
-      name: 'Télécharger au format Excel',
+      name: 'Télécharger format Excel',
     })
 
     await userEvent.click(downLoadXlsxButton)

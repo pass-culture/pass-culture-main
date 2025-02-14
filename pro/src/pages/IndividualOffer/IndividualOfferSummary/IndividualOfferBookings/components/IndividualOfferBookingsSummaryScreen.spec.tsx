@@ -151,10 +151,10 @@ describe('IndividualOfferBookingsSummaryScreen', () => {
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'Télécharger au format CSV' })
+      screen.getByRole('button', { name: 'Télécharger format CSV' })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'Télécharger au format Excel' })
+      screen.getByRole('button', { name: 'Télécharger format Excel' })
     ).toBeInTheDocument()
   })
 })

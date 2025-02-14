@@ -128,330 +128,333 @@ export const RecurrenceForm = ({
 
   return (
     <FormikProvider value={formik}>
-      <form onSubmit={formik.handleSubmit}>
-        <div className={styles['mandatory']}>
-          Tous les champs suivis d’un * sont obligatoires.
-        </div>
-
-        <fieldset>
-          <div className={styles['section']}>
-            <h2 className={styles['legend']}>
-              <SvgIcon
-                alt=""
-                src={strokeDateIcon}
-                className={styles['legend-icon']}
-              />{' '}
-              Cet évènement aura lieu
-            </h2>
-
-            <div className={styles['radio-group']}>
-              <RadioButton
-                label="Une seule fois"
-                name="recurrenceType"
-                value={RecurrenceType.UNIQUE}
-                variant={RadioVariant.BOX}
-                onChange={onRecurrenceTypeChange}
-              />
-
-              <RadioButton
-                label="Tous les jours"
-                name="recurrenceType"
-                value={RecurrenceType.DAILY}
-                variant={RadioVariant.BOX}
-                onChange={onRecurrenceTypeChange}
-              />
-
-              <RadioButton
-                label="Toutes les semaines"
-                name="recurrenceType"
-                value={RecurrenceType.WEEKLY}
-                variant={RadioVariant.BOX}
-                onChange={onRecurrenceTypeChange}
-              />
-
-              <RadioButton
-                label="Tous les mois"
-                name="recurrenceType"
-                value={RecurrenceType.MONTHLY}
-                variant={RadioVariant.BOX}
-                onChange={onRecurrenceTypeChange}
-              />
-            </div>
-
-            {values.recurrenceType === RecurrenceType.WEEKLY && (
-              <>
-                <div className={styles['day-inputs']}>
-                  <DayCheckbox
-                    letter="L"
-                    label="Lundi"
-                    name="days"
-                    value={RecurrenceDays.MONDAY}
-                  />
-                  <DayCheckbox
-                    letter="M"
-                    label="Mardi"
-                    name="days"
-                    value={RecurrenceDays.TUESDAY}
-                  />
-                  <DayCheckbox
-                    letter="M"
-                    label="Mercredi"
-                    name="days"
-                    value={RecurrenceDays.WEDNESDAY}
-                  />
-                  <DayCheckbox
-                    letter="J"
-                    label="Jeudi"
-                    name="days"
-                    value={RecurrenceDays.THURSDAY}
-                  />
-                  <DayCheckbox
-                    letter="V"
-                    label="Vendredi"
-                    name="days"
-                    value={RecurrenceDays.FRIDAY}
-                  />
-                  <DayCheckbox
-                    letter="S"
-                    label="Samedi"
-                    name="days"
-                    value={RecurrenceDays.SATURDAY}
-                  />
-                  <DayCheckbox
-                    letter="D"
-                    label="Dimanche"
-                    name="days"
-                    value={RecurrenceDays.SUNDAY}
-                  />
-                </div>
-                {formik.errors.days && formik.touched.days && (
-                  <div className={styles['days-error']}>
-                    <FieldError name="days">{formik.errors.days}</FieldError>
-                  </div>
-                )}
-              </>
-            )}
-            {values.recurrenceType !== RecurrenceType.MONTHLY && (
-              <FormLayout.Row inline>
-                <DatePicker
-                  name="startingDate"
-                  label={
-                    values.recurrenceType === RecurrenceType.UNIQUE
-                      ? 'Date de l’évènement'
-                      : 'Du'
-                  }
-                  className={styles['date-input']}
-                  minDate={new Date()}
-                />
-
-                {values.recurrenceType !== RecurrenceType.UNIQUE && (
-                  <DatePicker
-                    name="endingDate"
-                    label="Au"
-                    className={styles['date-input']}
-                    minDate={minDateForEndingDate}
-                  />
-                )}
-              </FormLayout.Row>
-            )}
-
-            {values.recurrenceType === RecurrenceType.MONTHLY && (
-              <FormLayout.Row inline>
-                <DatePicker
-                  name="startingDate"
-                  label={'Premier évènement le'}
-                  className={styles['date-input']}
-                  minDate={new Date()}
-                />
-
-                <Select
-                  label="Détail de la récurrence"
-                  name="monthlyOption"
-                  options={monthlyOptions}
-                  className={styles['monthly-option-input']}
-                  defaultOption={{
-                    label: 'Sélectionner une option',
-                    value: '',
-                  }}
-                />
-
-                <DatePicker
-                  name="endingDate"
-                  label="Fin de la récurrence"
-                  className={styles['date-input']}
-                  minDate={minDateForEndingDate}
-                />
-              </FormLayout.Row>
-            )}
+      <form onSubmit={formik.handleSubmit} className={styles['form']}>
+        <div className={styles['form-content']}>
+          <div className={styles['mandatory']}>
+            Tous les champs suivis d’un * sont obligatoires.
           </div>
-        </fieldset>
 
-        <fieldset>
-          <div className={styles['section']}>
-            <h2 className={styles['legend']}>
-              <SvgIcon
-                alt=""
-                src={strokeClockIcon}
-                className={styles['legend-icon']}
-              />{' '}
-              Horaires pour l’ensemble de ces dates
-            </h2>
+          <fieldset>
+            <div className={styles['section']}>
+              <h2 className={styles['legend']}>
+                <SvgIcon
+                  alt=""
+                  src={strokeDateIcon}
+                  className={styles['legend-icon']}
+                />{' '}
+                Cet évènement aura lieu
+              </h2>
 
-            <FormLayout.Row>
-              <FieldArray
-                name="beginningTimes"
-                render={(arrayHelpers) => (
-                  <>
-                    <div className={styles['beginning-time-list']}>
-                      {values.beginningTimes.map((_beginningTime, index) => (
-                        <TimePicker
-                          key={index}
-                          label={`Horaire ${index + 1}`}
-                          name={`beginningTimes[${index}]`}
-                          className={styles['beginning-time-input']}
-                          clearButtonProps={{
-                            tooltip: 'Supprimer',
-                            'aria-label': 'Supprimer le créneau',
-                            disabled: values.beginningTimes.length <= 1,
-                            onClick: () => arrayHelpers.remove(index),
-                          }}
-                        />
-                      ))}
-                    </div>
+              <div className={styles['radio-group']}>
+                <RadioButton
+                  label="Une seule fois"
+                  name="recurrenceType"
+                  value={RecurrenceType.UNIQUE}
+                  variant={RadioVariant.BOX}
+                  onChange={onRecurrenceTypeChange}
+                />
 
-                    <Button
-                      variant={ButtonVariant.TERNARY}
-                      icon={fullMoreIcon}
-                      onClick={() => {
-                        arrayHelpers.push('')
-                        const inputToFocus = `beginningTimes[${values.beginningTimes.length}]`
+                <RadioButton
+                  label="Tous les jours"
+                  name="recurrenceType"
+                  value={RecurrenceType.DAILY}
+                  variant={RadioVariant.BOX}
+                  onChange={onRecurrenceTypeChange}
+                />
 
-                        // The input we want to focus has not been rendered yet
-                        setTimeout(() => {
-                          document.getElementById(inputToFocus)?.focus()
-                        }, 0)
-                      }}
-                    >
-                      Ajouter un créneau
-                    </Button>
-                  </>
-                )}
-              />
-            </FormLayout.Row>
-          </div>
-        </fieldset>
+                <RadioButton
+                  label="Toutes les semaines"
+                  name="recurrenceType"
+                  value={RecurrenceType.WEEKLY}
+                  variant={RadioVariant.BOX}
+                  onChange={onRecurrenceTypeChange}
+                />
 
-        <fieldset>
-          <div className={styles['section']}>
-            <h2 className={styles['legend']}>
-              <SvgIcon
-                src={strokeEventsIcon}
-                alt=""
-                className={styles['legend-icon']}
-              />
-              Places et tarifs par horaire
-            </h2>
-            <FieldArray
-              name="quantityPerPriceCategories"
-              render={(arrayHelpers) => (
+                <RadioButton
+                  label="Tous les mois"
+                  name="recurrenceType"
+                  value={RecurrenceType.MONTHLY}
+                  variant={RadioVariant.BOX}
+                  onChange={onRecurrenceTypeChange}
+                />
+              </div>
+
+              {values.recurrenceType === RecurrenceType.WEEKLY && (
                 <>
-                  {values.quantityPerPriceCategories.map((_, index) => (
-                    <FormLayout.Row key={index} inline mdSpaceAfter>
-                      <QuantityInput
-                        label="Nombre de places"
-                        name={`quantityPerPriceCategories[${index}].quantity`}
-                        className={styles['quantity-input']}
-                        isOptional
-                        min={1}
-                      />
-                      <Select
-                        label="Tarif"
-                        name={`quantityPerPriceCategories[${index}].priceCategory`}
-                        options={priceCategoryOptions}
-                        defaultOption={{
-                          label: 'Sélectionner un tarif',
-                          value: '',
-                        }}
-                        className={styles['price-category-input']}
-                      />
-
-                      <div className={styles['align-icon']}>
-                        <Button
-                          variant={ButtonVariant.TERNARY}
-                          icon={fullTrashIcon}
-                          iconPosition={IconPositionEnum.CENTER}
-                          disabled={
-                            values.quantityPerPriceCategories.length <= 1
-                          }
-                          onClick={() => arrayHelpers.remove(index)}
-                          hasTooltip
-                        >
-                          Supprimer les places
-                        </Button>
-                      </div>
-                    </FormLayout.Row>
-                  ))}
-                  {values.quantityPerPriceCategories.length <
-                    priceCategoryOptions.length && (
-                    <ButtonLink
-                      variant={ButtonVariant.TERNARY}
-                      icon={fullMoreIcon}
-                      onClick={() =>
-                        arrayHelpers.push(INITIAL_QUANTITY_PER_PRICE_CATEGORY)
-                      }
-                      to={`#quantityPerPriceCategories[${
-                        values.quantityPerPriceCategories.length - 1
-                      }].quantity`}
-                      isExternal
-                    >
-                      Ajouter d’autres places et tarifs
-                    </ButtonLink>
+                  <div className={styles['day-inputs']}>
+                    <DayCheckbox
+                      letter="L"
+                      label="Lundi"
+                      name="days"
+                      value={RecurrenceDays.MONDAY}
+                    />
+                    <DayCheckbox
+                      letter="M"
+                      label="Mardi"
+                      name="days"
+                      value={RecurrenceDays.TUESDAY}
+                    />
+                    <DayCheckbox
+                      letter="M"
+                      label="Mercredi"
+                      name="days"
+                      value={RecurrenceDays.WEDNESDAY}
+                    />
+                    <DayCheckbox
+                      letter="J"
+                      label="Jeudi"
+                      name="days"
+                      value={RecurrenceDays.THURSDAY}
+                    />
+                    <DayCheckbox
+                      letter="V"
+                      label="Vendredi"
+                      name="days"
+                      value={RecurrenceDays.FRIDAY}
+                    />
+                    <DayCheckbox
+                      letter="S"
+                      label="Samedi"
+                      name="days"
+                      value={RecurrenceDays.SATURDAY}
+                    />
+                    <DayCheckbox
+                      letter="D"
+                      label="Dimanche"
+                      name="days"
+                      value={RecurrenceDays.SUNDAY}
+                    />
+                  </div>
+                  {formik.errors.days && formik.touched.days && (
+                    <div className={styles['days-error']}>
+                      <FieldError name="days">{formik.errors.days}</FieldError>
+                    </div>
                   )}
                 </>
               )}
-            />
-          </div>
-        </fieldset>
+              {values.recurrenceType !== RecurrenceType.MONTHLY && (
+                <FormLayout.Row inline>
+                  <DatePicker
+                    name="startingDate"
+                    label={
+                      values.recurrenceType === RecurrenceType.UNIQUE
+                        ? 'Date de l’évènement'
+                        : 'Du'
+                    }
+                    className={styles['date-input']}
+                    minDate={new Date()}
+                  />
 
-        <fieldset>
-          <div className={styles['section']}>
-            <h2 className={styles['legend']}>
-              <SvgIcon
-                alt=""
-                src={strokeBookedIcon}
-                className={styles['legend-icon']}
-              />{' '}
-              Date limite de réservation
-            </h2>
+                  {values.recurrenceType !== RecurrenceType.UNIQUE && (
+                    <DatePicker
+                      name="endingDate"
+                      label="Au"
+                      className={styles['date-input']}
+                      minDate={minDateForEndingDate}
+                    />
+                  )}
+                </FormLayout.Row>
+              )}
 
-            <div className={styles['booking-date-limit-container']}>
-              <TextInput
-                name="bookingLimitDateInterval"
-                label="Date limite de réservation (en nombre de jours avant le début de l’évènement)"
-                isLabelHidden
-                type="number"
-                step="1"
-                min={0}
-                className={styles['booking-date-limit-input']}
-                onBlur={() => {
-                  if (
-                    formik.initialValues.bookingLimitDateInterval !==
-                    values.bookingLimitDateInterval
-                  ) {
-                    logEvent(Events.UPDATED_BOOKING_LIMIT_DATE, {
-                      from: location.pathname,
-                      bookingLimitDateInterval: values.bookingLimitDateInterval,
-                    })
-                  }
-                }}
+              {values.recurrenceType === RecurrenceType.MONTHLY && (
+                <FormLayout.Row inline>
+                  <DatePicker
+                    name="startingDate"
+                    label={'Premier évènement le'}
+                    className={styles['date-input']}
+                    minDate={new Date()}
+                  />
+
+                  <Select
+                    label="Détail de la récurrence"
+                    name="monthlyOption"
+                    options={monthlyOptions}
+                    className={styles['monthly-option-input']}
+                    defaultOption={{
+                      label: 'Sélectionner une option',
+                      value: '',
+                    }}
+                  />
+
+                  <DatePicker
+                    name="endingDate"
+                    label="Fin de la récurrence"
+                    className={styles['date-input']}
+                    minDate={minDateForEndingDate}
+                  />
+                </FormLayout.Row>
+              )}
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <div className={styles['section']}>
+              <h2 className={styles['legend']}>
+                <SvgIcon
+                  alt=""
+                  src={strokeClockIcon}
+                  className={styles['legend-icon']}
+                />{' '}
+                Horaires pour l’ensemble de ces dates
+              </h2>
+
+              <FormLayout.Row>
+                <FieldArray
+                  name="beginningTimes"
+                  render={(arrayHelpers) => (
+                    <>
+                      <div className={styles['beginning-time-list']}>
+                        {values.beginningTimes.map((_beginningTime, index) => (
+                          <TimePicker
+                            key={index}
+                            label={`Horaire ${index + 1}`}
+                            name={`beginningTimes[${index}]`}
+                            className={styles['beginning-time-input']}
+                            clearButtonProps={{
+                              tooltip: 'Supprimer',
+                              'aria-label': 'Supprimer le créneau',
+                              disabled: values.beginningTimes.length <= 1,
+                              onClick: () => arrayHelpers.remove(index),
+                            }}
+                          />
+                        ))}
+                      </div>
+
+                      <Button
+                        variant={ButtonVariant.TERNARY}
+                        icon={fullMoreIcon}
+                        onClick={() => {
+                          arrayHelpers.push('')
+                          const inputToFocus = `beginningTimes[${values.beginningTimes.length}]`
+
+                          // The input we want to focus has not been rendered yet
+                          setTimeout(() => {
+                            document.getElementById(inputToFocus)?.focus()
+                          }, 0)
+                        }}
+                      >
+                        Ajouter un créneau
+                      </Button>
+                    </>
+                  )}
+                />
+              </FormLayout.Row>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <div className={styles['section']}>
+              <h2 className={styles['legend']}>
+                <SvgIcon
+                  src={strokeEventsIcon}
+                  alt=""
+                  className={styles['legend-icon']}
+                />
+                Places et tarifs par horaire
+              </h2>
+              <FieldArray
+                name="quantityPerPriceCategories"
+                render={(arrayHelpers) => (
+                  <>
+                    {values.quantityPerPriceCategories.map((_, index) => (
+                      <FormLayout.Row key={index} inline mdSpaceAfter>
+                        <QuantityInput
+                          label="Nombre de places"
+                          name={`quantityPerPriceCategories[${index}].quantity`}
+                          className={styles['quantity-input']}
+                          isOptional
+                          min={1}
+                        />
+                        <Select
+                          label="Tarif"
+                          name={`quantityPerPriceCategories[${index}].priceCategory`}
+                          options={priceCategoryOptions}
+                          defaultOption={{
+                            label: 'Sélectionner un tarif',
+                            value: '',
+                          }}
+                          className={styles['price-category-input']}
+                        />
+
+                        <div className={styles['align-icon']}>
+                          <Button
+                            variant={ButtonVariant.TERNARY}
+                            icon={fullTrashIcon}
+                            iconPosition={IconPositionEnum.CENTER}
+                            disabled={
+                              values.quantityPerPriceCategories.length <= 1
+                            }
+                            onClick={() => arrayHelpers.remove(index)}
+                            hasTooltip
+                          >
+                            Supprimer les places
+                          </Button>
+                        </div>
+                      </FormLayout.Row>
+                    ))}
+                    {values.quantityPerPriceCategories.length <
+                      priceCategoryOptions.length && (
+                      <ButtonLink
+                        variant={ButtonVariant.TERNARY}
+                        icon={fullMoreIcon}
+                        onClick={() =>
+                          arrayHelpers.push(INITIAL_QUANTITY_PER_PRICE_CATEGORY)
+                        }
+                        to={`#quantityPerPriceCategories[${
+                          values.quantityPerPriceCategories.length - 1
+                        }].quantity`}
+                        isExternal
+                      >
+                        Ajouter d’autres places et tarifs
+                      </ButtonLink>
+                    )}
+                  </>
+                )}
               />
+            </div>
+          </fieldset>
 
-              <div className={styles['booking-date-limit-text']}>
-                jours avant le début de l’évènement
+          <fieldset>
+            <div className={styles['section']}>
+              <h2 className={styles['legend']}>
+                <SvgIcon
+                  alt=""
+                  src={strokeBookedIcon}
+                  className={styles['legend-icon']}
+                />{' '}
+                Date limite de réservation
+              </h2>
+
+              <div className={styles['booking-date-limit-container']}>
+                <TextInput
+                  name="bookingLimitDateInterval"
+                  label="Date limite de réservation (en nombre de jours avant le début de l’évènement)"
+                  isLabelHidden
+                  type="number"
+                  step="1"
+                  min={0}
+                  className={styles['booking-date-limit-input']}
+                  onBlur={() => {
+                    if (
+                      formik.initialValues.bookingLimitDateInterval !==
+                      values.bookingLimitDateInterval
+                    ) {
+                      logEvent(Events.UPDATED_BOOKING_LIMIT_DATE, {
+                        from: location.pathname,
+                        bookingLimitDateInterval:
+                          values.bookingLimitDateInterval,
+                      })
+                    }
+                  }}
+                />
+
+                <div className={styles['booking-date-limit-text']}>
+                  jours avant le début de l’évènement
+                </div>
               </div>
             </div>
-          </div>
-        </fieldset>
+          </fieldset>
+        </div>
 
         <DialogBuilder.Footer>
           <div className={styles['action-buttons']}>
