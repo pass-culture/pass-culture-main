@@ -5,10 +5,10 @@ import { api } from 'apiClient/api'
 import {
   ApiError,
   CollectiveBookingStatus,
+  CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOffersStockResponseModel,
-  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -216,13 +216,13 @@ describe('ollectiveOfferRow', () => {
   })
 
   const offerStatusDataSet = [
-    CollectiveOfferStatus.ACTIVE,
-    CollectiveOfferStatus.ARCHIVED,
+    CollectiveOfferDisplayedStatus.ACTIVE,
+    CollectiveOfferDisplayedStatus.ARCHIVED,
   ]
   it.each(offerStatusDataSet)(
     'should not display the offer greyed when offer is %s',
     (status) => {
-      props.offer.status = status
+      props.offer.displayedStatus = status
       renderOfferItem(props)
 
       expect(screen.getByRole('img')).not.toHaveClass('thumb-column-inactive')
@@ -283,7 +283,7 @@ describe('ollectiveOfferRow', () => {
 
   it('should display booking link for sold out offer with pending booking', () => {
     props.offer = collectiveOfferFactory({
-      status: CollectiveOfferStatus.SOLD_OUT,
+      displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
       stocks: [
         {
           startDatetime: String(new Date()),
@@ -294,7 +294,7 @@ describe('ollectiveOfferRow', () => {
       booking: { id: 1, booking_status: CollectiveBookingStatus.PENDING },
     })
 
-    renderOfferItem(props)
+    renderOfferItem(props, { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] })
 
     const bookingLink = screen.getByRole('link', {
       name: 'Voir la préréservation',
@@ -305,7 +305,7 @@ describe('ollectiveOfferRow', () => {
 
   it('should display booking link for expired offer with booking', () => {
     props.offer = collectiveOfferFactory({
-      status: CollectiveOfferStatus.EXPIRED,
+      displayedStatus: CollectiveOfferDisplayedStatus.EXPIRED,
       stocks: [
         {
           startDatetime: String(new Date()),
@@ -338,7 +338,7 @@ describe('ollectiveOfferRow', () => {
     renderOfferItem({
       ...props,
       offer: collectiveOfferFactory({
-        status: CollectiveOfferStatus.SOLD_OUT,
+        displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
         stocks: [
           {
             startDatetime: String(new Date()),
@@ -368,13 +368,14 @@ describe('ollectiveOfferRow', () => {
     )
   })
 
-  it('should cancel booking of an offer', async () => {
+  it('should cancel offer booking', async () => {
     props.offer = collectiveOfferFactory({
       stocks,
-      status: CollectiveOfferStatus.SOLD_OUT,
+      displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
       booking: { booking_status: CollectiveBookingStatus.PENDING, id: 1 },
+      allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
     })
-    renderOfferItem(props)
+    renderOfferItem(props, { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] })
 
     await userEvent.click(screen.getByText('Voir les actions'))
 
@@ -392,7 +393,7 @@ describe('ollectiveOfferRow', () => {
 
     expect(
       screen.getByText(
-        'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.'
+        'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
       )
     ).toBeInTheDocument()
   })
@@ -400,8 +401,9 @@ describe('ollectiveOfferRow', () => {
   it('should return an error when there are no bookings for this offer', async () => {
     props.offer = collectiveOfferFactory({
       stocks,
-      status: CollectiveOfferStatus.SOLD_OUT,
+      displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
       booking: { booking_status: 'PENDING', id: 0 },
+      allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
     })
 
     vi.spyOn(api, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
@@ -412,7 +414,7 @@ describe('ollectiveOfferRow', () => {
       )
     )
 
-    renderOfferItem(props)
+    renderOfferItem(props, { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] })
 
     await userEvent.click(screen.getByText('Voir les actions'))
 

@@ -77,7 +77,8 @@ const toggleCollectiveOffersActiveInactiveStatus = async (
 
   if (
     selectedOffers.some(
-      (offer) => offer.status === CollectiveOfferStatus.ARCHIVED
+      (offer) =>
+        offer.displayedStatus === CollectiveOfferDisplayedStatus.ARCHIVED
     )
   ) {
     notify.error(
@@ -326,7 +327,8 @@ export function CollectiveOffersActionsBar({
   function getPublishOffersErrorMessage() {
     if (
       selectedOffers.some(
-        (offer) => offer.status === CollectiveOfferStatus.ARCHIVED
+        (offer) =>
+          offer.displayedStatus === CollectiveOfferDisplayedStatus.ARCHIVED
       )
     ) {
       notify.error(
@@ -336,7 +338,8 @@ export function CollectiveOffersActionsBar({
     }
     if (
       selectedOffers.some(
-        (offer) => offer.status === CollectiveOfferStatus.DRAFT
+        (offer) =>
+          offer.displayedStatus === CollectiveOfferDisplayedStatus.DRAFT
       )
     ) {
       return 'Vous ne pouvez pas publier des brouillons depuis cette liste'

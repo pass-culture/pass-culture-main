@@ -350,6 +350,11 @@ export const CollectiveActionsCells = ({
     await mutate(collectiveOffersQueryKeys)
   }
 
+  const shouldDisplayBookingLink =
+    offer.displayedStatus === CollectiveOfferDisplayedStatus.PREBOOKED ||
+    offer.displayedStatus === CollectiveOfferDisplayedStatus.BOOKED ||
+    offer.displayedStatus === CollectiveOfferDisplayedStatus.EXPIRED
+
   return (
     <td
       role="cell"
@@ -361,54 +366,50 @@ export const CollectiveActionsCells = ({
       headers={`${rowId} ${CELLS_DEFINITIONS.ACTIONS.id}`}
     >
       <div className={styles['actions-column-container']}>
-        {(offer.status === CollectiveOfferStatus.SOLD_OUT ||
-          offer.status === CollectiveOfferStatus.EXPIRED) &&
-          offer.booking && (
-            <BookingLinkCell
-              bookingId={offer.booking.id}
-              bookingStatus={offer.booking.booking_status}
-              offerEventDate={offer.stocks[0].startDatetime}
-              offerId={offer.id}
-            />
-          )}
+        {shouldDisplayBookingLink && offer.booking && (
+          <BookingLinkCell
+            bookingId={offer.booking.id}
+            bookingStatus={offer.booking.booking_status}
+            offerEventDate={offer.stocks[0].startDatetime}
+            offerId={offer.id}
+          />
+        )}
         {!noActionsAllowed && (
           <DropdownMenuWrapper
             title="Voir les actions"
             triggerIcon={fullThreeDotsIcon}
             triggerTooltip
           >
-            {(offer.status === CollectiveOfferStatus.SOLD_OUT ||
-              offer.status === CollectiveOfferStatus.EXPIRED) &&
-              offer.booking && (
-                <>
-                  <DropdownMenu.Item className={styles['menu-item']} asChild>
-                    <ButtonLink
-                      to={bookingLink}
-                      icon={fullNextIcon}
-                      onClick={() =>
-                        logEvent(
-                          CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
-                          {
-                            from: location.pathname,
-                            offerId: offer.id,
-                            offerType: 'collective',
-                            offererId: selectedOffererId?.toString(),
-                          }
-                        )
-                      }
-                    >
-                      Voir la{' '}
-                      {offer.booking.booking_status ===
-                      CollectiveBookingStatus.PENDING
-                        ? 'préréservation'
-                        : 'réservation'}
-                    </ButtonLink>
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Separator
-                    className={cn(styles['separator'], styles['tablet-only'])}
-                  />
-                </>
-              )}
+            {shouldDisplayBookingLink && offer.booking && (
+              <>
+                <DropdownMenu.Item className={styles['menu-item']} asChild>
+                  <ButtonLink
+                    to={bookingLink}
+                    icon={fullNextIcon}
+                    onClick={() =>
+                      logEvent(
+                        CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
+                        {
+                          from: location.pathname,
+                          offerId: offer.id,
+                          offerType: 'collective',
+                          offererId: selectedOffererId?.toString(),
+                        }
+                      )
+                    }
+                  >
+                    Voir la{' '}
+                    {offer.booking.booking_status ===
+                    CollectiveBookingStatus.PENDING
+                      ? 'préréservation'
+                      : 'réservation'}
+                  </ButtonLink>
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator
+                  className={cn(styles['separator'], styles['tablet-only'])}
+                />
+              </>
+            )}
             {canDuplicateOffer && (
               <DropdownMenu.Item
                 className={styles['menu-item']}
