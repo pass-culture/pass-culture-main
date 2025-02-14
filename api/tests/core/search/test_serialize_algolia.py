@@ -487,8 +487,8 @@ def test_serialize_future_offer():
     offer_1 = offers_factories.OfferFactory(isActive=False)
     offer_2 = offers_factories.OfferFactory(isActive=True)
     publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
-    offers_factories.FutureOfferFactory(offerId=offer_1.id, publicationDate=publication_date)
-    offers_factories.FutureOfferFactory(offerId=offer_2.id, publicationDate=publication_date)
+    offers_factories.FutureOfferFactory(offer=offer_1, publicationDate=publication_date)
+    offers_factories.FutureOfferFactory(offer=offer_2, publicationDate=publication_date)
 
     serialized = algolia.AlgoliaBackend().serialize_offer(offer_1, 0)
     assert serialized["offer"]["publicationDate"] == publication_date.timestamp()

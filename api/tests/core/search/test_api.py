@@ -29,7 +29,7 @@ def make_bookable_offer(venue: offerers_models.Venue | None = None) -> offers_mo
 def make_future_offer() -> offers_models.Offer:
     offer = offers_factories.OfferFactory(isActive=False)
     publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
-    offers_factories.FutureOfferFactory(offerId=offer.id, publicationDate=publication_date)
+    offers_factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
     return offer
 
 

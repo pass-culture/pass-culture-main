@@ -106,7 +106,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
         publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
         offers_factories.FutureOfferFactory(
-            offerId=event_offer_id,
+            offer=event_offer,
             publicationDate=publication_date,
         )
 

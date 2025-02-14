@@ -1028,16 +1028,16 @@ class GetOffersByPublicationDateTest:
 
         offer_before = factories.OfferFactory()
         publication_date_before = publication_date - datetime.timedelta(hours=1)
-        factories.FutureOfferFactory(offerId=offer_before.id, publicationDate=publication_date_before)
+        factories.FutureOfferFactory(offer=offer_before, publicationDate=publication_date_before)
 
         offer_to_publish_1 = factories.OfferFactory()
-        factories.FutureOfferFactory(offerId=offer_to_publish_1.id, publicationDate=publication_date)
+        factories.FutureOfferFactory(offer=offer_to_publish_1, publicationDate=publication_date)
         offer_to_publish_2 = factories.OfferFactory()
-        factories.FutureOfferFactory(offerId=offer_to_publish_2.id, publicationDate=publication_date)
+        factories.FutureOfferFactory(offer=offer_to_publish_2, publicationDate=publication_date)
 
         offer_after = factories.OfferFactory()
         publication_date_after = publication_date + datetime.timedelta(hours=1)
-        factories.FutureOfferFactory(offerId=offer_after.id, publicationDate=publication_date_after)
+        factories.FutureOfferFactory(offer=offer_after, publicationDate=publication_date_after)
 
         query = repository.get_offers_by_publication_date(publication_date=publication_date)
         assert query.count() == 2

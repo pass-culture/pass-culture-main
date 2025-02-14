@@ -1988,7 +1988,7 @@ class ActivateFutureOffersTest:
     def test_activate_future_offers(self, mocked_async_index_offer_ids):
         offer = factories.OfferFactory(isActive=False)
         publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
-        factories.FutureOfferFactory(offerId=offer.id, publicationDate=publication_date)
+        factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
 
         api.activate_future_offers(publication_date=publication_date)
 

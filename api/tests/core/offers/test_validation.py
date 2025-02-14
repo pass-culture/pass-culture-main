@@ -890,7 +890,7 @@ class CheckPublicationDateTest:
     def test_check_publication_date_should_raise_raise_because_already_set(self):
         offer = offers_factories.ThingOfferFactory()
         publication_date = datetime.datetime.utcnow().replace(minute=0) + datetime.timedelta(days=30)
-        offers_factories.FutureOfferFactory(offerId=offer.id, publicationDate=publication_date)
+        offers_factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
         with pytest.raises(exceptions.FutureOfferException) as exc:
             validation.check_publication_date(offer, publication_date)
             msg = "Cette offre est déjà programmée pour être publiée dans le futur"

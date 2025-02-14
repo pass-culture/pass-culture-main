@@ -2,6 +2,7 @@ from pcapi.sandboxes.scripts.creators.industrial.add_accessibility_compliance_to
     add_accessibility_compliance_to_venues,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_closed_offerers import create_closed_offerers
+from pcapi.sandboxes.scripts.creators.industrial.create_future_offers import create_future_offers
 from pcapi.sandboxes.scripts.creators.industrial.create_gdpr_user_extracts import create_gdpr_user_extract_data
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import *
@@ -144,6 +145,8 @@ def save_industrial_sandbox() -> None:
     create_offerer_providers_for_apis()
 
     create_offers_with_ean()
+
+    create_future_offers()
 
     create_industrial_incidents()
 
