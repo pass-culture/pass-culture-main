@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import fullEditIcon from 'icons/full-edit.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -32,6 +33,8 @@ export function ManadgedVenueItem({
   const [isPricingPointDialogOpen, setIsPricingPointDialogOpen] =
     useState<boolean>(false)
 
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   function handleVenueChange(event: any) {
     if (event.target.checked) {
       setSelectedVenuesIds([...selectedVenuesIds, parseInt(event.target.value)])
@@ -62,6 +65,10 @@ export function ManadgedVenueItem({
         <DialogBuilder
           open={isPricingPointDialogOpen}
           onOpenChange={setIsPricingPointDialogOpen}
+          variant="drawer"
+          title={`Sélectionnez un SIRET pour
+          ${isOfferAddressEnabled ? 'la structure' : 'le lieu'} “
+          ${venue.commonName}”`}
           trigger={
             <Button
               variant={ButtonVariant.QUATERNARY}

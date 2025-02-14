@@ -3,24 +3,20 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 
-$modal-width: rem.torem(592px);
-$modal-height: rem.torem(360px);
-$banner-height: rem.torem(124px);
-
 .dialog {
-  &-with-banner {
-    min-height: $modal-height + $banner-height;
-  }
+  margin-top: rem.torem(16px);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 
-  &-title {
-    @include fonts.title4;
-
-    margin-bottom: rem.torem(16px);
-    padding-right: rem.torem(32px);
+  &-form {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   &-callout {
-    margin-bottom: rem.torem(16px);
+    margin-bottom: rem.torem(32px);
   }
 
   &-subtitle {
@@ -31,6 +27,7 @@ $banner-height: rem.torem(124px);
     height: rem.torem(200px);
     overflow-y: auto;
     margin-bottom: rem.torem(24px);
+    flex-grow: 1;
   }
 
   &-select-all {
@@ -48,28 +45,6 @@ $banner-height: rem.torem(124px);
 
   &-actions {
     display: flex;
-    justify-content: flex-end;
-    gap: rem.torem(24px);
-  }
-
-  @media (min-width: size.$tablet) {
-    min-height: $modal-height;
-    width: $modal-width;
-
-    &-with-banner {
-      min-height: $modal-height + $banner-height;
-    }
-  }
-}
-
-.discard-dialog {
-  min-height: $modal-height;
-
-  &-with-banner {
-    min-height: $modal-height + $banner-height;
-  }
-
-  @media (min-width: size.$tablet) {
-    width: $modal-width;
+    gap: rem.torem(8px);
   }
 }
