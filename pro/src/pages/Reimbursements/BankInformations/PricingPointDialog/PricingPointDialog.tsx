@@ -8,6 +8,7 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { Select } from 'ui-kit/form/Select/Select'
 
 import styles from './PricingPointDialog.module.scss'
@@ -52,7 +53,7 @@ export const PricingPointDialog = ({
         )
       }
     },
-    validationSchema: getValidationSchema({ isOfferAddressEnabled }),
+    validationSchema: getValidationSchema(),
   })
 
   if (!selectedVenue) {
@@ -61,7 +62,7 @@ export const PricingPointDialog = ({
 
   const venuesOptions = [
     {
-      label: `Sélectionner ${isOfferAddressEnabled ? 'une structure' : 'un lieu'} dans la liste`,
+      label: `Sélectionner le SIRET dans la liste`,
       value: '',
     },
     ...venues.map((venue) => ({
@@ -72,13 +73,6 @@ export const PricingPointDialog = ({
 
   return (
     <div className={styles.dialog}>
-      <Dialog.Title asChild>
-        <h1 className={styles['callout-title']}>
-          Sélectionnez un SIRET pour{' '}
-          {isOfferAddressEnabled ? 'la structure' : 'le lieu'} “
-          {selectedVenue.commonName}”{' '}
-        </h1>
-      </Dialog.Title>
       <Callout className={styles['callout']}>
         Comme indiqué dans nos CGUs, le barème de remboursement se définit sur
         la base d’un établissement et donc d’un SIRET. Afin de vous faire
@@ -93,16 +87,19 @@ export const PricingPointDialog = ({
           <Select
             id="pricingPointId"
             name="pricingPointId"
-            label={`${isOfferAddressEnabled ? 'Structure avec SIRET utilisée' : 'Lieu avec SIRET utilisé'} pour le calcul de votre barème de remboursement`}
+            label={`${isOfferAddressEnabled ? 'Structure avec SIRET utilisée' : 'Lieu avec SIRET utilisé'} pour le calcul du barème de remboursement`}
             options={venuesOptions}
             className={styles['venues-select']}
+            showMandatoryAsterisk={false}
           />
-          <div className={styles['dialog-actions']}>
-            <Dialog.Close asChild>
-              <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
-            </Dialog.Close>
-            <Button type="submit">Valider la sélection</Button>
-          </div>
+          <DialogBuilder.Footer>
+            <div className={styles['dialog-actions']}>
+              <Dialog.Close asChild>
+                <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+              </Dialog.Close>
+              <Button type="submit">Valider la sélection</Button>
+            </div>
+          </DialogBuilder.Footer>
         </form>
       </FormikProvider>
     </div>

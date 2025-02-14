@@ -1,4 +1,3 @@
-import * as Dialog from '@radix-ui/react-dialog'
 import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash.isequal'
@@ -111,22 +110,19 @@ export const LinkVenuesDialog = ({
     <>
       <DialogBuilder
         defaultOpen
+        variant="drawer"
         onOpenChange={(open) => {
           if (!open) {
             closeDialog()
           }
         }}
+        title={`Compte bancaire : ${selectedBankAccount.label}`}
       >
         <div
           className={cn(styles['dialog'], {
             [styles['dialog-with-banner']]: hasVenuesWithoutPricingPoint,
           })}
         >
-          <Dialog.Title asChild>
-            <h1 className={styles['dialog-title']}>
-              Compte bancaire : {selectedBankAccount.label}
-            </h1>
-          </Dialog.Title>
           {hasVenuesWithoutPricingPoint && (
             <Callout
               title={
@@ -149,7 +145,10 @@ export const LinkVenuesDialog = ({
             dont les offres seront remboursées sur ce compte bancaire.
           </div>
           <FormikProvider value={formik}>
-            <form onSubmit={formik.handleSubmit}>
+            <form
+              onSubmit={formik.handleSubmit}
+              className={styles['dialog-form']}
+            >
               <div className={styles['dialog-checkboxes']}>
                 <div className={styles['dialog-select-all']}>
                   <BaseCheckbox
@@ -197,15 +196,17 @@ export const LinkVenuesDialog = ({
                   )
                 })}
               </div>
-              <div className={styles['dialog-actions']}>
-                <Button variant={ButtonVariant.SECONDARY} onClick={onCancel}>
-                  Annuler
-                </Button>
+              <DialogBuilder.Footer>
+                <div className={styles['dialog-actions']}>
+                  <Button variant={ButtonVariant.SECONDARY} onClick={onCancel}>
+                    Annuler
+                  </Button>
 
-                <Button type="submit" isLoading={formik.isSubmitting}>
-                  Enregistrer
-                </Button>
-              </div>
+                  <Button type="submit" isLoading={formik.isSubmitting}>
+                    Enregistrer
+                  </Button>
+                </div>
+              </DialogBuilder.Footer>
             </form>
           </FormikProvider>
         </div>
