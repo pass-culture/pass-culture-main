@@ -3,20 +3,21 @@
 @use "styles/mixins/_outline.scss" as outline;
 
 .container {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: rem.torem(16px);
-}
-
-.header {
-  @include fonts.title2;
+  gap: rem.torem(32px);
+  margin-top: rem.torem(16px);
 }
 
 .one-booking-date-section {
   @include fonts.title4;
+}
 
-  margin: rem.torem(8px) 0;
+.booking-type-section {
+  flex-grow: 1;
+  max-width: rem.torem(486px);
 }
 
 .date-select-section {
@@ -30,23 +31,19 @@
 
 .actions {
   display: flex;
-  justify-content: flex-end;
   flex-wrap: wrap;
-  gap: rem.torem(24px);
+  gap: rem.torem(8px);
   width: 100%;
-  margin-top: rem.torem(24px);
 }
 
 .bookings-radio-buttons {
-  max-width: rem.torem(486px);
-
   &-validated {
     margin: rem.torem(16px) 0;
   }
 }
 
 .bookings-date-count {
-  margin: rem.torem(16px) 0;
+  margin: rem.torem(32px) 0;
 
   @include fonts.body-accent-xs;
 }
