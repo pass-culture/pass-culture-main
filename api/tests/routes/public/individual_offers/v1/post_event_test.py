@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 import decimal
+import logging
 
 import pytest
 
@@ -79,6 +80,36 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.withdrawalType is None
         assert created_offer.withdrawalDelay is None
         assert not created_offer.futureOffer
+
+    def test_event_with_depreacted_music_type_triggers_warning_log(self, client, caplog):
+        # TODO(jbaudet-pass): remove test once the deprecated enum
+        # music type is not allowed anymore
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        payload = self._get_base_payload(venue_provider.venueId)
+        payload["categoryRelatedFields"] = {"category": "CONCERT", "musicType": "METAL-DOOM_METAL"}
+        payload["bookingContact"] = "booking@test.com"
+
+        with caplog.at_level(logging.INFO):
+            response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+
+        assert response.status_code == 200
+        assert next(rec for rec in caplog.records if rec.msg == "offer: using old music type")
+
+    def test_event_with_new_and_expected_music_type_does_not_trigger_warning_log(self, client, caplog):
+        # TODO(jbaudet-pass): remove test once the deprecated enum
+        # music type is not allowed anymore
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        payload = self._get_base_payload(venue_provider.venueId)
+        payload["categoryRelatedFields"] = {"category": "CONCERT", "musicType": "METAL"}
+        payload["bookingContact"] = "booking@test.com"
+
+        with caplog.at_level(logging.INFO):
+            response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+
+        assert response.status_code == 200
+        assert not [rec for rec in caplog.records if rec.msg == "offer: using old music type"]
 
     def test_future_event(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
