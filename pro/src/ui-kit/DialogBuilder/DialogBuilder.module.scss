@@ -5,7 +5,7 @@
 @use "styles/mixins/_outline.scss" as outline;
 
 $drawer-width: rem.torem(684px);
-$animation-duration: 0.15s;
+$animation-duration: 0.3s;
 $animation-timing-function: ease-in-out;
 
 @keyframes slidein {
@@ -57,7 +57,7 @@ $animation-timing-function: ease-in-out;
   overflow: auto;
 
   @media not (prefers-reduced-motion) {
-    &[data-state="open"] {
+    &.dialog-builder-overlay-drawer[data-state="open"] {
       animation-duration: $animation-duration;
       animation-name: fadein;
       animation-timing-function: $animation-timing-function;
