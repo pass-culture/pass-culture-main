@@ -26,6 +26,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
         booking = bookings_factories.BookingFactory(
             user__email="user@example.com",
             user__firstName="Jeanne",
+            user__lastName="Doux",
         )
 
         # When
@@ -75,6 +76,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
         booking = bookings_factories.BookingFactory(
             user__email="user@example.com",
             user__firstName="Jeanne",
+            user__lastName="Doux",
             stock=stock,
         )
 

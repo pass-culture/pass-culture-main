@@ -194,6 +194,7 @@ class RunIntegrationTest:
                 dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
                 subscription_age=15,
                 phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+                deposit__expirationDate=datetime.utcnow() + relativedelta(years=2),
             )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         details = fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)

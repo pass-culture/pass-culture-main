@@ -222,7 +222,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             product=product, venue=venue, lastProvider=api_key.provider, extraData=product.extraData
         )
         stock = offers_factories.ThingStockFactory(offer=offer, quantity=10, price=100)
-        bookings_factories.BookingFactory(stock=stock, quantity=2)
+        bookings_factories.BookingFactory(stock=stock, quantity=2, user__deposit__amount=300)
 
         tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -290,7 +290,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             product=product, venue=venue, lastProvider=api_key.provider, extraData=product.extraData
         )
         stock = offers_factories.ThingStockFactory(offer=offer, quantity=10, price=100)
-        bookings_factories.BookingFactory(stock=stock, quantity=2)
+        bookings_factories.BookingFactory(stock=stock, quantity=2, user__deposit__amount=300)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",

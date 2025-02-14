@@ -61,8 +61,8 @@ class ZendeskWebhookTest:
                     "suspended": "Non",
                     "email_validated": True,
                     "phone_validated": True,
-                    "initial_credit": 300.0,
-                    "remaining_credit": 300.0,
+                    "initial_credit": user.deposit.amount,
+                    "remaining_credit": user.deposit.amount,
                 },
             }
         }

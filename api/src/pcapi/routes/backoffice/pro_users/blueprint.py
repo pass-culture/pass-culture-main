@@ -225,7 +225,12 @@ def delete(user_id: int) -> utils.BackofficeResponse:
     ).delete(
         synchronize_session=False,
     )
-    finance_models.Deposit.query.filter(finance_models.Deposit.userId == user_id).delete(synchronize_session=False)
+    user_deposits_query = finance_models.Deposit.query.filter(finance_models.Deposit.userId == user_id)
+    for deposit in user_deposits_query:
+        finance_models.Recredit.query.filter(finance_models.Recredit.depositId == deposit.id).delete(
+            synchronize_session=False
+        )
+    user_deposits_query.delete(synchronize_session=False)
     beneficiary_import_models.BeneficiaryImport.query.filter(
         beneficiary_import_models.BeneficiaryImport.beneficiaryId == user_id
     ).delete(synchronize_session=False)

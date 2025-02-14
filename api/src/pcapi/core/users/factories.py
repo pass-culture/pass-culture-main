@@ -3,6 +3,7 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from decimal import Decimal
 import random
 import string
 import typing
@@ -18,7 +19,7 @@ from pcapi.connectors.beneficiaries.educonnect import models as educonnect_model
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.factories import BaseFactory
-import pcapi.core.finance.api as finance_api
+from pcapi.core.finance.conf import RECREDIT_TYPE_AGE_MAPPING
 import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import utils as users_utils
@@ -28,6 +29,7 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.utils import crypto
 
@@ -144,7 +146,8 @@ class PhoneValidatedUserFactory(EmailValidatedUserFactory):
 
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
         if obj.age == users_constants.ELIGIBILITY_AGE_18:
-            obj.phoneNumber = f"+336{obj.id:08}"  # type: ignore[method-assign]
+            if not obj.phoneNumber:
+                obj.phoneNumber = f"+336{obj.id:08}"  # type: ignore[method-assign]
             obj.phoneValidationStatus = models.PhoneValidationStatusType.VALIDATED
             fraud_checks.append(fraud_factories.PhoneValidationFraudCheckFactory(user=obj))
         return fraud_checks
@@ -366,6 +369,9 @@ class Transition1718Factory(BeneficiaryFactory):
         with time_machine.travel(datetime.today() - relativedelta(years=1)):
             if "dateCreated" not in kwargs:
                 kwargs["dateCreated"] = obj.dateCreated
+
+            if "expirationDate" not in kwargs:
+                kwargs["expirationDate"] = datetime.today()
 
             deposit = DepositGrantFactory(user=obj, **kwargs)
 
@@ -950,8 +956,8 @@ class DepositGrantFactory(BaseFactory):
         model = finance_models.Deposit
 
     dateCreated = LazyAttribute(lambda _: datetime.utcnow())
-    user = factory.SubFactory(UserFactory)  # BeneficiaryGrant18Factory is already creating a deposit
-    source = "public"
+    source = "factory"
+    user = factory.SubFactory(UserFactory)
 
     @classmethod
     def _create(
@@ -960,26 +966,62 @@ class DepositGrantFactory(BaseFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> finance_models.Deposit:
-        age = None
-        if kwargs["user"].birth_date:
-            age = users_utils.get_age_from_birth_date(kwargs["user"].birth_date)
-        eligibility = (
-            models.EligibilityType.UNDERAGE
-            if age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
-            else models.EligibilityType.AGE18
-        )
-        granted_deposit = finance_api.get_granted_deposit(kwargs["user"], eligibility, age_at_registration=age)
-        assert granted_deposit is not None
+        user = kwargs["user"]
+        age = users_utils.get_age_from_birth_date(user.birth_date)
 
-        if "version" not in kwargs:
-            kwargs["version"] = granted_deposit.version
-        if "amount" not in kwargs:
-            kwargs["amount"] = granted_deposit.amount
-        if "expirationDate" not in kwargs:
-            kwargs["expirationDate"] = granted_deposit.expiration_date
+        if age not in users_constants.ELIGIBILITY_UNDERAGE_RANGE + [users_constants.ELIGIBILITY_AGE_18]:
+            age = 18  # The calling functions are responsible for setting the correct age. If age is not in the range, we generate a deposit for 18yo.
+
         if "type" not in kwargs:
-            kwargs["type"] = granted_deposit.type
+            date_created = kwargs.get("dateCreated", datetime.utcnow())
+            if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and date_created >= settings.CREDIT_V3_DECREE_DATETIME:
+                kwargs["type"] = finance_models.DepositType.GRANT_17_18
+            else:
+                kwargs["type"] = (
+                    finance_models.DepositType.GRANT_15_17
+                    if age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
+                    else finance_models.DepositType.GRANT_18
+                )
+        if "amount" not in kwargs:
+            if kwargs["type"] == finance_models.DepositType.GRANT_17_18:
+                amount = {17: Decimal(50), 18: Decimal(150)}.get(age, Decimal(150))
+            else:
+                amount = {15: Decimal(20), 16: Decimal(30), 17: Decimal(30), 18: Decimal(300)}.get(age, Decimal(300))
+            kwargs["amount"] = amount
+        if "expirationDate" not in kwargs:
+            kwargs["expirationDate"] = user.birth_date + relativedelta(years=21)
+        if "version" not in kwargs:
+            kwargs["version"] = 2 if kwargs["type"] == finance_models.DepositType.GRANT_18 else 1
+
         return super()._create(model_class, *args, **kwargs)
+
+    @factory.post_generation
+    def recredits(
+        self,
+        create: bool,
+        extracted: finance_models.Recredit | None,
+        **kwargs: typing.Any,
+    ) -> list[finance_models.Recredit]:
+        from pcapi.core.finance.factories import RecreditFactory
+
+        if not create:
+            return []
+        if not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() or self.dateCreated < settings.CREDIT_V3_DECREE_DATETIME:
+            return []
+        if getattr(self, "recredits", None):
+            # do not create new recredits if they already exist
+            return getattr(self, "recredits", [])
+        # Immediately create the recredit that gives the first credit to the user
+        user = self.user
+        if not user.age:
+            return []
+        immediate_recredit = RecreditFactory(
+            deposit=self,
+            amount=self.amount,
+            recreditType=RECREDIT_TYPE_AGE_MAPPING.get(user.age, finance_models.RecreditType.RECREDIT_18),
+        )
+
+        return [immediate_recredit]
 
 
 class EduconnectUserFactory(factory.Factory):
@@ -1079,7 +1121,7 @@ class UserAccountUpdateRequestFactory(BaseFactory):
     email = factory.Sequence(lambda n: f"demandeur_{n+1}@example.com")
     birthDate = factory.Sequence(lambda n: date.today() - timedelta(days=18 * 366 + 10 * n))
     user = factory.SubFactory(
-        BeneficiaryGrant18Factory,
+        BeneficiaryFactory,
         firstName=factory.SelfAttribute("..firstName"),
         lastName=factory.SelfAttribute("..lastName"),
         email=factory.SelfAttribute("..email"),

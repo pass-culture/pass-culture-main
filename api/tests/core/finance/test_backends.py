@@ -263,12 +263,12 @@ class BaseBackendTest:
         backend = finance_backend.BaseFinanceBackend()
         invoice_lines = backend.get_invoice_lines(invoice)
         assert len(invoice_lines) == 2
-        assert {"OCINDGRANT_18", "ORINDGRANT_18"} == {e["product_id"] for e in invoice_lines}
-        offerer_revenue_line = [e for e in invoice_lines if e["product_id"] == "ORINDGRANT_18"][0]
+        assert {"OCINDGRANT_18_V3", "ORINDGRANT_18_V3"} == {e["product_id"] for e in invoice_lines}
+        offerer_revenue_line = [e for e in invoice_lines if e["product_id"] == "ORINDGRANT_18_V3"][0]
         assert offerer_revenue_line["amount"] == -200
         assert offerer_revenue_line["title"] == "Réservations"
 
-        offerer_contribution_line = [e for e in invoice_lines if e["product_id"] == "OCINDGRANT_18"][0]
+        offerer_contribution_line = [e for e in invoice_lines if e["product_id"] == "OCINDGRANT_18_V3"][0]
         assert offerer_contribution_line["amount"] == -200
         assert offerer_contribution_line["title"] == "Réservations"
 
@@ -491,7 +491,7 @@ class BaseBackendTest:
         invoice_line = invoice_lines[0]
         assert len(invoice_line) == 3
         assert invoice_line["amount"] == 55_66
-        assert invoice_line["product_id"] == "ORINDGRANT_18"
+        assert invoice_line["product_id"] == "ORINDGRANT_18_V3"
         assert invoice_line["title"] == "Réservations"
 
 

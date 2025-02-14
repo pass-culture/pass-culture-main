@@ -4,7 +4,6 @@ import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
-import pcapi.core.finance.models as finance_models
 from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 from pcapi.core.offers.models import Stock
@@ -113,9 +112,7 @@ def get_bookings(user: User) -> BookingsResponse:
         ended_bookings=[BookingReponse.from_orm(booking) for booking in ended_bookings],
         ongoing_bookings=[BookingReponse.from_orm(booking) for booking in ongoing_bookings],
         hasBookingsAfter18=any(
-            booking
-            for booking in individual_bookings
-            if not booking.deposit or booking.deposit.type == finance_models.DepositType.GRANT_18
+            booking for booking in individual_bookings if bookings_api.is_booking_by_18_user(booking)
         ),
     )
 

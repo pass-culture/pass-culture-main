@@ -22,13 +22,20 @@ class BookingFactory(BaseFactory):
     quantity = 1
     stock = factory.SubFactory(offers_factories.StockFactory)
     token = factory.LazyFunction(random_token)
-    user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
+    user = factory.SubFactory(users_factories.BeneficiaryFactory)
     deposit = factory.LazyAttribute(lambda o: o.user.deposit)
     amount = factory.SelfAttribute("stock.price")
     status = models.BookingStatus.CONFIRMED
     priceCategoryLabel = factory.Maybe(
         "stock.priceCategory", factory.SelfAttribute("stock.priceCategory.priceCategoryLabel.label"), None
     )
+
+    @factory.lazy_attribute
+    def usedRecreditType(self) -> models.BookingRecreditType | None:
+        sorted_recredits = sorted(self.deposit.recredits, key=lambda r: r.dateCreated, reverse=True)
+        if sorted_recredits:
+            return models.BookingRecreditType[sorted_recredits[0].recreditType.name]
+        return None
 
     @factory.post_generation
     def cancellation_limit_date(

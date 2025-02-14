@@ -221,7 +221,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert rows[0]["État"] == "En construction En attente de correction"
         assert (
             rows[0]["Modification"]
-            == f"Saisie incomplète Email en doublon Email : {update_request.oldEmail} → {update_request.newEmail} Téléphone : →"
+            == f"Saisie incomplète Email en doublon Email : {update_request.oldEmail} → {update_request.newEmail} Téléphone : {update_request.user.phoneNumber} →"
         )
 
     def test_list_filter_by_email(self, authenticated_client):
@@ -641,7 +641,7 @@ class GetAcceptFormTest(GetEndpointHelper):
             in content
         )
         assert f"Email : {update_request.user.email} " in content
-        assert f"Date de naissance : {update_request.user.dateOfBirth.strftime('%d/%m/%Y')} " in content
+        assert f"Date de naissance : {update_request.user.birth_date.strftime('%d/%m/%Y')} " in content
         assert f"Âge : {update_request.user.age} ans " in content
         assert "Modifications demandées : Email " in content
         assert f"Dossier : {update_request.dsApplicationId} " in content
