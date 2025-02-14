@@ -8,6 +8,7 @@ import { SynchronizationEvents } from 'commons/core/FirebaseEvents/constants'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
 import { DuoCheckbox } from '../DuoCheckbox/DuoCheckbox'
 
@@ -64,13 +65,13 @@ export const CinemaProviderForm = ({
 
   return (
     <FormikProvider value={formik}>
-      <Form>
-        {!isLoading && (
-          <div className={styles['cinema-provider-form']}>
-            <FormLayout.Row>
-              <DuoCheckbox isChecked={formik.values.isDuo} />
-            </FormLayout.Row>
+      {!isLoading && (
+        <Form className={styles['cinema-provider-form']}>
+          <FormLayout.Row className={styles['cinema-provider-form-content']}>
+            <DuoCheckbox isChecked={formik.values.isDuo} />
+          </FormLayout.Row>
 
+          <DialogBuilder.Footer>
             {isCreatedEntity ? (
               <Button
                 type="button"
@@ -91,18 +92,20 @@ export const CinemaProviderForm = ({
                     Annuler
                   </Button>
                 </Dialog.Close>
-                <Button
-                  type="submit"
-                  variant={ButtonVariant.PRIMARY}
-                  isLoading={formik.isSubmitting}
-                >
-                  Modifier
-                </Button>
+                <Dialog.Close asChild>
+                  <Button
+                    type="submit"
+                    variant={ButtonVariant.PRIMARY}
+                    isLoading={formik.isSubmitting}
+                  >
+                    Modifier
+                  </Button>
+                </Dialog.Close>
               </div>
             )}
-          </div>
-        )}
-      </Form>
+          </DialogBuilder.Footer>
+        </Form>
+      )}
     </FormikProvider>
   )
 }
