@@ -6,10 +6,10 @@ import {
 } from 'apiClient/v1'
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
+import { ThumbCell } from 'components/CollectiveOffersTable/CollectiveOfferRow/ThumbCell'
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
 import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferNameCell'
 import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
-import { ThumbCell } from 'components/OffersTable/Cells/ThumbCell'
 
 import { CollectiveActionsCells } from './CollectiveActionsCells/CollectiveActionsCells'
 import styles from './CollectiveOfferRow.module.scss'
