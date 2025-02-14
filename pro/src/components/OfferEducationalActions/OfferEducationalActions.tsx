@@ -6,7 +6,6 @@ import { api } from 'apiClient/api'
 import {
   CollectiveBookingStatus,
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferStatus,
   CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -174,7 +173,7 @@ export const OfferEducationalActions = ({
   const shouldDisplayBookingLink =
     lastBookingId &&
     (lastBookingStatus !== CollectiveBookingStatus.CANCELLED ||
-      offer.status === CollectiveOfferStatus.EXPIRED)
+      offer.displayedStatus === CollectiveOfferDisplayedStatus.EXPIRED)
 
   const shouldDisplayStatusSeparator =
     shouldDisplayAdagePublicationButton || shouldDisplayBookingLink

@@ -3,7 +3,6 @@ import classNames from 'classnames'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
-  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
@@ -47,7 +46,7 @@ export const CollectiveOfferRow = ({
   const rowId = `collective-offer-${id}`
 
   const isOfferDraft =
-    offer.status === CollectiveOfferStatus.DRAFT &&
+    offer.displayedStatus === CollectiveOfferDisplayedStatus.DRAFT &&
     `/offre/collectif/${id}/creation`
 
   const offerLink = isOfferDraft || `/offre/${id}/collectif/recapitulatif`

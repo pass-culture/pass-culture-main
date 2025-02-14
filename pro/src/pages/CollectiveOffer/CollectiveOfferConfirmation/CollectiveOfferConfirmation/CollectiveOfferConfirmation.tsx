@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import { CollectiveOfferStatus } from 'apiClient/v1'
+import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -12,7 +12,7 @@ import styles from './CollectiveOfferConfirmation.module.scss'
 
 interface CollectiveOfferConfirmationProps {
   offererId?: number | null
-  offerStatus?: CollectiveOfferStatus
+  offerStatus?: CollectiveOfferDisplayedStatus
   isShowcase?: boolean
   institutionDisplayName?: string
 }
@@ -94,11 +94,11 @@ const showcaseOffer = {
 }
 
 const mapOfferStatusToData = (
-  status?: CollectiveOfferStatus,
+  displayedStatus?: CollectiveOfferDisplayedStatus,
   isShowcase?: boolean,
   institutionName?: string
 ) => {
-  if (status === CollectiveOfferStatus.PENDING) {
+  if (displayedStatus === CollectiveOfferDisplayedStatus.PENDING) {
     return pendingOffer
   }
 
