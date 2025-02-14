@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
 
@@ -75,7 +75,10 @@ describe('test SignupJourneyStepper', () => {
     if (tabActivity) {
       await userEvent.click(tabActivity)
     }
-    expect(screen.queryByText('Activity screen')).not.toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.queryByText('Activity screen')).not.toBeInTheDocument()
+    })
 
     if (tabValidation) {
       await userEvent.click(tabValidation)
@@ -119,6 +122,7 @@ describe('test SignupJourneyStepper', () => {
       venueTypeCode: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL,
+      phoneNumber: undefined,
     }
     const { tabAuthentication, tabActivity, tabValidation } =
       renderSignupStepper(contextValue, '/parcours-inscription/validation')
