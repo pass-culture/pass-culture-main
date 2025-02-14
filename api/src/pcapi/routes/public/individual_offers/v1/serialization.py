@@ -312,6 +312,7 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
 def deserialize_extra_data(
     category_related_fields: CategoryRelatedFields | None,
     initial_extra_data: offers_models.OfferExtraData | None = None,
+    venue_id: int | None = None,
 ) -> dict[str, str]:
     extra_data: dict = initial_extra_data or {}  # type: ignore[assignment]
     if not category_related_fields:
@@ -327,6 +328,15 @@ def deserialize_extra_data(
                 extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[music_slug].code)
                 extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[music_slug].code)
             else:
+                extra = {
+                    "venue": venue_id if venue_id else "",
+                    "field_name": field_name,
+                    "field_value": field_value.value,
+                    "enum_used": type(field_value).__name__,
+                }
+
+                logger.info("offer: using old music type", extra=extra)
+
                 extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[field_value].code)
                 extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[field_value].code)
                 extra_data["gtl_id"] = constants.MUSIC_SLUG_TO_GTL_ID[field_value]

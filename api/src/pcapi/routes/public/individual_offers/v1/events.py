@@ -99,7 +99,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                 description=body.description,
                 durationMinutes=body.event_duration,
                 externalTicketOfficeUrl=body.external_ticket_office_url,
-                extraData=serialization.deserialize_extra_data(body.category_related_fields),
+                extraData=serialization.deserialize_extra_data(body.category_related_fields, venue_id=venue.id),
                 idAtProvider=body.id_at_provider,
                 isDuo=body.enable_double_bookings,
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
@@ -259,7 +259,9 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 description=get_field(offer, updates, "description"),
                 durationMinutes=get_field(offer, updates, "eventDuration", col="durationMinutes"),
                 extraData=(
-                    serialization.deserialize_extra_data(body.category_related_fields, extra_data)
+                    serialization.deserialize_extra_data(
+                        body.category_related_fields, extra_data, venue_id=offer.venueId
+                    )
                     if "categoryRelatedFields" in updates
                     else extra_data
                 ),
