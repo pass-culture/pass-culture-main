@@ -146,7 +146,7 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({ isShowcase: false }),
         collectiveOfferFactory({
-          status: CollectiveOfferStatus.DRAFT,
+          displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
           isShowcase: false,
         }),
       ],

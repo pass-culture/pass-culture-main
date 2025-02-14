@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { CollectiveOfferStatus } from 'apiClient/v1'
+import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CollectiveOfferConfirmationScreen } from '../CollectiveOfferConfirmation'
@@ -10,7 +10,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={1}
-        offerStatus={CollectiveOfferStatus.PENDING}
+        offerStatus={CollectiveOfferDisplayedStatus.PENDING}
         isShowcase={false}
         institutionDisplayName="Collège Bellevue"
       />
@@ -25,7 +25,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={1}
-        offerStatus={CollectiveOfferStatus.ACTIVE}
+        offerStatus={CollectiveOfferDisplayedStatus.ACTIVE}
         isShowcase={false}
         institutionDisplayName="Collège Bellevue"
       />
@@ -43,7 +43,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={1}
-        offerStatus={CollectiveOfferStatus.ACTIVE}
+        offerStatus={CollectiveOfferDisplayedStatus.ACTIVE}
         isShowcase={false}
         institutionDisplayName=""
       />
@@ -66,7 +66,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={null}
-        offerStatus={CollectiveOfferStatus.ACTIVE}
+        offerStatus={CollectiveOfferDisplayedStatus.ACTIVE}
         isShowcase={true}
         institutionDisplayName=""
       />
@@ -81,7 +81,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={null}
-        offerStatus={CollectiveOfferStatus.ACTIVE}
+        offerStatus={CollectiveOfferDisplayedStatus.ACTIVE}
         isShowcase={true}
         institutionDisplayName=""
       />

@@ -6,7 +6,6 @@ import { mutate } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
-  CollectiveOfferStatus,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
   CollectiveOfferAllowedAction,
@@ -103,7 +102,7 @@ export const CollectiveEditionOfferNavigation = ({
   }
 
   const canEditOffer =
-    offer?.status !== CollectiveOfferStatus.ARCHIVED &&
+    offer?.displayedStatus !== CollectiveOfferDisplayedStatus.ARCHIVED &&
     location.pathname.includes('edition')
 
   const canPreviewOffer =
