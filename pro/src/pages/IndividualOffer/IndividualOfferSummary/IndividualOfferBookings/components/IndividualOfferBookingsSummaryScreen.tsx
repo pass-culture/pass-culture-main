@@ -105,8 +105,10 @@ export const IndividualOfferBookingsSummaryScreen = ({
           bookings !== null &&
           bookings.length && (
             <DialogBuilder
+              variant="drawer"
               onOpenChange={setIsDownloadBookingModalOpen}
               open={isDownloadBookingModalOpen}
+              title="Téléchargement de vos réservations"
               trigger={
                 <Button variant={ButtonVariant.PRIMARY}>
                   Télécharger les réservations
