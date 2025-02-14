@@ -123,14 +123,12 @@ export function DialogBuilder({
               closeButtonClassName={closeButtonClassName}
             />
             <section className={styles['dialog-builder-section']}>
-              <div>
-                {title && (
-                  <Dialog.Title asChild>
-                    <h1 className={styles['dialog-builder-title']}>{title}</h1>
-                  </Dialog.Title>
-                )}
-                {children}
-              </div>
+              {title && (
+                <Dialog.Title asChild>
+                  <h1 className={styles['dialog-builder-title']}>{title}</h1>
+                </Dialog.Title>
+              )}
+              {children}
             </section>
           </Dialog.Content>
         </Dialog.Overlay>

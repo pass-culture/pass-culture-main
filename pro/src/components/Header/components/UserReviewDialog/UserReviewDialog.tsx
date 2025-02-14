@@ -10,9 +10,11 @@ import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import fullSmsIcon from 'icons/full-sms.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import {
   IconRadioGroup,
   IconRadioGroupValues,
@@ -28,7 +30,15 @@ interface UserReviewDialogFormValues {
   userComment: string
 }
 
-export const UserReviewDialog = () => {
+export const UserReviewDialog = ({
+  dialogTrigger = (
+    <Button variant={ButtonVariant.QUATERNARY} icon={fullSmsIcon}>
+      Donner mon avis
+    </Button>
+  ),
+}: {
+  dialogTrigger?: React.ReactNode
+}) => {
   const notify = useNotification()
   const [displayConfirmation, setDisplayConfirmation] = useState<boolean>(false)
   const onSubmitReview = async (formValues: UserReviewDialogFormValues) => {
@@ -90,61 +100,75 @@ export const UserReviewDialog = () => {
   ]
 
   return (
-    <div className={styles.dialog}>
-      {!displayConfirmation ? (
-        <FormikProvider value={formik}>
-          <Form>
-            <Dialog.Title asChild>
-              <h1 className={styles['dialog-title']}>Votre avis compte !</h1>
-            </Dialog.Title>
-            <MandatoryInfo
-              areAllFieldsMandatory
-              className={styles['dialog-mandatory']}
-            />
-            <ScrollToFirstErrorAfterSubmit />
-            <IconRadioGroup
-              name="userSatisfaction"
-              legend="Comment évalueriez-vous votre expérience avec le pass Culture Pro ?"
-              group={group}
-              hideAsterisk={true}
-            />
+    <DialogBuilder
+      onOpenChange={(open) => {
+        if (!open) {
+          setDisplayConfirmation(false)
+          formik.resetForm()
+        }
+      }}
+      title={displayConfirmation ? undefined : 'Votre avis compte !'}
+      trigger={dialogTrigger}
+      variant={displayConfirmation ? 'default' : 'drawer'}
+    >
+      <div className={styles.dialog}>
+        {!displayConfirmation ? (
+          <FormikProvider value={formik}>
+            <Form className={styles['dialog-form']}>
+              <div className={styles['dialog-form-content']}>
+                <MandatoryInfo
+                  areAllFieldsMandatory
+                  className={styles['dialog-mandatory']}
+                />
+                <ScrollToFirstErrorAfterSubmit />
+                <IconRadioGroup
+                  name="userSatisfaction"
+                  legend="Comment évalueriez-vous votre expérience avec le pass Culture Pro ?"
+                  group={group}
+                  hideAsterisk
+                />
 
-            <TextArea
-              name="userComment"
-              label={
-                <>
-                  Pourriez-vous préciser ? Nous lisons tous les commentaires.
-                  <span aria-hidden="true"> 🙂</span>
-                </>
-              }
-              maxLength={500}
-              hideAsterisk={true}
-              className={styles['text-area-container']}
-            />
+                <TextArea
+                  name="userComment"
+                  label={
+                    <>
+                      Pourriez-vous préciser ? Nous lisons tous les
+                      commentaires.
+                      <span aria-hidden="true"> 🙂</span>
+                    </>
+                  }
+                  maxLength={500}
+                  hideAsterisk
+                  className={styles['text-area-container']}
+                />
+              </div>
 
-            <div className={styles['dialog-buttons']}>
-              <Dialog.Close asChild>
-                <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
-              </Dialog.Close>
-              <Button type="submit">Envoyer</Button>
+              <DialogBuilder.Footer>
+                <div className={styles['dialog-buttons']}>
+                  <Dialog.Close asChild>
+                    <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+                  </Dialog.Close>
+                  <Button type="submit">Envoyer</Button>
+                </div>
+              </DialogBuilder.Footer>
+            </Form>
+          </FormikProvider>
+        ) : (
+          <div className={styles['confirmation-dialog']}>
+            <SvgIcon
+              src={strokeValidIcon}
+              alt=""
+              className={styles['confirmation-dialog-icon']}
+            />
+            <div className={styles['confirmation-dialog-title']}>
+              Merci beaucoup de votre participation !
             </div>
-          </Form>
-        </FormikProvider>
-      ) : (
-        <div className={styles['confirmation-dialog']}>
-          <SvgIcon
-            src={strokeValidIcon}
-            alt=""
-            className={styles['confirmation-dialog-icon']}
-          />
-          <div className={styles['confirmation-dialog-title']}>
-            Merci beaucoup de votre participation !
+            <Dialog.Close asChild>
+              <Button>Fermer</Button>
+            </Dialog.Close>
           </div>
-          <Dialog.Close asChild>
-            <Button>Fermer</Button>
-          </Dialog.Close>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </DialogBuilder>
   )
 }
