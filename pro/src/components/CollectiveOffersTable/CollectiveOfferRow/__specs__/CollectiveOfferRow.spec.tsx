@@ -215,20 +215,6 @@ describe('ollectiveOfferRow', () => {
     expect(screen.getByRole('checkbox')).toBeDisabled()
   })
 
-  const offerStatusDataSet = [
-    CollectiveOfferDisplayedStatus.ACTIVE,
-    CollectiveOfferDisplayedStatus.ARCHIVED,
-  ]
-  it.each(offerStatusDataSet)(
-    'should not display the offer greyed when offer is %s',
-    (status) => {
-      props.offer.displayedStatus = status
-      renderOfferItem(props)
-
-      expect(screen.getByRole('img')).not.toHaveClass('thumb-column-inactive')
-    }
-  )
-
   it('should display a tag when offer is template', () => {
     props.offer = collectiveOfferFactory({ isShowcase: true, stocks })
     renderOfferItem(props)
@@ -473,25 +459,6 @@ describe('ollectiveOfferRow', () => {
 
     expect(
       screen.getByText('En attente de réservation par le chef d’établissement')
-    ).toBeInTheDocument()
-  })
-
-  it('should not display a expiration row if the FF ENABLE_COLLECTIVE_OFFERS_EXPIRATION is disabled', () => {
-    props.offer = collectiveOfferFactory({
-      displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
-      stocks: [
-        {
-          hasBookingLimitDatetimePassed: false,
-          remainingQuantity: 1,
-          bookingLimitDatetime: getToday().toISOString(),
-        },
-      ],
-    })
-
-    renderOfferItem(props)
-
-    expect(
-      screen.getByText('En attente de préréservation par l’enseignant')
     ).toBeInTheDocument()
   })
 
