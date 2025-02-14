@@ -261,7 +261,6 @@ def remove_siret(
     override_revenue_check: bool = False,
     new_pricing_point_id: int | None = None,
     author_user_id: int | None = None,
-    new_db_session: bool = True,
 ) -> None:
     check_can_remove_siret(venue, comment, override_revenue_check=override_revenue_check)
     old_siret = venue.siret
@@ -286,10 +285,6 @@ def remove_siret(
         new_siret = new_pricing_point_venue.siret
 
     with db.session.no_autoflush:  # do not flush anything before commit
-        if new_db_session:
-            db.session.rollback()  # discard any previous transaction to start a fresh new one.
-            db.session.begin()
-
         try:
             _force_close_custom_reimbursement_rules_for_venue(venue)
             modified_info_by_venue: dict[int, dict[str, dict]] = defaultdict(dict)
