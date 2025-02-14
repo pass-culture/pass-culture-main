@@ -83,7 +83,7 @@ export const FormOfferType = ({
               name="domains"
               hasSearch
               searchLabel="Recherche"
-              options={[{ options: domainsOptions }]}
+              options={domainsOptions}
               defaultOptions={domainsOptions.filter((option) =>
                 values.domains.includes(option.id)
               )}
@@ -107,7 +107,7 @@ export const FormOfferType = ({
         )}
         <FormLayout.Row>
           <MultiSelect
-            options={[{ options: eacFormatOptions }]}
+            options={eacFormatOptions}
             defaultOptions={eacFormatOptions.filter((option) =>
               values.formats?.includes(option.id)
             )}
