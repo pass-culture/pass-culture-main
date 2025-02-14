@@ -9,11 +9,16 @@ import {
   DEFAULT_MARSEILLE_STUDENTS,
   SENT_DATA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
-import { domtomOptions, mainlandOptions, venueInterventionOptions } from 'commons/core/shared/interventionOptions'
+import {
+  mainlandOptions,
+  offerInterventionOptions,
+  venueInterventionOptions,
+} from 'commons/core/shared/interventionOptions'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { MAINLAND_OPTION_VALUE } from 'pages/AdageIframe/app/constants/departmentOptions'
 import { RouteLeavingGuardVenueEdition } from 'pages/VenueEdition/RouteLeavingGuardVenueEdition'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -117,7 +122,7 @@ export const CollectiveDataForm = ({
                   <MultiSelect
                     name="collectiveStudents"
                     label="Public cible"
-                    options={[{ options: studentOptions }]}
+                    options={studentOptions}
                     defaultOptions={studentOptions.filter((option) =>
                       formik.values.collectiveStudents.includes(option.label)
                     )}
@@ -131,11 +136,16 @@ export const CollectiveDataForm = ({
                       ])
                     }
                     buttonLabel="Public cible"
-                    isOptional
-                    onBlur={() => formik.setFieldTouched('collectiveStudents', true)}
-                    showError={formik.touched.collectiveStudents && !!formik.errors.collectiveStudents}
+                    onBlur={() =>
+                      formik.setFieldTouched('collectiveStudents', true)
+                    }
+                    showError={
+                      formik.touched.collectiveStudents &&
+                      !!formik.errors.collectiveStudents
+                    }
                     error={
-                      formik.touched.collectiveStudents && formik.errors.collectiveStudents
+                      formik.touched.collectiveStudents &&
+                      formik.errors.collectiveStudents
                         ? String(formik.errors.collectiveStudents)
                         : undefined
                     }
@@ -163,7 +173,7 @@ export const CollectiveDataForm = ({
                   <MultiSelect
                     name="collectiveDomains"
                     label="Domaine artistique et culturel"
-                    options={[{ options: domains }]}
+                    options={domains}
                     defaultOptions={domains.filter((option) =>
                       formik.values.collectiveDomains.includes(option.id)
                     )}
@@ -175,11 +185,16 @@ export const CollectiveDataForm = ({
                       ])
                     }
                     buttonLabel="Domaines artistiques"
-                    isOptional
-                    onBlur={() => formik.setFieldTouched('collectiveDomains', true)}
-                    showError={formik.touched.collectiveDomains && !!formik.errors.collectiveDomains}
+                    onBlur={() =>
+                      formik.setFieldTouched('collectiveDomains', true)
+                    }
+                    showError={
+                      formik.touched.collectiveDomains &&
+                      !!formik.errors.collectiveDomains
+                    }
                     error={
-                      formik.touched.collectiveDomains && formik.errors.collectiveDomains
+                      formik.touched.collectiveDomains &&
+                      formik.errors.collectiveDomains
                         ? String(formik.errors.collectiveDomains)
                         : undefined
                     }
@@ -190,16 +205,10 @@ export const CollectiveDataForm = ({
                   <MultiSelect
                     name="collectiveInterventionArea"
                     label="Zone de mobilité"
-                    options={[
-                      {
-                        options: mainlandOptions,
-                        hasSelectAllOptions: true,
-                        selectAllLabel: 'France métropolitaine',
-                      },
-                      {
-                        options: domtomOptions,
-                      },
-                    ]}
+                    options={offerInterventionOptions}
+                    selectedOptions={offerInterventionOptions.filter((op) =>
+                      formik.values.collectiveInterventionArea.includes(op.id)
+                    )}
                     defaultOptions={venueInterventionOptions.filter((option) =>
                       formik.values.collectiveInterventionArea.includes(
                         option.label
@@ -208,19 +217,68 @@ export const CollectiveDataForm = ({
                     hasSelectAllOptions
                     hasSearch
                     searchLabel="Zone de mobilité"
-                    onSelectedOptionsChanged={(selectedOption) =>
-                      formik.setFieldValue('collectiveInterventionArea', [
-                        ...selectedOption.map(
-                          (interventionArea) => interventionArea.id
-                        ),
-                      ])
-                    }
+                    onSelectedOptionsChanged={(
+                      selectedOption,
+                      addedOptions,
+                      removedOptions
+                    ) => {
+                      const newSelectedOptions = new Set(
+                        selectedOption.map((op) => op.id)
+                      )
+
+                      if (
+                        addedOptions.map((op) => op.id).includes('mainland')
+                      ) {
+                        //  If mainland is selected, check all mainland depatments
+                        for (const mainlandOp of mainlandOptions) {
+                          newSelectedOptions.add(String(mainlandOp.id))
+                        }
+                      }
+                      if (
+                        removedOptions.map((op) => op.id).includes('mainland')
+                      ) {
+                        //  If mainland is removed, uncheck all mainland departments
+                        for (const mainlandOp of mainlandOptions) {
+                          newSelectedOptions.delete(String(mainlandOp.id))
+                        }
+                      }
+
+                      if (
+                        removedOptions
+                          .map((op) => op.id)
+                          .some((removedOp) =>
+                            mainlandOptions
+                              .map((op) => op.id)
+                              .includes(removedOp)
+                          )
+                      ) {
+                        //  If a mainland department is not selected, remove the mainland from selected options
+                        newSelectedOptions.delete('mainland')
+                      }
+
+                      if (
+                        !newSelectedOptions.has('mainland') && mainlandOptions.every(option => newSelectedOptions.has(option.id))
+                      ) {
+                          newSelectedOptions.add(String(MAINLAND_OPTION_VALUE))
+                      }
+                      
+                      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                      formik.setFieldValue(
+                        'collectiveInterventionArea',
+                        Array.from(newSelectedOptions)
+                      )
+                    }}
                     buttonLabel="Zone de mobilité"
-                    isOptional
-                    onBlur={() => formik.setFieldTouched('collectiveDomains', true)}
-                    showError={formik.touched.collectiveInterventionArea && !!formik.errors.collectiveInterventionArea}
+                    onBlur={() =>
+                      formik.setFieldTouched('collectiveDomains', true)
+                    }
+                    showError={
+                      formik.touched.collectiveInterventionArea &&
+                      !!formik.errors.collectiveInterventionArea
+                    }
                     error={
-                      formik.touched.collectiveInterventionArea && formik.errors.collectiveInterventionArea
+                      formik.touched.collectiveInterventionArea &&
+                      formik.errors.collectiveInterventionArea
                         ? String(formik.errors.collectiveInterventionArea)
                         : undefined
                     }
