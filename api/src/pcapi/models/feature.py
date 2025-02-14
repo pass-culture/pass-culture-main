@@ -112,7 +112,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
-    WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
     WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
     WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE = "Activer l'association des offres collectives à des adresses."
     WIP_EAN_CREATION = "Activer la création d'offre par EAN"
@@ -209,7 +208,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
-    FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
     FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING,
     FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
