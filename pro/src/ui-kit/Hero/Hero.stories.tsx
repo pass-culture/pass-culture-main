@@ -11,7 +11,6 @@ export default {
 
 export const Default: StoryObj<typeof Hero> = {
   args: {
-    title: 'Mon titre',
     text: 'Une petite explication',
     linkLabel: 'cliquez-moi !',
     linkTo: '/',

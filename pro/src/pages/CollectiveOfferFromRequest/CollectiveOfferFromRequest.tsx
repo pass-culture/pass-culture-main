@@ -68,14 +68,11 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   }
 
   return (
-    <Layout>
+    <Layout mainHeading='Récapitulatif de la demande'>
       {isLoading || !informations ? (
         <Spinner />
       ) : (
         <>
-          <div className={styles['eac-section']}>
-            <h1 className={styles['title']}>Récapitulatif de la demande</h1>
-          </div>
           <div className={styles['eac-section']}>
             Vous avez reçu une demande de création d’offres de la part d’un
             établissement scolaire. Vous pouvez créer une offre à partir des

@@ -141,11 +141,10 @@ export const SignIn = (): JSX.Element => {
   return shouldRedirect ? (
     <Navigate to="/" replace />
   ) : (
-    <Layout layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}>
-      <h1 className={styles['title']}>
-        Bienvenue sur l’espace partenaires culturels
-      </h1>
-
+    <Layout
+      layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}
+      mainHeading='Bienvenue sur l’espace partenaires culturels'
+    >
       <div className={styles['mandatory']}>
         Tous les champs suivis d’un * sont obligatoires.
       </div>

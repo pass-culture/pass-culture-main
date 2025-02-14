@@ -11,7 +11,7 @@ export const Bookings = (): JSX.Element => {
   const location = useLocation()
 
   return (
-    <Layout>
+    <Layout mainHeading='Réservations individuelles'>
       <BookingsContainer
         audience={Audience.INDIVIDUAL}
         getFilteredBookingsAdapter={getFilteredIndividualBookingsAdapter}

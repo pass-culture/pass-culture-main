@@ -37,15 +37,18 @@ export const ResetPassword = (): JSX.Element => {
     validationSchema: validationSchema,
   })
 
+  const mainHeading = (passwordChanged && !isBadToken) ? 'Mot de passe changé !' :
+    (!token || isBadToken) ? 'Ce lien a expiré !' :
+    'Définit un nouveau mot de passe'
+
   return (
-    <Layout layout="logged-out">
+    <Layout layout="logged-out" mainHeading={mainHeading}>
       <div>
         {passwordChanged && !isBadToken && (
           <Hero
             linkLabel="Se connecter"
             linkTo="/connexion"
             text="Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe"
-            title="Mot de passe changé !"
           />
         )}
         {(!token || isBadToken) && (
@@ -53,7 +56,6 @@ export const ResetPassword = (): JSX.Element => {
             linkLabel="Recevoir un nouveau lien"
             linkTo="/demande-mot-de-passe"
             text="Le lien pour réinitialiser votre mot de passe a expiré. Veuillez recommencer la procédure pour recevoir un nouveau lien par email."
-            title="Ce lien a expiré !"
           />
         )}
         {token && !passwordChanged && !isBadToken && (

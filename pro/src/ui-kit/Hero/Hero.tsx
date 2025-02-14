@@ -8,10 +8,6 @@ import styles from './Hero.module.scss'
  */
 interface HeroProps {
   /**
-   * The title of the hero section.
-   */
-  title: string
-  /**
    * The text content for the hero section.
    */
   text: string
@@ -38,7 +34,6 @@ interface HeroProps {
  *
  * @example
  * <Hero
- *   title="Welcome to Our Platform"
  *   text="We provide the best solutions for your needs."
  *   linkLabel="Get Started"
  *   linkTo="/get-started"
@@ -49,14 +44,12 @@ interface HeroProps {
  * - **Button Label**: Ensure the button label (`linkLabel`) is descriptive to indicate the action it performs.
  */
 export const Hero = ({
-  title,
   text,
   linkLabel,
   linkTo,
 }: HeroProps): JSX.Element => (
   <section className={styles['hero']}>
     <div className={styles['hero-body']}>
-      <h1 className={styles['title']}>{title}</h1>
       <h2 className={styles['subtitle']}>{text}</h2>
       <ButtonLink variant={ButtonVariant.PRIMARY} to={linkTo}>
         {linkLabel}

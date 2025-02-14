@@ -10,8 +10,7 @@ export const Sitemap = () => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   return (
-    <Layout>
-      <h1 className={styles['title']}>Plan du site</h1>
+    <Layout mainHeading='Plan du site'>
       <ul className={styles['sitemap-list']} data-testid="sitemap">
         <li className={styles['sitemap-list-item']}>
           <Link

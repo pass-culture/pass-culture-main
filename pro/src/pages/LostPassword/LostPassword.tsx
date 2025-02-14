@@ -40,13 +40,12 @@ export const LostPassword = (): JSX.Element => {
   }
 
   return (
-    <Layout layout="logged-out">
+    <Layout layout="logged-out" mainHeading='Merci !'>
       {mailSent ? (
         <Hero
           linkLabel="Retourner sur la page de connexion"
           linkTo="/"
           text="Vous allez recevoir par email les instructions pour définir un nouveau mot de passe."
-          title="Merci !"
         />
       ) : (
         <Formik
