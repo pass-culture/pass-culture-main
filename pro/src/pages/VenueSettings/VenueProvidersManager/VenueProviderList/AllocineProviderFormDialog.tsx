@@ -1,5 +1,3 @@
-import * as Dialog from '@radix-ui/react-dialog'
-
 import { PostVenueProviderBody } from 'apiClient/v1'
 
 import {
@@ -26,11 +24,6 @@ export const AllocineProviderFormDialog = ({
 }: AllocineProviderFormDialogProps) => {
   return (
     <div className={styles['allocine-provider-form-dialog']}>
-      <Dialog.Title asChild>
-        <h1 className={styles['title']}>
-          <strong>Modifier les paramètres de mes offres</strong>
-        </h1>
-      </Dialog.Title>
       <div className={styles['explanation']}>
         Les modifications s’appliqueront uniquement aux nouvelles offres créées.
         La modification doit être faite manuellement pour les offres existantes.
