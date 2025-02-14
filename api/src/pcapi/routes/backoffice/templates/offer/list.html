@@ -72,16 +72,19 @@
                     data-use-confirmation-modal="true">Éditer les offres</button>
           </div>
         </div>
-        <table class="table mb-4"
+        <table class="table mb-4{% if is_feature_active("WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION") %} pc-table-manager d-none{% endif %}"
+               data-pc-table-manager-id="offer-table"
                data-table-multi-select-id="table-individual-offers-multiselect">
           <thead>
             <tr>
-              <th scope="col">
+              <th scope="col"
+                  data-pc-column-name="Checkbox">
                 <input type="checkbox"
                        class="form-check-input"
                        name="pc-table-multi-select-check-all" />
               </th>
-              <th scope="col"></th>
+              <th scope="col"
+                  data-pc-column-name="Menu"></th>
               <th scope="col">ID</th>
               <th scope="col">Nom de l'offre</th>
               <th scope="col">Catégorie</th>
@@ -100,7 +103,10 @@
               {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Tag</th>{% endif %}
               <th scope="col">Date(s) de l'évènement</th>
               {% if not has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Créateur de l'offre</th>{% endif %}
-              {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Pond.</th>{% endif %}
+              {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
+                <th data-pc-column-name="Pondération"
+                    scope="col">Pond.</th>
+              {% endif %}
               <th scope="col">État</th>
               <th scope="col">
                 {% if date_created_sort_url %}
@@ -115,10 +121,12 @@
                 {% endif %}
               </th>
               <th scope="col">Dernière validation</th>
-              <th scope="col">Dép.</th>
+              <th scope="col"
+                  data-pc-column-name="Département">Dép.</th>
               <th scope="col">Entité juridique</th>
               <th scope="col">Partenaire culturel</th>
-              <th scope="col">{# icon #}</th>
+              <th scope="col"
+                  data-pc-column-name="Voir les autres">{# icon #}</th>
             </tr>
           </thead>
           <tbody>
