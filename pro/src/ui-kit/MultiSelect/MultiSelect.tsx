@@ -25,6 +25,8 @@ export type Option = {
 type MultiSelectProps = {
   /** Array of available options */
   options: Option[]
+  /** Array of available options */
+  selectedOptions?: Option[]
   /** Array of initially selected options */
   defaultOptions?: Option[]
   /** Label for the MultiSelect field */
@@ -34,13 +36,20 @@ type MultiSelectProps = {
   /** Whether the MultiSelect is disabled */
   disabled?: boolean
   /** Callback function called when selected options change */
-  onSelectedOptionsChanged: (options: Option[]) => void
+  onSelectedOptionsChanged: (
+    selectedOptions: Option[],
+    addedOptions: Option[],
+    removedOptions: Option[]
+  ) => void
   /** Error message to display */
   error?: string
   /** Name attribute for the form field */
   name: string
   /** Label for the dropdown button */
   buttonLabel: string
+  isOptional?: boolean
+  showError?: boolean
+  onBlur?: () => void
 } & (
   | {
       /**
@@ -77,7 +86,7 @@ type MultiSelectProps = {
  *   label="Select Options"
  *   buttonLabel="Options"
  *   name="multiSelect"
- *   onSelectedOptionsChanged={(selectedOptions) => console.log(selectedOptions)}
+ *   onSelectedOptionsChanged={({selectedOptions, addedOptions, removedOptions}) => console.log(selectedOptions, addedOptions, removedOptions)}
  *   hasSearch={true}
  *   searchLabel="Search options"
  * />
@@ -91,6 +100,7 @@ type MultiSelectProps = {
  */
 export const MultiSelect = ({
   options,
+  selectedOptions,
   defaultOptions = [],
   hasSearch = false,
   searchLabel,
@@ -101,6 +111,9 @@ export const MultiSelect = ({
   error,
   name,
   buttonLabel,
+  isOptional = false,
+  showError = false,
+  onBlur,
 }: MultiSelectProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedItems, setSelectedItems] = useState<Option[]>(defaultOptions)
@@ -111,9 +124,30 @@ export const MultiSelect = ({
 
   const toggleDropdown = () => setIsOpen((prev) => !prev)
 
+  useEffect(() => {
+    if (selectedOptions) {
+      setSelectedItems(selectedOptions)
+    }
+  }, [selectedOptions])
+
   function updateSelectedItems(updatedSelectedItems: Option[]) {
+    const currentIds = new Set(selectedItems.map((item) => item.id))
+    const updatedIds = new Set(updatedSelectedItems.map((item) => item.id))
+
+    const removedOptionsIds = new Set(
+      [...currentIds].filter((id) => !updatedIds.has(id))
+    )
+
+    const addedOptionsIds = new Set(
+      [...updatedIds].filter((id) => !currentIds.has(id))
+    )
+
+    onSelectedOptionsChanged(
+      updatedSelectedItems,
+      options.filter((op) => addedOptionsIds.has(op.id)),
+      options.filter((op) => removedOptionsIds.has(op.id))
+    )
     setSelectedItems(updatedSelectedItems)
-    onSelectedOptionsChanged(updatedSelectedItems)
   }
 
   const handleSelectItem = (item: Option) => {
@@ -151,8 +185,14 @@ export const MultiSelect = ({
   useOnClickOrFocusOutside(containerRef, () => setIsOpen(false))
 
   return (
-    <FieldLayout label={label} name={name} error={error} showError={!!error}>
-      <fieldset className={styles.container}>
+    <FieldLayout
+      label={label}
+      name={name}
+      error={error}
+      showError={showError}
+      isOptional={isOptional}
+    >
+      <fieldset className={styles.container} onBlur={onBlur}>
         <div ref={containerRef}>
           <MultiSelectTrigger
             id={id}

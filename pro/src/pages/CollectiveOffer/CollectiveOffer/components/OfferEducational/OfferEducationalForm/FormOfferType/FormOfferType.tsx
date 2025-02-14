@@ -15,17 +15,17 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Select } from 'ui-kit/form/Select/Select'
-import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 import { getNationalProgramsForDomains } from '../../constants/getNationalProgramsForDomains'
 import styles from '../OfferEducationalForm.module.scss'
 
 export interface FormTypeProps {
-  domainsOptions: SelectOption[]
+  domainsOptions: Option[]
   nationalPrograms: SelectOption<number>[]
   disableForm: boolean
   isTemplate: boolean
@@ -37,11 +37,12 @@ export const FormOfferType = ({
   disableForm,
   isTemplate,
 }: FormTypeProps): JSX.Element => {
-  const { values } = useFormikContext<OfferEducationalFormValues>()
+  const { values, setFieldValue, setFieldTouched, touched, errors } =
+    useFormikContext<OfferEducationalFormValues>()
   const { logEvent } = useAnalytics()
 
   const eacFormatOptions = Object.entries(EacFormat).map(([, value]) => ({
-    value: value,
+    id: value,
     label: String(value),
   }))
 
@@ -77,22 +78,57 @@ export const FormOfferType = ({
       >
         {domainsOptions.length > 0 && (
           <FormLayout.Row>
-            <SelectAutocomplete
-              multi
+            <MultiSelect
               label="Ajoutez un ou plusieurs domaines artistiques"
               name="domains"
+              hasSearch
+              searchLabel="Recherche"
               options={domainsOptions}
+              defaultOptions={domainsOptions.filter((option) =>
+                values.domains.includes(option.id)
+              )}
+              buttonLabel="Domaines artistiques"
+              onSelectedOptionsChanged={async (selectedOptions) => {
+                await setFieldValue('domains', [
+                  ...selectedOptions.map((elm) => Number(elm.id)),
+                ])
+                await setFieldTouched('domains', true)
+              }}
+              onBlur={() => setFieldTouched('domains', true)}
               disabled={disableForm}
+              showError={touched.domains && !!errors.domains}
+              error={
+                touched.domains && errors.domains
+                  ? String(errors.domains)
+                  : undefined
+              }
             />
           </FormLayout.Row>
         )}
         <FormLayout.Row>
-          <SelectAutocomplete
-            multi
+          <MultiSelect
             options={eacFormatOptions}
+            defaultOptions={eacFormatOptions.filter((option) =>
+              values.formats?.includes(option.id)
+            )}
             label="Ajoutez un ou plusieurs formats"
+            buttonLabel="Formats"
+            hasSearch
+            searchLabel="Recherche"
             name="formats"
+            onSelectedOptionsChanged={(selectedOptions) =>
+              setFieldValue('formats', [
+                ...selectedOptions.map((elm) => elm.id),
+              ])
+            }
             disabled={disableForm}
+            onBlur={() => setFieldTouched('formats', true)}
+            showError={touched.formats && !!errors.formats}
+            error={
+              touched.formats && errors.formats
+                ? String(errors.formats)
+                : undefined
+            }
           />
         </FormLayout.Row>
 

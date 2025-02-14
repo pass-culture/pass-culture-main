@@ -12,6 +12,7 @@ import { SelectOption } from 'commons/custom_types/form'
 import { getLastCollectiveDmsApplication } from 'commons/utils/getLastCollectiveDmsApplication'
 import { PartnerPageCollectiveSection } from 'pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageCollectiveSection'
 import { Callout } from 'ui-kit/Callout/Callout'
+import { Option } from 'ui-kit/MultiSelect/MultiSelect'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { CollectiveDmsTimeline } from '../CollectiveDmsTimeline/CollectiveDmsTimeline'
@@ -40,14 +41,14 @@ export const CollectiveDataEdition = ({
     () => api.getVenuesEducationalStatuses()
   )
 
-  const domains: SelectOption[] =
+  const domains: Option[] =
     domainsQuery.data?.map((domain) => ({
-      value: domain.id.toString(),
+      id: domain.id.toString(),
       label: domain.name,
     })) ?? []
   const statuses: SelectOption[] =
     educationalStatusesQuery.data?.statuses.map((status) => ({
-      value: status.id,
+      value: status.id.toString(),
       label: status.name,
     })) ?? []
 

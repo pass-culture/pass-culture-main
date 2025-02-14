@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { MultiSelect } from '../MultiSelect'
+import { MultiSelect, Option } from '../MultiSelect'
 
 describe('<MultiSelect />', () => {
   const options = [
@@ -13,14 +13,17 @@ describe('<MultiSelect />', () => {
 
   const renderMultiSelect = ({
     hasSelectAllOptions = false,
+    options,
   }: {
     hasSelectAllOptions?: boolean
-  } = {}) => {
+    options: Option[]
+  }) => {
     const defaultOptions = [{ id: '1', label: 'Option 1' }]
 
     return render(
       <MultiSelect
         options={options}
+        selectedOptions={options}
         label="Select Options"
         defaultOptions={defaultOptions}
         hasSearch={false}
@@ -35,13 +38,13 @@ describe('<MultiSelect />', () => {
   }
 
   it('should render correctly', () => {
-    renderMultiSelect()
+    renderMultiSelect({ options })
 
     expect(screen.getByRole('button', { name: 'Options' })).toBeInTheDocument()
   })
 
   it('should not have accessibility violations', async () => {
-    const { container } = renderMultiSelect()
+    const { container } = renderMultiSelect({ options })
 
     expect(await axe(container)).toHaveNoViolations()
 
@@ -52,7 +55,7 @@ describe('<MultiSelect />', () => {
   })
 
   it('renders the MultiSelect component with the correct initial selected options', () => {
-    renderMultiSelect()
+    renderMultiSelect({ options })
 
     const selectedTag = screen.getByRole('button', {
       name: 'Supprimer Option 1',
@@ -62,7 +65,7 @@ describe('<MultiSelect />', () => {
   })
 
   it('toggles the dropdown when the trigger is clicked', async () => {
-    renderMultiSelect({ hasSelectAllOptions: true })
+    renderMultiSelect({ hasSelectAllOptions: true, options })
 
     const toggleButton = screen.getByRole('button', { name: 'Options' })
     await userEvent.click(toggleButton)
@@ -79,7 +82,7 @@ describe('<MultiSelect />', () => {
   })
 
   it('selects all options when "Select All" is clicked', async () => {
-    renderMultiSelect({ hasSelectAllOptions: true })
+    renderMultiSelect({ hasSelectAllOptions: true, options })
 
     const toggleButton = screen.getByRole('button', { name: 'Options' })
     await userEvent.click(toggleButton)
@@ -90,13 +93,13 @@ describe('<MultiSelect />', () => {
 
     await userEvent.click(selectAllCheckbox)
 
-    options.forEach((option) => {
-      expect(screen.getByLabelText(option.label)).toBeChecked()
+     options.forEach(async (option) => {
+      await waitFor(() => expect(screen.getByLabelText(option.label)).toBeChecked())
     })
   })
 
   it('removes an option from the selected items when clicked in SelectedValuesTags', async () => {
-    renderMultiSelect()
+    renderMultiSelect({ options })
 
     const selectedTag = screen.getByRole('button', {
       name: 'Supprimer Option 1',
@@ -108,7 +111,7 @@ describe('<MultiSelect />', () => {
   })
 
   it('closes the dropdown when clicked outside or when Escape key is pressed', async () => {
-    renderMultiSelect()
+    renderMultiSelect({ options })
 
     const toggleButton = screen.getByRole('button', { name: 'Options' })
     toggleButton.focus()
@@ -130,7 +133,7 @@ describe('<MultiSelect />', () => {
   })
 
   it('should toggle dropdown with keyboard accessibility', async () => {
-    renderMultiSelect({ hasSelectAllOptions: true })
+    renderMultiSelect({ hasSelectAllOptions: true, options })
 
     const toggleButton = screen.getByRole('button', { name: 'Options' })
     toggleButton.focus()

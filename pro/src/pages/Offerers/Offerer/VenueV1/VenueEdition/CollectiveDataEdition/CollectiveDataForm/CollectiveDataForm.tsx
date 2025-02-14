@@ -1,5 +1,4 @@
 import { FormikProvider, useFormik } from 'formik'
-import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -10,21 +9,25 @@ import {
   DEFAULT_MARSEILLE_STUDENTS,
   SENT_DATA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
-import { venueInterventionOptions } from 'commons/core/shared/interventionOptions'
-import { handleAllFranceDepartmentOptions } from 'commons/core/shared/utils/handleAllFranceDepartmentOptions'
+import {
+  mainlandOptions,
+  offerInterventionOptions,
+  venueInterventionOptions,
+} from 'commons/core/shared/interventionOptions'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { MAINLAND_OPTION_VALUE } from 'pages/AdageIframe/app/constants/departmentOptions'
 import { RouteLeavingGuardVenueEdition } from 'pages/VenueEdition/RouteLeavingGuardVenueEdition'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from 'ui-kit/form/Select/Select'
-import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 import styles from './CollectiveDataForm.module.scss'
 import { CollectiveDataFormValues } from './type'
@@ -33,12 +36,12 @@ import { validationSchema } from './validationSchema'
 
 type CollectiveDataFormProps = {
   statuses: SelectOption[]
-  domains: SelectOption[]
+  domains: Option[]
   venue: GetVenueResponseModel
 }
 
-const studentLevels = Object.entries(StudentLevels).map(([, value]) => ({
-  value,
+const studentLevels = Object.entries(StudentLevels).map(([id, value]) => ({
+  id,
   label: value,
 }))
 
@@ -52,9 +55,6 @@ export const CollectiveDataForm = ({
 
   const { mutate } = useSWRConfig()
 
-  const [previousInterventionValues, setPreviousInterventionValues] = useState<
-    string[] | null
-  >(null)
   const initialValues = extractInitialValuesFromVenue(venue)
 
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
@@ -63,7 +63,7 @@ export const CollectiveDataForm = ({
   const studentOptions = isMarseilleEnabled
     ? studentLevels
     : studentLevels.filter(
-        (level) => !DEFAULT_MARSEILLE_STUDENTS.includes(level.value)
+        (level) => !DEFAULT_MARSEILLE_STUDENTS.includes(level.label)
       )
 
   const onSubmit = async (values: CollectiveDataFormValues) => {
@@ -94,17 +94,6 @@ export const CollectiveDataForm = ({
     validationSchema,
   })
 
-  useEffect(() => {
-    handleAllFranceDepartmentOptions(
-      formik.values.collectiveInterventionArea,
-      previousInterventionValues,
-      (value: string[]) =>
-        formik.setFieldValue('collectiveInterventionArea', value)
-    )
-
-    setPreviousInterventionValues(formik.values.collectiveInterventionArea)
-  }, [formik.values.collectiveInterventionArea])
-
   return (
     <>
       <FormikProvider value={formik}>
@@ -130,13 +119,36 @@ export const CollectiveDataForm = ({
                 </FormLayout.Row>
 
                 <FormLayout.Row>
-                  <SelectAutocomplete
-                    multi
+                  <MultiSelect
                     name="collectiveStudents"
                     label="Public cible"
                     options={studentOptions}
-                    hideTags
-                    isOptional
+                    defaultOptions={studentOptions.filter((option) =>
+                      formik.values.collectiveStudents.includes(option.label)
+                    )}
+                    hasSearch
+                    searchLabel="Public cible"
+                    onSelectedOptionsChanged={(selectedOption) =>
+                      formik.setFieldValue('collectiveStudents', [
+                        ...selectedOption.map(
+                          (studentLevel) => studentLevel.label
+                        ),
+                      ])
+                    }
+                    buttonLabel="Public cible"
+                    onBlur={() =>
+                      formik.setFieldTouched('collectiveStudents', true)
+                    }
+                    showError={
+                      formik.touched.collectiveStudents &&
+                      !!formik.errors.collectiveStudents
+                    }
+                    error={
+                      formik.touched.collectiveStudents &&
+                      formik.errors.collectiveStudents
+                        ? String(formik.errors.collectiveStudents)
+                        : undefined
+                    }
                   />
                 </FormLayout.Row>
 
@@ -158,24 +170,118 @@ export const CollectiveDataForm = ({
                 }
               >
                 <FormLayout.Row>
-                  <SelectAutocomplete
-                    multi
-                    hideTags
-                    options={domains}
+                  <MultiSelect
                     name="collectiveDomains"
                     label="Domaine artistique et culturel"
-                    isOptional
+                    options={domains}
+                    defaultOptions={domains.filter((option) =>
+                      formik.values.collectiveDomains.includes(option.id)
+                    )}
+                    hasSearch
+                    searchLabel="Domaines artistiques et culturel"
+                    onSelectedOptionsChanged={(selectedOption) =>
+                      formik.setFieldValue('collectiveDomains', [
+                        ...selectedOption.map((domain) => domain.id),
+                      ])
+                    }
+                    buttonLabel="Domaines artistiques"
+                    onBlur={() =>
+                      formik.setFieldTouched('collectiveDomains', true)
+                    }
+                    showError={
+                      formik.touched.collectiveDomains &&
+                      !!formik.errors.collectiveDomains
+                    }
+                    error={
+                      formik.touched.collectiveDomains &&
+                      formik.errors.collectiveDomains
+                        ? String(formik.errors.collectiveDomains)
+                        : undefined
+                    }
                   />
                 </FormLayout.Row>
 
                 <FormLayout.Row>
-                  <SelectAutocomplete
-                    multi
-                    hideTags
-                    options={venueInterventionOptions}
+                  <MultiSelect
                     name="collectiveInterventionArea"
                     label="Zone de mobilité"
-                    isOptional
+                    options={offerInterventionOptions}
+                    selectedOptions={offerInterventionOptions.filter((op) =>
+                      formik.values.collectiveInterventionArea.includes(op.id)
+                    )}
+                    defaultOptions={venueInterventionOptions.filter((option) =>
+                      formik.values.collectiveInterventionArea.includes(
+                        option.label
+                      )
+                    )}
+                    hasSelectAllOptions
+                    hasSearch
+                    searchLabel="Zone de mobilité"
+                    onSelectedOptionsChanged={(
+                      selectedOption,
+                      addedOptions,
+                      removedOptions
+                    ) => {
+                      const newSelectedOptions = new Set(
+                        selectedOption.map((op) => op.id)
+                      )
+
+                      if (
+                        addedOptions.map((op) => op.id).includes('mainland')
+                      ) {
+                        //  If mainland is selected, check all mainland depatments
+                        for (const mainlandOp of mainlandOptions) {
+                          newSelectedOptions.add(String(mainlandOp.id))
+                        }
+                      }
+                      if (
+                        removedOptions.map((op) => op.id).includes('mainland')
+                      ) {
+                        //  If mainland is removed, uncheck all mainland departments
+                        for (const mainlandOp of mainlandOptions) {
+                          newSelectedOptions.delete(String(mainlandOp.id))
+                        }
+                      }
+
+                      if (
+                        removedOptions
+                          .map((op) => op.id)
+                          .some((removedOp) =>
+                            mainlandOptions
+                              .map((op) => op.id)
+                              .includes(removedOp)
+                          )
+                      ) {
+                        //  If a mainland department is not selected, remove the mainland from selected options
+                        newSelectedOptions.delete('mainland')
+                      }
+
+                      if (
+                        !newSelectedOptions.has('mainland') && mainlandOptions.every(option => newSelectedOptions.has(option.id))
+                      ) {
+                          newSelectedOptions.add(String(MAINLAND_OPTION_VALUE))
+                      }
+                      
+                      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                      formik.setFieldValue(
+                        'collectiveInterventionArea',
+                        Array.from(newSelectedOptions)
+                      )
+                    }}
+                    buttonLabel="Zone de mobilité"
+                    onBlur={() =>
+                      formik.setFieldTouched('collectiveDomains', true)
+                    }
+                    showError={
+                      formik.touched.collectiveInterventionArea &&
+                      !!formik.errors.collectiveInterventionArea
+                    }
+                    error={
+                      formik.touched.collectiveInterventionArea &&
+                      formik.errors.collectiveInterventionArea
+                        ? String(formik.errors.collectiveInterventionArea)
+                        : undefined
+                    }
                   />
                 </FormLayout.Row>
 
