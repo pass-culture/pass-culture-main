@@ -9,7 +9,7 @@ import { isOfferEducational } from 'commons/core/OfferEducational/types'
 import styles from 'styles/components/Cells.module.scss'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 
-import { CELLS_DEFINITIONS } from '../utils/cellDefinitions'
+import { CELLS_DEFINITIONS } from '../../OffersTable/utils/cellDefinitions'
 
 export const ThumbCell = ({
   offer,
