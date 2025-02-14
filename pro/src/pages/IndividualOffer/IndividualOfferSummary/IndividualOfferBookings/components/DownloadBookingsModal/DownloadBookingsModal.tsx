@@ -19,6 +19,7 @@ import strokeDeskIcon from 'icons/stroke-desk.svg'
 import { daysOfWeek } from 'pages/VenueEdition/OpeningHoursForm/OpeningHoursForm'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { BaseRadio } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
 
@@ -122,88 +123,83 @@ export const DownloadBookingsModal = ({
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className={style['container']}>
-        <Dialog.Title asChild>
-          <h1 id="download-bookings-modal" className={style['header']}>
-            Téléchargement de vos réservations
-          </h1>
-        </Dialog.Title>
-        <fieldset className={style['date-select-section']}>
-          {priceCategoryAndScheduleCountByDate.length === 1 ? (
-            <h2 className={style['one-booking-date-section']}>
-              Date de votre évènement :{' '}
-              {format(
-                new Date(priceCategoryAndScheduleCountByDate[0].eventDate),
-                FORMAT_DD_MM_YYYY
-              )}
-            </h2>
-          ) : (
-            <>
-              <legend>
-                <div>Sélectionnez la date :</div>
-              </legend>
-              <div className={style['bookings-date-count']}>
-                {pluralize(priceCategoryAndScheduleCountByDate.length, 'date')}
-              </div>
-              <hr className={style['horizontal-line']} />
-              <table className={style['date-select-table']}>
-                <thead className={style['date-select-table-header']}>
-                  <tr>
-                    <th scope="col" className={style['table-header']}>
-                      Date
-                    </th>
-                    <th className={style['table-header']} scope="col">
-                      Horaires
-                    </th>
-                    <th className={style['table-header']} scope="col">
-                      Tarifs
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {priceCategoryAndScheduleCountByDate.map((date) =>
-                    createDateRow(
-                      date.eventDate,
-                      date.scheduleCount,
-                      date.priceCategoriesCount
-                    )
-                  )}
-                </tbody>
-              </table>
-              <hr className={style['horizontal-line']} />
-            </>
-          )}
-        </fieldset>
-        <fieldset>
-          <legend>
-            <div>Sélectionnez le type de réservations :</div>
-          </legend>
-          <div className={style['bookings-radio-buttons']}>
-            <RadioButtonWithImage
-              className={style['bookings-radio-buttons-validated']}
-              name="select-bookings-type"
-              icon={strokeDeskIcon}
-              label="Réservations confirmées et validées uniquement"
-              description="Les réservations au statut confirmées et validées ne sont plus annulables par les bénéficiaires."
-              isChecked={bookingsType === BookingsExportStatusFilter.VALIDATED}
-              onChange={() =>
-                setBookingsType(BookingsExportStatusFilter.VALIDATED)
-              }
-              value={BookingsExportStatusFilter.VALIDATED}
-            />
-            <RadioButtonWithImage
-              name="select-bookings-type"
-              icon={strokeDeskIcon}
-              label="Toutes les réservations"
-              description="Les réservations dont le statut n’est pas “confirmée” ou “validée” pourront encore être annulées par les bénéficiaires."
-              isChecked={bookingsType === BookingsExportStatusFilter.ALL}
-              onChange={() => setBookingsType(BookingsExportStatusFilter.ALL)}
-              value={BookingsExportStatusFilter.ALL}
-            />
-          </div>
-        </fieldset>
+    <form onSubmit={handleSubmit} className={style['container']}>
+      <fieldset className={style['date-select-section']}>
+        {priceCategoryAndScheduleCountByDate.length === 1 ? (
+          <h2 className={style['one-booking-date-section']}>
+            Date de votre évènement :{' '}
+            {format(
+              new Date(priceCategoryAndScheduleCountByDate[0].eventDate),
+              FORMAT_DD_MM_YYYY
+            )}
+          </h2>
+        ) : (
+          <>
+            <legend>
+              <div>Sélectionnez la date :</div>
+            </legend>
+            <div className={style['bookings-date-count']}>
+              {pluralize(priceCategoryAndScheduleCountByDate.length, 'date')}
+            </div>
+            <hr className={style['horizontal-line']} />
+            <table className={style['date-select-table']}>
+              <thead className={style['date-select-table-header']}>
+                <tr>
+                  <th scope="col" className={style['table-header']}>
+                    Date
+                  </th>
+                  <th className={style['table-header']} scope="col">
+                    Horaires
+                  </th>
+                  <th className={style['table-header']} scope="col">
+                    Tarifs
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {priceCategoryAndScheduleCountByDate.map((date) =>
+                  createDateRow(
+                    date.eventDate,
+                    date.scheduleCount,
+                    date.priceCategoriesCount
+                  )
+                )}
+              </tbody>
+            </table>
+            <hr className={style['horizontal-line']} />
+          </>
+        )}
+      </fieldset>
+      <fieldset className={style['booking-type-section']}>
+        <legend>
+          <div>Sélectionnez le type de réservations :</div>
+        </legend>
+        <div className={style['bookings-radio-buttons']}>
+          <RadioButtonWithImage
+            className={style['bookings-radio-buttons-validated']}
+            name="select-bookings-type"
+            icon={strokeDeskIcon}
+            label="Réservations confirmées et validées uniquement"
+            description="Les réservations au statut confirmées et validées ne sont plus annulables par les bénéficiaires."
+            isChecked={bookingsType === BookingsExportStatusFilter.VALIDATED}
+            onChange={() =>
+              setBookingsType(BookingsExportStatusFilter.VALIDATED)
+            }
+            value={BookingsExportStatusFilter.VALIDATED}
+          />
+          <RadioButtonWithImage
+            name="select-bookings-type"
+            icon={strokeDeskIcon}
+            label="Toutes les réservations"
+            description="Les réservations dont le statut n’est pas “confirmée” ou “validée” pourront encore être annulées par les bénéficiaires."
+            isChecked={bookingsType === BookingsExportStatusFilter.ALL}
+            onChange={() => setBookingsType(BookingsExportStatusFilter.ALL)}
+            value={BookingsExportStatusFilter.ALL}
+          />
+        </div>
+      </fieldset>
 
+      <DialogBuilder.Footer>
         <div className={style['actions']}>
           <Dialog.Close asChild>
             <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
@@ -214,7 +210,7 @@ export const DownloadBookingsModal = ({
             data-export={BookingExportType.CSV}
             disabled={selectedDate === undefined || bookingsType === undefined}
           >
-            Télécharger au format CSV
+            Télécharger format CSV
           </Button>
           <Button
             variant={ButtonVariant.PRIMARY}
@@ -222,10 +218,10 @@ export const DownloadBookingsModal = ({
             data-export={BookingExportType.EXCEL}
             disabled={selectedDate === undefined || bookingsType === undefined}
           >
-            Télécharger au format Excel
+            Télécharger format Excel
           </Button>
         </div>
-      </div>
+      </DialogBuilder.Footer>
     </form>
   )
 }
