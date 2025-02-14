@@ -90,7 +90,7 @@ export const PricingPointDialog = ({
             label={`${isOfferAddressEnabled ? 'Structure avec SIRET utilisée' : 'Lieu avec SIRET utilisé'} pour le calcul du barème de remboursement`}
             options={venuesOptions}
             className={styles['venues-select']}
-            showMandatoryAsterisk={false}
+            hideAsterisk
           />
           <DialogBuilder.Footer>
             <div className={styles['dialog-actions']}>

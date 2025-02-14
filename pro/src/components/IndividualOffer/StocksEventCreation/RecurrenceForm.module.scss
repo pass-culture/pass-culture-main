@@ -4,14 +4,8 @@
 @use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.title {
-  @include fonts.title3;
-
-  margin-bottom: rem.torem(24px);
-}
-
 .section {
-  margin-bottom: rem.torem(16px);
+  margin-bottom: rem.torem(32px);
 }
 
 .legend {
@@ -115,4 +109,14 @@
 
   color: var(--color-grey-dark);
   margin-bottom: rem.torem(16px);
+}
+
+.form {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+
+  &-content {
+    flex-grow: 1;
+  }
 }

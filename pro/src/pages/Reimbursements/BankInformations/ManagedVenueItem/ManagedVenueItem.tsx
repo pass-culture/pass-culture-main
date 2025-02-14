@@ -67,8 +67,7 @@ export function ManadgedVenueItem({
           onOpenChange={setIsPricingPointDialogOpen}
           variant="drawer"
           title={`Sélectionnez un SIRET pour
-          ${isOfferAddressEnabled ? 'la structure' : 'le lieu'} “
-          ${venue.commonName}”`}
+          ${isOfferAddressEnabled ? 'la structure' : 'le lieu'} “${venue.commonName}”`}
           trigger={
             <Button
               variant={ButtonVariant.QUATERNARY}

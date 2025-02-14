@@ -22,6 +22,7 @@ function renderRecurrenceForm(props: RecurrenceFormProps = defaultProps) {
   return renderWithProviders(
     <Dialog.Root defaultOpen>
       <Dialog.Content aria-describedby={undefined}>
+        <Dialog.Title>Title</Dialog.Title>
         <RecurrenceForm {...props} />
       </Dialog.Content>
     </Dialog.Root>
@@ -141,9 +142,7 @@ describe('RecurrenceForm', () => {
     })
     await userEvent.type(input, '12')
     await userEvent.clear(input)
-    await userEvent.click(
-      screen.getByLabelText('Ajouter une ou plusieurs dates')
-    )
+    await userEvent.click(screen.getByLabelText('Tous les jours'))
 
     expect(mockLogEvent).not.toHaveBeenCalled()
   })
