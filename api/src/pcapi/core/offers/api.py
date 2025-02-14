@@ -1948,8 +1948,8 @@ def get_stocks_stats(offer_id: int) -> StocksStats:
         )
 
 
-def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venue]:
-    if not offer.isEvent:
+def check_can_move_offer(offer: models.Offer, only_event: bool = True) -> list[offerers_models.Venue]:
+    if only_event and not offer.isEvent:
         raise exceptions.OfferIsNotEvent()
 
     count_past_stocks = (
@@ -2055,12 +2055,15 @@ def _get_or_create_same_price_category_label(
         return new_price_category_label
 
 
-def move_event_offer(
-    offer: models.Offer, destination_venue: offerers_models.Venue, notify_beneficiary: bool = False
+def move_offer(
+    offer: models.Offer,
+    destination_venue: offerers_models.Venue,
+    notify_beneficiary: bool = False,
+    only_event: bool = True,
 ) -> None:
     offer_id = offer.id
 
-    venue_choices = check_can_move_event_offer(offer)
+    venue_choices = check_can_move_offer(offer, only_event=only_event)
 
     if destination_venue not in venue_choices:
         raise exceptions.ForbiddenDestinationVenue()
