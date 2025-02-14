@@ -16,6 +16,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
@@ -550,7 +551,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
     students: list[educational_models.StudentLevels]
-    offer_venue: CollectiveOfferVenueBodyModel
+    offer_venue: CollectiveOfferVenueBodyModel | None
     contact_email: EmailStrOrEmpty | None
     contact_phone: str | None
     intervention_area: list[str] | None
@@ -562,6 +563,11 @@ class PostCollectiveOfferBodyModel(BaseModel):
     # TODO(jeremieb): when subcategory_id is removed, formats becomes
     # mandatory
     formats: typing.Sequence[subcategories.EacFormat] | None
+
+    # for now, we can receive either offerVenue or (locationType, locationComment, address)
+    location_type: educational_models.CollectiveLocationType | None
+    location_comment: str | None
+    address: offerers_schemas.AddressBodyModel | None
 
     @validator("students")
     def validate_students(cls, students: list[str]) -> list[educational_models.StudentLevels]:
@@ -623,6 +629,23 @@ class PostCollectiveOfferBodyModel(BaseModel):
             raise ValueError("Un email doit etre renseigné.")
         return booking_emails
 
+    @root_validator
+    def validate_location_fields(cls, values: dict) -> dict:
+        has_offer_venue = values.get("offer_venue") is not None
+        has_oa = (
+            (values.get("location_type") is not None)
+            or (values.get("location_comment") is not None)
+            or (values.get("address") is not None)
+        )
+
+        if has_offer_venue and has_oa:
+            raise ValueError("Cannot receive offerVenue and OA fields at the same time")
+
+        if not has_offer_venue and not has_oa:
+            raise ValueError("Should receive either offerVenue or OA fields")
+
+        return values
+
     class Config:
         alias_generator = to_camel
         extra = "forbid"
@@ -672,6 +695,11 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     venueId: int | None
     nationalProgramId: int | None
     formats: typing.Sequence[subcategories.EacFormat] | None
+
+    # for now, we can receive either offerVenue or (locationType, locationComment, address)
+    locationType: educational_models.CollectiveLocationType | None
+    locationComment: str | None
+    address: offerers_schemas.AddressBodyModel | None
 
     @validator("students")
     def validate_students(cls, students: list[str] | None) -> list[educational_models.StudentLevels] | None:

@@ -2,11 +2,14 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AddressBodyModel } from './AddressBodyModel';
+import type { CollectiveLocationType } from './CollectiveLocationType';
 import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
 import type { EacFormat } from './EacFormat';
 import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 export type PatchCollectiveOfferBodyModel = {
+  address?: AddressBodyModel | null;
   audioDisabilityCompliant?: boolean | null;
   bookingEmails?: Array<string> | null;
   contactEmail?: string | null;
@@ -16,6 +19,8 @@ export type PatchCollectiveOfferBodyModel = {
   durationMinutes?: number | null;
   formats?: Array<EacFormat> | null;
   interventionArea?: Array<string> | null;
+  locationComment?: string | null;
+  locationType?: CollectiveLocationType | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;

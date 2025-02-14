@@ -305,8 +305,12 @@ class Returns200Test:
         offer = educational_models.CollectiveOfferTemplate.query.filter(
             educational_models.CollectiveOfferTemplate.id == offer_id
         ).one()
-        assert offer.offererAddressId == venue.offererAddressId
-        assert offer.locationType == educational_models.CollectiveLocationType.VENUE
+        assert offer.offerVenue == payload["offerVenue"]
+        assert offer.interventionArea == []
+
+        assert offer.offererAddressId == None
+        assert offer.locationType == None
+        assert offer.locationComment == None
 
     def test_offerer_address_school(self, client):
         offer_ctx = build_offer_context()
@@ -321,8 +325,12 @@ class Returns200Test:
         offer = educational_models.CollectiveOfferTemplate.query.filter(
             educational_models.CollectiveOfferTemplate.id == offer_id
         ).one()
+        assert offer.offerVenue == payload["offerVenue"]
+        assert len(offer.interventionArea) > 0
+
         assert offer.offererAddressId == None
-        assert offer.locationType == educational_models.CollectiveLocationType.SCHOOL
+        assert offer.locationType == None
+        assert offer.locationComment == None
 
     def test_offerer_address_other(self, client):
         offer_ctx = build_offer_context()
@@ -337,8 +345,12 @@ class Returns200Test:
         offer = educational_models.CollectiveOfferTemplate.query.filter(
             educational_models.CollectiveOfferTemplate.id == offer_id
         ).one()
+        assert offer.offerVenue == payload["offerVenue"]
+        assert len(offer.interventionArea) > 0
+
         assert offer.offererAddressId == None
         assert offer.locationType == None
+        assert offer.locationComment == None
 
 
 class Returns400Test:
@@ -702,4 +714,18 @@ class Returns404Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 404
-        assert response.json["venueId"] == "The venue does not exist."
+        assert response.json == {"venueId": "The venue does not exist."}
+
+    def test_replacing_by_unknown_venue_in_offer_venue(self, client):
+        offer_ctx = build_offer_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        data = {"offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": 0}}
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+
+        assert response.status_code == 404
+        assert response.json == {"venueId": "The venue does not exist."}

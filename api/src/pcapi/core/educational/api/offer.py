@@ -185,22 +185,101 @@ def get_educational_domains_from_ids(
     return educational_domains
 
 
-def _get_location_type_and_oa_id(
-    address_type: educational_models.OfferAddressType, venue_id: int | None, user: User
-) -> tuple[educational_models.CollectiveLocationType | None, int | None]:
-    match address_type:
-        case educational_models.OfferAddressType.SCHOOL:
-            return (educational_models.CollectiveLocationType.SCHOOL, None)
+def check_venue_user_access(venue_id: int, user: User) -> None:
+    location_venue = offerers_repository.get_venue_by_id(venue_id)
+    if not location_venue:
+        raise exceptions.VenueIdDontExist()
+    rest.check_user_has_access_to_offerer(user, offerer_id=location_venue.managingOffererId)
 
-        case educational_models.OfferAddressType.OFFERER_VENUE:
-            assert venue_id is not None  # for mypy - venue_id is present when address_type is venue
-            location_venue = offerers_repository.get_venue_by_id(venue_id)
-            rest.check_user_has_access_to_offerer(user, offerer_id=location_venue.managingOffererId)
 
-            return (educational_models.CollectiveLocationType.VENUE, location_venue.offererAddressId)
+def get_offer_venue_intervention_area(
+    location_type: educational_models.CollectiveLocationType | None,
+    location_comment: str | None,
+    offerer_address: offerers_models.OffererAddress | None,
+    venue_id: int,
+) -> tuple[dict, list[str] | None]:
+    offer_venue = {}
+    intervention_area: list[str] | None = None
 
-        case _:
-            return (None, None)
+    match location_type:
+        case educational_models.CollectiveLocationType.VENUE:
+            offer_venue = {
+                "addressType": educational_models.OfferAddressType.OFFERER_VENUE,
+                "otherAddress": "",
+                "venueId": venue_id,
+            }
+            intervention_area = []
+
+        case educational_models.CollectiveLocationType.SCHOOL:
+            offer_venue = {
+                "addressType": educational_models.OfferAddressType.SCHOOL,
+                "otherAddress": "",
+                "venueId": None,
+            }
+            intervention_area = None
+
+        case educational_models.CollectiveLocationType.ADDRESS:
+            if offerer_address is not None and offerer_address.address is not None:
+                other_address = offerer_address.address.fullAddress
+                department = offerer_address.address.departmentCode
+            else:
+                other_address = None
+                department = None
+
+            offer_venue = {
+                "addressType": educational_models.OfferAddressType.OTHER,
+                "otherAddress": other_address,
+                "venueId": None,
+            }
+            intervention_area = [department or "75"]
+
+        case educational_models.CollectiveLocationType.TO_BE_DEFINED:
+            offer_venue = {
+                "addressType": educational_models.OfferAddressType.OTHER,
+                "otherAddress": location_comment,
+                "venueId": None,
+            }
+            intervention_area = None
+
+    return (offer_venue, intervention_area)
+
+
+def get_location_values(
+    offer_data: collective_offers_serialize.PostCollectiveOfferBodyModel,
+    user: User,
+    venue: offerers_models.Venue,
+) -> tuple[offerers_models.OffererAddress | None, list[str], dict]:
+    """
+    We can either receive offerVenue or OA fields
+    When we receive the offerVenue field, we check venueId in the "offererVenue" case
+    When we receive OA fields, we also write to offerVenue to keep the field up to date
+    In both cases, we may also "force" the interventionArea field value
+    """
+
+    # TODO: we should put here collective-related functions from pcapi.core.offers.api (e.g update_collective_offer)
+    # and decide where to put shared code
+    from pcapi.core.offers.api import _get_offerer_address_from_address_body
+
+    offerer_address = _get_offerer_address_from_address_body(address_body=offer_data.address, venue=venue)
+    intervention_area = offer_data.intervention_area or []
+
+    if offer_data.offer_venue is not None:
+        offer_venue = offer_data.offer_venue.dict()
+        if offer_venue and offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
+            check_venue_user_access(venue_id=offer_venue["venueId"], user=user)
+            intervention_area = []
+    else:
+        offer_venue, intervention_area_from_location = get_offer_venue_intervention_area(
+            location_type=offer_data.location_type,
+            location_comment=offer_data.location_comment,
+            offerer_address=offerer_address,
+            venue_id=venue.id,
+        )
+
+        if intervention_area_from_location is not None:
+            intervention_area = intervention_area_from_location
+
+    return offerer_address, intervention_area, offer_venue
 
 
 def create_collective_offer_template(
@@ -215,10 +294,7 @@ def create_collective_offer_template(
     if offer_data.contact_url and offer_data.contact_form:
         raise offers_exceptions.UrlandFormBothSetError()
 
-    offer_venue = offer_data.offer_venue.dict()
-    location_type, offerer_address_id = _get_location_type_and_oa_id(
-        offer_venue["addressType"], venue_id=offer_venue["venueId"], user=user
-    )
+    offerer_address, intervention_area, offer_venue = get_location_values(offer_data=offer_data, user=user, venue=venue)
 
     collective_offer_template = educational_models.CollectiveOfferTemplate(
         venueId=venue.id,
@@ -238,13 +314,14 @@ def create_collective_offer_template(
         mentalDisabilityCompliant=offer_data.mental_disability_compliant,
         motorDisabilityCompliant=offer_data.motor_disability_compliant,
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
-        interventionArea=offer_data.intervention_area or [],
+        interventionArea=intervention_area,
         priceDetail=offer_data.price_detail,
         bookingEmails=offer_data.booking_emails,  # type: ignore[arg-type]
         formats=offer_data.formats,  # type: ignore[arg-type]
         author=user,
-        locationType=location_type,
-        offererAddressId=offerer_address_id,
+        locationType=offer_data.location_type,
+        locationComment=offer_data.location_comment,
+        offererAddressId=offerer_address.id if offerer_address else None,
     )
 
     if offer_data.dates:
@@ -280,10 +357,7 @@ def create_collective_offer(
             template, educational_models.CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
         )
 
-    offer_venue = offer_data.offer_venue.dict()
-    location_type, offerer_address_id = _get_location_type_and_oa_id(
-        offer_venue["addressType"], venue_id=offer_venue["venueId"], user=user
-    )
+    offerer_address, intervention_area, offer_venue = get_location_values(offer_data=offer_data, user=user, venue=venue)
 
     collective_offer = educational_models.CollectiveOffer(
         isActive=False,  # a DRAFT offer cannot be active
@@ -303,13 +377,14 @@ def create_collective_offer(
         mentalDisabilityCompliant=offer_data.mental_disability_compliant,
         motorDisabilityCompliant=offer_data.motor_disability_compliant,
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
-        interventionArea=offer_data.intervention_area or [],
+        interventionArea=intervention_area,
         templateId=offer_data.template_id,
         bookingEmails=offer_data.booking_emails,  # type: ignore[arg-type]
         formats=offer_data.formats,  # type: ignore[arg-type]
         author=user,
-        locationType=location_type,
-        offererAddressId=offerer_address_id,
+        locationType=offer_data.location_type,
+        locationComment=offer_data.location_comment,
+        offererAddressId=offerer_address.id if offerer_address else None,
     )
 
     # we update pro email data in sendinblue
@@ -761,6 +836,9 @@ def duplicate_offer_and_stock(
         institutionId=original_offer.institutionId,
         nationalProgramId=original_offer.nationalProgramId,
         formats=original_offer.formats,
+        locationType=original_offer.locationType,
+        locationComment=original_offer.locationComment,
+        offererAddressId=original_offer.offererAddressId,
     )
 
     if original_offer.collectiveStock is not None:
