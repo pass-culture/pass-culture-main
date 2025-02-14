@@ -380,8 +380,8 @@ def patch_collective_offer_public(
             )
 
     if new_values.get("offerVenue"):
-        if new_values["offerVenue"] == OfferAddressType.OFFERER_VENUE.value:
-            venue = offerers_repository.find_venue_by_id(new_values["offerVenue"]["venuId"])
+        if new_values["offerVenue"]["addressType"] == OfferAddressType.OFFERER_VENUE:
+            venue = offerers_repository.find_venue_by_id(new_values["offerVenue"]["venueId"])
             if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):
                 raise ApiErrors(
                     errors={
