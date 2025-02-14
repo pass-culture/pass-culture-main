@@ -131,3 +131,8 @@ class BookingIsExpired(Exception):
 
 class BookingDepositCreditExpired(Exception):
     pass
+
+
+class OffererIsClosed(Exception):
+    def __init__(self) -> None:
+        super().__init__("Une contremarque ne peut plus être validée sur une structure fermée")

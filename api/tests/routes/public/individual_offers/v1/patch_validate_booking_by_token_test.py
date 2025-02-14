@@ -4,8 +4,11 @@ from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.offers import factories as offers_factories
+from pcapi.models import db
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
 
 from tests.conftest import TestClient
@@ -125,6 +128,23 @@ class ValidateBookingByTokenTest(PublicAPIVenueEndpointHelper):
         # Then
         assert response.status_code == 403
         assert response.json == {"payment": "This booking has already been reimbursed"}
+
+    def test_should_raise_403_when_offerer_is_closed(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        offerer = venue_provider.venue.managingOfferer
+        offerer.validationStatus = ValidationStatus.CLOSED
+        db.session.add(offerer)
+        db.session.flush()
+
+        offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
+        stock = offers_factories.StockFactory(offer=offer)
+        booking = bookings_factories.BookingFactory(stock=stock)
+
+        response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(token=booking.token))
+        assert response.status_code == 403
+        assert response.json == {"booking": ["Vous ne pouvez plus valider de contremarque sur une structure fermée"]}
+        assert booking.status == bookings_models.BookingStatus.CONFIRMED
 
     def test_should_raise_410_when_booking_is_already_validated(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()

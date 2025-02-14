@@ -1161,6 +1161,22 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
             in alerts[1]
         )
 
+    def test_batch_mark_as_used_when_offerer_is_closed(self, legit_user, authenticated_client):
+        booking = bookings_factories.BookingFactory(
+            stock__offer__venue__managingOfferer=offerers_factories.ClosedOffererFactory()
+        )
+
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": booking.id})
+        assert response.status_code == 303
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        alerts = html_parser.extract_alerts(redirected_response.data)
+        assert alerts == [
+            f"Une erreur s'est produite pour la réservation ({booking.token}) : "
+            "Une contremarque ne peut plus être validée sur une structure fermée"
+        ]
+        assert booking.status == bookings_models.BookingStatus.CONFIRMED
+
     def test_batch_mark_as_used_bookings_with_multiple_errors(self, legit_user, authenticated_client):
         cancelled_booking = bookings_factories.CancelledBookingFactory()
         insufficient_stock_booking = bookings_factories.BookingFactory(

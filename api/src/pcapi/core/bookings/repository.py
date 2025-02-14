@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 import csv
 from datetime import date
 from datetime import datetime
@@ -111,6 +112,8 @@ BOOKING_EXPORT_HEADER = [
     "Duo",
 ]
 
+BOOKING_LOAD_OPTIONS = Sequence[typing.Literal["offerer",]]
+
 
 def booking_export_header() -> list[str]:
     if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
@@ -170,6 +173,13 @@ def find_not_cancelled_bookings_by_stock(stock: Stock) -> list[Booking]:
 
 def token_exists(token: str) -> bool:
     return db.session.query(Booking.query.filter_by(token=token.upper()).exists()).scalar()
+
+
+def get_booking_by_token(token: str, load_options: BOOKING_LOAD_OPTIONS = ()) -> Booking | None:
+    query = Booking.query.filter_by(token=token.upper())
+    if "offerer" in load_options:
+        query = query.options(sa.orm.joinedload(Booking.offerer))
+    return query.one_or_none()
 
 
 def find_expiring_individual_bookings_query() -> BaseQuery:

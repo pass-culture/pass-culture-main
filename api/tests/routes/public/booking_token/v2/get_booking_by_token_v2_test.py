@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi.core import testing
+from pcapi.core.bookings import models as bookings_models
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
@@ -223,6 +224,25 @@ class Returns403Test:
             assert response.status_code == 403
 
         assert response.json["payment"] == ["Cette réservation a été remboursée"]
+
+    def test_when_offerer_is_closed(self, client):
+        offerer = offerers_factories.ClosedOffererFactory()
+        booking = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer)
+        pro_user = offerers_factories.UserOffererFactory(offerer=offerer).user
+
+        url = f"/v2/bookings/token/{booking.token}"
+        num_queries = 1  # Select user session
+        num_queries += 1  # Select user
+        num_queries += 1  # Select booking
+        num_queries += 1  # check user has rights on offerer
+        num_queries += 1  # check if a pricing processed or invoiced exists for this booking
+        client = client.with_session_auth(pro_user.email)
+        with testing.assert_num_queries(num_queries):
+            response = client.get(url)
+            assert response.status_code == 403
+
+        assert response.json["booking"] == ["Vous ne pouvez plus valider de contremarque sur une structure fermée"]
+        assert booking.status == bookings_models.BookingStatus.CONFIRMED
 
 
 class Returns404Test:

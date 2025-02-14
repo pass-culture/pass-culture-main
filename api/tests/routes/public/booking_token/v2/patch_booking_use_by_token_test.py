@@ -101,6 +101,19 @@ class Returns403Test:
             booking = Booking.query.get(booking.id)
             assert booking.status == BookingStatus.CONFIRMED
 
+        def test_when_offerer_is_closed(self, client):
+            offerer = offerers_factories.ClosedOffererFactory()
+            booking = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer)
+            pro_user = offerers_factories.UserOffererFactory(offerer=offerer).user
+
+            url = f"/v2/bookings/use/token/{booking.token}"
+            response = client.with_session_auth(pro_user.email).patch(url)
+
+            assert response.status_code == 403
+            assert response.json["booking"] == ["Vous ne pouvez plus valider de contremarque sur une structure fermée"]
+            booking = Booking.query.get(booking.id)
+            assert booking.status == BookingStatus.CONFIRMED
+
 
 class Returns404Test:
     def test_missing_token(self, client):

@@ -3,6 +3,7 @@ from flask_login import current_user
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.bookings import validation as bookings_validation
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 from pcapi.models import api_errors
@@ -34,7 +35,7 @@ BASE_CODE_DESCRIPTIONS = {
 
 
 def _get_booking_by_token_or_404(token: str) -> bookings_models.Booking:
-    booking = bookings_models.Booking.query.filter_by(token=token.upper()).one_or_none()
+    booking = bookings_repository.get_booking_by_token(token, load_options=["offerer"])
     if not booking:
         errors = api_errors.ResourceNotFoundError()
         errors.add_error("global", "Cette contremarque n'a pas été trouvée")

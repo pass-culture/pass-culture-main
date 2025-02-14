@@ -12,8 +12,11 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class GetInvoicesTest:
-    def test_get_invoices(self, client):
-        offerer = offerers_factories.OffererFactory()
+    @pytest.mark.parametrize(
+        "offerer_factory", [offerers_factories.OffererFactory, offerers_factories.ClosedOffererFactory]
+    )
+    def test_get_invoices(self, client, offerer_factory):
+        offerer = offerer_factory()
         pro = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)

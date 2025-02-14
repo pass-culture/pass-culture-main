@@ -19,6 +19,16 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class GetOffererTest:
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # check user_offerer exists
+    num_queries += 1  # select offerer
+    num_queries += 1  # select api_key
+    num_queries += 1  # select venue
+    num_queries += 1  # check offerer has non free offers
+    num_queries += 1  # select venue_id
+    num_queries += 1  # select offerer_address
+    num_queries += 1  # select venues_id with active offers
+
     def test_basics(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -40,16 +50,7 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             with testing.assert_no_duplicated_queries():
                 response = client.get(f"/offerers/{offerer_id}")
                 assert response.status_code == 200
@@ -171,17 +172,7 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
@@ -204,17 +195,7 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
@@ -256,17 +237,7 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["isOnboarded"] is is_onboarded
@@ -281,17 +252,7 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
@@ -312,17 +273,7 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
@@ -344,17 +295,7 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
@@ -374,17 +315,7 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
@@ -406,17 +337,7 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
@@ -432,17 +353,7 @@ class GetOffererTest:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         http_client = client.with_session_auth(pro_user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = http_client.get(f"/offerers/{offerer.id}")
             assert response.status_code == 200
 
@@ -470,17 +381,7 @@ class GetOffererTest:
 
         http_client = client.with_session_auth(pro_user.email)
         offerer_id = offerer.id
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
@@ -530,17 +431,7 @@ class GetOffererTest:
 
         http_client = client.with_session_auth(pro_user.email)
         offerer_id = offerer.id
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
@@ -564,17 +455,7 @@ class GetOffererTest:
         http_client = client.with_session_auth(pro_user.email)
         offerer_id = offerer.id
 
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
@@ -596,17 +477,7 @@ class GetOffererTest:
 
         http_client = client.with_session_auth(pro_user.email)
         offerer_id = offerer.id
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
@@ -626,17 +497,7 @@ class GetOffererTest:
 
         http_client = client.with_session_auth(pro_user.email)
         offerer_id = offerer.id
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
@@ -672,17 +533,7 @@ class GetOffererTest:
 
         http_client = client.with_session_auth(pro_user.email)
         offerer_id = offerer.id
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
@@ -706,17 +557,7 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
         sorted_managed_venues = sorted(response.json["managedVenues"], key=lambda x: x["name"])
@@ -747,17 +588,7 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro_user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
@@ -810,16 +641,7 @@ class GetOffererTest:
 
         # We now have plenty of VenueBankAccountLink
         # But the user should still receive distinct `venuesWithNonFreeOffersWithoutBankAccounts`, not a cartesian product between Venues and VenueBankAccountLink
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-        num_queries += 1  # select missing managedVenues
-        num_queries += 1  # select venues_id with active offers
+        num_queries = self.num_queries + 1  # select missing managedVenues
         with testing.assert_num_queries(num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
@@ -847,17 +669,21 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # select offerer
-        num_queries += 1  # select api_key
-        num_queries += 1  # select venue
-        num_queries += 1  # check offerer has non free offers
-        num_queries += 1  # select venue_id
-        num_queries += 1  # select offerer_address
-
-        num_queries += 1  # select venues_id with active offers
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
         assert response.json["hasHeadlineOffer"] is True
+
+    def test_closed_offerer(self, client):
+        offerer = offerers_factories.ClosedOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        with testing.assert_num_queries(self.num_queries):
+            with testing.assert_no_duplicated_queries():
+                response = client.get(f"/offerers/{offerer.id}")
+                assert response.status_code == 200
+
+        # closed => similar to validated then suspended
+        assert response.json["isActive"] is False
+        assert response.json["isValidated"] is True

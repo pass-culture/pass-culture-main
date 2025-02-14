@@ -124,6 +124,9 @@ def check_is_usable(booking: Booking) -> None:
     if booking.status is BookingStatus.CANCELLED:
         raise exceptions.BookingIsAlreadyCancelled()
 
+    if booking.offerer.isClosed:
+        raise exceptions.OffererIsClosed()
+
     is_booking_for_event_and_not_confirmed = booking.stock.beginningDatetime and not booking.isConfirmed
     if is_booking_for_event_and_not_confirmed:
         if booking.cancellationLimitDate is None:
