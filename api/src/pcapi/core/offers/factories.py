@@ -197,6 +197,11 @@ class OfferFactory(BaseFactory):
             kwargs["description"] = None
             kwargs["extraData"] = product.extraData
             kwargs["durationMinutes"] = None
+            kwargs["ean"] = product.ean
+            # This condition should be removed once all features that uses
+            # offer.jsonData["ean"] are adapted to offer.ean
+            if product.ean:
+                kwargs["extraData"].update({"ean": product.ean})
         else:
             if "extraData" not in kwargs:
                 subcategory_id = kwargs.get("subcategoryId")
