@@ -40,6 +40,8 @@ export const AddRecurrencesButton = ({
       <DialogBuilder
         onOpenChange={setIsRecurrenceModalOpen}
         open={isRecurrenceModalOpen}
+        variant="drawer"
+        title="Ajouter une ou plusieurs dates"
         trigger={
           <Button
             variant={ButtonVariant.PRIMARY}
