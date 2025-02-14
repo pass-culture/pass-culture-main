@@ -3,28 +3,11 @@
 @use "styles/mixins/_size.scss" as size;
 
 .allocine-provider-form-dialog {
-  align-items: center;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  text-align: left;
+  flex-grow: 1;
+}
 
-  @media screen and (min-width: size.$tablet) {
-    max-width: rem.torem(504px);
-  }
-
-  .title {
-    @include fonts.title3;
-
-    margin-bottom: rem.torem(32px);
-    margin-top: rem.torem(32px);
-
-    @media screen and (min-width: size.$tablet) {
-      margin-top: 0;
-    }
-  }
-
-  .explanation {
-    margin-bottom: rem.torem(32px);
-  }
+.explanation {
+  margin: rem.torem(8px) 0 rem.torem(32px) 0;
 }
