@@ -11,9 +11,6 @@
 }
 
 .section {
-  padding: rem.torem(16px);
-  border: 1px solid var(--color-medium-shadow);
-  border-radius: rem.torem(8px);
   margin-bottom: rem.torem(16px);
 }
 
@@ -45,8 +42,7 @@
 
 .action-buttons {
   display: flex;
-  gap: rem.torem(24px);
-  justify-content: center;
+  gap: rem.torem(8px);
 }
 
 .day-inputs {
@@ -87,10 +83,6 @@
   }
 }
 
-.quantity-input {
-  width: rem.torem(268px);
-}
-
 .monthly-option-input {
   width: auto;
   flex-grow: 1;
@@ -115,10 +107,6 @@
 @media (min-width: size.$tablet) {
   .align-icon {
     @include size.input-center-with-top-margin(size.$button-icon-size);
-  }
-
-  .price-category-input {
-    width: rem.torem(328px);
   }
 }
 
