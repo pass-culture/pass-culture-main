@@ -2,10 +2,8 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 
-$modal-width: rem.torem(592px);
-$modal-height: rem.torem(484px);
-
 .dialog {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
 
@@ -18,24 +16,12 @@ $modal-height: rem.torem(484px);
 
   &-actions {
     display: flex;
-    justify-content: flex-end;
-    gap: rem.torem(24px);
-  }
-
-  @media (min-width: size.$tablet) {
-    width: $modal-width;
-    height: $modal-height;
+    gap: rem.torem(8px);
   }
 }
 
 .callout {
-  margin-bottom: rem.torem(24px);
-
-  &-title {
-    @include fonts.title3;
-
-    margin-bottom: rem.torem(24px);
-  }
+  margin: rem.torem(16px) 0 rem.torem(32px) 0;
 }
 
 .venues-select {

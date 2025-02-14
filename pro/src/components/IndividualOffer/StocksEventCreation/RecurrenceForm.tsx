@@ -8,7 +8,6 @@ import { isDateValid } from 'commons/utils/date'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullMoreIcon from 'icons/full-more.svg'
-import fullNextIcon from 'icons/full-next.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
@@ -17,6 +16,7 @@ import strokeEventsIcon from 'icons/stroke-events.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
 import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
@@ -129,10 +129,6 @@ export const RecurrenceForm = ({
   return (
     <FormikProvider value={formik}>
       <form onSubmit={formik.handleSubmit}>
-        <Dialog.Title asChild>
-          <h1 className={styles['title']}>Ajouter une ou plusieurs dates</h1>
-        </Dialog.Title>
-
         <div className={styles['mandatory']}>
           Tous les champs suivis d’un * sont obligatoires.
         </div>
@@ -457,21 +453,21 @@ export const RecurrenceForm = ({
           </div>
         </fieldset>
 
-        <div className={styles['action-buttons']}>
-          <Dialog.Close asChild>
-            <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
-          </Dialog.Close>
+        <DialogBuilder.Footer>
+          <div className={styles['action-buttons']}>
+            <Dialog.Close asChild>
+              <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+            </Dialog.Close>
 
-          <Button
-            type="submit"
-            icon={fullNextIcon}
-            disabled={formik.isSubmitting}
-            isLoading={formik.isSubmitting}
-            iconPosition={IconPositionEnum.RIGHT}
-          >
-            Valider
-          </Button>
-        </div>
+            <Button
+              type="submit"
+              disabled={formik.isSubmitting}
+              isLoading={formik.isSubmitting}
+            >
+              Valider
+            </Button>
+          </div>
+        </DialogBuilder.Footer>
       </form>
     </FormikProvider>
   )

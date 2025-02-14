@@ -10,6 +10,7 @@ import { validationSchema } from 'pages/VenueSettings/VenueProvidersManager/Allo
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
@@ -84,59 +85,61 @@ export const AllocineProviderForm = ({
     <FormikProvider value={formik}>
       {!isLoading && (
         <>
-          <FormLayout.Row>
-            <TextInput
-              name="price"
-              type="number"
-              label="Prix de vente/place"
-              min="0"
-              description="Le prix doit être indiqué en euros."
-              step={0.01}
-              className={styles['price-input']}
-              required
-            />
-          </FormLayout.Row>
-          <FormLayout.Row>
-            <QuantityInput
-              label="Nombre de places/séance"
-              className={styles['nb-places-input']}
-              isOptional
-              min={1}
-            />
-          </FormLayout.Row>
-          <FormLayout.Row>
-            <DuoCheckbox isChecked={formik.values.isDuo} />
-          </FormLayout.Row>
-          <Callout className={styles['allocine-provider-form-banner']}>
-            Pour le moment, seules les séances "classiques" peuvent être
-            importées. Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne
-            génèreront pas d’offres. Nous travaillons actuellement à l’ajout de
-            séances spécifiques.
-          </Callout>
-          <FormLayout.Actions
-            className={styles['allocine-provider-form-actions']}
-          >
-            {!isCreatedEntity ? (
+          <div className={styles['form-content']}>
+            <FormLayout.Row className={styles['form-layout-row']}>
+              <TextInput
+                name="price"
+                type="number"
+                label="Prix de vente/place"
+                min="0"
+                description="Le prix doit être indiqué en euros."
+                step={0.01}
+                className={styles['price-input']}
+                required
+              />
+              <QuantityInput
+                label="Nombre de places/séance"
+                className={styles['nb-places-input']}
+                isOptional
+                min={1}
+              />
+            </FormLayout.Row>
+            <FormLayout.Row>
+              <DuoCheckbox isChecked={formik.values.isDuo} />
+            </FormLayout.Row>
+            <Callout className={styles['allocine-provider-form-banner']}>
+              Pour le moment, seules les séances "classiques" peuvent être
+              importées. Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne
+              génèreront pas d’offres. Nous travaillons actuellement à l’ajout
+              de séances spécifiques.
+            </Callout>
+          </div>
+          <DialogBuilder.Footer>
+            <div className={styles['allocine-provider-form-actions']}>
+              {!isCreatedEntity ? (
+                <Dialog.Close asChild>
+                  <Button variant={ButtonVariant.SECONDARY} type="button">
+                    Annuler
+                  </Button>
+                </Dialog.Close>
+              ) : (
+                <></>
+              )}
+
               <Dialog.Close asChild>
-                <Button variant={ButtonVariant.SECONDARY} type="button">
-                  Annuler
+                <Button
+                  onClick={() => handleSubmit(formik.values)}
+                  type="button"
+                  isLoading={isLoading}
+                  disabled={
+                    !formik.isValid || typeof formik.values.price !== 'number'
+                  }
+                >
+                  {isCreatedEntity ? 'Lancer la synchronisation' : 'Modifier'}
                 </Button>
               </Dialog.Close>
-            ) : (
-              <></>
-            )}
-
-            <Button
-              onClick={() => handleSubmit(formik.values)}
-              type="button"
-              isLoading={isLoading}
-              disabled={
-                !formik.isValid || typeof formik.values.price !== 'number'
-              }
-            >
-              {isCreatedEntity ? 'Lancer la synchronisation' : 'Modifier'}
-            </Button>
-          </FormLayout.Actions>
+            </div>
+          </DialogBuilder.Footer>
         </>
       )}
     </FormikProvider>
