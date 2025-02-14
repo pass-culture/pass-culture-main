@@ -1,3 +1,5 @@
+import '../src/styles/index.scss'
+
 export const parameters = {
   backgrounds: {
     grid: {
