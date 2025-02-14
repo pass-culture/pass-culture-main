@@ -8,7 +8,6 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
 import sqlalchemy.orm.exc as sa_exceptions
 
-from pcapi import repository
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
@@ -26,7 +25,6 @@ from pcapi.core.offers.validation import check_product_cgu_and_offerer
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository import atomic
-from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
@@ -349,34 +347,31 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
     api=blueprint.pro_private_schema,
     response_model=offers_serialize.GetIndividualOfferResponseModel,
 )
+@atomic()
 def patch_publish_offer(
     body: offers_serialize.PatchOfferPublishBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
-    with repository.transaction():
-        with db.session.no_autoflush:
-            try:
-                offerer = offerers_repository.get_by_offer_id(body.id)
-            except offerers_exceptions.CannotFindOffererForOfferId:
-                raise api_errors.ApiErrors(
-                    {"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404
-                )
+    try:
+        offerer = offerers_repository.get_by_offer_id(body.id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise api_errors.ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
 
-            rest.check_user_has_access_to_offerer(current_user, offerer.id)
+    rest.check_user_has_access_to_offerer(current_user, offerer.id)
 
-            offer = offers_repository.get_offer_and_extradata(body.id)
-            if offer is None:
-                raise api_errors.ApiErrors({"offer": ["Cette offre n’existe pas"]}, status_code=404)
-            if not offers_repository.offer_has_bookable_stocks(offer.id):
-                raise api_errors.ApiErrors({"offer": "Cette offre n’a pas de stock réservable"}, 400)
+    offer = offers_repository.get_offer_and_extradata(body.id)
+    if offer is None:
+        raise api_errors.ApiErrors({"offer": ["Cette offre n’existe pas"]}, status_code=404)
+    if not offers_repository.offer_has_bookable_stocks(offer.id):
+        raise api_errors.ApiErrors({"offer": "Cette offre n’a pas de stock réservable"}, 400)
 
-            try:
-                offers_api.publish_offer(offer, current_user, publication_date=body.publicationDate)
-            except exceptions.FutureOfferException as exc:
-                raise api_errors.ApiErrors(exc.errors, status_code=400)
-            except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as exc:
-                raise api_errors.ApiErrors(exc.errors, status_code=400)
+    try:
+        offers_api.publish_offer(offer, current_user, publication_date=body.publicationDate)
+    except exceptions.FutureOfferException as exc:
+        raise api_errors.ApiErrors(exc.errors, status_code=400)
+    except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as exc:
+        raise api_errors.ApiErrors(exc.errors, status_code=400)
 
-            return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/offers/active-status", methods=["PATCH"])
@@ -386,6 +381,7 @@ def patch_publish_offer(
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBodyModel) -> None:
     query = offers_repository.get_offers_by_ids(current_user, body.ids)
     if body.is_active:
@@ -400,6 +396,7 @@ def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBody
     on_success_status=202,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def patch_all_offers_active_status(
     body: offers_serialize.PatchAllOffersActiveStatusBodyModel,
 ) -> offers_serialize.PatchAllOffersActiveStatusResponseModel:
@@ -426,32 +423,34 @@ def patch_all_offers_active_status(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def patch_offer(
     offer_id: int, body: offers_serialize.PatchOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
-    offer = (
-        models.Offer.query.options(
-            sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
-            sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
-            sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.offererAddress),
-            sqla.orm.joinedload(models.Offer.product),
+    try:
+        offer = offers_repository.get_offer_by_id(
+            offer_id,
+            load_options=[
+                "stock",
+                "venue",
+                "offerer_address",
+                "product",
+                "bookings_count",
+                "is_non_free_offer",
+            ],
         )
-        .filter_by(id=offer_id)
-        .one_or_none()
-    )
-    if not offer:
-        raise api_errors.ResourceNotFoundError
+    except exceptions.OfferNotFound:
+        raise api_errors.ResourceNotFoundError()
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     try:
-        with repository.transaction():
-            updates = body.dict(by_alias=True, exclude_unset=True)
-            if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
-                updates["extraData"] = body_extra_data
+        updates = body.dict(by_alias=True, exclude_unset=True)
+        if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
+            updates["extraData"] = body_extra_data
 
-            offer_body = offers_schemas.UpdateOffer(**updates)
+        offer_body = offers_schemas.UpdateOffer(**updates)
 
-            offer = offers_api.update_offer(offer, offer_body, is_from_private_api=True)
+        offer = offers_api.update_offer(offer, offer_body, is_from_private_api=True)
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
@@ -497,13 +496,13 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def delete_thumbnail(offer_id: int) -> None:
     offer = models.Offer.query.get_or_404(offer_id)
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    with transaction():
-        offers_api.delete_mediation(offer=offer)
+    offers_api.delete_mediation(offer=offer)
 
 
 @private_api.route("/offers/categories", methods=["GET"])
@@ -571,6 +570,7 @@ def _get_offer_for_price_categories_upsert(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def post_price_categories(
     offer_id: int, body: offers_serialize.PriceCategoryBody
 ) -> offers_serialize.GetIndividualOfferResponseModel:
@@ -595,28 +595,31 @@ def post_price_categories(
 
     existing_price_categories_by_id = {category.id: category for category in offer.priceCategories}
 
-    with repository.transaction():
-        for price_category_to_create in price_categories_to_create:
-            offers_api.create_price_category(offer, price_category_to_create.label, price_category_to_create.price)
+    for price_category_to_create in price_categories_to_create:
+        offers_api.create_price_category(offer, price_category_to_create.label, price_category_to_create.price)
 
-        for price_category_to_edit in price_categories_to_edit:
-            if price_category_to_edit.id not in existing_price_categories_by_id:
-                raise api_errors.ApiErrors(
-                    {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % price_category_to_edit.id]},
-                    status_code=400,
-                )
-            data = price_category_to_edit.dict(exclude_unset=True)
-            try:
-                offers_api.edit_price_category(
-                    offer,
-                    price_category=existing_price_categories_by_id[data["id"]],
-                    label=data.get("label", offers_api.UNCHANGED),
-                    price=data.get("price", offers_api.UNCHANGED),
-                )
-            except exceptions.RejectedOrPendingOfferNotEditable:
-                raise api_errors.ApiErrors(
-                    {"offer": ["Offer is not editable (because rejected or pending)"]}, status_code=400
-                )
+    for price_category_to_edit in price_categories_to_edit:
+        if price_category_to_edit.id not in existing_price_categories_by_id:
+            raise api_errors.ApiErrors(
+                {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % price_category_to_edit.id]},
+                status_code=400,
+            )
+        data = price_category_to_edit.dict(exclude_unset=True)
+        try:
+            offers_api.edit_price_category(
+                offer,
+                price_category=existing_price_categories_by_id[data["id"]],
+                label=data.get("label", offers_api.UNCHANGED),
+                price=data.get("price", offers_api.UNCHANGED),
+            )
+        except exceptions.RejectedOrPendingOfferNotEditable:
+            raise api_errors.ApiErrors(
+                {"offer": ["Offer is not editable (because rejected or pending)"]}, status_code=400
+            )
+
+    # Since we modified the price categories, we need to push the changes to the database
+    # so that the response does include them
+    db.session.flush()
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 

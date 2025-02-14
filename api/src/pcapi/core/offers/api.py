@@ -429,8 +429,14 @@ def update_offer(
     if should_send_mail and (withdrawal_updated or oa_updated):
         transactional_mails.send_email_for_each_ongoing_booking(offer)
 
-    reason = search.IndexationReason.OFFER_UPDATE
-    search.async_index_offer_ids([offer.id], reason=reason, log_extra={"changes": updates_set})
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [offer.id],
+            reason=search.IndexationReason.OFFER_UPDATE,
+            log_extra={"changes": updates_set},
+        )
+    )
 
     return offer
 
@@ -616,12 +622,7 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
         )
         if send_email_notification and withdrawal_updated:
             for offer in query_to_update.all():
-                on_commit(
-                    partial(
-                        transactional_mails.send_email_for_each_ongoing_booking,
-                        offer,
-                    ),
-                )
+                transactional_mails.send_email_for_each_ongoing_booking(offer)
 
 
 def archive_collective_offers(
@@ -1037,10 +1038,13 @@ def edit_stock(
         finance_api.update_finance_event_pricing_date(stock)
 
     repository.add_to_session(stock)
-    search.async_index_offer_ids(
-        [stock.offerId],
-        reason=search.IndexationReason.STOCK_UPDATE,
-        log_extra={"changes": set(modifications.keys())},
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [stock.offerId],
+            reason=search.IndexationReason.STOCK_UPDATE,
+            log_extra={"changes": set(modifications.keys())},
+        ),
     )
 
     log_extra_data: dict[str, typing.Any] = {
@@ -1101,9 +1105,13 @@ def publish_offer(
     else:
         if offer.publicationDate:
             offers_repository.delete_future_offer(offer.id)
-        search.async_index_offer_ids(
-            [offer.id],
-            reason=search.IndexationReason.OFFER_PUBLICATION,
+
+        on_commit(
+            partial(
+                search.async_index_offer_ids,
+                [offer.id],
+                reason=search.IndexationReason.OFFER_PUBLICATION,
+            )
         )
         logger.info(
             "Offer has been published",
@@ -1247,9 +1255,12 @@ def delete_mediation(offer: models.Offer) -> None:
 
     _delete_mediations_and_thumbs(mediations)
 
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.MEDIATION_DELETION,
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [offer.id],
+            reason=search.IndexationReason.MEDIATION_DELETION,
+        ),
     )
 
 
