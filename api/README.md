@@ -452,3 +452,4 @@ Lors d'un changement dans le fichier `requirements.py`, une nouvelle image docke
 docker image prune
 ```
 
+Non mais je vous assure que je ne mergerai pas cette ligne.
