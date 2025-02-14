@@ -1,4 +1,3 @@
-
 import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
 import { getProviderInfo } from 'commons/core/Providers/utils/getProviderInfo'
 import {
@@ -87,23 +86,21 @@ export const VenueProviderCard = ({
         </div>
       )}
       <div className={style['provider-actions-container']}>
-        <div>
-          {isAllocineProvider(venueProvider.provider) && (
-            <AllocineProviderEdit
-              venueProvider={venueProvider}
-              venue={venue}
-              offererId={offererId}
-            />
-          )}
+        {isAllocineProvider(venueProvider.provider) && (
+          <AllocineProviderEdit
+            venueProvider={venueProvider}
+            venue={venue}
+            offererId={offererId}
+          />
+        )}
 
-          {isCinemaProvider(venueProvider.provider) && (
-            <CinemaProviderEdit
-              venueProvider={venueProvider}
-              venue={venue}
-              offererId={offererId}
-            />
-          )}
-        </div>
+        {isCinemaProvider(venueProvider.provider) && (
+          <CinemaProviderEdit
+            venueProvider={venueProvider}
+            venue={venue}
+            offererId={offererId}
+          />
+        )}
         <div className={style['provider-actions-delete-and-inactivate']}>
           <ToggleVenueProviderStatusButton
             venueProvider={venueProvider}

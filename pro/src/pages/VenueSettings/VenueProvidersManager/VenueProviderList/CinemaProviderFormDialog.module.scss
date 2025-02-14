@@ -2,18 +2,11 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .cinema-provider-form-dialog {
-  align-items: center;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  max-width: rem.torem(504px);
-  text-align: left;
+  flex-grow: 1;
+}
 
-  .title {
-    @include fonts.title4;
-  }
-
-  .explanation {
-    margin: rem.torem(24px) 0 rem.torem(8px) 0;
-  }
+.explanation {
+  margin: rem.torem(8px) 0 rem.torem(32px) 0;
 }

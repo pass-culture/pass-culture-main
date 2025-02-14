@@ -60,6 +60,8 @@ export const CinemaProviderEdit = ({
 
   return (
     <DialogBuilder
+      variant="drawer"
+      title="Modifier les paramètres de vos offres"
       trigger={
         <Button variant={ButtonVariant.TERNARY} icon={fullEditIcon}>
           Paramétrer
