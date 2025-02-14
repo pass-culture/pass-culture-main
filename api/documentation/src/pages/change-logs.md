@@ -16,6 +16,7 @@ title: Pass Culture API change logs
 ## February 2025
 
 - You can specify a `publicationDate` precise to the quarter of hour using the [**Create Product Offer endpoint**](/rest-api#tag/Product-Offers/operation/PostProductOffer) and [**Create Event Offer endpoint**](/rest-api#tag/Event-Offers/operation/PostEventOffer).
+- The `isActive` and `isSoldOut` fields have been deprecated in the [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic) and the [**Get Collective Offers endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOffersPublic).
 
 ## January 2025
 - The `beginningDatetime` has been removed from the following endpoints:
