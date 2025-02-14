@@ -547,7 +547,7 @@ def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = F
     for offer in offers:
         if offer and offer.is_eligible_for_search:
             to_add.append(offer)
-        elif backend.check_offer_is_indexed(offer):
+        elif backend.check_offer_id_is_indexed(offer.id):
             to_delete_ids.append(offer.id)
         else:
             # FIXME (dbaty, 2021-06-24). I think we could safely do

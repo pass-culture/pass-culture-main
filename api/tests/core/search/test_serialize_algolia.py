@@ -20,6 +20,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.providers.constants import BookFormat
 from pcapi.core.search.backends import algolia
+from pcapi.core.search.backends import serialization
 from pcapi.utils.human_ids import humanize
 
 
@@ -98,7 +99,7 @@ def test_serialize_offer():
             "isPermanent": offer.isPermanent,
             "isThing": True,
             "last30DaysBookings": 0,
-            "last30DaysBookingsRange": algolia.Last30DaysBookingsRange.VERY_LOW.value,
+            "last30DaysBookingsRange": serialization.Last30DaysBookingsRange.VERY_LOW.value,
             "musicType": [],
             "name": "Titre formidable",
             "nativeCategoryId": offer.subcategory.native_category_id,
@@ -193,7 +194,7 @@ def test_serialize_offer_legacy():
             "isPermanent": offer.isPermanent,
             "isThing": True,
             "last30DaysBookings": 0,
-            "last30DaysBookingsRange": algolia.Last30DaysBookingsRange.VERY_LOW.value,
+            "last30DaysBookingsRange": serialization.Last30DaysBookingsRange.VERY_LOW.value,
             "musicType": [],
             "name": "Titre formidable",
             "nativeCategoryId": offer.subcategory.native_category_id,
@@ -271,12 +272,12 @@ def test_serialize_offer_extra_data(
 @pytest.mark.parametrize(
     "bookings_count, expected_range",
     (
-        (0, algolia.Last30DaysBookingsRange.VERY_LOW.value),
-        (1, algolia.Last30DaysBookingsRange.LOW.value),
-        (2, algolia.Last30DaysBookingsRange.MEDIUM.value),
-        (3, algolia.Last30DaysBookingsRange.HIGH.value),
-        (4, algolia.Last30DaysBookingsRange.VERY_HIGH.value),
-        (5, algolia.Last30DaysBookingsRange.VERY_HIGH.value),
+        (0, serialization.Last30DaysBookingsRange.VERY_LOW.value),
+        (1, serialization.Last30DaysBookingsRange.LOW.value),
+        (2, serialization.Last30DaysBookingsRange.MEDIUM.value),
+        (3, serialization.Last30DaysBookingsRange.HIGH.value),
+        (4, serialization.Last30DaysBookingsRange.VERY_HIGH.value),
+        (5, serialization.Last30DaysBookingsRange.VERY_HIGH.value),
     ),
 )
 def test_index_last_30_days_bookings(app, bookings_count, expected_range):
@@ -330,8 +331,8 @@ def test_serialize_default_position():
     offer = offers_factories.DigitalOfferFactory()
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["_geoloc"] == {
-        "lat": algolia.DEFAULT_LATITUDE,
-        "lng": algolia.DEFAULT_LONGITUDE,
+        "lat": serialization.DEFAULT_LATITUDE,
+        "lng": serialization.DEFAULT_LONGITUDE,
     }
 
 
@@ -501,8 +502,8 @@ def test_serialize_collective_offer_template():
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
     offer_venue_offerer_address = offerers_factories.OffererAddressFactory(
-        address__latitude=algolia.DEFAULT_LATITUDE,
-        address__longitude=algolia.DEFAULT_LONGITUDE,
+        address__latitude=serialization.DEFAULT_LATITUDE,
+        address__longitude=serialization.DEFAULT_LONGITUDE,
     )
     offer_venue = offerers_factories.VenueFactory(offererAddress=offer_venue_offerer_address)
     venue_offerer_address = offerers_factories.OffererAddressFactory(
@@ -566,7 +567,9 @@ def test_serialize_collective_offer_template_legacy():
     # Same as test_serialize_collective_offer_template
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
-    venue = offerers_factories.VenueFactory(latitude=algolia.DEFAULT_LATITUDE, longitude=algolia.DEFAULT_LONGITUDE)
+    venue = offerers_factories.VenueFactory(
+        latitude=serialization.DEFAULT_LATITUDE, longitude=serialization.DEFAULT_LONGITUDE
+    )
 
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
