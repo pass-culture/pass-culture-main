@@ -396,6 +396,7 @@ def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBody
     on_success_status=202,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def patch_all_offers_active_status(
     body: offers_serialize.PatchAllOffersActiveStatusBodyModel,
 ) -> offers_serialize.PatchAllOffersActiveStatusResponseModel:
