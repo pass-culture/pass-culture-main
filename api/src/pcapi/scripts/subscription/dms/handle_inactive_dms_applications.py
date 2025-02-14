@@ -55,8 +55,9 @@ def _has_inactivity_delay_expired(dms_application: dms_models.DmsApplicationResp
     if dms_application.latest_modification_datetime >= date_with_delay:
         return False
 
+    # Do not close application if no message has been sent by either an instructor or the automation
     if not dms_application.messages:
-        return True
+        return False
 
     most_recent_message = max(dms_application.messages, key=lambda message: message.created_at)
 
@@ -74,7 +75,7 @@ def _is_message_from_applicant(
 def _mark_without_continuation_a_draft_application(dms_application: dms_models.DmsApplicationResponse) -> None:
     """Mark a draft application as without continuation.
 
-    First make it on_going - disable notification to only notificate the user of the without_continuation change
+    First make it on_going - disable notification to only notify the user of the without_continuation change
     Then mark it without_continuation
     """
 

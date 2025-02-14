@@ -54,7 +54,7 @@ class HandleInactiveApplicationTest:
         mark_without_continuation_mock.assert_called_once_with(
             inactive_application.id,
             "SomeInstructorId",
-            motivation="Aucune activité n'a eu lieu sur votre dossier depuis plus de 90 jours. Si vous souhaitez le soumettre à nouveau, vous pouvez contacter le support à l'adresse support@example.com",
+            motivation="Aucune activité n'a eu lieu sur votre dossier depuis plus de 30 jours. Si vous souhaitez le soumettre à nouveau, vous pouvez contacter le support à l'adresse support@example.com",
         )
         assert active_fraud_check.status == fraud_models.FraudCheckStatus.STARTED
         assert inactive_fraud_check.status == fraud_models.FraudCheckStatus.CANCELED
@@ -131,7 +131,7 @@ class HandleInactiveApplicationTest:
         mark_without_continuation_mock.assert_called_once_with(
             inactive_application.id,
             "SomeInstructorId",
-            motivation="Aucune activité n'a eu lieu sur votre dossier depuis plus de 90 jours. Si vous souhaitez le soumettre à nouveau, vous pouvez contacter le support à l'adresse support@example.com",
+            motivation="Aucune activité n'a eu lieu sur votre dossier depuis plus de 30 jours. Si vous souhaitez le soumettre à nouveau, vous pouvez contacter le support à l'adresse support@example.com",
         )
         assert active_fraud_check.status == fraud_models.FraudCheckStatus.STARTED
         assert inactive_fraud_check.status == fraud_models.FraudCheckStatus.CANCELED
@@ -179,7 +179,7 @@ class HasInactivityDelayExpiredTest:
             messages=[],
         )
 
-        assert _has_inactivity_delay_expired(no_message_application)
+        assert not _has_inactivity_delay_expired(no_message_application)
 
     @time_machine.travel("2022-04-27")
     def test_has_inactivity_delay_expired_with_recent_message(self):
