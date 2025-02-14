@@ -65,6 +65,7 @@ class ProAttributes:
     venues_names: typing.Iterable[str]  # Distinct names of all these venues
     venues_types: typing.Iterable[str]  # Distinct types of all these venues
     venues_labels: typing.Iterable[str]  # Distinct labels of all these venues
+    # departement_code and postal_code are now only sent to Zendesk Sell
     departement_code: typing.Iterable[
         str
     ]  # Distinct department codes of all these venues; keep same name as UserAttributes
