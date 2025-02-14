@@ -30,13 +30,14 @@ $animation-timing-function: ease-in-out;
 
 .dialog-builder-title {
   @include fonts.title3;
+
+  margin-bottom: rem.torem(16px);
 }
 
 .dialog-builder-section {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .dialog-builder-footer {
