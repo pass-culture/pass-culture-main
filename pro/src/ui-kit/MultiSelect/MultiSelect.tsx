@@ -19,19 +19,14 @@ export type Option = {
   label: string
 }
 
-export interface Options {
-  options: Option[]
-  selectAllLabel?: string
-  hasSelectAllOptions?: boolean
-  checked?: boolean
-}
-
 /**
  * Props for the MultiSelect component.
  */
 type MultiSelectProps = {
   /** Array of available options */
-  options: Options[]
+  options: Option[]
+  /** Array of available options */
+  selectedOptions?: Option[]
   /** Array of initially selected options */
   defaultOptions?: Option[]
   /** Label for the MultiSelect field */
@@ -41,7 +36,11 @@ type MultiSelectProps = {
   /** Whether the MultiSelect is disabled */
   disabled?: boolean
   /** Callback function called when selected options change */
-  onSelectedOptionsChanged: (options: Option[]) => void
+  onSelectedOptionsChanged: (
+    selectedOptions: Option[],
+    addedOptions: Option[],
+    removedOptions: Option[]
+  ) => void
   /** Error message to display */
   error?: string
   /** Name attribute for the form field */
@@ -87,7 +86,7 @@ type MultiSelectProps = {
  *   label="Select Options"
  *   buttonLabel="Options"
  *   name="multiSelect"
- *   onSelectedOptionsChanged={(selectedOptions) => console.log(selectedOptions)}
+ *   onSelectedOptionsChanged={({selectedOptions, addedOptions, removedOptions}) => console.log(selectedOptions, addedOptions, removedOptions)}
  *   hasSearch={true}
  *   searchLabel="Search options"
  * />
@@ -101,6 +100,7 @@ type MultiSelectProps = {
  */
 export const MultiSelect = ({
   options,
+  selectedOptions,
   defaultOptions = [],
   hasSearch = false,
   searchLabel,
@@ -117,38 +117,37 @@ export const MultiSelect = ({
 }: MultiSelectProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedItems, setSelectedItems] = useState<Option[]>(defaultOptions)
-  const [checkboxStates, setCheckboxStates] = useState(() => {
-    return options.reduce(
-      (acc, group, index) => {
-        if (group.hasSelectAllOptions) {
-          acc[index] = group.checked || false
-        }
-        return acc
-      },
-      {} as Record<number, boolean>
-    )
-  })
-
-  const totalOptionsCount = options.reduce(
-    (total, group) => total + group.options.length,
-    0
-  )
-
-  const isSelectAllChecked = selectedItems.length === totalOptionsCount
-
-  const mergedOptions = options.reduce(
-    (acc, group) => [...acc, ...group.options],
-    [] as Option[]
-  )
+  const isSelectAllChecked = selectedItems.length === options.length
 
   const containerRef = useRef<HTMLDivElement>(null)
   const id = useId()
 
   const toggleDropdown = () => setIsOpen((prev) => !prev)
 
+  useEffect(() => {
+    if (selectedOptions) {
+      setSelectedItems(selectedOptions)
+    }
+  }, [selectedOptions])
+
   function updateSelectedItems(updatedSelectedItems: Option[]) {
+    const currentIds = new Set(selectedItems.map((item) => item.id))
+    const updatedIds = new Set(updatedSelectedItems.map((item) => item.id))
+
+    const removedOptionsIds = new Set(
+      [...currentIds].filter((id) => !updatedIds.has(id))
+    )
+
+    const addedOptionsIds = new Set(
+      [...updatedIds].filter((id) => !currentIds.has(id))
+    )
+
+    onSelectedOptionsChanged(
+      updatedSelectedItems,
+      options.filter((op) => addedOptionsIds.has(op.id)),
+      options.filter((op) => removedOptionsIds.has(op.id))
+    )
     setSelectedItems(updatedSelectedItems)
-    onSelectedOptionsChanged(updatedSelectedItems)
   }
 
   const handleSelectItem = (item: Option) => {
@@ -156,52 +155,12 @@ export const MultiSelect = ({
       ? selectedItems.filter((i) => i.id !== item.id)
       : [...selectedItems, item]
 
-      options.forEach((group, index) => {
-        if (group.options.some((opt) => opt.id === item.id)) {
-          const allGroupItemsSelected = group.options.every(groupItem => 
-            updatedItems.some(selectedItem => selectedItem.id === groupItem.id)
-          )
-    
-          setCheckboxStates((prev) => ({
-            ...prev,
-            [index]: allGroupItemsSelected,
-          }))
-        }
-      })
-
     updateSelectedItems(updatedItems)
   }
 
-  const handleSelectAll = (option: Option[], index?: number) => {
-    if (index !== undefined) {
-      setCheckboxStates((prev) => ({
-        ...prev,
-        [index]: !prev[index],
-      }))
-
-      const optionIds = new Set(option.map((opt) => opt.id))
-      const remainingItems = selectedItems.filter(
-        (item) => !optionIds.has(item.id)
-      )
-
-      const mergedItems = [...selectedItems, ...option].filter(
-        (item, index, self) => index === self.findIndex((t) => t.id === item.id)
-      )
-
-      updateSelectedItems(checkboxStates[index] ? remainingItems : mergedItems)
-    } else {
-      const updatedItems = isSelectAllChecked ? [] : option
-      setCheckboxStates((prev) =>
-        Object.keys(prev).reduce(
-          (acc, key) => ({
-            ...acc,
-            [key]: isSelectAllChecked ? false : true,
-          }),
-          {}
-        )
-      )
-      updateSelectedItems(updatedItems)
-    }
+  const handleSelectAll = () => {
+    const updatedItems = isSelectAllChecked ? [] : options
+    updateSelectedItems(updatedItems)
   }
 
   const handleRemoveTag = (itemId: string) => {
@@ -250,14 +209,12 @@ export const MultiSelect = ({
             <MultiSelectPanel
               id={id}
               label={label}
-              mergedOptions={mergedOptions.map((option) => ({
+              options={options.map((option) => ({
                 ...option,
                 checked: selectedItems.some((item) => item.id === option.id),
               }))}
-              options={options}
               onOptionSelect={handleSelectItem}
-              onSelectAllOptions={handleSelectAll}
-              checkboxStates={checkboxStates}
+              onSelectAll={handleSelectAll}
               isAllChecked={isSelectAllChecked}
               hasSearch={hasSearch}
               searchLabel={searchLabel}

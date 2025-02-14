@@ -4,31 +4,27 @@ import strokeSearch from 'icons/stroke-search.svg'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 
-import { Option, Options } from './MultiSelect'
+import { Option } from './MultiSelect'
 import styles from './MultiSelect.module.scss'
 
 type MultiSelectPanelProps = {
   id: string
   className?: string
   label: string
-  mergedOptions: (Option & { checked: boolean })[]
-  options: Options[]
+  options: (Option & { checked: boolean })[]
   hasSelectAllOptions?: boolean
   isAllChecked: boolean
   hasSearch?: boolean
   searchLabel?: string
   onOptionSelect: (option: Option) => void
-  onSelectAllOptions: (option: Option[], index?: number) => void
-  checkboxStates: Record<number, boolean>
+  onSelectAll: () => void
 }
 
 export const MultiSelectPanel = ({
   id,
-  mergedOptions,
   options,
   onOptionSelect,
-  onSelectAllOptions,
-  checkboxStates,
+  onSelectAll,
   hasSearch = false,
   searchLabel,
   hasSelectAllOptions,
@@ -38,10 +34,10 @@ export const MultiSelectPanel = ({
 
   const filteredOptions = useMemo(
     () =>
-      mergedOptions.filter((option) =>
+      options.filter((option) =>
         option.label.toLowerCase().includes(searchValue.toLowerCase())
       ),
-    [mergedOptions, searchValue]
+    [options, searchValue]
   )
 
   return (
@@ -79,21 +75,10 @@ export const MultiSelectPanel = ({
                   checked={isAllChecked}
                   labelClassName={styles['label']}
                   inputClassName={styles['checkbox']}
-                  onChange={() => onSelectAllOptions(mergedOptions)}
+                  onChange={onSelectAll}
                 />
               </li>
             )}
-            {options.map((elm, index) => elm.hasSelectAllOptions && (
-              <li key={'all-other-options'} className={styles.item}>
-                <BaseCheckbox
-                  label={elm.selectAllLabel}
-                  checked={checkboxStates[index]}
-                  labelClassName={styles['label']}
-                  inputClassName={styles['checkbox']}
-                  onChange={() => onSelectAllOptions(elm.options, index)}
-                />
-              </li>
-            ))}
             {filteredOptions.map((option) => (
               <li key={option.id} className={styles.item}>
                 <BaseCheckbox
