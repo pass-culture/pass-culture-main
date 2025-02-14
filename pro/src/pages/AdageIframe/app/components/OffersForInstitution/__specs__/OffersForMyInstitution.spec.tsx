@@ -57,6 +57,19 @@ describe('OffersInstitutionList', () => {
     expect(screen.getByText(defaultCollectiveOffer.name)).toBeInTheDocument()
   })
 
+  it('should display title and banner', async () => {
+    renderOffersForMyInstitution()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByText('Pour mon établissement'))
+    expect(
+      screen.getByRole('link', {
+        name: /Voir la page “Suivi pass Culture”/i,
+      })
+    ).toHaveAttribute('href', 'adage/passculture/index')
+  })
+
   it('should show an offer card', async () => {
     vi.spyOn(
       apiAdage,
