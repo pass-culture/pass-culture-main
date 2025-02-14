@@ -54,6 +54,7 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_and_lock_user
+from pcapi.core.users.utils import get_age_at_date
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
@@ -100,6 +101,16 @@ def _is_ended_booking(booking: Booking) -> bool:
         if booking.is_used_or_reimbursed
         else booking.status == BookingStatus.CANCELLED
     )
+
+
+def is_booking_by_18_user(booking: Booking) -> bool:
+    if not booking.deposit:
+        return False
+    if booking.deposit.type == finance_models.DepositType.GRANT_18:
+        return True
+    if booking.deposit.type == finance_models.DepositType.GRANT_17_18:
+        return get_age_at_date(booking.user.birth_date, booking.dateCreated, booking.user.departementCode) >= 18
+    return False
 
 
 def get_individual_bookings(user: User) -> list[Booking]:
