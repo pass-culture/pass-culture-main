@@ -1,7 +1,10 @@
+from functools import partial
+
 from pcapi.core import mails
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import models as offerer_models
+from pcapi.repository import on_commit
 from pcapi.utils import urls
 
 
@@ -19,4 +22,10 @@ def send_permanent_venue_needs_picture(venue: offerer_models.Venue) -> None:
     data = get_permanent_venue_needs_picture_data(venue)
     if not venue.bookingEmail:
         return
-    mails.send(recipients=[venue.bookingEmail], data=data)
+    on_commit(
+        partial(
+            mails.send,
+            recipients=[venue.bookingEmail],
+            data=data,
+        )
+    )
