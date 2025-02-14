@@ -126,7 +126,7 @@ def build_new_offer_from_product(
 ) -> models.Offer:
     return models.Offer(
         bookingEmail=venue.bookingEmail,
-        ean=product.extraData.get("ean") if product.extraData else None,
+        ean=product.ean,
         extraData=product.extraData,
         idAtProvider=id_at_provider,
         lastProviderId=provider_id,
