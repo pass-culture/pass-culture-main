@@ -11,6 +11,11 @@ def get_chunks(input_data: typing.Iterable[T], chunk_size: int) -> typing.Genera
     Build chunks of `chunk_size` max from an iterable.
     eg. get_chuks([1, 2, 3], 2) -> ([1, 2], [2])
     """
+    # Avoid infinite loop: len([]) will be < to 1 (chunk_size)
+    if chunk_size < 1:
+        chunk_size = 1
+        input_data = (_ for _ in [])
+
     if not inspect.isgenerator(input_data):
         # if `input_data` is not a generator, the while loop will not
         # consume anything and always get the same first items from
