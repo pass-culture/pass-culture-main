@@ -15,60 +15,14 @@
     <link rel="icon"
           type="image/x-icon"
           href="{{ url_for('static', filename='backoffice/favicon/' + icon_path) }}" />
-    <!-- Bootstrap icons -->
+    <!-- Bootstrap icons breaks if it is bundled -->
     <link href="{{ url_for('static', filename='backoffice/css/bootstrap-icons@1.11.0/font/bootstrap-icons.css') }}"
           rel="stylesheet"
           type="text/css" />
-    <!-- Tom Select JS configuration -->
-    <link href="{{ url_for('static', filename='backoffice/css/tom-select@2.4.1/dist/css/tom-select.css') }}"
+    <link href="{{ url_for('static', filename='backoffice/css/bundle.css',hash=static_hashes.css) }}"
           rel="stylesheet"
           type="text/css" />
-    <link href="{{ url_for('static', filename='backoffice/css/tom-select-bootstrap-5.min.css') }}"
-          rel="stylesheet"
-          type="text/css" />
-    <!-- Vanilla datetime range picker -->
-    <link href="{{ url_for('static', filename='backoffice/css/vanilla-datetimerange-picker@latest/dist/vanilla-datetimerange-picker.css') }}"
-          rel="stylesheet"
-          type="text/css" />
-    <script src="{{ url_for('static', filename='backoffice/js/libs/momentjs@2.30.1/moment.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/libs/vanilla-datetimerange-picker@latest/dist/vanilla-datetimerange-picker.js') }}"></script>
-    <!-- Our css needs to be imported after Bootstrap to have a stronger weight -->
-    <link href="{{ url_for('static', filename='backoffice/css/compiled/pc/pc.css') }}"
-          rel="stylesheet"
-          type="text/css" />
-    <!-- Hotwired turbo frame -->
-    <script src="{{ url_for('static', filename='backoffice/js/libs/@hotwired/turbo@v8.0.12/dist/turbo.es2017-umd.js') }}"></script>
-    <!-- Bootstrap JS -->
-    <script src="{{ url_for('static', filename='backoffice/js/libs/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/libs/tom-select@2.4.1/dist/js/tom-select.complete.min.js') }}"></script>
-    <!-- Our core libs -->
-    <script src="{{ url_for('static', filename='backoffice/js/core/pc-utils.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/core/pc-event-handler.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/core/pc-addon.js') }}"></script>
-    <!-- Our app -->
-    <script src="{{ url_for('static', filename='backoffice/js/core/pc-backoffice-app.js') }}"></script>
-    <!-- Our JS libs -->
-    <script src="{{ url_for('static', filename='backoffice/js/addons/bs-tooltips.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-validation-filters.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-forms-check-validity.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-tom-select-field.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-override-custom-textarea-enter.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-table-multi-select.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-batch-action-form.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-postal-address-autocomplete.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-registration-steps.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-filter-dataset.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-confirm-modal.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-reset-modal-turbo-src.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-field-list.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-form-field.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-clipboard.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-date-range-field.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-form.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-pro-search-form.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-strip-query-string.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-hide-on-click.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-display-selector.js') }}"></script>
+    <script src="{{ url_for('static', filename='backoffice/js/bundle.js', hash=static_hashes.js) }}"></script>
     <script>
       const app = new PcBackofficeApp({
         addOns: [

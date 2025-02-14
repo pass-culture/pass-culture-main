@@ -223,8 +223,8 @@ class GetIndividualBookingListForm(BaseBookingListForm):
         return (
             super().is_single_venue_with_optional_dates
             and not self.category.data
-            and not self.cancellation_reason
-            and not self.deposit
+            and not self.cancellation_reason.data
+            and self.deposit.data == "all"
         )
 
 
