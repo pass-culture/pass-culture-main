@@ -38,7 +38,7 @@ describe('CinemaProviderEdit', () => {
 
     await userEvent.click(editButton)
     expect(
-      screen.getByText('Modifier les paramètres de mes offres')
+      screen.getByText('Modifier les paramètres de vos offres')
     ).toBeInTheDocument()
     expect(
       screen.getByText('Accepter les réservations duo')
@@ -57,7 +57,7 @@ describe('CinemaProviderEdit', () => {
 
     await userEvent.click(editButton)
     expect(
-      screen.getByText('Modifier les paramètres de mes offres')
+      screen.getByText('Modifier les paramètres de vos offres')
     ).toBeInTheDocument()
     expect(
       screen.getByText('Accepter les réservations duo')
