@@ -72,8 +72,8 @@ def generate_cashflows_and_payment_files(
                 ],
                 icon_emoji=":large_green_circle:",
             )
-        if settings.GENERATE_CGR_KINEPOLIS_INVOICES:
-            export_csv_and_send_notification_emails_job.delay(batch.id, batch.label)
+    if settings.GENERATE_CGR_KINEPOLIS_INVOICES:
+        export_csv_and_send_notification_emails_job.delay(batch.id, batch.label)
 
 
 @blueprint.cli.command("generate_invoices")
