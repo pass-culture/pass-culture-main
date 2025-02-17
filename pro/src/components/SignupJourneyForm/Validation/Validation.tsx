@@ -7,7 +7,7 @@ import { api } from 'apiClient/api'
 import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
+import { defaultActivityValues } from 'commons/context/SignupJourneyContext/constants'
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
@@ -43,6 +43,8 @@ export const Validation = (): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
+
   const { activity, offerer } = useSignupJourneyContext()
   useInitReCaptcha()
 
@@ -67,7 +69,10 @@ export const Validation = (): JSX.Element => {
       navigate('/parcours-inscription/identification')
       return
     }
-    if (activity === null || activity === DEFAULT_ACTIVITY_VALUES) {
+    if (
+      activity === null ||
+      activity === defaultActivityValues(isNewSignupEnabled)
+    ) {
       navigate('/parcours-inscription/activite')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

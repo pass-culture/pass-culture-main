@@ -29,5 +29,7 @@ def signup_pro_V2(body: users_serialize.ProUserCreationBodyV2Model) -> None:
         users_api.create_pro_user_V2(body)
     except phone_exceptions.InvalidPhoneNumber:
         raise ApiErrors(errors={"phoneNumber": ["Le numéro de téléphone est invalide"]})
+    except phone_exceptions.RequiredPhoneNumber:
+        raise ApiErrors(errors={"phoneNumber": ["Le numéro de téléphone est requis"]})
     except users_exceptions.UserAlreadyExistsException:
         raise ApiErrors(errors={"email": ["l'email existe déjà"]})
