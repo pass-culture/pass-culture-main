@@ -10,6 +10,7 @@ import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+  INDIVIDUAL_OFFER_SUBTYPE,
   OFFER_TYPES,
   OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
@@ -45,7 +46,7 @@ export const OfferTypeScreen = (): JSX.Element => {
     collectiveOfferSubtype: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
     collectiveOfferSubtypeDuplicate:
       COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,
-    individualOfferSubtype: '',
+    individualOfferSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
   }
 
   const { data } = useSWR<GetOfferersNamesResponseModel | null, string, [string]>(

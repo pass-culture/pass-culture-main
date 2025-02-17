@@ -101,6 +101,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         }
 
         setOffers(offers)
+        await formikSelection.setFieldValue('templateOfferId', String(offers[0].id))
         setIsLoading(false)
       } catch {
         setIsLoading(false)

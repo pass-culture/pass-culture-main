@@ -204,24 +204,4 @@ describe('CollectiveOfferConfirmation', () => {
       )
     )
   })
-
-  it('should display error when offer not selected', async () => {
-    renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
-
-    await waitFor(() =>
-      expect(
-        screen.getByText('Les dernières offres vitrines créées')
-      ).toBeInTheDocument()
-    )
-
-    const buttonNextStep = screen.getByText('Étape suivante')
-    await userEvent.click(buttonNextStep)
-
-    await waitFor(() =>
-      expect(notifyError).toHaveBeenNthCalledWith(
-        1,
-        'Vous devez sélectionner une offre vitrine à dupliquer'
-      )
-    )
-  })
 })

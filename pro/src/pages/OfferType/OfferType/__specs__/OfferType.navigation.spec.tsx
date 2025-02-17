@@ -82,14 +82,4 @@ describe('screens:IndividualOffer::OfferType', () => {
       search: 'lieu=123&offer-type=PHYSICAL_EVENT',
     })
   })
-
-  it('should disable button when type was not selected', async () => {
-    renderOfferTypes('123')
-
-    // type is not selected
-    expect(screen.getByText('Étape suivante')).toBeDisabled()
-
-    await userEvent.click(screen.getByText('Un évènement physique daté'))
-    expect(screen.getByText('Étape suivante')).not.toBeDisabled()
-  })
 })

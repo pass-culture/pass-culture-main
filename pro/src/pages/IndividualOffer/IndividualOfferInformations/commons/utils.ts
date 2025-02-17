@@ -2,6 +2,7 @@ import {
   GetIndividualOfferResponseModel,
   type GetIndividualOfferWithAddressResponseModel,
   VenueListItemResponseModel,
+  WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import {
   OFFER_STATUS_PENDING,
@@ -89,7 +90,7 @@ export function setDefaultInitialValuesFromOffer({
       DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['withdrawalDetails'],
     withdrawalDelay:
       offer.withdrawalDelay === null ? undefined : offer.withdrawalDelay,
-    withdrawalType: offer.withdrawalType || undefined,
+    withdrawalType: offer.withdrawalType || WithdrawalTypeEnum.NO_TICKET,
     accessibility: {
       [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant || false,
       [AccessibilityEnum.MENTAL]: offer.mentalDisabilityCompliant || false,
