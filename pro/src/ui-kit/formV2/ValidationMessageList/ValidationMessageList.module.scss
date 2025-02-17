@@ -1,8 +1,13 @@
 @use "styles/mixins/_forms.scss" as forms;
+@use "styles/mixins/rem.scss" as rem;
 
 .password-footer {
   @include forms.field-layout-footer;
 
   margin-top: 0;
   flex-direction: column;
+
+  &:not(:empty):last-child {
+    margin-bottom: rem.torem(16px);
+  }
 }
