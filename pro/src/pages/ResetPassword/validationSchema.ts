@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { passwordValidationStatus } from 'commons/core/shared/utils/validation'
+import { passwordValidationStatus } from 'ui-kit/formV2/PasswordInput/validation'
 
 export const validationSchema = yup.object().shape({
   newPasswordValue: yup

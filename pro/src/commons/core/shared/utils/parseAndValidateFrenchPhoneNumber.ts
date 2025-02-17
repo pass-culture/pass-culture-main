@@ -45,3 +45,15 @@ export const parseAndValidateFrenchPhoneNumber = (phoneNumber: string) => {
   }
   return parsedPhoneNumber
 }
+
+export const isPhoneValid = (phone: string | undefined): boolean => {
+  if (!phone) {
+    return false
+  }
+  try {
+    parseAndValidateFrenchPhoneNumber(phone)
+  } catch {
+    return false
+  }
+  return true
+}

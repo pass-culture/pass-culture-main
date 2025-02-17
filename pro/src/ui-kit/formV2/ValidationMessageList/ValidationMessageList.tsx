@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 
+import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
+import { FieldSuccess } from 'ui-kit/form/shared/FieldSuccess/FieldSuccess'
 import {
   getPasswordRuleLabel,
   passwordValidationStatus,
-} from 'commons/core/shared/utils/validation'
-import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
-import { FieldSuccess } from 'ui-kit/form/shared/FieldSuccess/FieldSuccess'
+} from 'ui-kit/formV2/PasswordInput/validation'
 
 import styles from './ValidationMessageList.module.scss'
 
