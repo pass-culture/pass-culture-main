@@ -1,12 +1,15 @@
-import { Form, FormikProvider, useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm } from 'react-hook-form'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
+import { useNotification } from 'commons/hooks/useNotification'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { BoxFormLayout } from 'ui-kit/BoxFormLayout/BoxFormLayout'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { PasswordInput } from 'ui-kit/form/PasswordInput/PasswordInput'
+import { PasswordInput } from 'ui-kit/formV2/PasswordInput/PasswordInput'
+import { ValidationMessageList } from 'ui-kit/formV2/ValidationMessageList/ValidationMessageList'
 
 import styles from '../UserPhoneForm/UserForm.module.scss'
 
@@ -22,76 +25,120 @@ type UserPasswordFormValues = {
   newConfirmationPassword: string
 }
 
+const isUserPasswordError = (
+  error: unknown
+): error is Record<keyof UserPasswordFormValues, string[]> => {
+  if (typeof error !== 'object' || error === null) {
+    return false
+  }
+  if (
+    'oldPassword' in error ||
+    'newPassword' in error ||
+    'newConfirmationPassword' in error
+  ) {
+    return true
+  }
+  return false
+}
+
 export const UserPasswordForm = ({
   closeForm,
 }: UserPasswordFormProps): JSX.Element => {
+  const notify = useNotification()
   const onSubmit = async (values: UserPasswordFormValues) => {
     try {
       await api.postChangePassword(values)
       closeForm()
     } catch (error) {
-      if (isErrorAPIError(error)) {
-        for (const field in error.body) {
-          formik.setFieldError(field, error.body[field])
+      // Check if we have a specific error message for one or more fields
+      if (
+        isErrorAPIError(error) &&
+        error.status < 500 &&
+        isUserPasswordError(error.body)
+      ) {
+        // If so, let's set the error message for each field
+        for (const [field, message] of Object.entries(error.body)) {
+          const typedField = field as keyof UserPasswordFormValues
+          setError(typedField, { message: message.join('\n') })
         }
+      } else {
+        // In any other case, it's a generic error
+        notify.error(
+          'Une erreur est survenue, veuillez réessayer ultérieurement.'
+        )
       }
     }
-    formik.setSubmitting(false)
   }
 
-  const initialValues: UserPasswordFormValues = {
+  const defaultValues: UserPasswordFormValues = {
     oldPassword: '',
     newPassword: '',
     newConfirmationPassword: '',
   }
 
-  const formik = useFormik({
-    initialValues,
-    onSubmit,
-    validationSchema,
-    validateOnChange: false,
+  const hookForm = useForm<UserPasswordFormValues>({
+    defaultValues,
+    resolver: yupResolver(validationSchema),
+    mode: 'onTouched',
   })
 
+  const {
+    handleSubmit,
+    register,
+    formState: { isSubmitting, errors },
+    watch,
+    setError,
+    trigger,
+  } = hookForm
+
   const onCancel = () => {
-    formik.resetForm()
+    hookForm.reset(defaultValues)
     closeForm()
   }
+
+  const newPassword = watch('newPassword')
 
   return (
     <>
       <BoxFormLayout.RequiredMessage />
       <BoxFormLayout.Fields>
-        <FormikProvider value={formik}>
-          <Form onSubmit={formik.handleSubmit}>
-            <FormLayout>
-              <FormLayout.Row>
-                <PasswordInput name="oldPassword" label="Mot de passe actuel" />
-              </FormLayout.Row>
-              <FormLayout.Row>
-                <PasswordInput
-                  name="newPassword"
-                  label="Nouveau mot de passe"
-                  withErrorPreview={true}
-                />
-              </FormLayout.Row>
-              <FormLayout.Row>
-                <PasswordInput
-                  name="newConfirmationPassword"
-                  label="Confirmer votre nouveau mot de passe"
-                />
-              </FormLayout.Row>
-            </FormLayout>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <FormLayout>
+            <FormLayout.Row>
+              <PasswordInput
+                {...register('oldPassword')}
+                error={errors.oldPassword?.message}
+                label="Mot de passe actuel"
+              />
+            </FormLayout.Row>
+            <FormLayout.Row>
+              <PasswordInput
+                {...register('newPassword', {
+                  onChange: () => trigger('newPassword'),
+                })}
+                error={errors.newPassword?.message}
+                label="Nouveau mot de passe"
+              />
+              <ValidationMessageList passwordValue={newPassword} />
+            </FormLayout.Row>
+            <FormLayout.Row>
+              <PasswordInput
+                {...register('newConfirmationPassword')}
+                error={errors.newConfirmationPassword?.message}
+                label="Confirmer votre nouveau mot de passe"
+              />
+            </FormLayout.Row>
+          </FormLayout>
 
-            <div className={styles['buttons-field']}>
-              <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
-                Annuler
-              </Button>
-              <Button type="submit" isLoading={formik.isSubmitting}>
-                Enregistrer
-              </Button>
-            </div>
-          </Form>
-        </FormikProvider>
+          <div className={styles['buttons-field']}>
+            <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
+              Annuler
+            </Button>
+            <Button type="submit" isLoading={isSubmitting}>
+              Enregistrer
+            </Button>
+          </div>
+        </form>
       </BoxFormLayout.Fields>
     </>
   )
