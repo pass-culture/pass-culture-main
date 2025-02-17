@@ -27,14 +27,19 @@ export const Default = {
     legend: 'What is the question?',
     group: [
       {
-        label: 'This should be hidden',
+        label: 'Mécontent',
         icon: 'J',
         value: '1',
       },
       {
-        label: 'This should be hidden too',
+        label: 'Content',
         icon: <span>2</span>,
         value: '2',
+      },
+      {
+        label: 'Très Content',
+        icon: <span>3</span>,
+        value: '3',
       },
     ],
   },

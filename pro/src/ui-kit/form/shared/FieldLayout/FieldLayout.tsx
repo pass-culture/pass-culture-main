@@ -143,11 +143,9 @@ export const FieldLayout = ({
               icon={fullHelpIcon}
               iconAlt="À propos"
               type="button"
-              hasTooltip
+              tooltipContent={<>{help}</>}
               variant={ButtonVariant.SECONDARY}
-            >
-              {help}
-            </Button>
+            />
           )}
         </div>
         {description && (
@@ -175,15 +173,13 @@ export const FieldLayout = ({
                 {...clearButtonProps}
                 aria-describedby={tooltipId}
                 className={styles['clear-button']}
-                hasTooltip={true}
                 type="button"
                 icon={
                   clearButtonDisplay === 'clear' ? fullClearIcon : fullCloseIcon
                 }
+                tooltipContent={<>{clearButtonProps.tooltip || 'Supprimer'}</>}
                 variant={ButtonVariant.TERNARY}
-              >
-                {clearButtonProps.tooltip || 'Supprimer'}
-              </Button>
+              />
             </div>
           )}
         </div>

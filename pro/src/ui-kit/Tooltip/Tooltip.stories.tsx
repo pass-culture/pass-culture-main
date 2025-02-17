@@ -1,5 +1,7 @@
 import type { StoryObj } from '@storybook/react'
 
+import { Button } from 'ui-kit/Button/Button'
+
 import { Tooltip } from './Tooltip'
 
 export default {
@@ -16,7 +18,7 @@ export default {
 
 export const Default: StoryObj<typeof Tooltip> = {
   args: {
-    content: 'Contenu du tooltip',
-    children: 'Hover me!',
+    content: <>Contenu du tooltip</>,
+    children: <Button>Je peux afficher un tooltip.</Button>,
   },
 }

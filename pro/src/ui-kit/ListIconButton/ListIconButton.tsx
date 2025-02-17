@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
-import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
 import styles from './ListIconButton.module.scss'
 
@@ -56,6 +55,7 @@ interface ListIconButtonProps extends React.HTMLProps<HTMLButtonElement> {
    * Target attribute for the <a> tag
    */
   target?: string
+  tooltipContent?: JSX.Element
 }
 
 const LIST_ICON_SIZE = '16'
@@ -85,10 +85,10 @@ const LIST_ICON_SIZE = '16'
 export const ListIconButton = forwardRef(
   (
     {
-      children,
       className,
       variant = ListIconButtonVariant.DEFAULT,
       tooltipContentClassName,
+      tooltipContent,
       icon,
       onClick,
       url,
@@ -99,8 +99,6 @@ export const ListIconButton = forwardRef(
     }: ListIconButtonProps,
     forwadedRef: ForwardedRef<HTMLButtonElement>
   ): JSX.Element => {
-    const { isTooltipHidden, ...tooltipProps } = useTooltipProps(buttonAttrs)
-
     const svgicon = (
       <SvgIcon
         src={icon}
@@ -108,18 +106,6 @@ export const ListIconButton = forwardRef(
         className={cn(styles['button-icon'])}
         width={LIST_ICON_SIZE}
       />
-    )
-    const content = !buttonAttrs.disabled ? (
-      <Tooltip
-        content={children}
-        tooltipContainerClassName={styles['tooltip']}
-        tooltipContentClassName={tooltipContentClassName}
-        visuallyHidden={isTooltipHidden}
-      >
-        {svgicon}
-      </Tooltip>
-    ) : (
-      svgicon
     )
 
     const button = (
@@ -134,9 +120,8 @@ export const ListIconButton = forwardRef(
         onClick={onClick}
         type="button"
         data-testid={dataTestid}
-        {...tooltipProps}
       >
-        {content}
+        {svgicon}
       </button>
     )
 
@@ -151,9 +136,8 @@ export const ListIconButton = forwardRef(
         onClick={onClick}
         target={target}
         rel={target === '_blank' ? 'noreferrer' : undefined}
-        {...tooltipProps}
       >
-        {content}
+        {svgicon}
       </a>
     ) : (
       <Link
@@ -164,13 +148,23 @@ export const ListIconButton = forwardRef(
         )}
         onClick={onClick}
         to={`${url}`}
-        {...tooltipProps}
       >
-        {content}
+        {svgicon}
       </Link>
     )
 
-    return url ? link : button
+    const listIconButton = url ? link : button
+
+    return tooltipContent ? (
+      <Tooltip
+        content={<>{tooltipContent}</>}
+        className={tooltipContentClassName}
+      >
+        {listIconButton}
+      </Tooltip>
+    ) : (
+      listIconButton
+    )
   }
 )
 

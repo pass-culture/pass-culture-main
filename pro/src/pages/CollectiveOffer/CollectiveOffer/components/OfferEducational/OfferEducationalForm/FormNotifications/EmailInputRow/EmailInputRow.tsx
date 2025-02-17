@@ -41,10 +41,8 @@ export const EmailInputRow = ({
             iconPosition={IconPositionEnum.CENTER}
             variant={ButtonVariant.TERNARY}
             disabled={disableForm}
-            hasTooltip
-          >
-            Supprimer l’email
-          </Button>
+            tooltipContent={<>Supprimer l’email</>}
+          />
         </div>
       )}
     </FormLayout.Row>
