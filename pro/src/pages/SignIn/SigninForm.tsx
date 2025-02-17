@@ -50,6 +50,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             error={errors.email?.message}
             description="Format : email@exemple.com"
             {...register('email')}
+            showMandatoryAsterisk={false}
           />
         </FormLayout.Row>
         <FormLayout.Row>
@@ -58,6 +59,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             required={true}
             error={errors.password?.message}
             {...register('password')}
+            showMandatoryAsterisk={false}
           />
         </FormLayout.Row>
         <ButtonLink

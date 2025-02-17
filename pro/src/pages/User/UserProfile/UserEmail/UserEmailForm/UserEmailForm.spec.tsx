@@ -31,12 +31,12 @@ describe('components:UserEmailForm', () => {
   it('should trigger onSubmit callback when submitting', async () => {
     renderUserEmailForm(props)
     await userEvent.type(
-      screen.getByLabelText('Nouvelle adresse email *'),
+      screen.getByLabelText('Nouvelle adresse email'),
       'test@test.com'
     )
     await userEvent.type(
       screen.getByLabelText(
-        'Mot de passe (requis pour modifier votre email) *'
+        'Mot de passe (requis pour modifier votre email)'
       ),
       'test'
     )
@@ -54,12 +54,12 @@ describe('components:UserEmailForm', () => {
     renderUserEmailForm(props)
 
     await userEvent.type(
-      screen.getByLabelText('Nouvelle adresse email *'),
+      screen.getByLabelText('Nouvelle adresse email'),
       'test@test.com'
     )
     await userEvent.type(
       screen.getByLabelText(
-        'Mot de passe (requis pour modifier votre email) *'
+        'Mot de passe (requis pour modifier votre email)'
       ),
       'test'
     )
@@ -73,21 +73,21 @@ describe('components:UserEmailForm', () => {
     renderUserEmailForm(props)
 
     await userEvent.type(
-      screen.getByLabelText('Nouvelle adresse email *'),
+      screen.getByLabelText('Nouvelle adresse email'),
       'test@test.com'
     )
     await userEvent.type(
       screen.getByLabelText(
-        'Mot de passe (requis pour modifier votre email) *'
+        'Mot de passe (requis pour modifier votre email)'
       ),
       'test'
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
 
-    expect(screen.getByLabelText('Nouvelle adresse email *')).toHaveValue('')
+    expect(screen.getByLabelText('Nouvelle adresse email')).toHaveValue('')
     expect(
-      screen.getByLabelText('Mot de passe (requis pour modifier votre email) *')
+      screen.getByLabelText('Mot de passe (requis pour modifier votre email)')
     ).toHaveValue('')
   })
 })

@@ -112,7 +112,7 @@ describe('PriceCategories', () => {
   it('should let going to stock when form has been filled in creation', async () => {
     renderPriceCategories({ offer: getIndividualOfferFactory() })
     await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif *'),
+      screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
 
@@ -135,7 +135,7 @@ describe('PriceCategories', () => {
       )
     )
     await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif *'),
+      screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
 

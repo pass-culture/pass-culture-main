@@ -37,6 +37,7 @@ type TextInputProps = FieldLayoutBaseProps &
      * If this prop is provided, the counter will be displayed
      */
     count?: number
+    showMandatoryAsterisk?: boolean
   }
 
 /**
@@ -86,6 +87,7 @@ export const TextInput = React.forwardRef(
       description,
       error,
       count,
+      showMandatoryAsterisk = true,
       ...props
     }: TextInputProps,
     ref: ForwardedRef<HTMLInputElement>
@@ -124,7 +126,7 @@ export const TextInput = React.forwardRef(
           })}
         >
           <label className={styles['input-layout-label']} htmlFor={name}>
-            {label} {required && '*'}
+            {label} {required && showMandatoryAsterisk && '*'}
           </label>
           {description && (
             <span

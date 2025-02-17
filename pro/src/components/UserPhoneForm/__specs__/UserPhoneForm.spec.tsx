@@ -92,8 +92,8 @@ describe('components:UserPhoneForm', () => {
 
     renderUserPhoneForm(props)
 
-    await userEvent.clear(screen.getByLabelText('Téléphone *'))
-    await userEvent.type(screen.getByLabelText('Téléphone *'), '0692790350')
+    await userEvent.clear(screen.getByLabelText('Téléphone'))
+    await userEvent.type(screen.getByLabelText('Téléphone'), '0692790350')
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
 
@@ -107,9 +107,9 @@ describe('components:UserPhoneForm', () => {
 
     renderUserPhoneForm(props)
 
-    await userEvent.type(screen.getByLabelText('Téléphone *'), '0692790350')
+    await userEvent.type(screen.getByLabelText('Téléphone'), '0692790350')
     await userEvent.click(screen.getByText('Annuler'))
 
-    expect(screen.getByLabelText('Téléphone *')).toHaveValue('0615142345')
+    expect(screen.getByLabelText('Téléphone')).toHaveValue('0615142345')
   })
 })
