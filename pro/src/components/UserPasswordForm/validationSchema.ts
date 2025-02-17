@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { isPasswordValid } from 'commons/core/shared/utils/validation'
+import { isPasswordValid } from 'ui-kit/formV2/PasswordInput/validation'
 
 const passwordErrorMessage = 'Veuillez renseigner votre nouveau mot de passe'
 
