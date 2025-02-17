@@ -905,6 +905,123 @@ class DomainsCreditTest:
             physical=users_models.Credit(initial=Decimal("200"), remaining=Decimal("200")),
         )
 
+    def test_get_domains_regular_credit_with_finance_incidents_in_case_of_v3_deposit_transition(self):
+        offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(
+            pricing_point="self",
+            managingOfferer=offerer,
+            bank_account=bank_account,
+            siret="85331845900023",
+        )
+        author_user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryGrant18Factory(
+            deposit__type=finance_models.DepositType.GRANT_15_17,
+            deposit__expirationDate=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+            deposit__amount=70,
+        )
+
+        # booking1 (20€ → 20€) + booking2 (6€ → 0€) + booking3 (15€ → 10€) = 30€
+        booking1 = bookings_factories.BookingFactory(
+            user=user,
+            cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            quantity=4,
+            stock__price=Decimal("5.0"),
+            stock__offer__venue=venue,
+            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+        )  # 20€
+        self._price_booking(booking1)
+
+        # Booking to cancel totally
+        booking2 = bookings_factories.BookingFactory(
+            user=user,
+            cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            quantity=2,
+            stock__price=Decimal("3.0"),
+            stock__offer__venue=venue,
+            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+        )  # 6€ → 0€
+        self._price_booking(booking2)
+
+        # Booking to cancel partially
+        booking3 = bookings_factories.BookingFactory(
+            user=user,
+            cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            quantity=5,
+            stock__price=Decimal("3.0"),
+            stock__offer__venue=venue,
+            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+        )  # 15€ → 10€
+        self._price_booking(booking3)
+
+        # the old deposit expires and is replaced by a 17_18 one
+        user.deposit.expirationDate = datetime.datetime.utcnow() - datetime.timedelta(days=5)
+        users_factories.DepositGrantFactory(
+            user=user,
+            type=finance_models.DepositType.GRANT_17_18,
+            expirationDate=datetime.datetime.utcnow() + datetime.timedelta(days=5),
+            amount=50,
+        )
+        booking4 = bookings_factories.BookingFactory(
+            user=user,
+            cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            quantity=4,
+            stock__price=Decimal("5.0"),
+            stock__offer__venue=venue,
+            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+        )  # 20€
+        self._price_booking(booking4)
+
+        # Mark all pricings as invoiced
+        cutoff = datetime.datetime.utcnow()
+        batch = finance_api.generate_cashflows(cutoff)
+        assert len(batch.cashflows) == 1
+        cashflow = batch.cashflows[0]
+        cashflow.status = finance_models.CashflowStatus.UNDER_REVIEW
+        db.session.add(cashflow)
+        db.session.flush()
+        finance_api._generate_invoice_legacy(
+            bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows]
+        )
+
+        # Create the finance incidents and validate them
+        #  - For booking2 → cancelled totally
+        incident2 = finance_api.create_overpayment_finance_incident(
+            bookings=[booking2],
+            author=author_user,
+            origin="BO",
+            amount=Decimal("6.0"),
+        )
+        finance_api.validate_finance_overpayment_incident(
+            finance_incident=incident2,
+            force_debit_note=False,
+            author=author_user,
+        )
+        self._price_incident(incident2)
+
+        #  - For booking3 → cancelled partially: get back 5€
+        incident3 = finance_api.create_overpayment_finance_incident(
+            bookings=[booking3],
+            author=author_user,
+            origin="BO",
+            amount=Decimal("5.0"),
+        )
+        finance_api.validate_finance_overpayment_incident(
+            finance_incident=incident3,
+            force_debit_note=False,
+            author=author_user,
+        )
+        self._price_incident(incident3)
+
+        # initial amount of active deposit + incidents amounts = 50 + (6 + 5) = 61
+        # 20€ are used with booking4 => remaining = 61 - 20 = 41€
+        assert users_api.get_domains_credit(user).all == users_models.Credit(
+            initial=Decimal("61"), remaining=Decimal("41")
+        )
+
     def test_get_domains_digital_credit_with_finance_incidents(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
