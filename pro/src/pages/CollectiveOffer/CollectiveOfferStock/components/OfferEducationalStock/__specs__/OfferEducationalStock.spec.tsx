@@ -108,10 +108,10 @@ describe('OfferEducationalStock', () => {
       renderWithProviders(<OfferEducationalStock {...testProps} />)
 
       const descriptionInput = screen.getByRole('textbox', {
-        name: `${DETAILS_PRICE_LABEL} *`,
+        name: `${DETAILS_PRICE_LABEL}`,
       })
-      const priceInput = screen.getByLabelText('Prix total TTC *')
-      const placeInput = screen.getByLabelText('Nombre de participants *')
+      const priceInput = screen.getByLabelText('Prix total TTC')
+      const placeInput = screen.getByLabelText('Nombre de participants')
 
       expect(descriptionInput).not.toBeDisabled()
       expect(priceInput).not.toBeDisabled()
@@ -140,10 +140,10 @@ describe('OfferEducationalStock', () => {
       renderWithProviders(<OfferEducationalStock {...testProps} />)
 
       const descriptionInput = screen.getByRole('textbox', {
-        name: `${DETAILS_PRICE_LABEL} *`,
+        name: `${DETAILS_PRICE_LABEL}`,
       })
-      const priceInput = screen.getByLabelText('Prix total TTC *')
-      const placeInput = screen.getByLabelText('Nombre de participants *')
+      const priceInput = screen.getByLabelText('Prix total TTC')
+      const placeInput = screen.getByLabelText('Nombre de participants')
       const saveButton = screen.getByText('Enregistrer et continuer')
 
       expect(descriptionInput).toBeDisabled()
@@ -196,7 +196,7 @@ it('should disable booking limit datetime when form access is read only', () => 
   renderWithProviders(<OfferEducationalStock {...testProps} />)
 
   const bookingLimitDatetimeInput = screen.getByLabelText(
-    'Date limite de réservation *'
+    'Date limite de réservation'
   )
 
   expect(bookingLimitDatetimeInput).toBeDisabled()
@@ -224,9 +224,9 @@ it('should not disable start datetime, end datetime and event time inputs when f
 
   renderWithProviders(<OfferEducationalStock {...testProps} />)
 
-  const startDatetimeInput = screen.getByLabelText('Date de début *')
-  const endDatetimeInput = screen.getByLabelText('Date de fin *')
-  const eventTimeInput = screen.getByLabelText('Horaire *')
+  const startDatetimeInput = screen.getByLabelText('Date de début')
+  const endDatetimeInput = screen.getByLabelText('Date de fin')
+  const eventTimeInput = screen.getByLabelText('Horaire')
 
   expect(startDatetimeInput).not.toBeDisabled()
   expect(endDatetimeInput).not.toBeDisabled()
@@ -247,10 +247,10 @@ it('should not disable description, price and places when allowedAction CAN_EDIT
   })
 
   const descriptionInput = screen.getByRole('textbox', {
-    name: `${DETAILS_PRICE_LABEL} *`,
+    name: `${DETAILS_PRICE_LABEL}`,
   })
-  const priceInput = screen.getByLabelText('Prix total TTC *')
-  const placeInput = screen.getByLabelText('Nombre de participants *')
+  const priceInput = screen.getByLabelText('Prix total TTC')
+  const placeInput = screen.getByLabelText('Nombre de participants')
 
   expect(descriptionInput).not.toBeDisabled()
   expect(priceInput).not.toBeDisabled()
@@ -271,10 +271,10 @@ it('should disable description, price and places when allowedAction CAN_EDIT_DIS
   })
 
   const descriptionInput = screen.getByRole('textbox', {
-    name: `${DETAILS_PRICE_LABEL} *`,
+    name: `${DETAILS_PRICE_LABEL}`,
   })
-  const priceInput = screen.getByLabelText('Prix total TTC *')
-  const placeInput = screen.getByLabelText('Nombre de participants *')
+  const priceInput = screen.getByLabelText('Prix total TTC')
+  const placeInput = screen.getByLabelText('Nombre de participants')
 
   expect(descriptionInput).toBeDisabled()
   expect(priceInput).toBeDisabled()

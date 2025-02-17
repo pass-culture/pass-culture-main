@@ -170,7 +170,7 @@ export const SignIn = (): JSX.Element => {
       </h1>
 
       <div className={styles['mandatory']}>
-        Tous les champs suivis d’un * sont obligatoires.
+        Tous les champs sont obligatoires.
       </div>
       <FormProvider {...hookForm}>
         <SigninForm onSubmit={hookForm.handleSubmit(onSubmit)} />

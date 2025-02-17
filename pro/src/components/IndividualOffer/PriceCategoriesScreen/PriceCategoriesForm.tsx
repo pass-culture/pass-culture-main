@@ -106,7 +106,7 @@ export const PriceCategoriesForm = ({
   return (
     <>
       <FormLayout>
-        <FormLayout.MandatoryInfo />
+        <FormLayout.MandatoryInfo areAllFieldsMandatory/>
         <FieldArray
           name="priceCategories"
           render={(arrayHelpers) => (
@@ -148,6 +148,7 @@ export const PriceCategoriesForm = ({
                       disabled={
                         values.priceCategories.length <= 1 || isDisabled
                       }
+                      showMandatoryAsterisk={false}
                     />
                     <PriceInput
                       className={styles['price-input']}
@@ -158,6 +159,7 @@ export const PriceCategoriesForm = ({
                       disabled={isDisabled}
                       showFreeCheckbox
                       smallLabel
+                      showMandatoryAsterisk={false}
                     />
                     {mode === OFFER_WIZARD_MODE.CREATION && (
                       <Button

@@ -14,6 +14,7 @@ type TimePickerProps = FieldLayoutBaseProps & {
   value?: Date | null | ''
   min?: string
   suggestedTimeList?: SuggestedTimeList
+  showMandatoryAsterisk?: boolean
 }
 
 export const TimePicker = ({
@@ -31,6 +32,7 @@ export const TimePicker = ({
   isOptional = false,
   min,
   suggestedTimeList,
+  showMandatoryAsterisk = true,
 }: TimePickerProps): JSX.Element => {
   const [field, meta] = useField({ name, type: 'text' })
   const showError = meta.touched && !!meta.error
@@ -49,6 +51,7 @@ export const TimePicker = ({
       classNameInput={classNameInput}
       clearButtonProps={clearButtonProps}
       isOptional={isOptional}
+      showMandatoryAsterisk={showMandatoryAsterisk}
     >
       <BaseTimePicker
         {...field}

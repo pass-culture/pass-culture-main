@@ -24,6 +24,7 @@ export type PriceInputProps = Pick<
    * A flag to show the "Gratuit" checkbox.
    */
   showFreeCheckbox?: boolean
+  showMandatoryAsterisk?: boolean
 }
 
 /**
@@ -55,6 +56,7 @@ export const PriceInput = ({
   disabled,
   smallLabel,
   showFreeCheckbox,
+  showMandatoryAsterisk = true
 }: PriceInputProps): JSX.Element => {
   const priceName = name
   const priceRef = useRef<HTMLInputElement>(null)
@@ -117,6 +119,7 @@ export const PriceInput = ({
       max={max}
       rightIcon={rightIcon}
       disabled={disabled}
+      showMandatoryAsterisk={showMandatoryAsterisk}
       {...(showFreeCheckbox ? { InputExtension: inputExtension } : {})}
     />
   )
