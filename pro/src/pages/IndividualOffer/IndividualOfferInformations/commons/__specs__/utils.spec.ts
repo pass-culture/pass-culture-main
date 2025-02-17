@@ -65,7 +65,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       withdrawalDetails:
         DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['withdrawalDetails'],
       withdrawalDelay: undefined,
-      withdrawalType: undefined,
+      withdrawalType: WithdrawalTypeEnum.NO_TICKET,
       accessibility: {
         [AccessibilityEnum.VISUAL]: false,
         [AccessibilityEnum.MENTAL]: false,
@@ -101,7 +101,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       withdrawalDetails:
         DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['withdrawalDetails'],
       withdrawalDelay: undefined,
-      withdrawalType: undefined,
+      withdrawalType: WithdrawalTypeEnum.NO_TICKET,
       accessibility: {
         [AccessibilityEnum.VISUAL]: false,
         [AccessibilityEnum.MENTAL]: false,

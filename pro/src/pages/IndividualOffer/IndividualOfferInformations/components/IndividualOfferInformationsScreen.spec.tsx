@@ -2,7 +2,7 @@ import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
-import { SubcategoryIdEnum } from 'apiClient/v1'
+import { SubcategoryIdEnum, WithdrawalTypeEnum } from 'apiClient/v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
@@ -236,9 +236,9 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       shouldSendMail: true,
       url: undefined,
       visualDisabilityCompliant: false,
-      withdrawalDelay: undefined,
+      withdrawalDelay: null,
       withdrawalDetails: 'My information',
-      withdrawalType: undefined,
+      withdrawalType: WithdrawalTypeEnum.NO_TICKET,
     })
   })
 
