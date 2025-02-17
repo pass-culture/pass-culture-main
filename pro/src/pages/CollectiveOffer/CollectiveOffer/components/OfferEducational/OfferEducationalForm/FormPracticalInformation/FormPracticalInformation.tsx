@@ -9,13 +9,12 @@ import {
 import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import {
-  mainlandOptions,
   offerInterventionOptions,
 } from 'commons/core/shared/interventionOptions'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { interventionAreaMultiSelect } from 'commons/utils/interventionAreaMultiSelect'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { MAINLAND_OPTION_VALUE } from 'pages/AdageIframe/app/constants/departmentOptions'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
@@ -199,42 +198,11 @@ export const FormPracticalInformation = ({
               addedOptions,
               removedOptions
             ) => {
-              const newSelectedOptions = new Set(
-                selectedOption.map((op) => op.id)
-              )
-
-              if (addedOptions.map((op) => op.id).includes('mainland')) {
-                //  If mainland is selected, check all mainland depatments
-                for (const mainlandOp of mainlandOptions) {
-                  newSelectedOptions.add(String(mainlandOp.id))
-                }
-              }
-              if (removedOptions.map((op) => op.id).includes('mainland')) {
-                //  If mainland is removed, uncheck all mainland departments
-                for (const mainlandOp of mainlandOptions) {
-                  newSelectedOptions.delete(String(mainlandOp.id))
-                }
-              }
-
-              if (
-                removedOptions
-                  .map((op) => op.id)
-                  .some((removedOp) =>
-                    mainlandOptions.map((op) => op.id).includes(removedOp)
-                  )
-              ) {
-                //  If a mainland department is not selected, remove the mainland from selected options
-                newSelectedOptions.delete('mainland')
-              }
-
-              if (
-                !newSelectedOptions.has('mainland') &&
-                mainlandOptions.every((option) =>
-                  newSelectedOptions.has(option.id)
-                )
-              ) {
-                newSelectedOptions.add(String(MAINLAND_OPTION_VALUE))
-              }
+              const newSelectedOptions = interventionAreaMultiSelect({
+                selectedOption,
+                addedOptions,
+                removedOptions,
+              })
 
               // eslint-disable-next-line @typescript-eslint/no-floating-promises
               setFieldValue('interventionArea', Array.from(newSelectedOptions))

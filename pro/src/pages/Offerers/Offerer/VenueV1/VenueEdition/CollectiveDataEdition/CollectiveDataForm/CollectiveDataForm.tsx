@@ -10,15 +10,14 @@ import {
   SENT_DATA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
 import {
-  mainlandOptions,
   offerInterventionOptions,
   venueInterventionOptions,
 } from 'commons/core/shared/interventionOptions'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
+import { interventionAreaMultiSelect } from 'commons/utils/interventionAreaMultiSelect'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { MAINLAND_OPTION_VALUE } from 'pages/AdageIframe/app/constants/departmentOptions'
 import { RouteLeavingGuardVenueEdition } from 'pages/VenueEdition/RouteLeavingGuardVenueEdition'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -222,46 +221,12 @@ export const CollectiveDataForm = ({
                       addedOptions,
                       removedOptions
                     ) => {
-                      const newSelectedOptions = new Set(
-                        selectedOption.map((op) => op.id)
-                      )
+                      const newSelectedOptions = interventionAreaMultiSelect({
+                        selectedOption,
+                        addedOptions,
+                        removedOptions,
+                      })
 
-                      if (
-                        addedOptions.map((op) => op.id).includes('mainland')
-                      ) {
-                        //  If mainland is selected, check all mainland depatments
-                        for (const mainlandOp of mainlandOptions) {
-                          newSelectedOptions.add(String(mainlandOp.id))
-                        }
-                      }
-                      if (
-                        removedOptions.map((op) => op.id).includes('mainland')
-                      ) {
-                        //  If mainland is removed, uncheck all mainland departments
-                        for (const mainlandOp of mainlandOptions) {
-                          newSelectedOptions.delete(String(mainlandOp.id))
-                        }
-                      }
-
-                      if (
-                        removedOptions
-                          .map((op) => op.id)
-                          .some((removedOp) =>
-                            mainlandOptions
-                              .map((op) => op.id)
-                              .includes(removedOp)
-                          )
-                      ) {
-                        //  If a mainland department is not selected, remove the mainland from selected options
-                        newSelectedOptions.delete('mainland')
-                      }
-
-                      if (
-                        !newSelectedOptions.has('mainland') && mainlandOptions.every(option => newSelectedOptions.has(option.id))
-                      ) {
-                          newSelectedOptions.add(String(MAINLAND_OPTION_VALUE))
-                      }
-                      
                       // eslint-disable-next-line @typescript-eslint/no-floating-promises
                       formik.setFieldValue(
                         'collectiveInterventionArea',
