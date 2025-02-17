@@ -3124,6 +3124,41 @@ def _recredit_deposit(
     return recredit
 
 
+def _recredit_new_deposit_after_validation_of_incident_on_expired_deposit(
+    booking_incident: models.BookingFinanceIncident,
+) -> models.Recredit | None:
+    """
+    During the transition from v2 deposits to v3 deposits, some 15-17 deposits will be prematurely expired
+    and a new 17-18 will start, cumulating the remaining deposit amount.
+    To adapt this cumulation to incidents concerning a booking made with a 15-17 expired deposit,
+    we add the incident amount on the 17-18 deposit, via a specific Recredit object.
+    """
+    if booking := booking_incident.booking:
+        # helps mypy
+        if booking.deposit is None:  # in the case of a finance incident, the deposit is never None
+            return None
+        if booking.deposit.expirationDate is None:  # expirationDate is never None
+            return None
+        if booking.user.deposit is None:  # can't be None if booking.deposit isn't
+            return None
+
+        if (
+            booking.deposit.expirationDate < datetime.datetime.utcnow()
+            and booking.deposit != booking.user.deposit
+            and booking.user.deposit.type == models.DepositType.GRANT_17_18
+        ):
+            recredit = models.Recredit(
+                deposit=booking.user.deposit,
+                amount=utils.cents_to_full_unit(booking_incident.due_amount_by_offerer),
+                recreditType=models.RecreditType.FINANCE_INCIDENT_RECREDIT,
+                comment="Suite à la validation d'un incident finance, recrédit du crédit 17-18 après l'expiration prématurée du crédit 15-17 due à la transition vers la v3",
+            )
+            booking.user.deposit.amount += recredit.amount
+            db.session.add(recredit)
+            return recredit
+    return None
+
+
 def upsert_deposit(
     user: users_models.User,
     deposit_source: str,
@@ -3856,6 +3891,7 @@ def validate_finance_overpayment_incident(
                     cancel_even_if_reimbursed=True,
                 )
                 db.session.add(collective_booking)
+        recredit = _recredit_new_deposit_after_validation_of_incident_on_expired_deposit(booking_incident)
     db.session.add_all(finance_events)
 
     if not finance_incident.relates_to_collective_bookings:
@@ -3868,6 +3904,11 @@ def validate_finance_overpayment_incident(
                 author=author,
                 user=beneficiary,
                 linked_incident_id=finance_incident.id,
+                comment=(
+                    "Suite à la validation d'un incident finance déclaré sur le crédit '15-17 ans' (expiré du fait de la réforme des crédits), le recrédit se fera automatiquement sur celui '17-18 ans'"
+                    if recredit
+                    else None
+                ),
             )
 
     finance_incident.status = models.IncidentStatus.VALIDATED
