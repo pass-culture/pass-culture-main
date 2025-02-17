@@ -51,7 +51,7 @@ export const PasswordInput = ({
         description={description}
         type={isPasswordHidden ? 'password' : 'text'}
         autoComplete={autoComplete}
-        showMandatoryAsterisk={false}
+        hideAsterisk={true}
         rightButton={() => (
           <Button
             icon={isPasswordHidden ? strokeHideIcon : strokeShowIcon}

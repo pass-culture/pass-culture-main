@@ -26,7 +26,7 @@ export const ChangePasswordRequestForm = (): JSX.Element => {
               name="email"
               description="Format : email@exemple.com"
               label="Adresse email"
-              showMandatoryAsterisk={false}
+              hideAsterisk={true}
             />
           </FormLayout.Row>
           <FormLayout.Row>

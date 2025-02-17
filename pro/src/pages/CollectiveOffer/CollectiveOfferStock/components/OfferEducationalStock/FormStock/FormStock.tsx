@@ -64,7 +64,7 @@ export const FormStock = ({
         name="startDatetime"
         onChange={handleStartDatetimeChange}
         className={styles['input-date']}
-        showMandatoryAsterisk={false}
+        hideAsterisk={true}
       />
       <DatePicker
         disabled={!canEditDates}
@@ -75,14 +75,14 @@ export const FormStock = ({
         help={
           'Le remboursement de votre offre sera effectué 2 à 3 semaines après la fin de votre évènement.'
         }
-        showMandatoryAsterisk={false}
+        hideAsterisk={true}
       />
       <TimePicker
         disabled={!canEditDates}
         label={EVENT_TIME_LABEL}
         name="eventTime"
         className={styles['custom-field-layout']}
-        showMandatoryAsterisk={false}
+        hideAsterisk={true}
       />
       <TextInput
         disabled={!canEditDiscount}
@@ -92,7 +92,7 @@ export const FormStock = ({
         hasLabelLineBreak={false}
         rightIcon={strokeCollaborator}
         classNameInput={styles['input-custom-width']}
-        showMandatoryAsterisk={false}
+        hideAsterisk={true}
       />
       <TextInput
         disabled={!canEditDiscount}
@@ -103,7 +103,7 @@ export const FormStock = ({
         type="number"
         rightIcon={strokeEuroIcon}
         classNameInput={styles['input-custom-width']}
-        showMandatoryAsterisk={false}
+        hideAsterisk={true}
       />
     </FormLayout.Row>
   )

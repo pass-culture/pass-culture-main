@@ -35,7 +35,7 @@ export type FieldLayoutBaseProps = {
    * Can be false only when it's the only field in a form and it's mandatory,
    * or when all fields are mandatory and the form indicates that all fields are mandatory
    */
-  showMandatoryAsterisk?: boolean
+  hideAsterisk?: boolean
   /**
    * A custom class for the field layout,
    * where label, description, input, and footer are displayed.
@@ -84,7 +84,7 @@ export const FieldLayout = ({
   count = undefined,
   maxLength = undefined,
   isOptional = false,
-  showMandatoryAsterisk = true,
+  hideAsterisk = false,
   smallLabel,
   inline = false,
   classNameLabel,
@@ -132,7 +132,7 @@ export const FieldLayout = ({
             )}
             htmlFor={name}
           >
-            {label} {!isOptional && showMandatoryAsterisk && '*'}
+            {label} {!isOptional && !hideAsterisk && '*'}
           </label>
           {help && (
             <Button

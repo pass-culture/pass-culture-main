@@ -18,7 +18,7 @@ type EmailSpellCheckInputProps<FormType> = FieldLayoutBaseProps & {
   label: string
   overrideInitialTip?: string | null
   maxLength?: number
-  showMandatoryAsterisk?: boolean
+  hideAsterisk?: boolean
 }
 
 export const EmailSpellCheckInput = <FormType,>({
@@ -28,7 +28,7 @@ export const EmailSpellCheckInput = <FormType,>({
   className,
   overrideInitialTip = null,
   maxLength = 255,
-  showMandatoryAsterisk,
+  hideAsterisk,
 }: EmailSpellCheckInputProps<FormType>): JSX.Element => {
   const { setFieldValue, setFieldTouched } = useFormikContext<FormType>()
   const [field, meta] = useField<string>(name)
@@ -69,7 +69,7 @@ export const EmailSpellCheckInput = <FormType,>({
         autoFocus={true}
         className={className}
         maxLength={maxLength}
-        showMandatoryAsterisk={showMandatoryAsterisk}
+        hideAsterisk={hideAsterisk}
         ErrorDetails={
           emailValidationTip ? (
             <div className={styles['email-validation-error']}>

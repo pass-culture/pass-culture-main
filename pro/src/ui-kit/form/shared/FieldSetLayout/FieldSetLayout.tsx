@@ -18,7 +18,7 @@ interface FieldSetLayoutProps {
    * Can be false only when it's the only field in a form and it's mandatory,
    * or when all fields are mandatory and the form indicates that all fields are mandatory
    */
-  showMandatoryAsterisk?: boolean
+  hideAsterisk?: boolean
 }
 
 export const FieldSetLayout = ({
@@ -31,7 +31,7 @@ export const FieldSetLayout = ({
   dataTestId,
   isOptional = false,
   ariaDescribedBy,
-  showMandatoryAsterisk = true,
+  hideAsterisk = false,
 }: FieldSetLayoutProps): JSX.Element => {
   const showError = Boolean(error) || !hideFooter
   return (
@@ -44,7 +44,7 @@ export const FieldSetLayout = ({
       {legend && (
         <legend className={styles['fieldset-layout-legend']}>
           {legend}
-          {!isOptional && showMandatoryAsterisk && ' *'}
+          {!isOptional && !hideAsterisk && ' *'}
         </legend>
       )}
       <div>{children}</div>

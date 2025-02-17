@@ -204,7 +204,7 @@ export const OfferEducationalStock = <
                   maxLength={MAX_PRICE_DETAILS_LENGTH}
                   name="priceDetail"
                   description={PRICE_DETAIL_PLACEHOLDER}
-                  showMandatoryAsterisk={false}
+                  hideAsterisk={true}
                 />
               </FormLayout.Row>
             </FormLayout.Section>
@@ -228,7 +228,7 @@ export const OfferEducationalStock = <
                     }
                     name="bookingLimitDatetime"
                     className={styles['input-date']}
-                    showMandatoryAsterisk={false}
+                    hideAsterisk={true}
                   />
                 </FormLayout.Row>
               </>

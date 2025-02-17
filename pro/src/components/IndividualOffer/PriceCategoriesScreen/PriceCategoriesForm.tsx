@@ -148,7 +148,7 @@ export const PriceCategoriesForm = ({
                       disabled={
                         values.priceCategories.length <= 1 || isDisabled
                       }
-                      showMandatoryAsterisk={false}
+                      hideAsterisk={true}
                     />
                     <PriceInput
                       className={styles['price-input']}
@@ -159,7 +159,7 @@ export const PriceCategoriesForm = ({
                       disabled={isDisabled}
                       showFreeCheckbox
                       smallLabel
-                      showMandatoryAsterisk={false}
+                      hideAsterisk={true}
                     />
                     {mode === OFFER_WIZARD_MODE.CREATION && (
                       <Button
