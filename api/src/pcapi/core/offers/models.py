@@ -1067,9 +1067,14 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             return self.offererAddress.address.fullAddress
         return f"{label} - {self.offererAddress.address.fullAddress}"
 
-    @property
+    @hybrid_property
     def is_headline_offer(self) -> bool:
         return any(headline_offer.isActive for headline_offer in self.headlineOffers)
+
+    @is_headline_offer.expression  # type: ignore[no-redef]
+    def is_headline_offer(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
+        headline_offer_alias = sa_orm.aliased(HeadlineOffer)
+        return sa.exists().where(headline_offer_alias.offerId == cls.id, headline_offer_alias.isActive)
 
 
 class ActivationCode(PcObject, Base, Model):

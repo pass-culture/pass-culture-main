@@ -749,6 +749,35 @@ class HeadlineOfferTest:
             factories.HeadlineOfferFactory(offer=another_offer_on_the_same_venue)
 
 
+class OfferIsHeadlineTest:
+    today = datetime.datetime.utcnow()
+    day_before_yesterday = today - datetime.timedelta(days=2)
+    day_after_tomorrow = today + datetime.timedelta(days=2)
+
+    def test_is_headline(self):
+        active_headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, self.day_after_tomorrow))
+        eternally_active_headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, None))
+        inactive_headline_offer = factories.HeadlineOfferFactory(timespan=(self.day_before_yesterday, self.today))
+        reactivated_headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, self.day_after_tomorrow))
+        factories.HeadlineOfferFactory(
+            timespan=(self.day_before_yesterday, self.today), offer=reactivated_headline_offer.offer
+        )
+        assert active_headline_offer.isActive
+        assert not inactive_headline_offer.isActive
+
+        assert active_headline_offer.offer.is_headline_offer
+        assert not inactive_headline_offer.offer.is_headline_offer
+
+        assert models.Offer.query.filter(models.Offer.is_headline_offer.is_(True)).all() == [
+            active_headline_offer.offer,
+            eternally_active_headline_offer.offer,
+            reactivated_headline_offer.offer,
+        ]
+        assert models.Offer.query.filter(models.Offer.is_headline_offer.is_(False)).all() == [
+            inactive_headline_offer.offer
+        ]
+
+
 class OfferIsSearchableTest:
     def test_offer_is_future(self):
         offer_1 = factories.OfferFactory(isActive=False)

@@ -178,6 +178,11 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "special": lambda x: x != "true",
         "column": offers_models.Offer.idAtProvider,
     },
+    "HEADLINE": {
+        "field": "boolean",
+        "special": lambda x: x == "true",
+        "column": offers_models.Offer.is_headline_offer,
+    },
     "PROVIDER": {
         "field": "provider",
         "column": offers_models.Offer.lastProviderId,
