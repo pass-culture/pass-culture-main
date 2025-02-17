@@ -267,3 +267,4 @@ env_files = ["local_test_env_file"]
 junit_family = "xunit1"
 markers = ["backoffice", "features", "settings"]
 requests_mock_case_sensitive = true
+verbosity_assertions = 2
