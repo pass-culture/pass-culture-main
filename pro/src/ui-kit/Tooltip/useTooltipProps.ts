@@ -25,10 +25,12 @@ export const useTooltipProps = ({
   return {
     isTooltipHidden,
     onMouseOver: (event: React.MouseEvent<HTMLElement>) => {
+      console.log('onMouseOver')
       setIsTooltipHidden(false)
       onMouseOver?.(event)
     },
     onMouseOut: (event: React.MouseEvent<HTMLElement>) => {
+      console.log('onMouseOut')
       setIsTooltipHidden(true)
       onMouseOut?.(event)
     },

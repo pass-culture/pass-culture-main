@@ -6,9 +6,7 @@ import {
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
 import { isOfferEducational } from 'commons/core/OfferEducational/types'
-import {
-  OFFER_STATUS_SOLD_OUT,
-} from 'commons/core/Offers/constants'
+import { OFFER_STATUS_SOLD_OUT } from 'commons/core/Offers/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
 import { pluralize } from 'commons/utils/pluralize'
@@ -19,7 +17,7 @@ import styles from 'styles/components/Cells.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
-import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
+import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 
 import { CELLS_DEFINITIONS } from '../../utils/cellDefinitions'
 
@@ -40,13 +38,16 @@ export const OfferNameCell = ({
   displayThumb = false,
   className,
 }: OfferNameCellProps) => {
-  const { isTooltipHidden, ...tooltipProps } = useTooltipProps({})
   const useOffererAddressAsDataSourceEnabled = useActiveFeature(
     'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
   )
 
   const getDateInformations = () => {
-    const startDatetime = offer.stocks[0] ? isOfferEducational(offer) ? offer.stocks[0].startDatetime : offer.stocks[0].beginningDatetime : undefined
+    const startDatetime = offer.stocks[0]
+      ? isOfferEducational(offer)
+        ? offer.stocks[0].startDatetime
+        : offer.stocks[0].beginningDatetime
+      : undefined
 
     let departmentCode = ''
     // If that offer is not educational, it means it's an individual offer …
@@ -101,9 +102,13 @@ export const OfferNameCell = ({
         })}
         to={offerLink}
       >
-        {displayThumb && <div className={styles['title-column-thumb']}>
-          <Thumb url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl} />
-        </div>}
+        {displayThumb && (
+          <div className={styles['title-column-thumb']}>
+            <Thumb
+              url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl}
+            />
+          </div>
+        )}
         <div>
           {offer.isShowcase && (
             <Tag
@@ -114,26 +119,33 @@ export const OfferNameCell = ({
             </Tag>
           )}
           <div className={styles['title-column-name']}>
-            {displayLabel &&
+            {displayLabel && (
               <span
                 className={styles['offers-table-cell-mobile-label']}
                 aria-hidden={true}
               >
                 {`${CELLS_DEFINITIONS.NAME.title} :`}
               </span>
-            }
+            )}
             {offer.name}
           </div>
           {(isOfferEducational(offer) || offer.isEvent) && (
             <span className={styles['stocks']}>
-              {!isOfferEducational(offer) && offer.isEvent && getDateInformations()}
+              {!isOfferEducational(offer) &&
+                offer.isEvent &&
+                getDateInformations()}
               {shouldShowIndividualWarning && (
-                <>
-                  <button
-                    type="button"
-                    {...tooltipProps}
-                    className={styles['sold-out-button']}
-                  >
+                <Tooltip
+                  content={
+                    <>
+                      {pluralize(
+                        computeNumberOfSoldOutStocks(),
+                        'date épuisée'
+                      )}
+                    </>
+                  }
+                >
+                  <button type="button" className={styles['sold-out-button']}>
                     <SvgIcon
                       className={styles['sold-out-icon']}
                       src={fullErrorIcon}
@@ -141,18 +153,7 @@ export const OfferNameCell = ({
                       width="16"
                     />
                   </button>
-                  {!isTooltipHidden && (
-                    <span className={styles['sold-out-dates']}>
-                      <SvgIcon
-                        className={styles['sold-out-icon']}
-                        src={fullErrorIcon}
-                        alt="Attention"
-                        width="16"
-                      />
-                      {pluralize(computeNumberOfSoldOutStocks(), 'date épuisée')}
-                    </span>
-                  )}
-                </>
+                </Tooltip>
               )}
             </span>
           )}

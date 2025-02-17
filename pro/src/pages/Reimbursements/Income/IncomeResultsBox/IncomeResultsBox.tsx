@@ -38,11 +38,9 @@ const IncomeResultsSubBox = ({ title, number, help }: IncomeSubBoxProps) => {
             icon={fullHelpIcon}
             iconAlt="À propos"
             type="button"
-            hasTooltip
+            tooltipContent={<>{help}</>}
             variant={ButtonVariant.SECONDARY}
-          >
-            {help}
-          </Button>
+          />
         )}
       </div>
       <div className={styles['income-results-block-number']}>{numberStr}</div>

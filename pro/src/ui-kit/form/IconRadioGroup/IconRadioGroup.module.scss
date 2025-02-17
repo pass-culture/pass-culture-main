@@ -7,17 +7,22 @@
   margin-bottom: rem.torem(8px);
 
   &-items {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: rem.torem(24px);
+  }
+
+  &-items-container {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
   }
 
   &-item {
     display: inline-flex;
     align-items: center;
     cursor: pointer;
-
-    &:not(:last-of-type) {
-      margin-right: rem.torem(24px);
-    }
   }
 
   &-scale {

@@ -1,9 +1,9 @@
 import cn from 'classnames'
+import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
 import { BookingRecapResponseModel } from 'apiClient/v1'
 import { formatPrice } from 'commons/utils/formatPrice'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
 import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'
 
