@@ -35,7 +35,9 @@ type MultiSelectProps = {
   hasSelectAllOptions?: boolean
   /** Whether the MultiSelect is disabled */
   disabled?: boolean
-  /** Callback function called when selected options change */
+  /** Callback function called when selected options change,
+   *  Multiple selections can be made by selecting only one item (ex: interventionAreaMultiSelect.ts)
+   */
   onSelectedOptionsChanged: (
     selectedOptions: Option[],
     addedOptions: Option[],
@@ -49,6 +51,7 @@ type MultiSelectProps = {
   buttonLabel: string
   isOptional?: boolean
   showError?: boolean
+  /** Trigger function to display error message when element is unfocus */
   onBlur?: () => void
 } & (
   | {
