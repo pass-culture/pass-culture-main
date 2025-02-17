@@ -947,6 +947,38 @@ class ListOffersTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["Nom de l'offre"] == "good"
 
+    def test_list_offers_has_headline(self, authenticated_client):
+        offers_factories.HeadlineOfferFactory(offer__name="good")
+        offers_factories.OfferFactory(name="bad")
+        query_args = {
+            "search-0-search_field": "HEADLINE",
+            "search-0-operator": "EQUALS",
+            "search-0-boolean": "true",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom de l'offre"] == "good"
+
+    def test_list_offers_has_no_headline(self, authenticated_client):
+        offers_factories.HeadlineOfferFactory(offer__name="bad")
+        offers_factories.OfferFactory(name="good")
+        query_args = {
+            "search-0-search_field": "HEADLINE",
+            "search-0-operator": "EQUALS",
+            "search-0-boolean": "false",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom de l'offre"] == "good"
+
     # === Error cases ===
 
     def test_list_offers_by_invalid_field(self, authenticated_client):
