@@ -25,7 +25,7 @@ type UserPasswordFormValues = {
   newConfirmationPassword: string
 }
 
-const isUserPasswordError = (
+export const isUserPasswordError = (
   error: unknown
 ): error is Record<keyof UserPasswordFormValues, string[]> => {
   if (typeof error !== 'object' || error === null) {
