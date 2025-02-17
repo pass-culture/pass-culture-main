@@ -124,10 +124,13 @@ def build_new_offer_from_product(
     provider_id: int | None,
     offerer_address_id: int | None = None,
 ) -> models.Offer:
+    extra_data = product.extraData.copy() if product.extraData else {}
+    # FIXME (mageoffray) Once offer uses ean column remove this next line
+    extra_data.update({"ean": product.ean})
     return models.Offer(
         bookingEmail=venue.bookingEmail,
         ean=product.ean,
-        extraData=product.extraData,
+        extraData=extra_data,
         idAtProvider=id_at_provider,
         lastProviderId=provider_id,
         name=product.name,
@@ -1291,7 +1294,7 @@ def add_criteria_to_offers(
     query = models.Product.query
     if ean:
         ean = ean.replace("-", "").replace(" ", "")
-        query = query.filter(models.Product.extraData["ean"].astext == ean)
+        query = query.filter(models.Product.ean == ean)
     if visa:
         query = query.filter(models.Product.extraData["visa"].astext == visa)
 
@@ -1338,7 +1341,7 @@ def reject_inappropriate_products(
     send_booking_cancellation_emails: bool = True,
 ) -> bool:
     products = models.Product.query.filter(
-        models.Product.extraData["ean"].astext.in_(eans),
+        models.Product.ean.in_(eans),
         models.Product.idAtProviders.is_not(None),
         models.Product.gcuCompatibilityType != models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
     ).all()
@@ -1859,7 +1862,7 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
 def approves_provider_product_and_rejected_offers(ean: str) -> None:
     product = models.Product.query.filter(
         models.Product.gcuCompatibilityType == models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
-        models.Product.extraData["ean"].astext == ean,
+        models.Product.ean == ean,
         models.Product.idAtProviders.is_not(None),
     ).one_or_none()
 

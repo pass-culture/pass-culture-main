@@ -72,10 +72,9 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
                     with repository.transaction():
                         db.session.add(product)
                 except Exception as e:  # pylint: disable=broad-except
-                    ean = product.extraData.get("ean") if product.extraData else None
                     logger.error(
                         "Error while saving product in db",
-                        extra={"exception": e, "productId": product.id, "ean": ean},
+                        extra={"exception": e, "productId": product.id, "ean": product.ean},
                     )
                     failed_to_update_products.append(product)
             updated_products = [product for product in updated_products if product not in failed_to_update_products]
@@ -172,7 +171,7 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
         titelive_eans = [article.gencod for work in titelive_page for article in work.article]
 
         products = offers_models.Product.query.filter(
-            offers_models.Product.extraData["ean"].astext.in_(titelive_eans),
+            offers_models.Product.ean.in_(titelive_eans),
             offers_models.Product.lastProviderId.is_not(None),
         ).all()
 
@@ -292,7 +291,7 @@ def filter_recent_products(
 
 def activate_newly_eligible_product_and_offers(product: offers_models.Product) -> None:
     is_product_newly_eligible = product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
-    ean = product.extraData.get("ean") if product.extraData else None
+    ean = product.ean
     if ean is None:
         return
     if is_product_newly_eligible:

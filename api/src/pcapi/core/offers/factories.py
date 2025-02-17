@@ -32,6 +32,11 @@ THINGS_PRODUCT_SUBCATEGORIES_IDS = [
 ALL_PRODUCT_SUBCATEGORIES_IDS = EVENT_PRODUCT_SUBCATEGORIES_IDS + THINGS_PRODUCT_SUBCATEGORIES_IDS
 
 
+def _check_product_extraData(extraData: typing.Any) -> None:
+    if extraData.get("ean"):
+        raise ValueError("Product ExtraData should not contain any ean")
+
+
 class ProductFactory(BaseFactory):
     AVAILABLE_SUBCATEGORIES = ALL_PRODUCT_SUBCATEGORIES_IDS
 
@@ -66,6 +71,12 @@ class ProductFactory(BaseFactory):
                 subcategory_id, kwargs.pop("set_all_fields", False), True
             )
 
+            if "ean" not in kwargs:
+                # This is a temporary workaround. Once offers and products stops using
+                # jsonData->>ean we can rewrite build_extra_data_from_subcategory
+                kwargs["ean"] = kwargs["extraData"].pop("ean", None)
+
+        _check_product_extraData(kwargs["extraData"])
         return super()._create(model_class, *args, **kwargs)
 
 
@@ -236,8 +247,12 @@ def _check_offer_kwargs(product: models.Product, kwargs: dict[str, typing.Any]) 
         raise ValueError("Name of the offer and the product must be the same")
     if kwargs.get("subcategoryId") and kwargs.get("subcategoryId") != product.subcategoryId:
         raise ValueError("SubcategoryId of the offer and the product must be the same")
-    if kwargs.get("extraData") and kwargs.get("extraData") != product.extraData:
-        raise ValueError("ExtraData of the offer and the product must be the same")
+    extra_data = kwargs.get("extraData")
+    if extra_data and extra_data != product.extraData:
+        if product.extraData:
+            common_keys = extra_data.keys() & product.extraData.keys()
+            if any(key == "ean" for key in common_keys):
+                raise ValueError("ExtraData of the offer and the product must be the same, except for EAN")
     if kwargs.get("durationMinutes"):
         raise ValueError("DurationMinutes of the offer must be None when product is given")
     if kwargs.get("description"):

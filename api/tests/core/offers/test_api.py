@@ -2508,10 +2508,10 @@ class RejectInappropriateProductTest:
         offers = models.Offer.query.all()
         bookings = bookings_models.Booking.query.all()
 
-        product1 = models.Product.query.filter(models.Product.extraData["ean"].astext == "ean-de-test").one()
+        product1 = models.Product.query.filter(models.Product.ean == "ean-de-test").one()
         assert product1.gcuCompatibilityType == models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
 
-        product2 = models.Product.query.filter(models.Product.extraData["ean"].astext == "ean-de-test-2").one()
+        product2 = models.Product.query.filter(models.Product.ean == "ean-de-test-2").one()
         assert product2.isGcuCompatible
 
         assert all(
@@ -2583,7 +2583,7 @@ class RejectInappropriateProductTest:
 
         # Then
 
-        product = models.Product.query.filter(models.Product.extraData["ean"].astext == "ean-de-test").one()
+        product = models.Product.query.filter(models.Product.ean == "ean-de-test").one()
         assert product.gcuCompatibilityType == models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
 
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_not_called()
@@ -3199,7 +3199,7 @@ class WhitelistExistingProductTest:
         assert product.name == oeuvre["titre"]
         assert product.description == article["resume"]
         assert product.extraData["author"] == oeuvre["auteurs"]
-        assert product.extraData["ean"] == ean
+        assert product.ean == ean
         assert product.extraData["prix_livre"] == article["prix"]
         assert product.extraData["collection"] == article["collection"]
         assert product.extraData["comic_series"] == article["serie"]
@@ -3990,7 +3990,7 @@ class ApproveProductAndRejectedOffersTest:
         api.approves_provider_product_and_rejected_offers(ean)
 
         # Then
-        product = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).one()
+        product = models.Product.query.filter(models.Product.ean == ean).one()
         assert product.isGcuCompatible
 
         mocked_async_index_offer_ids.assert_not_called()
@@ -4015,7 +4015,7 @@ class ApproveProductAndRejectedOffersTest:
         api.approves_provider_product_and_rejected_offers(ean)
 
         # Then
-        product = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).one()
+        product = models.Product.query.filter(models.Product.ean == ean).one()
         assert product.isGcuCompatible
 
         assert models.Offer.query.filter(models.Offer.validation == OfferValidationStatus.APPROVED).count() == 2
@@ -4048,7 +4048,7 @@ class ApproveProductAndRejectedOffersTest:
         api.approves_provider_product_and_rejected_offers(ean)
 
         # Then
-        product = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).one()
+        product = models.Product.query.filter(models.Product.ean == ean).one()
         assert product.isGcuCompatible
 
         assert models.Offer.query.filter(models.Offer.validation == OfferValidationStatus.APPROVED).count() == 2
@@ -4083,7 +4083,7 @@ class ApproveProductAndRejectedOffersTest:
         api.approves_provider_product_and_rejected_offers(ean)
 
         # Then
-        product = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).one()
+        product = models.Product.query.filter(models.Product.ean == ean).one()
         assert product.isGcuCompatible
 
         assert models.Offer.query.filter(models.Offer.validation == OfferValidationStatus.REJECTED).count() == 1
@@ -4110,7 +4110,7 @@ class ApproveProductAndRejectedOffersTest:
         api.approves_provider_product_and_rejected_offers(ean)
 
         # Then
-        product = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).one()
+        product = models.Product.query.filter(models.Product.ean == ean).one()
         assert product.isGcuCompatible
 
         assert models.Offer.query.filter(models.Offer.validation == OfferValidationStatus.REJECTED).count() == 1
