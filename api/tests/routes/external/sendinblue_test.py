@@ -115,7 +115,7 @@ class GetUserRecommendationsTest:
         product = ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         ProductMediationFactory(product=product, uuid="12345678", imageType=TiteliveImageType.RECTO)
         OfferFactory(id=1, product=product)
-        OfferFactory(id=2)
+        offer_2 = OfferFactory(id=2)
 
         expected_num_queries = 1  # feature
         expected_num_queries += 1  # user
@@ -125,10 +125,10 @@ class GetUserRecommendationsTest:
 
         assert response.status_code == 200
         assert sorted(response.json["offers"], key=lambda item: item["name"]) == [
-            {"image": None, "name": "Offer 1", "url": "https://webapp-v2.example.com/offre/2"},
+            {"image": None, "name": offer_2.name, "url": "https://webapp-v2.example.com/offre/2"},
             {
                 "image": "http://localhost/storage/thumbs/12345678",
-                "name": "Product 0",
+                "name": product.name,
                 "url": "https://webapp-v2.example.com/offre/1",
             },
         ]
