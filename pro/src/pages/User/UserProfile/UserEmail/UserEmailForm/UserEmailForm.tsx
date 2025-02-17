@@ -1,4 +1,5 @@
-import { Form, FormikProvider, useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm } from 'react-hook-form'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
@@ -8,8 +9,8 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { BoxFormLayout } from 'ui-kit/BoxFormLayout/BoxFormLayout'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { PasswordInput } from 'ui-kit/form/PasswordInput/PasswordInput'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { PasswordInput } from 'ui-kit/formV2/PasswordInput/PasswordInput'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
 import styles from './UserEmailForm.module.scss'
 import { validationSchema } from './validationSchema'
@@ -30,6 +31,24 @@ export const UserEmailForm = ({
 }: UserEmailFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
 
+  const initialValues: UserEmailFormValues = {
+    email: '',
+    password: '',
+  }
+
+  const hookForm = useForm<UserEmailFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver(validationSchema),
+    mode: 'onBlur',
+  })
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting, errors },
+  } = hookForm
+
   const onSubmit = async (values: UserResetEmailBodyModel) => {
     try {
       await api.postUserEmail(values)
@@ -38,28 +57,18 @@ export const UserEmailForm = ({
       closeForm()
     } catch (error) {
       if (isErrorAPIError(error)) {
-        for (const field in error.body) {
-          formik.setFieldError(field, error.body[field])
+        // Handle server-side errors and set field errors
+        for (const field of Object.keys(error.body)) {
+          hookForm.setError('password', {
+            message: error.body[field],
+          })
         }
       }
     }
-    formik.setSubmitting(false)
   }
-
-  const initialValues: UserEmailFormValues = {
-    email: '',
-    password: '',
-  }
-
-  const formik = useFormik({
-    initialValues,
-    onSubmit,
-    validationSchema,
-    validateOnChange: false,
-  })
 
   const onCancel = () => {
-    formik.resetForm()
+    reset()
     closeForm()
   }
 
@@ -71,34 +80,36 @@ export const UserEmailForm = ({
         textPrimary={currentUser.email}
       />
       <BoxFormLayout.Fields>
-        <FormikProvider value={formik}>
-          <Form onSubmit={formik.handleSubmit}>
-            <FormLayout>
-              <FormLayout.Row>
-                <TextInput
-                  label="Nouvelle adresse email"
-                  name="email"
-                  description="Format : email@exemple.com"
-                />
-              </FormLayout.Row>
-              <FormLayout.Row>
-                <PasswordInput
-                  name="password"
-                  label="Mot de passe (requis pour modifier votre email)"
-                />
-              </FormLayout.Row>
-            </FormLayout>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <FormLayout>
+            <FormLayout.Row>
+              <TextInput
+                label="Nouvelle adresse email"
+                description="Format : email@exemple.com"
+                error={errors.email?.message}
+                required={true}
+                {...register('email')}
+              />
+            </FormLayout.Row>
+            <FormLayout.Row>
+              <PasswordInput
+                label="Mot de passe (requis pour modifier votre email)"
+                error={errors.password?.message}
+                required={true}
+                {...register('password')}
+              />
+            </FormLayout.Row>
+          </FormLayout>
 
-            <div className={styles['buttons-field']}>
-              <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
-                Annuler
-              </Button>
-              <Button type="submit" isLoading={formik.isSubmitting}>
-                Enregistrer
-              </Button>
-            </div>
-          </Form>
-        </FormikProvider>
+          <div className={styles['buttons-field']}>
+            <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
+              Annuler
+            </Button>
+            <Button type="submit" isLoading={isSubmitting}>
+              Enregistrer
+            </Button>
+          </div>
+        </form>
       </BoxFormLayout.Fields>
     </>
   )
