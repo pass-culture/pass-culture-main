@@ -15,7 +15,7 @@ interface DatePickerProps extends FieldLayoutBaseProps {
   onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
   help?: string
   onBlur?: React.FocusEventHandler<HTMLInputElement>
-  showMandatoryAsterisk?: boolean
+  hideAsterisk?: boolean
 }
 
 export const DatePicker = ({
@@ -35,7 +35,7 @@ export const DatePicker = ({
   onChange,
   help,
   onBlur,
-  showMandatoryAsterisk = true,
+  hideAsterisk = false,
 }: DatePickerProps): JSX.Element => {
   const [field, meta] = useField({ name, type: 'date' })
   const showError = meta.touched && !!meta.error
@@ -64,7 +64,7 @@ export const DatePicker = ({
       smallLabel={smallLabel}
       isOptional={isOptional}
       help={help}
-      showMandatoryAsterisk={showMandatoryAsterisk}
+      hideAsterisk={hideAsterisk}
     >
       <BaseDatePicker
         {...field}

@@ -28,7 +28,7 @@ interface IconRadioGroupProps {
   group: IconRadioGroupValues[]
   children?: React.ReactNode
   isOptional?: boolean
-  showMandatoryAsterisk?: boolean
+  hideAsterisk?: boolean
 }
 
 export const IconRadioGroup = ({
@@ -36,7 +36,7 @@ export const IconRadioGroup = ({
   name,
   legend,
   isOptional = false,
-  showMandatoryAsterisk,
+  hideAsterisk,
 }: IconRadioGroupProps): JSX.Element => {
   const [, meta] = useField({ name })
 
@@ -57,7 +57,7 @@ export const IconRadioGroup = ({
         name={`icon-radio-group-${name}`}
         hideFooter
         isOptional={isOptional}
-        showMandatoryAsterisk={showMandatoryAsterisk}
+        hideAsterisk={hideAsterisk}
         ariaDescribedBy={displayScale ? scaleId : undefined}
       >
         {displayScale && (

@@ -106,7 +106,7 @@ export const UserReviewDialog = () => {
               name="userSatisfaction"
               legend="Comment évalueriez-vous votre expérience avec le pass Culture Pro ?"
               group={group}
-              showMandatoryAsterisk={false}
+              hideAsterisk={true}
             />
 
             <TextArea
@@ -118,7 +118,7 @@ export const UserReviewDialog = () => {
                 </>
               }
               maxLength={500}
-              showMandatoryAsterisk={false}
+              hideAsterisk={true}
               className={styles['text-area-container']}
             />
 

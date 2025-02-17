@@ -110,7 +110,7 @@ export const TextInput = ({
   hasLabelLineBreak = true,
   externalError,
   ErrorDetails,
-  showMandatoryAsterisk,
+  hideAsterisk,
   InputExtension,
   ...props
 }: TextInputProps): JSX.Element => {
@@ -165,7 +165,7 @@ export const TextInput = ({
       count={countCharacters ? field.value.length : undefined}
       error={externalError || meta.error}
       isOptional={isOptional}
-      showMandatoryAsterisk={showMandatoryAsterisk}
+      hideAsterisk={hideAsterisk}
       label={label}
       isLabelHidden={isLabelHidden}
       maxLength={maxLength}

@@ -83,7 +83,7 @@ export const UserPhoneForm = ({
               {...register('phoneNumber')}
               required={true}
               error={errors.phoneNumber?.message}
-              showMandatoryAsterisk={false}
+              hideAsterisk={true}
             />
           </FormLayout.Row>
         </FormLayout>

@@ -89,7 +89,7 @@ export const UserEmailForm = ({
                 error={errors.email?.message}
                 required={true}
                 {...register('email')}
-                showMandatoryAsterisk={false}
+                hideAsterisk={true}
               />
             </FormLayout.Row>
             <FormLayout.Row>
@@ -98,7 +98,7 @@ export const UserEmailForm = ({
                 error={errors.password?.message}
                 required={true}
                 {...register('password')}
-                showMandatoryAsterisk={false}
+                hideAsterisk={true}
               />
             </FormLayout.Row>
           </FormLayout>
