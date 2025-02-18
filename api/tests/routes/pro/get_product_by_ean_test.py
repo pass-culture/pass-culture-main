@@ -21,8 +21,8 @@ class Returns200Test:
             description="Product description",
             name="Product name",
             subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+            ean="1234567891011",
             extraData={
-                "ean": "1234567891011",
                 "author": "Martin Dupont",
                 "gtl_id": "02000000",
                 "performer": "Martine Dupond",
@@ -61,7 +61,8 @@ class Returns200Test:
             description=None,
             name="Product name",
             subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
-            extraData={"ean": "1234567891011", "author": "Martin Dupont"},
+            ean="1234567891011",
+            extraData={"author": "Martin Dupont"},
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )
 
@@ -85,8 +86,8 @@ class Returns200Test:
             description="Product description",
             name="Product name",
             subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+            ean="1234567891011",
             extraData={
-                "ean": "1234567891011",
                 "author": "Martin Dupont",
                 "gtl_id": "02000000",
                 "performer": "Martine Dupond",
@@ -115,8 +116,9 @@ class Returns422Test:
         offers_factories.ProductFactory(
             description="Product description",
             name="Product name",
+            ean="1234567890123",
             subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
-            extraData={"ean": "EANDUPRODUIT", "author": "Martin Dupont"},
+            extraData={"author": "Martin Dupont"},
             gcuCompatibilityType=GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
@@ -127,7 +129,7 @@ class Returns422Test:
         num_queries += 1  # select offer
         num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get_product_by_ean/EANDUPRODUIT/{offerer_id}")
+            response = test_client.get(f"/get_product_by_ean/1234567890123/{offerer_id}")
 
             assert response.status_code == 422
             assert response.json == {"ean": ["EAN invalide. Ce produit n'est pas conforme à nos CGU."]}
@@ -160,7 +162,8 @@ class Returns422Test:
             description="Product description",
             name="Product name",
             subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
-            extraData={"ean": "EANDUPRODUIT", "author": "Martin Dupont"},
+            ean="1234567890123",
+            extraData={"author": "Martin Dupont"},
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )
         offers_factories.OfferFactory(product=product, venue=venue)
@@ -172,7 +175,7 @@ class Returns422Test:
         num_queries += 1  # select offer
         num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get_product_by_ean/EANDUPRODUIT/{offerer_id}")
+            response = test_client.get(f"/get_product_by_ean/1234567890123/{offerer_id}")
 
             assert response.status_code == 422
             assert response.json == {
@@ -185,7 +188,8 @@ class Returns422Test:
             description="Product description",
             name="Product name",
             subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
-            extraData={"ean": "EANDUPRODUIT", "author": "Martin Dupont"},
+            ean="1234567890123",
+            extraData={"author": "Martin Dupont"},
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )
 
@@ -195,7 +199,7 @@ class Returns422Test:
         num_queries += 1  # select offerer join load venue
         num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
-            response = test_client.get("/get_product_by_ean/EANDUPRODUIT/0")
+            response = test_client.get("/get_product_by_ean/1234567890123/0")
 
             assert response.status_code == 422
             assert response.json == {"ean": ["Structure non reconnue."]}

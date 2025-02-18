@@ -76,7 +76,7 @@ class TiteliveSearchTest:
         assert cd_product.extraData["date_parution"] == "2022-12-02"
         assert cd_product.extraData["dispo"] == "1"
         assert cd_product.extraData["distributeur"] == "Believe"
-        assert cd_product.extraData["ean"] == "3700187679323"
+        assert cd_product.ean == "3700187679323"
         assert cd_product.extraData["editeur"] == "BELIEVE"
         assert cd_product.extraData["music_label"] == "PLAY TWO"
         assert cd_product.extraData["nb_galettes"] == "1"
@@ -107,7 +107,7 @@ class TiteliveSearchTest:
         assert shared_gtl_product.extraData["date_parution"] == "2022-12-02"
         assert shared_gtl_product.extraData["dispo"] == "1"
         assert shared_gtl_product.extraData["distributeur"] == "Believe"
-        assert shared_gtl_product.extraData["ean"] == "3700187679324"
+        assert shared_gtl_product.ean == "3700187679324"
         assert shared_gtl_product.extraData["editeur"] == "BELIEVE"
         assert shared_gtl_product.extraData["music_label"] == "PLAY TWO"
         assert shared_gtl_product.extraData["nb_galettes"] == "1"
@@ -138,7 +138,7 @@ class TiteliveSearchTest:
         assert vinyle_product.extraData["date_parution"] == "2023-02-24"
         assert vinyle_product.extraData["dispo"] == "1"
         assert vinyle_product.extraData["distributeur"] == "Warner Music France"
-        assert vinyle_product.extraData["ean"] == "5054197199738"
+        assert vinyle_product.ean == "5054197199738"
         assert vinyle_product.extraData["editeur"] == "WARNER MUSIC UK"
         assert vinyle_product.extraData["music_label"] == "WARNER MUSIC UK"
         assert vinyle_product.extraData["nb_galettes"] == "1"
@@ -223,9 +223,7 @@ class TiteliveSearchTest:
         sync_date = datetime.date(2022, 12, 1)
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        products_with_same_ean_query = offers_models.Product.query.filter(
-            offers_models.Product.extraData["ean"].astext == "3700187679323"
-        )
+        products_with_same_ean_query = offers_models.Product.query.filter(offers_models.Product.ean == "3700187679323")
         assert products_with_same_ean_query.count() == 1
 
         titelive_epagine_provider = providers_repository.get_provider_by_name(

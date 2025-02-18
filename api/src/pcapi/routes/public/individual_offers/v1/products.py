@@ -408,7 +408,7 @@ def _create_or_update_ean_offers(
         if ean_list_to_create:
             created_offers = []
             existing_products = _get_existing_products(ean_list_to_create)
-            product_by_ean = {product.extraData["ean"]: product for product in existing_products}  # type: ignore[index]
+            product_by_ean = {product.ean: product for product in existing_products}
             not_found_eans = [ean for ean in ean_list_to_create if ean not in product_by_ean.keys()]
             if not_found_eans:
                 logger.warning(
@@ -416,9 +416,11 @@ def _create_or_update_ean_offers(
                     extra={"eans": ",".join(not_found_eans), "venue": venue_id},
                     technical_message_id="ean.not_found",
                 )
+
             for product in existing_products:
                 try:
-                    ean = product.extraData["ean"] if product.extraData else None
+                    ean = product.ean
+
                     stock_data = serialized_products_stocks[ean]
                     created_offer = _create_offer_from_product(
                         venue,
@@ -517,7 +519,7 @@ ALLOWED_PRODUCT_SUBCATEGORIES = [
 
 def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:
     return offers_models.Product.query.filter(
-        offers_models.Product.extraData["ean"].astext.in_(ean_to_create),
+        offers_models.Product.ean.in_(ean_to_create),
         offers_models.Product.can_be_synchronized == True,
         offers_models.Product.subcategoryId.in_(ALLOWED_PRODUCT_SUBCATEGORIES),
         # FIXME (cepehang, 2023-09-21) remove these condition when the product table is cleaned up
@@ -567,12 +569,10 @@ def _create_offer_from_product(
     provider: providers_models.Provider,
     offererAddress: offerers_models.OffererAddress,
 ) -> offers_models.Offer:
-    ean = product.extraData.get("ean") if product.extraData else None
-
     offer = offers_api.build_new_offer_from_product(
         venue,
         product,
-        id_at_provider=ean,
+        id_at_provider=product.ean,
         provider_id=provider.id,
         offerer_address_id=offererAddress.id,
     )
@@ -710,7 +710,7 @@ def check_eans_availability(
     """
     eans_to_check = set(query.eans)
     existing_products = offers_models.Product.query.filter(
-        offers_models.Product.extraData["ean"].astext.in_(eans_to_check),
+        offers_models.Product.ean.in_(eans_to_check),
     ).all()
 
     rejected_eans_because_subcategory_is_not_allowed = []
@@ -718,7 +718,7 @@ def check_eans_availability(
     available_eans = []
 
     for product in existing_products:
-        product_ean = product.extraData["ean"]
+        product_ean = product.ean
         eans_to_check.remove(product_ean)
 
         if product.subcategoryId not in ALLOWED_PRODUCT_SUBCATEGORIES:
