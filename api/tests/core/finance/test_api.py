@@ -5139,9 +5139,26 @@ class UserRecreditAfterDecreeTest:
             assert len(user.deposits) == 1
             assert len(user.deposit.recredits) == 2
 
+    def test_user_with_missing_steps_is_not_recredited(self):
+        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1, months=1)):
+            user = users_factories.BeneficiaryFactory(age=17, deposit__type=models.DepositType.GRANT_17_18)
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
-class UserRecreditTransitionBeforeAfterDecreeTest:
+        # User cannot be recredited because of missing steps
+        api.recredit_users()
+        assert len(user.deposits) == 1
+        assert len(user.deposit.recredits) == 1
+
+        # Finish missing steps
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        fraud_factories.PhoneValidationFraudCheckFactory(user=user)
+        user.phoneNumber = "+33600000000"
+        fraud_factories.HonorStatementFraudCheckFactory(user=user)
+
+        # User can be recredited
+        api.recredit_users()
+        assert len(user.deposits) == 1
+        assert len(user.deposit.recredits) == 2
+
     def test_create_new_deposit_when_recrediting_underage_deposit(self):
         one_year_before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
         one_day_after_decree = settings.CREDIT_V3_DECREE_DATETIME + relativedelta(days=1)
