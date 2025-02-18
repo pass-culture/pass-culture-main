@@ -37,6 +37,7 @@ class FormatUserAttributesTest:
             "u.is_current_beneficiary": True,
             "u.is_former_beneficiary": False,
             "u.last_name": "Last name",
+            "u.last_recredit_type": None,
             "u.most_booked_movie_genre": "COMEDY",
             "u.most_booked_music_type": "900",
             "u.most_booked_subcategory": "CINE_PLEIN_AIR",

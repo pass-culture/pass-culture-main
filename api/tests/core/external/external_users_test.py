@@ -17,7 +17,8 @@ from pcapi.core.external.attributes.api import get_user_bookings
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.attributes.models import BookingsAttributes
 from pcapi.core.external.attributes.models import UserAttributes
-import pcapi.core.finance.conf as finance_conf
+from pcapi.core.finance import conf as finance_conf
+from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.enum import DepositType
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
@@ -194,6 +195,7 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         is_email_validated=True,
         is_phone_validated=True,
         last_favorite_creation_date=last_favorite.dateCreated,
+        last_recredit_type=None,
         last_visit_date=user.lastConnectionDate,
         marketing_email_subscription=True,
         most_booked_subcategory="SEANCE_CINE",
@@ -250,6 +252,7 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
         is_email_validated=True,
         is_phone_validated=True,
         last_favorite_creation_date=None,
+        last_recredit_type=None,
         last_visit_date=user.lastConnectionDate,
         marketing_email_subscription=True,
         most_booked_subcategory=None,
@@ -319,6 +322,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         is_email_validated=True,
         is_phone_validated=True,
         last_favorite_creation_date=favorite.dateCreated,
+        last_recredit_type=finance_models.RecreditType.RECREDIT_18,
         last_visit_date=user.lastConnectionDate,
         marketing_email_subscription=True,
         most_booked_subcategory="SEANCE_CINE",
@@ -463,6 +467,7 @@ def test_get_user_attributes_not_beneficiary():
         is_email_validated=True,
         is_phone_validated=True,
         last_favorite_creation_date=None,
+        last_recredit_type=None,
         last_visit_date=user.lastConnectionDate,
         marketing_email_subscription=True,
         most_booked_subcategory=None,

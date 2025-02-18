@@ -6,8 +6,12 @@ We want to be able to retrieve the processed applications and update the status 
 import datetime
 import logging
 
+import sqlalchemy as sa
+
+from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription.ubble import api as ubble_api
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 
 
@@ -18,11 +22,19 @@ def update_pending_ubble_applications(dry_run: bool = True) -> None:
     # Ubble guaranties an application is processed after 3 hours.
     # We give ourselves some extra time and we retrieve the applications that are still pending after 12 hours.
     TWELVE_HOURS_AGO = datetime.date.today() - datetime.timedelta(hours=12)
-    pending_ubble_application_fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter(
-        fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
-        fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.PENDING,
-        fraud_models.BeneficiaryFraudCheck.dateCreated < TWELVE_HOURS_AGO,
-    ).all()
+    pending_ubble_application_fraud_checks = (
+        fraud_models.BeneficiaryFraudCheck.query.filter(
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
+            fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.PENDING,
+            fraud_models.BeneficiaryFraudCheck.dateCreated < TWELVE_HOURS_AGO,
+        )
+        .options(
+            sa.orm.joinedload(fraud_models.BeneficiaryFraudCheck.user)
+            .selectinload(users_models.User.deposits)
+            .selectinload(finance_models.Deposit.recredits)
+        )
+        .all()
+    )
     if len(pending_ubble_application_fraud_checks) > 0:
         logger.warning(
             "Found %d pending ubble application older than 12 hours. Updating them.",

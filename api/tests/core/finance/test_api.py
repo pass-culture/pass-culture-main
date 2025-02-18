@@ -5190,7 +5190,7 @@ class UserRecreditAfterDecreeTest:
 
 
 @pytest.mark.feature(WIP_ENABLE_CREDIT_V3=True)
-class CanRecreditTest:
+class CanBeRecreditedTest:
     @pytest.mark.parametrize("age", (14, 15, 16, 19))
     def test_users_not_eligible_cannot_be_recredited(self, age):
         user = users_factories.BaseUserFactory(
@@ -5259,6 +5259,38 @@ class CanRecreditTest:
             user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
 
         assert not api._can_be_recredited(user)
+
+
+@pytest.mark.feature(WIP_ENABLE_CREDIT_V3=True)
+class LastAgeRelatedRecreditTest:
+    def test_last_recredit_17(self):
+        user = users_factories.BeneficiaryFactory(age=17)
+
+        last_recredit_type = api.get_last_age_related_user_recredit(user)
+
+        assert last_recredit_type == models.RecreditType.RECREDIT_17
+
+    def test_last_recredit_18(self):
+        user = users_factories.BeneficiaryFactory(age=17)
+        factories.RecreditFactory(
+            deposit=user.deposit,
+            amount=Decimal("150"),
+            recreditType=models.RecreditType.RECREDIT_18,
+            dateCreated=datetime.datetime.utcnow() - relativedelta(weeks=1),
+        )
+
+        last_recredit_type = api.get_last_age_related_user_recredit(user)
+
+        assert last_recredit_type == models.RecreditType.RECREDIT_18
+
+    @pytest.mark.parametrize("age", [15, 16, 17])
+    def test_last_recredit_15_17_deposit(self, age):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        user = users_factories.BeneficiaryFactory(age=age, dateCreated=before_decree)
+
+        last_recredit_type = api.get_last_age_related_user_recredit(user)
+
+        assert last_recredit_type == conf.RECREDIT_TYPE_AGE_MAPPING[age]
 
 
 class ValidateFinanceIncidentTest:

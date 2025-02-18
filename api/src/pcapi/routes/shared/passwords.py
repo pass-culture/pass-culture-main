@@ -1,8 +1,11 @@
 import logging
 
+import sqlalchemy as sa
+
 from pcapi import settings
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
+from pcapi.core.finance import models as finance_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.token as token_utils
 from pcapi.core.users import api as users_api
@@ -57,7 +60,9 @@ def post_new_password(body: NewPasswordBodyModel) -> None:
     try:
         token = token_utils.Token.load_and_check(token_value, token_utils.TokenType.RESET_PASSWORD)
         token.expire()
-        user = users_models.User.query.get(token.user_id)
+        user = users_models.User.query.options(
+            sa.orm.selectinload(users_models.User.deposits).selectinload(finance_models.Deposit.recredits)
+        ).get(token.user_id)
     except users_exceptions.InvalidToken:
         errors = ApiErrors()
         errors.add_error("token", "Votre lien de changement de mot de passe est invalide.")
