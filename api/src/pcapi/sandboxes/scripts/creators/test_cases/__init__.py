@@ -5,6 +5,7 @@ import random
 
 from factory.faker import faker
 
+from pcapi import settings
 from pcapi.core.achievements import factories as achievements_factories
 from pcapi.core.achievements import models as achievements_models
 from pcapi.core.artist import factories as artist_factories
@@ -12,6 +13,7 @@ from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.finance.enum import DepositType
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
@@ -69,6 +71,89 @@ def save_test_cases_sandbox() -> None:
     create_discord_users()
     create_users_with_reactions()
     create_user_that_booked_some_cinema()  # to suggest reactions on cinema bookings
+    create_users_for_credit_v3_tests()
+
+
+def create_users_for_credit_v3_tests() -> None:
+    # Utilisateur 18 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité avant décret
+    users_factories.BeneficiaryFactory(
+        firstName="User18",
+        lastName="Inscriptionavantdecret",
+        email="user18avantdecret@test.com",
+        # birth_date=datetime.date(2007, 1, 1),
+        age=18,
+        deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - datetime.timedelta(days=1),
+    )
+
+    # Utilisateur 18 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité après décret
+    users_factories.BeneficiaryFactory(
+        firstName="User18",
+        lastName="Inscriptionapresdecret",
+        email="user18apresdecret@test.com",
+        # birth_date=datetime.date(2007, 1, 1),
+        age=18,
+        deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME + datetime.timedelta(days=1),
+    )
+
+    # Utilisateur 17 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité avant décret
+    users_factories.BeneficiaryFactory(
+        firstName="User17",
+        lastName="Inscriptionavantdecret",
+        email="user17avantdecret@test.com",
+        # birth_date=datetime.date(2008, 1, 1),
+        age=17,
+        deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - datetime.timedelta(days=1),
+    )
+
+    # Utilisateur 17 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité après décret
+    users_factories.BeneficiaryFactory(
+        firstName="User17",
+        lastName="Inscriptionapresdecret",
+        email="user17apresdecret@test.com",
+        # birth_date=datetime.date(2008, 1, 1),
+        age=17,
+        deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME + datetime.timedelta(days=1),
+    )
+
+    # Utilisateur 16 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité avant décret
+    users_factories.BeneficiaryFactory(
+        firstName="User16",
+        lastName="Inscriptionavantdecret",
+        email="user16avantdecret@test.com",
+        # birth_date=datetime.date(2009, 1, 1),
+        age=16,
+        deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - datetime.timedelta(days=1),
+    )
+
+    # Utilisateur 16 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité après décret
+    users_factories.BeneficiaryFactory(
+        firstName="User16",
+        lastName="Inscriptionapresdecret",
+        email="user16apresdecret@test.com",
+        # birth_date=datetime.date(2009, 1, 1),
+        age=16,
+        deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME + datetime.timedelta(days=1),
+    )
+
+    # Utilisateur 15 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité avant décret
+    users_factories.BeneficiaryFactory(
+        firstName="User15",
+        lastName="Inscriptionavantdecret",
+        email="user15avantdecret@test.com",
+        # birth_date=datetime.date(2010, 1, 1),
+        age=15,
+        deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - datetime.timedelta(days=1),
+    )
+
+    # Utilisateur 15 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité après décret
+    users_factories.BeneficiaryFactory(
+        firstName="User15",
+        lastName="Inscriptionapresdecret",
+        email="user15apresdecret@test.com",
+        # birth_date=datetime.date(2010, 1, 1),
+        age=15,
+        deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME + datetime.timedelta(days=1),
+    )
 
 
 def create_artists() -> None:
