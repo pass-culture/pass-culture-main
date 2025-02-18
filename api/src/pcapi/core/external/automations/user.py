@@ -103,6 +103,9 @@ def get_users_whose_credit_expired_today() -> list[User]:
             > datetime.combine(date.today() - relativedelta(days=1), datetime.min.time()),
             finance_models.Deposit.expirationDate <= datetime.combine(date.today(), datetime.min.time()),
         )
+        .options(
+            sa.orm.selectinload(User.deposits).selectinload(finance_models.Deposit.recredits),
+        )
         .yield_per(YIELD_COUNT_PER_DB_QUERY)
     )
 
@@ -116,6 +119,9 @@ def get_ex_underage_beneficiaries_who_can_no_longer_recredit() -> list[User]:
             User.has_underage_beneficiary_role,
             User.dateOfBirth > datetime.combine(date.today() - relativedelta(days=days_19y + 1), datetime.min.time()),
             User.dateOfBirth <= datetime.combine(date.today() - relativedelta(days=days_19y), datetime.min.time()),
+        )
+        .options(
+            sa.orm.selectinload(User.deposits).selectinload(finance_models.Deposit.recredits),
         )
         .yield_per(YIELD_COUNT_PER_DB_QUERY)
     )

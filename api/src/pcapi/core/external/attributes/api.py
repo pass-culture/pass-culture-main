@@ -16,6 +16,7 @@ from pcapi.core.educational.repository import has_collective_offers_for_program_
 from pcapi.core.external.attributes import models
 from pcapi.core.external.batch import update_user_attributes as update_batch_user
 from pcapi.core.external.sendinblue import update_contact_attributes as update_sendinblue_user
+from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
@@ -138,6 +139,7 @@ def get_anonymized_attributes(user: users_models.User) -> models.UserAttributes 
         is_email_validated=None,
         last_booking_date=None,
         last_favorite_creation_date=None,
+        last_recredit_type=None,
         last_visit_date=None,
         most_booked_subcategory=None,
         most_booked_movie_genre=None,
@@ -425,6 +427,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     domains_credit = get_domains_credit(user, user_bookings) if not is_pro_user else None
     bookings_attributes = get_bookings_categories_and_subcategories(user_bookings)
     booking_venues_count = len({booking.venueId for booking in user_bookings})
+    last_recredit_type = finance_api.get_last_age_related_user_recredit(user)
 
     # Call only once to limit to one get_wallet_balance query
     has_remaining_credit = user.has_remaining_credit
@@ -463,6 +466,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         last_booking_date=user_bookings[0].dateCreated if user_bookings else None,
         last_favorite_creation_date=last_favorite.dateCreated if last_favorite else None,
         last_name=user.lastName,
+        last_recredit_type=last_recredit_type,
         last_visit_date=user.lastConnectionDate,
         marketing_email_subscription=user.get_notification_subscriptions().marketing_email,
         marketing_push_subscription=user.get_notification_subscriptions().marketing_push,

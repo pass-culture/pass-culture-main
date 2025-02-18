@@ -39,6 +39,7 @@ common_user_attributes = attributes_models.UserAttributes(
     last_booking_date=datetime(2021, 5, 6),
     last_favorite_creation_date=None,
     last_name="Last name",
+    last_recredit_type=None,
     last_visit_date=None,
     marketing_email_subscription=True,
     marketing_push_subscription=True,

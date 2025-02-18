@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import datetime
 import typing
 
+from pcapi.core.finance import models as finance_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 
@@ -35,6 +36,7 @@ class UserAttributes:
     last_booking_date: datetime.datetime | None
     last_favorite_creation_date: datetime.datetime | None
     last_name: str | None
+    last_recredit_type: finance_models.RecreditType | None
     last_visit_date: datetime.datetime | None
     marketing_email_subscription: bool
     marketing_push_subscription: bool

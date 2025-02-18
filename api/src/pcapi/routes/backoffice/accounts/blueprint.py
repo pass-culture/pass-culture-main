@@ -1142,7 +1142,11 @@ def send_validation_code(user_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW)
 def review_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
-        users_models.User.query.filter_by(id=user_id).populate_existing().with_for_update(key_share=True).one_or_none()
+        users_models.User.query.filter_by(id=user_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .options(sa.orm.selectinload(users_models.User.deposits).selectinload(finance_models.Deposit.recredits))
+        .one_or_none()
     )
     if not user:
         raise NotFound()
