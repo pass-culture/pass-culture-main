@@ -444,4 +444,56 @@ describe('Offerer', () => {
       )
     ).toBeInTheDocument()
   })
+
+  it('should render offerer form', async () => {
+    renderOffererScreen(contextValue)
+
+    expect(
+      await screen.findByText('Renseignez le SIRET de votre structure')
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByText('Tous les champs suivis d’un * sont obligatoires.')
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *')
+    ).toHaveValue('')
+  })
+
+  it('should fill siret field only with numbers', async () => {
+    renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
+      'AbdqsI'
+    )
+
+    expect(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *')
+    ).toHaveValue('')
+  })
+
+  it('should render empty siret field error', async () => {
+    renderOffererScreen(contextValue)
+
+    await userEvent.click(screen.getByText('Continuer'))
+    expect(
+      await screen.findByText('Veuillez renseigner un SIRET')
+    ).toBeInTheDocument()
+  })
+
+  const lenErrorCondition = ['22223333', '1234567891234567']
+  it.each(lenErrorCondition)('should render errors', async (siretValue) => {
+    renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
+      siretValue
+    )
+    await userEvent.click(screen.getByText('Continuer'))
+    expect(
+      await screen.findByText('Le SIRET doit comporter 14 caractères')
+    ).toBeInTheDocument()
+  })
 })

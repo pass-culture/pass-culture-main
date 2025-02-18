@@ -12,7 +12,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
-import { OffererFormValues } from '../Offerer/OffererForm'
+import { OffererFormValues } from '../Offerer/Offerer'
 
 import styles from './OffererAuthenticationForm.module.scss'
 
