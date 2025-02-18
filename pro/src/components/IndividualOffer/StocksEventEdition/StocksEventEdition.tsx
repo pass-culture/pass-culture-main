@@ -2,15 +2,15 @@ import cn from 'classnames'
 import { FieldArray, FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
   GetIndividualOfferWithAddressResponseModel,
   GetStocksResponseModel,
-  StocksOrderedBy,
   OfferStatus,
+  StocksOrderedBy,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
@@ -19,7 +19,6 @@ import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { SortingMode, useColumnSorting } from 'commons/hooks/useColumnSorting'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
@@ -27,9 +26,9 @@ import { usePaginationWithSearchParams } from 'commons/hooks/usePagination'
 import { getToday } from 'commons/utils/date'
 import { hasErrorCode } from 'commons/utils/error'
 import {
-  isValidTime,
   convertTimeFromVenueTimezoneToUtc,
   getLocalDepartementDateTimeFromUtc,
+  isValidTime,
 } from 'commons/utils/timezone'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -140,13 +139,7 @@ export const StocksEventEdition = ({
     () => getPriceCategoryOptions(offer.priceCategories),
     [offer.priceCategories]
   )
-  const useOffererAddressAsDataSourceEnabled = useActiveFeature(
-    'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
-  )
-  const departmentCode = getDepartmentCode({
-    offer,
-    useOffererAddressAsDataSourceEnabled,
-  })
+  const departmentCode = getDepartmentCode(offer)
 
   const today = useMemo(
     () => getLocalDepartementDateTimeFromUtc(getToday(), departmentCode),

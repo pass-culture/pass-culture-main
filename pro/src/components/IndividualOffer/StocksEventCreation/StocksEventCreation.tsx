@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -32,10 +31,6 @@ export const StocksEventCreation = ({
   const notify = useNotification()
 
   const [hasStocks, setHasStocks] = useState<boolean | null>(null)
-
-  const useOffererAddressAsDataSourceEnabled = useActiveFeature(
-    'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
-  )
 
   const handlePreviousStep = () => {
     /* istanbul ignore next: DEBT, TO FIX */
@@ -67,10 +62,7 @@ export const StocksEventCreation = ({
     )
   }
 
-  const departmentCode = getDepartmentCode({
-    offer,
-    useOffererAddressAsDataSourceEnabled,
-  })
+  const departmentCode = getDepartmentCode(offer)
 
   return (
     <>

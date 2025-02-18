@@ -39,7 +39,9 @@ export default defineConfig(({ mode }) => {
       globals: true,
       environment: 'jsdom',
       setupFiles: ['allure-vitest/setup', './vitest.setup.ts'],
-      reporters: process.env.GITHUB_ACTIONS ? ['verbose', 'github-actions'] : ['verbose'],
+      reporters: process.env.GITHUB_ACTIONS
+        ? ['verbose', 'github-actions']
+        : ['verbose'],
       clearMocks: true,
       restoreMocks: true,
       cacheDir: '../.vitest_cache',
@@ -48,7 +50,14 @@ export default defineConfig(({ mode }) => {
         provider: 'istanbul',
         reportsDirectory: '../coverage',
         reporter: ['text', 'json'],
-        exclude: ['**/*.stories.tsx', 'apiClient/adage/*','apiClient/adresse/*','apiClient/v1/*','apiClient/v2/*',...coverageConfigDefaults.exclude],
+        exclude: [
+          '**/*.stories.tsx',
+          'apiClient/adage/*',
+          'apiClient/adresse/*',
+          'apiClient/v1/*',
+          'apiClient/v2/*',
+          ...coverageConfigDefaults.exclude,
+        ],
       },
       minThreads: 4,
       maxThreads: 6,
