@@ -51,8 +51,8 @@ from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
+from pcapi.core.users import repository as users_repository
 import pcapi.core.users.models as users_models
-import pcapi.core.users.repository as users_repository
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import pc_object
@@ -978,6 +978,7 @@ def create_offerer(
         if not user_offerer:
             user_offerer = models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
             db.session.add(user_offerer)
+            db.session.flush()
 
         if offerer.isRejected:
             # When offerer was rejected, it is considered as a new offerer in validation process;
@@ -1005,6 +1006,7 @@ def create_offerer(
         _fill_in_offerer(offerer, offerer_informations)
         user_offerer = grant_user_offerer_access(offerer, user)
         db.session.add_all([offerer, user_offerer])
+        db.session.flush()
 
     if is_new:
         assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
@@ -1033,6 +1035,11 @@ def create_offerer(
 
     # keep commit with repository.save() as long as siren is validated in pcapi.validation.models.offerer
     repository.save(offerer)
+
+    if offerer_informations.phoneNumber:
+        users_repository.fill_phone_number_on_all_users_offerer_without_any(
+            offerer.id, offerer_informations.phoneNumber
+        )
 
     external_attributes_api.update_external_pro(user.email)
     on_commit(functools.partial(zendesk_sell.create_offerer, offerer))
@@ -2017,6 +2024,7 @@ def create_from_onboarding_data(
         name=name,
         postalCode=onboarding_data.address.postalCode,
         siren=onboarding_data.siret[:9],
+        phoneNumber=None,
     )
     new_onboarding_info = NewOnboardingInfo(
         target=onboarding_data.target,
