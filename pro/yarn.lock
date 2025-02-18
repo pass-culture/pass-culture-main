@@ -2791,10 +2791,17 @@ algoliasearch@>=4:
     "@algolia/requester-node-http" "4.19.1"
     "@algolia/transporter" "4.19.1"
 
-allure-js-commons@3.1.0, allure-js-commons@^3.0.8:
+allure-js-commons@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.1.0.tgz#63595af4699264f90adafee66b6cd0d6e225b953"
   integrity sha512-J4ijOvlbdw6nNRUWLgrNlybQ8v3FulgKAcIqiupeDI9bXy8D0yh2ukPtUdvWS+fltAwaQT72pFR2hEq4I21rrQ==
+  dependencies:
+    md5 "^2.3.0"
+
+allure-js-commons@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.2.0.tgz#064503cec8735564599c90fff5a239c36d016d66"
+  integrity sha512-UXRo3D6/XEIMosro+OldWj8phJ65eSOYaAUlThOpl6nJJ0sGngMpJYog+Z9FmZDo1BZn4edwLs4aAUaTgkz4Cg==
   dependencies:
     md5 "^2.3.0"
 
