@@ -28,10 +28,17 @@ jobs:
       checksum-tag-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
       checksum-console-tag-exists: ${{ steps.check-console-checksum-tag.outputs.tag-exists }}
     steps:
-      - uses: actions/checkout@v4.2.2
+      - name: "Checkout PR branch and all PR commits"
+        uses: actions/checkout@v4.2.2
         with:
-          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: ${{ github.event.pull_request.commits }}
           fetch-tags: false
+
+      - name: "Fetch the other branch with enough history for a common merge-base commit"
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+
       - name: "Check api folder changes"
         id: check-api-changes
         uses: tj-actions/changed-files@v45
@@ -61,8 +68,8 @@ jobs:
       # checkout source branch of the pull request
       - uses: actions/checkout@v4.2.2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 1
           fetch-tags: false
       - name: "Define pcapi image tags."
         id: pcapi-tags
