@@ -109,7 +109,7 @@ export const MultiSelect = ({
   searchLabel,
   label,
   hasSelectAllOptions,
-  disabled,
+  disabled = false,
   onSelectedOptionsChanged,
   error,
   name,
@@ -227,7 +227,7 @@ export const MultiSelect = ({
         </div>
 
         <SelectedValuesTags
-          disabled={false}
+          disabled={disabled}
           selectedOptions={selectedItems.map((item) => item.id)}
           removeOption={handleRemoveTag}
           fieldName="tags"

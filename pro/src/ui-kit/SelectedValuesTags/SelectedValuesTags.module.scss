@@ -44,7 +44,7 @@
     @include outline.focus-outline;
   }
 
-  :disabled {
+  &:disabled {
     cursor: default;
   }
 }
