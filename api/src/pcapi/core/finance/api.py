@@ -3032,6 +3032,54 @@ def get_granted_deposit(
 
 
 def _recredit_user(user: users_models.User) -> models.Recredit | None:
+    if (
+        feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active()
+        and datetime.datetime.utcnow() > settings.CREDIT_V3_DECREE_DATETIME
+    ):
+        return _recredit_user_v3(user)
+    return _recredit_user_v2(user)
+
+
+def _recredit_user_v3(user: users_models.User) -> models.Recredit | None:
+    from pcapi.core.users.api import get_domains_credit
+
+    if not user.deposit or not user.age:
+        return None
+    if not (user_eligibility := user.eligibility):
+        return None
+    if user.deposit.type == DepositType.GRANT_17_18:
+        recredit_type_to_create = conf.RECREDIT_TYPE_AGE_MAPPING[user.age]
+        if not recredit_type_to_create:
+            return None
+        if any(
+            recredit.recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[user.age] for recredit in user.deposit.recredits
+        ):
+            return None
+        return _recredit_deposit(user.deposit, user.age, recredit_type_to_create)
+
+    domains_credit = get_domains_credit(user)
+    if not domains_credit:
+        amount_to_transfer = decimal.Decimal(0)
+    else:
+        amount_to_transfer = decimal.Decimal(domains_credit.all.remaining)
+
+    expire_current_deposit_for_user(user)
+    new_deposit = create_deposit_v3(
+        user,
+        deposit_source="Transfer deposit to age_17_18 type",
+        eligibility=user_eligibility,
+        age_at_registration=None,
+    )
+    latest_age_related_recredit = new_deposit.recredits[0] if new_deposit.recredits else None
+    if amount_to_transfer:
+        _recredit_deposit(
+            user.deposit, user.age, recredit_type=models.RecreditType.PREVIOUS_DEPOSIT, amount=amount_to_transfer
+        )
+
+    return latest_age_related_recredit
+
+
+def _recredit_user_v2(user: users_models.User) -> models.Recredit | None:
     """
     Recredits the user of all their missing recredits.
     :return: The most recent recredit.
@@ -3051,19 +3099,22 @@ def _recredit_user(user: users_models.User) -> models.Recredit | None:
     for age in range(min_age_between_deposit_and_now, user.age + 1):
         if not _can_be_recredited(user, age):
             continue
-        latest_recredit = _recredit_deposit(deposit, age)
+        latest_recredit = _recredit_deposit(deposit, age, recredit_type=conf.RECREDIT_TYPE_AGE_MAPPING[age])
 
     return latest_recredit
 
 
-def _recredit_deposit(deposit: models.Deposit, age: int) -> models.Recredit:
-    amount = conf.get_credit_amount_per_age(age)
+def _recredit_deposit(
+    deposit: models.Deposit, age: int, recredit_type: models.RecreditType, amount: decimal.Decimal | None = None
+) -> models.Recredit:
+    if amount is None:
+        amount = conf.get_credit_amount_per_age(age)
     if amount is None:
         raise ValueError(f"Could not create recredit with unknown amount. Deposit: {deposit.id}, user {deposit.userId}")
     recredit = models.Recredit(
         deposit=deposit,
         amount=amount,
-        recreditType=conf.RECREDIT_TYPE_AGE_MAPPING[age],
+        recreditType=recredit_type,
     )
     deposit.amount += recredit.amount
 
@@ -3071,6 +3122,25 @@ def _recredit_deposit(deposit: models.Deposit, age: int) -> models.Recredit:
     db.session.flush()
 
     return recredit
+
+
+def upsert_deposit(
+    user: users_models.User,
+    deposit_source: str,
+    eligibility: users_models.EligibilityType,
+    age_at_registration: int | None = None,
+) -> models.Deposit:
+    """
+    Create a deposit for the user. If the deposit already exists, try to recredit the user instead.
+    """
+    if not user.has_active_deposit:
+        return create_deposit(user, deposit_source, eligibility, age_at_registration)
+
+    if not user.deposit:
+        raise ValueError(f"failed to create deposit for {user = }")
+    _recredit_user(user)
+
+    return user.deposit
 
 
 def create_deposit(
@@ -3202,22 +3272,26 @@ def _can_be_recredited_v3(user: users_models.User, age: int | None = None) -> bo
         return False
     assert user.deposit is not None  # always True after the check above. Helps mypy.
 
-    user_recredits = user.deposit.recredits
-
     # Handle old-new deposits transition
     if user.deposit.type == models.DepositType.GRANT_15_17:
         # In this very case, it is OK to aggressively cut the recredit at the exact time of the decree
         # because the user already has a deposit, this means we are in an automatic recredit process, so the users can't be late
-        decree_datetime = settings.CREDIT_V3_DECREE_DATETIME
-        if age == 16 and datetime.datetime.utcnow() > decree_datetime:
+        if age == 16 and datetime.datetime.utcnow() > settings.CREDIT_V3_DECREE_DATETIME:
             return False
         return _can_be_recredited_v2(user, age)
 
     if user.deposit.type == models.DepositType.GRANT_17_18:
-        return not any(recredit.recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[age] for recredit in user_recredits)
+        # We currently need more information when a user reaches majority. The phone number validation ; and sometimes an id check
+        from pcapi.core.subscription.api import get_user_subscription_state
 
-    # models.DepositType.GRANT_18 cannot be recredited
-    return False
+        subscription_state = get_user_subscription_state(user)
+        if not subscription_state.is_activable:
+            return False
+
+    has_been_recredited = any(
+        recredit.recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[age] for recredit in user.deposit.recredits
+    )
+    return not has_been_recredited
 
 
 def _has_celebrated_birthday_since_credit_or_registration(user: users_models.User) -> bool:
@@ -3356,15 +3430,22 @@ def _get_known_birthday_at_deposit(user: users_models.User) -> datetime.date | N
 def recredit_users() -> None:
     import pcapi.core.users.api as users_api
 
-    sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
-    eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18)
+    if (
+        feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active()
+        and datetime.datetime.utcnow() > settings.CREDIT_V3_DECREE_DATETIME
+    ):
+        upper_date = datetime.datetime.utcnow() - relativedelta(years=17)
+        lower_date = datetime.datetime.utcnow() - relativedelta(years=19)
+    else:
+        upper_date = datetime.datetime.utcnow() - relativedelta(years=16)
+        lower_date = datetime.datetime.utcnow() - relativedelta(years=18)
 
     user_ids = [
         result
         for result, in (
             users_models.User.query.filter(users_models.User.has_underage_beneficiary_role)
-            .filter(users_models.User.validatedBirthDate > eighteen_years_ago)
-            .filter(users_models.User.validatedBirthDate <= sixteen_years_ago)
+            .filter(users_models.User.validatedBirthDate > lower_date)
+            .filter(users_models.User.validatedBirthDate <= upper_date)
             .with_entities(users_models.User.id)
             .all()
         )

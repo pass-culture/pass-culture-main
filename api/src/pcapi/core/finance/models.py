@@ -121,6 +121,7 @@ class RecreditType(enum.Enum):
     RECREDIT_17 = "Recredit17"
     RECREDIT_18 = "Recredit18"
     MANUAL_MODIFICATION = "ManualModification"
+    PREVIOUS_DEPOSIT = "PreviousDeposit"
 
 
 class Recredit(PcObject, Base, Model):

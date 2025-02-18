@@ -27,7 +27,6 @@ from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users import young_status as young_status_module
-from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 import pcapi.repository as pcapi_repository
 import pcapi.utils.postal_code as postal_code_utils
@@ -38,6 +37,70 @@ from . import models
 
 
 logger = logging.getLogger(__name__)
+
+
+def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
+    subscription_state = get_user_subscription_state(user)
+
+    if not subscription_state.is_activable:
+        return False
+    if not subscription_state.identity_fraud_check:
+        return False
+    if subscription_state.identity_fraud_check.resultContent is None:
+        return False
+    if user.eligibility is None:
+        return False
+
+    duplicate_beneficiary = fraud_api.get_duplicate_beneficiary(subscription_state.identity_fraud_check)
+    if duplicate_beneficiary:
+        fraud_api.invalidate_fraud_check_for_duplicate_user(
+            subscription_state.identity_fraud_check, duplicate_beneficiary.id
+        )
+        return False
+
+    source_data = typing.cast(
+        common_fraud_models.IdentityCheckContent, subscription_state.identity_fraud_check.source_data()
+    )
+    try:
+        users_api.update_user_information_from_external_source(user, source_data)
+    except sqlalchemy_exceptions.IntegrityError as e:
+        logger.warning("The user information could not be updated", extra={"exc": str(e), "user": user.id})
+        return False
+
+    try:
+        activate_beneficiary_for_eligibility(user, subscription_state.identity_fraud_check, user.eligibility)
+    except (finance_exceptions.DepositTypeAlreadyGrantedException, finance_exceptions.UserHasAlreadyActiveDeposit):
+        # this error may happen on identity provider concurrent requests
+        logger.info("A deposit already exists for user %s", user.id)
+        return False
+
+    return True
+
+
+def activate_beneficiary_for_eligibility(
+    user: users_models.User,
+    fraud_check: fraud_models.BeneficiaryFraudCheck,
+    eligibility: users_models.EligibilityType,
+) -> users_models.User:
+    with pcapi_repository.transaction():
+        age_at_registration = _get_age_at_first_registration(user, eligibility)
+        deposit = finance_api.upsert_deposit(
+            user,
+            deposit_source=fraud_check.get_detailed_source(),
+            eligibility=eligibility,
+            age_at_registration=age_at_registration,
+        )
+        add_eligibility_role(user, eligibility)
+    logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit.source})
+
+    transactional_mails.send_accepted_as_beneficiary_email(user=user)
+    external_attributes_api.update_external_user(user)
+    batch.track_deposit_activated_event(user.id, deposit)
+
+    if "apps_flyer" in user.externalIds:
+        apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
+
+    return user
 
 
 def _get_age_at_first_registration(user: users_models.User, eligibility: users_models.EligibilityType) -> int | None:
@@ -57,45 +120,13 @@ def _get_age_at_first_registration(user: users_models.User, eligibility: users_m
     return age_at_registration
 
 
-def activate_beneficiary_for_eligibility(
-    user: users_models.User,
-    fraud_check: fraud_models.BeneficiaryFraudCheck,
-    eligibility: users_models.EligibilityType,
-) -> users_models.User:
-    if eligibility_api.is_underage_eligibility(eligibility, user.age):
+def add_eligibility_role(user: users_models.User, eligibility: users_models.EligibilityType) -> None:
+    if eligibility_api.is_underage_eligibility(eligibility, user.age) and not user.has_underage_beneficiary_role:
         user.add_underage_beneficiary_role()
-        age_at_registration = _get_age_at_first_registration(user, users_models.EligibilityType.UNDERAGE)
-
-        if age_at_registration not in users_constants.ELIGIBILITY_UNDERAGE_RANGE:
-            raise exceptions.InvalidAgeException(age=age_at_registration)
-
-    elif eligibility_api.is_18_or_above_eligibility(eligibility, user.age):
+    elif eligibility_api.is_18_or_above_eligibility(eligibility, user.age) and not user.has_beneficiary_role:
         user.add_beneficiary_role()
-        age_at_registration = users_constants.ELIGIBILITY_AGE_18
-
     else:
         raise exceptions.InvalidEligibilityTypeException()
-
-    deposit = finance_api.create_deposit(
-        user,
-        deposit_source=fraud_check.get_detailed_source(),
-        eligibility=eligibility,
-        age_at_registration=age_at_registration,
-    )
-
-    db.session.add_all((user, deposit))
-    db.session.commit()
-    logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit.source})
-
-    transactional_mails.send_accepted_as_beneficiary_email(user=user)
-
-    external_attributes_api.update_external_user(user)
-    batch.track_deposit_activated_event(user.id, deposit)
-
-    if "apps_flyer" in user.externalIds:
-        apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
-
-    return user
 
 
 def has_completed_profile_for_given_eligibility(
@@ -569,44 +600,6 @@ def get_maintenance_page_type(user: users_models.User) -> models.MaintenancePage
         return models.MaintenancePageType.WITH_DMS
 
     return models.MaintenancePageType.WITHOUT_DMS
-
-
-def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
-    subscription_state = get_user_subscription_state(user)
-
-    if not subscription_state.is_activable:
-        return False
-    if not subscription_state.identity_fraud_check:
-        return False
-    if subscription_state.identity_fraud_check.resultContent is None:
-        return False
-    if user.eligibility is None:
-        return False
-
-    duplicate_beneficiary = fraud_api.get_duplicate_beneficiary(subscription_state.identity_fraud_check)
-    if duplicate_beneficiary:
-        fraud_api.invalidate_fraud_check_for_duplicate_user(
-            subscription_state.identity_fraud_check, duplicate_beneficiary.id
-        )
-        return False
-
-    source_data = typing.cast(
-        common_fraud_models.IdentityCheckContent, subscription_state.identity_fraud_check.source_data()
-    )
-    try:
-        users_api.update_user_information_from_external_source(user, source_data)
-    except sqlalchemy_exceptions.IntegrityError as e:
-        logger.warning("The user information could not be updated", extra={"exc": str(e), "user": user.id})
-        return False
-
-    try:
-        activate_beneficiary_for_eligibility(user, subscription_state.identity_fraud_check, user.eligibility)
-    except (finance_exceptions.DepositTypeAlreadyGrantedException, finance_exceptions.UserHasAlreadyActiveDeposit):
-        # this error may happen on identity provider concurrent requests
-        logger.info("A deposit already exists for user %s", user.id)
-        return False
-
-    return True
 
 
 DEPRECATED_UBBLE_PREFIX = "deprecated-"

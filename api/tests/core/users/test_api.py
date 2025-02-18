@@ -480,7 +480,6 @@ class ChangeUserEmailTest:
         ]
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 class CreateBeneficiaryTest:
     def test_with_eligible_user(self):
         user = users_factories.UserFactory(roles=[])
