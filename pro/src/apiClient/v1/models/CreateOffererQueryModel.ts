@@ -7,6 +7,7 @@ export type CreateOffererQueryModel = {
   latitude?: number | null;
   longitude?: number | null;
   name: string;
+  phoneNumber?: string | null;
   postalCode: string;
   siren: string;
   street?: string | null;

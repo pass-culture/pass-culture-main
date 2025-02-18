@@ -5,6 +5,7 @@ import pytest
 import pcapi.core.history.models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.users import models as users_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.testing as users_testing
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -69,6 +70,37 @@ def test_user_cant_create_same_offerer_twice(client):
 
     assert second_response.status_code == 400
     assert "This user already belongs to this offerer" in str(second_response.data)
+
+
+@pytest.mark.features(WIP_2025_SIGN_UP=True)
+def test_user_can_create_offerer_with_phone_number(client):
+    pro = users_factories.ProFactory(phoneNumber=None)
+
+    body = {
+        "name": "MINISTERE DE LA CULTURE",
+        "siren": "418166096",
+        "address": "123 rue de Paris",
+        "postalCode": "93100",
+        "city": "Montreuil",
+        "latitude": 48,
+        "longitude": 2,
+        "phoneNumber": "0123456789",
+    }
+
+    assert not pro.phoneNumber
+
+    client = client.with_session_auth(pro.email)
+    response = client.post("/offerers", json=body)
+
+    created_offerer = offerers_models.Offerer.query.one()
+    assert response.json == {
+        "id": created_offerer.id,
+        "siren": "418166096",
+        "name": "MINISTERE DE LA CULTURE",
+    }
+
+    pro = users_models.User.query.filter_by(id=pro.id).one()
+    assert pro.phoneNumber == "+33123456789"
 
 
 def test_when_no_address_is_provided(client):
