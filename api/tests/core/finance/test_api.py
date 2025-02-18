@@ -4522,7 +4522,7 @@ class CreateDepositV3Test:
 
 
 @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
-class UserRecreditTest:
+class LegacyUserRecreditTest:
     @time_machine.travel("2021-07-01")
     @pytest.mark.parametrize(
         "birth_date,registration_datetime,expected_result",
@@ -5080,6 +5080,93 @@ class UserRecreditTest:
         assert payload["deposit_expiration_date"] == user.deposit.expirationDate.isoformat()
 
 
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
+@pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime(2020, 1, 1))
+class UserRecreditAfterDecreeTest:
+    @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    def test_user_already_recredited(self, age):
+        one_year_ago = datetime.datetime.utcnow() - relativedelta(years=1)
+        users_factories.BeneficiaryFactory(age=age, dateCreated=one_year_ago)
+
+        before_recredit_number = db.session.query(models.Recredit.id).count()
+        api.recredit_users()
+        after_recredit_number = db.session.query(models.Recredit.id).count()
+
+        assert before_recredit_number == after_recredit_number
+
+    def test_user_recredited_at_18(self):
+        user = users_factories.BeneficiaryFactory(age=17, phoneNumber="0123456789")
+        with time_machine.travel(datetime.datetime.utcnow() + relativedelta(years=1)):
+            assert user.age == 18
+            fraud_factories.PhoneValidationFraudCheckFactory(user=user)
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+            )
+            fraud_factories.HonorStatementFraudCheckFactory(user=user)
+            fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+            api.recredit_users()
+
+            assert len(user.deposits) == 1
+            assert len(user.deposit.recredits) == 2
+
+    def test_user_not_recredited_at_18_if_missing_step(self):
+        user = users_factories.BeneficiaryFactory(age=17, phoneNumber="0123456789")
+        with time_machine.travel(datetime.datetime.utcnow() + relativedelta(years=1)):
+            assert user.age == 18
+            # user has not finished their subscription for the 18 year old recredit
+
+            api.recredit_users()
+            assert len(user.deposit.recredits) == 1
+
+    def test_users_recredited_once(self):
+        user = users_factories.BeneficiaryFactory(age=17, phoneNumber="0123456789")
+        with time_machine.travel(datetime.datetime.utcnow() + relativedelta(years=1)):
+            assert user.age == 18
+            fraud_factories.PhoneValidationFraudCheckFactory(user=user)
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+            )
+            fraud_factories.HonorStatementFraudCheckFactory(user=user)
+            fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+            api.recredit_users()
+
+            assert len(user.deposits) == 1
+            assert len(user.deposit.recredits) == 2
+
+            api.recredit_users()
+            assert len(user.deposits) == 1
+            assert len(user.deposit.recredits) == 2
+
+
+@pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
+class UserRecreditTransitionBeforeAfterDecreeTest:
+    def test_create_new_deposit_when_recrediting_underage_deposit(self):
+        one_year_before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
+        one_day_after_decree = settings.CREDIT_V3_DECREE_DATETIME + relativedelta(days=1)
+        with time_machine.travel(one_year_before_decree):
+            user_1 = users_factories.BeneficiaryFactory(age=16, deposit__amount=12)
+            user_2 = users_factories.BeneficiaryFactory(age=17)
+
+        with time_machine.travel(one_day_after_decree):
+            api.recredit_users()
+
+        # User 1 is 17, and was recredited with RECREDIT_17 on its new deposit
+        assert len(user_1.deposits) == 2
+        assert user_1.deposit.type == models.DepositType.GRANT_17_18
+        assert user_1.deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_17
+        assert (
+            user_1.deposit.amount == 12 + 50
+        )  #  12 (remaining credit 16 before decree) + 50 (for 17 year old after decree)
+
+        # User 2 is 18, and was recredited with RECREDIT_18 on its new deposit
+        assert len(user_2.deposits) == 2
+        assert user_2.deposit.type == models.DepositType.GRANT_17_18
+        assert user_2.deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_18
+        assert user_2.deposit.amount == 30 + 150  #  30 (credit 17 before decree) + 150 (for 18 year old after decree)
+
+
 @pytest.mark.feature(WIP_ENABLE_CREDIT_V3=True)
 class CanRecreditTest:
     @pytest.mark.parametrize("age", (14, 15, 16, 19))
@@ -5095,10 +5182,14 @@ class CanRecreditTest:
         )
         assert not api._can_be_recredited(user)
 
-    def test_user_18_yo_can_be_recredited(self):
-        user = users_factories.BeneficiaryFactory(age=17)
+    @pytest.mark.parametrize("age", [17, 18])
+    def test_beneficiary_can_be_recredited_with_v2_deposit(self, age):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        with time_machine.travel(before_decree):
+            user = users_factories.BeneficiaryFactory(age=age - 1)
 
-        with time_machine.travel(datetime.datetime.utcnow() + relativedelta(years=1)):
+        next_year = datetime.datetime.utcnow() + relativedelta(years=1)
+        with time_machine.travel(next_year):
             assert api._can_be_recredited(user)
 
     def test_user_18_yo_can_not_be_recredited_twice(self):
@@ -5110,7 +5201,22 @@ class CanRecreditTest:
 
         assert not api._can_be_recredited(user)
 
-    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime(2025, 1, 1))
+    def test_user_17_yo_cannot_be_recredited_twice(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        with time_machine.travel(before_decree):
+            user = users_factories.BaseUserFactory(
+                dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=16, months=1)
+            )
+            deposit = users_factories.DepositGrantFactory(user=user)
+            # user already received the 17 year old pre-decree recredit
+            factories.RecreditFactory(deposit=deposit, recreditType=models.RecreditType.RECREDIT_17)
+
+        after_decree = settings.CREDIT_V3_DECREE_DATETIME + relativedelta(years=1)
+        with time_machine.travel(after_decree):
+            assert user.age == 17
+            # user can not receive the 17 year old post-decree recredit
+            assert not api._can_be_recredited(user)
+
     def test_user_16_yo_can_be_recredited_if_started_before_decree(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         with time_machine.travel(before_decree - relativedelta(years=1)):
