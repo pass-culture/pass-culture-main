@@ -420,7 +420,7 @@ jobs:
         id: restore-test-durations
         uses: actions/cache/restore@v4
         with:
-          path: /tests/.test_durations
+          path: ${{ runner.temp }}/.test_durations
           key: tests-durations-${{ steps.get-date.outputs.date }}
           restore-keys: |
             tests-durations-${{ steps.get-date.outputs.date }}-
@@ -435,10 +435,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-durations-before
-          path: /tests/.test_durations
+          path: ${{ runner.temp }}/.test_durations
+          include-hidden-files: true
 
   pytest:
     name: "Pytest ${{ matrix.pytest_args.description }} : ${{ matrix.group }}/4"
+    needs: restore-test-durations
     env:
       RUN_ENV: tests
       DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
@@ -535,6 +537,19 @@ jobs:
             alembic upgrade post@head
             flask install_data
 
+      # The next 2 steps will be executed only when there IS a cache hit (exact match or not).
+      # When a matrix job is retried, it will reuse the same artifact to execute the exact same split.
+      - name: "Download test durations artifact"
+        if: needs.restore-test-durations.outputs.restored == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: test-durations-before
+          path: ${{ runner.temp }}
+
+      - name: "Move test durations"
+        if: needs.restore-test-durations.outputs.restored == 'true'
+        run: sudo mv ${{ runner.temp }}/.test_durations ${{ runner.workspace }}/pass-culture-main/api/tests/.test_durations
+
       - name: "Mount a Volume with pcapi rights"
         uses: addnab/docker-run-action@v3
         with:
@@ -544,18 +559,6 @@ jobs:
           run: |
             echo "Changing owner and group for directory test"
             chown -R pcapi:pcapi /tests
-
-      # These two steps will be executed only when there IS a cache hit (exact match or not).
-      # When a matrix job is retried, it will reuse the same artifact to execute the exact same split.
-      - name: "Download test durations"
-        if: needs.restore-test-durations.outputs.restored == 'true'
-        uses: actions/download-artifact@v4
-        with:
-          name: test-durations-before
-
-      - name: Use cached test durations
-        if: needs.restore-test-durations.outputs.restored == 'true'
-        run: mv .test_durations ${{ runner.workspace }}/pass-culture-main/api/tests/.test_durations
 
         # When running pytest, we write the new test durations using options `--store-durations --clean-durations`.
         # Option `--clean-durations` is undocumented but you can check its implementation here:
