@@ -118,7 +118,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(nextPageIcon)
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?page=2&structure=1',
+        '/offres/vitrines?page=2',
         {
           replace: true,
         }
@@ -141,7 +141,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/vitrines?nom-ou-isbn=AnyWord&structure=1`,
+        `/offres/vitrines?nom-ou-isbn=AnyWord`,
         {
           replace: true,
         }
@@ -159,7 +159,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?structure=1',
+        '/offres/vitrines',
         {
           replace: true,
         }
@@ -180,7 +180,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/vitrines?structure=1&lieu=${proVenues[0].id}`,
+        `/offres/vitrines?lieu=${proVenues[0].id}`,
         {
           replace: true,
         }
@@ -202,7 +202,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?structure=1&format=Concert',
+        '/offres/vitrines?format=Concert',
         {
           replace: true,
         }
@@ -224,7 +224,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?structure=1&statut=active',
+        '/offres/vitrines?statut=active',
         {
           replace: true,
         }
@@ -247,7 +247,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?structure=1&statut=en-attente&statut=archivee',
+        '/offres/vitrines?statut=en-attente&statut=archivee',
         {
           replace: true,
         }
