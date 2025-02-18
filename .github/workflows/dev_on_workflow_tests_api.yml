@@ -173,7 +173,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: ${{ steps.compute-image-name.outputs.image_name }}
-          run: pylint src tests --jobs=15
+          run: pylint src tests --jobs=3
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: slackapi/slack-github-action@v1.27.0
@@ -414,8 +414,8 @@ jobs:
           echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
         shell: bash
 
-    # It's mandatory to use the exact same path when saving/restoring cache, otherwise it won't work
-    # (the same key is not enough - cf https://github.com/actions/cache/blob/main/README.md#cache-version).
+      # It's mandatory to use the exact same path when saving/restoring cache, otherwise it won't work
+      # (the same key is not enough - cf https://github.com/actions/cache/blob/main/README.md#cache-version).
       - name: Restore test durations
         id: restore-test-durations
         uses: actions/cache/restore@v4
@@ -443,7 +443,7 @@ jobs:
       RUN_ENV: tests
       DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
       REDIS_URL: redis://redis:6379
-      # Remove this environment variable when SQLAlchemy 2.0 
+      # Remove this environment variable when SQLAlchemy 2.0
       # is successfully bump
       SQLALCHEMY_WARN_20: 1
     runs-on: ubuntu-22.04
@@ -451,10 +451,10 @@ jobs:
       fail-fast: false
       matrix:
         pytest_args:
-        - collection: "--ignore=tests/routes/backoffice"
-          description: "(without BO)"
-        - collection: "tests/routes/backoffice"
-          description: "(only BO)"
+          - collection: "--ignore=tests/routes/backoffice"
+            description: "(without BO)"
+          - collection: "tests/routes/backoffice"
+            description: "(only BO)"
         group: [1, 2, 3, 4]
     services:
       redis:
