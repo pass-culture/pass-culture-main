@@ -9,7 +9,6 @@ import {
 } from 'commons/utils/factories/collectiveApiFactories'
 import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
-  getOfferVenueFactory,
   listOffersOfferFactory,
   listOffersStockFactory,
 } from 'commons/utils/factories/individualApiFactories'
@@ -161,12 +160,12 @@ describe('OfferNameCell', () => {
     expect(screen.getByText('2 dates')).toBeInTheDocument()
   })
 
-  describe('departmentCode', () => {
+  it('should use individual offer’s address department code to format a date', () => {
     // Creates an INDIVIDUAL offer
     const individualOffer = listOffersOfferFactory({
       stocks: [
         listOffersStockFactory({
-          beginningDatetime: '2024-10-01T10:00:00.000', // this datetime is UTC
+          beginningDatetime: '2024-10-01T10:00:00.000Z', // this datetime is UTC
         }),
       ],
       address: getAddressResponseIsLinkedToVenueModelFactory({
@@ -174,47 +173,19 @@ describe('OfferNameCell', () => {
       }),
       name: 'Individual offer',
       isEvent: true,
-      venue: {
-        offererName: 'Le Piton',
-        ...getOfferVenueFactory({
-          departementCode: '974', // Saint-Denis (La Réunion) department code (UTC+4 EDT)
-        }),
-      },
     })
 
-    it('should use individual offer’s venue departement code', () => {
-      renderOfferNameCell({
-        // Using the INDIVIDUAL offer that have VENUE departement code at Saint-Denis (La Réunion)
-        offer: individualOffer,
-        offerLink: '#',
-        rowId: 'rowId',
+    renderOfferNameCell({
+      offer: individualOffer,
+      offerLink: '#',
+      rowId: 'rowId',
+    })
+
+    // We expect here to see 06h00 because for the 01/10/2024, Fort-de-France is UTC-4
+    expect(
+      screen.getByRole('cell', {
+        name: /Individual offer 01\/10\/2024 06:00/,
       })
-
-      // We expect here to see 14h00 because for the 01/10/2024, Saint-Denis is UTC+4
-      expect(
-        screen.getByRole('cell', {
-          name: /Individual offer 01\/10\/2024 14:00/,
-        })
-      ).toBeInTheDocument()
-    })
-
-    it('should use individual offer’s address department code if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE', () => {
-      renderOfferNameCell(
-        {
-          // Using the same INDIVIDUAL offer that have an address (OA) located at Fort-de-France (Martinique)
-          offer: individualOffer,
-          offerLink: '#',
-          rowId: 'rowId',
-        },
-        { features: ['WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'] }
-      )
-
-      // We expect here to see 06h00 because for the 01/10/2024, Fort-de-France is UTC-4
-      expect(
-        screen.getByRole('cell', {
-          name: /Individual offer 01\/10\/2024 06:00/,
-        })
-      ).toBeInTheDocument()
-    })
+    ).toBeInTheDocument()
   })
 })

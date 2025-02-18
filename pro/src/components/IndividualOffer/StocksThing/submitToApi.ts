@@ -16,8 +16,7 @@ export const submitToApi = async (
   values: StockThingFormValues,
   offer: GetIndividualOfferWithAddressResponseModel,
   resetForm: StockThingFormik['resetForm'],
-  setErrors: StockThingFormik['setErrors'],
-  useOffererAddressAsDataSourceEnabled: boolean
+  setErrors: StockThingFormik['setErrors']
 ) => {
   try {
     await api.patchOffer(offer.id, { isDuo: values.isDuo })
@@ -30,10 +29,7 @@ export const submitToApi = async (
   try {
     await api.upsertStocks({
       offerId: offer.id,
-      stocks: serializeStockThingList(
-        values,
-        getDepartmentCode({ offer, useOffererAddressAsDataSourceEnabled })
-      ),
+      stocks: serializeStockThingList(values, getDepartmentCode(offer)),
     })
   } catch (error) {
     if (isErrorAPIError(error)) {
@@ -57,10 +53,6 @@ export const submitToApi = async (
     api.getStocks(offer.id),
   ])
   resetForm({
-    values: buildInitialValues(
-      offerResponse,
-      stockResponse.stocks,
-      useOffererAddressAsDataSourceEnabled
-    ),
+    values: buildInitialValues(offerResponse, stockResponse.stocks),
   })
 }

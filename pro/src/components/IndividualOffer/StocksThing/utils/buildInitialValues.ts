@@ -13,8 +13,7 @@ import { StockThingFormValues } from '../types'
 
 export const buildInitialValues = (
   offer: GetIndividualOfferWithAddressResponseModel,
-  stocks: GetOfferStockResponseModel[],
-  useOffererAddressAsDataSourceEnabled: boolean
+  stocks: GetOfferStockResponseModel[]
 ): StockThingFormValues => {
   if (stocks.length === 0) {
     return STOCK_THING_FORM_DEFAULT_VALUES
@@ -32,7 +31,7 @@ export const buildInitialValues = (
       ? format(
           getLocalDepartementDateTimeFromUtc(
             stocks[0].bookingLimitDatetime,
-            getDepartmentCode({ offer, useOffererAddressAsDataSourceEnabled })
+            getDepartmentCode(offer)
           ),
           FORMAT_ISO_DATE_ONLY
         )
