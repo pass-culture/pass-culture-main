@@ -28,8 +28,7 @@ const DefaultBoxFormLayout = (args: BoxFormLayoutProps) => {
   return (
     <BoxFormLayout {...args}>
       <BoxRounded
-        onClickModify={() => setShowForm(true)}
-        showButtonModify={!showForm}
+        onClickModify={!showForm ? () => setShowForm(true) : undefined}
       >
         {showForm ? (
           <>
