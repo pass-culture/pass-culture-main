@@ -76,12 +76,12 @@ describe('Create collective offers', () => {
 
     cy.findByText('Enregistrer et continuer').click()
 
-    cy.findByLabelText('Date de début *').type('2025-05-10')
-    cy.findByLabelText('Horaire *').type('18:30')
-    cy.findByLabelText('Nombre de participants *').type('10')
-    cy.findByLabelText('Prix total TTC *').type('10')
-    cy.findByLabelText('Informations sur le prix *').type('description')
-    cy.findByLabelText('Date limite de réservation *').type('2025-05-09')
+    cy.findByLabelText('Date de début').type('2025-05-10')
+    cy.findByLabelText('Horaire').type('18:30')
+    cy.findByLabelText('Nombre de participants').type('10')
+    cy.findByLabelText('Prix total TTC').type('10')
+    cy.findByLabelText('Informations sur le prix').type('description')
+    cy.findByLabelText('Date limite de réservation').type('2025-05-09')
 
     cy.findByText('Enregistrer et continuer').click()
 
