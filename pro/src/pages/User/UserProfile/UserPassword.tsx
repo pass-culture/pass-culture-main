@@ -17,7 +17,7 @@ export const UserPassword = ({
   const resetForm = () => setCurrentForm(null)
   return (
     <BoxFormLayout>
-      <BoxRounded onClickModify={onClickModify} showButtonModify={!showForm}>
+      <BoxRounded onClickModify={!showForm ? onClickModify : undefined}>
         {showForm ? (
           <UserPasswordForm closeForm={resetForm} />
         ) : (

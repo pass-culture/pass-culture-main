@@ -61,7 +61,7 @@ export const UserPhone = ({
   const resetForm = () => setCurrentForm(null)
   return (
     <BoxFormLayout>
-      <BoxRounded onClickModify={onClickModify} showButtonModify={!showForm}>
+      <BoxRounded onClickModify={!showForm ? onClickModify : undefined}>
         {showForm ? (
           <UserPhoneForm closeForm={resetForm} initialValues={initialValues} />
         ) : (
