@@ -77,7 +77,7 @@
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.6",
-    "@storybook/addon-a11y": "^8.5.5",
+    "@storybook/addon-a11y": "^8.5.6",
     "@storybook/addon-controls": "^8.5.5",
     "@storybook/addon-docs": "^8.5.6",
     "@storybook/blocks": "^8.5.5",
