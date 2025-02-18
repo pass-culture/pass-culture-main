@@ -170,3 +170,22 @@ def get_single_sign_on(sso_provider: str, sso_user_id: str) -> models.SingleSign
 
 def create_single_sign_on(user: models.User, sso_provider: str, sso_user_id: str) -> models.SingleSignOn:
     return models.SingleSignOn(user=user, ssoProvider=sso_provider, ssoUserId=sso_user_id)
+
+
+def fill_phone_number_on_all_users_offerer_without_any(offerer_id: int, phone_number: str) -> None:
+    users_without_phone_number = (
+        sa.select(models.User.id)
+        .select_from(models.User)
+        .where(sa.or_(models.User.phoneNumber == None, models.User.phoneNumber == ""))
+        .join(
+            offerers_models.UserOfferer,
+            sa.and_(
+                models.User.id == offerers_models.UserOfferer.userId,
+                offerers_models.UserOfferer.offererId == offerer_id,
+            ),
+        )
+    )
+    db.session.query(models.User).where(models.User.id.in_(users_without_phone_number)).update(
+        {"phoneNumber": phone_number}, synchronize_session=False
+    )
+    db.session.flush()

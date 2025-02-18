@@ -51,8 +51,8 @@ from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
+from pcapi.core.users import repository as users_repository
 import pcapi.core.users.models as users_models
-import pcapi.core.users.repository as users_repository
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import pc_object
@@ -1037,6 +1037,11 @@ def create_offerer(
     # keep commit with repository.save() as long as siren is validated in pcapi.validation.models.offerer
     repository.save(offerer)
 
+    if FeatureToggle.WIP_2025_SIGN_UP.is_active() and offerer_informations.phoneNumber:
+        users_repository.fill_phone_number_on_all_users_offerer_without_any(
+            offerer.id, offerer_informations.phoneNumber
+        )
+
     external_attributes_api.update_external_pro(user.email)
     on_commit(functools.partial(zendesk_sell.create_offerer, offerer))
 
@@ -2019,6 +2024,7 @@ def create_from_onboarding_data(
         name=name,
         postalCode=onboarding_data.address.postalCode,
         siren=onboarding_data.siret[:9],
+        phoneNumber=onboarding_data.phoneNumber,
     )
     new_onboarding_info = NewOnboardingInfo(
         target=onboarding_data.target,

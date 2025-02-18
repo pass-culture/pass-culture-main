@@ -8,6 +8,7 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
+import pcapi.core.users.models as users_models
 
 from tests.connectors import sirene_test_data
 
@@ -200,6 +201,39 @@ class Returns200Test:
         created_venue = offerers_models.Venue.query.filter(offerers_models.Venue.isVirtual.is_(False)).one()
         assert created_venue.adageId is not None
         assert created_venue.adageInscriptionDate is not None
+
+    @pytest.mark.features(WIP_2025_SIGN_UP=True)
+    def test_user_can_create_offerer_with_phone_number(self, client):
+        pro = users_factories.ProFactory(phoneNumber=None)
+
+        body = {**REQUEST_BODY, **{"phoneNumber": "0123456789"}}
+        assert not pro.phoneNumber
+
+        client = client.with_session_auth(pro.email)
+        response = client.post("/offerers/new", json=body)
+
+        created_offerer = offerers_models.Offerer.query.one()
+        assert response.json["id"] == created_offerer.id
+
+        pro = users_models.User.query.filter_by(id=pro.id).one()
+        assert pro.phoneNumber == "+33123456789"
+
+    @pytest.mark.features(WIP_2025_SIGN_UP=True)
+    def test_user_can_create_offerer_without_phone_number(self, client):
+        pro = users_factories.ProFactory(phoneNumber=None)
+
+        body = {**REQUEST_BODY, **{"phoneNumber": None}}
+
+        assert not pro.phoneNumber
+
+        client = client.with_session_auth(pro.email)
+        response = client.post("/offerers/new", json=body)
+
+        created_offerer = offerers_models.Offerer.query.one()
+        assert response.json["id"] == created_offerer.id
+
+        pro = users_models.User.query.filter_by(id=pro.id).one()
+        assert not pro.phoneNumber
 
 
 class Returns400Test:
