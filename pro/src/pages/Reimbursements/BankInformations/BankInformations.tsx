@@ -79,11 +79,17 @@ export const BankInformations = (): JSX.Element => {
   let bankAccountVenues = bankAccountVenuesQuery.data?.managedVenues
 
   const updateBankAccountVenuePricingPoint = (venueId: number) => {
-    if (!bankAccountVenues) {
+    if (!bankAccountVenuesQuery.data) {
       return
     }
-    bankAccountVenues = bankAccountVenues.map((venue) =>
-      venue.id === venueId ? { ...venue, hasPricingPoint: true } : venue
+    void bankAccountVenuesQuery.mutate(
+      {
+        ...bankAccountVenuesQuery.data,
+        managedVenues: bankAccountVenuesQuery.data.managedVenues.map((venue) =>
+          venue.id === venueId ? { ...venue, hasPricingPoint: true } : venue
+        ),
+      },
+      { revalidate: false }
     )
   }
 
