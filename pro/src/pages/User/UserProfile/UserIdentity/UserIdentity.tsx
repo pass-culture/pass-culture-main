@@ -3,7 +3,7 @@ import { UserIdentityForm } from 'components/UserIdentityForm/UserIdentityForm'
 import { BoxFormLayout } from 'ui-kit/BoxFormLayout/BoxFormLayout'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 
-import { Forms } from './constants'
+import { Forms } from '../constants'
 
 interface UserIdentityProps {
   setCurrentForm: (value: Forms | null) => void
@@ -14,7 +14,7 @@ interface UserIdentityProps {
 export const UserIdentity = ({
   setCurrentForm,
   initialValues,
-  showForm = false,
+  showForm,
 }: UserIdentityProps) => {
   const onClickModify = () => setCurrentForm(Forms.USER_IDENTITY)
   const resetForm = () => setCurrentForm(null)

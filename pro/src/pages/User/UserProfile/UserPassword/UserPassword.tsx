@@ -2,7 +2,7 @@ import { UserPasswordForm } from 'components/UserPasswordForm/UserPasswordForm'
 import { BoxFormLayout } from 'ui-kit/BoxFormLayout/BoxFormLayout'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 
-import { Forms } from './constants'
+import { Forms } from '../constants'
 
 interface UserPasswordProps {
   setCurrentForm: (value: Forms | null) => void
@@ -11,7 +11,7 @@ interface UserPasswordProps {
 
 export const UserPassword = ({
   setCurrentForm,
-  showForm = false,
+  showForm,
 }: UserPasswordProps) => {
   const onClickModify = () => setCurrentForm(Forms.USER_PASSWORD)
   const resetForm = () => setCurrentForm(null)
