@@ -13,6 +13,7 @@ from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -25,6 +26,9 @@ def create_offers_with_status(offerer: Offerer) -> None:
         managingOfferer=offerer,
     )
     user_bene = BeneficiaryGrant18Factory(email="jeune-has-specific-offers-external-bookings@example.com")
+    user_bene.deposit.amount = 300
+    db.session.add(user_bene)
+    db.session.commit()
 
     create_offers_fully_booked(user_bene, venue)
     create_offers_expired(venue)
