@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { valideSiretLength } from 'pages/VenueSettings/SiretOrCommentFields/validationSchema'
+import { unhumanizeSiret } from 'commons/core/Venue/utils'
 
 export const validationSchema = yup.object().shape({
   siret: yup
@@ -9,6 +9,6 @@ export const validationSchema = yup.object().shape({
     .test(
       'len',
       'Le SIRET doit comporter 14 caractères',
-      (siret) => !!siret && valideSiretLength(siret)
+      (siret) => Boolean(siret) && unhumanizeSiret(siret).length === 14
     ),
 })
