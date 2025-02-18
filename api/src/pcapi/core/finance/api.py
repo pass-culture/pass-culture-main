@@ -3487,7 +3487,7 @@ def recredit_users() -> None:
             users_models.User.query.filter(
                 users_models.User.id.in_(user_ids[start_index : start_index + RECREDIT_UNDERAGE_USERS_BATCH_SIZE])
             )
-            .options(sqla_orm.joinedload(users_models.User.deposits).joinedload(models.Deposit.recredits))
+            .options(sqla_orm.selectinload(users_models.User.deposits).selectinload(models.Deposit.recredits))
             .all()
         )
 
@@ -3533,6 +3533,27 @@ def recredit_user_if_no_missing_step(user: users_models.User) -> None:
 
         domains_credit = users_api.get_domains_credit(user)
         transactional_mails.send_recredit_email_to_underage_beneficiary(user, recredit.amount, domains_credit)
+
+
+def get_last_age_related_user_recredit(user: users_models.User) -> models.RecreditType | None:
+    """
+    This function assumes that the user.deposits and the deposit.recredits relationships are already loaded.
+
+    Example: User.query.options(selectinload(User.deposits).selectinload(Deposit.recredits))
+    """
+    if not user.deposit:
+        return None
+
+    if user.deposit.type == models.DepositType.GRANT_17_18:
+        recredit_types = [recredit.recreditType for recredit in user.deposit.recredits]
+        for recredit_type in [models.RecreditType.RECREDIT_18, models.RecreditType.RECREDIT_17]:
+            if recredit_type in recredit_types:
+                return recredit_type
+
+    if user.deposit.type == models.DepositType.GRANT_15_17 and user.age:
+        return conf.RECREDIT_TYPE_AGE_MAPPING.get(user.age)
+
+    return None
 
 
 def update_bank_account_venues_links(

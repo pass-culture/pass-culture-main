@@ -74,6 +74,7 @@ class SendinblueAttributes(Enum):
     IS_VIRTUAL = "IS_VIRTUAL"
     LAST_BOOKING_DATE = "LAST_BOOKING_DATE"
     LAST_FAVORITE_CREATION_DATE = "LAST_FAVORITE_CREATION_DATE"
+    LAST_RECREDIT_TYPE = "LAST_RECREDIT_TYPE"
     LAST_VISIT_DATE = "LAST_VISIT_DATE"
     LASTNAME = "LASTNAME"
     MARKETING_EMAIL_SUBSCRIPTION = "MARKETING_EMAIL_SUBSCRIPTION"
@@ -243,6 +244,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.IS_VIRTUAL.value: _get_attr(attributes, "isVirtual"),
         SendinblueAttributes.LAST_BOOKING_DATE.value: _get_attr(attributes, "last_booking_date"),
         SendinblueAttributes.LAST_FAVORITE_CREATION_DATE.value: _get_attr(attributes, "last_favorite_creation_date"),
+        SendinblueAttributes.LAST_RECREDIT_TYPE.value: _get_attr(attributes, "last_recredit_type", format_enum),
         SendinblueAttributes.LAST_VISIT_DATE.value: _get_attr(attributes, "last_visit_date"),
         SendinblueAttributes.LASTNAME.value: _get_attr(attributes, "last_name"),
         SendinblueAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: _get_attr(attributes, "marketing_email_subscription"),

@@ -562,7 +562,9 @@ def _cancel_booking(
         .options(
             sa.orm.joinedload(Booking.externalBookings),
             sa.orm.joinedload(Booking.stock, innerjoin=True).joinedload(Stock.offer, innerjoin=True),
-            sa.orm.joinedload(Booking.user, innerjoin=True).joinedload(User.deposits),
+            sa.orm.joinedload(Booking.user, innerjoin=True)
+            .selectinload(User.deposits)
+            .selectinload(finance_models.Deposit.recredits),
         )
         .one()
     )

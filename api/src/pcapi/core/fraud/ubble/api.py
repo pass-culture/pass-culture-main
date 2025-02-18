@@ -1,8 +1,11 @@
 import logging
 import re
 
+import sqlalchemy as sa
+
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
+from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
@@ -166,6 +169,11 @@ def get_ubble_fraud_check(identification_id: str) -> fraud_models.BeneficiaryFra
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
         )
         .filter(fraud_models.BeneficiaryFraudCheck.thirdPartyId == identification_id)
+        .options(
+            sa.orm.joinedload(fraud_models.BeneficiaryFraudCheck.user)
+            .selectinload(users_models.User.deposits)
+            .selectinload(finance_models.Deposit.recredits)
+        )
         .one_or_none()
     )
     return fraud_check
