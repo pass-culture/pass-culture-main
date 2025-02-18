@@ -5163,10 +5163,15 @@ class UserRecreditAfterDecreeTest:
         one_year_before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
         one_day_after_decree = settings.CREDIT_V3_DECREE_DATETIME + relativedelta(days=1)
         with time_machine.travel(one_year_before_decree):
-            user_1 = users_factories.BeneficiaryFactory(age=16, deposit__amount=12)
+            user_1 = users_factories.BeneficiaryFactory(age=16, deposit__amount=12, phoneNumber="+33600000000")
             user_2 = users_factories.BeneficiaryFactory(age=17)
 
         with time_machine.travel(one_day_after_decree):
+            # finish steps for user 2
+            fraud_factories.ProfileCompletionFraudCheckFactory(user=user_2)
+            fraud_factories.PhoneValidationFraudCheckFactory(user=user_2)
+            user_2.phoneNumber = "+33610000000"
+            fraud_factories.HonorStatementFraudCheckFactory(user=user_2)
             api.recredit_users()
 
         # User 1 is 17, and was recredited with RECREDIT_17 on its new deposit
@@ -5192,6 +5197,13 @@ class CanRecreditTest:
             dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, months=1)
         )
         assert not api._can_be_recredited(user)
+
+    def test_user_18_yo_can_be_recredited_with_v3_deposit(self):
+        user = users_factories.BeneficiaryFactory(age=17)
+
+        year_when_user_is_18 = datetime.datetime.utcnow() + relativedelta(years=1)
+        with time_machine.travel(year_when_user_is_18):
+            assert api._can_be_recredited(user)
 
     def test_users_with_no_deposit_cannot_be_recredited(self):
         user = users_factories.BaseUserFactory(

@@ -3302,6 +3302,8 @@ def _can_be_recredited_v3(user: users_models.User, age: int | None = None) -> bo
         return False
     if age < 16:
         return False
+    if age not in conf.RECREDIT_TYPE_AGE_MAPPING:
+        return False
 
     if not user.has_active_deposit:
         return False
@@ -3314,14 +3316,6 @@ def _can_be_recredited_v3(user: users_models.User, age: int | None = None) -> bo
         if age == 16 and datetime.datetime.utcnow() > settings.CREDIT_V3_DECREE_DATETIME:
             return False
         return _can_be_recredited_v2(user, age)
-
-    if user.deposit.type == models.DepositType.GRANT_17_18:
-        # We currently need more information when a user reaches majority. The phone number validation ; and sometimes an id check
-        from pcapi.core.subscription.api import get_user_subscription_state
-
-        subscription_state = get_user_subscription_state(user)
-        if not subscription_state.is_activable:
-            return False
 
     has_been_recredited = any(
         recredit.recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[age] for recredit in user.deposit.recredits
@@ -3463,8 +3457,6 @@ def _get_known_birthday_at_deposit(user: users_models.User) -> datetime.date | N
 
 
 def recredit_users() -> None:
-    import pcapi.core.users.api as users_api
-
     if (
         feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active()
         and datetime.datetime.utcnow() > settings.CREDIT_V3_DECREE_DATETIME
@@ -3500,35 +3492,47 @@ def recredit_users() -> None:
         )
 
         users_to_recredit = [user for user in users if user.deposit and _can_be_recredited(user)]
-        users_and_recredit_amounts = []
         with transaction():
             for user in users_to_recredit:
                 try:
-                    recredit = _recredit_user(user)
-                    if recredit:  # recredit will be None is user's age is also None
-                        users_and_recredit_amounts.append((user, recredit.amount))
-                        user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
-
-                        db.session.add(user)
-                        db.session.add(recredit)
-                        total_users_recredited += 1
+                    recredit_user_if_no_missing_step(user)
+                    total_users_recredited += 1
                 except Exception as e:  # pylint: disable=broad-except
                     failed_users.append(user.id)
                     logger.exception("Could not recredit user %s: %s", user.id, e)
                     continue
 
         logger.info("Recredited %s underage users deposits", len(users_to_recredit))
-
-        for user, recredit_amount in users_and_recredit_amounts:
-            external_attributes_api.update_external_user(user)
-            domains_credit = users_api.get_domains_credit(user)
-            transactional_mails.send_recredit_email_to_underage_beneficiary(user, recredit_amount, domains_credit)
-            push_notifications.track_account_recredited(user.id, user.deposit, len(user.deposits))
-
         start_index += RECREDIT_UNDERAGE_USERS_BATCH_SIZE
     logger.info("Recredited %s users successfully", total_users_recredited)
     if failed_users:
         logger.error("Failed to recredit %s users: %s", len(failed_users), failed_users)
+
+
+def recredit_user_if_no_missing_step(user: users_models.User) -> None:
+    from pcapi.core.subscription.api import get_user_subscription_state
+
+    if not user.eligibility or not user.deposit:
+        raise exceptions.UserCannotBeRecredited()
+    suscription_state = get_user_subscription_state(user)
+    if suscription_state.next_step is not None:
+        raise exceptions.UserCannotBeRecredited()
+
+    recredit = _recredit_user(user)
+    if not recredit:
+        raise exceptions.UserCannotBeRecredited()
+
+    user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
+    db.session.add(user)
+    external_attributes_api.update_external_user(user)
+    push_notifications.track_account_recredited(user.id, user.deposit, len(user.deposits))
+    if not feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and recredit.amount > 0:
+        # This email will not be sent after the decree.
+        # It will be handled by the email sent to the user for their birthday
+        from pcapi.core.users import api as users_api
+
+        domains_credit = users_api.get_domains_credit(user)
+        transactional_mails.send_recredit_email_to_underage_beneficiary(user, recredit.amount, domains_credit)
 
 
 def update_bank_account_venues_links(
