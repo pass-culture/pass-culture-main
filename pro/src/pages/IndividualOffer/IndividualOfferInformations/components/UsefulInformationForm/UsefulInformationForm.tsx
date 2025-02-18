@@ -114,8 +114,7 @@ export const UsefulInformationForm = ({
           </FormLayout.Row>
         )}
 
-        {(conditionalFields.includes('withdrawalType') ||
-          Boolean(withdrawalType)) && (
+        {conditionalFields.includes('withdrawalType') && (
           <>
             <FormLayout.Row mdSpaceAfter>
               {/*
