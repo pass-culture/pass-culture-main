@@ -70,29 +70,27 @@ export function HeadlineOfferContextProvider({ children }: HeadlineOfferContextP
     isHeadlineOfferBannerOpen,
     setIsHeadlineOfferBannerOpen
   ] = useState(initialIsHeadlineOfferBannerOpen)
-  const [headlineOffer, setHeadlineOffer] = useState<OffererHeadLineOfferResponseModel | null>(null)
 
   useEffect(() => {
     setIsHeadlineOfferBannerOpen(initialIsHeadlineOfferBannerOpen)
   }, [initialIsHeadlineOfferBannerOpen])
 
-  useSWR(
+  const { data: rawHeadlineOffer } = useSWR(
     selectedOffererId && isHeadlineOfferAvailable
       ? [GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId]
       : null,
     ([, offererId]) => api.getOffererHeadlineOffer(offererId),
     {
       onError: (error) => {
-        if (error.status === 404) {
-          setHeadlineOffer(null)
-        } else {
+        // 404 is expected when there is no headline offer.
+        if (error.status !== 404) {
           throw error
         }
-      },
-      onSuccess: (data) => setHeadlineOffer(data),
-      shouldRetryOnError: false,
+      }
     }
   )
+
+  const headlineOffer = rawHeadlineOffer ?? null
 
   const closeHeadlineOfferBanner = () => {
     setIsHeadlineOfferBannerOpen(false)
