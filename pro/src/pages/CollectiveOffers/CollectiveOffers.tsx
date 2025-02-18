@@ -68,6 +68,10 @@ export const CollectiveOffers = (): JSX.Element => {
   const redirectWithUrlFilters = (
     filters: Partial<CollectiveSearchFiltersParams>
   ) => {
+    // We dont need to pass the offererId in the URL since
+    // its already present in the redux store (useSelector(selectCurrentOffererId))
+    delete filters.offererId
+
     navigate(computeCollectiveOffersUrl(filters, defaultCollectiveFilters), {
       replace: true,
     })

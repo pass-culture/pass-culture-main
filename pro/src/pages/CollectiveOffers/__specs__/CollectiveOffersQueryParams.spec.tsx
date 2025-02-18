@@ -140,7 +140,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?nom-ou-isbn=AnyWord&structure=1',
+        '/offres/collectives?nom-ou-isbn=AnyWord',
         {
           replace: true,
         }
@@ -158,7 +158,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?structure=1',
+        '/offres/collectives',
         {
           replace: true,
         }
@@ -179,7 +179,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/collectives?structure=1&lieu=1`,
+        `/offres/collectives?lieu=1`,
         {
           replace: true,
         }
@@ -201,7 +201,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?structure=1&format=Concert',
+        '/offres/collectives?format=Concert',
         {
           replace: true,
         }
@@ -223,7 +223,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?structure=1&statut=reservee',
+        '/offres/collectives?statut=reservee',
         {
           replace: true,
         }
@@ -247,7 +247,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?structure=1&statut=reservee&statut=en-attente&statut=archivee',
+        '/offres/collectives?statut=reservee&statut=en-attente&statut=archivee',
         {
           replace: true,
         }

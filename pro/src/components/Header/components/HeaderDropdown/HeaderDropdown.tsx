@@ -2,7 +2,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -22,6 +22,7 @@ import { selectCurrentUser } from 'commons/store/user/selectors'
 import { getSavedOffererId } from 'commons/utils/getSavedOffererId'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { sortByLabel } from 'commons/utils/strings'
+import { resetAllStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import fulBackIcon from 'icons/full-back.svg'
 import fullCloseIcon from 'icons/full-close.svg'
 import fullLogoutIcon from 'icons/full-logout.svg'
@@ -66,6 +67,7 @@ export const HeaderDropdown = () => {
   const notify = useNotification()
 
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const IN_STRUCTURE_CREATION_FUNNEL = pathname.startsWith(
     '/parcours-inscription'
   )
@@ -88,6 +90,14 @@ export const HeaderDropdown = () => {
 
       if (Number(newOffererId) !== selectedOffererId) {
         dispatch(updateSelectedOffererId(Number(newOffererId)))
+
+        // Reset offers stored search filters & clean url when changing offerer
+        // to avoid any side effects.
+        resetAllStoredFilterConfig()
+        if (pathname.startsWith('/offres')) {
+          navigate(pathname, { replace: true })
+        }
+
         if (storageAvailable('localStorage')) {
           localStorage.setItem(SAVED_OFFERER_ID_KEY, newOffererId)
         }
