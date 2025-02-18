@@ -1,7 +1,13 @@
+from pcapi.core.core_exception import CoreException
+
 from . import models
 
 
-class CredentialsException(Exception):
+class UserException(CoreException):
+    pass
+
+
+class CredentialsException(UserException):
     pass
 
 
@@ -13,67 +19,63 @@ class UnvalidatedAccount(CredentialsException):
     pass
 
 
-class UserAlreadyExistsException(Exception):
+class UserAlreadyExistsException(UserException):
     pass
 
 
-class UnderAgeUserException(Exception):
+class UnderAgeUserException(UserException):
     pass
 
 
-class IncompleteDataException(Exception):
+class IncompleteDataException(UserException):
     pass
 
 
-class UserDoesNotExist(Exception):
+class UserDoesNotExist(UserException):
     pass
 
 
-class InvalidUserRoleException(Exception):
+class InvalidUserRoleException(UserException):
     pass
 
 
-class EmailValidationLimitReached(Exception):
+class EmailValidationLimitReached(UserException):
     pass
 
 
-class EmailUpdateLimitReached(Exception):
+class EmailUpdateLimitReached(UserException):
     pass
 
 
-class EmailUpdateInvalidPassword(Exception):
+class EmailUpdateInvalidPassword(UserException):
     pass
 
 
-class EmailExistsError(Exception):
+class EmailExistsError(UserException):
     pass
 
 
-class InvalidEmailError(Exception):
+class InvalidEmailError(UserException):
     pass
 
 
-class EmailUpdateTokenExists(Exception):
+class EmailUpdateTokenExists(UserException):
     pass
 
 
-class UnsuspensionNotEnabled(Exception):
+class CantAskForUnsuspension(UserException):
     pass
 
 
-class CantAskForUnsuspension(Exception):
+class UnsuspensionTimeLimitExceeded(UserException):
     pass
 
 
-class UnsuspensionTimeLimitExceeded(Exception):
+class NotSuspended(UserException):
     pass
 
 
-class NotSuspended(Exception):
-    pass
-
-
-class InvalidToken(Exception):
+class InvalidToken(UserException):
     pass
 
 
@@ -85,13 +87,33 @@ class ExpiredToken(InvalidToken):
         super().__init__()
 
 
-class UserGenerationForbiddenException(Exception):
+class UserGenerationForbiddenException(UserException):
     pass
 
 
-class MissingLoginMethod(Exception):
+class MissingLoginMethod(UserException):
     pass
 
 
-class UserAlreadyHasPendingAnonymization(Exception):
+class UserAlreadyHasPendingAnonymization(UserException):
+    pass
+
+
+class DiscordException(UserException):
+    pass
+
+
+class DiscordUserAlreadyLinked(DiscordException):
+    pass
+
+
+class UserNotAllowed(DiscordException):
+    pass
+
+
+class UserNotABeneficiary(DiscordException):
+    pass
+
+
+class UserUnderage(DiscordException):
     pass
