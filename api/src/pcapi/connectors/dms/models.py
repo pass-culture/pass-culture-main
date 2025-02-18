@@ -109,6 +109,11 @@ class DMSMessage(pydantic_v1.BaseModel):
     _format_created_at = pydantic_v1.validator("created_at", allow_reuse=True)(parse_dms_datetime)
 
 
+class DMSLabel(pydantic_v1.BaseModel):
+    id: str
+    name: str
+
+
 class DemarcheDescriptor(pydantic_v1.BaseModel):
     """https://demarches-simplifiees-graphql.netlify.app/demarchedescriptor.doc.html"""
 
@@ -127,6 +132,7 @@ class DmsApplicationResponse(pydantic_v1.BaseModel):
     fields: list[DmsField] = pydantic_v1.Field(alias="champs")
     filing_date: datetime.datetime = pydantic_v1.Field(alias="dateDepot")
     id: str
+    labels: list[DMSLabel]
     latest_modification_datetime: datetime.datetime = pydantic_v1.Field(alias="dateDerniereModification")
     messages: list[DMSMessage]
     number: int

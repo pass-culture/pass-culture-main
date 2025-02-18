@@ -1,11 +1,15 @@
 import datetime
+import enum
 import hashlib
 import logging
+
+from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
+from pcapi.connectors.dms.exceptions import DmsGraphQLApiException
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
@@ -16,6 +20,7 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.dms import messages
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import find_user_by_email
@@ -35,6 +40,20 @@ FIELD_ERROR_LABELS = {
     fraud_models.DmsFieldErrorKeyEnum.id_piece_number: "Le numéro de pièce d'identité",
     fraud_models.DmsFieldErrorKeyEnum.last_name: "Le nom de famille",
     fraud_models.DmsFieldErrorKeyEnum.postal_code: "Le code postal",
+}
+
+
+class ApplicationLabel(enum.Enum):
+    URGENT = "Urgent"
+
+
+APPLICATION_LABEL_TO_SETTINGS_LABEL_ID: dict[int, dict[ApplicationLabel, str | None]] = {
+    settings.DMS_ENROLLMENT_PROCEDURE_ID_FR: {
+        ApplicationLabel.URGENT: settings.DMS_ENROLLMENT_FR_LABEL_ID_URGENT,
+    },
+    settings.DMS_ENROLLMENT_PROCEDURE_ID_ET: {
+        ApplicationLabel.URGENT: settings.DMS_ENROLLMENT_ET_LABEL_ID_URGENT,
+    },
 }
 
 
@@ -169,6 +188,11 @@ def handle_dms_application(
             extra=log_extra_data,
         )
     logger.info("[DMS] Application received with state %s", state, extra=log_extra_data)
+
+    if state in (dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going):
+        _process_check_birth_date(
+            application_content, dms_application.procedure.number, application_scalar_id, dms_application.labels
+        )
 
     fraud_check = fraud_dms_api.get_fraud_check(user, application_number)
     if fraud_check is None:
@@ -569,3 +593,33 @@ def compute_dms_checksum(content: fraud_models.DMSContent) -> str:
     checksum = hashlib.sha256(b"".join(sorted_fields)).hexdigest()
 
     return checksum
+
+
+def _process_check_birth_date(
+    application_content: fraud_models.DMSContent,
+    procedure_number: int,
+    application_scalar_id: str,
+    labels: list[dms_models.DMSLabel],
+) -> None:
+    # Tag as "Urgent" when 7 days or less before end of eligibility
+    if any(label.name == ApplicationLabel.URGENT.value for label in labels):
+        return
+
+    if birth_date := application_content.get_birth_date():
+        days_before_end_of_eligibility = (
+            birth_date + relativedelta(years=users_constants.ELIGIBILITY_END_AGE) - datetime.date.today()
+        ).days
+        if 0 < days_before_end_of_eligibility <= 7:
+            _add_application_label(procedure_number, application_scalar_id, ApplicationLabel.URGENT)
+
+
+def _add_application_label(procedure_number: int, application_scalar_id: str, label: ApplicationLabel) -> None:
+    label_id = APPLICATION_LABEL_TO_SETTINGS_LABEL_ID.get(procedure_number, {}).get(label)
+    if not label_id:
+        raise ValueError("Configuration error: unknown label")
+
+    try:
+        client = dms_connector_api.DMSGraphQLClient()
+        client.add_label_to_application(application_scalar_id, label_id)
+    except DmsGraphQLApiException:
+        pass  # label is a helper, do not fail; already logged

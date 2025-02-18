@@ -134,6 +134,11 @@ class Message(pydantic_v1.BaseModel):
     email: str = "message_email@example.com"
 
 
+class Label(pydantic_v1.BaseModel):
+    id: str = "label_id"
+    name: str = "Label Name"
+
+
 class Dossier(pydantic_v1.BaseModel):
     annotations: list = []
     archived: bool = False
@@ -159,6 +164,7 @@ class Dossier(pydantic_v1.BaseModel):
     groupeInstructeur: GroupeInstructeur = GroupeInstructeur(id="groupe_instructeur_id", number=1, label="défaut")
     id: str = "RandomGeneratedId"
     instructeurs: list[Profile] = [Profile()]
+    labels: list[Label] = [Label()]
     messages: list[Message] = [Message()]
     motivation: str | None = None
     motivationAttachment: File | None = None

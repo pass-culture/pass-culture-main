@@ -52,6 +52,10 @@ fragment DossierFragment on Dossier {
       email
     }
   }
+  labels {
+    id
+    name
+  }
 }
 
 fragment RootChampFragment on Champ {

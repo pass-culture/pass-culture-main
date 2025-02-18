@@ -431,6 +431,15 @@ message_type = gql.GraphQLObjectType(
 )
 
 
+label_type = gql.GraphQLObjectType(
+    name="Label",
+    fields={
+        "id": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLID)),
+        "name": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLString)),
+    },
+)
+
+
 revision_type = gql.GraphQLObjectType(
     name="Revision",
     fields={
@@ -487,6 +496,7 @@ dossier_type = gql.GraphQLObjectType(
         "groupeInstructeur": gql.GraphQLField(gql.GraphQLNonNull(groupe_instructeur_type)),
         "id": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLID)),
         "instructeurs": gql.GraphQLField(gql.GraphQLList(gql.GraphQLNonNull(profile_type))),
+        "labels": gql.GraphQLField(gql.GraphQLList(gql.GraphQLNonNull(label_type))),
         "messages": gql.GraphQLField(gql.GraphQLList(gql.GraphQLNonNull(message_type))),
         "motivation": gql.GraphQLField(gql.GraphQLString),
         "motivationAttachment": gql.GraphQLField(file_type),

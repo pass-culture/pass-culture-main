@@ -5,6 +5,7 @@ from unittest.mock import patch
 from dateutil.relativedelta import relativedelta
 import pytest
 
+from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import factories as fraud_factories
@@ -16,6 +17,7 @@ from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
+from pcapi.core.users.constants import ELIGIBILITY_END_AGE
 import pcapi.notifications.push.testing as push_testing
 from pcapi.repository import repository
 
@@ -469,6 +471,41 @@ class HandleDmsApplicationTest:
 
         assert fraud_check.reasonCodes == []
         assert fraud_check.reason is None
+
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.add_label_to_application")
+    def test_add_label_when_almost_19_years_old(self, mock_add_label_to_application, db_session):
+        user = users_factories.UserFactory()
+        dms_response = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.on_going,
+            email=user.email,
+            birth_date=datetime.datetime.utcnow() - relativedelta(years=ELIGIBILITY_END_AGE, days=-6),
+            procedure_number=settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        mock_add_label_to_application.assert_called_once_with(
+            dms_response.id, settings.DMS_ENROLLMENT_FR_LABEL_ID_URGENT
+        )
+        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).count() == 1
+
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.add_label_to_application")
+    def test_keep_label_when_almost_19_years_old(self, mock_add_label_to_application, db_session):
+        user = users_factories.UserFactory()
+        dms_response = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.on_going,
+            email=user.email,
+            birth_date=datetime.datetime.utcnow() - relativedelta(years=ELIGIBILITY_END_AGE, days=-6),
+            procedure_number=settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
+            application_labels=[{"id": settings.DMS_ENROLLMENT_FR_LABEL_ID_URGENT, "name": "Urgent"}],
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        mock_add_label_to_application.assert_not_called()
+        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).count() == 1
 
 
 @pytest.mark.usefixtures("db_session")

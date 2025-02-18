@@ -275,6 +275,7 @@ class DmsWebhookApplicationTest:
                     "prenom": "Young",
                     "dateDeNaissance": None,
                 },
+                "labels": [],
             }
         }
         form_data = {
