@@ -16,6 +16,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
+from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
@@ -52,6 +53,11 @@ def _create_offers(provider: Provider) -> Venue:
     VirtualVenueFactory(name=f"Cinéma - {provider_name} Lieu Virtuel", managingOfferer=cinema_user_offerer.offerer)
 
     user_bene = BeneficiaryGrant18Factory(email=f"jeune-has-{provider_name}-external-bookings@example.com")
+
+    user_bene.deposit.amount = 300
+    db.session.add(user_bene)
+    db.session.commit()
+
     for i in range(9):
         if provider.isCinemaProvider or provider.isAllocine:
             offer_solo = EventOfferFactory(

@@ -38,10 +38,10 @@ def _create_total_commercial_gesture_individual_offer(
     for user in users:
         booking = bookings_factories.BookingFactory(
             user=user,
-            quantity=40,
+            quantity=10,
             stock__price=decimal.Decimal("5.0"),
             stock__offer__venue=venue,
-        )  # 200€
+        )  # 50€
         bookings_api.mark_as_used(
             booking=booking,
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
@@ -180,10 +180,10 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
     for user in users:
         booking = bookings_factories.BookingFactory(
             user=user,
-            quantity=40,
+            quantity=10,
             stock__price=decimal.Decimal("5.0"),
             stock__offer__venue=venue,
-        )  # 200€
+        )  # 50€
         bookings_api.mark_as_used(
             booking=booking,
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
@@ -261,10 +261,10 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
     for user in users:
         booking = bookings_factories.BookingFactory(
             user=user,
-            quantity=40,
+            quantity=10,
             stock__price=decimal.Decimal("5.0"),
             stock__offer__venue=venue,
-        )  # 200€
+        )  # 50€
         bookings_api.mark_as_used(
             booking=booking,
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
