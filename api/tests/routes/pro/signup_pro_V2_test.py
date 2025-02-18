@@ -12,7 +12,7 @@ BASE_DATA_PRO_WITHOUT_PHONE = {
     "email": "toto_pro@example.com",
     "firstName": "Toto",
     "lastName": "Pro",
-    "password": "__v4l1d_P455sw0rd__", # ggignore
+    "password": "__v4l1d_P455sw0rd__",  # ggignore
     "contactOk": False,
     "token": "token",
 }
