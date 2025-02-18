@@ -83,6 +83,10 @@ fragment DossierFragment on Dossier {
       email
     }
   }
+  labels {
+    id
+    name
+  }
 }
 
 fragment FileFragment on File {

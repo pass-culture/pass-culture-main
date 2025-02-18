@@ -35,6 +35,7 @@ GET_EAC_APPLICATIONS_STATE_SIRET = "eac/get_applications_state_siret"
 GET_BANK_INFO_APPLICATIONS_QUERY_NAME = "pro/get_bank_info_applications"
 GET_INSTRUCTORS_QUERY_NAME = "get_instructors"
 GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME = "beneficiaries/get_account_update_applications"
+ADD_LABEL = "add_label"
 
 
 class DmsStats(BaseModel):
@@ -249,6 +250,35 @@ class DMSGraphQLClient:
             }
         }
         return self.execute_query(UPDATE_TEXT_ANNOTATION_QUERY_NAME, variables=variables)
+
+    def add_label_to_application(self, application_techid: str, label_techid: str) -> None:
+        params: dict[str, str] = {
+            "dossierId": application_techid,
+            "labelId": label_techid,
+        }
+
+        try:
+            response = self.execute_query(ADD_LABEL, variables={"input": params})
+        except gql_exceptions.TransportQueryError as exc:
+            raise exceptions.DmsGraphQLApiError(exc.errors)
+        except Exception as exc:
+            logger.warning(
+                "[DMS] Unexpected error while adding label to application",
+                extra={"application_techid": application_techid, "label_techid": label_techid, "exc": exc},
+            )
+            raise exceptions.DmsGraphQLApiException()
+
+        data = response["dossierAjouterLabel"]
+        errors = data["errors"]
+        if errors:
+            if len(errors) == 1 and errors[0]["message"] == "Ce label est déjà associé au dossier":
+                return
+            logger.warning(
+                "[DMS] Error while adding label to application: %s",
+                errors,
+                extra={"application_techid": application_techid, "label_techid": label_techid},
+            )
+            raise exceptions.DmsGraphQLApiError(errors)
 
     def get_pro_bank_nodes_states(
         self,

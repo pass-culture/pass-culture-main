@@ -39,6 +39,7 @@ class DMSGraphQLTest:
                 nom="Stiles",
             ),
             id="RandomGeneratedId",
+            labels=[dms_models.DMSLabel(id="label_id", name="Label Name")],
             messages=[
                 dms_models.DMSMessage(
                     created_at=datetime.datetime(

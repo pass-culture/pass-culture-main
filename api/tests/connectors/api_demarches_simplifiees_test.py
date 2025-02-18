@@ -67,6 +67,34 @@ class GraphqlResponseTest:
 
         assert client.execute_query.call_count == 1
 
+    @patch.object(
+        api_dms.DMSGraphQLClient,
+        "execute_query",
+        return_value={"dossierAjouterLabel": {"errors": None, "label": {"id": "TGFiZWwtMzE5NjAw", "name": "Urgent"}}},
+    )
+    def test_add_label_to_application(self, execute_query):
+        client = api_dms.DMSGraphQLClient()
+        client.add_label_to_application("RG9zc2llci0yMjA2MDYyMw==", "TGFiZWwtMzE5NjAw")
+
+        execute_query.assert_called_once_with(
+            "add_label", variables={"input": {"dossierId": "RG9zc2llci0yMjA2MDYyMw==", "labelId": "TGFiZWwtMzE5NjAw"}}
+        )
+
+    @patch.object(
+        api_dms.DMSGraphQLClient,
+        "execute_query",
+        return_value={
+            "dossierAjouterLabel": {"errors": [{"message": "Ce label est déjà associé au dossier"}], "label": None}
+        },
+    )
+    def test_add_label_to_application_already_set(self, execute_query):
+        client = api_dms.DMSGraphQLClient()
+        client.add_label_to_application("RG9zc2llci0yMjA2MDYyMw==", "TGFiZWwtMzE5NjAw")
+
+        execute_query.assert_called_once_with(
+            "add_label", variables={"input": {"dossierId": "RG9zc2llci0yMjA2MDYyMw==", "labelId": "TGFiZWwtMzE5NjAw"}}
+        )
+
     @time_machine.travel("2020-01-01")
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_get_deleted_applications(self, execute_query):

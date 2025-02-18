@@ -1,0 +1,11 @@
+mutation dossierAjouterLabel($input: DossierAjouterLabelInput!) {
+  dossierAjouterLabel(input: $input) {
+    errors {
+      message
+    }
+    label {
+      id
+      name
+    }
+  }
+}

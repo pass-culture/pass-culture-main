@@ -46,6 +46,7 @@ def make_graphql_application(  # pylint: disable=dangerous-default-value
     application_techid: str | None = None,
     procedure_number: int | None = 8888,
     labels: dict | None = {},
+    application_labels: list | None = None,
 ) -> dict:
     if messages is None:
         messages = DEFAULT_MESSAGES
@@ -161,6 +162,7 @@ def make_graphql_application(  # pylint: disable=dangerous-default-value
             "dateDeNaissance": None,
             "email": applicant_email,
         },
+        "labels": [{"id": "TGFiZWwtR6E7NtAx", "name": "Test"}] if application_labels is None else application_labels,
     }
     if city is not None:
         data["champs"].append(
@@ -445,6 +447,7 @@ def make_new_application():
             "prenom": "Jean",
             "dateDeNaissance": None,
         },
+        "labels": [],
     }
     return response
 
@@ -550,6 +553,7 @@ def make_new_stranger_application():
             "prenom": "Jean",
             "dateDeNaissance": None,
         },
+        "labels": [],
     }
     return data
 
