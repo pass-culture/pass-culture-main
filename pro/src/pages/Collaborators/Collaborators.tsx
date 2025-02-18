@@ -1,10 +1,7 @@
-/* istanbul ignore file */
-
-// Component only for display (sub-components already tested)
-
+import { yupResolver } from '@hookform/resolvers/yup'
 import classNames from 'classnames'
-import { Form, FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
@@ -23,19 +20,22 @@ import fullUpIcon from 'icons/full-up.svg'
 import { validationSchema } from 'pages/Collaborators/validationSchema'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { EmailSpellCheckInput } from 'ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
 import styles from './Collaborators.module.scss'
 
 const SUCCESS_MESSAGE = "L'invitation a bien été envoyée."
 const ERROR_MESSAGE = 'Une erreur est survenue lors de l’envoi de l’invitation.'
 
+type UserEmailFormValues = {
+  email: string
+}
+
 export const Collaborators = (): JSX.Element | null => {
   const offererId = useSelector(selectCurrentOffererId)
 
   const { logEvent } = useAnalytics()
   const notify = useNotification()
-  const [isLoading, setIsLoading] = useState(false)
   const [displayAllMembers, setDisplayAllMembers] = useState(false)
 
   const [showInvitationForm, setShowInvitationForm] = useState(false)
@@ -48,39 +48,45 @@ export const Collaborators = (): JSX.Element | null => {
   )
   const members = data?.members ?? []
 
+  const hookForm = useForm<UserEmailFormValues>({
+    defaultValues: { email: '' },
+    resolver: yupResolver(validationSchema),
+    mode: 'onBlur',
+  })
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors, isSubmitting },
+  } = hookForm
+
   const onSubmit = async ({ email }: { email: string }) => {
     try {
       if (!offererId) {
         return
       }
-      setIsLoading(true)
+
       await api.inviteMember(offererId, { email: email })
+
       members.unshift({
         email,
         status: OffererMemberStatus.PENDING,
       })
-      formik.resetForm()
+      reset()
       logEvent(OffererLinkEvents.CLICKED_SEND_INVITATION, {
         offererId: offererId,
       })
       notify.success(SUCCESS_MESSAGE)
     } catch (error) {
       if (isErrorAPIError(error) && error.status === 400 && error.body.email) {
-        formik.setFieldError('email', error.body.email)
+        setError('email', { message: error.body.email })
       } else {
         notify.error(ERROR_MESSAGE)
       }
-    } finally {
-      setIsLoading(false)
     }
   }
-
-  const formik = useFormik({
-    initialValues: { email: '' },
-    onSubmit,
-    validationSchema,
-    validateOnChange: false,
-  })
 
   const MAX_COLLABORATORS = 10
 
@@ -175,30 +181,31 @@ export const Collaborators = (): JSX.Element | null => {
               Une invitation leur sera envoyée par email. Vous serez notifié
               quand ils auront rejoint l’espace.
             </p>
-            <FormikProvider value={formik}>
-              <Form className={styles['invitation-form']}>
-                <FormLayout>
-                  <FormLayout.Row
-                    className={styles['invitation-email-wrapper']}
+            <form
+              className={styles['invitation-form']}
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <FormLayout>
+                <FormLayout.Row className={styles['invitation-email-wrapper']}>
+                  <TextInput
+                    className={styles['invitation-email-field']}
+                    label="Adresse email"
+                    description="Format : email@exemple.com"
+                    error={errors.email?.message}
+                    required={true}
+                    {...register('email')}
+                  />
+                  <Button
+                    type="submit"
+                    isLoading={isSubmitting}
+                    className={styles['add-member-button']}
+                    data-error={errors.email?.message ? 'true' : 'false'}
                   >
-                    <EmailSpellCheckInput
-                      name="email"
-                      description="Format : email@exemple.com"
-                      label="Adresse email"
-                      className={styles['invitation-email-field']}
-                    />
-                    <Button
-                      type="submit"
-                      isLoading={isLoading}
-                      className={styles['add-member-button']}
-                      data-error={formik.errors.email ? 'true' : 'false'}
-                    >
-                      Inviter
-                    </Button>
-                  </FormLayout.Row>
-                </FormLayout>
-              </Form>
-            </FormikProvider>
+                    Inviter
+                  </Button>
+                </FormLayout.Row>
+              </FormLayout>
+            </form>
           </>
         )}
       </section>
