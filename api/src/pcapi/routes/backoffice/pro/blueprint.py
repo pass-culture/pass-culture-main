@@ -231,6 +231,7 @@ def create_offerer() -> utils.BackofficeResponse:
         city=address.city,
         latitude=city_info.latitude,
         longitude=city_info.longitude,
+        phoneNumber=None,
     )
 
     new_onboarding_info = offerers_api.NewOnboardingInfo(
