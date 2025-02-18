@@ -45,6 +45,10 @@ class UserNotGrantable(Exception):
     pass
 
 
+class UserCannotBeRecredited(Exception):
+    pass
+
+
 class UserHasAlreadyActiveDeposit(UserNotGrantable):
     pass
 

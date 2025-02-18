@@ -229,6 +229,7 @@ class AccountTest:
         expected_num_queries += 1  # achievements
         expected_num_queries += 1  # bookings (from _get_booked_offers)
         expected_num_queries += 1  # bookings (from get_domains_credit)
+        expected_num_queries += 1  # deposit
         expected_num_queries += 1  # ff (from decide_eligibility)
         expected_num_queries += 1  # beneficiary fraud checks
 
