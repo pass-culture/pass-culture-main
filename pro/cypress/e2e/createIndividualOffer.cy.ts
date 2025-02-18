@@ -78,7 +78,7 @@ describe('Create individual offers', () => {
     cy.wait(['@getOffer', '@patchOffer'])
 
     cy.stepLog({ message: 'I fill in prices' })
-    cy.findByLabelText('Intitulé du tarif *').should(
+    cy.findByLabelText('Intitulé du tarif').should(
       'have.value',
       'Tarif unique'
     )
@@ -87,25 +87,25 @@ describe('Create individual offers', () => {
 
     cy.findByTestId('wrapper-priceCategories[0].label').within(() => {
       // trouve le premier champ avec le label:
-      cy.findByLabelText('Intitulé du tarif *').type('Carré Or')
+      cy.findByLabelText('Intitulé du tarif').type('Carré Or')
     })
     cy.findByTestId('wrapper-priceCategories[0].price').within(() => {
       // trouve le premier champ avec le label:
-      cy.findByLabelText('Prix par personne *').type('100')
+      cy.findByLabelText('Prix par personne').type('100')
     })
 
     cy.findByTestId('wrapper-priceCategories[1].label').within(() => {
       // trouve le deuxième champ avec le label:
-      cy.findByLabelText('Intitulé du tarif *').type('Fosse Debout')
+      cy.findByLabelText('Intitulé du tarif').type('Fosse Debout')
     })
     cy.findByTestId('wrapper-priceCategories[1].price').within(() => {
       // trouve le deuxième champ avec le label:
-      cy.findByLabelText('Prix par personne *').type('10')
+      cy.findByLabelText('Prix par personne').type('10')
     })
 
     cy.findByTestId('wrapper-priceCategories[2].label').within(() => {
       // trouve le troisième champ avec le label:
-      cy.findByLabelText('Intitulé du tarif *').type('Fosse Sceptique')
+      cy.findByLabelText('Intitulé du tarif').type('Fosse Sceptique')
     })
     // manque un data-testid ou un accessibility label
     cy.get('[name="priceCategories[2].price.free"]').click()

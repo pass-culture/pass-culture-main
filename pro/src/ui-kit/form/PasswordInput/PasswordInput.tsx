@@ -18,6 +18,7 @@ interface PasswordInputProps {
   description?: string
   withErrorPreview?: boolean
   autoComplete?: string
+  hideAsterisk?: boolean
 }
 
 export const PasswordInput = ({
@@ -26,6 +27,7 @@ export const PasswordInput = ({
   description,
   withErrorPreview = false,
   autoComplete,
+  hideAsterisk = false,
   ...props
 }: PasswordInputProps): JSX.Element => {
   const [isPasswordHidden, setPasswordHidden] = useState(true)
@@ -51,7 +53,7 @@ export const PasswordInput = ({
         description={description}
         type={isPasswordHidden ? 'password' : 'text'}
         autoComplete={autoComplete}
-        hideAsterisk={true}
+        hideAsterisk={hideAsterisk}
         rightButton={() => (
           <Button
             icon={isPasswordHidden ? strokeHideIcon : strokeShowIcon}

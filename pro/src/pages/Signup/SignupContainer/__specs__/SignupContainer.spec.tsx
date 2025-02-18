@@ -337,7 +337,7 @@ describe('Signup', () => {
           'test@example.com'
         )
         await userEvent.type(
-          screen.getByLabelText('Mot de passe'),
+          screen.getByLabelText('Mot de passe *'),
           'user@AZERTY123'
         )
         await userEvent.type(screen.getByLabelText('Nom *'), 'Nom')
