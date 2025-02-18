@@ -3,7 +3,7 @@ import { UserPhoneForm } from 'components/UserPhoneForm/UserPhoneForm'
 import { BoxFormLayout } from 'ui-kit/BoxFormLayout/BoxFormLayout'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 
-import { Forms } from './constants'
+import { Forms } from '../constants'
 
 interface UserPhoneProps {
   setCurrentForm: (value: Forms | null) => void
@@ -22,7 +22,7 @@ interface UserPhoneProps {
  *
  * otherwise, return given argument phoneNumber unchanged
  */
-const formatPhoneNumber = (phoneNumber: string | null | undefined) => {
+export const formatPhoneNumber = (phoneNumber: string | null | undefined) => {
   let formatedNumber = phoneNumber
   if (phoneNumber) {
     formatedNumber = phoneNumber.replace(/ /g, '')
@@ -55,7 +55,7 @@ const formatPhoneNumber = (phoneNumber: string | null | undefined) => {
 export const UserPhone = ({
   setCurrentForm,
   initialValues,
-  showForm = false,
+  showForm,
 }: UserPhoneProps) => {
   const onClickModify = () => setCurrentForm(Forms.USER_PHONE)
   const resetForm = () => setCurrentForm(null)
