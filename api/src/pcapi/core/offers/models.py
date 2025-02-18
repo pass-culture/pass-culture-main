@@ -1438,3 +1438,12 @@ class OfferCompliance(PcObject, Base, Model):
     compliance_reasons: sa_orm.Mapped[list[str]] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.String)), nullable=False
     )
+
+
+class FutureOfferReminder(PcObject, Base, Model):
+    __tablename__ = "future_offer_reminder"
+
+    user: sa.orm.Mapped["User"] = sa.orm.relationship("User", backref="future_offer_reminders")
+    user_id: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    offer: sa.orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="future_offer_reminders")
+    offer_id: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
