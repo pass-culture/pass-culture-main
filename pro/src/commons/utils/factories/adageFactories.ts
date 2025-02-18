@@ -113,7 +113,6 @@ export const defaultAdageUser: AuthenticatedResponse = {
   uai: '1234567A',
   lat: 1,
   lon: 2,
-  canPrebook: true,
 }
 
 export const defaultEducationalInstitution: EducationalInstitutionWithBudgetResponseModel =
