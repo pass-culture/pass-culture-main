@@ -771,6 +771,7 @@ class OfferIsSearchableTest:
             .outerjoin(models.Stock)
             .outerjoin(models.FutureOffer)
             .filter(models.Offer.is_eligible_for_search)
+            .order_by(models.Offer.id)
             .all()
         )
         assert len(results) == 2
