@@ -3,6 +3,7 @@ import itertools
 import pathlib
 import random
 
+from dateutil.relativedelta import relativedelta
 from factory.faker import faker
 
 from pcapi import settings
@@ -14,6 +15,8 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.finance.enum import DepositType
+from pcapi.core.finance.factories import RecreditFactory
+from pcapi.core.finance.models import RecreditType
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
@@ -75,85 +78,188 @@ def save_test_cases_sandbox() -> None:
 
 
 def create_users_for_credit_v3_tests() -> None:
-    # Utilisateur 18 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité avant décret
+    ### 'static' users
+
+    ## 18yo user, beneficiary, started before decree
     users_factories.BeneficiaryFactory(
         firstName="User18",
         lastName="Inscriptionavantdecret",
         email="user18avantdecret@test.com",
-        # birth_date=datetime.date(2007, 1, 1),
         age=18,
         deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - datetime.timedelta(days=1),
     )
 
-    # Utilisateur 18 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité après décret
+    ## 18yo user, beneficiary, started after decree
     users_factories.BeneficiaryFactory(
         firstName="User18",
         lastName="Inscriptionapresdecret",
         email="user18apresdecret@test.com",
-        # birth_date=datetime.date(2007, 1, 1),
         age=18,
         deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME + datetime.timedelta(days=1),
     )
 
-    # Utilisateur 17 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité avant décret
+    ## 17yo user, beneficiary, started before decree
     users_factories.BeneficiaryFactory(
         firstName="User17",
         lastName="Inscriptionavantdecret",
         email="user17avantdecret@test.com",
-        # birth_date=datetime.date(2008, 1, 1),
         age=17,
         deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - datetime.timedelta(days=1),
     )
 
-    # Utilisateur 17 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité après décret
+    ## 17yo user, beneficiary, started after decree
     users_factories.BeneficiaryFactory(
         firstName="User17",
         lastName="Inscriptionapresdecret",
         email="user17apresdecret@test.com",
-        # birth_date=datetime.date(2008, 1, 1),
         age=17,
         deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME + datetime.timedelta(days=1),
     )
 
-    # Utilisateur 16 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité avant décret
+    ## 16yo user, beneficiary, started before decree
     users_factories.BeneficiaryFactory(
         firstName="User16",
         lastName="Inscriptionavantdecret",
         email="user16avantdecret@test.com",
-        # birth_date=datetime.date(2009, 1, 1),
         age=16,
         deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - datetime.timedelta(days=1),
     )
 
-    # Utilisateur 16 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité après décret
+    ## 16yo user, beneficiary, started after decree
     users_factories.BeneficiaryFactory(
         firstName="User16",
         lastName="Inscriptionapresdecret",
         email="user16apresdecret@test.com",
-        # birth_date=datetime.date(2009, 1, 1),
         age=16,
         deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME + datetime.timedelta(days=1),
     )
 
-    # Utilisateur 15 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité avant décret
+    ## 15yo user, beneficiary, started before decree
     users_factories.BeneficiaryFactory(
         firstName="User15",
         lastName="Inscriptionavantdecret",
         email="user15avantdecret@test.com",
-        # birth_date=datetime.date(2010, 1, 1),
         age=15,
         deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - datetime.timedelta(days=1),
     )
 
-    # Utilisateur 15 ans, bénéficiaire, date de dépôt du dossier de vérification d’identité après décret
+    ## 15yo user, beneficiary, started after decree
     users_factories.BeneficiaryFactory(
         firstName="User15",
         lastName="Inscriptionapresdecret",
         email="user15apresdecret@test.com",
-        # birth_date=datetime.date(2010, 1, 1),
         age=15,
         deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME + datetime.timedelta(days=1),
     )
+
+    ### Users who had a deposit underage before the decree ###
+
+    ## 18yo user, beneficiary, with birthday before decree
+    one_day_before_decree = settings.CREDIT_V3_DECREE_DATETIME - datetime.timedelta(days=1)
+    user_birthdate = one_day_before_decree - relativedelta(years=18)
+    first_activation_date = one_day_before_decree - relativedelta(years=3)  # User created at 15 yo
+
+    user18_redepotavantdecret = users_factories.BeneficiaryFactory(
+        firstName="User18",
+        lastName="Redepotavantdecret",
+        email="user18redepotavantdecret@test.com",
+        validatedBirthDate=user_birthdate,
+        deposit__dateCreated=one_day_before_decree,
+        dateCreated=first_activation_date,
+    )
+    # then add the previous deposit they would have had at 15
+    user18_redepotavantdecret_underage_deposit = users_factories.DepositGrantFactory(
+        user=user18_redepotavantdecret,
+        dateCreated=first_activation_date,
+        type=DepositType.GRANT_15_17,
+        amount=20 + 30 + 30,
+        expirationDate=user_birthdate + relativedelta(years=18),
+    )
+    RecreditFactory(
+        deposit=user18_redepotavantdecret_underage_deposit, amount=30, recreditType=RecreditType.RECREDIT_16
+    )
+    RecreditFactory(
+        deposit=user18_redepotavantdecret_underage_deposit, amount=30, recreditType=RecreditType.RECREDIT_17
+    )
+
+    ## 18yo user, beneficiary, with birthday after decree
+    one_day_after_decree = settings.CREDIT_V3_DECREE_DATETIME + datetime.timedelta(days=1)
+    user_birthdate = one_day_after_decree - relativedelta(years=18)
+    first_activation_date = one_day_after_decree - relativedelta(years=3)  # User created at 15 yo
+
+    user18_redepotapresdecret = users_factories.BeneficiaryFactory(
+        firstName="User18",
+        lastName="Redepotavantdecret",
+        email="user18redepotapresdecret@test.com",
+        validatedBirthDate=user_birthdate,
+        deposit__dateCreated=one_day_after_decree,
+        dateCreated=first_activation_date,
+    )
+    # then add the previous deposit they would have had at 15
+    user18_redepotapresdecret_underage_deposit = users_factories.DepositGrantFactory(
+        user=user18_redepotapresdecret,
+        dateCreated=first_activation_date,
+        type=DepositType.GRANT_15_17,
+        amount=20 + 30 + 30,
+        expirationDate=user_birthdate + relativedelta(years=18),
+    )
+    RecreditFactory(
+        deposit=user18_redepotapresdecret_underage_deposit, amount=30, recreditType=RecreditType.RECREDIT_16
+    )
+    RecreditFactory(
+        deposit=user18_redepotapresdecret_underage_deposit, amount=30, recreditType=RecreditType.RECREDIT_17
+    )
+
+    ## 17yo user, beneficiary, with birthday before decree
+    first_activation_date = one_day_before_decree - relativedelta(years=2)  # User created at 15 yo
+    user_birthdate = one_day_before_decree - relativedelta(years=17)
+    user_17_bday_before_decree = users_factories.BeneficiaryFactory(
+        firstName="User17",
+        lastName="Anniversaireavantreforme",
+        email="user17anniversaireavantdecret@test.com",
+        dateCreated=first_activation_date,
+        deposit__amount=20 + 30 + 30,
+        validatedBirthDate=user_birthdate,
+    )
+    RecreditFactory(deposit=user_17_bday_before_decree.deposit, amount=30, recreditType=RecreditType.RECREDIT_16)
+    RecreditFactory(deposit=user_17_bday_before_decree.deposit, amount=30, recreditType=RecreditType.RECREDIT_17)
+
+    ## 17yo user, beneficiary, with birthday after decree
+    first_activation_date = one_day_after_decree - relativedelta(years=2)  # User created at 15 yo
+    user_17_after_decree = users_factories.BeneficiaryFactory(
+        firstName="User17",
+        lastName="Anniversaireaprèsréforme",
+        email="user17anniversaireapresdecret@test.com",
+        age=16,  # create user at 16 yo, we chage it to 17 yo later
+        dateCreated=first_activation_date,
+        deposit__amount=20 + 30,
+    )
+    # Add recredit 16
+    RecreditFactory(deposit=user_17_after_decree.deposit, amount=30, recreditType=RecreditType.RECREDIT_16)
+    # Set real age to 17
+    user_17_after_decree.validatedBirthDate = one_day_after_decree - relativedelta(years=17)
+
+    ## 16yo user, beneficiary, with birthday before decree
+    user_16_before_decree = users_factories.BeneficiaryFactory(
+        firstName="User16",
+        lastName="Anniversaireavantreforme",
+        email="user16anniversaireavantdecret@test.com",
+        age=15,  # create user at 15 yo
+        deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - datetime.timedelta(days=1),
+    )
+    # Set real age to 16
+    user_16_before_decree.validatedBirthDate = one_day_before_decree - relativedelta(years=16)
+
+    ## 16yo user, beneficiary, with birthday after decree
+    user_16_after_decree = users_factories.BeneficiaryFactory(
+        firstName="User16",
+        lastName="Anniversaireaprèsréforme",
+        email="user16anniversaireapresdecret@test.com",
+        age=15,  # create user at 15 yo
+        deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - datetime.timedelta(days=1),
+    )
+    # Set real age to 16
+    user_16_after_decree.validatedBirthDate = one_day_after_decree - relativedelta(years=16)
 
 
 def create_artists() -> None:

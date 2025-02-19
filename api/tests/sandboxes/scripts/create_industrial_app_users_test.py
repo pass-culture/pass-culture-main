@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.finance.api import recredit_users
 import pcapi.core.finance.models as finance_models
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
@@ -87,3 +88,113 @@ class CreateTestCasesTest:
             if user.email == "user15apresdecret@test.com":
                 assert user.age == 15
                 assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+
+    def test_create_users_for_credit_v3_tests_with_underage_deposits(self):
+        create_users_for_credit_v3_tests()
+
+        credit_v3_tests_users = User.query.filter(
+            User.email.in_(
+                [
+                    "user18redepotavantdecret@test.com",
+                    "user18redepotapresdecret@test.com",
+                    "user17anniversaireavantdecret@test.com",
+                    "user17anniversaireapresdecret@test.com",
+                    "user16anniversaireavantdecret@test.com",
+                    "user16anniversaireapresdecret@test.com",
+                ]
+            )
+        ).all()
+
+        assert len(credit_v3_tests_users) == 6
+
+        for user in credit_v3_tests_users:
+            assert user.is_beneficiary
+            if user.email == "user18redepotavantdecret@test.com":
+                assert user.age == 18
+                assert user.deposit.type == finance_models.DepositType.GRANT_18
+
+                underage_deposit = next(
+                    deposit for deposit in user.deposits if deposit.type == finance_models.DepositType.GRANT_15_17
+                )
+                assert underage_deposit
+                assert underage_deposit.amount == 80
+                assert len(underage_deposit.recredits) == 2
+
+                recredit_types_and_amounts = [
+                    (recredit.recreditType, recredit.amount) for recredit in underage_deposit.recredits
+                ]
+                assert (finance_models.RecreditType.RECREDIT_16, 30) in recredit_types_and_amounts
+                assert (finance_models.RecreditType.RECREDIT_17, 30) in recredit_types_and_amounts
+
+            if user.email == "user18redepotapresdecret@test.com":
+                assert user.age == 18
+                assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+
+                underage_deposit = next(
+                    deposit for deposit in user.deposits if deposit.type == finance_models.DepositType.GRANT_15_17
+                )
+                assert underage_deposit
+                assert underage_deposit.amount == 80
+                assert len(underage_deposit.recredits) == 2
+
+                recredit_types_and_amounts = [
+                    (recredit.recreditType, recredit.amount) for recredit in underage_deposit.recredits
+                ]
+                assert (finance_models.RecreditType.RECREDIT_16, 30) in recredit_types_and_amounts
+                assert (finance_models.RecreditType.RECREDIT_17, 30) in recredit_types_and_amounts
+
+            if user.email == "user17anniversaireavantdecret@test.com":
+                assert user.age == 17
+                assert user.deposit.type == finance_models.DepositType.GRANT_15_17
+                assert user.deposit.amount == 20 + 30 + 30
+
+                recredit_types_and_amounts = [
+                    (recredit.recreditType, recredit.amount) for recredit in user.deposit.recredits
+                ]
+                assert (finance_models.RecreditType.RECREDIT_16, 30) in recredit_types_and_amounts
+                assert (finance_models.RecreditType.RECREDIT_17, 30) in recredit_types_and_amounts
+
+            if user.email == "user17anniversaireapresdecret@test.com":
+                assert user.age == 17
+                # At this point, the RECREDIT_17 is not yet applied.
+                assert user.deposit.type == finance_models.DepositType.GRANT_15_17
+                assert user.deposit.amount == 20 + 30
+                # assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+                # assert user.deposit.amount == 20 + 30 + 50
+
+            if user.email == "user16anniversaireavantdecret@test.com":
+                assert user.age == 16
+                assert user.deposit.type == finance_models.DepositType.GRANT_15_17
+                assert user.deposit.amount == 20
+                assert not user.deposit.recredits
+
+            if user.email == "user16anniversaireapresdecret@test.com":
+                assert user.age == 16
+                assert user.deposit.type == finance_models.DepositType.GRANT_15_17
+                assert user.deposit.amount == 20
+                assert not user.deposit.recredits
+
+        recredit_users()
+
+        # check 16 yo users are not recredited
+        user_16_before_decree = User.query.filter_by(email="user16anniversaireavantdecret@test.com").one()
+        assert user_16_before_decree.deposit.type == finance_models.DepositType.GRANT_15_17
+        assert user_16_before_decree.deposit.amount == 20
+        assert not user_16_before_decree.deposit.recredits
+
+        user_16_after_decree = User.query.filter_by(email="user16anniversaireapresdecret@test.com").one()
+        assert user_16_after_decree.deposit.type == finance_models.DepositType.GRANT_15_17
+        assert user_16_after_decree.deposit.amount == 20
+        assert not user_16_after_decree.deposit.recredits
+
+        # Check user 17 yo is recredited
+        user_17_after_decree = User.query.filter_by(email="user17anniversaireapresdecret@test.com").one()
+        # At this point, the RECREDIT_17 is applied.
+        assert user_17_after_decree.deposit.type == finance_models.DepositType.GRANT_17_18
+        assert user_17_after_decree.deposit.amount == 20 + 30 + 50
+
+        recredit_types_and_amounts = [
+            (recredit.recreditType, recredit.amount) for recredit in user_17_after_decree.deposit.recredits
+        ]
+        assert (finance_models.RecreditType.RECREDIT_17, 50) in recredit_types_and_amounts
+        assert (finance_models.RecreditType.PREVIOUS_DEPOSIT, 20 + 30) in recredit_types_and_amounts
