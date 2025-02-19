@@ -116,3 +116,12 @@ class DmsImportTest:
 
         latest_import_record = dms_models.LatestDmsImport.query.first()
         assert latest_import_record.latestImportDatetime == datetime.datetime(2020, 10, 1, 15, 0)
+
+    @pytest.mark.usefixtures("db_session")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
+    def test_import_with_forced_since(self, mock_get_applications_with_details):
+        dms_factories.LatestDmsImportFactory(procedureId=1, latestImportDatetime=datetime.datetime(2025, 2, 19, 15, 0))
+
+        import_all_updated_dms_applications(1, forced_since=datetime.datetime(2025, 1, 1))
+
+        mock_get_applications_with_details.assert_called_with(1, since=datetime.datetime(2025, 1, 1))
