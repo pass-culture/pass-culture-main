@@ -86,7 +86,6 @@ def get_responses_generator(
 ) -> typing.Iterator[TypeformResponse]:
     previous_date = object()
     while True:
-
         last_date = last_date_retriever()
         if last_date == previous_date:
             logger.error(
@@ -143,7 +142,19 @@ class TestingBackend(BaseBackend):
     def get_responses(
         self, form_id: str, num_results: int = 100, sort: str = "submitted_at,desc", since: datetime | None = None
     ) -> list[TypeformResponse]:
-        return []
+        return [
+            TypeformResponse(
+                response_id=f"{form_id}-response",
+                date_submitted=datetime.utcnow(),
+                phone_number="0199000123",
+                email="spilgrim@example.com",
+                answers=[
+                    TypeformAnswer(field_id=f"{form_id}-0000", choice_id=None, text="Scott"),
+                    TypeformAnswer(field_id=f"{form_id}-0001", choice_id=None, text="Dans le sac de Ramona"),
+                    TypeformAnswer(field_id=f"{form_id}-0002", choice_id=None, text="Pour payer le bus"),
+                ],
+            )
+        ]
 
 
 def _strip(text: str | None) -> str | None:
