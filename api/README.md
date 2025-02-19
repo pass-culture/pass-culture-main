@@ -10,6 +10,8 @@ Plus de détails sur le lancement de l'infra docker compose sont accessibles dan
 
 ## Add comment to trigger ci
 
+##
+
 Une documentation Swagger des APIs est générée selon l'OpenAPI Specification (OAS3) grâce à un schéma généré par
 Spectree :
 
