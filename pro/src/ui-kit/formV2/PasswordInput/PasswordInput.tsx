@@ -55,7 +55,7 @@ export const PasswordInput = React.forwardRef(
           type={isPasswordHidden ? 'password' : 'text'}
           autoComplete={autoComplete}
           error={error}
-          hideAsterisk={hideAsterisk}
+          asterisk={!hideAsterisk}
           rightButton={() => (
             <Button
               icon={isPasswordHidden ? strokeHideIcon : strokeShowIcon}

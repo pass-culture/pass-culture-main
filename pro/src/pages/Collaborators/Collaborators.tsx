@@ -193,7 +193,7 @@ export const Collaborators = (): JSX.Element | null => {
                     description="Format : email@exemple.com"
                     error={errors.email?.message}
                     required={true}
-                    hideAsterisk={true}
+                    asterisk={false}
                     {...register('email')}
                   />
                   <Button

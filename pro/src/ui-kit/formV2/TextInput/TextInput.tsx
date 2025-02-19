@@ -37,7 +37,11 @@ type TextInputProps = FieldLayoutBaseProps &
      * If this prop is provided, the counter will be displayed
      */
     count?: number
-    hideAsterisk?: boolean
+    /**
+     * A property to not displayed asterisk even if field is required
+     * If this prop is provided, the asterisk will not be displayed
+     */
+    asterisk?: boolean
   }
 
 /**
@@ -80,6 +84,7 @@ export const TextInput = React.forwardRef(
       isLabelHidden = false,
       maxLength = 255,
       required = false,
+      asterisk = true,
       leftIcon,
       rightButton,
       rightIcon,
@@ -87,7 +92,6 @@ export const TextInput = React.forwardRef(
       description,
       error,
       count,
-      hideAsterisk = false,
       ...props
     }: TextInputProps,
     ref: ForwardedRef<HTMLInputElement>
@@ -126,7 +130,7 @@ export const TextInput = React.forwardRef(
           })}
         >
           <label className={styles['input-layout-label']} htmlFor={name}>
-            {label} {required && !hideAsterisk && '*'}
+            {label} {required && asterisk && '*'}
           </label>
           {description && (
             <span
