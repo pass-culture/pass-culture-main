@@ -79,6 +79,21 @@ def _load_suspension_info(query: BaseQuery) -> BaseQuery:
     )
 
 
+def _load_current_deposit_data(query: BaseQuery, join_needed: bool = True) -> BaseQuery:
+    # partial joined load with Deposit and Recredit to avoid N+1, show the version of the current
+    # deposit and not mess with the pagination as a beneficiary cannot have multiple deposits active
+    # at the same time
+    if join_needed:
+        query = query.outerjoin(
+            finance_models.Deposit,
+            sa.and_(
+                users_models.User.id == finance_models.Deposit.userId,
+                finance_models.Deposit.expirationDate > datetime.datetime.utcnow(),
+            ),
+        )
+    return query.options(sa.orm.contains_eager(users_models.User.deposits))
+
+
 def _apply_search_filters(query: BaseQuery, search_filters: list[str]) -> BaseQuery:
     or_filters: list = []
     query = query.outerjoin(
@@ -228,6 +243,7 @@ def search_public_accounts() -> utils.BackofficeResponse:
     users_query = users_api.search_public_account(form.q.data)
     users_query = _apply_search_filters(users_query, form.filter.data)
     users_query = _load_suspension_info(users_query)
+    users_query = _load_current_deposit_data(users_query, join_needed=False)
     paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
 
     # Do NOT call users.count() after search_public_account, this would make one more request on all users every time
@@ -235,6 +251,7 @@ def search_public_accounts() -> utils.BackofficeResponse:
     if paginated_rows.total == 0 and email_utils.is_valid_email(email_utils.sanitize_email(form.q.data)):
         users_query = users_api.search_public_account_in_history_email(form.q.data)
         users_query = _load_suspension_info(users_query)
+        users_query = _load_current_deposit_data(users_query)
         paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
 
     if paginated_rows.total == 1:

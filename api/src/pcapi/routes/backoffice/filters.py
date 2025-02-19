@@ -54,7 +54,18 @@ def format_state(is_active: bool) -> str:
     return "Suspendu"
 
 
-def format_role(role: str | None) -> str:
+def _get_last_deposit_type(deposits: list[finance_models.Deposit] | None) -> finance_models.DepositType | None:
+    if not deposits:
+        return None
+    sorted_deposits = sorted(
+        deposits,
+        key=lambda d: d.expirationDate.timestamp() if d.expirationDate else 2**63,
+        reverse=True,
+    )
+    return sorted_deposits[0].type
+
+
+def format_role(role: str | None, deposits: list[finance_models.Deposit] | None = None) -> str:
     if not role:
         return "Aucune information"
 
@@ -66,21 +77,30 @@ def format_role(role: str | None) -> str:
         case users_models.UserRole.TEST:
             return "Test"
         case users_models.UserRole.BENEFICIARY:
-            return "Pass 18"
+            if _get_last_deposit_type(deposits) == finance_models.DepositType.GRANT_17_18:
+                return "Pass 18"
+            return "Ancien Pass 18"
         case users_models.UserRole.UNDERAGE_BENEFICIARY:
-            return "Pass 15-17"
+            if _get_last_deposit_type(deposits) == finance_models.DepositType.GRANT_17_18:
+                return "Pass 17"
+            return "Ancien Pass 15-17"
         case _:
             return "Aucune information"
 
 
-def format_deposit_type(deposit_type: finance_models.DepositType) -> str:
-    match deposit_type:
-        case finance_models.DepositType.GRANT_18:
+def format_deposit_used(booking: bookings_models.Booking) -> str:
+    if booking.usedRecreditType:
+        if booking.usedRecreditType == bookings_models.BookingRecreditType.RECREDIT_17:
+            return Markup("<span class='badge text-bg-secondary'>Pass 17</span>")
+        if booking.usedRecreditType == bookings_models.BookingRecreditType.RECREDIT_18:
             return Markup("<span class='badge text-bg-secondary'>Pass 18</span>")
-        case finance_models.DepositType.GRANT_15_17:
-            return Markup("<span class='badge text-bg-secondary'>Pass 15-17</span>")
-        case _:
-            return "Aucune information"
+    elif booking.deposit:
+        deposit = booking.deposit
+        if deposit.type == finance_models.DepositType.GRANT_18:
+            return Markup("<span class='badge text-bg-secondary'>Ancien Pass 18</span>")
+        if deposit.type == finance_models.DepositType.GRANT_15_17:
+            return Markup("<span class='badge text-bg-secondary'>Ancien Pass 15-17</span>")
+    return "Aucune information"
 
 
 def format_active_deposit(deposit: finance_models.Deposit | None) -> str:
@@ -1613,7 +1633,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_string_to_date_time"] = format_string_to_date_time
     app.jinja_env.filters["format_cutoff_date"] = format_cutoff_date
     app.jinja_env.filters["format_timespan"] = format_timespan
-    app.jinja_env.filters["format_deposit_type"] = format_deposit_type
+    app.jinja_env.filters["format_deposit_used"] = format_deposit_used
     app.jinja_env.filters["format_active_deposit"] = format_active_deposit
     app.jinja_env.filters["format_validation_status"] = format_validation_status
     app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status

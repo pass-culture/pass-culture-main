@@ -1161,7 +1161,10 @@ class GetCommercialGestureTest(GetEndpointHelper):
 
     @pytest.mark.parametrize(
         "venue_factory,expected_xpf_text",
-        [(offerers_factories.VenueFactory, ""), (offerers_factories.CaledonianVenueFactory, "(1205 CFP)")],
+        [
+            (offerers_factories.VenueFactory, ""),
+            (offerers_factories.CaledonianVenueFactory, "(1205 CFP)"),
+        ],
     )
     def test_get_incident(self, authenticated_client, venue_factory, expected_xpf_text):
         finance_incident = finance_factories.FinanceIncidentFactory(
@@ -1181,7 +1184,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
             assert response.status_code == 200
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
-        assert badges == ["Créé", "Total", "Annulée", "Pass 18"]  # incident badges + booking badges
+        assert badges == ["Créé", "Total", "Annulée", "Ancien Pass 18"]  # incident badges + booking badges
 
         content = html_parser.content_as_text(response.data)
         assert f"ID : {finance_incident.id}" in content
