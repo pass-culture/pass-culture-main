@@ -2,7 +2,7 @@ import * as yup from 'yup'
 
 import { emailSchema } from 'commons/utils/isValidEmail'
 
-export const validationSchema = () =>
+export const validationSchema = 
   yup.object().shape({
     email: yup
       .string()
