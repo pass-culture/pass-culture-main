@@ -14,7 +14,6 @@ from pcapi.models import db
 from pcapi.utils import crypto
 import pcapi.utils.email as email_utils
 
-from . import constants
 from . import exceptions
 from . import models
 
@@ -104,17 +103,17 @@ def has_access_to_venues(user: models.User, venue_ids: list[int]) -> bool:
     ).scalar()
 
 
-def get_newly_eligible_age_18_users(since: date) -> list[models.User]:
+def get_users_that_had_birthday_since(since: date, age: int) -> list[models.User]:
     """
     Get users that are eligible between `since` (excluded) and now (included) and that have
-    created their account before `since`
+    created their account before `today`
     If `since` is "yesterday", on 29th of February:
-        `today - relativedelta(years=constants.ELIGIBILITY_AGE_18) = YYYY-02-28`
-        `since - relativedelta(years=constants.ELIGIBILITY_AGE_18) = YYYY-02-28`
+        `today - relativedelta(years=18) = YYYY-02-28`
+        `since - relativedelta(years=18) = YYYY-02-28`
         So the function will return an empty list.
         And the day after:
-        `today - relativedelta(years=constants.ELIGIBILITY_AGE_18) = YYYY-03-01`
-        `since - relativedelta(years=constants.ELIGIBILITY_AGE_18) = YYYY-02-28`
+        `today - relativedelta(years=18) = YYYY-03-01`
+        `since - relativedelta(years=18) = YYYY-02-28`
         So users born on the 29th of February will be notified.
     """
     today = datetime.combine(datetime.today(), datetime.min.time())
@@ -122,15 +121,10 @@ def get_newly_eligible_age_18_users(since: date) -> list[models.User]:
     eligible_users = (
         models.User.query.outerjoin(offerers_models.UserOfferer)
         .filter(
-            sa.not_(models.User.has_beneficiary_role),  # not already beneficiary
             sa.not_(models.User.has_admin_role),  # not an admin
             offerers_models.UserOfferer.userId.is_(None),  # not a pro
-            # less than 19yo
-            models.User.birth_date > today - relativedelta(years=(constants.ELIGIBILITY_AGE_18 + 1)),  # type: ignore[operator]
-            # more than or 18yo
-            models.User.birth_date <= today - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # type: ignore[operator]
-            # less than 18yo at since
-            models.User.birth_date > since - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # type: ignore[operator]
+            (models.User.birth_date <= today - relativedelta(years=age)),  # type: ignore[operator]
+            (models.User.birth_date > since - relativedelta(years=age)),  # type: ignore[operator]
             models.User.dateCreated < today,
         )
         .all()
