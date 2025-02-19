@@ -1,4 +1,6 @@
+from contextlib import suppress
 import datetime
+from functools import partial
 import logging
 
 import sqlalchemy as sa
@@ -10,7 +12,9 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository import on_commit
 from pcapi.utils.phone_number import ParsedPhoneNumber
+from pcapi.workers.operations_jobs import retrieve_special_event_from_typeform_job
 
 from . import models
 
@@ -39,7 +43,6 @@ def create_special_event_from_typeform(
             raise ValueError(f"La structure {offerer_id} n'existe pas")
 
     data = typeform.get_form(form_id)
-
     special_event = models.SpecialEvent(
         externalId=data.form_id,
         title=data.title,
@@ -50,13 +53,7 @@ def create_special_event_from_typeform(
     db.session.add(special_event)
     db.session.flush()
 
-    for field in data.fields:
-        db.session.add(
-            models.SpecialEventQuestion(eventId=special_event.id, externalId=field.field_id, title=field.title)
-        )
-
-    db.session.flush()
-
+    on_commit(partial(retrieve_special_event_from_typeform_job.delay, special_event.id))
     return special_event
 
 
@@ -84,20 +81,24 @@ def retrieve_data_from_typeform() -> None:
         models.SpecialEvent.eventDate >= datetime.date.today() - datetime.timedelta(days=7),
     )
     for event in events:
-        try:
-            form = typeform.get_form(form_id=event.externalId)
-            update_form_title_from_typeform(event=event, form=form)
-            questions = update_form_questions_from_typeform(event=event, form=form)
-            download_responses_from_typeform(event=event, questions=questions)
-        except Exception as exc:  # pylint: disable=broad-except
-            logger.error(
-                "An error happened while retrieving special event",
-                extra={
-                    "event_id": event.id,
-                    "exc": str(exc),
-                    "external_id": event.externalId,
-                },
-            )
+        retrieve_special_event_from_typeform(event)
+
+
+def retrieve_special_event_from_typeform(event: models.SpecialEvent) -> None:
+    try:
+        form = typeform.get_form(form_id=event.externalId)
+        update_form_title_from_typeform(event=event, form=form)
+        questions = update_form_questions_from_typeform(event=event, form=form)
+        download_responses_from_typeform(event=event, questions=questions)
+    except Exception as exc:  # pylint: disable=broad-except
+        logger.error(
+            "An error happened while retrieving special event",
+            extra={
+                "event_id": event.id,
+                "exc": str(exc),
+                "external_id": event.externalId,
+            },
+        )
 
 
 @atomic()
@@ -133,7 +134,6 @@ def update_form_questions_from_typeform(
 def download_responses_from_typeform(
     event: models.SpecialEvent, questions: dict[str, models.SpecialEventQuestion]
 ) -> None:
-
     def get_last_date_for_event() -> datetime.datetime | None:
         result = (
             models.SpecialEventResponse.query.with_entities(models.SpecialEventResponse.dateSubmitted)
@@ -150,9 +150,6 @@ def download_responses_from_typeform(
             form=response,
             questions=questions,
         )
-
-
-from contextlib import suppress
 
 
 def _get_user_for_form(form: typeform.TypeformResponse) -> users_models.User | None:
