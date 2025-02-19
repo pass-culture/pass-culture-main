@@ -1,4 +1,4 @@
-name: '3 [on_workflow/Deprecated] Build docker image'
+name: "3 [on_workflow/Deprecated] Build docker image"
 
 on:
   workflow_call:
@@ -54,13 +54,15 @@ jobs:
       - name: "Compute docker image name:tag"
         id: compute-image-name
         run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
-          
+
       - name: "Build ${{ steps.compute-image-name.outputs.image_name }} image"
         uses: docker/build-push-action@v6
         with:
           context: api
           target: ${{ inputs.image }}
           tags: ${{ steps.compute-image-name.outputs.image_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: "Store artifact"
         run: |
