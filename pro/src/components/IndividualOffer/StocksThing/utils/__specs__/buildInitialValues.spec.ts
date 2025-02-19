@@ -1,15 +1,13 @@
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
-  getOfferVenueFactory,
   getIndividualOfferFactory,
   getOfferStockFactory,
+  getOfferVenueFactory,
 } from 'commons/utils/factories/individualApiFactories'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
 import { buildInitialValues } from '../buildInitialValues'
-
-const WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE_ENABLED = false
 
 describe('StockThingForm::utils::buildInitialValues', () => {
   let offer: GetIndividualOfferWithAddressResponseModel
@@ -20,29 +18,21 @@ describe('StockThingForm::utils::buildInitialValues', () => {
   })
 
   it('should return default values when offer have no stocks', () => {
-    const initialValues = buildInitialValues(
-      offer,
-      [],
-      WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE_ENABLED
-    )
+    const initialValues = buildInitialValues(offer, [])
     expect(initialValues).toEqual(STOCK_THING_FORM_DEFAULT_VALUES)
   })
 
   it('should build form initial values from offer', () => {
-    const initialValues = buildInitialValues(
-      offer,
-      [
-        getOfferStockFactory({
-          id: 1,
-          remainingQuantity: 10,
-          bookingsQuantity: 20,
-          quantity: 40,
-          bookingLimitDatetime: '2001-06-05',
-          price: 12,
-        }),
-      ],
-      WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE_ENABLED
-    )
+    const initialValues = buildInitialValues(offer, [
+      getOfferStockFactory({
+        id: 1,
+        remainingQuantity: 10,
+        bookingsQuantity: 20,
+        quantity: 40,
+        bookingLimitDatetime: '2001-06-05',
+        price: 12,
+      }),
+    ])
     expect(initialValues).toEqual({
       stockId: 1,
       remainingQuantity: '10',
@@ -57,20 +47,16 @@ describe('StockThingForm::utils::buildInitialValues', () => {
   })
 
   it('should normalize null values', () => {
-    const initialValues = buildInitialValues(
-      offer,
-      [
-        getOfferStockFactory({
-          id: 1,
-          bookingsQuantity: 20,
-          remainingQuantity: undefined,
-          quantity: null,
-          bookingLimitDatetime: null,
-          price: 12,
-        }),
-      ],
-      WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE_ENABLED
-    )
+    const initialValues = buildInitialValues(offer, [
+      getOfferStockFactory({
+        id: 1,
+        bookingsQuantity: 20,
+        remainingQuantity: undefined,
+        quantity: null,
+        bookingLimitDatetime: null,
+        price: 12,
+      }),
+    ])
     expect(initialValues).toEqual({
       activationCodes: [],
       activationCodesExpirationDatetime: '',
@@ -84,20 +70,18 @@ describe('StockThingForm::utils::buildInitialValues', () => {
     })
   })
 
-  it('should format date with good department code if FF WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE_ENABLED', () => {
+  it('should format date with good department code', () => {
     offer.address = getAddressResponseIsLinkedToVenueModelFactory({
       departmentCode: '987', // Pacific/Tahiti
     })
 
-    const initialValues = buildInitialValues(
-      offer,
-      [getOfferStockFactory({ id: 8, bookingLimitDatetime: '2001-06-05' })],
-      !WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE_ENABLED
-    )
+    const initialValues = buildInitialValues(offer, [
+      getOfferStockFactory({ id: 8, bookingLimitDatetime: '2001-06-05' }),
+    ])
 
     expect(initialValues).toEqual({
       ...STOCK_THING_FORM_DEFAULT_VALUES,
-      bookingLimitDatetime: '2001-06-04',
+      bookingLimitDatetime: '2001-06-04', // Tahiti is UTC-10 so we expect here 1 day earlier
       isDuo: true,
       price: 10,
       quantity: 18,

@@ -1,8 +1,7 @@
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import {
-  StocksEventList,
   StocksEvent,
+  StocksEventList,
 } from 'components/StocksEventList/StocksEventList'
 
 import { EventCancellationBanner } from '../StocksEventEdition/EventCancellationBanner'
@@ -17,14 +16,7 @@ export const RecurrenceSummary = ({
   offer,
   stocks,
 }: RecurrenceSummaryProps) => {
-  const useOffererAddressAsDataSourceEnabled = useActiveFeature(
-    'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
-  )
-
-  const departmentCode = getDepartmentCode({
-    offer,
-    useOffererAddressAsDataSourceEnabled,
-  })
+  const departmentCode = getDepartmentCode(offer)
   return (
     <>
       <EventCancellationBanner offer={offer} />

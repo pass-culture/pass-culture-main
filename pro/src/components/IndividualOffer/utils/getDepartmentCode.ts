@@ -3,16 +3,10 @@ import {
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
 
-export const getDepartmentCode = ({
-  offer,
-  useOffererAddressAsDataSourceEnabled,
-}: {
+export const getDepartmentCode = (
   offer:
     | GetIndividualOfferWithAddressResponseModel
     | ListOffersOfferResponseModel
-  useOffererAddressAsDataSourceEnabled: boolean
-}): string => {
-  return offer.address?.departmentCode && useOffererAddressAsDataSourceEnabled
-    ? offer.address.departmentCode
-    : (offer.venue.departementCode ?? '')
+): string => {
+  return offer.address?.departmentCode ?? offer.venue.departementCode ?? ''
 }

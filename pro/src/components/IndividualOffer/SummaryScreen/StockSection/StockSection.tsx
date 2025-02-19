@@ -11,7 +11,6 @@ import {
 } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
@@ -59,14 +58,7 @@ export const StockSection = ({
   const [stockThing, setStockThing] = useState<GetOfferStockResponseModel>()
   const notification = useNotification()
 
-  const useOffererAddressAsDataSourceEnabled = useActiveFeature(
-    'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
-  )
-
-  const departmentCode = getDepartmentCode({
-    offer,
-    useOffererAddressAsDataSourceEnabled,
-  })
+  const departmentCode = getDepartmentCode(offer)
 
   useEffect(() => {
     async function getStockThing() {

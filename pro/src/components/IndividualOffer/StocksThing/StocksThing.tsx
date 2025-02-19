@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -16,7 +16,6 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { getToday, getYearMonthDay, isDateValid } from 'commons/utils/date'
@@ -80,11 +79,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       const response = await api.getStocks(offer.id)
       setStocks(response.stocks)
       formik.resetForm({
-        values: buildInitialValues(
-          offer,
-          response.stocks,
-          useOffererAddressAsDataSourceEnabled
-        ),
+        values: buildInitialValues(offer, response.stocks),
       })
     }
 
@@ -104,12 +99,9 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         : 0
       : 1
   const isDisabled = isOfferDisabled(offer.status)
-  const useOffererAddressAsDataSourceEnabled = useActiveFeature(
-    'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
-  )
   const today = getLocalDepartementDateTimeFromUtc(
     getToday(),
-    getDepartmentCode({ offer, useOffererAddressAsDataSourceEnabled })
+    getDepartmentCode(offer)
   )
   const canBeDuo = subCategories.find(
     (subCategory) => subCategory.id === offer.subcategoryId
@@ -145,13 +137,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
     // Submit
     try {
-      await submitToApi(
-        values,
-        offer,
-        formik.resetForm,
-        formik.setErrors,
-        useOffererAddressAsDataSourceEnabled
-      )
+      await submitToApi(values, offer, formik.resetForm, formik.setErrors)
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error.message)
@@ -172,11 +158,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   // so this is a workaround to pass its value.
   const stockId = stocks.length > 0 ? stocks[0].id : undefined
   const formik = useFormik({
-    initialValues: buildInitialValues(
-      offer,
-      [],
-      useOffererAddressAsDataSourceEnabled
-    ),
+    initialValues: buildInitialValues(offer, []),
     onSubmit,
     validationSchema: getValidationSchema(mode, bookingsQuantity, stockId),
   })

@@ -6,10 +6,7 @@ import {
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
 import { isOfferEducational } from 'commons/core/OfferEducational/types'
-import {
-  OFFER_STATUS_SOLD_OUT,
-} from 'commons/core/Offers/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { OFFER_STATUS_SOLD_OUT } from 'commons/core/Offers/constants'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
 import { pluralize } from 'commons/utils/pluralize'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
@@ -41,21 +38,19 @@ export const OfferNameCell = ({
   className,
 }: OfferNameCellProps) => {
   const { isTooltipHidden, ...tooltipProps } = useTooltipProps({})
-  const useOffererAddressAsDataSourceEnabled = useActiveFeature(
-    'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
-  )
 
   const getDateInformations = () => {
-    const startDatetime = offer.stocks[0] ? isOfferEducational(offer) ? offer.stocks[0].startDatetime : offer.stocks[0].beginningDatetime : undefined
+    const startDatetime = offer.stocks[0]
+      ? isOfferEducational(offer)
+        ? offer.stocks[0].startDatetime
+        : offer.stocks[0].beginningDatetime
+      : undefined
 
     let departmentCode = ''
     // If that offer is not educational, it means it's an individual offer …
     if (!isOfferEducational(offer)) {
-      // … so we want here to use the offer's address 'departmentCode' (under FF)
-      departmentCode = getDepartmentCode({
-        offer,
-        useOffererAddressAsDataSourceEnabled,
-      })
+      // … so we want here to use the offer's address 'departmentCode'
+      departmentCode = getDepartmentCode(offer)
     } else {
       // … else, use venue's departementCode for educational offers
       departmentCode = offer.venue.departementCode ?? ''
@@ -101,9 +96,13 @@ export const OfferNameCell = ({
         })}
         to={offerLink}
       >
-        {displayThumb && <div className={styles['title-column-thumb']}>
-          <Thumb url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl} />
-        </div>}
+        {displayThumb && (
+          <div className={styles['title-column-thumb']}>
+            <Thumb
+              url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl}
+            />
+          </div>
+        )}
         <div>
           {offer.isShowcase && (
             <Tag
@@ -114,19 +113,21 @@ export const OfferNameCell = ({
             </Tag>
           )}
           <div className={styles['title-column-name']}>
-            {displayLabel &&
+            {displayLabel && (
               <span
                 className={styles['offers-table-cell-mobile-label']}
                 aria-hidden={true}
               >
                 {`${CELLS_DEFINITIONS.NAME.title} :`}
               </span>
-            }
+            )}
             {offer.name}
           </div>
           {(isOfferEducational(offer) || offer.isEvent) && (
             <span className={styles['stocks']}>
-              {!isOfferEducational(offer) && offer.isEvent && getDateInformations()}
+              {!isOfferEducational(offer) &&
+                offer.isEvent &&
+                getDateInformations()}
               {shouldShowIndividualWarning && (
                 <>
                   <button
@@ -149,7 +150,10 @@ export const OfferNameCell = ({
                         alt="Attention"
                         width="16"
                       />
-                      {pluralize(computeNumberOfSoldOutStocks(), 'date épuisée')}
+                      {pluralize(
+                        computeNumberOfSoldOutStocks(),
+                        'date épuisée'
+                      )}
                     </span>
                   )}
                 </>
