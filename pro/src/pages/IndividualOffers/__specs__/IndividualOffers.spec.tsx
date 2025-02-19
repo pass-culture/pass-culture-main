@@ -17,7 +17,6 @@ import {
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   ALL_CREATION_MODES,
-  ALL_VENUES_OPTION,
   CREATION_MODES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
 } from 'commons/core/Offers/constants'
@@ -116,13 +115,12 @@ describe('route Offers', () => {
   beforeEach(() => {
     offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
     vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
-    vi.spyOn(api, 'getCategories').mockResolvedValue(
-      categoriesAndSubcategories
-    )
+    vi.spyOn(api, 'getCategories').mockResolvedValue(categoriesAndSubcategories)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
     })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
+    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
   })
 
   describe('filters', () => {
@@ -254,11 +252,22 @@ describe('route Offers', () => {
 
       it('should load offers with selected venue filter', async () => {
         await renderOffers()
-        const firstVenueOption = screen.getByRole('option', {
-          name: proVenues[0].name,
+
+        const offererAddressOption = screen.getByLabelText('Localisation')
+
+        await waitFor(() => {
+          expect(
+            within(offererAddressOption).getAllByRole('option').length
+          ).toBe(3)
         })
-        const venueSelect = screen.getByLabelText('Lieu')
-        await userEvent.selectOptions(venueSelect, firstVenueOption)
+
+        const firstOffererAddressOption =
+          within(offererAddressOption).getAllByRole('option')[1]
+
+        await userEvent.selectOptions(
+          offererAddressOption,
+          firstOffererAddressOption
+        )
 
         await userEvent.click(screen.getByText('Rechercher'))
 
@@ -267,13 +276,13 @@ describe('route Offers', () => {
             undefined,
             '1',
             undefined,
-            proVenues[0].id.toString(),
             undefined,
             undefined,
             undefined,
             undefined,
             undefined,
-            undefined
+            undefined,
+            '2'
           )
         })
       })
@@ -460,12 +469,21 @@ describe('route Offers', () => {
 
     it('should have venue value when user filters by venue', async () => {
       await renderOffers()
-      const firstVenueOption = screen.getByRole('option', {
-        name: proVenues[0].name,
-      })
-      const venueSelect = screen.getByLabelText('Lieu')
+      const offererAddressOption = screen.getByLabelText('Localisation')
 
-      await userEvent.selectOptions(venueSelect, firstVenueOption)
+      await waitFor(() => {
+        expect(within(offererAddressOption).getAllByRole('option').length).toBe(
+          3
+        )
+      })
+
+      const firstOffererAddressOption =
+        within(offererAddressOption).getAllByRole('option')[1]
+
+      await userEvent.selectOptions(
+        offererAddressOption,
+        firstOffererAddressOption
+      )
       await userEvent.click(screen.getByText('Rechercher'))
 
       await waitFor(() => {
@@ -473,13 +491,13 @@ describe('route Offers', () => {
           undefined,
           '1',
           undefined,
-          proVenues[0].id.toString(),
           undefined,
           undefined,
           undefined,
           undefined,
           undefined,
-          undefined
+          undefined,
+          '2'
         )
       })
     })
@@ -735,28 +753,35 @@ describe('route Offers', () => {
 
       await renderOffers(filters)
 
-      const firstVenueOption = screen.getByRole('option', {
-        name: proVenues[0].name,
+      const offererAddressOption = screen.getByLabelText('Localisation')
+
+      await waitFor(() => {
+        expect(within(offererAddressOption).getAllByRole('option').length).toBe(
+          3
+        )
       })
 
-      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
+      const firstOffererAddressOption =
+        within(offererAddressOption).getAllByRole('option')[1]
 
-      await userEvent.selectOptions(venueSelect, firstVenueOption)
+      await userEvent.selectOptions(
+        offererAddressOption,
+        firstOffererAddressOption
+      )
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenNthCalledWith(
-          2,
+        expect(api.listOffers).toHaveBeenLastCalledWith(
           undefined,
           '1',
           undefined,
-          proVenues[0].id.toString(),
+          '666',
           undefined,
           undefined,
           undefined,
           undefined,
           undefined,
-          undefined
+          '2'
         )
       })
 
@@ -793,30 +818,37 @@ describe('route Offers', () => {
       }
       await renderOffers(filters)
 
-      const venueOptionToSelect = screen.getByRole('option', {
-        name: proVenues[0].name,
+      const offererAddressOption = screen.getByLabelText('Localisation')
+
+      await waitFor(() => {
+        expect(within(offererAddressOption).getAllByRole('option').length).toBe(
+          3
+        )
       })
 
-      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
+      const firstOffererAddressOption =
+        within(offererAddressOption).getAllByRole('option')[1]
 
-      await userEvent.selectOptions(venueSelect, venueOptionToSelect)
+      await userEvent.selectOptions(
+        offererAddressOption,
+        firstOffererAddressOption
+      )
       await userEvent.click(screen.getByText('Rechercher'))
 
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledTimes(2)
       })
-      expect(api.listOffers).toHaveBeenNthCalledWith(
-        2,
+      expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
         '1',
         undefined,
-        proVenues[0].id.toString(),
+        '666',
         undefined,
         undefined,
         undefined,
         undefined,
         undefined,
-        undefined
+        '2'
       )
 
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
@@ -843,11 +875,14 @@ describe('route Offers', () => {
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
       const nameOrIsbn = 'Any word'
 
-      await renderOffers({
-        nameOrIsbn,
-        venueId: '666',
-      }, ['WIP_COLLAPSED_MEMORIZED_FILTERS'])
-  
+      await renderOffers(
+        {
+          nameOrIsbn,
+          venueId: '666',
+        },
+        ['WIP_COLLAPSED_MEMORIZED_FILTERS']
+      )
+
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
 
       await waitFor(() => {
@@ -868,21 +903,8 @@ describe('route Offers', () => {
   })
 
   describe('With WIP_ENABLE_OFFER_ADDRESS FF', () => {
-    beforeEach(() => {
-      vi.spyOn(api, 'getOffererAddresses').mockResolvedValueOnce(offererAddress)
-    })
-    it('should display venue header without the FF', async () => {
-      await renderOffers()
-      expect(
-        screen.queryByRole('columnheader', { name: 'Lieu' })
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByRole('columnheader', { name: 'Localisation' })
-      ).not.toBeInTheDocument()
-    })
-
     it('should display address header with the FF', async () => {
-      await renderOffers(DEFAULT_SEARCH_FILTERS, ['WIP_ENABLE_OFFER_ADDRESS'])
+      await renderOffers(DEFAULT_SEARCH_FILTERS)
       expect(
         screen.queryByRole('columnheader', { name: 'Lieu' })
       ).not.toBeInTheDocument()
@@ -892,13 +914,10 @@ describe('route Offers', () => {
     })
 
     it('should display venue header with the FF for collective offers', async () => {
-      await renderOffers(
-        {
-          ...DEFAULT_SEARCH_FILTERS,
-          audience: Audience.COLLECTIVE,
-        },
-        ['WIP_ENABLE_OFFER_ADDRESS']
-      )
+      await renderOffers({
+        ...DEFAULT_SEARCH_FILTERS,
+        audience: Audience.COLLECTIVE,
+      })
       expect(
         screen.queryByRole('columnheader', { name: 'Lieu' })
       ).not.toBeInTheDocument()
@@ -908,11 +927,10 @@ describe('route Offers', () => {
     })
 
     it('should have offerer address value when user filters by address', async () => {
-      vi.spyOn(api, 'getOffererAddresses').mockResolvedValueOnce(offererAddress)
       vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
         defaultGetOffererResponseModel
       )
-      await renderOffers(DEFAULT_SEARCH_FILTERS, ['WIP_ENABLE_OFFER_ADDRESS'])
+      await renderOffers(DEFAULT_SEARCH_FILTERS)
       const offererAddressOption = screen.getByLabelText('Localisation')
 
       await waitFor(() => {
@@ -954,8 +972,8 @@ describe('route Offers', () => {
           venueListItemFactory({
             id: 1,
             name: 'Une venue physique & permanente',
-          })
-        ]
+          }),
+        ],
       })
 
       localStorage.clear()
@@ -964,7 +982,9 @@ describe('route Offers', () => {
     it('should render an awesome headline offer banner', async () => {
       await renderOffers(undefined, ['WIP_HEADLINE_OFFER'])
 
-      const bannerTitle = await screen.findByText(/Nouvelle fonctionnalité : l’offre à la une !/)
+      const bannerTitle = await screen.findByText(
+        /Nouvelle fonctionnalité : l’offre à la une !/
+      )
       expect(bannerTitle).toBeInTheDocument()
     })
 
@@ -975,15 +995,21 @@ describe('route Offers', () => {
 
       await renderOffers(undefined, ['WIP_HEADLINE_OFFER'])
 
-      let bannerTitle = await screen.findByText(/Nouvelle fonctionnalité : l’offre à la une !/)
+      let bannerTitle = await screen.findByText(
+        /Nouvelle fonctionnalité : l’offre à la une !/
+      )
       expect(bannerTitle).toBeInTheDocument()
 
-      const closeButton = screen.getByRole('button', { name: 'Fermer la bannière' })
+      const closeButton = screen.getByRole('button', {
+        name: 'Fermer la bannière',
+      })
       await userEvent.click(closeButton)
 
       // If the user refreshes the page, the banner should not be displayed anymore.
       await renderOffers(undefined, ['WIP_HEADLINE_OFFER'])
-      expect(screen.queryByText(/Nouvelle fonctionnalité : l’offre à la une !/)).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(/Nouvelle fonctionnalité : l’offre à la une !/)
+      ).not.toBeInTheDocument()
     })
   })
 })

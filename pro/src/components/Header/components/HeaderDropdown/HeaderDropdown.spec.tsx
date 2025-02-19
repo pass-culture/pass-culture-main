@@ -97,9 +97,7 @@ describe('App', () => {
     })
 
     it('should display the right wording with the OA FF', async () => {
-      renderHeaderDropdown({
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
+      renderHeaderDropdown()
 
       await userEvent.click(screen.getByTestId('offerer-select'))
       expect(

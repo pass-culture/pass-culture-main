@@ -274,10 +274,7 @@ describe('LinkVenueDialog', () => {
         defaultBankAccount,
         managedVenues,
         undefined,
-        undefined,
-        {
-          features: ['WIP_ENABLE_OFFER_ADDRESS'],
-        }
+        undefined
       )
 
       const selectSiretButton = screen.getByRole('button', {
@@ -311,10 +308,7 @@ describe('LinkVenueDialog', () => {
         defaultBankAccount,
         managedVenues,
         undefined,
-        undefined,
-        {
-          features: ['WIP_ENABLE_OFFER_ADDRESS'],
-        }
+        undefined
       )
 
       expect(

@@ -13,7 +13,6 @@ import { ALL_OFFERER_ADDRESS_OPTION } from 'commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { Audience } from 'commons/core/shared/types'
 import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { isDateValid } from 'commons/utils/date'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -72,7 +71,6 @@ export const PreFilters = ({
       ...appliedPreFilters,
     })
   const [isDownloadingCSV, setIsDownloadingCSV] = useState<boolean>(false)
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   useEffect(
     () => setSelectedPreFilters({ ...appliedPreFilters }),
@@ -183,7 +181,7 @@ export const PreFilters = ({
       >
         <div className={styles['pre-filters-form-filters']}>
           <FormLayout.Row inline>
-            {isOfferAddressEnabled && audience === Audience.INDIVIDUAL ? (
+            {audience === Audience.INDIVIDUAL ? (
               <FieldLayout
                 label="Localisation"
                 name="address"

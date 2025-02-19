@@ -520,13 +520,10 @@ describe('CollectiveOffersScreen', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display "Structure" instead of "Lieu" of the WIP_ENABLE_OFFER_ADDRESS FF is active', () => {
-    renderOffers(
-      {
-        ...props,
-      },
-      { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
-    )
+  it('should display "Structure"', () => {
+    renderOffers({
+      ...props,
+    })
 
     // In filters
     expect(

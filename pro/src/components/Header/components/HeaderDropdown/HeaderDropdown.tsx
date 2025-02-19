@@ -43,7 +43,6 @@ import styles from './HeaderDropdown.module.scss'
 
 export const HeaderDropdown = () => {
   const { logEvent } = useAnalytics()
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
 
   const currentUser = useSelector(selectCurrentUser)
@@ -159,14 +158,6 @@ export const HeaderDropdown = () => {
             </DropdownMenu.Item>
             {offererOptions.length > 1 && (
               <>
-                {!isOfferAddressEnabled && (
-                  <DropdownMenu.Label
-                    data-testid="offerer-header-label"
-                    className={styles['menu-title']}
-                  >
-                    Structure
-                  </DropdownMenu.Label>
-                )}
                 <div className={styles['menu-email']}>
                   {selectedOffererName?.name}
                 </div>
@@ -186,7 +177,7 @@ export const HeaderDropdown = () => {
                       icon={fullSwitchIcon}
                       className={styles['menu-item']}
                     >
-                      Changer{!isOfferAddressEnabled && ' de structure'}
+                      Changer
                     </Button>
                   </DropdownMenu.SubTrigger>
                   <DropdownMenu.Portal>
@@ -254,8 +245,6 @@ export const HeaderDropdown = () => {
                             to="/parcours-inscription/structure"
                           >
                             Ajouter
-                            {!isOfferAddressEnabled &&
-                              ' une nouvelle structure'}
                           </ButtonLink>
                         </DropdownMenu.Item>
                       </div>

@@ -11,7 +11,6 @@ import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
 import { handleAllFranceDepartmentOptions } from 'commons/core/shared/utils/handleAllFranceDepartmentOptions'
 import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -20,9 +19,7 @@ import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import {
-  EVENT_ADDRESS_OFFERER_LABEL,
   EVENT_ADDRESS_VENUE_LABEL,
-  EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL,
   EVENT_ADDRESS_VENUE_SELECT_LABEL,
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
   EVENT_ADDRESS_OTHER_LABEL,
@@ -51,13 +48,9 @@ export const FormPracticalInformation = ({
     string[] | null
   >(null)
 
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
   const adressTypeRadios = [
     {
-      label: isOfferAddressEnabled
-        ? EVENT_ADDRESS_VENUE_LABEL
-        : EVENT_ADDRESS_OFFERER_LABEL,
+      label: EVENT_ADDRESS_VENUE_LABEL,
       value: OfferAddressType.OFFERER_VENUE,
     },
     {
@@ -162,11 +155,7 @@ export const FormPracticalInformation = ({
         <FormLayout.Row>
           <Select
             disabled={venuesOptions.length === 1 || disableForm}
-            label={
-              isOfferAddressEnabled
-                ? EVENT_ADDRESS_VENUE_SELECT_LABEL
-                : EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL
-            }
+            label={EVENT_ADDRESS_VENUE_SELECT_LABEL}
             name="eventAddress.venueId"
             options={venuesOptions}
           />

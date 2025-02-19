@@ -55,7 +55,9 @@ describe('CollectiveOfferLocationSection', () => {
     const loadingMessage = screen.queryByText(/Chargement en cours/)
     await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
 
-    expect(await screen.findByText('Lieu de l’événement')).toBeInTheDocument()
+    expect(
+      await screen.findByText('Localisation de l’événement')
+    ).toBeInTheDocument()
     expect(
       screen.getByText('Dans l’établissement scolaire')
     ).toBeInTheDocument()
@@ -141,49 +143,5 @@ describe('CollectiveOfferLocationSection', () => {
     expect(
       screen.getByText('02 - Aisne, 03 - Allier, 04 - Alpes-de-Haute-Provence')
     ).toBeInTheDocument()
-  })
-
-  describe('OA feature flag', () => {
-    const offer = getCollectiveOfferTemplateFactory()
-
-    it('should display the right wording without the OA FF', async () => {
-      renderWithProviders(
-        <CollectiveOfferLocationSection
-          offer={{
-            ...offer,
-            offerVenue: {
-              ...offer.venue,
-              addressType: OfferAddressType.OFFERER_VENUE,
-              otherAddress: '',
-            },
-          }}
-        />
-      )
-
-      await waitFor(() => {
-        expect(screen.getByText('Lieu de l’événement')).toBeInTheDocument()
-      })
-    })
-    it('should display the right wording with the OA FF', async () => {
-      renderWithProviders(
-        <CollectiveOfferLocationSection
-          offer={{
-            ...offer,
-            offerVenue: {
-              ...offer.venue,
-              addressType: OfferAddressType.OFFERER_VENUE,
-              otherAddress: '',
-            },
-          }}
-        />,
-        { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
-      )
-
-      await waitFor(() => {
-        expect(
-          screen.getByText('Localisation de l’événement')
-        ).toBeInTheDocument()
-      })
-    })
   })
 })

@@ -94,7 +94,7 @@ describe('ReimbursementFields', () => {
 
     expect(
       screen.getByText(
-        'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement *'
+        'Structure avec SIRET utilisée pour le calcul de votre barème de remboursement *'
       )
     ).toBeInTheDocument()
   })

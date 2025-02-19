@@ -89,17 +89,14 @@ describe('Offerers', () => {
   })
 
   it('should display the new informative modal for offer address', async () => {
-    renderOfferers(
-      {
-        selectedOfferer: {
-          ...defaultGetOffererResponseModel,
-          id: 200,
-          managedVenues: [defaultGetOffererVenueResponseModel],
-          isActive: true,
-        },
+    renderOfferers({
+      selectedOfferer: {
+        ...defaultGetOffererResponseModel,
+        id: 200,
+        managedVenues: [defaultGetOffererVenueResponseModel],
+        isActive: true,
       },
-      { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
-    )
+    })
 
     const addVenueButton = screen.getByRole('button', {
       name: 'Ajouter un lieu',

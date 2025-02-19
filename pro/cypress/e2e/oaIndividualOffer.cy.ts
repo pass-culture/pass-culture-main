@@ -16,7 +16,6 @@ describe('Create individual offers with OA', () => {
     }).then((response) => {
       login = response.body.user.email
     })
-    cy.setFeatureFlags([{ name: 'WIP_ENABLE_OFFER_ADDRESS', isActive: true }])
   })
 
   beforeEach(() => {

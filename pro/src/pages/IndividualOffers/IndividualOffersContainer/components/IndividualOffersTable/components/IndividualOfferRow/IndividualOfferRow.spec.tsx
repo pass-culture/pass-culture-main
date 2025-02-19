@@ -14,6 +14,7 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { listOffersVenueFactory } from 'commons/utils/factories/collectiveApiFactories'
+import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   listOffersOfferFactory,
   listOffersStockFactory,
@@ -87,16 +88,16 @@ const renderOfferItem = ({
 }: RenderOfferItemProps) => {
   vi.spyOn(api, 'getVenues').mockResolvedValue({
     venues: [
-      isHeadlineOfferAllowedForOfferer ?
-        venueListItemFactory({
-          name: 'Une venue physique & permanente',
-          isVirtual: false,
-        }) :
-        venueListItemFactory({
-          name: 'Une venue virtuelle',
-          isVirtual: true,
-        })
-    ]
+      isHeadlineOfferAllowedForOfferer
+        ? venueListItemFactory({
+            name: 'Une venue physique & permanente',
+            isVirtual: false,
+          })
+        : venueListItemFactory({
+            name: 'Une venue virtuelle',
+            isVirtual: true,
+          }),
+    ],
   })
 
   return renderWithProviders(
@@ -265,10 +266,10 @@ describe('IndividualOfferRow', () => {
 
         await waitFor(async () => {
           const links = await screen.findAllByRole('link')
-        expect(links[links.length - 1]).toHaveAttribute(
-          'href',
-          `/offre/individuelle/${offer.id}/recapitulatif/details`
-        )
+          expect(links[links.length - 1]).toHaveAttribute(
+            'href',
+            `/offre/individuelle/${offer.id}/recapitulatif/details`
+          )
         })
       })
 
@@ -637,49 +638,15 @@ describe('IndividualOfferRow', () => {
     })
   })
 
-  it('should display the venue name when venue public name is not given', async () => {
-    props.offer.venue = listOffersVenueFactory({
-      name: 'Paris',
-      isVirtual: false,
-      offererName: 'Offerer name',
+  it('should display the venue address', async () => {
+    props.offer.address = getAddressResponseIsLinkedToVenueModelFactory({
+      label: 'Paris',
     })
 
     renderOfferItem({ props })
 
     await waitFor(async () => {
-      const res = await screen.findByText(props.offer.venue.name)
-      expect(res).toBeInTheDocument()
-    })
-  })
-
-  it('should display the venue public name when is given', async () => {
-    props.offer.venue = listOffersVenueFactory({
-      name: 'Paris',
-      publicName: 'lieu de ouf',
-      isVirtual: false,
-      offererName: 'Offerer name',
-    })
-
-    renderOfferItem({ props })
-
-    await waitFor(async () => {
-      const res = await screen.findByText('lieu de ouf')
-      expect(res).toBeInTheDocument()
-    })
-  })
-
-  it('should display the offerer name with "- Offre numérique" when venue is virtual', async () => {
-    props.offer.venue = listOffersVenueFactory({
-      isVirtual: true,
-      name: 'Gaumont Montparnasse',
-      offererName: 'Gaumont',
-      publicName: 'Gaumontparnasse',
-    })
-
-    renderOfferItem({ props })
-
-    await waitFor(async () => {
-      const res = await screen.findByText('Gaumont - Offre numérique')
+      const res = await screen.findByText('Paris - ma super rue 75008 city')
       expect(res).toBeInTheDocument()
     })
   })

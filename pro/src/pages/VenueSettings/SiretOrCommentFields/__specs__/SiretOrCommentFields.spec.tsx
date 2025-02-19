@@ -349,9 +349,6 @@ describe('components | SiretOrCommentFields', () => {
         onSubmit,
         props,
         validationSchema: generateSiretValidationSchema(false, false, null),
-        options: {
-          features: ['WIP_ENABLE_OFFER_ADDRESS'],
-        },
       })
 
       expect(

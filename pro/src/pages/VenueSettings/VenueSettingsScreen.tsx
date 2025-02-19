@@ -15,7 +15,6 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import fullBackIcon from 'icons/full-back.svg'
@@ -58,8 +57,6 @@ export const VenueSettingsScreen = ({
   const [isAddressChangeDialogOpen, setIsAddressChangeDialogOpen] =
     useState(false)
 
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
   const handleCancelAddressChangeDialog = () => {
     setIsAddressChangeDialogOpen(false)
   }
@@ -100,11 +97,7 @@ export const VenueSettingsScreen = ({
   }
 
   const onSubmit = async (values: VenueSettingsFormValues) => {
-    if (
-      !handleDialogAddressChange() &&
-      isOfferAddressEnabled &&
-      venue.hasOffers
-    ) {
+    if (!handleDialogAddressChange() && venue.hasOffers) {
       return
     }
 
@@ -142,11 +135,7 @@ export const VenueSettingsScreen = ({
       }
 
       if (!formErrors || Object.keys(formErrors).length === 0) {
-        notify.error(
-          isOfferAddressEnabled
-            ? 'Erreur inconnue lors de la sauvegarde de la structure.'
-            : 'Erreur inconnue lors de la sauvegarde du lieu.'
-        )
+        notify.error('Erreur inconnue lors de la sauvegarde de la structure.')
       } else {
         notify.error(
           'Une ou plusieurs erreurs sont présentes dans le formulaire'
@@ -202,23 +191,21 @@ export const VenueSettingsScreen = ({
           />
         </form>
 
-        {isOfferAddressEnabled && (
-          <ConfirmDialog
-            cancelText="Annuler"
-            confirmText="Confirmer le changement d'adresse"
-            leftButtonAction={handleCancelAddressChangeDialog}
-            onCancel={() => setIsAddressChangeDialogOpen(false)}
-            onConfirm={handleConfirmAddressChangeDialog}
-            icon={strokeErrorIcon}
-            title="Ce changement d'adresse ne va pas s’appliquer sur vos offres"
-            open={isAddressChangeDialogOpen && venue.hasOffers}
-          >
-            <p>
-              Si vous souhaitez rectifier leur localisation, vous devez les
-              modifier individuellement.
-            </p>
-          </ConfirmDialog>
-        )}
+        <ConfirmDialog
+          cancelText="Annuler"
+          confirmText="Confirmer le changement d'adresse"
+          leftButtonAction={handleCancelAddressChangeDialog}
+          onCancel={() => setIsAddressChangeDialogOpen(false)}
+          onConfirm={handleConfirmAddressChangeDialog}
+          icon={strokeErrorIcon}
+          title="Ce changement d'adresse ne va pas s’appliquer sur vos offres"
+          open={isAddressChangeDialogOpen && venue.hasOffers}
+        >
+          <p>
+            Si vous souhaitez rectifier leur localisation, vous devez les
+            modifier individuellement.
+          </p>
+        </ConfirmDialog>
       </FormikProvider>
     </>
   )

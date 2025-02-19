@@ -1,7 +1,6 @@
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/types'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { SortingMode } from 'commons/hooks/useColumnSorting'
 import { OffersTable } from 'components/OffersTable/OffersTable'
 import {
@@ -49,8 +48,6 @@ export const CollectiveOffersTable = ({
   currentSortingMode,
   currentPageItems,
 }: CollectiveOffersTableProps) => {
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
   const columns: Columns[] = [
     { ...CELLS_DEFINITIONS.INFO_ON_EXPIRATION, isVisuallyHidden: true },
     { ...CELLS_DEFINITIONS.THUMB, isVisuallyHidden: true },
@@ -63,9 +60,7 @@ export const CollectiveOffersTable = ({
         currentSortingMode,
       },
     },
-    isOfferAddressEnabled
-      ? CELLS_DEFINITIONS.STRUCTURE
-      : CELLS_DEFINITIONS.VENUE,
+    CELLS_DEFINITIONS.STRUCTURE,
     CELLS_DEFINITIONS.INSTITUTION,
     CELLS_DEFINITIONS.STATUS,
   ]

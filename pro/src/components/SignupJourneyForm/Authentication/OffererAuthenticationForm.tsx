@@ -1,6 +1,5 @@
 import { useField, useFormikContext } from 'formik'
 
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { resetAddressFields } from 'commons/utils/resetAddressFields'
 import { AddressSelect } from 'components/Address/Address'
 import { Address } from 'components/Address/types'
@@ -29,7 +28,6 @@ export interface OffererAuthenticationFormValues
 
 export const OffererAuthenticationForm = (): JSX.Element => {
   const formik = useFormikContext<OffererAuthenticationFormValues>()
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
     useField('manuallySetAddress')
@@ -60,22 +58,20 @@ export const OffererAuthenticationForm = (): JSX.Element => {
           suggestionLimit={5}
           disabled={manuallySetAddress.value}
         />
-        {isOfferAddressEnabled && (
-          <>
-            <Button
-              variant={ButtonVariant.QUATERNARY}
-              icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
-              onClick={toggleManuallySetAddress}
-            >
-              {manuallySetAddress.value ? (
-                <>Revenir à la sélection automatique</>
-              ) : (
-                <>Vous ne trouvez pas votre adresse ?</>
-              )}
-            </Button>
-            {manuallySetAddress.value && <AddressManual />}
-          </>
-        )}
+        <>
+          <Button
+            variant={ButtonVariant.QUATERNARY}
+            icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
+            onClick={toggleManuallySetAddress}
+          >
+            {manuallySetAddress.value ? (
+              <>Revenir à la sélection automatique</>
+            ) : (
+              <>Vous ne trouvez pas votre adresse ?</>
+            )}
+          </Button>
+          {manuallySetAddress.value && <AddressManual />}
+        </>
       </FormLayout.Row>
     </FormLayout.Section>
   )

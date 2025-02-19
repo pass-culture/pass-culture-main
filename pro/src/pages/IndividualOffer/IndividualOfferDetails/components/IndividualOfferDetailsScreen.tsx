@@ -82,7 +82,6 @@ export const IndividualOfferDetailsScreen = ({
   const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
 
   const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const { categories, subCategories, offer, publishedOfferWithSameEAN } =
     useIndividualOfferContext()
@@ -191,7 +190,6 @@ export const IndividualOfferDetailsScreen = ({
   const formik = useFormik({
     initialValues,
     validationSchema: getValidationSchema({
-      isOfferAddressEnabled,
       isDigitalOffer:
         categoryStatus === CATEGORY_STATUS.ONLINE || Boolean(offer?.isDigital),
     }),
