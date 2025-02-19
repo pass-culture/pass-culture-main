@@ -1,26 +1,184 @@
-{% import "components/public_accounts/registration_steps.html" as macro with context %}
-{% set builded_steps = [] %}
-{% for step in tunnel.steps %}
-  {% set _ = builded_steps.append(macro.build_step('step-' + step.step_id|string, step.description, step.subscription_item_status, step.icon, step.status)) %}
-{% endfor %}
-{% call macro.build_registration_steps(tunnel, builded_steps) %}
-  <div class="col-6 form-check form-switch m-3 form-switch-show-all-steps">
-    {% set switch_boolean_field_id = random_hash() %}
-    <input class="form-check-input"
-           type="checkbox"
-           role="switch"
-           name="show_all_steps"
-           id="{{ switch_boolean_field_id }}" />
-    <label role="button"
-           class="form-check-label pc-switch-boolean-field-label pt-1"
-           for="{{ switch_boolean_field_id }}">Voir tout</label>
+{% macro build_idcheck_histories(fraud_actions) %}
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th>Date de création</th>
+          <th>ID Technique</th>
+          <th>Type</th>
+          <th>Eligibilité</th>
+          <th>Statut</th>
+          <th>Explication</th>
+          <th>Code d'erreur</th>
+          <th>Détails techniques</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if fraud_actions|length == 0 %}
+          <tr>
+            <td colspan="8">Aucune donnée</td>
+          </tr>
+        {% else %}
+          {% for fraud_action in fraud_actions %}
+            <tr>
+              <td>
+                <time datetime="{{ fraud_action['creationDate'] }}">{{ fraud_action['creationDate'] | format_date_time }}</time>
+              </td>
+              <td>{{ fraud_action['techId'] }}</td>
+              <td>
+                {% if fraud_action | format_fraud_action_dict_url %}
+                  <a href="{{ fraud_action | format_fraud_action_dict_url }}"
+                     target="_blank">
+                    {{ fraud_action['type'] }}
+                    <i class="bi bi-folder"></i>
+                  </a>
+                {% else %}
+                  {{ fraud_action['type'] }}
+                {% endif %}
+              </td>
+              <td>
+                {% if fraud_action['applicableEligibilities']|length == 0 %}
+                  <span class="badge rounded-pill bg-secondary px-3 py-2">NA</span>
+                {% else %}
+                  {% for applicable_eligibility in fraud_action['applicableEligibilities'] %}
+                    <span class="badge rounded-pill bg-primary px-3 py-2">{{ applicable_eligibility | format_eligibility_value }}</span>
+                  {% endfor %}
+                {% endif %}
+              </td>
+              <td>
+                {% if fraud_action['status'] %}
+                  {% if fraud_action['status'].lower() == 'ok' %}
+                    <span class="badge rounded-pill text-bg-success align-middle px-3 py-2">
+                      <i class="bi bi-check-circle"></i> {{ fraud_action['status'].upper() }}
+                    </span>
+                  {% elif fraud_action['status'].lower() == 'ko' %}
+                    <span class="badge rounded-pill text-bg-danger align-middle px-3 py-2">
+                      <i class="bi bi-exclamation-circle"></i> {{ fraud_action['status'].upper() }}
+                    </span>
+                  {% elif fraud_action['status'].lower() == 'suspicious' %}
+                    <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
+                      <i class="bi bi-shield-shaded"></i> {{ fraud_action['status'].upper() }}
+                    </span>
+                  {% elif fraud_action['status'].lower() == 'redirected_to_dms' %}
+                    <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
+                      <i class="bi bi-person-circle"></i> {{ fraud_action['status'].upper() }}
+                    </span>
+                  {% else %}
+                    <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
+                      <i class="bi bi-exclamation-circle"></i> {{ fraud_action['status'].upper() }}
+                    </span>
+                  {% endif %}
+                {% endif %}
+              </td>
+              <td>{{ fraud_action['reason'] | empty_string_if_null | pc_backoffice_public_account_link_in_comment | safe }}</td>
+              <td>{{ fraud_action['errorCode'] | format_string_list }}</td>
+              <td>
+                {% if fraud_action['technicalDetails'] %}
+                  {% set idcheck_history_random_id = random_hash() %}
+                  <button class="btn btn-light"
+                          type="button"
+                          data-bs-toggle="modal"
+                          data-bs-target=".technical-details-{{ idcheck_history_random_id }}">
+                    <i class="bi bi-zoom-in"></i>
+                  </button>
+                  <div class="modal modal-lg fade text-start technical-details-{{ idcheck_history_random_id }}"
+                       tabindex="-1"
+                       aria-labelledby="view-technical-details"
+                       aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Détails techniques</h5>
+                        </div>
+                        <div class="modal-body">
+                          <div class="form-floating my-3">
+                            <pre>
+                             <code><br />{{ fraud_action['technicalDetails']  | tojson(indent=4) | safe | empty_string_if_null }}</code>
+                            </pre>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button"
+                                  class="btn btn-outline-primary"
+                                  data-bs-dismiss="modal">Fermer</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endmacro %}
+<div class="card my-4 pc-personal-information-registration-view">
+  <div class="card-body">
+    <h5 class="card-title text-bold fs-2 m-3">
+      Parcours d'inscription
+      <span class="badge rounded-pill text-bg-primary fs-6 align-middle mx-4">{{ tunnel.type.value | format_eligibility_value }}</span>
+    </h5>
+    <div class="card-body">
+      <div class="row py-1"
+           data-registration-steps-id="{{ tunnel.type.value }}">
+        <div class="col-12 position-relative">
+          <div class="progress position-absolute">
+            <div class="progress-bar"
+                 role="progressbar"
+                 aria-valuenow="{{ tunnel.progress }}"
+                 aria-valuemin="0"
+                 aria-valuemax="100"
+                 style="width: {{ tunnel.progress }}%"></div>
+          </div>
+          <ol class="breadcrumb-container position-relative d-flex p-0 justify-content-between">
+            {% for step in tunnel.steps %}
+              <li>
+                <div class="steps d-flex flex-column flex-grow-1 justify-content-center align-items-center position-relative {{ ' step-success' if step.status.success }}{{ ' step-warning' if step.status.warning }}{{ ' step-error' if step.status.error }}{{ ' step-active' if step.status.active }}{{ ' step-disabled' if step.status.disabled }}"
+                     disabled
+                     role="button"
+                     data-step-id="step-{{ step.step_id }}"
+                     title="{{ step.subscription_item_status }}">
+                  <span class="step-number d-flex justify-content-center align-items-center pe-none position-relative">
+                    {% if step.icon %}
+                      <i class="bi {{ step.icon }} pe-none"></i>
+                    {% else %}
+                      {{ step.text }}
+                    {% endif %}
+                    <div class="icon-container position-absolute">
+                      <div class="me-5 fs-4 step-status-icon-container">{{ step.subscription_item_status | format_user_subscription_tunnel_step_status }}</div>
+                    </div>
+                  </span>
+                  <span class="step-text center-smallcontainer pe-none">{{ step.description | format_registration_step_description }}</span>
+                </div>
+              </li>
+            {% endfor %}
+          </ol>
+        </div>
+        <div class="col-6 form-check form-switch m-3 form-switch-show-all-steps">
+          {% set switch_boolean_field_id = random_hash() %}
+          <input class="form-check-input"
+                 type="checkbox"
+                 role="switch"
+                 name="show_all_steps"
+                 id="{{ switch_boolean_field_id }}" />
+          <label role="button"
+                 class="form-check-label pc-switch-boolean-field-label pt-1"
+                 for="{{ switch_boolean_field_id }}">Voir tout</label>
+        </div>
+        {% for step in tunnel.steps %}
+          <div class="row step-content step {{ 'd-block' if step.status.active else 'd-none' }} step-{{ step.step_id }}">
+            <div class="col-xs-12">
+              <div class="col-md-12 well text-center">{{ build_idcheck_histories(step.fraud_actions_history) }}</div>
+            </div>
+          </div>
+        {% endfor %}
+        <div class="row all-id-check-history-container d-none">
+          <div class="col-md-12 well text-center">{{ build_idcheck_histories(fraud_actions_desc) }}</div>
+        </div>
+      </div>
+    </div>
   </div>
-  {% for step in tunnel.steps %}
-    {% call macro.build_step_content(step) %}
-      {{ macro.build_idcheck_histories(step.fraud_actions_history) }}
-    {% endcall %}
-  {% endfor %}
-  <div class="row all-id-check-history-container d-none">
-    <div class="col-md-12 well text-center">{{ macro.build_idcheck_histories(fraud_actions_desc) }}</div>
-  </div>
-{% endcall %}
+</div>

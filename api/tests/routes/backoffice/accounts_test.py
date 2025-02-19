@@ -742,6 +742,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         parsed_html = html_parser.get_soup(response.data)
         assert parsed_html.find("i", class_="pc-email-changed-icon") is not None
 
+    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + datetime.timedelta(days=30))
     @pytest.mark.parametrize(
         "reasonCodes",
         ([fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER], [fraud_models.FraudReasonCode.DUPLICATE_USER]),
@@ -803,7 +804,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
-        with assert_num_queries(self.expected_num_queries_with_ff + 1):  # +1 to get duplicate user info
+        with assert_num_queries(self.expected_num_queries + 1):  # +1 to get duplicate user info
             response = authenticated_client.get(url_for(self.endpoint, user_id=duplicate_user.id))
             assert response.status_code == 200
 
@@ -946,6 +947,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert not html_parser.extract_table_rows(response.data, parent_class="bookings-tab-pane")
         assert "Aucune réservation à ce jour" in response.data.decode("utf-8")
 
+    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + datetime.timedelta(days=30))
     def test_fraud_check_link(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()
         # modifiy the date for clearer tests
@@ -2015,7 +2017,7 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
 
         soup = html_parser.get_soup(response.data)
 
-        step_icon_views = soup.select(".steps .pc-test-step-status")
+        step_icon_views = soup.select(".steps .step-status-icon-container i")
         text_views = soup.select(".steps .step-text")
 
         assert soup.select('[data-registration-steps-id="underage+age-18"]')
@@ -2066,7 +2068,7 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
 
         soup = html_parser.get_soup(response.data)
 
-        step_icon_views = soup.select(".steps .pc-test-step-status")
+        step_icon_views = soup.select(".steps .step-status-icon-container i")
         text_views = soup.select(".steps .step-text")
 
         assert soup.select('[data-registration-steps-id="underage+age-18"]')
@@ -2078,6 +2080,7 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             assert step_title == expected_title.value
 
 
+@pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + datetime.timedelta(days=30))
 class RegistrationStepTest:
     @pytest.mark.parametrize(
         "steps,expected_progress",
@@ -2166,6 +2169,7 @@ class RegistrationStepTest:
     def test_get_status(self, subscription_item_status, registration_step_status):
         assert _get_status(subscription_item_status.value) == registration_step_status
 
+    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + datetime.timedelta(days=3000))
     @pytest.mark.parametrize(
         "dateCreated,dateOfBirth,tunnel_type",
         [
@@ -2214,6 +2218,7 @@ class RegistrationStepTest:
         )
         assert _get_tunnel_type(user) is TunnelType.NOT_ELIGIBLE
 
+    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + datetime.timedelta(days=3000))
     @pytest.mark.parametrize(
         "dateCreated,dateOfBirth,age",
         [
@@ -2283,7 +2288,7 @@ class RegistrationStepTest:
         ],
     )
     def test_get_steps_tunnel_unspecified(self, item_status_15_17, item_status_18):
-        steps = _get_steps_tunnel_unspecified(item_status_15_17, item_status_18)
+        steps = _get_steps_tunnel_unspecified(item_status_15_17, item_status_18, {})
         assert len(steps) == 2
         for index, step in enumerate(steps):
             assert step.step_id == index + 1
@@ -2463,6 +2468,7 @@ class RegistrationStepTest:
             ),
         ],
     )
+    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + datetime.timedelta(days=3000))
     def test_get_steps_for_tunnel(self, dateCreated, dateOfBirth, tunnel_type):
         user = users_factories.UserFactory(
             dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth, dateCreated=dateCreated
@@ -2524,7 +2530,7 @@ class RegistrationStepTest:
             )
             assert steps != steps_to_compare
         else:
-            steps_to_compare = _get_steps_tunnel_unspecified(item_status_15_17, item_status_18)
+            steps_to_compare = _get_steps_tunnel_unspecified(item_status_15_17, item_status_18, {})
             assert steps == steps_to_compare
 
         assert len(steps) == len(steps_to_compare)
@@ -2653,6 +2659,7 @@ class RegistrationStepTest:
             assert steps[8].status["active"] is True
             assert steps[9].status["disabled"] is True
 
+    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + datetime.timedelta(days=3000))
     def test_get_tunnel(self):
         dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=1)
         user = users_factories.UserFactory(
