@@ -53,6 +53,7 @@ JS_FILES = [
     Path("src/pcapi/static/backoffice/js/addons/pc-strip-query-string.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-hide-on-click.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-display-selector.js"),
+    Path("src/pcapi/static/backoffice/js/addons/pc-table-manager.js"),
 ]
 CSS_BUNDLE = Path("src/pcapi/static/backoffice/css/bundle.css")
 CSS_FILES = [
