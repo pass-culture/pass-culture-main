@@ -48,8 +48,6 @@ jobs:
 
       - name: "Set up Docker Buildx"
         uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker
 
       - name: "Compute docker image name:tag"
         id: compute-image-name
