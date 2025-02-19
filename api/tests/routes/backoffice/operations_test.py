@@ -79,18 +79,15 @@ class CreateEventTest(PostEndpointHelper):
     # - user session
     # - insert into special_event or rollback
     expected_num_queries = 3
-    # - reload inserted special event
-    # - get special event in job
-    # - get special event questions in job
-    # - insert into special_event_questions (3 queries)
-    # - reload special event
+    # - get special event
+    # - get special event questions
+    # - insert into special_event_questions
     # - reload responses for special event
     # - fail to retrieve the user by email
     # - fail to retrieve the user by phone number
     # - insert response
-    # - reload responses (3 queries)
     # - insert answers
-    expected_num_queries_with_job = expected_num_queries + 15
+    expected_num_queries_with_job = expected_num_queries + 8
 
     def test_create_event(self, authenticated_client):
         # Data come from TestingBackend

@@ -86,11 +86,16 @@ def retrieve_data_from_typeform() -> None:
 
 def retrieve_special_event_from_typeform(event: models.SpecialEvent) -> None:
     try:
-        form = typeform.get_form(form_id=event.externalId)
-        update_form_title_from_typeform(event=event, form=form)
-        questions = update_form_questions_from_typeform(event=event, form=form)
-        download_responses_from_typeform(event=event, questions=questions)
+        event_id = event.id
+        event_external_id = event.externalId
+        form = typeform.get_form(form_id=event_external_id)
+        update_form_title_from_typeform(event_id=event_id, event_title=event.title, form=form)
+        questions = update_form_questions_from_typeform(event_id=event_id, form=form)
+        download_responses_from_typeform(event_id=event_id, event_external_id=event_external_id, questions=questions)
     except Exception as exc:  # pylint: disable=broad-except
+        from traceback import print_exc
+
+        print_exc()
         logger.error(
             "An error happened while retrieving special event",
             extra={
@@ -102,51 +107,49 @@ def retrieve_special_event_from_typeform(event: models.SpecialEvent) -> None:
 
 
 @atomic()
-def update_form_title_from_typeform(event: models.SpecialEvent, form: typeform.TypeformForm) -> None:
-    if form.title != event.title:
-        event.title = form.title
-        db.session.add(event)
-        db.session.flush()
+def update_form_title_from_typeform(event_id: int, event_title: str, form: typeform.TypeformForm) -> None:
+    if form.title != event_title:
+        models.SpecialEvent.query.filter(models.SpecialEvent.id == event_id).update(
+            {
+                "title": form.title,
+            },
+            synchronize_session=False,
+        )
 
 
 @atomic()
-def update_form_questions_from_typeform(
-    event: models.SpecialEvent, form: typeform.TypeformForm
-) -> dict[str, models.SpecialEventQuestion]:
-    old_questions = models.SpecialEventQuestion.query.filter(models.SpecialEventQuestion.eventId == event.id).all()
+def update_form_questions_from_typeform(event_id: int, form: typeform.TypeformForm) -> dict[str, int]:
+    old_questions = models.SpecialEventQuestion.query.filter(models.SpecialEventQuestion.eventId == event_id).all()
 
     questions = {q.externalId: q for q in old_questions}
 
     for question in form.fields:
         if question.field_id not in questions:
             questions[question.field_id] = models.SpecialEventQuestion(
-                eventId=event.id, externalId=question.field_id, title=question.title
+                eventId=event_id, externalId=question.field_id, title=question.title
             )
             db.session.add(questions[question.field_id])
-            db.session.flush()
         elif question.title != questions[question.field_id].title:
             questions[question.field_id].title = question.title
             db.session.add(questions[question.field_id])
-            db.session.flush()
-    return questions
+    db.session.flush()
+    return {q.externalId: q.id for q in questions.values()}
 
 
-def download_responses_from_typeform(
-    event: models.SpecialEvent, questions: dict[str, models.SpecialEventQuestion]
-) -> None:
+def download_responses_from_typeform(event_id: int, event_external_id: str, questions: dict[str, int]) -> None:
     def get_last_date_for_event() -> datetime.datetime | None:
         result = (
             models.SpecialEventResponse.query.with_entities(models.SpecialEventResponse.dateSubmitted)
-            .filter(models.SpecialEventResponse.eventId == event.id)
+            .filter(models.SpecialEventResponse.eventId == event_id)
             .order_by(models.SpecialEventResponse.dateSubmitted.desc())
             .limit(1)
             .scalar()
         )
         return result
 
-    for response in typeform.get_responses_generator(get_last_date_for_event, event.externalId):
+    for response in typeform.get_responses_generator(get_last_date_for_event, event_external_id):
         save_response(
-            event=event,
+            event_id=event_id,
             form=response,
             questions=questions,
         )
@@ -171,12 +174,10 @@ def _get_user_for_form(form: typeform.TypeformResponse) -> users_models.User | N
 
 
 @atomic()
-def save_response(
-    event: models.SpecialEvent, form: typeform.TypeformResponse, questions: dict[str, models.SpecialEventQuestion]
-) -> None:
+def save_response(event_id: int, form: typeform.TypeformResponse, questions: dict[str, int]) -> None:
     try:
         response = models.SpecialEventResponse(
-            eventId=event.id,
+            eventId=event_id,
             externalId=form.response_id,
             dateSubmitted=form.date_submitted,
             phoneNumber=form.phone_number,
@@ -196,7 +197,7 @@ def save_response(
             db.session.add(
                 models.SpecialEventAnswer(
                     responseId=response.id,
-                    questionId=questions[answer.field_id].id,
+                    questionId=questions[answer.field_id],
                     text=answer.text,
                 )
             )
