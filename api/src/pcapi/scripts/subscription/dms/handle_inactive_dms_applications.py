@@ -78,15 +78,11 @@ def _mark_without_continuation_a_draft_application(dms_application: dms_models.D
     First make it on_going - disable notification to only notify the user of the without_continuation change
     Then mark it without_continuation
     """
-
-    dms_api.DMSGraphQLClient().make_on_going(
-        dms_application.id, settings.DMS_ENROLLMENT_INSTRUCTOR, disable_notification=True
-    )
-
     dms_api.DMSGraphQLClient().mark_without_continuation(
         dms_application.id,
         settings.DMS_ENROLLMENT_INSTRUCTOR,
         motivation=f"Aucune activité n'a eu lieu sur votre dossier depuis plus de {settings.DMS_INACTIVITY_TOLERANCE_DELAY} jours. Si vous souhaitez le soumettre à nouveau, vous pouvez contacter le support à l'adresse {settings.SUPPORT_EMAIL_ADDRESS}",
+        from_draft=True,
     )
 
     logger.info("[DMS] Marked application %s without continuation", dms_application.number)
