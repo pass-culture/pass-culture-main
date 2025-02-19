@@ -6,11 +6,9 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import fullBurgerIcon from 'icons/full-burger.svg'
-import fullSmsIcon from 'icons/full-sms.svg'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { HeaderDropdown } from './components/HeaderDropdown/HeaderDropdown'
@@ -90,20 +88,7 @@ export const Header = forwardRef(
           <div className={styles['top-right-menu']}>
             <div className={styles['top-right-menu-links']}>
               <div className={styles['tablet-and-above']}>
-                {isProFeedbackEnabled && (
-                  <DialogBuilder
-                    trigger={
-                      <Button
-                        variant={ButtonVariant.QUATERNARY}
-                        icon={fullSmsIcon}
-                      >
-                        Donner mon avis
-                      </Button>
-                    }
-                  >
-                    <UserReviewDialog />
-                  </DialogBuilder>
-                )}
+                {isProFeedbackEnabled && <UserReviewDialog />}
               </div>
               <div className={styles['tablet-and-above']}>
                 <HeaderHelpDropdown />

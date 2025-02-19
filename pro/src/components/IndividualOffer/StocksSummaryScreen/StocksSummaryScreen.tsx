@@ -62,7 +62,6 @@ export const StocksSummaryScreen = () => {
           descriptions={[{ text: stockWarningText }]}
         />
       )}
-
       {offer.isEvent ? (
         <RecurrenceSummary
           offer={offer}
