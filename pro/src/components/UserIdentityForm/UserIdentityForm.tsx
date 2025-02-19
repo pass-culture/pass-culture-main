@@ -77,7 +77,7 @@ export const UserIdentityForm = ({
                 label="Prénom"
                 error={errors.firstName?.message}
                 required={true}
-                hideAsterisk={true}
+                asterisk={false}
                 {...register('firstName')}
               />
             </FormLayout.Row>
@@ -86,7 +86,7 @@ export const UserIdentityForm = ({
                 label="Nom"
                 error={errors.lastName?.message}
                 required={true}
-                hideAsterisk={true}
+                asterisk={false}
                 {...register('lastName')}
               />
             </FormLayout.Row>
