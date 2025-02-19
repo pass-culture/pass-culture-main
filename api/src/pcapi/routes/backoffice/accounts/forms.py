@@ -16,8 +16,10 @@ from pcapi.utils import string as string_utils
 
 
 class AccountSearchFilter(enum.Enum):
-    UNDERAGE = "Pass 15-17"
-    BENEFICIARY = "Pass 18"
+    PASS_15_17 = "Ancien Pass 15-17"
+    PASS_18 = "Ancien Pass 18"
+    PASS_17_V3 = "Pass 17"
+    PASS_18_V3 = "Pass 18"
     PUBLIC = "Non bénéficiaire"
     SUSPENDED = "Suspendu"
 

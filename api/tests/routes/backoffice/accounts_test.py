@@ -535,8 +535,10 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     @pytest.mark.parametrize(
         "search_filter,expected_user",
         [
-            (account_forms.AccountSearchFilter.UNDERAGE.name, "underage_user"),
-            (account_forms.AccountSearchFilter.BENEFICIARY.name, "beneficiary_user"),
+            (account_forms.AccountSearchFilter.PASS_17_V3.name, "underage_V3_user"),
+            (account_forms.AccountSearchFilter.PASS_18_V3.name, "beneficiary_v3_user"),
+            (account_forms.AccountSearchFilter.PASS_15_17.name, "underage_user"),
+            (account_forms.AccountSearchFilter.PASS_18.name, "beneficiary_user"),
             (account_forms.AccountSearchFilter.PUBLIC.name, "public_user"),
             (account_forms.AccountSearchFilter.SUSPENDED.name, "suspended_user"),
         ],
@@ -545,8 +547,20 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         self, authenticated_client, search_filter, expected_user
     ):  # pylint: disable=possibly-unused-variable
         common_name = "Last-Name"
+        underage_V3_user = users_factories.BeneficiaryFactory(
+            lastName=common_name,
+            roles=[users_models.UserRole.UNDERAGE_BENEFICIARY],
+            deposit__type=finance_models.DepositType.GRANT_17_18,
+        )
+        beneficiary_v3_user = users_factories.BeneficiaryFactory(
+            lastName=common_name,
+            roles=[users_models.UserRole.BENEFICIARY],
+            deposit__type=finance_models.DepositType.GRANT_17_18,
+        )
         underage_user = users_factories.UnderageBeneficiaryFactory(lastName=common_name)
-        beneficiary_user = users_factories.BeneficiaryGrant18Factory(lastName=common_name)
+        beneficiary_user = users_factories.BeneficiaryGrant18Factory(
+            lastName=common_name, deposit__type=finance_models.DepositType.GRANT_18
+        )
         public_user = users_factories.UserFactory(lastName=common_name)
         suspended_user = users_factories.BeneficiaryGrant18Factory(lastName=common_name, isActive=False)
 
@@ -570,7 +584,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
                     self.endpoint,
                     q=common_name,
                     filter=[
-                        account_forms.AccountSearchFilter.UNDERAGE.name,
+                        account_forms.AccountSearchFilter.PASS_15_17.name,
                         account_forms.AccountSearchFilter.SUSPENDED.name,
                     ],
                 )
@@ -918,7 +932,6 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         extra_rows = html_parser.extract(response.data, "tr", class_="accordion-collapse")
         assert len(extra_rows) == 2
-        print(extra_rows)
 
         assert f"Utilisée le : {datetime.date.today().strftime('%d/%m/%Y')}" in extra_rows[0]
         assert "Annulée le" not in extra_rows[0]
