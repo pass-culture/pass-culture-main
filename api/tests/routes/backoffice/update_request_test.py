@@ -822,7 +822,7 @@ class AcceptTest(PostEndpointHelper):
         motivation = "Test !"
 
         mock_make_accepted.return_value = {
-            "id": "RG9zc2llci0yMTI2ODM4MQ==",
+            "id": "UHJvY4VkdXKlLTI5NTgw",
             "number": 21268381,
             "state": "accepte",
             "dateDerniereModification": "2024-12-05T12:17:10+01:00",

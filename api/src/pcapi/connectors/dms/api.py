@@ -190,9 +190,14 @@ class DMSGraphQLClient:
         self,
         application_techid: str,
         instructeur_techid: str,
-        motivation: str | None,
+        *,
+        motivation: str | None = None,
         disable_notification: bool = False,
+        from_draft: bool = False,
     ) -> dict:
+        if from_draft:
+            # Can be accepted only when on_going ("en instruction")
+            self.make_on_going(application_techid, instructeur_techid, disable_notification=True)
         return self._execute_mutation(
             MAKE_ACCEPTED_MUTATION_NAME,
             key="dossierAccepter",
@@ -230,8 +235,13 @@ class DMSGraphQLClient:
         application_techid: str,
         instructeur_techid: str,
         motivation: str | None,
+        *,
         disable_notification: bool = False,
+        from_draft: bool = False,
     ) -> Any:
+        if from_draft:
+            # Can be processed only when on_going ("en instruction")
+            self.make_on_going(application_techid, instructeur_techid, disable_notification=True)
         return self._execute_mutation(
             MARK_WITHOUT_CONTINUATION_MUTATION_NAME,
             key="dossierClasserSansSuite",

@@ -681,7 +681,7 @@ class UserAccountUpdateRequestCanBeAcceptedTest:
     @pytest.mark.parametrize(
         "status,expected_result",
         [
-            (dms_models.GraphQLApplicationStates.draft, False),
+            (dms_models.GraphQLApplicationStates.draft, True),
             (dms_models.GraphQLApplicationStates.on_going, True),
             (dms_models.GraphQLApplicationStates.accepted, False),
             (dms_models.GraphQLApplicationStates.refused, False),
