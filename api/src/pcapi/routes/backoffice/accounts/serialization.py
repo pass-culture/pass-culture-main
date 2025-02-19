@@ -1,13 +1,44 @@
 import abc
 import datetime
+import typing
 
+from pydantic.v1.utils import GetterDict
+
+from pcapi import settings
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import models as history_models
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
+from pcapi.core.users import utils as users_utils
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.routes.serialization import BaseModel
+
+
+def get_fraud_check_eligibility_type(
+    fraud_check: fraud_models.BeneficiaryFraudCheck,
+) -> users_models.EligibilityType | None:
+    if fraud_check.eligibilityType:
+        return fraud_check.eligibilityType
+
+    user = fraud_check.user
+
+    if not user.dateOfBirth:
+        return None
+
+    age_at_fraud_check_date = users_utils.get_age_at_date(
+        birth_date=user.dateOfBirth,
+        specified_datetime=fraud_check.dateCreated,
+        department_code=user.departementCode,
+    )
+
+    if user.dateCreated < settings.CREDIT_V3_DECREE_DATETIME:
+        if age_at_fraud_check_date < users_constants.ELIGIBILITY_AGE_18:
+            return users_models.EligibilityType.UNDERAGE
+        return users_models.EligibilityType.AGE18
+
+    return users_models.EligibilityType.AGE17_18
 
 
 class SubscriptionItemModel(BaseModel):
@@ -19,10 +50,22 @@ class SubscriptionItemModel(BaseModel):
     status: subscription_models.SubscriptionItemStatus
 
 
+class IdCheckItemGetterDict(GetterDict):
+    def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
+        if key == "applicable_eligibilities":
+            # For the BO we consider that if the user has had a fraud check on a given date
+            # then he has the eligibility related to that date
+            if not self._obj.is_id_check_ok_across_eligibilities_or_age:
+                eligibility_type = get_fraud_check_eligibility_type(self._obj)
+                return [eligibility_type] if eligibility_type else []
+        return super().get(key, default)
+
+
 class IdCheckItemModel(BaseModel):
     class Config:
         orm_mode = True
         use_enum_values = True
+        getter_dict = IdCheckItemGetterDict
 
     @classmethod
     def from_orm(cls, fraud_check: fraud_models.BeneficiaryFraudCheck) -> "IdCheckItemModel":

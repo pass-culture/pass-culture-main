@@ -44,7 +44,6 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.email import update as email_update
-from pcapi.core.users.models import EligibilityType
 from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models import feature
@@ -519,11 +518,8 @@ def _get_fraud_reviews_desc(
 def _get_id_check_histories_desc(
     eligibility_history: dict[str, serialization.EligibilitySubscriptionHistoryModel]
 ) -> list[serialization.IdCheckItemModel]:
-    id_check_histories_desc: list[serialization.IdCheckItemModel] = []
-    for history in eligibility_history.values():
-        id_check_histories_desc += history.idCheckHistory
     return sorted(
-        id_check_histories_desc,
+        sum([history.idCheckHistory for history in eligibility_history.values()], []),
         key=lambda h: h.dateCreated,
         reverse=True,
     )
@@ -531,9 +527,18 @@ def _get_id_check_histories_desc(
 
 class TunnelType(enum.Enum):
     NOT_ELIGIBLE = "not-eligible"
-    AGE18 = EligibilityType.AGE18.value
-    UNDERAGE = EligibilityType.UNDERAGE.value
-    UNDERAGE_AGE18 = f"{EligibilityType.UNDERAGE.value}+{EligibilityType.AGE18.value}"
+    # Credits v2 tunnels
+    AGE18_OLD = "age-18-old"  # age: 18
+    UNDERAGE = "underage"  # age: 15(optional), 16(optional), 17(optional)
+    UNDERAGE_AGE18 = "underage+age-18"  # age: 15(optional), 16(optional), 17(old) and 18(new)
+    UNDERAGE_AGE17 = "underage+age-17"  # age: 15(optional), 16, 17(new)
+    UNDERAGE_AGE17_18 = "underage+age-17-18"  # age: 15(optional), 16, 17(new), 18(new)
+    UNDERAGE_AGE18_OLD = "underage+age-18-old"  # age: 15(optional), 16(optional), 17(old), 18(old)
+
+    # Credits v3 tunnels
+    AGE17 = "age-17"  # means between 17 and 18 years
+    AGE18 = "age-18"  # means 18 years and above
+    AGE17_18 = "age-17-18"
 
 
 class RegistrationStepStatus(enum.Enum):
@@ -543,18 +548,131 @@ class RegistrationStepStatus(enum.Enum):
 
 
 def _get_tunnel_type(user: users_models.User) -> TunnelType:
+    """
+    Tunnel generation schema:
+
+    ————————————————————————————
+    Signup at 15 or 16 years old
+    ————————————————————————————
+    Signup age: 15 or 16 | Decree age: before signup | Current age: 15 or 16 → Tunnel: not eligible
+    Signup age: 15 or 16 | Decree age: before signup | Current age: 17 → Tunnel: Pass 17
+    Signup age: 15 or 16 | Decree age: before signup | Current age: 18 → Tunnel: Pass 17 / Pass 18
+
+    Signup age: 15 or 16 | Decree age: 15 or 16 | Current age: 15 or 16 → Tunnel: Pass 15-17
+    Signup age: 15 or 16 | Decree age: 15 or 16 | Current age: 17 → Tunnel: Pass 15-17 / Pass 17
+    Signup age: 15 or 16 | Decree age: 15 or 16 | Current age: 18 → Tunnel: Pass 15-17 / Pass 17 / Pass 18
+
+    Signup age: 15 or 16 | Decree age: 17 | Current age: 17 → Tunnel: Pass 15-17
+    Signup age: 15 or 16 | Decree age: 17 | Current age: 18 → Tunnel: Pass 15-17 / Pass 18
+
+    Signup age: 15 or 16 | Decree age: 18 | Current age: 18 → Tunnel: Pass 15-17 / Pass 18 (old)
+
+    ——————————————————————
+    Signup at 17 years old
+    ——————————————————————
+    Signup age: 17 | Decree age: before signup | Current age: 17 → Tunnel: Pass 17
+    Signup age: 17 | Decree age: before signup | Current age: 18 → Tunnel: Pass 17 / Pass 18
+
+    Signup age: 17 | Decree age: 17 | Current age: 17 → Tunnel: Pass 15-17
+    Signup age: 17 | Decree age: 17 | Current age: 18 → Tunnel: Pass 15-17 / Pass 18
+
+    Signup age: 17 | Decree age: 18 | Current age: 18 → Tunnel: Pass 15-17 / Pass 18 (old)
+
+    ——————————————————————
+    Signup at 18 years old
+    ——————————————————————
+    Signup age: 18 | Decree age: before signup | Current age: 18 → Tunnel: Pass 18
+    Signup age: 18 | Decree age: 18 | Current age: 18 → Tunnel: Pass 18 (old)
+    """
     if user.birth_date is None:
         return TunnelType.NOT_ELIGIBLE
 
-    age_at_creation = users_utils.get_age_at_date(user.birth_date, user.dateCreated)
-    age_now = users_utils.get_age_from_birth_date(user.birth_date)
+    age_now = user.age
+    user_creation_date = user.dateCreated
+    age_at_decree_start = users_utils.get_age_at_date(
+        birth_date=user.birth_date,
+        specified_datetime=settings.CREDIT_V3_DECREE_DATETIME,
+        department_code=user.departementCode,
+    )
+    signup_age = None
+    if user_creation_date:
+        signup_age = users_utils.get_age_at_date(
+            birth_date=user.birth_date,
+            specified_datetime=user_creation_date,
+            department_code=user.departementCode,
+        )
+    assert age_now  # helps mypy
 
-    if age_now < users_constants.ELIGIBILITY_AGE_18:
-        return TunnelType.UNDERAGE
-    if age_at_creation < users_constants.ELIGIBILITY_AGE_18 <= age_now:
-        return TunnelType.UNDERAGE_AGE18
-    if age_at_creation == users_constants.ELIGIBILITY_AGE_18:
-        return TunnelType.AGE18
+    if not signup_age:
+        return TunnelType.NOT_ELIGIBLE
+
+    ################################
+    # Signup at 15 or 16 years old #
+    ################################
+    # After decree start
+    if age_at_decree_start < signup_age < users_constants.ELIGIBILITY_AGE_17:
+        if age_now < users_constants.ELIGIBILITY_AGE_17:
+            return TunnelType.NOT_ELIGIBLE
+        if age_now == users_constants.ELIGIBILITY_AGE_17:
+            return TunnelType.AGE17
+        if age_now == users_constants.ELIGIBILITY_AGE_18:
+            return TunnelType.AGE17_18
+
+    # Decree starts at age 15 or 16
+    if signup_age <= age_at_decree_start < users_constants.ELIGIBILITY_AGE_17:
+        if age_now < users_constants.ELIGIBILITY_AGE_17:
+            return TunnelType.UNDERAGE
+        if age_now < users_constants.ELIGIBILITY_AGE_18:
+            return TunnelType.UNDERAGE_AGE17
+        if age_now == users_constants.ELIGIBILITY_AGE_18:
+            return TunnelType.UNDERAGE_AGE17_18
+
+    # Decree at age 17
+    if signup_age < users_constants.ELIGIBILITY_AGE_17 and age_at_decree_start == users_constants.ELIGIBILITY_AGE_17:
+        if age_now == users_constants.ELIGIBILITY_AGE_17:
+            return TunnelType.UNDERAGE
+        if age_now == users_constants.ELIGIBILITY_AGE_18:
+            return TunnelType.UNDERAGE_AGE18
+
+    # Decree start at age 18
+    if signup_age < users_constants.ELIGIBILITY_AGE_17 and age_at_decree_start >= users_constants.ELIGIBILITY_AGE_18:
+        if age_now >= users_constants.ELIGIBILITY_AGE_18:
+            return TunnelType.UNDERAGE_AGE18_OLD  # old Pass 18
+
+    ##########################
+    # Signup at 17 years old #
+    ##########################
+    # After decree start
+    if signup_age == users_constants.ELIGIBILITY_AGE_17 and age_at_decree_start < signup_age:
+        if age_now == users_constants.ELIGIBILITY_AGE_17:
+            return TunnelType.AGE17
+        if age_now == users_constants.ELIGIBILITY_AGE_18:
+            return TunnelType.AGE17_18
+
+    # Decree start at age 17
+    if signup_age == users_constants.ELIGIBILITY_AGE_17 and age_at_decree_start == users_constants.ELIGIBILITY_AGE_17:
+        if age_now == users_constants.ELIGIBILITY_AGE_17:
+            return TunnelType.UNDERAGE
+        if age_now == users_constants.ELIGIBILITY_AGE_18:
+            return TunnelType.UNDERAGE_AGE18
+
+    # Decree start at age 18
+    if signup_age == users_constants.ELIGIBILITY_AGE_17 and age_at_decree_start >= users_constants.ELIGIBILITY_AGE_18:
+        if age_now >= users_constants.ELIGIBILITY_AGE_18:
+            return TunnelType.UNDERAGE_AGE18_OLD
+
+    ##########################
+    # Signup at 18 years old #
+    ##########################
+    # After decree start
+    if signup_age == users_constants.ELIGIBILITY_AGE_18 and age_at_decree_start < signup_age:
+        if age_now >= users_constants.ELIGIBILITY_AGE_18:
+            return TunnelType.AGE18
+    # Decree start at age 18
+    if signup_age == users_constants.ELIGIBILITY_AGE_18 and age_at_decree_start >= users_constants.ELIGIBILITY_AGE_18:
+        if age_now >= users_constants.ELIGIBILITY_AGE_18:
+            return TunnelType.AGE18_OLD
+
     return TunnelType.NOT_ELIGIBLE
 
 
@@ -583,27 +701,40 @@ class RegistrationStep:
         step_id: int,
         description: str,
         subscription_item_status: str,
-        icon: str,
-        fraud_actions_history: typing.Iterable[dict] = (),
+        icon: str = "",
+        fraud_actions_history: list[dict] | None = None,
         is_active: bool = False,
         is_disabled: bool = False,
+        text: str = "",
     ):
         self.step_id = step_id
         self.description = description
         self.subscription_item_status = subscription_item_status
         self.icon = icon
-        self.fraud_actions_history = list(fraud_actions_history)
+        self.fraud_actions_history = list(fraud_actions_history or [])
         self.status = {
-            "error": _get_status(subscription_item_status) is RegistrationStepStatus.ERROR,
-            "success": _get_status(subscription_item_status) is RegistrationStepStatus.SUCCESS,
-            "warning": _get_status(subscription_item_status) is RegistrationStepStatus.WARNING,
+            "error": _get_status(subscription_item_status) == RegistrationStepStatus.ERROR,
+            "success": _get_status(subscription_item_status) == RegistrationStepStatus.SUCCESS,
+            "warning": _get_status(subscription_item_status) == RegistrationStepStatus.WARNING,
             "active": is_active,
             "disabled": is_disabled,
         }
+        self.text = text
+
+    def __repr__(self) -> str:
+        fmt_status = " ".join([f"status[{key}]={value}" for key, value in self.status.items()])
+        return (
+            f"<RegistrationStep #{self.step_id} '{self.description}' "
+            f"subscription_item_status={self.subscription_item_status} "
+            f"icon=<{self.icon}> "
+            f"fraud_actions_history={self.fraud_actions_history} "
+            f"text='{self.text}' "
+            f"{fmt_status}>"
+        )
 
     def __eq__(self, other: object) -> bool | NotImplementedType:
         if not isinstance(other, RegistrationStep):
-            return NotImplemented
+            raise NotImplementedError()
         return (
             self.fraud_actions_history == other.fraud_actions_history
             and self.step_id == other.step_id
@@ -611,6 +742,7 @@ class RegistrationStep:
             and self.subscription_item_status == other.subscription_item_status
             and self.icon == other.icon
             and self.status == other.status
+            and self.text == other.text
         )
 
 
@@ -621,21 +753,39 @@ def _get_steps_for_tunnel(
     id_check_histories: list,
     fraud_reviews_desc: list[fraud_models.BeneficiaryFraudReview],
 ) -> list[RegistrationStep]:
-    item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
-    item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
+    item_status_15_17 = subscription_item_status[users_models.EligibilityType.UNDERAGE.value]
+    item_status_18 = subscription_item_status[users_models.EligibilityType.AGE18.value]
+    item_status_17_18 = subscription_item_status[users_models.EligibilityType.AGE17_18.value]
 
-    if tunnel_type is TunnelType.UNDERAGE:
-        steps = _get_steps_tunnel_underage(user, id_check_histories, item_status_15_17, fraud_reviews_desc)
-    elif tunnel_type is TunnelType.AGE18:
-        steps = _get_steps_tunnel_age18(user, id_check_histories, item_status_18, fraud_reviews_desc)
-    elif tunnel_type is TunnelType.UNDERAGE_AGE18:
-        steps = _get_steps_tunnel_underage_age18(
-            user, id_check_histories, item_status_15_17, item_status_18, fraud_reviews_desc
-        )
-    else:
-        steps = _get_steps_tunnel_unspecified(item_status_15_17, item_status_18)
+    match tunnel_type:
+        case TunnelType.AGE17:
+            steps = _get_steps_tunnel_age17(user, id_check_histories, item_status_17_18, fraud_reviews_desc)
+        case TunnelType.AGE18:
+            steps = _get_steps_tunnel_age18(user, id_check_histories, item_status_17_18, fraud_reviews_desc)
+        case TunnelType.AGE18_OLD:
+            steps = _get_steps_tunnel_age18_old(user, id_check_histories, item_status_18, fraud_reviews_desc)
+        case TunnelType.AGE17_18:
+            steps = _get_steps_tunnel_age17_18(user, id_check_histories, item_status_17_18, fraud_reviews_desc)
+        case TunnelType.UNDERAGE:
+            steps = _get_steps_tunnel_underage(user, id_check_histories, item_status_15_17, fraud_reviews_desc)
+        case TunnelType.UNDERAGE_AGE17:
+            steps = _get_steps_tunnel_underage_age17(user, id_check_histories, item_status_15_17, fraud_reviews_desc)
+        case TunnelType.UNDERAGE_AGE18_OLD:
+            steps = _get_steps_tunnel_underage_age18_old(
+                user, id_check_histories, item_status_15_17, item_status_18, fraud_reviews_desc
+            )
+        case TunnelType.UNDERAGE_AGE18:
+            steps = _get_steps_tunnel_underage_age18(
+                user, id_check_histories, item_status_15_17, item_status_17_18, fraud_reviews_desc
+            )
+        case TunnelType.UNDERAGE_AGE17_18:
+            steps = _get_steps_tunnel_underage_age17_18(
+                user, id_check_histories, item_status_15_17, item_status_17_18, fraud_reviews_desc
+            )
+        case _:
+            steps = _get_steps_tunnel_unspecified(item_status_15_17, item_status_18, item_status_17_18)
 
-    if tunnel_type is TunnelType.NOT_ELIGIBLE:
+    if tunnel_type == TunnelType.NOT_ELIGIBLE:
         return steps
 
     _set_steps_with_active_and_disabled(steps)
@@ -655,13 +805,17 @@ def _set_steps_with_active_and_disabled(steps: list[RegistrationStep]) -> None:
         step.status["disabled"] = True
 
 
-def _get_steps_tunnel_unspecified(item_status_15_17: dict, item_status_18: dict) -> list[RegistrationStep]:
-    if item_status_15_17 and item_status_15_17[SubscriptionStep.EMAIL_VALIDATION.value] is not None:
-        email_status = item_status_15_17[SubscriptionStep.EMAIL_VALIDATION.value]
-    elif item_status_18 and item_status_18[SubscriptionStep.EMAIL_VALIDATION.value] is not None:
-        email_status = item_status_18[SubscriptionStep.EMAIL_VALIDATION.value]
-    else:
-        email_status = SubscriptionItemStatus.PENDING.value
+def _get_steps_tunnel_unspecified(
+    item_status_15_17: dict, item_status_18: dict, item_status_17_18: dict
+) -> list[RegistrationStep]:
+    email_step_key = SubscriptionStep.EMAIL_VALIDATION.value
+    email_status = (
+        item_status_15_17.get(email_step_key)
+        or item_status_18.get(email_step_key)
+        or item_status_17_18.get(email_step_key)
+        or SubscriptionItemStatus.PENDING.value
+    )
+
     steps = [
         RegistrationStep(
             step_id=1,
@@ -680,7 +834,313 @@ def _get_steps_tunnel_unspecified(item_status_15_17: dict, item_status_18: dict)
     return steps
 
 
+def _get_steps_tunnel_underage_age17(
+    user: users_models.User,
+    id_check_histories: list,
+    item_status_15_17: dict,
+    fraud_reviews_desc: list[fraud_models.BeneficiaryFraudReview],
+) -> list[RegistrationStep]:
+    steps = [
+        RegistrationStep(
+            step_id=1,
+            description=SubscriptionStep.EMAIL_VALIDATION.value,
+            subscription_item_status=item_status_15_17[SubscriptionStep.EMAIL_VALIDATION.value],
+            icon="bi-envelope-fill",
+        ),
+        RegistrationStep(
+            step_id=2,
+            description=SubscriptionStep.PROFILE_COMPLETION.value,
+            subscription_item_status=item_status_15_17[SubscriptionStep.PROFILE_COMPLETION.value],
+            icon="bi-house-check-fill",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type == fraud_models.FraudCheckType.PROFILE_COMPLETION.value
+                and users_models.EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=3,
+            description=SubscriptionStep.IDENTITY_CHECK.value,
+            subscription_item_status=item_status_15_17[SubscriptionStep.IDENTITY_CHECK.value],
+            icon="bi-fingerprint",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type in {f.value for f in fraud_models.IDENTITY_CHECK_TYPES}
+                and users_models.EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=4,
+            description=SubscriptionStep.HONOR_STATEMENT.value,
+            subscription_item_status=item_status_15_17[SubscriptionStep.HONOR_STATEMENT.value],
+            icon="bi-card-checklist",
+        ),
+        RegistrationStep(
+            step_id=5,
+            description=users_models.EligibilityType.UNDERAGE.value,
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_15_17 else SubscriptionItemStatus.VOID.value
+            ),
+            text="1517",
+            fraud_actions_history=[
+                _convert_fraud_review_to_fraud_action_dict(review)
+                for review in fraud_reviews_desc
+                if review.eligibilityType == users_models.EligibilityType.UNDERAGE
+            ],
+        ),
+        RegistrationStep(
+            step_id=6,
+            description="Pass 17",
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_17_18 else SubscriptionItemStatus.VOID.value
+            ),
+            text="17",
+            fraud_actions_history=[
+                _convert_fraud_review_to_fraud_action_dict(review)
+                for review in fraud_reviews_desc
+                if review.eligibilityType == users_models.EligibilityType.AGE17_18
+            ],
+        ),
+    ]
+    return steps
+
+
+def _get_steps_tunnel_underage_age17_18(
+    user: users_models.User,
+    id_check_histories: list,
+    item_status_15_17: dict,
+    item_status_17_18: dict,
+    fraud_reviews_desc: list[fraud_models.BeneficiaryFraudReview],
+) -> list[RegistrationStep]:
+    steps = [
+        RegistrationStep(
+            step_id=1,
+            description=SubscriptionStep.EMAIL_VALIDATION.value,
+            subscription_item_status=item_status_15_17[SubscriptionStep.EMAIL_VALIDATION.value],
+            icon="bi-envelope-fill",
+        ),
+        RegistrationStep(
+            step_id=2,
+            description=SubscriptionStep.PROFILE_COMPLETION.value,
+            subscription_item_status=item_status_15_17[SubscriptionStep.PROFILE_COMPLETION.value],
+            icon="bi-house-check-fill",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type == fraud_models.FraudCheckType.PROFILE_COMPLETION.value
+                and users_models.EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=3,
+            description=SubscriptionStep.IDENTITY_CHECK.value,
+            subscription_item_status=item_status_15_17[SubscriptionStep.IDENTITY_CHECK.value],
+            icon="bi-fingerprint",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type in {f.value for f in fraud_models.IDENTITY_CHECK_TYPES}
+                and users_models.EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=4,
+            description=SubscriptionStep.HONOR_STATEMENT.value,
+            subscription_item_status=item_status_15_17[SubscriptionStep.HONOR_STATEMENT.value],
+            icon="bi-card-checklist",
+        ),
+        RegistrationStep(
+            step_id=5,
+            description=users_models.EligibilityType.UNDERAGE.value,
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_15_17 else SubscriptionItemStatus.VOID.value
+            ),
+            text="1517",
+            fraud_actions_history=[
+                _convert_fraud_review_to_fraud_action_dict(review)
+                for review in fraud_reviews_desc
+                if review.eligibilityType == users_models.EligibilityType.UNDERAGE
+            ],
+        ),
+        RegistrationStep(
+            step_id=6,
+            description="age-17",
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_17_18 else SubscriptionItemStatus.VOID.value
+            ),
+            icon="bi-card-checklist",
+            fraud_actions_history=[
+                _convert_fraud_review_to_fraud_action_dict(review)
+                for review in fraud_reviews_desc
+                if review.eligibilityType == users_models.EligibilityType.AGE18
+            ],
+        ),
+        RegistrationStep(
+            step_id=7,
+            description=SubscriptionStep.PHONE_VALIDATION.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.PHONE_VALIDATION.value],
+            icon="bi-telephone-fill",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type == fraud_models.FraudCheckType.PHONE_VALIDATION.value
+                and users_models.EligibilityType.AGE18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=8,
+            description=SubscriptionStep.PROFILE_COMPLETION.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.PROFILE_COMPLETION.value],
+            icon="bi-house-check-fill",
+        ),
+        RegistrationStep(
+            step_id=9,
+            description=SubscriptionStep.IDENTITY_CHECK.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.IDENTITY_CHECK.value],
+            icon="bi-fingerprint",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type in {f.value for f in fraud_models.IDENTITY_CHECK_TYPES}
+                and users_models.EligibilityType.AGE18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=10,
+            description=SubscriptionStep.HONOR_STATEMENT.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.HONOR_STATEMENT.value],
+            icon="bi-card-checklist",
+        ),
+        RegistrationStep(
+            step_id=11,
+            description="age-18",
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_18_v3 else SubscriptionItemStatus.VOID.value
+            ),
+            icon="bi-card-checklist",
+            fraud_actions_history=[
+                _convert_fraud_review_to_fraud_action_dict(review)
+                for review in fraud_reviews_desc
+                if review.eligibilityType == users_models.EligibilityType.AGE18
+            ],
+        ),
+    ]
+    return steps
+
+
 def _get_steps_tunnel_underage_age18(
+    user: users_models.User,
+    id_check_histories: list,
+    item_status_15_17: dict,
+    item_status_17_18: dict,
+    fraud_reviews_desc: list[fraud_models.BeneficiaryFraudReview],
+) -> list[RegistrationStep]:
+    steps = [
+        RegistrationStep(
+            step_id=1,
+            description=SubscriptionStep.EMAIL_VALIDATION.value,
+            subscription_item_status=item_status_15_17[SubscriptionStep.EMAIL_VALIDATION.value],
+            icon="bi-envelope-fill",
+        ),
+        RegistrationStep(
+            step_id=2,
+            description=SubscriptionStep.PROFILE_COMPLETION.value,
+            subscription_item_status=item_status_15_17[SubscriptionStep.PROFILE_COMPLETION.value],
+            icon="bi-house-check-fill",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type == fraud_models.FraudCheckType.PROFILE_COMPLETION.value
+                and users_models.EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=3,
+            description=SubscriptionStep.IDENTITY_CHECK.value,
+            subscription_item_status=item_status_15_17[SubscriptionStep.IDENTITY_CHECK.value],
+            icon="bi-fingerprint",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type in {f.value for f in fraud_models.IDENTITY_CHECK_TYPES}
+                and users_models.EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=4,
+            description=SubscriptionStep.HONOR_STATEMENT.value,
+            subscription_item_status=item_status_15_17[SubscriptionStep.HONOR_STATEMENT.value],
+            icon="bi-card-checklist",
+        ),
+        RegistrationStep(
+            step_id=5,
+            description=users_models.EligibilityType.UNDERAGE.value,
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_15_17 else SubscriptionItemStatus.VOID.value
+            ),
+            text="1517",
+            fraud_actions_history=[
+                _convert_fraud_review_to_fraud_action_dict(review)
+                for review in fraud_reviews_desc
+                if review.eligibilityType == users_models.EligibilityType.UNDERAGE
+            ],
+        ),
+        RegistrationStep(
+            step_id=6,
+            description=SubscriptionStep.PHONE_VALIDATION.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.PHONE_VALIDATION.value],
+            icon="bi-telephone-fill",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type == fraud_models.FraudCheckType.PHONE_VALIDATION.value
+                and users_models.EligibilityType.AGE18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=7,
+            description=SubscriptionStep.PROFILE_COMPLETION.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.PROFILE_COMPLETION.value],
+            icon="bi-house-check-fill",
+        ),
+        RegistrationStep(
+            step_id=8,
+            description=SubscriptionStep.IDENTITY_CHECK.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.IDENTITY_CHECK.value],
+            icon="bi-fingerprint",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type in {f.value for f in fraud_models.IDENTITY_CHECK_TYPES}
+                and users_models.EligibilityType.AGE18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=9,
+            description=SubscriptionStep.HONOR_STATEMENT.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.HONOR_STATEMENT.value],
+            icon="bi-card-checklist",
+        ),
+        RegistrationStep(
+            step_id=10,
+            description="age-18",
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_18_v3 else SubscriptionItemStatus.VOID.value
+            ),
+            icon="bi-card-checklist",
+            fraud_actions_history=[
+                _convert_fraud_review_to_fraud_action_dict(review)
+                for review in fraud_reviews_desc
+                if review.eligibilityType == users_models.EligibilityType.AGE18
+            ],
+        ),
+    ]
+    return steps
+
+
+def _get_steps_tunnel_underage_age18_old(
     user: users_models.User,
     id_check_histories: list,
     item_status_15_17: dict,
@@ -703,7 +1163,7 @@ def _get_steps_tunnel_underage_age18(
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
                 if id_check_history.type == fraud_models.FraudCheckType.PROFILE_COMPLETION.value
-                and EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
+                and users_models.EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
             ],
         ),
         RegistrationStep(
@@ -714,13 +1174,7 @@ def _get_steps_tunnel_underage_age18(
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
-                if id_check_history.type
-                in {
-                    fraud_models.FraudCheckType.UBBLE.value,
-                    fraud_models.FraudCheckType.EDUCONNECT.value,
-                    fraud_models.FraudCheckType.JOUVE.value,
-                    fraud_models.FraudCheckType.DMS.value,
-                }
+                if id_check_history.type in {f.value for f in fraud_models.IDENTITY_CHECK_TYPES}
                 and users_models.EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
             ],
         ),
@@ -732,15 +1186,15 @@ def _get_steps_tunnel_underage_age18(
         ),
         RegistrationStep(
             step_id=5,
-            description=TunnelType.UNDERAGE.value,
+            description=users_models.EligibilityType.UNDERAGE.value,
             subscription_item_status=(
                 SubscriptionItemStatus.OK.value if user.received_pass_15_17 else SubscriptionItemStatus.VOID.value
             ),
-            icon="1517",
+            text="1517",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
-                if review.eligibilityType == EligibilityType.UNDERAGE
+                if review.eligibilityType == users_models.EligibilityType.UNDERAGE
             ],
         ),
         RegistrationStep(
@@ -769,13 +1223,7 @@ def _get_steps_tunnel_underage_age18(
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
-                if id_check_history.type
-                in {
-                    fraud_models.FraudCheckType.UBBLE.value,
-                    fraud_models.FraudCheckType.EDUCONNECT.value,
-                    fraud_models.FraudCheckType.JOUVE.value,
-                    fraud_models.FraudCheckType.DMS.value,
-                }
+                if id_check_history.type in {f.value for f in fraud_models.IDENTITY_CHECK_TYPES}
                 and users_models.EligibilityType.AGE18.value in id_check_history.applicable_eligibilities
             ],
         ),
@@ -787,7 +1235,7 @@ def _get_steps_tunnel_underage_age18(
         ),
         RegistrationStep(
             step_id=10,
-            description=TunnelType.AGE18.value,
+            description="Ancien Pass 18",
             subscription_item_status=(
                 SubscriptionItemStatus.OK.value if user.received_pass_18 else SubscriptionItemStatus.VOID.value
             ),
@@ -795,14 +1243,255 @@ def _get_steps_tunnel_underage_age18(
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
-                if review.eligibilityType == EligibilityType.AGE18
+                if review.eligibilityType == users_models.EligibilityType.AGE18
             ],
         ),
     ]
     return steps
 
 
+def _get_steps_tunnel_age17(
+    user: users_models.User,
+    id_check_histories: list,
+    item_status_17_18: dict,
+    fraud_reviews_desc: list[fraud_models.BeneficiaryFraudReview],
+) -> list[RegistrationStep]:
+    steps = [
+        RegistrationStep(
+            step_id=1,
+            description=SubscriptionStep.EMAIL_VALIDATION.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.EMAIL_VALIDATION.value],
+            icon="bi-envelope-fill",
+        ),
+        RegistrationStep(
+            step_id=2,
+            description=SubscriptionStep.PROFILE_COMPLETION.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.PROFILE_COMPLETION.value],
+            icon="bi-house-check-fill",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type == fraud_models.FraudCheckType.PROFILE_COMPLETION.value
+                and users_models.EligibilityType.AGE17_18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=3,
+            description=SubscriptionStep.IDENTITY_CHECK.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.IDENTITY_CHECK.value],
+            icon="bi-fingerprint",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type in {f.value for f in fraud_models.IDENTITY_CHECK_TYPES}
+                and users_models.EligibilityType.AGE17_18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=4,
+            description=SubscriptionStep.HONOR_STATEMENT.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.HONOR_STATEMENT.value],
+            icon="bi-card-checklist",
+        ),
+        RegistrationStep(
+            step_id=5,
+            description="Pass 17",
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_17_18 else SubscriptionItemStatus.VOID.value
+            ),
+            fraud_actions_history=[
+                _convert_fraud_review_to_fraud_action_dict(review)
+                for review in fraud_reviews_desc
+                if review.eligibilityType == users_models.EligibilityType.AGE17_18
+            ],
+        ),
+    ]
+    return steps
+
+
+def _get_steps_tunnel_age17_18(
+    user: users_models.User,
+    id_check_histories: list,
+    item_status_17_18: dict,
+    fraud_reviews_desc: list[fraud_models.BeneficiaryFraudReview],
+) -> list[RegistrationStep]:
+    steps = [
+        RegistrationStep(
+            step_id=1,
+            description=SubscriptionStep.EMAIL_VALIDATION.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.EMAIL_VALIDATION.value],
+            icon="bi-envelope-fill",
+        ),
+        RegistrationStep(
+            step_id=2,
+            description=SubscriptionStep.PROFILE_COMPLETION.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.PROFILE_COMPLETION.value],
+            icon="bi-house-check-fill",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type == fraud_models.FraudCheckType.PROFILE_COMPLETION.value
+                and users_models.EligibilityType.AGE17_18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=3,
+            description=SubscriptionStep.IDENTITY_CHECK.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.IDENTITY_CHECK.value],
+            icon="bi-fingerprint",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type in {f.value for f in fraud_models.IDENTITY_CHECK_TYPES}
+                and users_models.EligibilityType.AGE17_18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=4,
+            description=SubscriptionStep.HONOR_STATEMENT.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.HONOR_STATEMENT.value],
+            icon="bi-card-checklist",
+        ),
+        RegistrationStep(
+            step_id=5,
+            description="Pass 17",
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_17_18 else SubscriptionItemStatus.VOID.value
+            ),
+            text="17",
+            fraud_actions_history=[
+                _convert_fraud_review_to_fraud_action_dict(review)
+                for review in fraud_reviews_desc
+                if review.eligibilityType == users_models.EligibilityType.AGE17_18
+            ],
+        ),
+        RegistrationStep(
+            step_id=6,
+            description=SubscriptionStep.PHONE_VALIDATION.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.PHONE_VALIDATION.value],
+            icon="bi-telephone-fill",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type == fraud_models.FraudCheckType.PHONE_VALIDATION.value
+                and users_models.EligibilityType.AGE17_18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=7,
+            description=SubscriptionStep.PROFILE_COMPLETION.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.PROFILE_COMPLETION.value],
+            icon="bi-house-check-fill",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type == fraud_models.FraudCheckType.PROFILE_COMPLETION.value
+                and users_models.EligibilityType.AGE17_18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=8,
+            description=SubscriptionStep.IDENTITY_CHECK.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.IDENTITY_CHECK.value],
+            icon="bi-fingerprint",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type in {f.value for f in fraud_models.IDENTITY_CHECK_TYPES}
+                and users_models.EligibilityType.AGE17_18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=9,
+            description=SubscriptionStep.HONOR_STATEMENT.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.HONOR_STATEMENT.value],
+            icon="bi-card-checklist",
+        ),
+        RegistrationStep(
+            step_id=10,
+            description="Pass 18",
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_18_v3 else SubscriptionItemStatus.VOID.value
+            ),
+            text="18",
+        ),
+    ]
+    return steps
+
+
 def _get_steps_tunnel_age18(
+    user: users_models.User,
+    id_check_histories: list,
+    item_status_17_18: dict,
+    fraud_reviews_desc: list[fraud_models.BeneficiaryFraudReview],
+) -> list[RegistrationStep]:
+    steps = [
+        RegistrationStep(
+            step_id=1,
+            description=SubscriptionStep.EMAIL_VALIDATION.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.EMAIL_VALIDATION.value],
+            icon="bi-envelope-fill",
+        ),
+        RegistrationStep(
+            step_id=2,
+            description=SubscriptionStep.PHONE_VALIDATION.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.PHONE_VALIDATION.value],
+            icon="bi-telephone-fill",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type == fraud_models.FraudCheckType.PHONE_VALIDATION.value
+                and users_models.EligibilityType.AGE17_18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=3,
+            description=SubscriptionStep.PROFILE_COMPLETION.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.PROFILE_COMPLETION.value],
+            icon="bi-house-check-fill",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type == fraud_models.FraudCheckType.PROFILE_COMPLETION.value
+                and users_models.EligibilityType.AGE17_18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=4,
+            description=SubscriptionStep.IDENTITY_CHECK.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.IDENTITY_CHECK.value],
+            icon="bi-fingerprint",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type in {f.value for f in fraud_models.IDENTITY_CHECK_TYPES}
+                and users_models.EligibilityType.AGE17_18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=5,
+            description=SubscriptionStep.HONOR_STATEMENT.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.HONOR_STATEMENT.value],
+            icon="bi-card-checklist",
+        ),
+        RegistrationStep(
+            step_id=6,
+            description="Pass 18",
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_18_v3 else SubscriptionItemStatus.VOID.value
+            ),
+            text="18",
+            fraud_actions_history=[
+                _convert_fraud_review_to_fraud_action_dict(review)
+                for review in fraud_reviews_desc
+                if review.eligibilityType == users_models.EligibilityType.AGE17_18
+            ],
+        ),
+    ]
+    return steps
+
+
+def _get_steps_tunnel_age18_old(
     user: users_models.User,
     id_check_histories: list,
     item_status_18: dict,
@@ -824,7 +1513,7 @@ def _get_steps_tunnel_age18(
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
                 if id_check_history.type == fraud_models.FraudCheckType.PHONE_VALIDATION.value
-                and EligibilityType.AGE18.value in id_check_history.applicable_eligibilities
+                and users_models.EligibilityType.AGE18.value in id_check_history.applicable_eligibilities
             ],
         ),
         RegistrationStep(
@@ -836,7 +1525,7 @@ def _get_steps_tunnel_age18(
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
                 if id_check_history.type == fraud_models.FraudCheckType.PROFILE_COMPLETION.value
-                and EligibilityType.AGE18.value in id_check_history.applicable_eligibilities
+                and users_models.EligibilityType.AGE18.value in id_check_history.applicable_eligibilities
             ],
         ),
         RegistrationStep(
@@ -847,14 +1536,8 @@ def _get_steps_tunnel_age18(
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
-                if id_check_history.type
-                in {
-                    fraud_models.FraudCheckType.UBBLE.value,
-                    fraud_models.FraudCheckType.EDUCONNECT.value,
-                    fraud_models.FraudCheckType.JOUVE.value,
-                    fraud_models.FraudCheckType.DMS.value,
-                }
-                and EligibilityType.AGE18.value in id_check_history.applicable_eligibilities
+                if id_check_history.type in {f.value for f in fraud_models.IDENTITY_CHECK_TYPES}
+                and users_models.EligibilityType.AGE18.value in id_check_history.applicable_eligibilities
             ],
         ),
         RegistrationStep(
@@ -865,15 +1548,15 @@ def _get_steps_tunnel_age18(
         ),
         RegistrationStep(
             step_id=6,
-            description="Pass 18",
+            description="Ancien Pass 18",
             subscription_item_status=(
                 SubscriptionItemStatus.OK.value if user.received_pass_18 else SubscriptionItemStatus.VOID.value
             ),
-            icon="18",
+            text="18",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
-                if review.eligibilityType == EligibilityType.AGE18
+                if review.eligibilityType == users_models.EligibilityType.AGE18
             ],
         ),
     ]
@@ -902,7 +1585,7 @@ def _get_steps_tunnel_underage(
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
                 if id_check_history.type == fraud_models.FraudCheckType.PROFILE_COMPLETION.value
-                and EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
+                and users_models.EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
             ],
         ),
         RegistrationStep(
@@ -913,14 +1596,8 @@ def _get_steps_tunnel_underage(
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
-                if id_check_history.type
-                in {
-                    fraud_models.FraudCheckType.UBBLE.value,
-                    fraud_models.FraudCheckType.EDUCONNECT.value,
-                    fraud_models.FraudCheckType.DMS.value,
-                    fraud_models.FraudCheckType.JOUVE.value,
-                }
-                and EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
+                if id_check_history.type in {f.value for f in fraud_models.IDENTITY_CHECK_TYPES}
+                and users_models.EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
             ],
         ),
         RegistrationStep(
@@ -931,15 +1608,15 @@ def _get_steps_tunnel_underage(
         ),
         RegistrationStep(
             step_id=5,
-            description="Pass 15-17",
+            description="Ancien Pass 15-17",
             subscription_item_status=(
                 SubscriptionItemStatus.OK.value if user.received_pass_15_17 else SubscriptionItemStatus.VOID.value
             ),
-            icon="1517",
+            text="1517",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
-                if review.eligibilityType == EligibilityType.UNDERAGE
+                if review.eligibilityType == users_models.EligibilityType.UNDERAGE
             ],
         ),
     ]
@@ -967,13 +1644,19 @@ def _get_tunnel(
 def _get_subscription_item_status_by_eligibility(
     eligibility_history: dict[str, serialization.EligibilitySubscriptionHistoryModel]
 ) -> dict[str, dict]:
-    subscription_item_status: dict[str, dict] = {EligibilityType.UNDERAGE.value: {}, EligibilityType.AGE18.value: {}}
+    subscription_item_status: dict[str, dict] = {
+        users_models.EligibilityType.UNDERAGE.value: {},
+        users_models.EligibilityType.AGE18.value: {},
+        users_models.EligibilityType.AGE17_18.value: {},
+    }
     for key, value in eligibility_history.items():
         for item in value.subscriptionItems:
-            if key is EligibilityType.UNDERAGE.value:
-                subscription_item_status[EligibilityType.UNDERAGE.value][item.type] = item.status
-            elif key is EligibilityType.AGE18.value:
-                subscription_item_status[EligibilityType.AGE18.value][item.type] = item.status
+            if key in [
+                users_models.EligibilityType.UNDERAGE.value,
+                users_models.EligibilityType.AGE18.value,
+                users_models.EligibilityType.AGE17_18.value,
+            ]:
+                subscription_item_status[key][item.type] = item.status
     return subscription_item_status
 
 
@@ -1256,22 +1939,15 @@ def get_public_account_link(
     return url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id, **kwargs)
 
 
-def get_fraud_check_target_eligibility(
-    user: users_models.User, fraud_check: fraud_models.BeneficiaryFraudCheck
-) -> users_models.EligibilityType | None:
-    if fraud_check.eligibilityType:
-        return fraud_check.eligibilityType
-
+def _get_user_fraud_check_eligibility_types(user: users_models.User) -> list[users_models.EligibilityType]:
     if not user.dateOfBirth:
-        return None
+        return []
 
-    age_at_fraud_check_date = users_utils.get_age_at_date(user.dateOfBirth, fraud_check.dateCreated)
-    target_eligibility = (
-        users_models.EligibilityType.UNDERAGE if age_at_fraud_check_date < 18 else users_models.EligibilityType.AGE18
-    )
-    fraud_check.eligibilityType = target_eligibility
-
-    return target_eligibility
+    return [
+        eligibility_type
+        for fraud_check in user.beneficiaryFraudChecks
+        if (eligibility_type := serialization.get_fraud_check_eligibility_type(fraud_check))
+    ]
 
 
 def get_eligibility_history(user: users_models.User) -> dict[str, serialization.EligibilitySubscriptionHistoryModel]:
@@ -1287,24 +1963,39 @@ def get_eligibility_history(user: users_models.User) -> dict[str, serialization.
     ]
     # Do not show information about eligibility types which are not possible depending on known user age
     if user.birth_date:
-        age_at_creation = users_utils.get_age_at_date(user.birth_date, user.dateCreated)
-        if age_at_creation <= users_constants.ELIGIBILITY_AGE_18:
-            if age_at_creation == users_constants.ELIGIBILITY_AGE_18:
-                eligibility_types.append(users_models.EligibilityType.AGE18)
-                if users_models.EligibilityType.UNDERAGE in [
-                    get_fraud_check_target_eligibility(user, fraud_check) for fraud_check in user.beneficiaryFraudChecks
-                ]:
-                    eligibility_types.insert(0, users_models.EligibilityType.UNDERAGE)
-            else:
-                eligibility_types.append(users_models.EligibilityType.UNDERAGE)
-                age_now = users_utils.get_age_from_birth_date(user.birth_date)
-                if age_now >= users_constants.ELIGIBILITY_AGE_18 or users_models.EligibilityType.AGE18 in [
-                    get_fraud_check_target_eligibility(user, fraud_check) for fraud_check in user.beneficiaryFraudChecks
-                ]:
-                    eligibility_types.append(users_models.EligibilityType.AGE18)
+        age_at_creation = users_utils.get_age_at_date(user.birth_date, user.dateCreated, user.departementCode)
+        age_at_decree_start = users_utils.get_age_at_date(
+            birth_date=user.birth_date,
+            specified_datetime=settings.CREDIT_V3_DECREE_DATETIME,
+            department_code=user.departementCode,
+        )
+        age_now = user.age
+        assert age_now is not None  # helps mypy
+        fraud_eligibility_types = _get_user_fraud_check_eligibility_types(user)
+
+        if (users_models.EligibilityType.UNDERAGE in fraud_eligibility_types) or (
+            age_at_creation < users_constants.ELIGIBILITY_AGE_18
+            or age_at_decree_start < users_constants.ELIGIBILITY_AGE_18
+        ):
+            eligibility_types.append(users_models.EligibilityType.UNDERAGE)
+
+        if (users_models.EligibilityType.AGE17_18 in fraud_eligibility_types) or (
+            age_now >= users_constants.ELIGIBILITY_AGE_17 and age_at_decree_start >= users_constants.ELIGIBILITY_AGE_17
+        ):
+            eligibility_types.append(users_models.EligibilityType.AGE17_18)
+
+        if (users_models.EligibilityType.AGE18 in fraud_eligibility_types) or (
+            age_now >= users_constants.ELIGIBILITY_AGE_18 and age_at_decree_start >= users_constants.ELIGIBILITY_AGE_18
+        ):
+            eligibility_types.append(users_models.EligibilityType.AGE18)
+
     else:
         # Profile completion step not reached yet; can't guess eligibility, display all
-        eligibility_types = list(users_models.EligibilityType)
+        eligibility_types = [
+            users_models.EligibilityType.UNDERAGE,
+            users_models.EligibilityType.AGE17_18,
+            users_models.EligibilityType.AGE18,
+        ]
 
     for eligibility in eligibility_types:
         subscriptions[eligibility.value] = serialization.EligibilitySubscriptionHistoryModel(
@@ -1315,8 +2006,7 @@ def get_eligibility_history(user: users_models.User) -> dict[str, serialization.
             idCheckHistory=[
                 serialization.IdCheckItemModel.from_orm(fraud_check)
                 for fraud_check in user.beneficiaryFraudChecks
-                if fraud_check.eligibilityType == eligibility
-                or get_fraud_check_target_eligibility(user, fraud_check) == eligibility
+                if serialization.get_fraud_check_eligibility_type(fraud_check) == eligibility
             ],
         )
 
@@ -1342,15 +2032,16 @@ def _get_latest_fraud_check(
 def _get_duplicate_fraud_history(
     eligibility_history: dict[str, serialization.EligibilitySubscriptionHistoryModel],
 ) -> str | None:
+    reason_codes_for_duplicates = {
+        fraud_models.FraudReasonCode.DUPLICATE_USER.value,
+        fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER.value,
+    }
     for history_item in eligibility_history.values():
         check_history_items = sorted(history_item.idCheckHistory, key=attrgetter("dateCreated"), reverse=True)
         for check_history in check_history_items:
-            reason_codes = check_history.reasonCodes if check_history.reasonCodes else None
+            reason_codes = set(check_history.reasonCodes or [])
 
-            if reason_codes and (
-                fraud_models.FraudReasonCode.DUPLICATE_USER.value in reason_codes
-                or fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER.value in reason_codes
-            ):
+            if reason_codes.intersection(reason_codes_for_duplicates):
                 if check_history.reason:
                     id_searched = re.search(r"\s(\d+)\D*$", check_history.reason)
                     if id_searched:
