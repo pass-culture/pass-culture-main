@@ -80,6 +80,7 @@ export const LostPassword = (): JSX.Element => {
                   description="Format : email@exemple.com"
                   error={errors.email?.message}
                   required={true}
+                  asterisk={false}
                   {...register('email')}
                 />
               </FormLayout.Row>
