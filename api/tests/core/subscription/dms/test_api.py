@@ -8,12 +8,14 @@ import pytest
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
+from pcapi.connectors.dms import serializer as dms_serializer
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
+from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
@@ -506,6 +508,112 @@ class HandleDmsApplicationTest:
 
         mock_add_label_to_application.assert_not_called()
         assert fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).count() == 1
+
+    @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=False)
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
+    def test_do_not_process_instructor_annotation_without_feature_flag(self, mock_make_refused):
+        user = users_factories.UserFactory()
+        dms_response = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.draft,
+            email=user.email,
+            annotations=[
+                {
+                    "id": "Q2hhbXAtNDk2MTgyMw==",
+                    "label": dms_serializer.DMS_INSTRUCTOR_ANNOTATION_LABEL,
+                    "stringValue": fraud_models.DmsInstructorAnnotation.NEL.value,
+                }
+            ],
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        mock_make_refused.assert_not_called()
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+
+    @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
+    def test_process_instructor_annotation_NEL(self, mock_make_refused):
+        user = users_factories.UserFactory()
+        dms_response = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.draft,
+            email=user.email,
+            annotations=[
+                {
+                    "id": "Q2hhbXAtNDk2MTgyMw==",
+                    "label": dms_serializer.DMS_INSTRUCTOR_ANNOTATION_LABEL,
+                    "stringValue": fraud_models.DmsInstructorAnnotation.NEL.value,
+                }
+            ],
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        mock_make_refused.assert_called_once_with(
+            dms_response.id,
+            settings.DMS_ENROLLMENT_INSTRUCTOR,
+            dms_internal_mailing.DMS_MESSAGE_REFUSED_USER_NOT_ELIGIBLE,
+            from_draft=True,
+        )
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+
+    @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
+    def test_process_instructor_annotation_IDP(self, mock_make_refused):
+        user = users_factories.UserFactory()
+        dms_response = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.on_going,
+            email=user.email,
+            annotations=[
+                {
+                    "id": "Q2hhbXAtNDk2MTgyMw==",
+                    "label": dms_serializer.DMS_INSTRUCTOR_ANNOTATION_LABEL,
+                    "stringValue": fraud_models.DmsInstructorAnnotation.IDP.value,
+                }
+            ],
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        mock_make_refused.assert_called_once_with(
+            dms_response.id,
+            settings.DMS_ENROLLMENT_INSTRUCTOR,
+            dms_internal_mailing.DMS_MESSAGE_REFUSED_ID_EXPIRED,
+            from_draft=False,
+        )
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+
+    @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
+    def test_process_instructor_annotation_IDM(self, mock_make_refused):
+        user = users_factories.UserFactory()
+        dms_response = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.draft,
+            email=user.email,
+            annotations=[
+                {
+                    "id": "Q2hhbXAtNDk2MTgyMw==",
+                    "label": dms_serializer.DMS_INSTRUCTOR_ANNOTATION_LABEL,
+                    "stringValue": fraud_models.DmsInstructorAnnotation.IDM.value,
+                }
+            ],
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        mock_make_refused.assert_not_called()
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
 
 
 @pytest.mark.usefixtures("db_session")

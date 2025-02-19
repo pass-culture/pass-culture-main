@@ -25,6 +25,7 @@ from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.demarches_simplifiees import update_demarches_simplifiees_text_annotations
+from pcapi.models.feature import FeatureToggle
 import pcapi.repository as pcapi_repository
 from pcapi.repository import repository
 import pcapi.utils.email as email_utils
@@ -193,6 +194,9 @@ def handle_dms_application(
         _process_check_birth_date(
             application_content, dms_application.procedure.number, application_scalar_id, dms_application.labels
         )
+
+        if _process_instructor_annotation(application_content, application_scalar_id):
+            state = dms_models.GraphQLApplicationStates(application_content.state)
 
     fraud_check = fraud_dms_api.get_fraud_check(user, application_number)
     if fraud_check is None:
@@ -623,3 +627,28 @@ def _add_application_label(procedure_number: int, application_scalar_id: str, la
         client.add_label_to_application(application_scalar_id, label_id)
     except DmsGraphQLApiException:
         pass  # label is a helper, do not fail; already logged
+
+
+def _process_instructor_annotation(application_content: fraud_models.DMSContent, application_scalar_id: str) -> bool:
+    if not FeatureToggle.ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION.is_active():
+        return False
+
+    match application_content.instructor_annotation:
+        case fraud_models.DmsInstructorAnnotation.NEL:
+            motivation = dms_internal_mailing.DMS_MESSAGE_REFUSED_USER_NOT_ELIGIBLE
+        case fraud_models.DmsInstructorAnnotation.IDP:
+            motivation = dms_internal_mailing.DMS_MESSAGE_REFUSED_ID_EXPIRED
+        case _:
+            return False
+
+    # Can be rejected automatically since an instructor has checked details before manually setting an annotation
+    client = dms_connector_api.DMSGraphQLClient()
+    client.make_refused(
+        application_scalar_id,
+        settings.DMS_ENROLLMENT_INSTRUCTOR,
+        motivation,
+        from_draft=(application_content.state == dms_models.GraphQLApplicationStates.draft.value),
+    )
+    application_content.state = dms_models.GraphQLApplicationStates.refused.value
+    application_content.processed_datetime = datetime.datetime.utcnow()
+    return True
