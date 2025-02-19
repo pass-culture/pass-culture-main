@@ -17,13 +17,18 @@ jobs:
       id-token: write
       contents: read
     outputs: 
-      namespace_name: ${{ steps.set_namespace_name.outputs.namespace_name }}
+      resource_label: ${{ steps.set_resource_label.outputs.resource_label }}
     steps:
-      # Define the namespace name
-      - name: "Set namespace name"
-        id: "set_namespace_name"
-        run: 
-          echo "namespace_name=$(echo ${{ inputs.api_version }} | cut -c1-7)" >> $GITHUB_OUTPUT
+      - name: "Set resources label name"
+        id: "set_resource_label"
+        run: |
+          BRANCH_NAME=${{ github.ref_name }}
+          BRANCH_SHA1=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
+          echo "BRANCH_SHA1: $BRANCH_SHA1"
+          echo "resource_label=$BRANCH_SHA1" >> $GITHUB_OUTPUT
+      - name: "Echo resource label"
+        run: echo "${{ steps.set_resource_label.outputs.resource_label }}"
+
       - uses: actions/checkout@v4.2.1
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
@@ -79,13 +84,13 @@ jobs:
       - name: "Installing Pullrequest deployment prerequisites"
         run: |
           set -e
-          export PRID=${{ steps.set_namespace_name.outputs.namespace_name }}
+          export PRID=${{ steps.set_resource_label.outputs.resource_label }}
           envsubst < .github/workflows/templates/pullrequest-namespace.yaml | kubectl apply -f -
           envsubst < .github/workflows/templates/pullrequest-pgsql-externalsecret.yaml | kubectl apply -f -
 
       # Executes helmfile templating and push results to render-manifests repository
       - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@render-push-manifests/v2.4.2
+        uses: pass-culture/common-workflows/actions/render-push-manifests@mageoffray/pc-34480-add-ressource-label-to-render-manifest
         with:
           environment: pullrequest
           app_name: pcapi
@@ -98,9 +103,10 @@ jobs:
           helmfile_path: "./pass-culture-deployment/helm/pcapi"
           rendered_manifests_target_branch: "pcapi/pullrequests"
           is_pull_request: true
+          pro_url: "https://pro.testing.passculture.team/"
+          resource_label: ${{ steps.set_resource_label.outputs.resource_label }}
           # TODO : Handle pro deployment
           # pro_url: ${{ inputs.pro_url }}
-          pro_url: "https://pro.testing.passculture.team/"
 
       # We have to reauthenticate to GCP because render-manifests removes previous authenthication
       - name: "Authentification to Google"
@@ -125,22 +131,22 @@ jobs:
         run: |
           set +e
           while true; do
-            kubectl get application -n argocd | grep postgresql-pr-${{ steps.set_namespace_name.outputs.namespace_name }}
+            kubectl get application -n argocd | grep postgresql-pr-${{ steps.set_resource_label.outputs.resource_label }}
             [[ $? -eq 0 ]] && break || sleep 5
           done
           while true; do
-            kubectl get application -n argocd | grep redis-pr-${{ steps.set_namespace_name.outputs.namespace_name }}
+            kubectl get application -n argocd | grep redis-pr-${{ steps.set_resource_label.outputs.resource_label }}
             [[ $? -eq 0 ]] && break || sleep 5
           done
           while true; do
-            kubectl get application -n argocd | grep pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }}
+            kubectl get application -n argocd | grep pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }}
             [[ $? -eq 0 ]] && break || sleep 5
           done
           {
             echo "### :rocket: Applications Argocd"
             echo "| Argocd       | Link |"
             echo "| ------------ | ---- |"
-            echo "| Applications | https://argocd.ehp.passculture.team/applications?showFavorites=false&proj=pcapi-pullrequest&sync=&autoSync=&health=&namespace=&cluster=&labels=&search=pr-${{ steps.set_namespace_name.outputs.namespace_name }} |"
+            echo "| Applications | https://argocd.ehp.passculture.team/applications?showFavorites=false&proj=pcapi-pullrequest&sync=&autoSync=&health=&namespace=&cluster=&labels=&search=pr-${{ steps.set_resource_label.outputs.resource_label }} |"
           } >> $GITHUB_STEP_SUMMARY
 
       - name: "Namespace monitoring"
@@ -149,25 +155,25 @@ jobs:
             echo "### :rocket: Pullrequest Namespace monitoring"
             echo "| Namespace                                        | Link |"
             echo "| ------------------------------------------------ | ---- |"
-            echo "| pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} | https://monitoring.ehp.passculture.team/d/pods-dashboard/k8s-resource-monitoring-pods?orgId=1&var-Filters=namespace%7C%3D%7Cpcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }}&from=now-1h&to=now |"
+            echo "| pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} | https://monitoring.ehp.passculture.team/d/pods-dashboard/k8s-resource-monitoring-pods?orgId=1&var-Filters=namespace%7C%3D%7Cpcapi-pr-${{ steps.set_resource_label.outputs.resource_label }}&from=now-1h&to=now |"
           } >> $GITHUB_STEP_SUMMARY
 
       - name: "Sync ArgoCD Pgsql application"
         uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
         with:
-          app_name: postgresql-pr-${{ steps.set_namespace_name.outputs.namespace_name }}
+          app_name: postgresql-pr-${{ steps.set_resource_label.outputs.resource_label }}
           argocd_app_wait: true
 
       - name: "Sync ArgoCD Redis application"
         uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
         with:
-          app_name: redis-pr-${{ steps.set_namespace_name.outputs.namespace_name }}
+          app_name: redis-pr-${{ steps.set_resource_label.outputs.resource_label }}
           argocd_app_wait: true
 
       - name: "Sync ArgoCD pcapi configmaps and secrets"
         uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
         with:
-          app_name: pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }}
+          app_name: pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }}
           argocd_app_wait: false
           prune: true
           extra_flags: --resource ':ConfigMap:*' --resource '*:ExternalSecret:*'
@@ -179,17 +185,17 @@ jobs:
           export ENVIRONMENT="pullrequest"
           IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
           export IMAGE="${IMAGE}:${VERSION}"
-          export PRID=${{ steps.set_namespace_name.outputs.namespace_name }}
+          export PRID=${{ steps.set_resource_label.outputs.resource_label }}
 
           echo "=== exec: flask install_postgres_extensions"
           export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
           start=$(date +%s.%N)
-          envsubst < .github/workflows/templates/pullrequest-db-init-01.yaml | kubectl -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} apply -f -
+          envsubst < .github/workflows/templates/pullrequest-db-init-01.yaml | kubectl -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} apply -f -
           while true;
           do
-            kubectl logs -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} -f jobs/pullrequest-db-init-01-${DATE} && break
+            kubectl logs -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} -f jobs/pullrequest-db-init-01-${DATE} && break
           done
-          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} jobs/pullrequest-db-init-01-${DATE}
+          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} jobs/pullrequest-db-init-01-${DATE}
           end=$(date +%s.%N)
           duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
           {
@@ -202,12 +208,12 @@ jobs:
           echo "=== exec: alembic upgrade pre@head"
           export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
           start=$(date +%s.%N)
-          envsubst < .github/workflows/templates/pullrequest-db-init-02.yaml | kubectl -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} apply -f -
+          envsubst < .github/workflows/templates/pullrequest-db-init-02.yaml | kubectl -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} apply -f -
           while true;
           do
-            kubectl logs -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} -f jobs/pullrequest-db-init-02-${DATE} && break
+            kubectl logs -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} -f jobs/pullrequest-db-init-02-${DATE} && break
           done
-          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} jobs/pullrequest-db-init-02-${DATE}
+          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} jobs/pullrequest-db-init-02-${DATE}
           end=$(date +%s.%N)
           duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
           {
@@ -217,12 +223,12 @@ jobs:
           echo "=== exec: flask install_data"
           export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
           start=$(date +%s.%N)
-          envsubst < .github/workflows/templates/pullrequest-db-init-03.yaml | kubectl -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} apply -f -
+          envsubst < .github/workflows/templates/pullrequest-db-init-03.yaml | kubectl -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} apply -f -
           while true;
           do
-          kubectl logs -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} -f jobs/pullrequest-db-init-03-${DATE} && break
+          kubectl logs -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} -f jobs/pullrequest-db-init-03-${DATE} && break
           done
-          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} jobs/pullrequest-db-init-03-${DATE}
+          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} jobs/pullrequest-db-init-03-${DATE}
           end=$(date +%s.%N)
           duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
           {
@@ -232,12 +238,12 @@ jobs:
           echo "=== exec: alembic upgrade post@head"
           export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
           start=$(date +%s.%N)
-          envsubst < .github/workflows/templates/pullrequest-db-init-04.yaml | kubectl -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} apply -f -
+          envsubst < .github/workflows/templates/pullrequest-db-init-04.yaml | kubectl -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} apply -f -
           while true;
           do
-          kubectl logs -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} -f jobs/pullrequest-db-init-04-${DATE} && break
+          kubectl logs -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} -f jobs/pullrequest-db-init-04-${DATE} && break
           done
-          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} jobs/pullrequest-db-init-04-${DATE}
+          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} jobs/pullrequest-db-init-04-${DATE}
           end=$(date +%s.%N)
           duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
           {
@@ -247,7 +253,7 @@ jobs:
       - name: "Sync ArgoCD pcapi application"
         uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
         with:
-          app_name: pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }}
+          app_name: pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }}
           argocd_app_wait: true
           prune: true
 
@@ -258,17 +264,17 @@ jobs:
           export ENVIRONMENT="pullrequest"
           IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
           export IMAGE="${IMAGE}:${VERSION}"
-          export PRID=${{ steps.set_namespace_name.outputs.namespace_name }}
+          export PRID=${{ steps.set_resource_label.outputs.resource_label }}
 
           echo "=== exec: flask sandbox -n industrial"
           export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
           start=$(date +%s.%N)
-          envsubst < .github/workflows/templates/pullrequest-db-init-05.yaml | kubectl -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} apply -f -
+          envsubst < .github/workflows/templates/pullrequest-db-init-05.yaml | kubectl -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} apply -f -
           while true;
           do
-          kubectl logs -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} -f jobs/pullrequest-db-init-05-${DATE} && break
+          kubectl logs -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} -f jobs/pullrequest-db-init-05-${DATE} && break
           done
-          kubectl wait --for=condition=complete --timeout=1800s -n pcapi-pr-${{ steps.set_namespace_name.outputs.namespace_name }} jobs/pullrequest-db-init-05-${DATE}
+          kubectl wait --for=condition=complete --timeout=1800s -n pcapi-pr-${{ steps.set_resource_label.outputs.resource_label }} jobs/pullrequest-db-init-05-${DATE}
           end=$(date +%s.%N)
           duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
           {
