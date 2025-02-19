@@ -112,10 +112,9 @@ class ImportDSBankAccountApplicationsTest:
 class MarkWithoutApplicationTooOldApplicationsTest:
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
-    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
     def test_too_old_draft_dsv5_are_set_without_continuation(
-        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+        self, mock_graphql_client, mock_mark_without_continuation, mock_archive_application
     ):
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
@@ -149,14 +148,11 @@ class MarkWithoutApplicationTooOldApplicationsTest:
 
         mark_without_continuation_applications()
 
-        mock_make_on_going.assert_called_once_with(
-            application_techid="RG9zc2llci0xNDc0MjY1NA==",
-            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
-        )
         mock_mark_without_continuation.assert_called_once_with(
             application_techid="RG9zc2llci0xNDc0MjY1NA==",
             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
             motivation=MARK_WITHOUT_CONTINUATION_MOTIVATION,
+            from_draft=True,
         )
         mock_archive_application.assert_called_once_with(
             application_techid="RG9zc2llci0xNDc0MjY1NA==",
@@ -169,10 +165,9 @@ class MarkWithoutApplicationTooOldApplicationsTest:
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
-    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
     def test_too_old_on_going_dsv5_are_set_without_continuation(
-        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+        self, mock_graphql_client, mock_mark_without_continuation, mock_archive_application
     ):
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.ON_GOING
@@ -210,6 +205,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
             application_techid="RG9zc2llci0xNDc0MjY1NA==",
             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
             motivation=MARK_WITHOUT_CONTINUATION_MOTIVATION,
+            from_draft=False,
         )
         mock_archive_application.assert_called_once_with(
             application_techid="RG9zc2llci0xNDc0MjY1NA==",
@@ -360,10 +356,9 @@ class MarkWithoutApplicationTooOldApplicationsTest:
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
-    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
     def test_too_old_dsv5_application_waiting_for_anything_is_mark_without_continuation(
-        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+        self, mock_graphql_client, mock_mark_without_continuation, mock_archive_application
     ):
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
@@ -420,14 +415,11 @@ class MarkWithoutApplicationTooOldApplicationsTest:
             authorUserId=None,
         )
 
-        mock_make_on_going.assert_called_once_with(
-            application_techid="RG9zc2llci0xNDc0MjY1NA==",
-            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
-        )
         mock_mark_without_continuation.assert_called_once_with(
             application_techid="RG9zc2llci0xNDc0MjY1NA==",
             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
             motivation=MARK_WITHOUT_CONTINUATION_MOTIVATION,
+            from_draft=True,
         )
         mock_archive_application.assert_called_once_with(
             application_techid="RG9zc2llci0xNDc0MjY1NA==",

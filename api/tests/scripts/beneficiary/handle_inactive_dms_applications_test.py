@@ -17,10 +17,9 @@ from tests.scripts.beneficiary.fixture import make_parsed_graphql_application
 @pytest.mark.usefixtures("db_session")
 class HandleInactiveApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "mark_without_continuation")
-    @patch.object(api_dms.DMSGraphQLClient, "make_on_going")
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     @pytest.mark.settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
-    def test_mark_without_continuation(self, dms_applications_mock, make_on_going_mock, mark_without_continuation_mock):
+    def test_mark_without_continuation(self, dms_applications_mock, mark_without_continuation_mock):
         active_application = make_parsed_graphql_application(
             application_number=1,
             state="en_construction",
@@ -48,13 +47,11 @@ class HandleInactiveApplicationTest:
 
         handle_inactive_dms_applications(1)
 
-        make_on_going_mock.assert_called_once_with(
-            inactive_application.id, "SomeInstructorId", disable_notification=True
-        )
         mark_without_continuation_mock.assert_called_once_with(
             inactive_application.id,
             "SomeInstructorId",
             motivation="Aucune activité n'a eu lieu sur votre dossier depuis plus de 30 jours. Si vous souhaitez le soumettre à nouveau, vous pouvez contacter le support à l'adresse support@example.com",
+            from_draft=True,
         )
         assert active_fraud_check.status == fraud_models.FraudCheckStatus.STARTED
         assert inactive_fraud_check.status == fraud_models.FraudCheckStatus.CANCELED
@@ -90,13 +87,10 @@ class HandleInactiveApplicationTest:
         assert inactive_fraud_check.status == fraud_models.FraudCheckStatus.STARTED
 
     @patch.object(api_dms.DMSGraphQLClient, "mark_without_continuation")
-    @patch.object(api_dms.DMSGraphQLClient, "make_on_going")
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     @time_machine.travel("2022-04-27")
     @pytest.mark.settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
-    def test_duplicated_application_can_be_cancelled(
-        self, dms_applications_mock, make_on_going_mock, mark_without_continuation_mock
-    ):
+    def test_duplicated_application_can_be_cancelled(self, dms_applications_mock, mark_without_continuation_mock):
         old_email = "lucille.ellingson@example.com"
         new_email = "lucy.ellingson@example.com"
         inactive_application = make_parsed_graphql_application(
@@ -125,13 +119,11 @@ class HandleInactiveApplicationTest:
         handle_inactive_dms_applications(1)
 
         # Then
-        make_on_going_mock.assert_called_once_with(
-            inactive_application.id, "SomeInstructorId", disable_notification=True
-        )
         mark_without_continuation_mock.assert_called_once_with(
             inactive_application.id,
             "SomeInstructorId",
             motivation="Aucune activité n'a eu lieu sur votre dossier depuis plus de 30 jours. Si vous souhaitez le soumettre à nouveau, vous pouvez contacter le support à l'adresse support@example.com",
+            from_draft=True,
         )
         assert active_fraud_check.status == fraud_models.FraudCheckStatus.STARTED
         assert inactive_fraud_check.status == fraud_models.FraudCheckStatus.CANCELED
