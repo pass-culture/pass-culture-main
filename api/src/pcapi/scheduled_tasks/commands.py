@@ -27,7 +27,7 @@ from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import api as users_api
-from pcapi.core.users.repository import get_newly_eligible_age_18_users
+from pcapi.core.users.repository import get_users_that_had_birthday_since
 from pcapi.local_providers.provider_manager import collect_elligible_venues_and_activate_ems_sync
 from pcapi.local_providers.provider_manager import synchronize_ems_venue_providers
 from pcapi.local_providers.provider_manager import synchronize_venue_providers
@@ -168,12 +168,22 @@ def notify_soon_to_be_expired_individual_bookings() -> None:
 
 @blueprint.cli.command("notify_newly_eligible_age_18_users")
 @log_cron_with_transaction
-def notify_newly_eligible_age_18_users() -> None:
+def notify_newly_eligible_users() -> None:
     if not settings.NOTIFY_NEWLY_ELIGIBLE_USERS:
         return
+
+    # TODO: (tconte-pass, 2025-02-20) https://passculture.atlassian.net/browse/PC-34732
+    # Make `get_users_that_had_birthday_since` return a query
+    # and join here necessary tables to compute remaining credit later.
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
-    for user in get_newly_eligible_age_18_users(yesterday):
-        transactional_mails.send_birthday_age_18_email_to_newly_eligible_user(user)
+    if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
+        for user in get_users_that_had_birthday_since(yesterday, age=17):
+            transactional_mails.send_birthday_age_17_email_to_newly_eligible_user(user)
+        for user in get_users_that_had_birthday_since(yesterday, age=18):
+            transactional_mails.send_birthday_age_18_email_to_newly_eligible_user_v3(user)
+    else:
+        for user in get_users_that_had_birthday_since(yesterday, age=18):
+            transactional_mails.send_birthday_age_18_email_to_newly_eligible_user(user)
 
 
 @blueprint.cli.command("check_stock_quantity_consistency")

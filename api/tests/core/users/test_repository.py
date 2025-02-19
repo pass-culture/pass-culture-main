@@ -76,8 +76,7 @@ class CheckUserHasAccessToOfferersVenues:
 
 
 class GetNewlyEligibleUsersTest:
-    @time_machine.travel("2024-02-01")
-    def test_eligible_user(self):
+    def test_fetch_users_that_had_birthday(self):
         today = datetime.today()
         already_18_birthday = today - relativedelta(years=18, days=1)
         created_one_month_ago = today - relativedelta(months=1)
@@ -107,9 +106,9 @@ class GetNewlyEligibleUsersTest:
         users_factories.BaseUserFactory(dateOfBirth=not_yet_18, dateCreated=created_one_month_ago)
 
         # Users 18 on the day `since` should not appear, nor those that are not 18 yet
-        users = repository.get_newly_eligible_age_18_users(since=one_day_ago)
+        users = repository.get_users_that_had_birthday_since(since=one_day_ago, age=18)
         assert set(users) == {user_just_18, user_just_18_ex_underage_beneficiary}
-        users = repository.get_newly_eligible_age_18_users(since=two_days_ago)
+        users = repository.get_users_that_had_birthday_since(since=two_days_ago, age=18)
         assert set(users) == {user_just_18, user_just_18_ex_underage_beneficiary, user_already_18}
 
     def test_eligible_user_with_discordant_dates_on_declared_one(self):
@@ -120,7 +119,7 @@ class GetNewlyEligibleUsersTest:
             dateCreated=datetime.utcnow() - relativedelta(months=1),
             roles=[UserRole.UNDERAGE_BENEFICIARY],
         )
-        users = repository.get_newly_eligible_age_18_users(since=date_to_check)
+        users = repository.get_users_that_had_birthday_since(since=date_to_check, age=18)
         assert set(users) == set()
 
     @time_machine.travel("2024-02-01")
@@ -133,7 +132,7 @@ class GetNewlyEligibleUsersTest:
             roles=[UserRole.UNDERAGE_BENEFICIARY],
         )
 
-        users = repository.get_newly_eligible_age_18_users(since=date_to_check)
+        users = repository.get_users_that_had_birthday_since(since=date_to_check, age=18)
         assert set(users) == {user_just_18_discordant_dates}
 
 
