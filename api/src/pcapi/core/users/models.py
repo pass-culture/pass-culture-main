@@ -1003,6 +1003,10 @@ class UserAccountUpdateRequest(PcObject, Base, Model):
         return users_utils.get_age_from_birth_date(self.birthDate) if self.birthDate else None
 
     @property
+    def is_draft(self) -> bool:
+        return self.status == dms_models.GraphQLApplicationStates.draft
+
+    @property
     def is_accepted(self) -> bool:
         return self.status == dms_models.GraphQLApplicationStates.accepted
 
@@ -1060,7 +1064,7 @@ class UserAccountUpdateRequest(PcObject, Base, Model):
     @property
     def can_be_accepted(self) -> bool:
         return bool(
-            self.status == dms_models.GraphQLApplicationStates.on_going
+            self.status in (dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going)
             and self.userId is not None
             and self.updateTypes
             and not self.updateTypes == [UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO]

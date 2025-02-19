@@ -377,6 +377,7 @@ def update_state(
             instructeur_techid=instructor_id,
             motivation=motivation,
             disable_notification=disable_notification,
+            from_draft=user_request.is_draft,
         )
     elif new_state == dms_models.GraphQLApplicationStates.without_continuation:
         node = ds_client.mark_without_continuation(
@@ -399,17 +400,12 @@ def archive(user_request: users_models.UserAccountUpdateRequest, *, motivation: 
     ds_client = ds_api.DMSGraphQLClient()
 
     if user_request.status in (dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going):
-        if user_request.status == dms_models.GraphQLApplicationStates.draft:
-            ds_client.make_on_going(
-                application_techid=user_request.dsTechnicalId,
-                instructeur_techid=settings.DMS_INSTRUCTOR_ID,
-                disable_notification=True,
-            )
         ds_client.mark_without_continuation(
             application_techid=user_request.dsTechnicalId,
             instructeur_techid=settings.DMS_INSTRUCTOR_ID,
             motivation=motivation,
             disable_notification=True,
+            from_draft=(user_request.status == dms_models.GraphQLApplicationStates.draft),
         )
 
     ds_client.archive_application(

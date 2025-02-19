@@ -755,7 +755,7 @@ class UpdateStateTest:
     def test_from_on_going_to_accepted(self, mocked_update_state, instructor):
         uaur = users_factories.EmailUpdateRequestFactory(
             dsApplicationId=21268381,
-            dsTechnicalId="RG9zc2llci0yMTI2ODM4MQ==",
+            dsTechnicalId="UHJvY4VkdXKlLTI5NTgw",
             status=dms_models.GraphQLApplicationStates.on_going,
         )
 
@@ -783,13 +783,54 @@ class UpdateStateTest:
 
     @patch(
         "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
-        return_value=ds_fixtures.DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ACCEPTED,
+        side_effect=[
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ON_GOING,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_ACCEPTED,
+        ],
     )
-    def test_from_draft_to_accepted(self, mocked_update_state, instructor):
+    def test_from_draft_to_accepted(self, mocked_execute_query, instructor):
+        uaur = users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21273773,
+            dsTechnicalId="UHJvY4VkdXKlLTI5NTgw",
+            status=dms_models.GraphQLApplicationStates.draft,
+        )
+
+        users_ds.update_state(uaur, new_state=dms_models.GraphQLApplicationStates.accepted, instructor=instructor)
+
+        mocked_execute_query.assert_called()
+        assert mocked_execute_query.call_count == 2
+
+        assert mocked_execute_query.call_args_list[0].args == (dms_api.MAKE_ON_GOING_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[0].kwargs["variables"] == {
+            "input": {
+                "dossierId": uaur.dsTechnicalId,
+                "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                "disableNotification": True,
+            }
+        }
+
+        assert mocked_execute_query.call_args_list[1].args == (dms_api.MAKE_ACCEPTED_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[1].kwargs["variables"] == {
+            "input": {
+                "dossierId": uaur.dsTechnicalId,
+                "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                "disableNotification": False,
+            }
+        }
+
+        db.session.refresh(uaur)
+        assert uaur.status == dms_models.GraphQLApplicationStates.accepted
+        assert uaur.lastInstructor == instructor
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_UPDATE_STATE_ACCEPTED_TO_ACCEPTED,
+    )
+    def test_from_accepted_to_accepted(self, mocked_update_state, instructor):
         uaur = users_factories.EmailUpdateRequestFactory(
             dsApplicationId=21273773,
             dsTechnicalId="RG9zc2llci0yMTI3Mzc3Mw==",
-            status=dms_models.GraphQLApplicationStates.draft,
+            status=dms_models.GraphQLApplicationStates.accepted,
         )
 
         with pytest.raises(dms_exceptions.DmsGraphQLApiError) as error:
@@ -806,7 +847,7 @@ class UpdateStateTest:
             },
         )
 
-        assert error.value.message == "Le dossier est déjà en construction"
+        assert error.value.message == "Le dossier est déjà accepté"
         assert uaur.lastInstructor != instructor
 
     @patch(

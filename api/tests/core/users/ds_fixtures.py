@@ -1169,7 +1169,7 @@ DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_ON_GOING = {
 DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_ACCEPTED = {
     "dossierAccepter": {
         "dossier": {
-            "id": "RG9zc2llci0yMTI2ODM4MQ==",
+            "id": "UHJvY4VkdXKlLTI5NTgw",
             "number": 21268381,
             "state": "accepte",
             "dateDerniereModification": "2024-12-05T12:17:10+01:00",
@@ -1184,8 +1184,8 @@ DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_ACCEPTED = {
     }
 }
 
-DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ACCEPTED = {
-    "dossierAccepter": {"dossier": None, "errors": [{"message": "Le dossier est d\u00e9j\u00e0 en construction"}]}
+DS_RESPONSE_UPDATE_STATE_ACCEPTED_TO_ACCEPTED = {
+    "dossierAccepter": {"dossier": None, "errors": [{"message": "Le dossier est d\u00e9j\u00e0 accept\u00e9"}]}
 }
 
 

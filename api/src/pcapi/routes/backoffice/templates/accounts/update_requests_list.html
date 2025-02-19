@@ -83,7 +83,7 @@
                         </ul>
                       </div>
                     </div>
-                    {% if update_request.status == update_request.status.on_going and update_request.user is not none %}
+                    {% if update_request.can_be_accepted %}
                       {{ build_lazy_modal(url_for("backoffice_web.account_update.get_accept_form", ds_application_id=update_request.dsApplicationId) , "accept-" + update_request.dsApplicationId|string, "lazy", "xl") }}
                     {% endif %}
                     {% if update_request.can_be_corrected %}
