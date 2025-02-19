@@ -142,8 +142,14 @@ def archive_already_processed_dms_applications() -> None:
 
 
 @blueprint.cli.command("import_all_updated_dms_applications")
+@click.option(
+    "--since",
+    help="Force previous import date to this date. Format: YYYY-MM-DD. Example: 2025-01-01. Default: None.",
+    type=str,
+)
 @log_cron_with_transaction
-def import_all_updated_dms_applications() -> None:
+def import_all_updated_dms_applications(since: str | None = None) -> None:
+    forced_since = datetime.datetime.fromisoformat(since) if since else None
     for procedure_name, procedure_id in (
         ("v4_FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_FR),
         ("v4_ET", settings.DMS_ENROLLMENT_PROCEDURE_ID_ET),
@@ -151,7 +157,7 @@ def import_all_updated_dms_applications() -> None:
         if not procedure_id:
             logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
             continue
-        dms_script.import_all_updated_dms_applications(procedure_id)
+        dms_script.import_all_updated_dms_applications(procedure_id, forced_since=forced_since)
 
 
 @blueprint.cli.command("handle_expired_bookings")

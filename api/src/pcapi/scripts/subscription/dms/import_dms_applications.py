@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from pcapi import settings
@@ -46,7 +47,7 @@ def _import_all_dms_applications_initial_import(procedure_id: int) -> None:
     )
 
 
-def import_all_updated_dms_applications(procedure_number: int) -> None:
+def import_all_updated_dms_applications(procedure_number: int, forced_since: datetime.datetime | None = None) -> None:
     logger.info("[DMS] Start import of all applications from Démarches Simplifiées for procedure %s", procedure_number)
 
     latest_dms_import_record: dms_models.LatestDmsImport | None = (
@@ -77,7 +78,7 @@ def import_all_updated_dms_applications(procedure_number: int) -> None:
         # It is OK to pass a UTC datetime as a param to DMS.
         # Their API understands it is a UTC datetime and interprets it correctly, even if they return time in the local timezone.
         for application_details in client.get_applications_with_details(
-            procedure_number, since=latest_dms_import_record.latestImportDatetime
+            procedure_number, since=forced_since if forced_since else latest_dms_import_record.latestImportDatetime
         ):
             try:
                 latest_modification_datetime = application_details.latest_modification_datetime
