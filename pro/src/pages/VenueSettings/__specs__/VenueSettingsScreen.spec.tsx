@@ -184,7 +184,7 @@ describe('VenueSettingsScreen', () => {
   })
 
   it('should render with manual address fields when WIP_ENABLE_OFFER_ADDRESS feature is enabled', async () => {
-    await renderForm({ features: ['WIP_ENABLE_OFFER_ADDRESS'] })
+    await renderForm()
 
     expect(
       await screen.findByText(/Vous ne trouvez pas votre adresse/)
@@ -192,7 +192,7 @@ describe('VenueSettingsScreen', () => {
   })
 
   it('should display the address change modal when updating venue address', async () => {
-    await renderForm({ features: ['WIP_ENABLE_OFFER_ADDRESS'] })
+    await renderForm()
 
     await userEvent.click(
       screen.getByRole('button', { name: /Vous ne trouvez pas votre adresse/ })
@@ -256,9 +256,7 @@ describe('VenueSettingsScreen', () => {
       ).toBeInTheDocument()
     })
     it('should display the right wording with the OA FF', async () => {
-      await renderForm({
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
+      await renderForm()
       expect(
         screen.getByText(/Si votre structure est labellisée/)
       ).toBeInTheDocument()

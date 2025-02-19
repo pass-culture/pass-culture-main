@@ -10,15 +10,12 @@ import {
   GET_VENUE_TYPES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueSettingsScreen } from './VenueSettingsScreen'
 
 const VenueSettings = (): JSX.Element | null => {
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
@@ -75,7 +72,7 @@ const VenueSettings = (): JSX.Element | null => {
   return (
     <Layout>
       <VenueSettingsScreen
-        initialValues={setInitialFormValues({ venue, isOfferAddressEnabled })}
+        initialValues={setInitialFormValues({ venue })}
         offerer={offerer}
         venueLabels={venueLabels}
         venueTypes={venueTypes}

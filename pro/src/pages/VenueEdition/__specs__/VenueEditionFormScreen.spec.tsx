@@ -304,12 +304,7 @@ describe('VenueFormScreen', () => {
       ).toBeInTheDocument()
     })
     it('should display the right wording with the OA FF', () => {
-      renderForm(
-        { ...baseVenue, isVirtual: true },
-        {
-          features: ['WIP_ENABLE_OFFER_ADDRESS'],
-        }
-      )
+      renderForm({ ...baseVenue, isVirtual: true })
 
       expect(
         screen.getByText(

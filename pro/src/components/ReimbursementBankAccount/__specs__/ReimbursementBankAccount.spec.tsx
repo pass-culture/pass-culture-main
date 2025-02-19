@@ -337,9 +337,7 @@ describe('ReimbursementBankAccount', () => {
   it('should display the correct button with WIP_ENABLE_OFFER_ADDRESS', () => {
     bankAccount.linkedVenues = []
     managedVenues[0].bankAccountId = null
-    renderReimbursementBankAccount(bankAccount, managedVenues, 0, false, {
-      features: ['WIP_ENABLE_OFFER_ADDRESS'],
-    })
+    renderReimbursementBankAccount(bankAccount, managedVenues, 0, false)
 
     expect(
       screen.getByText(/Aucune structure n’est rattachée à ce compte bancaire./)
@@ -378,9 +376,7 @@ describe('ReimbursementBankAccount', () => {
       managedVenues.push({
         ...defaultManagedVenues,
       })
-      renderReimbursementBankAccount(bankAccount, managedVenues, 0, false, {
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
+      renderReimbursementBankAccount(bankAccount, managedVenues, 0, false)
 
       expect(
         screen.getByText('Structures rattachées à ce compte bancaire')

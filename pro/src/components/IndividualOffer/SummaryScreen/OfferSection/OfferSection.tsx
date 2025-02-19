@@ -11,7 +11,6 @@ import {
   OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -50,8 +49,6 @@ export const OfferSection = ({
   )
   const musicTypes = musicTypesQuery.data
 
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
   const offerData = serializeOfferSectionData(
     offer,
     categories,
@@ -69,6 +66,10 @@ export const OfferSection = ({
   ]
 
   const aboutDescriptions: Description[] = [
+    {
+      title: 'Structure',
+      text: offerData.venuePublicName || offerData.venueName,
+    },
     { title: 'Titre de l’offre', text: offerData.name },
     { title: 'Description', text: offerData.description || '-' },
   ].concat(
@@ -79,11 +80,6 @@ export const OfferSection = ({
         }
       : []
   )
-  const venueName = offerData.venuePublicName || offerData.venueName
-  aboutDescriptions.unshift({
-    title: isOfferAddressEnabled ? 'Structure' : 'Lieu',
-    text: venueName,
-  })
 
   const artisticInfoDescriptions: Description[] = []
   if (conditionalFields.includes('musicType')) {
@@ -228,7 +224,7 @@ export const OfferSection = ({
         })}
         aria-label="Modifier les informations pratiques de l’offre"
       >
-        {!offer.isDigital && isOfferAddressEnabled && (
+        {!offer.isDigital && (
           <SummarySubSection title="Localisation de l’offre">
             <SummaryDescriptionList
               listDataTestId="localisation-offer-details"

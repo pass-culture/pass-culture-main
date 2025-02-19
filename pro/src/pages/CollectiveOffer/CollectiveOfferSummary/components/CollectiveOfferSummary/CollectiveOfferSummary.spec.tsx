@@ -347,12 +347,7 @@ describe('CollectiveOfferSummary', () => {
     })
 
     it('should display the right wording with the OA FF', async () => {
-      renderCollectiveOfferSummary(
-        { ...props, offerEditLink: undefined },
-        {
-          features: ['WIP_ENABLE_OFFER_ADDRESS'],
-        }
-      )
+      renderCollectiveOfferSummary({ ...props, offerEditLink: undefined })
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       expect(

@@ -114,7 +114,7 @@ describe('filter bookings by bookings period', () => {
   })
 
   it('should be able to filter by offererAddress', async () => {
-    renderPreFilters(props, ['WIP_ENABLE_OFFER_ADDRESS'])
+    renderPreFilters(props)
 
     const offerVenuIdInput = screen.getByLabelText('Localisation')
     await userEvent.selectOptions(offerVenuIdInput, '21')
@@ -133,7 +133,7 @@ describe('filter bookings by bookings period', () => {
 
   it('should not display offererAddress for collective audiance', () => {
     props.audience = Audience.COLLECTIVE
-    renderPreFilters(props, ['WIP_ENABLE_OFFER_ADDRESS'])
+    renderPreFilters(props)
 
     expect(screen.queryByLabelText('Localisation')).not.toBeInTheDocument()
   })

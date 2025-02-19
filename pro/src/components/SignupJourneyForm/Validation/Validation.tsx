@@ -14,7 +14,6 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
@@ -42,7 +41,6 @@ export const Validation = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const { activity, offerer } = useSignupJourneyContext()
   useInitReCaptcha()
 
@@ -108,9 +106,7 @@ export const Validation = (): JSX.Element => {
           city: offerer.city,
           postalCode: offerer.postalCode,
           street: offerer.street,
-          ...(isOfferAddressEnabled && {
-            isManualEdition: offerer.manuallySetAddress,
-          }),
+          isManualEdition: offerer.manuallySetAddress,
         },
         token,
       }

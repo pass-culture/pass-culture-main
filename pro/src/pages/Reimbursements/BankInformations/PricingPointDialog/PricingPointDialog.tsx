@@ -3,7 +3,6 @@ import { FormikProvider, useFormik } from 'formik'
 
 import { api } from 'apiClient/api'
 import { ManagedVenues } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -31,7 +30,6 @@ export const PricingPointDialog = ({
   updateVenuePricingPoint,
 }: PricingPointDialogProps) => {
   const notification = useNotification()
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const formik = useFormik<PricingPointFormValues>({
     initialValues: {
       pricingPointId: undefined,
@@ -52,7 +50,7 @@ export const PricingPointDialog = ({
         )
       }
     },
-    validationSchema: getValidationSchema({ isOfferAddressEnabled }),
+    validationSchema: getValidationSchema,
   })
 
   if (!selectedVenue) {
@@ -61,7 +59,7 @@ export const PricingPointDialog = ({
 
   const venuesOptions = [
     {
-      label: `Sélectionner ${isOfferAddressEnabled ? 'une structure' : 'un lieu'} dans la liste`,
+      label: `Sélectionner une structure dans la liste`,
       value: '',
     },
     ...venues.map((venue) => ({
@@ -74,26 +72,24 @@ export const PricingPointDialog = ({
     <div className={styles.dialog}>
       <Dialog.Title asChild>
         <h1 className={styles['callout-title']}>
-          Sélectionnez un SIRET pour{' '}
-          {isOfferAddressEnabled ? 'la structure' : 'le lieu'} “
-          {selectedVenue.commonName}”{' '}
+          Sélectionnez un SIRET pour la structure “{selectedVenue.commonName}
+          ”{' '}
         </h1>
       </Dialog.Title>
       <Callout className={styles['callout']}>
         Comme indiqué dans nos CGUs, le barème de remboursement se définit sur
         la base d’un établissement et donc d’un SIRET. Afin de vous faire
-        rembourser les offres de{' '}
-        {isOfferAddressEnabled ? 'cette structure' : 'ce lieu'}, vous devez
-        sélectionner le SIRET à partir duquel sera calculé votre taux de
-        remboursement. Attention, vous ne pourrez plus modifier votre choix
-        après validation.{' '}
+        rembourser les offres de cette structure, vous devez sélectionner le
+        SIRET à partir duquel sera calculé votre taux de remboursement.
+        Attention, vous ne pourrez plus modifier votre choix après
+        validation.{' '}
       </Callout>
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} className={styles['dialog-form']}>
           <Select
             id="pricingPointId"
             name="pricingPointId"
-            label={`${isOfferAddressEnabled ? 'Structure avec SIRET utilisée' : 'Lieu avec SIRET utilisé'} pour le calcul de votre barème de remboursement`}
+            label="Structure avec SIRET utilisée pour le calcul de votre barème de remboursement"
             options={venuesOptions}
             className={styles['venues-select']}
           />

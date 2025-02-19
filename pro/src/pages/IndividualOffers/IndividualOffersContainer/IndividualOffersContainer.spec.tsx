@@ -16,7 +16,8 @@ import {
 } from 'commons/core/Offers/constants'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import * as useNotification from 'commons/hooks/useNotification'
-import { listOffersOfferFactory ,
+import {
+  listOffersOfferFactory,
   venueListItemFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from 'commons/utils/factories/offererAddressFactories'
@@ -29,7 +30,6 @@ import {
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 import { computeAddressDisplayName } from 'repository/venuesService'
-
 
 import {
   IndividualOffersContainer,
@@ -86,10 +86,6 @@ const proVenues = [
     isVirtual: true,
   },
 ]
-const proVenuesOptions = [
-  { value: 'JI', label: 'Ma venue' },
-  { value: 'JQ', label: 'Mon offerer - Offre numérique' },
-]
 
 const offererAddress: GetOffererAddressResponseModel[] = [
   offererAddressFactory({
@@ -139,7 +135,6 @@ describe('IndividualOffersScreen', () => {
       offers: offersRecap,
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
       redirectWithSelectedFilters: vi.fn(),
-      venues: proVenuesOptions,
       offererAddresses: offererAddressOptions,
       categories: categoriesAndSubcategories.categories.map(
         ({ id, proLabel }) => ({ value: id, label: proLabel })
@@ -382,9 +377,7 @@ describe('IndividualOffersScreen', () => {
       },
     ]
 
-    renderOffers(props, {
-      features: ['WIP_ENABLE_OFFER_ADDRESS'],
-    })
+    renderOffers(props)
 
     const addressSelect = screen.getByLabelText('Localisation')
     expect(addressSelect).not.toBeDisabled()
@@ -661,7 +654,7 @@ describe('IndividualOffersScreen', () => {
     vi.spyOn(api, 'getVenues').mockResolvedValue({
       venues: [
         venueListItemFactory({ name: 'Une venue physique & permanente' }),
-      ]
+      ],
     })
     vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue({
       id: 42,

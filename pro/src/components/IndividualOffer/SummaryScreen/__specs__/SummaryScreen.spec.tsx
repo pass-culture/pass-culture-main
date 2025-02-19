@@ -638,8 +638,7 @@ describe('Summary', () => {
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
-        ),
-        { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
+        )
       )
 
       expect(await screen.findByText(/Structure/)).toBeInTheDocument()
@@ -677,8 +676,7 @@ describe('Summary', () => {
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
-        ),
-        { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
+        )
       )
 
       expect(await screen.findByText(/Structure/)).toBeInTheDocument()

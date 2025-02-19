@@ -72,9 +72,7 @@ describe('UsefulInformationsSummaryScreen', () => {
       },
     })
 
-    renderUsefulInformationsSummaryScreen(offer, {
-      features: ['WIP_ENABLE_OFFER_ADDRESS'],
-    })
+    renderUsefulInformationsSummaryScreen(offer)
 
     expect(
       await screen.findByText('Localisation de l’offre')

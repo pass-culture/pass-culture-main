@@ -1,5 +1,4 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
@@ -12,7 +11,6 @@ interface CollectiveDataEditionReadOnlyProps {
 export const CollectiveDataEditionReadOnly = ({
   venue,
 }: CollectiveDataEditionReadOnlyProps) => {
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   return (
     <SummarySection
       title="Vos informations pour les enseignants"
@@ -37,13 +35,7 @@ export const CollectiveDataEditionReadOnly = ({
         />
       </SummarySubSection>
 
-      <SummarySubSection
-        title={
-          isOfferAddressEnabled
-            ? 'Informations de la structure'
-            : 'Informations du lieu'
-        }
-      >
+      <SummarySubSection title="Informations de la structure">
         <SummaryDescriptionList
           descriptions={[
             {

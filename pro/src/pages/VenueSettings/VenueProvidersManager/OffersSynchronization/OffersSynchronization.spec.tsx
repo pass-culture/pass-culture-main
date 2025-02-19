@@ -38,9 +38,7 @@ describe('OffersSynchronization', () => {
     })
 
     it('should display the right wording with the OA FF', () => {
-      renderComponent(props, {
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
+      renderComponent(props)
 
       expect(
         screen.getByText(/Vous pouvez synchroniser votre structure/)
