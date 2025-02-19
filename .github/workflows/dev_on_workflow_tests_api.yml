@@ -537,16 +537,6 @@ jobs:
             alembic upgrade post@head
             flask install_data
 
-      - name: "Mount a Volume with pcapi rights"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests -u 0
-          run: |
-            echo "Changing owner and group for directory test"
-            chown -R pcapi:pcapi /tests
-
       # The next 2 steps will be executed only when there IS a cache hit (exact match or not).
       # When a matrix job is retried, it will reuse the same artifact to execute the exact same split.
       - name: "Download test durations artifact"
@@ -559,6 +549,16 @@ jobs:
       - name: "Move test durations"
         if: needs.restore-test-durations.outputs.restored == 'true'
         run: sudo mv ${{ runner.temp }}/.test_durations ${{ runner.workspace }}/pass-culture-main/api/tests/.test_durations
+
+      - name: "Mount a Volume with pcapi rights"
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ steps.compute-image-name.outputs.image_name }}
+          shell: bash
+          options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests -u 0
+          run: |
+            echo "Changing owner and group for directory test"
+            chown -R pcapi:pcapi /tests
 
         # When running pytest, we write the new test durations using options `--store-durations --clean-durations`.
         # Option `--clean-durations` is undocumented but you can check its implementation here:
