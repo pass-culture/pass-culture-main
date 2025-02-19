@@ -34,13 +34,13 @@ jobs:
         run: |
           echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
           echo "::notice:: Running tests api with ${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}"
-      - name: "Download artifact"
+      - name: "Download docker image artifact"
         if: ${{ inputs.tag != 'latest' }}
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
           path: ${{ runner.temp }}
-      - name: "Docker load artifact."
+      - name: "Docker load image artifact."
         if: ${{ inputs.tag != 'latest' }}
         run: |
           docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
@@ -49,7 +49,7 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
+      - name: "Get Secrets"
         id: secrets
         uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
@@ -92,7 +92,7 @@ jobs:
         with:
           image: ${{ steps.compute-image-name.outputs.image_name }}
           run: mypy src
-      - name: "Slack Notification"
+      - name: "Slack Notification of failure"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: slackapi/slack-github-action@v1.27.0
         with:
@@ -126,13 +126,13 @@ jobs:
       - name: "Compute docker image name:tag"
         id: compute-image-name
         run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
-      - name: "Download artifact"
+      - name: "Download docker image artifact"
         if: ${{ inputs.tag != 'latest' }}
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
           path: ${{ runner.temp }}
-      - name: "Docker load artifact."
+      - name: "Docker load image artifact"
         if: ${{ inputs.tag != 'latest' }}
         run: |
           docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
@@ -141,7 +141,7 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
+      - name: "Get Secrets"
         id: secrets
         uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
@@ -174,7 +174,7 @@ jobs:
         with:
           image: ${{ steps.compute-image-name.outputs.image_name }}
           run: pylint src tests --jobs=3
-      - name: "Slack Notification"
+      - name: "Slack Notification of failure"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: slackapi/slack-github-action@v1.27.0
         with:
@@ -253,13 +253,13 @@ jobs:
       - name: "Compute docker image name:tag"
         id: compute-image-name
         run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
-      - name: "Download artifact"
+      - name: "Download docker image artifact"
         if: ${{ inputs.tag != 'latest' }}
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
           path: ${{ runner.temp }}
-      - name: "Docker load artifact."
+      - name: "Docker load image artifact"
         if: ${{ inputs.tag != 'latest' }}
         run: |
           docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
@@ -268,7 +268,7 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
+      - name: "Get Secrets"
         id: secrets
         uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
@@ -300,7 +300,7 @@ jobs:
             LINE_COUNT=$(wc -l <<< "$(alembic heads)")
             echo "Found "$LINE_COUNT" head(s)"
             if [ ${LINE_COUNT} -ne 2 ]; then echo "There must be two heads";exit 1;fi
-      - name: "Check database and model are aligned"
+      - name: "Check database and models are aligned"
         uses: addnab/docker-run-action@v3
         with:
           image: ${{ steps.compute-image-name.outputs.image_name }}
@@ -313,7 +313,7 @@ jobs:
             alembic upgrade post@head
             flask install_data
             alembic check
-      - name: "Check that downgrade scripts are correctly written"
+      - name: "Check migration downgrade scripts"
         uses: addnab/docker-run-action@v3
         with:
           image: ${{ steps.compute-image-name.outputs.image_name }}
@@ -367,7 +367,7 @@ jobs:
               squawk --config .squawk.toml ||
               status_code=1
             exit $status_code
-      - name: "Slack Notification"
+      - name: "Slack Notification of failure"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: slackapi/slack-github-action@v1.27.0
         with:
@@ -394,7 +394,7 @@ jobs:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
 
   restore-test-durations:
-    name: Restore pytest durations
+    name: "Restore pytest durations"
     runs-on: ubuntu-22.04
     outputs:
       # This output will be used to know if we had a cache hit (exact match or not), or no cache hit at all.
@@ -407,16 +407,16 @@ jobs:
       date: ${{ steps.get-date.outputs.date }}
     steps:
       # http://man7.org/linux/man-pages/man1/date.1.html
-      - name: Get Date
+      - name: "Get Date"
         working-directory: /
         id: get-date
         run: |
           echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
         shell: bash
 
-      # It's mandatory to use the exact same path when saving/restoring cache, otherwise it won't work
-      # (the same key is not enough - cf https://github.com/actions/cache/blob/main/README.md#cache-version).
-      - name: Restore test durations
+    # It's mandatory to use the exact same path when saving/restoring cache, otherwise it won't work
+    # (the same key is not enough - cf https://github.com/actions/cache/blob/main/README.md#cache-version).
+      - name: "Restore test durations from cache"
         id: restore-test-durations
         uses: actions/cache/restore@v4
         with:
@@ -430,7 +430,7 @@ jobs:
       # Then we upload the restored test durations as an artifact. This way, each matrix job will download
       # it when it starts. When a matrix job is manually retried, it will also reuse the artifact (to
       # retry the exact same tests, even if the cache has been updated in the meantime).
-      - name: Upload test durations
+      - name: "Upload test durations as artifact"
         if: steps.restore-test-durations.outputs.cache-hit != ''
         uses: actions/upload-artifact@v4
         with:
@@ -484,13 +484,13 @@ jobs:
       - name: "Compute docker image name:tag"
         id: compute-image-name
         run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
-      - name: "Download artifact"
+      - name: "Download docker image artifact"
         if: ${{ inputs.tag != 'latest' }}
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
           path: ${{ runner.temp }}
-      - name: "Docker load artifact."
+      - name: "Docker load image artifact"
         if: ${{ inputs.tag != 'latest' }}
         run: |
           docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
@@ -499,7 +499,7 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
+      - name: "Get Secrets"
         id: secrets
         uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
@@ -542,12 +542,12 @@ jobs:
           shell: bash
           options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests -u 0
           run: |
-            echo "Changing owner and group fort directory test"
+            echo "Changing owner and group for directory test"
             chown -R pcapi:pcapi /tests
 
       # These two steps will be executed only when there IS a cache hit (exact match or not).
       # When a matrix job is retried, it will reuse the same artifact to execute the exact same split.
-      - name: Download test durations
+      - name: "Download test durations"
         if: needs.restore-test-durations.outputs.restored == 'true'
         uses: actions/download-artifact@v4
         with:
@@ -574,7 +574,7 @@ jobs:
             --durations=10 --junitxml='/tests/junit.xml' \
             -q --color=yes
 
-      - name: Upload test durations
+      - name: "Upload test durations"
         if: github.run_attempt == 1
         uses: actions/upload-artifact@v4
         with:
@@ -618,7 +618,7 @@ jobs:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
 
   cache-test-durations:
-    name: Cache test durations
+    name: "Cache test durations"
     needs: pytest
     if: github.run_attempt == 1 && (success() || failure())
     runs-on: ubuntu-22.04
@@ -630,7 +630,7 @@ jobs:
           path: ${{ runner.temp }}
 
       # This step regroups the 8 partial files and sorts keys alphabetically
-      - name: Merge all partial test durations
+      - name: "Merge all partial test durations"
         # overrides workflow default
         working-directory: /
         run: |
@@ -640,7 +640,7 @@ jobs:
 
       # This step uploads the final file as an artifact.
       # We can download it from the GitHub GUI, and we would then commit it if we implemented a fallback mechanism
-      - name: Upload final test durations
+      - name: "Upload final test durations"
         uses: actions/upload-artifact@v4
         with:
           name: test-durations-after
@@ -648,7 +648,7 @@ jobs:
           if-no-files-found: warn
           include-hidden-files: true
 
-      - name: Get Date
+      - name: "Get Date"
         working-directory: /
         id: get-date
         run: |
@@ -657,7 +657,7 @@ jobs:
 
       # Finally, we cache the new test durations. This file will be restored in next CI execution
       # (see step "Restore test durations" above).
-      - name: Cache final test durations
+      - name: "Cache final test durations"
         uses: actions/cache/save@v4
         with:
           path: ${{ runner.temp }}/.test_durations
