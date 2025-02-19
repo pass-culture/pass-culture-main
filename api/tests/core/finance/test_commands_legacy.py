@@ -221,7 +221,7 @@ def test_when_there_is_a_debit_note_to_generate_on_partial_incident(run_command,
         str(second_batch.id),
     )
 
-    invoices = finance_models.Invoice.query.all()
+    invoices = finance_models.Invoice.query.order_by(finance_models.Invoice.id).all()
     assert len(invoices) == 2
     assert invoices[1].reference.startswith("A")
     assert invoices[1].bankAccountId == bank_account_id
