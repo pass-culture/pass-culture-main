@@ -388,12 +388,25 @@ class User(PcObject, Base, Model, DeactivableMixin):
         return min((deposit.dateCreated for deposit in self.deposits), default=None)
 
     @property
+    def received_pass_17_18(self) -> bool:
+        return DepositType.GRANT_17_18 in [deposit.type for deposit in self.deposits]
+
+    @property
     def received_pass_15_17(self) -> bool:
         return DepositType.GRANT_15_17 in [deposit.type for deposit in self.deposits]
 
     @property
     def received_pass_18(self) -> bool:
         return DepositType.GRANT_18 in [deposit.type for deposit in self.deposits]
+
+    @property
+    def received_pass_18_v3(self) -> bool:
+        from pcapi.core.finance.models import RecreditType
+
+        if not self.received_pass_17_18:
+            return False
+
+        return RecreditType.RECREDIT_18 in [r.recreditType for r in self.deposit.recredits] if self.deposit else False
 
     @property
     def deposit_version(self) -> int | None:

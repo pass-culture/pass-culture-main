@@ -123,16 +123,22 @@ def get_pre_decree_eligibility(
 def get_first_eligible_registration_date(
     user: users_models.User,
     birth_date: datetime.date | None,
-    eligibility: users_models.EligibilityType | None = None,
+    eligibility: users_models.EligibilityType | None | list[users_models.EligibilityType] = None,
 ) -> datetime.datetime | None:
     fraud_checks = user.beneficiaryFraudChecks
     if not fraud_checks or not birth_date:
         return None
 
+    eligibility_types = []
+    if isinstance(eligibility, list):
+        eligibility_types = eligibility
+    elif eligibility is not None:
+        eligibility_types = [eligibility]
+
     registration_dates = sorted(
         fraud_check.get_min_date_between_creation_and_registration()
         for fraud_check in fraud_checks
-        if (eligibility is None or fraud_check.eligibilityType == eligibility)
+        if (not eligibility_types or fraud_check.eligibilityType in eligibility_types)
     )
     eligible_registration_dates = [
         registration_date
