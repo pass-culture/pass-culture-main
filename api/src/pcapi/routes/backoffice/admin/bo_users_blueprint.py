@@ -60,7 +60,9 @@ def search_bo_users() -> utils.BackofficeResponse:
 
     users = users.options(
         # suspension_reason is shown in result card; joinedload to avoid N+1 query
-        sa.orm.joinedload(users_models.User.action_history)
+        sa.orm.joinedload(users_models.User.action_history),
+        # deposits is used to compute the role tag in the card; joinedload to avoid N+1 query
+        sa.orm.joinedload(users_models.User.deposits),
     )
 
     paginated_rows = users.paginate(
@@ -108,6 +110,7 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
             sa.orm.joinedload(users_models.User.backoffice_profile)
             .joinedload(perm_models.BackOfficeUserProfile.roles)
             .joinedload(perm_models.Role.permissions),
+            sa.orm.joinedload(users_models.User.deposits),
         )
         .one_or_none()
     )
