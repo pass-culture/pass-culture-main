@@ -39,6 +39,7 @@ const defaultProps = {
   options: defaultOptions,
   legend: 'Département',
   label: 'Sélectionner un département',
+  onSelectedOptionsChanged: () => {},
 }
 
 export const Default: StoryObj<typeof MultiSelect> = {
@@ -94,7 +95,9 @@ export const WithError: StoryObj<typeof MultiSelect> = {
     ...defaultProps,
     buttonLabel: 'Départements',
     label: 'Sélectionner des départements',
+    showError: true,
     error: 'Veuillez sélectionner un département',
+    onBlur: () => {},
     name: 'départements',
   },
 }
