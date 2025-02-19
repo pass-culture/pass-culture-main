@@ -1,31 +1,23 @@
-import { useFormikContext } from 'formik'
-
 import { StudentLevels } from 'apiClient/adage'
-import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
+import { CheckboxVariant } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
-
-import { useParticipantsOptions } from './useParticipantsOptions'
 
 export const FormParticipants = ({
   disableForm,
-  isTemplate,
 }: {
   disableForm: boolean
   isTemplate: boolean
 }): JSX.Element => {
-  const { values, setFieldValue } =
-    useFormikContext<OfferEducationalFormValues>()
-
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
-  const defaultPartipantsOptions = useParticipantsOptions(
-    values.participants,
-    setFieldValue,
-    isTemplate,
-    isMarseilleEnabled
+  const defaultPartipantsOptions = Object.values(StudentLevels).map(
+    (studentLevel) => ({
+      label: studentLevel,
+      name: `participants.${studentLevel}`,
+    })
   )
 
   const filteredParticipantsOptions = isMarseilleEnabled
@@ -58,6 +50,30 @@ export const FormParticipants = ({
           groupName="participants"
           legend="Cette offre s'adresse aux élèves de :"
           disabled={disableForm}
+        />
+
+        <CheckboxGroup
+          groupName="participants"
+          variant={CheckboxVariant.BOX}
+          legend="Cette offre s'adresse aux élèves de :"
+          disabled={disableForm}
+          group={[
+            {
+              name: 'college',
+              label: 'Collège',
+              childrenOnChecked: (
+                <CheckboxGroup
+                  group={filteredParticipantsOptions.filter((option) =>
+                    option.label.startsWith('Collège')
+                  )}
+                  groupName="college"
+                  disabled={disableForm}
+                  legend="Niveau du collège"
+                  inline={true}
+                />
+              ),
+            },
+          ]}
         />
       </FormLayout.Row>
     </FormLayout.Section>
