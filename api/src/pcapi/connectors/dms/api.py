@@ -28,6 +28,7 @@ GET_SINGLE_APPLICATION_QUERY_NAME = "beneficiaries/get_single_application_detail
 GET_APPLICATIONS_WITH_DETAILS_QUERY_NAME = "beneficiaries/get_applications_with_details"
 MAKE_ON_GOING_MUTATION_NAME = "make_on_going"
 MAKE_ACCEPTED_MUTATION_NAME = "make_accepted"
+MAKE_REFUSED_MUTATION_NAME = "make_refused"
 MARK_WITHOUT_CONTINUATION_MUTATION_NAME = "mark_without_continuation"
 SEND_USER_MESSAGE_QUERY_NAME = "send_user_message"
 UPDATE_TEXT_ANNOTATION_QUERY_NAME = "update_text_annotation"
@@ -196,6 +197,28 @@ class DMSGraphQLClient:
             MAKE_ACCEPTED_MUTATION_NAME,
             key="dossierAccepter",
             log_state="accepted",
+            application_techid=application_techid,
+            instructeur_techid=instructeur_techid,
+            motivation=motivation,
+            disable_notification=disable_notification,
+        )
+
+    def make_refused(
+        self,
+        application_techid: str,
+        instructeur_techid: str,
+        motivation: str,
+        *,
+        disable_notification: bool = False,
+        from_draft: bool = False,
+    ) -> dict:
+        if from_draft:
+            # Can be refused only when on_going ("en instruction")
+            self.make_on_going(application_techid, instructeur_techid, disable_notification=True)
+        return self._execute_mutation(
+            MAKE_REFUSED_MUTATION_NAME,
+            key="dossierRefuser",
+            log_state="rejected",
             application_techid=application_techid,
             instructeur_techid=instructeur_techid,
             motivation=motivation,

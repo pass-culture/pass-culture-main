@@ -58,6 +58,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE = (
         "Permet l'affichage du lien vers DMS sur la page de maintenance pour les 15-17 ans"
     )
+    ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION = (
+        "Active le refus automatique des dossiers DS (DMS) de crédit en fonction de l'annotation d'un instructeur"
+    )
     ENABLE_DS_SYNC_FOR_USER_ACCOUNT_UPDATE_REQUESTS = (
         "Active la synchronisation des demandes de modifications avec DS (DMS)"
     )
@@ -190,6 +193,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_CULTURAL_SURVEY,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE,
+    FeatureToggle.ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION,
     FeatureToggle.ENABLE_DS_SYNC_FOR_USER_ACCOUNT_UPDATE_REQUESTS,
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
     FeatureToggle.ENABLE_EMS_INTEGRATION,

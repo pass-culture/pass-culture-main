@@ -252,6 +252,27 @@ class DmsAnnotation(pydantic_v1.BaseModel):
     text: str | None
 
 
+class DmsInstructorAnnotation(enum.Enum):
+    NEL = "NEL"  # Non éligible
+    IDP = "IDP"  # ID périmée
+    IDN = "IDN"  # Erreur n° ID
+    SM = "SM"  # Selfie Manquant
+    SI = "SI"  # Selfie Incorrect
+    IDM = "IDM"  # ID manquante
+    IDR = "IDR"  # ID réfugié ou récipissé
+    TVR = "TVR"  # Titre de voyage pour réfugié
+    DN = "DN"  # Date de naissance différente de l'ID
+    EC = "EC"  # Erreur civilité (prénom, nom)
+    JD = "JC"  # Justificatif de domicile < 1 an
+    AH = "AH"  # Attestation d'Hébergement incomplète
+    AD = "AD"  # Adresse incomplète
+    FID = "FID"  # Format ID incorrect (jpg/pdf)
+    IDI = "IDI"  # ID illisible
+    CP = "CP"  # Code postal
+    IDD = "IDD"  # ID différentes (pièce/selfie)
+    IDH = "IDH"  # ID Hébergeur illisible ou incorrecte
+
+
 class DmsFieldErrorKeyEnum(enum.Enum):
     birth_date = "birth_date"
     first_name = "first_name"
@@ -279,6 +300,7 @@ class DMSContent(common_models.IdentityCheckContent):
     field_errors: list[DmsFieldErrorDetails] | None
     first_name: str
     id_piece_number: str | None
+    instructor_annotation: DmsInstructorAnnotation | None
     last_name: str
     latest_modification_datetime: datetime.datetime | None
     phone: str | None

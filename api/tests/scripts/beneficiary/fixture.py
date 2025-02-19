@@ -46,6 +46,7 @@ def make_graphql_application(  # pylint: disable=dangerous-default-value
     application_techid: str | None = None,
     procedure_number: int | None = 8888,
     labels: dict | None = {},
+    annotations: list[dict] | None = None,
     application_labels: list | None = None,
 ) -> dict:
     if messages is None:
@@ -152,7 +153,7 @@ def make_graphql_application(  # pylint: disable=dangerous-default-value
                 "stringValue": "",
             },
         ],
-        "annotations": [],
+        "annotations": annotations if annotations else [],
         "usager": {"id": "WSJvY2VkdXJlLTQ0Nhju", "email": email},
         "demandeur": {
             "id": "ABCvY2VkdXJlLTQ0Nxyz",

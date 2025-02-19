@@ -41,7 +41,8 @@ DMS_ACTIVITY_ENUM_MAPPING = {
     "Volontaire en service civique rémunéré": users_models.ActivityEnum.VOLUNTEER.value,
 }
 
-DMS_ANNOTATION_SLUG = "AN_001"
+DMS_BACKEND_ANNOTATION_SLUG = "AN_001"
+DMS_INSTRUCTOR_ANNOTATION_LABEL = "Nouvelle annotation ID"
 
 
 def _sanitize_id_piece_number(id_piece_number: str) -> str:
@@ -73,6 +74,7 @@ def parse_beneficiary_information_graphql(
     phone = None
     postal_code = None
     annotation = None
+    instructor_annotation = None
 
     field_errors: list[fraud_models.DmsFieldErrorDetails] = []
 
@@ -138,11 +140,15 @@ def parse_beneficiary_information_graphql(
             city = value
 
     for remote_annotation in application_detail.annotations:
-        if DMS_ANNOTATION_SLUG in remote_annotation.label:
+        if DMS_BACKEND_ANNOTATION_SLUG in remote_annotation.label:
             annotation = fraud_models.DmsAnnotation(
                 id=remote_annotation.id, label=remote_annotation.label, text=remote_annotation.value
             )
-            break
+        if remote_annotation.label == DMS_INSTRUCTOR_ANNOTATION_LABEL:
+            try:
+                instructor_annotation = fraud_models.DmsInstructorAnnotation(remote_annotation.value)
+            except ValueError:
+                pass  # Field is filled manually, do not raise an error when it does not match any known value
 
     return fraud_models.DMSContent(  # type: ignore[call-arg]
         activity=activity,
@@ -157,6 +163,7 @@ def parse_beneficiary_information_graphql(
         field_errors=field_errors,
         first_name=first_name,
         id_piece_number=id_piece_number,
+        instructor_annotation=instructor_annotation,
         last_name=last_name,
         latest_modification_datetime=application_detail.latest_modification_datetime,
         phone=phone,

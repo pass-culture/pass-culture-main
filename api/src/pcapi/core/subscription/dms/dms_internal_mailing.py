@@ -25,6 +25,15 @@ DMS_ERROR_MESSAGE_USER_NOT_FOUND = """Bonjour,
                 L’équipe pass Culture"""
 
 
+DMS_MESSAGE_REFUSED_USER_NOT_ELIGIBLE = """Ta date de naissance indique que tu n'es pas éligible."""
+
+DMS_MESSAGE_REFUSED_ID_EXPIRED = """Le document utilisé pour ton inscription est périmé.
+Une pièce d'identité en cours de validité est nécessaire pour ton inscription.
+Si tu n'en as pas, tu peux te rendre sur le site https://ants.gouv.fr/.
+Lorsque tu recevras ta nouvelle pièce d'identité, tu pourras renouveler ta demande d'inscription au pass Culture.
+"""
+
+
 def build_field_errors_user_message(field_errors: list[fraud_models.DmsFieldErrorDetails]) -> str:
     error_keys = [error.key for error in field_errors]
     field_errors_list_str = "\n".join(f" - {FIELD_ERROR_LABELS.get(field.key)}" for field in field_errors)
