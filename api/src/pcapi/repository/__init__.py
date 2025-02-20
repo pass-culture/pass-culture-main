@@ -6,6 +6,7 @@ from types import TracebackType
 import typing
 
 from flask import g
+from sqlalchemy.exc import InternalError
 
 from pcapi import settings
 from pcapi.models import db
@@ -169,16 +170,17 @@ def _manage_session() -> None:
     g.pop("_session_to_commit", None)
     g.pop("_managed_session", None)
     if success:
-        try:
-            on_commit_callbacks = getattr(g, "_on_commit_callbacks", [])
-            for callback in on_commit_callbacks:
-                if not callback():
-                    break
-        finally:
-            # rollback twice because of the nested session
-            db.session.rollback()
-            db.session.rollback()
+        on_commit_callbacks = getattr(g, "_on_commit_callbacks", [])
+        for callback in on_commit_callbacks:
+            if not callback():
+                break
     g.pop("_on_commit_callbacks", None)
+
+    try:
+        db.session.execute("SELECT NOW()")
+    except InternalError:
+        db.session.rollback()
+        raise
 
 
 def on_commit(func: typing.Callable[[], typing.Any], *, robust: bool = False) -> None:
