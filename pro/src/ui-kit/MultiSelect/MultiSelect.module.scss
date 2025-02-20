@@ -95,6 +95,10 @@
   width: rem.torem(16px);
   height: rem.torem(16px);
   color: var(--color-black);
+
+  &-disabled {
+    color: var(--color-grey-dark)
+  }
 }
 
 .chevron-open {

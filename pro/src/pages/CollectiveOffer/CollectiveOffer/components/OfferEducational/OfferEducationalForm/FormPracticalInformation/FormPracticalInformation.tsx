@@ -181,7 +181,7 @@ export const FormPracticalInformation = ({
           <MultiSelect
             label={INTERVENTION_AREA_LABEL}
             name="interventionArea"
-            buttonLabel="Zone de mobilité"
+            buttonLabel="Département(s)"
             options={offerInterventionOptions}
             selectedOptions={offerInterventionOptions.filter((op) =>
               values.interventionArea.includes(op.id)

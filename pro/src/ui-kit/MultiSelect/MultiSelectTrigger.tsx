@@ -56,7 +56,7 @@ export const MultiSelectTrigger = ({
           <span className={styles['trigger-label']}>{buttonLabel}</span>
         </div>
         <SvgIcon
-          className={`${styles['chevron']} ${isOpen ? styles['chevronOpen'] : ''}`}
+          className={`${styles['chevron']} ${isOpen ? styles['chevronOpen'] : ''} ${disabled ? styles['chevron-disabled'] : ''}`}
           src={isOpen ? fullUpIcon : fullDownIcon}
         />
       </button>

@@ -155,7 +155,7 @@ describe('CollectiveDataEdition', () => {
       const phoneField = screen.getByLabelText(/Numéro de téléphone/)
       const emailField = screen.getByLabelText(/Email/)
       const domainsField = screen.getByLabelText('Domaines artistiques')
-      const interventionAreaField = screen.getByLabelText('Zone de mobilité')
+      const interventionAreaField = screen.getByLabelText('Département(s)')
       const statusField = screen.getByLabelText(/Statut/)
 
       expect(descriptionField).toBeInTheDocument()
@@ -310,7 +310,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-      const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
+      const interventionAreaField = screen.getByLabelText('Département(s)')
       await userEvent.click(interventionAreaField)
 
       expect(
@@ -331,7 +331,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-      const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
+      const interventionAreaField = screen.getByLabelText('Département(s)')
       await userEvent.click(interventionAreaField)
       await waitFor(() =>
         expect(
@@ -351,7 +351,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-      const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
+      const interventionAreaField = screen.getByLabelText('Département(s)')
       await userEvent.click(interventionAreaField)
 
       const mainlandOption = screen.getByRole('checkbox', {

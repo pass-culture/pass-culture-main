@@ -58,7 +58,7 @@ describe('screens | OfferEducational', () => {
       screen.getByLabelText('Téléphone', { exact: false }),
       screen.getByLabelText(`${EMAIL_LABEL} *`),
       screen.getByLabelText(`${NOTIFICATIONS_EMAIL_LABEL} *`),
-      screen.getByLabelText(`Zone de mobilité`),
+      screen.getByLabelText(`Département(s)`),
     ]
     const submitButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',
