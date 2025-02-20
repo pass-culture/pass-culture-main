@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
@@ -13,6 +13,7 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
+  SAVED_OFFERER_ID_KEY,
 } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
@@ -21,10 +22,13 @@ import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
 import { useNotification } from 'commons/hooks/useNotification'
 import {
   updateOffererIsOnboarded,
+  updateOffererNames,
   updateSelectedOffererId,
 } from 'commons/store/offerer/reducer'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { updateUser } from 'commons/store/user/reducer'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
+import { storageAvailable } from 'commons/utils/storageAvailable'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
@@ -54,6 +58,7 @@ export const Validation = (): JSX.Element => {
   const dispatch = useDispatch()
   const { currentUser } = useCurrentUser()
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
+  const currentOffererId = useSelector(selectCurrentOffererId)
 
   const targetCustomerLabel = {
     [Target.INDIVIDUAL]: 'Au grand public',
@@ -115,12 +120,44 @@ export const Validation = (): JSX.Element => {
         token,
       }
 
+      // Sending offerer data…
       const response = await api.saveNewOnboardingData(data)
+
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
-      dispatch(updateSelectedOffererId(response.id))
+
+      // In the redux store, we can have 2 values for the currentOffererId:
+      // - null (means that it's the first time the user creates an offerer)
+      // - an offerer ID (means that the user already has an offerer, and is currently adding a new structure)
+
+      // Update the offerer names list
+      const offerers = await api.listOfferersNames()
+      dispatch(updateOffererNames(offerers.offerersNames))
+
+      // If API returns an offerer ID that is different from the one in the redux store, we must update it too
+      if (currentOffererId !== response.id) {
+        // Update the current offerer ID in the redux store and in the local storage if available
+        dispatch(updateSelectedOffererId(response.id))
+        if (storageAvailable('localStorage')) {
+          localStorage.setItem(SAVED_OFFERER_ID_KEY, response.id.toString())
+        }
+      }
+
+      // Checks if user should see the didactic onboarding (FF + A/B Test)
       if (isDidacticOnboardingEnabled) {
-        dispatch(updateOffererIsOnboarded(false))
-        return navigate('/onboarding')
+        // If currentOffererId is null, offerer is not onboarded yet
+        if (currentOffererId === null) {
+          dispatch(updateOffererIsOnboarded(false))
+          return navigate('/onboarding')
+        }
+
+        // Else, we should getting the new offererId onboarded status (to redirect to /onboarding or /accueil)
+        const { isOnboarded } = await api.getOfferer(response.id)
+        dispatch(updateOffererIsOnboarded(isOnboarded))
+        if (!isOnboarded) {
+          navigate('/onboarding')
+        } else {
+          navigate('/accueil')
+        }
       } else {
         notify.success('Votre structure a bien été créée')
         navigate('/accueil')
