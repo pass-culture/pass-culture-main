@@ -44,179 +44,185 @@ const renderAttachmentInvitations = async () => {
 }
 
 describe('AttachmentInvitations', () => {
-  beforeEach(() => {
-    vi.spyOn(api, 'getOffererMembers').mockResolvedValueOnce({ members: [] })
-    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-    }))
-  })
+  describe('withMembers', () => {
+    it('should display button to show all members', async () => {
+      vi.spyOn(api, 'getOffererMembers').mockResolvedValue({
+        members: [
+          { email: 'email1@gmail.com', status: OffererMemberStatus.VALIDATED },
+          { email: 'email2@gmail.com', status: OffererMemberStatus.VALIDATED },
+          { email: 'email3@gmail.com', status: OffererMemberStatus.VALIDATED },
+          { email: 'email7@gmail.com', status: OffererMemberStatus.VALIDATED },
+          { email: 'email8@gmail.com', status: OffererMemberStatus.VALIDATED },
+          { email: 'email9@gmail.com', status: OffererMemberStatus.VALIDATED },
+          { email: 'email10@gmail.com', status: OffererMemberStatus.VALIDATED },
+          { email: 'email12@gmail.com', status: OffererMemberStatus.VALIDATED },
+          { email: 'email4@gmail.com', status: OffererMemberStatus.PENDING },
+          { email: 'email5@gmail.com', status: OffererMemberStatus.PENDING },
+          { email: 'email6@gmail.com', status: OffererMemberStatus.PENDING },
+          { email: 'email11@gmail.com', status: OffererMemberStatus.VALIDATED },
+          { email: 'email13@gmail.com', status: OffererMemberStatus.VALIDATED },
+          { email: 'email14@gmail.com', status: OffererMemberStatus.VALIDATED },
+        ],
+      })
 
-  it('The user should see a button to display the invite form', async () => {
-    await renderAttachmentInvitations()
+      await renderAttachmentInvitations()
 
-    expect(screen.getByText('Ajouter un collaborateur')).toBeInTheDocument()
-    expect(
-      screen.queryByText(
-        /Vous pouvez inviter des collaborateurs à rejoindre votre espace/
-      )
-    ).not.toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText('email1@gmail.com')).toBeInTheDocument()
+      })
 
-    expect(
-      screen.queryByRole('button', { name: 'Voir moins de collaborateurs' })
-    ).not.toBeInTheDocument()
-  })
+      expect(screen.getAllByText(/Validé/)).toHaveLength(8)
+      expect(screen.getAllByText(/En attente/)).toHaveLength(2)
 
-  it('should display the invite form on click', async () => {
-    await renderAttachmentInvitations()
-
-    await userEvent.click(screen.getByText('Ajouter un collaborateur'))
-
-    expect(
-      screen.queryByText('Ajouter un collaborateur')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.getByText(
-        /Vous pouvez inviter des collaborateurs à rejoindre votre espace/
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should display the form error on invalid email', async () => {
-    await renderAttachmentInvitations()
-
-    await userEvent.click(screen.getByText('Ajouter un collaborateur'))
-    await userEvent.type(screen.getByLabelText('Adresse email'), '123456')
-    await userEvent.click(screen.getByText('Inviter'))
-    expect(
-      screen.getByText(/Veuillez renseigner un email valide/)
-    ).toBeInTheDocument()
-  })
-
-  it('should display add the email on success and trigger buttons event', async () => {
-    await renderAttachmentInvitations()
-
-    await userEvent.click(screen.getByText('Ajouter un collaborateur'))
-
-    expect(mockLogEvent).toHaveBeenCalledWith('hasClickedAddCollaborator', {
-      offererId: 1,
-    })
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-
-    await userEvent.type(
-      screen.getByLabelText('Adresse email'),
-      'test@test.fr'
-    )
-    await userEvent.click(screen.getByText('Inviter'))
-
-    await waitFor(() => {
       expect(
-        screen.getByText(/L'invitation a bien été envoyée/)
+        screen.getByRole('button', { name: 'Voir plus de collaborateurs' })
       ).toBeInTheDocument()
-    })
 
-    expect(mockLogEvent).toHaveBeenCalledWith('hasSentInvitation', {
-      offererId: 1,
-    })
+      await userEvent.click(screen.getByText('Voir plus de collaborateurs'))
 
-    expect(mockLogEvent).toHaveBeenCalledTimes(2)
+      expect(screen.getAllByText(/En attente/)).toHaveLength(3)
 
-    expect(screen.getByText('test@test.fr')).toBeInTheDocument()
-  })
-
-  it('should display email error message if user is already invited', async () => {
-    await renderAttachmentInvitations()
-
-    await userEvent.click(screen.getByText('Ajouter un collaborateur'))
-
-    await userEvent.type(
-      screen.getByLabelText('Adresse email'),
-      'test@test.fr'
-    )
-
-    vi.spyOn(api, 'inviteMember').mockRejectedValue(
-      new ApiError(
-        { method: 'POST' } as ApiRequestOptions,
-        {
-          status: 400,
-          body: {
-            email: 'Une invitation a déjà été envoyée à ce collaborateur',
-          },
-        } as ApiResult,
-        ''
-      )
-    )
-
-    await userEvent.click(screen.getByText('Inviter'))
-
-    await waitFor(() => {
       expect(
-        screen.getByText(/Une invitation a déjà été envoyée à ce collaborateur/)
+        screen.getByRole('button', { name: 'Voir moins de collaborateurs' })
       ).toBeInTheDocument()
     })
   })
 
-  it('should display default error message if error with server', async () => {
-    await renderAttachmentInvitations()
+  describe('withoutMembers', () => {
+    beforeEach(() => {
+      vi.spyOn(api, 'getOffererMembers').mockResolvedValueOnce({ members: [] })
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+    })
 
-    await userEvent.click(screen.getByText('Ajouter un collaborateur'))
+    it('The user should see a button to display the invite form', async () => {
+      await renderAttachmentInvitations()
 
-    await userEvent.type(
-      screen.getByLabelText('Adresse email'),
-      'test@test.fr'
-    )
+      expect(screen.getByText('Ajouter un collaborateur')).toBeInTheDocument()
+      expect(
+        screen.queryByText(
+          /Vous pouvez inviter des collaborateurs à rejoindre votre espace/
+        )
+      ).not.toBeInTheDocument()
 
-    vi.spyOn(api, 'inviteMember').mockRejectedValue({})
+      expect(
+        screen.queryByRole('button', { name: 'Voir moins de collaborateurs' })
+      ).not.toBeInTheDocument()
+    })
 
-    await userEvent.click(screen.getByText('Inviter'))
+    it('should display the invite form on click', async () => {
+      await renderAttachmentInvitations()
 
-    await waitFor(() => {
+      await userEvent.click(screen.getByText('Ajouter un collaborateur'))
+
+      expect(
+        screen.queryByText('Ajouter un collaborateur')
+      ).not.toBeInTheDocument()
       expect(
         screen.getByText(
-          'Une erreur est survenue lors de l’envoi de l’invitation.'
+          /Vous pouvez inviter des collaborateurs à rejoindre votre espace/
         )
       ).toBeInTheDocument()
     })
-  })
 
-  it('should display button to show all members', async () => {
-    vi.spyOn(api, 'getOffererMembers').mockResolvedValue({
-      members: [
-        { email: 'email1@gmail.com', status: OffererMemberStatus.VALIDATED },
-        { email: 'email2@gmail.com', status: OffererMemberStatus.VALIDATED },
-        { email: 'email3@gmail.com', status: OffererMemberStatus.VALIDATED },
-        { email: 'email7@gmail.com', status: OffererMemberStatus.VALIDATED },
-        { email: 'email8@gmail.com', status: OffererMemberStatus.VALIDATED },
-        { email: 'email9@gmail.com', status: OffererMemberStatus.VALIDATED },
-        { email: 'email10@gmail.com', status: OffererMemberStatus.VALIDATED },
-        { email: 'email12@gmail.com', status: OffererMemberStatus.VALIDATED },
-        { email: 'email4@gmail.com', status: OffererMemberStatus.PENDING },
-        { email: 'email5@gmail.com', status: OffererMemberStatus.PENDING },
-        { email: 'email6@gmail.com', status: OffererMemberStatus.PENDING },
-        { email: 'email11@gmail.com', status: OffererMemberStatus.VALIDATED },
-        { email: 'email13@gmail.com', status: OffererMemberStatus.VALIDATED },
-        { email: 'email14@gmail.com', status: OffererMemberStatus.VALIDATED },
-      ],
+    it('should display the form error on invalid email', async () => {
+      await renderAttachmentInvitations()
+
+      await userEvent.click(screen.getByText('Ajouter un collaborateur'))
+      await userEvent.type(screen.getByLabelText('Adresse email'), '123456')
+      await userEvent.click(screen.getByText('Inviter'))
+      expect(
+        screen.getByText(/Veuillez renseigner un email valide/)
+      ).toBeInTheDocument()
     })
 
-    await renderAttachmentInvitations()
+    it('should display add the email on success and trigger buttons event', async () => {
+      await renderAttachmentInvitations()
 
-    await waitFor(() => {
-      expect(screen.getByText('email1@gmail.com')).toBeInTheDocument()
+      await userEvent.click(screen.getByText('Ajouter un collaborateur'))
+
+      expect(mockLogEvent).toHaveBeenCalledWith('hasClickedAddCollaborator', {
+        offererId: 1,
+      })
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+
+      await userEvent.type(
+        screen.getByLabelText('Adresse email'),
+        'test@test.fr'
+      )
+      await userEvent.click(screen.getByText('Inviter'))
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/L'invitation a bien été envoyée/)
+        ).toBeInTheDocument()
+      })
+
+      expect(mockLogEvent).toHaveBeenCalledWith('hasSentInvitation', {
+        offererId: 1,
+      })
+
+      expect(mockLogEvent).toHaveBeenCalledTimes(2)
+
+      expect(screen.getByText('test@test.fr')).toBeInTheDocument()
     })
 
-    expect(screen.getAllByText(/Validé/)).toHaveLength(8)
-    expect(screen.getAllByText(/En attente/)).toHaveLength(2)
+    it('should display email error message if user is already invited', async () => {
+      await renderAttachmentInvitations()
 
-    expect(
-      screen.getByRole('button', { name: 'Voir plus de collaborateurs' })
-    ).toBeInTheDocument()
+      await userEvent.click(screen.getByText('Ajouter un collaborateur'))
 
-    await userEvent.click(screen.getByText('Voir plus de collaborateurs'))
+      await userEvent.type(
+        screen.getByLabelText('Adresse email'),
+        'test@test.fr'
+      )
 
-    expect(screen.getAllByText(/En attente/)).toHaveLength(3)
+      vi.spyOn(api, 'inviteMember').mockRejectedValue(
+        new ApiError(
+          { method: 'POST' } as ApiRequestOptions,
+          {
+            status: 400,
+            body: {
+              email: 'Une invitation a déjà été envoyée à ce collaborateur',
+            },
+          } as ApiResult,
+          ''
+        )
+      )
 
-    expect(
-      screen.getByRole('button', { name: 'Voir moins de collaborateurs' })
-    ).toBeInTheDocument()
+      await userEvent.click(screen.getByText('Inviter'))
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            /Une invitation a déjà été envoyée à ce collaborateur/
+          )
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('should display default error message if error with server', async () => {
+      await renderAttachmentInvitations()
+
+      await userEvent.click(screen.getByText('Ajouter un collaborateur'))
+
+      await userEvent.type(
+        screen.getByLabelText('Adresse email'),
+        'test@test.fr'
+      )
+
+      vi.spyOn(api, 'inviteMember').mockRejectedValue({})
+
+      await userEvent.click(screen.getByText('Inviter'))
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            'Une erreur est survenue lors de l’envoi de l’invitation.'
+          )
+        ).toBeInTheDocument()
+      })
+    })
   })
 })
