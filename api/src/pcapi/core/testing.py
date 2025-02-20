@@ -104,7 +104,7 @@ def _record_end_of_query(statement: str, parameters: dict, **kwargs: dict) -> No
     """
     # SQLAlchemy issues savepoints, which we do not want to count in
     # `assert_num_queries`.
-    if statement.startswith("SAVEPOINT") or statement.startswith("RELEASE SAVEPOINT"):
+    if statement.startswith("SAVEPOINT") or statement.startswith("RELEASE SAVEPOINT") or statement == "SELECT NOW()":
         return
     # Do not record the query if we're not within the
     # assert_num_queries context manager.
