@@ -1154,12 +1154,20 @@ def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
             models.User.has_non_attached_pro_role,
             models.User.has_pro_role,
         )
+    ).outerjoin(
+        finance_models.Deposit,
+        # load only the last deposit to avoid breaking line count
+        sa.and_(
+            models.User.id == finance_models.Deposit.userId,
+            finance_models.Deposit.expirationDate > datetime.datetime.utcnow(),
+        ),
     )
 
     return _filter_user_accounts(pro_accounts, search_query).options(
         sa.orm.with_expression(models.User.suspension_reason_expression, models.User.suspension_reason.expression),  # type: ignore[attr-defined]
         sa.orm.with_expression(models.User.suspension_date_expression, models.User.suspension_date.expression),  # type: ignore[attr-defined]
         sa.orm.joinedload(models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
+        sa.orm.contains_eager(models.User.deposits),
     )
 
 

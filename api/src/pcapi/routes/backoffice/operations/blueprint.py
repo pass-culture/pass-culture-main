@@ -11,6 +11,7 @@ import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
 from pcapi.connectors import typeform
+from pcapi.core.finance import models as finance_models
 from pcapi.core.operations import api as operations_api
 from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
@@ -164,13 +165,20 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
         )
         .filter(*response_rows_filters)
         .options(
-            sa.orm.joinedload(operations_models.SpecialEventResponse.user).load_only(
+            sa.orm.joinedload(operations_models.SpecialEventResponse.user)
+            .load_only(
                 users_models.User.id,
                 users_models.User.firstName,
                 users_models.User.lastName,
                 users_models.User.phoneNumber,
                 users_models.User.email,
                 users_models.User.roles,
+            )
+            .joinedload(users_models.User.deposits)
+            .load_only(
+                finance_models.Deposit.expirationDate,
+                finance_models.Deposit.type,
+                finance_models.Deposit.version,
             ),
         )
         .order_by(operations_models.SpecialEventResponse.dateSubmitted.desc())

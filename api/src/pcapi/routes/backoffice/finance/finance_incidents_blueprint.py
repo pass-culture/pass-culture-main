@@ -1097,6 +1097,7 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                     bookings_models.Booking.dateUsed,
                     bookings_models.Booking.status,
                     bookings_models.Booking.token,
+                    bookings_models.Booking.usedRecreditType,
                 )
                 .options(
                     # Booking venue info
