@@ -12,6 +12,7 @@ import json
 import logging
 import re
 
+from flask import current_app
 import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
@@ -314,6 +315,10 @@ class ApiAdresseBackend(BaseBackend):
             key_args={"hash_params": hash_params},
             expire=60 * 60 * 24 * 7,  # time between 2 PC main releases
         )
+        if cached_data == json.dumps({"type": "FeatureCollection", "features": []}):
+            # This is a broken response from BAN API, real empty response should look like this
+            # {'type': 'FeatureCollection', 'version': 'draft', 'features': [], 'attribution': 'BAN', 'licence': 'ETALAB-2.0', 'query': 'Pouroi faire', 'filters': {'postcode': '97351'}, 'limit': 1}
+            current_app.redis_client.delete(key_template % {"hash_params": hash_params})
 
         return json.loads(str(cached_data))
 
