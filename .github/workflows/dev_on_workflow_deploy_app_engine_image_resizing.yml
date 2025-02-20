@@ -54,49 +54,47 @@ jobs:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-22.04
     steps:
-      - name: 'Checkout actual repository'
+      - name: "Checkout actual repository"
         uses: actions/checkout@v4.2.2
         with:
           ref: ${{ inputs.base_ref }}
-      - name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v2'
+      - name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v2'
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
       - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
             APP_ENGINE_WORKLOAD_IDENTITY_PROVIDER:${{ inputs.workload_identity_provider_secret_name }}
             APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT:${{ inputs.service_account_secret_name }}
-      - name: 'Authenticate to Google Cloud with ${{ inputs.environment }} App Engine service account'
-        uses: 'google-github-actions/auth@v2'
+      - name: "Authenticate to Google Cloud with ${{ inputs.environment }} App Engine service account"
+        uses: "google-github-actions/auth@v2"
         with:
-          token_format: 'access_token'
+          token_format: "access_token"
           workload_identity_provider: ${{ steps.secrets.outputs.APP_ENGINE_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }}
-      - name: 'Set up Cloud SDK ${{ inputs.environment }} App Engine'
-        uses: 'google-github-actions/setup-gcloud@v2'
+      - name: "Set up Cloud SDK ${{ inputs.environment }} App Engine"
+        uses: "google-github-actions/setup-gcloud@v2"
       - name: "Add sha to image-resizing"
         if: inputs.environment == 'testing'
         working-directory: app-engine/image-resizing
         run: echo "${{ github.sha }}" > version.txt
-      - name: 'Deploy the image-resizing service to ${{ inputs.environment }} environment'
+      - name: "Deploy the image-resizing service to ${{ inputs.environment }} environment"
         working-directory: app-engine/image-resizing
         run: |
-          gcloud app deploy --user-output-enabled=false \
-            --quiet \
+          gcloud app deploy --quiet \
             --service-account=${{ steps.secrets.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }} \
             --project=${{ inputs.google_project }} \
             --version=$(echo ${{ inputs.base_ref }}| tr '.' '-'| tr '/' '-'| tr '[:upper:]' '[:lower:]' | cut -c1-25)
-      - name: 'Clear unused apps'
-      # Delete all versions that are not serving traffic
-      # This is a cleanup step to avoid having too many versions(limit is 210)
+      - name: "Clear unused apps"
+        # Delete all versions that are not serving traffic
+        # This is a cleanup step to avoid having too many versions(limit is 210)
         run: |
           gcloud app versions list --service=image-resizing --format="table[no-heading](id)" --project=${{ inputs.google_project }} \
             | grep -v $(gcloud app versions list --service=image-resizing --hide-no-traffic --format="table[no-heading](id)" --project=${{ inputs.google_project }}) \
             | xargs --no-run-if-empty gcloud app versions delete --service=image-resizing --project=${{ inputs.google_project }}
-          
