@@ -7,12 +7,17 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { PostOffererResponseModel, Target } from 'apiClient/v1'
+import {
+  GetOffererResponseModel,
+  PostOffererResponseModel,
+  Target,
+} from 'apiClient/v1'
 import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import * as utils from 'commons/utils/recaptcha'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
@@ -24,12 +29,19 @@ vi.mock('apiClient/api', () => ({
   api: {
     getVenueTypes: vi.fn(),
     saveNewOnboardingData: vi.fn(),
+    listOfferersNames: vi.fn(),
+    getOfferer: vi.fn(),
   },
 }))
 
 const useHasAccessToDidacticOnboarding = vi.hoisted(() => vi.fn())
 vi.mock('commons/hooks/useHasAccessToDidacticOnboarding', () => ({
   useHasAccessToDidacticOnboarding,
+}))
+
+const selectCurrentOffererId = vi.hoisted(() => vi.fn())
+vi.mock('commons/store/offerer/selectors', () => ({
+  selectCurrentOffererId,
 }))
 
 const addressInformations: Address = {
@@ -152,6 +164,7 @@ describe('ValidationScreen', () => {
         setActivity: () => {},
         setOfferer: () => {},
       }
+      selectCurrentOffererId.mockReturnValue(null)
     })
 
     it('should navigate to activity page with the previous step button', async () => {
@@ -178,34 +191,70 @@ describe('ValidationScreen', () => {
       expect(screen.getByText('Activite')).toBeInTheDocument()
     })
 
-    it('should redirect to home after submit', async () => {
-      useHasAccessToDidacticOnboarding.mockReturnValue(false)
-      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
-        {} as PostOffererResponseModel
-      )
-      vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
-        remove: vi.fn(),
-      } as unknown as HTMLScriptElement)
-      vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
-      renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      await userEvent.click(screen.getByText('Valider et créer ma structure'))
-      expect(await screen.findByText('accueil')).toBeInTheDocument()
-    })
+    describe('form validation', () => {
+      beforeEach(() => {
+        vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue({
+          id: 1,
+        } as PostOffererResponseModel)
+        vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+          remove: vi.fn(),
+        } as unknown as HTMLScriptElement)
+        vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+        vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+          offerersNames: [getOffererNameFactory({ id: 10 })],
+        })
+      })
 
-    it('should redirect to onboarding after submit if isDidacticOnboardingEnabled is true', async () => {
-      useHasAccessToDidacticOnboarding.mockReturnValue(true)
-      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
-        {} as PostOffererResponseModel
-      )
-      vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
-        remove: vi.fn(),
-      } as unknown as HTMLScriptElement)
-      vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
-      renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      await userEvent.click(screen.getByText('Valider et créer ma structure'))
-      expect(await screen.findByText('onboarding')).toBeInTheDocument()
+      it("should redirect to home after submit if user doesn't have access to onBoarding", async () => {
+        useHasAccessToDidacticOnboarding.mockReturnValue(false)
+        renderValidationScreen(contextValue)
+        await waitForElementToBeRemoved(() =>
+          screen.queryAllByTestId('spinner')
+        )
+        await userEvent.click(screen.getByText('Valider et créer ma structure'))
+        expect(await screen.findByText('accueil')).toBeInTheDocument()
+      })
+
+      it('should redirect to onboarding after submit if user has access to onBoarding and the offerer is not activated', async () => {
+        useHasAccessToDidacticOnboarding.mockReturnValue(true)
+        selectCurrentOffererId.mockReturnValue(null)
+        renderValidationScreen(contextValue)
+        await waitForElementToBeRemoved(() =>
+          screen.queryAllByTestId('spinner')
+        )
+        await userEvent.click(screen.getByText('Valider et créer ma structure'))
+        expect(await screen.findByText('onboarding')).toBeInTheDocument()
+      })
+
+      it('should redirect to home after submit if user has access to onBoarding, but he added a structure that is already onBoarded', async () => {
+        useHasAccessToDidacticOnboarding.mockReturnValue(true)
+        selectCurrentOffererId.mockReturnValue(10)
+        vi.spyOn(api, 'getOfferer').mockResolvedValue({
+          isOnboarded: true,
+        } as GetOffererResponseModel)
+
+        renderValidationScreen(contextValue)
+        await waitForElementToBeRemoved(() =>
+          screen.queryAllByTestId('spinner')
+        )
+        await userEvent.click(screen.getByText('Valider et créer ma structure'))
+        expect(await screen.findByText('accueil')).toBeInTheDocument()
+      })
+
+      it('should redirect to onboarding after submit if user has access to onBoarding, and he added a structure that not onBoarded yet', async () => {
+        useHasAccessToDidacticOnboarding.mockReturnValue(true)
+        selectCurrentOffererId.mockReturnValue(10)
+        vi.spyOn(api, 'getOfferer').mockResolvedValue({
+          isOnboarded: false,
+        } as GetOffererResponseModel)
+
+        renderValidationScreen(contextValue)
+        await waitForElementToBeRemoved(() =>
+          screen.queryAllByTestId('spinner')
+        )
+        await userEvent.click(screen.getByText('Valider et créer ma structure'))
+        expect(await screen.findByText('onboarding')).toBeInTheDocument()
+      })
     })
   })
 

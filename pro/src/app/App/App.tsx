@@ -97,7 +97,11 @@ export const App = (): JSX.Element | null => {
     ) {
       return <Navigate to="/onboarding" replace />
     }
-    if (location.pathname.includes('onboarding') && isOffererOnboarded) {
+    if (
+      location.pathname.includes('onboarding') &&
+      isOffererOnboarded &&
+      !searchParams.get('userHasJustOnBoarded')
+    ) {
       return <Navigate to="/accueil" replace />
     }
   }
