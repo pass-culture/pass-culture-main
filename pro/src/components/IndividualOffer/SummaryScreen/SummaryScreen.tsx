@@ -1,6 +1,6 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -46,6 +46,7 @@ export const SummaryScreen = () => {
   const { offer, subCategories, publishedOfferWithSameEAN } =
     useIndividualOfferContext()
   const showEventPublicationForm = Boolean(offer?.isEvent)
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const onPublish = async (values: EventPublicationFormValues) => {
     // Edition mode offers are already published
@@ -79,6 +80,10 @@ export const SummaryScreen = () => {
           !offererResponse.hasPendingBankAccount)
 
       if (shouldDisplayRedirectDialog) {
+        setSearchParams(
+          { ...searchParams, userHasJustOnBoarded: '1' },
+          { replace: true }
+        )
         setDisplayRedirectDialog(true)
       } else {
         navigate(offerConfirmationStepUrl)
