@@ -46,8 +46,8 @@ def get_collective_booking_cancellation_confirmation_by_pro_email_data(
 ) -> models.TransactionalEmailData:
     stock = booking.collectiveStock
     offer = stock.collectiveOffer
-    event_date = get_date_formatted_for_email(get_event_datetime(stock)) if stock.beginningDatetime else ""
-    event_hour = get_time_formatted_for_email(get_event_datetime(stock)) if stock.beginningDatetime else ""
+    event_date = get_date_formatted_for_email(get_event_datetime(stock)) if stock.startDatetime else ""
+    event_hour = get_time_formatted_for_email(get_event_datetime(stock)) if stock.startDatetime else ""
     offer_price = str(stock.price) if stock.price > 0 else "Gratuit"
 
     return models.TransactionalEmailData(

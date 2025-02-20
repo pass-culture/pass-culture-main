@@ -515,7 +515,6 @@ def create_collective_offer_public(
 
     collective_stock = educational_models.CollectiveStock(
         collectiveOffer=collective_offer,
-        beginningDatetime=body.start_datetime,  # TODO: this field is still required, the column will be removed later
         startDatetime=body.start_datetime,
         endDatetime=end_datetime,
         bookingLimitDatetime=body.booking_limit_datetime,
@@ -765,7 +764,6 @@ def duplicate_offer_and_stock(
 
     if original_offer.collectiveStock is not None:
         educational_models.CollectiveStock(
-            beginningDatetime=original_offer.collectiveStock.startDatetime,  # TODO: needed for now as the field is required, it will be removed later
             startDatetime=original_offer.collectiveStock.startDatetime,
             endDatetime=original_offer.collectiveStock.endDatetime,
             collectiveOffer=offer,
