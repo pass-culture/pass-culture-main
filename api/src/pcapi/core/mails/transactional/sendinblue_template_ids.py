@@ -65,6 +65,7 @@ class TransactionalEmail(Enum):
     RECREDIT_TO_UNDERAGE_BENEFICIARY = models.Template(
         id_prod=303, id_not_prod=31, tags=["anniversaire_16_17_ans"], send_to_ehp=False
     )
+    RECREDIT = models.Template(id_prod=1509, id_not_prod=180, send_to_ehp=False)
     REPORTED_OFFER_BY_USER = models.Template(id_prod=589, id_not_prod=70)
     SUBSCRIPTION_FOREIGN_DOCUMENT_ERROR = models.Template(
         id_prod=385, id_not_prod=40, tags=["jeunes_document_etranger"]

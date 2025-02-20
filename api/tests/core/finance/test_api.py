@@ -31,6 +31,7 @@ from pcapi.core.finance import models
 from pcapi.core.finance import utils
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.object_storage.testing import recursive_listdir
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
@@ -5187,6 +5188,26 @@ class UserRecreditAfterDecreeTest:
         assert user_2.deposit.type == models.DepositType.GRANT_17_18
         assert user_2.deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_18
         assert user_2.deposit.amount == 30 + 150  #  30 (credit 17 before decree) + 150 (for 18 year old after decree)
+
+    def test_recredt_email_is_sent_to_18_years_old_users(self):
+        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1, months=1)):
+            user = users_factories.BeneficiaryFactory(age=17, deposit__type=models.DepositType.GRANT_17_18)
+
+        # Finish missing steps
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        fraud_factories.PhoneValidationFraudCheckFactory(user=user)
+        user.phoneNumber = "+33600000000"
+        fraud_factories.HonorStatementFraudCheckFactory(user=user)
+
+        # User can be recredited
+        api.recredit_users()
+        assert len(user.deposits) == 1
+        assert len(user.deposit.recredits) == 2
+
+        outbox = mails_testing.outbox
+        assert len(outbox) == 1
+        assert outbox[0]["To"] == user.email
+        assert outbox[0]["template"]["id_prod"] == 1509
 
 
 @pytest.mark.feature(WIP_ENABLE_CREDIT_V3=True)
