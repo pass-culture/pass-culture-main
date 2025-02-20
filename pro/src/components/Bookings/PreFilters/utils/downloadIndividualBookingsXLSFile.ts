@@ -9,6 +9,7 @@ export const downloadIndividualBookingsXLSFile = async (
 ) => {
   const bookingsXLSText = await api.getBookingsExcel(
     filters.page,
+    filters.offererId !== DEFAULT_PRE_FILTERS.offererId ? Number(filters.offererId) : null,
     filters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId
       ? Number(filters.offerVenueId)
       : null,
