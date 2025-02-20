@@ -102,10 +102,7 @@ describe('AttachmentInvitations', () => {
     })
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
 
-    await userEvent.type(
-      screen.getByLabelText('Adresse email'),
-      'test@test.fr'
-    )
+    await userEvent.type(screen.getByLabelText('Adresse email'), 'test@test.fr')
     await userEvent.click(screen.getByText('Inviter'))
 
     await waitFor(() => {
@@ -128,10 +125,7 @@ describe('AttachmentInvitations', () => {
 
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
 
-    await userEvent.type(
-      screen.getByLabelText('Adresse email'),
-      'test@test.fr'
-    )
+    await userEvent.type(screen.getByLabelText('Adresse email'), 'test@test.fr')
 
     vi.spyOn(api, 'inviteMember').mockRejectedValue(
       new ApiError(
@@ -160,10 +154,7 @@ describe('AttachmentInvitations', () => {
 
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
 
-    await userEvent.type(
-      screen.getByLabelText('Adresse email'),
-      'test@test.fr'
-    )
+    await userEvent.type(screen.getByLabelText('Adresse email'), 'test@test.fr')
 
     vi.spyOn(api, 'inviteMember').mockRejectedValue({})
 
@@ -177,7 +168,9 @@ describe('AttachmentInvitations', () => {
       ).toBeInTheDocument()
     })
   })
+})
 
+describe('ViewAllList', () => {
   it('should display button to show all members', async () => {
     vi.spyOn(api, 'getOffererMembers').mockResolvedValue({
       members: [

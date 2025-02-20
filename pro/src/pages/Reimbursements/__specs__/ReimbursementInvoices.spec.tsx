@@ -87,19 +87,11 @@ describe('reimbursementsWithFilters', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
-    vi.spyOn(
-      api,
-      'getOffererBankAccountsAndAttachedVenues'
-    ).mockResolvedValueOnce({
-      id: 1,
-      bankAccounts: BASE_BANK_ACCOUNTS,
-      managedVenues: [],
-    })
-    vi.spyOn(api, 'hasInvoice').mockResolvedValueOnce({ hasInvoice: true })
   })
 
   it('shoud render a table with invoices', async () => {
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -179,7 +171,7 @@ describe('reimbursementsWithFilters', () => {
     ).toBeInTheDocument()
   })
 
-  it('shoud render no invoice yet information block', async () => {
+  it('should render no invoice yet information block', async () => {
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue([])
     vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: false })
     renderReimbursementsInvoices()
@@ -199,7 +191,7 @@ describe('reimbursementsWithFilters', () => {
     ).toBeInTheDocument()
   })
 
-  it('shoud render error block', async () => {
+  it('should render error block', async () => {
     vi.spyOn(api, 'getInvoicesV2').mockRejectedValue([])
     renderReimbursementsInvoices()
 
@@ -209,6 +201,8 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should reorder invoices on order buttons click', async () => {
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -235,6 +229,8 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should contain sort informations for a11y', async () => {
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -285,6 +281,14 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should display invoice banner', async () => {
+    vi.spyOn(
+      api,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockResolvedValueOnce({
+      id: 1,
+      bankAccounts: BASE_BANK_ACCOUNTS,
+      managedVenues: [],
+    })
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -299,6 +303,14 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should not disable filter if has invoices', async () => {
+    vi.spyOn(
+      api,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockResolvedValueOnce({
+      id: 1,
+      bankAccounts: BASE_BANK_ACCOUNTS,
+      managedVenues: [],
+    })
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -357,6 +369,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should let download several invoices at same time', async () => {
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
     vi.spyOn(api, 'getCombinedInvoices').mockResolvedValue({})
     renderReimbursementsInvoices()
 
@@ -413,7 +426,9 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should let download several reimbursment csv at same time', async () => {
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
     vi.spyOn(api, 'getReimbursementsCsvV2').mockResolvedValueOnce('data')
+
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -475,6 +490,16 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should call api with requested filters', async () => {
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(
+      api,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockResolvedValueOnce({
+      id: 1,
+      bankAccounts: BASE_BANK_ACCOUNTS,
+      managedVenues: [],
+    })
+
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))

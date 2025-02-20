@@ -124,6 +124,8 @@ describe('StocksEventCreation', () => {
   it('should display new stocks banner for several stocks', async () => {
     await renderStockEventCreation([], { offer: getIndividualOfferFactory() })
 
+    vi.clearAllMocks()
+
     await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
 
     await userEvent.type(
