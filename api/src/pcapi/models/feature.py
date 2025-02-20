@@ -86,6 +86,9 @@ class FeatureToggle(enum.Enum):
     )
     ID_CHECK_ADDRESS_AUTOCOMPLETION = "Autocomplétion de l'adresse lors du parcours IDCheck"
     PRICE_FINANCE_EVENTS = "Active la valorisation des évènements de finance"
+    SEND_ALL_EMAILS_TO_EHP = (
+        "Envoyer tous les emails en testing et staging. À activer temporairement lors de phase de test"
+    )
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
     SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS = (
@@ -208,6 +211,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
+    FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
     FeatureToggle.WIP_2025_SIGN_UP,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS,

@@ -1,6 +1,7 @@
 from typing import Iterable
 
 from pcapi import settings
+from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.serialization import sendinblue_tasks
 from pcapi.utils.module_loading import import_string
 
@@ -53,6 +54,7 @@ def _get_backend(data: models.TransactionalEmailData | models.TransactionalWitho
         and isinstance(data, models.TransactionalEmailData)
         and not data.template.send_to_ehp
     ):
+        if FeatureToggle.SEND_ALL_EMAILS_TO_EHP.is_active():
+            return import_string(settings.EMAIL_BACKEND)
         return import_string("pcapi.core.mails.backends.logger.LoggerBackend")
-
     return import_string(settings.EMAIL_BACKEND)
