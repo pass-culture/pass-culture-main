@@ -594,6 +594,31 @@ class InstructTest(PostEndpointHelper):
         assert update_request.lastInstructor != legit_user
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    def test_instruct_with_ds_connection_error(self, mock_make_on_going, legit_user, authenticated_client):
+        update_request = users_factories.UserAccountUpdateRequestFactory(
+            dsApplicationId=1234567, status=dms_models.GraphQLApplicationStates.draft
+        )
+
+        message = (
+            "HTTPSConnectionPool(host='www.demarches-simplifiees.fr', port=443): Max retries exceeded with url: "
+            "/api/v2/graphql (Caused by ProtocolError('Connection aborted.', RemoteDisconnected('Remote end closed"
+            " connection without response')))"
+        )
+        mock_make_on_going.side_effect = dms_exceptions.DmsGraphQLAPIConnectError(message)
+
+        response = self.post_to_endpoint(authenticated_client, ds_application_id=update_request.dsApplicationId)
+        assert response.status_code == 303
+
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"Le dossier 1234567 ne peut pas passer en instruction : La connexion à Démarches-Simplifiées a échoué : {message}"
+        )
+
+        db.session.refresh(update_request)
+        assert update_request.status == dms_models.GraphQLApplicationStates.draft
+        assert update_request.lastInstructor != legit_user
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
     def test_instruct_not_instructor(self, mock_make_on_going, client):
         not_instructor = users_factories.AdminFactory()
         update_request = users_factories.UserAccountUpdateRequestFactory(
