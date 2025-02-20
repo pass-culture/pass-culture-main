@@ -1,5 +1,8 @@
 import csv
+from hashlib import md5
 from io import StringIO
+import json
+from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
@@ -300,3 +303,132 @@ def test_cache_api(requests_mock):
             street="2 Rue de Valois",
             city="Montigny-le-Bretonneux",
         )
+
+
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+@patch(
+    "pcapi.connectors.api_adresse.ApiAdresseBackend._search",
+    side_effect=[
+        {"type": "FeatureCollection", "features": []},  # Falsy empty response when querying the address
+        {
+            "type": "FeatureCollection",
+            "version": "draft",
+            "features": [
+                {
+                    "type": "Feature",
+                    "geometry": {"type": "Point", "coordinates": [2.347, 48.859]},
+                    "properties": {
+                        "label": "Paris",
+                        "score": 0.10937561497326202,
+                        "id": "75056",
+                        "type": "municipality",
+                        "name": "Paris",
+                        "postcode": "75001",
+                        "citycode": "75056",
+                        "x": 652089.7,
+                        "y": 6862305.26,
+                        "population": 2133111,
+                        "city": "Paris",
+                        "context": "75, Paris, Île-de-France",
+                        "importance": 0.67372,
+                        "municipality": "Paris",
+                    },
+                }
+            ],
+            "attribution": "BAN",
+            "licence": "ETALAB-2.0",
+            "query": "3 Rue de Valois",
+            "filters": {"postcode": "75001", "type": "municipality"},
+            "limit": 1,
+        },  # Connector falling back on the centroid
+    ],
+)
+@patch("flask.current_app.redis_client.delete")
+@patch("flask.current_app.redis_client.set", side_effect=[None, None])
+@patch("flask.current_app.redis_client.get", side_effect=[None, None])
+def test_we_dont_cache_falsy_empty_response(mocked_redis_get, mocked_redis_set, mocked_redis_delete, mocked_search):
+    payload = {
+        "q": "3 Rue de Valois",
+        "postcode": "75001",
+        "citycode": None,
+        "city": "Paris",
+        "autocomplete": 0,
+        "limit": 1,
+    }
+    response = api_adresse.get_address(address="3 Rue de Valois", postcode="75001", city="Paris")
+    address_cache_key = f"cache:api:addresse:search:{md5(json.dumps(payload).encode()).hexdigest()}"
+    centroid_cache_key = f'cache:api:addresse:search:{md5(json.dumps({"q": "Paris", "postcode": "75001", "citycode": None, "type": "municipality", "autocomplete": 0, "limit": 1}).encode()).hexdigest()}'
+
+    ### redis_client.get calls ###
+    get_calls = [call(address_cache_key), call(centroid_cache_key)]
+    mocked_redis_get.assert_has_calls(get_calls)
+
+    ### redis_client.set calls ###
+    set_calls = [
+        call(address_cache_key, json.dumps({"type": "FeatureCollection", "features": []}).encode(), ex=86400 * 7),
+        call(
+            centroid_cache_key,
+            json.dumps(
+                {
+                    "type": "FeatureCollection",
+                    "version": "draft",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "geometry": {"type": "Point", "coordinates": [2.347, 48.859]},
+                            "properties": {
+                                "label": "Paris",
+                                "score": 0.10937561497326202,
+                                "id": "75056",
+                                "type": "municipality",
+                                "name": "Paris",
+                                "postcode": "75001",
+                                "citycode": "75056",
+                                "x": 652089.7,
+                                "y": 6862305.26,
+                                "population": 2133111,
+                                "city": "Paris",
+                                "context": "75, Paris, Île-de-France",
+                                "importance": 0.67372,
+                                "municipality": "Paris",
+                            },
+                        }
+                    ],
+                    "attribution": "BAN",
+                    "licence": "ETALAB-2.0",
+                    "query": "3 Rue de Valois",
+                    "filters": {"postcode": "75001", "type": "municipality"},
+                    "limit": 1,
+                }
+            ).encode(),
+            ex=86400 * 7,
+        ),
+    ]
+    mocked_redis_set.assert_has_calls(set_calls)  # Wrongly caching the response
+
+    ### redis_client.delete calls ###
+    mocked_redis_delete.assert_called_with(
+        address_cache_key
+    )  #  Ensure we don’t serve the wrongly empty response for others users
+
+    ### Ensure we don’t break anything from the BAN API connector ###
+    assert (
+        mocked_search.call_count == 2
+    )  # Searching the address, BAN API return wrongly an empty response, then falling back on asking for the centroid
+    mocked_search.assert_any_call(
+        {"q": "3 Rue de Valois", "postcode": "75001", "citycode": None, "city": "Paris", "autocomplete": 0, "limit": 1}
+    )
+    mocked_search.assert_any_call(
+        {"q": "Paris", "postcode": "75001", "citycode": None, "type": "municipality", "autocomplete": 0, "limit": 1}
+    )  # Connector fallback on the centroid because the `get_single_address_result` returned (falsy) empty
+    assert response == api_adresse.AddressInfo(
+        id="75056",
+        label="Paris",
+        postcode="75001",
+        citycode="75056",
+        latitude=48.859,
+        longitude=2.347,
+        score=0.10937561497326202,
+        street=None,
+        city="Paris",
+    )
