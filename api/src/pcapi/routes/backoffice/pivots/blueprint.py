@@ -5,7 +5,6 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
-import sqlalchemy as sa
 
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -108,7 +107,8 @@ def create_pivot(name: str) -> utils.BackofficeResponse:
             db.session.flush()
         else:
             mark_transaction_as_invalid()
-    except sa.exc.IntegrityError as exc:
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        # IntegrityError or external error (which inherit from any ExternalBooking*)
         mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
@@ -155,7 +155,8 @@ def update_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
             db.session.flush()
         else:
             mark_transaction_as_invalid()
-    except sa.exc.IntegrityError as exc:
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        # IntegrityError or external error (which inherit from any ExternalBooking*)
         mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
@@ -190,7 +191,7 @@ def delete_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
         can_delete_pivot = pivot_context.delete_pivot(pivot_id)
         if can_delete_pivot:
             db.session.flush()
-    except sa.exc.IntegrityError as exc:
+    except Exception as exc:  # pylint: disable=broad-exception-caught
         mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:

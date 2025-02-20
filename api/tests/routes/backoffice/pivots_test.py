@@ -5,6 +5,7 @@ from unittest.mock import patch
 from flask import url_for
 import pytest
 
+from pcapi.core.external_bookings.cds import exceptions as cds_exceptions
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
@@ -474,6 +475,25 @@ class CreatePivotTest(PostEndpointHelper):
             "Le nom de compte ne peut pas contenir de caractères autres que chiffres, lettres et tirets"
             in html_parser.content_as_text(redirected_response.data)
         )
+
+    @patch(
+        "pcapi.routes.backoffice.pivots.contexts.cineoffice.CineofficeContext.check_if_api_call_is_ok",
+        side_effect=cds_exceptions.CineDigitalServiceAPIException("Test"),
+    )
+    def test_create_pivot_with_external_booking_exception(self, mock_check_if_api_call_is_ok, authenticated_client):
+        venue_id = offerers_factories.VenueFactory().id
+        form = {
+            "venue_id": venue_id,
+            "cinema_id": "cineoffice cinema 1",
+            "account_id": "cineofficeaccount1",
+            "api_token": "====?azerty!123",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, name="cineoffice", form=form, follow_redirects=True)
+
+        mock_check_if_api_call_is_ok.assert_called_once()
+        assert providers_models.CDSCinemaDetails.query.count() == 0
+        assert html_parser.extract_alert(response.data) == "Une erreur s'est produite : Test"
 
 
 class GetUpdatePivotFormTest(GetEndpointHelper):
