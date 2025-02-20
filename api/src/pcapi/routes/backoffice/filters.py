@@ -813,6 +813,14 @@ def format_eligibility_value(tunnel_type: str) -> str:
             return "Pass 15-17+18"
         case "not-eligible":
             return "Non éligible"
+
+        # Credits v3
+        case "age-18-v3":
+            return "Pass 18 (post décret)"
+        case "age-17":
+            return "Pass 17 (post décret)"
+        case "age-17+age-18":
+            return "Pass 17+18 (post décret)"
         case _:
             return tunnel_type
 
@@ -1590,6 +1598,21 @@ def nl2br(text: str) -> str:
     return escape(text).replace("\n", Markup("<br>"))
 
 
+def format_user_subscription_tunnel_step_status(status: str) -> str:
+    match status:
+        case "ok":
+            markup = Markup('<i class="bi bi-check-circle-fill text-success" title={status}></i>')
+        case "ko":
+            markup = Markup('<i class="bi bi-exclamation-circle-fill text-danger" title="{status}"></i>')
+        case "error":
+            markup = Markup('<i class="bi bi-x-circle-fill text-danger" title="{status}"></i>')
+        case "canceled":
+            markup = Markup('<i class="bi bi-trash3-fill text-danger" title="{status}"></i>')
+        case _:
+            markup = Markup('<i class="bi bi-exclamation-circle-fill text-warning" title="{status}"></i>')
+    return markup.format(status=status)
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -1686,3 +1709,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["build_pro_link"] = build_pro_link
     app.jinja_env.filters["offer_type"] = get_offer_type
     app.jinja_env.filters["nl2br"] = nl2br
+    app.jinja_env.filters["format_user_subscription_tunnel_step_status"] = format_user_subscription_tunnel_step_status
