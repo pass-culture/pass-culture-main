@@ -96,7 +96,7 @@ class UpdateFormTitleFromTypeformTest:
             fields=[],
         )
 
-        operations_api.update_form_title_from_typeform(event=event, form=form)
+        operations_api.update_form_title_from_typeform(event_id=event.id, event_title=event.title, form=form)
 
         db.session.refresh(event)
         assert event.title == expected_title
@@ -127,7 +127,7 @@ class UpdateFormQuestionsFromTypeformTest:
             ],
         )
 
-        result = operations_api.update_form_questions_from_typeform(event=event, form=form)
+        result = operations_api.update_form_questions_from_typeform(event_id=event.id, form=form)
 
         db.session.refresh(question)
         db.session.refresh(untouched_question)
@@ -135,8 +135,8 @@ class UpdateFormQuestionsFromTypeformTest:
         assert untouched_question.title == "still title"
         assert question.title == form.fields[0].title
         assert result == {
-            question.externalId: question,
-            untouched_question.externalId: untouched_question,
+            question.externalId: question.id,
+            untouched_question.externalId: untouched_question.id,
         }
 
     def test_create_new_question(self):
@@ -156,7 +156,7 @@ class UpdateFormQuestionsFromTypeformTest:
             ],
         )
 
-        result = operations_api.update_form_questions_from_typeform(event=event, form=form)
+        result = operations_api.update_form_questions_from_typeform(event_id=event.id, form=form)
 
         db.session.refresh(question)
         assert operations_models.SpecialEventQuestion.query.count() == 2
@@ -166,8 +166,8 @@ class UpdateFormQuestionsFromTypeformTest:
         assert new_question.title == form.fields[0].title
         assert new_question.eventId == event.id
         assert result == {
-            question.externalId: question,
-            new_question.externalId: new_question,
+            question.externalId: question.id,
+            new_question.externalId: new_question.id,
         }
 
     def test_complete_list_of_questions(self):
@@ -187,15 +187,15 @@ class UpdateFormQuestionsFromTypeformTest:
             ],
         )
 
-        result = operations_api.update_form_questions_from_typeform(event=event, form=form)
+        result = operations_api.update_form_questions_from_typeform(event_id=event.id, form=form)
 
         db.session.refresh(question)
         new_question = operations_models.SpecialEventQuestion.query.filter(
             operations_models.SpecialEventQuestion.externalId == "qwerty123"
         ).one()
         assert result == {
-            question.externalId: question,
-            new_question.externalId: new_question,
+            question.externalId: question.id,
+            new_question.externalId: new_question.id,
         }
 
 
@@ -212,8 +212,8 @@ class SaveResponseTest:
             event=event,
         )
         questions = {
-            question1.externalId: question1,
-            question2.externalId: question2,
+            question1.externalId: question1.id,
+            question2.externalId: question2.id,
         }
         form = typeform.TypeformResponse(
             response_id="qwerty123",
@@ -234,7 +234,7 @@ class SaveResponseTest:
             ],
         )
 
-        operations_api.save_response(event=event, form=form, questions=questions)
+        operations_api.save_response(event_id=event.id, form=form, questions=questions)
 
         response = operations_models.SpecialEventResponse.query.one()
         answers = operations_models.SpecialEventAnswer.query.order_by("text").all()
@@ -258,7 +258,7 @@ class SaveResponseTest:
 
     def test_response_already_exists(self):
         question = operations_factories.SpecialEventQuestionFactory()
-        questions = {question.externalId: question}
+        questions = {question.externalId: question.id}
         response = operations_factories.SpecialEventResponseFactory()
 
         form = typeform.TypeformResponse(
@@ -275,14 +275,14 @@ class SaveResponseTest:
             ],
         )
 
-        operations_api.save_response(event=question.event, form=form, questions=questions)
+        operations_api.save_response(event_id=question.event.id, form=form, questions=questions)
 
         assert operations_models.SpecialEventResponse.query.count() == 1
         assert operations_models.SpecialEventAnswer.query.count() == 0
 
     def test_question_does_not_exist(self):
         question = operations_factories.SpecialEventQuestionFactory()
-        questions = {question.externalId: question}
+        questions = {question.externalId: question.id}
         form = typeform.TypeformResponse(
             response_id="qwerty123",
             date_submitted=datetime.datetime(2020, 1, 1),
@@ -302,7 +302,7 @@ class SaveResponseTest:
             ],
         )
 
-        operations_api.save_response(event=question.event, form=form, questions=questions)
+        operations_api.save_response(event_id=question.event.id, form=form, questions=questions)
 
         response = operations_models.SpecialEventResponse.query.one()
         answer = operations_models.SpecialEventAnswer.query.one()
@@ -320,7 +320,7 @@ class SaveResponseTest:
 
     def test_ignore_answer_without_text(self):
         question = operations_factories.SpecialEventQuestionFactory()
-        questions = {question.externalId: question}
+        questions = {question.externalId: question.id}
         form = typeform.TypeformResponse(
             response_id="qwerty123",
             date_submitted=datetime.datetime(2020, 1, 1),
@@ -340,7 +340,7 @@ class SaveResponseTest:
             ],
         )
 
-        operations_api.save_response(event=question.event, form=form, questions=questions)
+        operations_api.save_response(event_id=question.event.id, form=form, questions=questions)
 
         assert operations_models.SpecialEventResponse.query.count() == 1
         assert operations_models.SpecialEventAnswer.query.count() == 1

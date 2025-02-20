@@ -79,8 +79,15 @@ class CreateEventTest(PostEndpointHelper):
     # - user session
     # - insert into special_event or rollback
     expected_num_queries = 3
-    # - insert into special_event_question
-    expected_num_queries_with_questions = expected_num_queries + 1
+    # - get special event
+    # - get special event questions
+    # - insert into special_event_questions
+    # - reload responses for special event
+    # - fail to retrieve the user by email
+    # - fail to retrieve the user by phone number
+    # - insert response
+    # - insert answers
+    expected_num_queries_with_job = expected_num_queries + 8
 
     def test_create_event(self, authenticated_client):
         # Data come from TestingBackend
@@ -92,7 +99,7 @@ class CreateEventTest(PostEndpointHelper):
                 "typeform_id": typeform_id,
                 "event_date": datetime.date.today().isoformat(),
             },
-            expected_num_queries=self.expected_num_queries_with_questions,
+            expected_num_queries=self.expected_num_queries_with_job,
         )
         assert response.status_code == 303
 
@@ -102,6 +109,8 @@ class CreateEventTest(PostEndpointHelper):
         assert special_event.eventDate == datetime.date.today()
         assert special_event.externalId == typeform_id
         assert operations_models.SpecialEventQuestion.query.count() == 3
+        assert operations_models.SpecialEventResponse.query.count() == 1
+        assert operations_models.SpecialEventAnswer.query.count() == 3
 
     def test_create_event_already_exists(self, authenticated_client, special_events):
         # Data come from TestingBackend
