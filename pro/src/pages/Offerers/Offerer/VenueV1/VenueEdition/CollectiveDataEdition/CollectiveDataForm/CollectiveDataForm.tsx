@@ -126,6 +126,7 @@ export const CollectiveDataForm = ({
                       formik.values.collectiveStudents.includes(option.label)
                     )}
                     hasSearch
+                    isOptional
                     searchLabel="Public cible"
                     onSelectedOptionsChanged={(selectedOption) =>
                       formik.setFieldValue('collectiveStudents', [
@@ -177,6 +178,7 @@ export const CollectiveDataForm = ({
                       formik.values.collectiveDomains.includes(option.id)
                     )}
                     hasSearch
+                    isOptional
                     searchLabel="Domaines artistiques et culturel"
                     onSelectedOptionsChanged={(selectedOption) =>
                       formik.setFieldValue('collectiveDomains', [
@@ -215,7 +217,8 @@ export const CollectiveDataForm = ({
                     )}
                     hasSelectAllOptions
                     hasSearch
-                    searchLabel="Zone de mobilité"
+                    isOptional
+                    searchLabel="Rechercher"
                     onSelectedOptionsChanged={(
                       selectedOption,
                       addedOptions,
@@ -233,7 +236,7 @@ export const CollectiveDataForm = ({
                         Array.from(newSelectedOptions)
                       )
                     }}
-                    buttonLabel="Zone de mobilité"
+                    buttonLabel="Département(s)"
                     onBlur={() =>
                       formik.setFieldTouched('collectiveDomains', true)
                     }

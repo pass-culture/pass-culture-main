@@ -113,7 +113,7 @@ describe('FormPracticalInformation', () => {
       expect(textarea).toBeInTheDocument()
       expect(textarea).toHaveValue('A la mairie')
       expect(
-        screen.queryByLabelText('Zone de mobilité')
+        screen.queryByLabelText('Département(s)')
       ).toBeInTheDocument()
     })
 
@@ -132,7 +132,7 @@ describe('FormPracticalInformation', () => {
       })
       expect(textarea).not.toBeInTheDocument()
       expect(
-        screen.queryByLabelText('Zone de mobilité')
+        screen.queryByLabelText('Département(s)')
       ).toBeInTheDocument()
     })
   })

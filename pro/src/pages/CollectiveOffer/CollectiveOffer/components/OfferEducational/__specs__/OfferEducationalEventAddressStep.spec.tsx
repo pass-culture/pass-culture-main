@@ -74,7 +74,7 @@ describe('screens | OfferEducational : event address step', () => {
       ).toBeInTheDocument()
 
       expect(
-        screen.queryByLabelText('Zone de mobilité')
+        screen.queryByLabelText('Département(s)')
       ).toBeInTheDocument()
     })
 
@@ -97,7 +97,7 @@ describe('screens | OfferEducational : event address step', () => {
       ).not.toBeInTheDocument()
 
       expect(
-        screen.queryByLabelText('Zone de mobilité')
+        screen.queryByLabelText('Département(s)')
       ).toBeInTheDocument()
     })
   })
@@ -195,7 +195,7 @@ describe('screens | OfferEducational : event address step', () => {
 
       expect(screen.getByLabelText('Autre')).toBeChecked()
 
-      const interventionArea = await screen.findByLabelText('Zone de mobilité')
+      const interventionArea = await screen.findByLabelText('Département(s)')
       await userEvent.click(interventionArea)
 
       const interventionAreaContainer = screen.getByTestId(
