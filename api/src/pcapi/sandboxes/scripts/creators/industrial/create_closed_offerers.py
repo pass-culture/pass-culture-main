@@ -1,6 +1,9 @@
 import datetime
 import logging
 
+from dateutil.relativedelta import relativedelta
+
+from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.history import factories as history_factories
@@ -9,6 +12,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 
 
 logger = logging.getLogger(__name__)
@@ -16,6 +20,28 @@ logger = logging.getLogger(__name__)
 
 def create_closed_offerers() -> None:
     logger.info("create_closed_offerers")
+
+    beneficiary = users_factories.BeneficiaryGrant18Factory(
+        firstName="Jeune",
+        lastName="Réservant sur structure fermée",
+        email="jeune.structure.fermee@example.com",
+        dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(weeks=1),
+    )
+
+    _create_closed_offerer("Structure fermée", "structure.fermee@example.com", beneficiary)
+    _create_closed_offerer(
+        "Structure fermée avec CB et justificatif",
+        "structure.fermee.avec.justificatif@example.com",
+        beneficiary,
+        with_bank_account=True,
+    )
+
+    logger.info("created closed offerer")
+
+
+def _create_closed_offerer(
+    name: str, email: str, beneficiary: users_models.User, with_bank_account: bool = False
+) -> None:
 
     now = datetime.datetime.utcnow()
     siren_caduc_tag = offerers_models.OffererTag.query.filter_by(name="siren-caduc").one()
