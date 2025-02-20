@@ -102,6 +102,8 @@ class Returns200Test:
         assert address.city == REQUEST_BODY["address"]["city"]
         assert address.isManualEdition is False
 
+        assert created_venue.offererAddress.offererId == created_venue.managingOffererId
+
     @patch(
         "pcapi.connectors.api_adresse.TestingBackend.get_municipality_centroid",
         return_value=AddressInfo(
