@@ -112,13 +112,10 @@ const renderOffers = async (
 
 describe('route Offers', () => {
   let offersRecap: ListOffersOfferResponseModel[]
+  offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
 
   beforeEach(() => {
-    offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
-    vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
-    vi.spyOn(api, 'getCategories').mockResolvedValue(
-      categoriesAndSubcategories
-    )
+    vi.spyOn(api, 'getCategories').mockResolvedValue(categoriesAndSubcategories)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
     })
@@ -127,7 +124,10 @@ describe('route Offers', () => {
 
   describe('filters', () => {
     it('should display only selectable categories on filters', async () => {
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+
       await renderOffers()
+
       await waitFor(() => {
         expect(
           screen.getByRole('option', { name: 'Cinéma' })
@@ -163,6 +163,8 @@ describe('route Offers', () => {
 
     describe('status filters', () => {
       it('should filter on a given status filter', async () => {
+        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+
         await renderOffers()
 
         const statusSelect = screen.getByRole('combobox', {
@@ -194,6 +196,7 @@ describe('route Offers', () => {
         vi.spyOn(api, 'listOffers')
           .mockResolvedValueOnce(offersRecap)
           .mockResolvedValueOnce([])
+
         await renderOffers()
 
         const statusSelect = screen.getByRole('combobox', {
@@ -224,7 +227,10 @@ describe('route Offers', () => {
 
     describe('on click on search button', () => {
       it('should load offers with written offer name filter', async () => {
+        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+
         await renderOffers()
+
         await userEvent.type(
           screen.getByRole('searchbox', {
             name: LABELS.nameSearchInput,
@@ -253,7 +259,10 @@ describe('route Offers', () => {
       })
 
       it('should load offers with selected venue filter', async () => {
+        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+
         await renderOffers()
+
         const firstVenueOption = screen.getByRole('option', {
           name: proVenues[0].name,
         })
@@ -279,7 +288,10 @@ describe('route Offers', () => {
       })
 
       it('should load offers with selected type filter', async () => {
+        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+
         await renderOffers()
+
         await waitFor(() => {
           expect(
             screen.getByRole('option', {
@@ -313,7 +325,10 @@ describe('route Offers', () => {
       })
 
       it('should load offers with selected creation mode filter', async () => {
+        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+
         await renderOffers()
+
         const creationModeSelect = screen.getByRole('combobox', {
           name: 'Mode de création',
         })
@@ -342,6 +357,8 @@ describe('route Offers', () => {
       })
 
       it('should load offers with selected period beginning date', async () => {
+        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+
         await renderOffers()
 
         await userEvent.type(
@@ -368,6 +385,8 @@ describe('route Offers', () => {
       })
 
       it('should load offers with selected period ending date', async () => {
+        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+
         await renderOffers()
 
         await userEvent.type(
@@ -400,7 +419,9 @@ describe('route Offers', () => {
         listOffersOfferFactory()
       )
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+
       await renderOffers()
+
       const nextPageIcon = screen.getByRole('button', { name: 'Page suivante' })
 
       await userEvent.click(nextPageIcon)
@@ -409,6 +430,8 @@ describe('route Offers', () => {
     })
 
     it('should store search value', async () => {
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+
       await renderOffers()
       const searchInput = screen.getByRole('searchbox', {
         name: LABELS.nameSearchInput,
@@ -434,6 +457,8 @@ describe('route Offers', () => {
     })
 
     it('should have offer name value be removed when name search value is an empty string', async () => {
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+
       await renderOffers()
 
       await userEvent.clear(
@@ -459,7 +484,10 @@ describe('route Offers', () => {
     })
 
     it('should have venue value when user filters by venue', async () => {
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+
       await renderOffers()
+
       const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
       })
@@ -485,6 +513,7 @@ describe('route Offers', () => {
     })
 
     it('should have venue value be removed when user asks for all venues', async () => {
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
       vi.spyOn(api, 'getCategories').mockResolvedValueOnce({
         categories: [
           { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
@@ -496,7 +525,9 @@ describe('route Offers', () => {
         ],
         subcategories: [],
       })
+
       await renderOffers()
+
       await waitFor(() => {
         expect(
           screen.getByRole('option', {
@@ -591,6 +622,8 @@ describe('route Offers', () => {
     })
 
     it('should have creation mode value when user filters by creation mode', async () => {
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+
       await renderOffers()
 
       await userEvent.selectOptions(
@@ -616,7 +649,10 @@ describe('route Offers', () => {
     })
 
     it('should have creation mode value be removed when user ask for all creation modes', async () => {
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+
       await renderOffers()
+
       const searchButton = screen.getByText('Rechercher')
       await userEvent.selectOptions(
         screen.getByRole('combobox', { name: 'Mode de création' }),
@@ -843,11 +879,14 @@ describe('route Offers', () => {
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
       const nameOrIsbn = 'Any word'
 
-      await renderOffers({
-        nameOrIsbn,
-        venueId: '666',
-      }, ['WIP_COLLAPSED_MEMORIZED_FILTERS'])
-  
+      await renderOffers(
+        {
+          nameOrIsbn,
+          venueId: '666',
+        },
+        ['WIP_COLLAPSED_MEMORIZED_FILTERS']
+      )
+
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
 
       await waitFor(() => {
@@ -869,8 +908,10 @@ describe('route Offers', () => {
 
   describe('With WIP_ENABLE_OFFER_ADDRESS FF', () => {
     beforeEach(() => {
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
       vi.spyOn(api, 'getOffererAddresses').mockResolvedValueOnce(offererAddress)
     })
+
     it('should display venue header without the FF', async () => {
       await renderOffers()
       expect(
@@ -948,23 +989,12 @@ describe('route Offers', () => {
   })
 
   describe('when headline offer feature is available', () => {
-    beforeEach(() => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
-        venues: [
-          venueListItemFactory({
-            id: 1,
-            name: 'Une venue physique & permanente',
-          })
-        ]
-      })
-
-      localStorage.clear()
-    })
-
     it('should render an awesome headline offer banner', async () => {
       await renderOffers(undefined, ['WIP_HEADLINE_OFFER'])
 
-      const bannerTitle = await screen.findByText(/Nouvelle fonctionnalité : l’offre à la une !/)
+      const bannerTitle = await screen.findByText(
+        /Nouvelle fonctionnalité : l’offre à la une !/
+      )
       expect(bannerTitle).toBeInTheDocument()
     })
 
@@ -975,15 +1005,21 @@ describe('route Offers', () => {
 
       await renderOffers(undefined, ['WIP_HEADLINE_OFFER'])
 
-      let bannerTitle = await screen.findByText(/Nouvelle fonctionnalité : l’offre à la une !/)
+      let bannerTitle = await screen.findByText(
+        /Nouvelle fonctionnalité : l’offre à la une !/
+      )
       expect(bannerTitle).toBeInTheDocument()
 
-      const closeButton = screen.getByRole('button', { name: 'Fermer la bannière' })
+      const closeButton = screen.getByRole('button', {
+        name: 'Fermer la bannière',
+      })
       await userEvent.click(closeButton)
 
       // If the user refreshes the page, the banner should not be displayed anymore.
       await renderOffers(undefined, ['WIP_HEADLINE_OFFER'])
-      expect(screen.queryByText(/Nouvelle fonctionnalité : l’offre à la une !/)).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(/Nouvelle fonctionnalité : l’offre à la une !/)
+      ).not.toBeInTheDocument()
     })
   })
 })

@@ -408,6 +408,8 @@ describe('StocksEventList', () => {
   it('should bulk delete lines with ids when clicking on each stock', async () => {
     await renderStocksEventList([stock1, stock2, stock3])
 
+    vi.clearAllMocks()
+
     const checkboxes = screen.getAllByRole('checkbox')
     await userEvent.click(checkboxes[1])
     await userEvent.click(checkboxes[3])
@@ -432,6 +434,8 @@ describe('StocksEventList', () => {
 
   it('should delete line when clicking on trash icon', async () => {
     await renderStocksEventList([stock1, stock2, stock3])
+
+    vi.clearAllMocks()
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [stock2, stock3],
