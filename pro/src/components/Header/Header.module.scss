@@ -6,7 +6,7 @@
 .top-menu {
   z-index: zIndex.$top-header-z-index;
   border-bottom: size.$top-menu-border-size solid var(--color-grey-medium);
-  background: var(--color-white);
+  background: var(--color-background-default);
   padding: 0 rem.torem(16px) 0 0;
   min-height: rem.torem(size.$top-menu-height);
   display: flex;
@@ -33,12 +33,6 @@
     align-items: center;
     gap: 24px;
     flex-shrink: 0;
-
-    &-open {
-      background: var(--color-grey-semi-dark);
-      color: var(--color-white);
-      padding: rem.torem(12.5px);
-    }
   }
 
   @media (min-width: size.$laptop) {
@@ -58,7 +52,7 @@
   .logo {
     display: inline-flex;
     height: 100%;
-    color: var(--color-input-text-color);
+    color: var(--color-text-default);
 
     svg {
       width: rem.torem(80px);
