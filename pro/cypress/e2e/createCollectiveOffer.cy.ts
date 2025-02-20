@@ -68,7 +68,7 @@ describe('Create collective offers', () => {
     cy.findByLabelText(
       'Décrivez ici votre projet et son interêt pédagogique *'
     ).type('Bookable draft offer')
-    cy.findByText('Collège - 6e').click()
+    cy.findByText('6e').click()
     cy.findByLabelText('Email *').type('example@passculture.app')
     cy.findByLabelText('Email auquel envoyer les notifications *').type(
       'example@passculture.app'
