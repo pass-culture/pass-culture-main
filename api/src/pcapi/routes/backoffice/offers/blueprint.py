@@ -41,7 +41,6 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.search import search_offer_ids
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
@@ -1041,9 +1040,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
     edit_offer_venue_form = None
     if is_advanced_pro_support:
         try:
-            venue_choices = offers_api.check_can_move_offer(
-                offer, only_move_event_offer=FeatureToggle.ONLY_MOVE_EVENT_OFFERS.is_active()
-            )
+            venue_choices = offers_api.check_can_move_event_offer(offer)
             edit_offer_venue_form = forms.EditOfferVenueForm()
             edit_offer_venue_form.set_venue_choices(venue_choices)
         except offers_exceptions.MoveOfferBaseException:
@@ -1371,12 +1368,7 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
             .options(sa.orm.joinedload(offerers_models.Venue.offererAddress))
         ).one()
 
-        offers_api.move_offer(
-            offer,
-            destination_venue,
-            notify_beneficiary=form.notify_beneficiary.data,
-            only_move_event_offer=FeatureToggle.ONLY_MOVE_EVENT_OFFERS.is_active(),
-        )
+        offers_api.move_offer(offer, destination_venue)
 
     except offers_exceptions.MoveOfferBaseException as exc:
         mark_transaction_as_invalid()
