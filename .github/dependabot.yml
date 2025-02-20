@@ -11,6 +11,14 @@ updates:
       - dependency-name: 'design-system' # Keep the design-system repo under control while it's early-stage
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
+  - package-ecosystem: 'npm'
+    directory: '/api/documentation'
+    schedule:
+      interval: 'daily'
+      time: '09:00'
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: 'pip' # pip even if we use poetry
     directory: '/api'
@@ -24,15 +32,18 @@ updates:
       - dependency-name: boto3
       # Except for critical ones where we only allow patches update
       - dependency-name: 'flask'
-        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+        update-types:
+          ['version-update:semver-major', 'version-update:semver-minor']
       - dependency-name: 'sqlalchemy'
-        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+        update-types:
+          ['version-update:semver-major', 'version-update:semver-minor']
       - dependency-name: 'pydantic'
-        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+        update-types:
+          ['version-update:semver-major', 'version-update:semver-minor']
       # We are not ready to handle upper version of spectree, even for patches
       - dependency-name: 'spectree'
     # Disable automatic rebasing for poetry pull requests
-    rebase-strategy: "disabled"
+    rebase-strategy: 'disabled'
 
   # Special configuration for Python packages that have very frequent updates.
   # We don't want to get a pull request every day for insignificant changes.
@@ -49,7 +60,7 @@ updates:
     open-pull-requests-limit: 15
     allow:
       - dependency-name: boto3
-    rebase-strategy: "disabled"
+    rebase-strategy: 'disabled'
 
   - package-ecosystem: 'github-actions'
     directory: '.github/workflows'
