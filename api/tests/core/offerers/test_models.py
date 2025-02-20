@@ -184,25 +184,27 @@ class VenueIsEligibleForSearchTest:
             isPermanent=permanent,
             venueTypeCode=type,
         )
+        offers_factories.OfferFactory(venue=venue)
         assert venue.is_eligible_for_search == is_eligible_for_search
 
     @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
     @pytest.mark.parametrize(
-        "open_to_public,permanent,validation_status,active,type,is_eligible_for_search",
+        "open_to_public,permanent,validation_status,active,type,has_indiv_offer,is_eligible_for_search",
         [
-            (True, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True),
-            (True, False, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True),
-            (False, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
-            (False, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.ADMINISTRATIVE, False),
-            (False, True, ValidationStatus.VALIDATED, False, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
-            (False, False, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
-            (False, False, ValidationStatus.VALIDATED, False, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
-            (True, True, ValidationStatus.NEW, True, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
-            (True, True, ValidationStatus.CLOSED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
+            (True, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, True),
+            (True, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, False, False),
+            (True, False, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, True),
+            (False, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
+            (False, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.ADMINISTRATIVE, True, False),
+            (False, True, ValidationStatus.VALIDATED, False, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
+            (False, False, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
+            (False, False, ValidationStatus.VALIDATED, False, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
+            (True, True, ValidationStatus.NEW, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
+            (True, True, ValidationStatus.CLOSED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
         ],
     )
     def test_is_eligible_for_search(
-        self, open_to_public, permanent, validation_status, active, type, is_eligible_for_search
+        self, open_to_public, permanent, validation_status, active, type, has_indiv_offer, is_eligible_for_search
     ):
         venue = factories.VenueFactory(
             isVirtual=False,
@@ -212,6 +214,8 @@ class VenueIsEligibleForSearchTest:
             isPermanent=permanent,
             venueTypeCode=type,
         )
+        if has_indiv_offer:
+            offers_factories.OfferFactory(venue=venue)
         assert venue.is_eligible_for_search == is_eligible_for_search
 
 

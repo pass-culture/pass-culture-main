@@ -727,6 +727,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
 
     @property
     def has_partner_page(self) -> bool:
+        from pcapi.core.offerers.models import Offerer
         from pcapi.core.offerers.models import UserOfferer
         from pcapi.core.offerers.models import Venue
 
@@ -736,8 +737,10 @@ class User(PcObject, Base, Model, DeactivableMixin):
             .join(Venue, UserOfferer.offererId == Venue.managingOffererId)
             .where(
                 UserOfferer.userId == self.id,
+                Offerer.isActive.is_(True),
                 Venue.isPermanent.is_(True),
                 Venue.isVirtual.is_(False),
+                Venue.hasOffers == True,
             )
             .exists()
         ).scalar()

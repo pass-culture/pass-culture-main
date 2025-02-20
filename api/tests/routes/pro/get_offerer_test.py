@@ -175,10 +175,11 @@ class GetOffererTest:
         with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
-        assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
-        assert response.json["managedVenues"][1]["hasCreatedOffer"] is True
-        assert response.json["managedVenues"][2]["hasCreatedOffer"] is True
-        assert response.json["managedVenues"][3]["hasCreatedOffer"] is False
+        managed_venues_list = sorted(response.json["managedVenues"], key=lambda d: d["id"])
+        assert managed_venues_list[0]["hasCreatedOffer"] is True
+        assert managed_venues_list[1]["hasCreatedOffer"] is True
+        assert managed_venues_list[2]["hasCreatedOffer"] is True
+        assert managed_venues_list[3]["hasCreatedOffer"] is False
         assert response.json["hasValidBankAccount"] is False
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []

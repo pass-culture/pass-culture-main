@@ -127,8 +127,11 @@ def test_partially_index_collective_offer_templates(app):
 def test_partially_index_venues(app):
     _not_indexable_venue = offerers_factories.VenueFactory(isPermanent=False)
     indexable_venue1 = offerers_factories.VenueFactory(isPermanent=True)
+    offers_factories.OfferFactory(venue=indexable_venue1)
     _indexable_venue2 = offerers_factories.VenueFactory(isPermanent=True)
+    offers_factories.OfferFactory(venue=_indexable_venue2)
     _indexable_venue3 = offerers_factories.VenueFactory(isPermanent=True)
+    offers_factories.OfferFactory(venue=_indexable_venue3)
 
     expected_to_be_reindexed = {
         indexable_venue1.id,
@@ -152,7 +155,9 @@ def test_partially_index_venues(app):
 @pytest.mark.usefixtures("clean_database")
 def test_partially_index_venues_removes_non_eligible_venues(app):
     future_not_indexable_venue = offerers_factories.VenueFactory(isPermanent=True)
+    offers_factories.OfferFactory(venue=future_not_indexable_venue)
     indexable_venue1 = offerers_factories.VenueFactory(isPermanent=True)
+    offers_factories.OfferFactory(venue=indexable_venue1)
 
     expected_to_be_reindexed = {
         future_not_indexable_venue.id,
