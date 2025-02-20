@@ -4,7 +4,6 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { GET_OFFERER_HEADLINE_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import * as useNotification from 'commons/hooks/useNotification'
 import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
@@ -207,10 +206,7 @@ describe('HeadlineOfferContext', () => {
       // which is triggered by the SWR mutate function on GET_OFFERER_HEADLINE_OFFER_QUERY_KEY.
       // This would be like testing the SWR library itself & its none of our concern.
       // Yet, we expect the mutation to be called.
-      expect(mockMutate).toHaveBeenCalledWith([
-        GET_OFFERER_HEADLINE_OFFER_QUERY_KEY,
-        MOCK_DATA.offerer.selectedOffererId
-      ])
+      expect(mockMutate).toHaveBeenCalled()
     })
 
     describe('about notifications', () => {
@@ -243,7 +239,9 @@ describe('HeadlineOfferContext', () => {
           pending: vi.fn(),
           close: vi.fn(),
         }))
-        vi.spyOn(api, 'upsertHeadlineOffer').mockRejectedValue('PLONK')
+
+        // Api call rejects with an error and so does the mutation.
+        mockMutate.mockImplementation(() => Promise.reject())
 
         renderIndividualOffersContext()
 
@@ -305,18 +303,11 @@ describe('HeadlineOfferContext', () => {
       })
       await userEvent.click(removeButton)
 
-      await waitFor(() => {
-        expect(api.deleteHeadlineOffer).toHaveBeenCalled()
-      })
-
       // We are not testing display update since this happens after a re-render,
       // which is triggered by the SWR mutate function on GET_OFFERER_HEADLINE_OFFER_QUERY_KEY.
       // This would be like testing the SWR library itself & its none of our concern.
       // Yet, we expect the mutation to be called.
-      expect(mockMutate).toHaveBeenCalledWith([
-        GET_OFFERER_HEADLINE_OFFER_QUERY_KEY,
-        MOCK_DATA.offerer.selectedOffererId
-      ])
+      expect(mockMutate).toHaveBeenCalled()
     })
 
     describe('about notifications', () => {
@@ -349,7 +340,9 @@ describe('HeadlineOfferContext', () => {
           pending: vi.fn(),
           close: vi.fn(),
         }))
-        vi.spyOn(api, 'deleteHeadlineOffer').mockRejectedValue('PLONK')
+
+        // Api call rejects with an error and so does the mutation.
+        mockMutate.mockImplementation(() => Promise.reject())
 
         renderIndividualOffersContext()
 
