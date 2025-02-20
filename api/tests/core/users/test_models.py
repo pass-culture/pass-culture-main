@@ -19,6 +19,7 @@ from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repository
@@ -340,21 +341,36 @@ class UserTest:
     def test_has_partner_page(self):
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
+        inactive_offerer = offerers_factories.OffererFactory(isActive=False)
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
-        # Non-permanent & Non-virtual --> has not a partner page:
+        # Non-permanent & Non-virtual --> does not have a partner page:
         venue_type_code = offerers_models.VenueTypeCode.CULTURAL_CENTRE
         offerers_factories.VenueFactory(managingOfferer=offerer, venueTypeCode=venue_type_code, isVirtual=False)
         assert user.has_partner_page is False
 
-        # Permanent & Virtual --> has not a partner page:
+        # Permanent & Virtual --> does not have a partner page:
         venue_type_code = offerers_models.VenueTypeCode.LIBRARY
         offerers_factories.VirtualVenueFactory(managingOfferer=offerer, venueTypeCode=venue_type_code)
         assert user.has_partner_page is False
 
-        # Permanent & Non-virtual --> has a partner page:
+        # Permanent & Non-virtual & no individual offer --> does not have a partner page:
         venue_type_code = offerers_models.VenueTypeCode.LIBRARY
         offerers_factories.VenueFactory(managingOfferer=offerer, venueTypeCode=venue_type_code, isVirtual=False)
+        assert user.has_partner_page is False
+
+        # Permanent & Non-virtual & at least one individual offer & inactive offerer --> has a partner page:
+        venue_type_code = offerers_models.VenueTypeCode.LIBRARY
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=inactive_offerer, venueTypeCode=venue_type_code, isVirtual=False
+        )
+        offers_factories.OfferFactory(venue=venue)
+        assert user.has_partner_page is False
+
+        # Permanent & Non-virtual & at least one individual offer --> has a partner page:
+        venue_type_code = offerers_models.VenueTypeCode.LIBRARY
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, venueTypeCode=venue_type_code, isVirtual=False)
+        offers_factories.OfferFactory(venue=venue)
         assert user.has_partner_page is True
 
 
