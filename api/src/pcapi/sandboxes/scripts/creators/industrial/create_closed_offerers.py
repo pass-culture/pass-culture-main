@@ -1,6 +1,9 @@
 import datetime
 import logging
 
+from dateutil.relativedelta import relativedelta
+
+from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import api as finance_api
@@ -25,6 +28,7 @@ def create_closed_offerers() -> None:
         firstName="Jeune",
         lastName="Réservant sur structure fermée",
         email="jeune.structure.fermee@example.com",
+        dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(weeks=1),
     )
 
     _create_closed_offerer("Structure fermée", "structure.fermee@example.com", beneficiary)
