@@ -22,3 +22,13 @@ class DmsGraphQLApiError(DmsGraphQLApiException):
     @property
     def is_not_found(self) -> bool:
         return self.code == "not_found"
+
+
+class DmsGraphQLAPIConnectError(DmsGraphQLApiError):
+    def __init__(self, message: str | None) -> None:
+        self._message = message
+        super().__init__(None)
+
+    @property
+    def message(self) -> str | None:
+        return f"La connexion à Démarches-Simplifiées a échoué : {self._message}"
