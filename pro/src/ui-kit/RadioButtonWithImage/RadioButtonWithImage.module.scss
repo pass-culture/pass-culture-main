@@ -9,7 +9,7 @@ $radio-size: rem.torem(16px);
 
 .button {
   background-color: transparent;
-  border: rem.torem(1px) solid var(--color-grey-dark);
+  border: rem.torem(1px) solid var(--color-border-default);
   border-radius: rem.torem(8px);
   position: relative;
 
@@ -28,7 +28,7 @@ $radio-size: rem.torem(16px);
     flex-shrink: 0;
     width: rem.torem(44px);
     height: rem.torem(44px);
-    color: var(--color-secondary-light);
+    color: var(--color-icon-brand-primary);
   }
 
   &:hover {
@@ -43,8 +43,8 @@ $radio-size: rem.torem(16px);
   &.is-selected {
     @include fonts.body-accent;
 
-    border: $border-size-selected solid var(--color-secondary-light);
-    background-color: var(--color-background-secondary);
+    border: $border-size-selected solid var(--color-border-brand-primary);
+    background-color: var(--color-background-brand-primary-selected);
   }
 
   &.is-disabled {
@@ -69,7 +69,7 @@ $radio-size: rem.torem(16px);
   &-description {
     @include fonts.body-accent-xs;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
     margin-top: rem.torem(4px);
   }
 }
