@@ -3526,6 +3526,11 @@ def recredit_user_if_no_missing_step(user: users_models.User) -> None:
     db.session.add(user)
     external_attributes_api.update_external_user(user)
     push_notifications.track_account_recredited(user.id, user.deposit, len(user.deposits))
+    if feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and recredit.amount > 0:
+        if user.age and user.age >= 18:
+            # After the decree, send email to 18 years old users only
+            # This email will hold information about the recredit after 18 years old specifics
+            transactional_mails.send_recredit_email_to_18_years_old(user)
     if not feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and recredit.amount > 0:
         # This email will not be sent after the decree.
         # It will be handled by the email sent to the user for their birthday
