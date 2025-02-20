@@ -446,7 +446,7 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
         )
         offerer_address = create_offerer_address(venue_data.managingOffererId, address.id)
     else:
-        offerer_address = get_offerer_address_from_address(venue.managingOffererId, address)
+        offerer_address = get_offerer_address_from_address(venue_data.managingOffererId, address)
 
     venue.offererAddressId = offerer_address.id
 
@@ -2858,6 +2858,7 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
 
 
 def create_offerer_address(offerer_id: int, address_id: int | None, label: str | None = None) -> models.OffererAddress:
+    assert offerer_id
     try:
         offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
         db.session.add(offerer_address)
@@ -2961,6 +2962,7 @@ def create_offerer_address_from_address_api(address: offerers_schemas.AddressBod
 def get_offerer_address_from_address(
     offerer_id: int, address: offerers_schemas.AddressBodyModel
 ) -> offerers_models.OffererAddress:
+    assert offerer_id
     if not address.label:
         address.label = None
     address_from_api = create_offerer_address_from_address_api(address)
