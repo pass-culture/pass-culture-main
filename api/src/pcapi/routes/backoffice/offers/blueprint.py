@@ -1368,7 +1368,7 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
             .options(sa.orm.joinedload(offerers_models.Venue.offererAddress))
         ).one()
 
-        offers_api.move_event_offer(offer, destination_venue, notify_beneficiary=form.notify_beneficiary.data)
+        offers_api.move_offer(offer, destination_venue)
 
     except offers_exceptions.MoveOfferBaseException as exc:
         mark_transaction_as_invalid()
