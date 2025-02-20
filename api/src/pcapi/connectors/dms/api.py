@@ -13,6 +13,7 @@ from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils import requests
+from pcapi.utils.requests import exceptions as requests_exception
 
 from . import exceptions
 
@@ -156,6 +157,12 @@ class DMSGraphQLClient:
             response = self.execute_query(mutation_name, variables={"input": params})
         except gql_exceptions.TransportQueryError as exc:
             raise exceptions.DmsGraphQLApiError(exc.errors)
+        except requests_exception.RequestException as exc:
+            # DS unavailability does not need to be notified as an error in Sentry
+            logger.warning(
+                "[DMS] Connection error when marking %s", log_state, extra={"application_techid": application_techid}
+            )
+            raise exceptions.DmsGraphQLAPIConnectError(str(exc))
         except Exception:
             logger.exception(
                 "[DMS] Unexpected error when marking %s", log_state, extra={"application_techid": application_techid}
@@ -294,6 +301,13 @@ class DMSGraphQLClient:
             response = self.execute_query(ADD_LABEL, variables={"input": params})
         except gql_exceptions.TransportQueryError as exc:
             raise exceptions.DmsGraphQLApiError(exc.errors)
+        except requests_exception.RequestException as exc:
+            # DS unavailability does not need to be notified as an error in Sentry
+            logger.warning(
+                "[DMS] Connection error when adding label to application",
+                extra={"application_techid": application_techid, "label_techid": label_techid},
+            )
+            raise exceptions.DmsGraphQLAPIConnectError(str(exc))
         except Exception as exc:
             logger.warning(
                 "[DMS] Unexpected error while adding label to application",
