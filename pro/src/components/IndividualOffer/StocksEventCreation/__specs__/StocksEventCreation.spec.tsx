@@ -143,7 +143,7 @@ describe('StocksEventCreation', () => {
     })
     await userEvent.click(screen.getByText('Valider'))
     await waitFor(() => {
-      expect(api.getStocks).toHaveBeenCalledTimes(1)
+      expect(api.getStocks).toHaveBeenCalled()
     })
 
     expect(

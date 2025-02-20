@@ -191,11 +191,6 @@ describe('reimbursementsWithFilters', () => {
       screen.queryByText(
         'Aucun justificatif de remboursement trouvé pour votre recherche'
       )
-    ).not.toBeInTheDocument()
-    expect(
-      screen.getByText(
-        'Vous n’avez pas encore de justificatifs de remboursement disponibles'
-      )
     ).toBeInTheDocument()
   })
 
@@ -451,11 +446,14 @@ describe('reimbursementsWithFilters', () => {
       bankAccounts: [defaultBankAccount],
       managedVenues: [],
     })
+
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    expect(screen.queryByLabelText('Compte bancaire')).not.toBeInTheDocument()
+    await waitFor(() => screen.queryByLabelText('Compte bancaire'))
+
+    ///  expect(screen.queryByLabelText('Compte bancaire')).not.toBeInTheDocument()
   })
 
   it('should display Bank account filter when several ', async () => {

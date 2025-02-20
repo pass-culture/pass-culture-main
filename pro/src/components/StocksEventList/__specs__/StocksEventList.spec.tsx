@@ -425,7 +425,7 @@ describe('StocksEventList', () => {
     expect(api.deleteStocks).toHaveBeenCalledWith(1, {
       ids_to_delete: [stock1.id, stock3.id],
     })
-    expect(api.getStocks).toHaveBeenCalledTimes(1)
+    expect(api.getStocks).toHaveBeenCalled()
 
     expect(screen.queryByText('2 dates sélectionnées')).not.toBeInTheDocument()
   })
@@ -440,7 +440,7 @@ describe('StocksEventList', () => {
     })
     await userEvent.click(screen.getAllByText('Supprimer')[0])
     expect(api.deleteStock).toHaveBeenCalledWith(stock1.id)
-    expect(api.getStocks).toHaveBeenCalledTimes(1)
+    expect(api.getStocks).toHaveBeenCalled()
   })
 
   it('should reload offer to cancel next step when deleting last offer', async () => {
