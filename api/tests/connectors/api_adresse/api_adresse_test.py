@@ -432,3 +432,59 @@ def test_we_dont_cache_falsy_empty_response(mocked_redis_get, mocked_redis_set, 
         street=None,
         city="Paris",
     )
+
+
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+@patch(
+    "pcapi.connectors.api_adresse.ApiAdresseBackend._search",
+    side_effect=[
+        {"type": "FeatureCollection", "features": []},  # Falsy empty response when querying the address
+        {"type": "FeatureCollection", "features": []},  # Falsy empty response when falling back on the centroid
+    ],
+)
+@patch("flask.current_app.redis_client.delete")
+@patch("flask.current_app.redis_client.set", side_effect=[None, None])
+@patch("flask.current_app.redis_client.get", side_effect=[None, None])
+def test_we_dont_cache_falsy_empty_response_when_falling_back_on_centroid(
+    mocked_redis_get, mocked_redis_set, mocked_redis_delete, mocked_search
+):
+    payload = {
+        "q": "3 Rue de Valois",
+        "postcode": "75001",
+        "citycode": None,
+        "city": "Paris",
+        "autocomplete": 0,
+        "limit": 1,
+    }
+    with pytest.raises(api_adresse.NoResultException):
+        api_adresse.get_address(address="3 Rue de Valois", postcode="75001", city="Paris")
+    address_cache_key = f"cache:api:addresse:search:{md5(json.dumps(payload).encode()).hexdigest()}"
+    centroid_cache_key = f'cache:api:addresse:search:{md5(json.dumps({"q": "Paris", "postcode": "75001", "citycode": None, "type": "municipality", "autocomplete": 0, "limit": 1}).encode()).hexdigest()}'
+
+    ### redis_client.get calls ###
+    get_calls = [call(address_cache_key), call(centroid_cache_key)]
+    mocked_redis_get.assert_has_calls(get_calls)
+
+    ### redis_client.set calls ###
+    set_calls = [
+        call(address_cache_key, json.dumps({"type": "FeatureCollection", "features": []}).encode(), ex=86400 * 7),
+        call(centroid_cache_key, json.dumps({"type": "FeatureCollection", "features": []}).encode(), ex=86400 * 7),
+    ]
+
+    mocked_redis_set.assert_has_calls(set_calls)  # Wrongly caching the responses
+
+    ### redis_client.delete calls ###
+    mocked_redis_delete.assert_has_calls(
+        [call(address_cache_key), call(centroid_cache_key)]
+    )  #  Ensure we don’t serve the wrongly empty responses for others users
+
+    ### Ensure we don’t break anything from the BAN API connector ###
+    assert (
+        mocked_search.call_count == 2
+    )  # Searching the address, BAN API return wrongly an empty response, then falling back on asking for the centroid
+    mocked_search.assert_any_call(
+        {"q": "3 Rue de Valois", "postcode": "75001", "citycode": None, "city": "Paris", "autocomplete": 0, "limit": 1}
+    )
+    mocked_search.assert_any_call(
+        {"q": "Paris", "postcode": "75001", "citycode": None, "type": "municipality", "autocomplete": 0, "limit": 1}
+    )  # Connector fallback on the centroid because the `get_single_address_result` returned (falsy) empty
