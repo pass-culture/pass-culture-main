@@ -67,7 +67,7 @@ export const FormParticipants = ({
           disabled={disableForm}
           group={[
             {
-              name: 'college',
+              name: 'participants.college',
               label: 'Collège',
               childrenOnChecked: (
                 <CheckboxGroup
@@ -83,7 +83,7 @@ export const FormParticipants = ({
               ),
             },
             {
-              name: 'lycee',
+              name: 'participants.lycee',
               label: 'Lycée',
               childrenOnChecked: (
                 <CheckboxGroup
@@ -101,7 +101,7 @@ export const FormParticipants = ({
               ),
             },
             {
-              name: 'marseille',
+              name: 'participants.marseille',
               label: 'Projet Marseille en Grand - École innovante',
               childrenOnChecked: (
                 <CheckboxGroup

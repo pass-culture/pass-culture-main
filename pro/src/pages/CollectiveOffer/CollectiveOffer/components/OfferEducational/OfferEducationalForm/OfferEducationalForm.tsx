@@ -77,6 +77,8 @@ export const OfferEducationalForm = ({
   const { values, setFieldValue, initialValues, dirty } =
     useFormikContext<OfferEducationalFormValues>()
 
+  console.log({ values })
+
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const areCollectiveNewStatusesEnabled = useActiveFeature(

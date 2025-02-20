@@ -35,7 +35,9 @@ describe('createPatchOfferPayload', () => {
     },
     participants: {
       ...buildStudentLevelsMapWithDefaultValue(true),
-      all: false,
+      college: false,
+      lycee: false,
+      marseille: false,
     },
     phone: '0123456789',
     email: 'test@email.com',
@@ -68,7 +70,9 @@ describe('createPatchOfferPayload', () => {
     },
     participants: {
       ...buildStudentLevelsMapWithDefaultValue(false),
-      all: true,
+      college: false,
+      lycee: false,
+      marseille: false,
     },
     phone: '0123456788',
     email: 'test2@email.com',

@@ -24,7 +24,13 @@ export type OfferEducationalFormValues = {
     venueId: number | null
   }
   interventionArea: string[]
-  participants: Record<StudentLevels | 'all', boolean>
+  participants: {
+    college: boolean
+    lycee: boolean
+    marseille: boolean
+  } & {
+    [K in StudentLevels]: boolean
+  }
   accessibility: AccessibilityFormValues
   phone: string
   email: string

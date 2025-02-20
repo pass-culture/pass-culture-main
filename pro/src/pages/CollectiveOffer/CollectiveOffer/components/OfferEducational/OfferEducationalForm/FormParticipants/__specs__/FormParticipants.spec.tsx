@@ -31,7 +31,6 @@ describe('FormParticipants', () => {
   let participants: Record<string, boolean> = {
     ...buildStudentLevelsMapWithDefaultValue(true),
     CAPAnnee2: false,
-    all: false,
   }
   it('should render all options with default value', async () => {
     renderFormParticipants(participants)
