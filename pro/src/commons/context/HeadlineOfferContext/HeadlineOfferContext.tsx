@@ -104,10 +104,12 @@ export function HeadlineOfferContextProvider({ children }: HeadlineOfferContextP
     context,
   }: UpsertHeadlineOfferParams) => {
     try {
-      await api.upsertHeadlineOffer({ offerId })
-      notify.success('Votre offre a été mise à la une !')
-      await mutate([GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId])
+      await mutate([GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId],
+        api.upsertHeadlineOffer({ offerId }),
+        { revalidate: true, throwOnError: true }
+      )
 
+      notify.success('Votre offre a été mise à la une !')
       logEvent(Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
         from: location.pathname,
         actionType: context.actionType,
@@ -127,10 +129,16 @@ export function HeadlineOfferContextProvider({ children }: HeadlineOfferContextP
   const removeHeadlineOffer = async () => {
     if (selectedOffererId) {
       try {
-        await api.deleteHeadlineOffer({ offererId: selectedOffererId })
-        notify.success('Votre offre n’est plus à la une')
-        await mutate([GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId])
+        await mutate([GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId],
+          api.deleteHeadlineOffer({ offererId: selectedOffererId }),
+          {
+            populateCache: () => null,
+            revalidate: false,
+            throwOnError: true,
+          }
+        )
 
+        notify.success('Votre offre n’est plus à la une')
         logEvent(Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
           from: location.pathname,
           actionType: 'delete',
