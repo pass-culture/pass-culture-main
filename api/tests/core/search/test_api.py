@@ -267,6 +267,7 @@ class ReindexOfferIdsTest:
 class ReindexVenueIdsTest:
     def test_index_new_venue(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
+        offers_factories.OfferFactory(venue=venue)
         assert search_testing.search_store["venues"] == {}
         search.reindex_venue_ids([venue.id])
         assert venue.id in search_testing.search_store["venues"]
@@ -296,6 +297,7 @@ class ReindexVenueIdsTest:
         indexable_venue = offerers_factories.VenueFactory(
             isPermanent=True, managingOfferer__isActive=True, venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
         )
+        offers_factories.OfferFactory(venue=indexable_venue)
 
         venue1 = offerers_factories.VenueFactory(isPermanent=False)
         venue2 = offerers_factories.VenueFactory(isPermanent=True, managingOfferer__isActive=False)
