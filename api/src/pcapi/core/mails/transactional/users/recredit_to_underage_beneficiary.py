@@ -28,3 +28,10 @@ def send_recredit_email_to_underage_beneficiary(
 ) -> None:
     data = get_recredit_to_underage_beneficiary_email_data(user, recredit_amount, domains_credit)
     mails.send(recipients=[user.email], data=data)
+
+
+def send_recredit_email_to_18_years_old(
+    user: users_models.User,
+) -> None:
+    data = models.TransactionalEmailData(template=TransactionalEmail.RECREDIT.value)
+    mails.send(recipients=[user.email], data=data)
