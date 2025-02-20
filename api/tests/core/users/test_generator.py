@@ -232,11 +232,17 @@ class UserGeneratorTest:
 
         user = users_generator.generate_user(user_data)
 
+        profile_completion_check = next(
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == fraud_models.FraudCheckType.PROFILE_COMPLETION
+        )
+        assert profile_completion_check.dateCreated == date_in_the_past
+
         identity_fraud_check = next(
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
             if fraud_check.type == fraud_models.FraudCheckType.UBBLE
         )
-
         assert identity_fraud_check.dateCreated == date_in_the_past
         assert identity_fraud_check.source_data().get_registration_datetime().date() == date_in_the_past.date()

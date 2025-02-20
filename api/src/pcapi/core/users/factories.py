@@ -205,6 +205,7 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
                 resultContent__firstName=obj.firstName,
                 resultContent__lastName=obj.lastName,
                 resultContent__postalCode=obj.postalCode,
+                dateCreated=kwargs.get("dateCreated", datetime.utcnow()),
             )
         )
         return fraud_checks
