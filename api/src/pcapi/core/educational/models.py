@@ -75,11 +75,11 @@ class StudentLevels(enum.Enum):
     COLLEGE5 = "Collège - 5e"
     COLLEGE4 = "Collège - 4e"
     COLLEGE3 = "Collège - 3e"
-    CAP1 = "CAP - 1re année"
-    CAP2 = "CAP - 2e année"
     GENERAL2 = "Lycée - Seconde"
     GENERAL1 = "Lycée - Première"
     GENERAL0 = "Lycée - Terminale"
+    CAP2 = "CAP - 2e année"
+    CAP1 = "CAP - 1re année"
 
     @classmethod
     def primary_levels(cls) -> set:
