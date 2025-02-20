@@ -72,10 +72,7 @@ export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
       : income.individual
 
   return (
-    <BoxRounded
-      className={styles['income-results-box']}
-      showButtonModify={false}
-    >
+    <BoxRounded className={styles['income-results-box']}>
       <IncomeResultsSubBox title={totalLabel} number={total} help={totalHelp} />
       {shouldDisplayIncomeDetails && (
         <div className={styles['income-results-box-subbox']}>

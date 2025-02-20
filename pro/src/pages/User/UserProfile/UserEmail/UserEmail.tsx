@@ -42,10 +42,15 @@ export const UserEmail = ({
 
   return (
     <BoxFormLayout>
-      {!showForm && pendingEmailValidation && (
-        <BannerPendingEmailValidation email={pendingEmailValidation} />
-      )}
-      <BoxRounded onClickModify={onClickModify} showButtonModify={!showForm}>
+      <BoxRounded
+        onClickModify={!showForm ? onClickModify : undefined}
+        footer={
+          !showForm &&
+          pendingEmailValidation && (
+            <BannerPendingEmailValidation email={pendingEmailValidation} />
+          )
+        }
+      >
         {showForm ? (
           <UserEmailForm
             closeForm={resetForm}

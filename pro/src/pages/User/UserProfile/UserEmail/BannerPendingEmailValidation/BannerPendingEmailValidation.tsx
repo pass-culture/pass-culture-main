@@ -1,4 +1,3 @@
-
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 
@@ -17,7 +16,7 @@ export const BannerPendingEmailValidation = ({ email }: Props): JSX.Element => (
         isExternal: true,
       },
     ]}
-    variant={CalloutVariant.WARNING}
+    variant={CalloutVariant.ERROR}
     className={styles['banner-email-adress']}
   >
     Pour valider ce changement, un lien de confirmation valable 24 heures vous a
