@@ -184,6 +184,7 @@ class VenueIsEligibleForSearchTest:
             isPermanent=permanent,
             venueTypeCode=type,
         )
+        offers_factories.OfferFactory(venue=venue)
         assert venue.is_eligible_for_search == is_eligible_for_search
 
     @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
@@ -212,6 +213,7 @@ class VenueIsEligibleForSearchTest:
             isPermanent=permanent,
             venueTypeCode=type,
         )
+        offers_factories.OfferFactory(venue=venue)
         assert venue.is_eligible_for_search == is_eligible_for_search
 
 
