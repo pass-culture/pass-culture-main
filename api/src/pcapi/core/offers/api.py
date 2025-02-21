@@ -1987,6 +1987,31 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
     return get_venues_with_same_pricing_point(offer)
 
 
+def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
+    count_past_stocks = (
+        models.Stock.query.with_entities(models.Stock.id)
+        .filter(
+            models.Stock.offerId == offer.id,
+            models.Stock.beginningDatetime < datetime.datetime.utcnow(),
+            models.Stock.isSoftDeleted.is_(False),
+        )
+        .count()
+    )
+    if count_past_stocks > 0:
+        raise exceptions.OfferEventInThePast(count_past_stocks)
+
+    count_reimbursed_bookings = (
+        bookings_models.Booking.query.with_entities(bookings_models.Booking.id)
+        .join(bookings_models.Booking.stock)
+        .filter(models.Stock.offerId == offer.id, bookings_models.Booking.isReimbursed)
+        .count()
+    )
+    if count_reimbursed_bookings > 0:
+        raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
+
+    return get_venues_with_same_pricing_point(offer)
+
+
 def check_can_move_collective_offer_venue(
     collective_offer: educational_models.CollectiveOffer,
 ) -> list[offerers_models.Venue]:
@@ -2064,6 +2089,103 @@ def _get_or_create_same_price_category_label(
         )
         db.session.add(new_price_category_label)
         return new_price_category_label
+
+
+# WARNING: this is WIP, do not use it yet
+def move_offer(
+    offer: models.Offer,
+    destination_venue: offerers_models.Venue,
+) -> None:
+    if not feature.FeatureToggle.MOVE_OFFER_TEST.is_active():
+        raise NotImplementedError("This feature is not yet available")
+
+    offer_id = offer.id
+
+    venue_choices = check_can_move_offer(offer)
+
+    if destination_venue not in venue_choices:
+        raise exceptions.ForbiddenDestinationVenue()
+
+    destination_pricing_point_link = destination_venue.current_pricing_point_link
+    assert destination_pricing_point_link  # for mypy - it would not be in venue_choices without link
+    destination_pricing_point_id = destination_pricing_point_link.pricingPointId
+
+    bookings = (
+        bookings_models.Booking.query.join(bookings_models.Booking.stock)
+        .outerjoin(
+            # max 1 row joined thanks to idx_uniq_individual_booking_id
+            finance_models.FinanceEvent,
+            sa.and_(
+                finance_models.FinanceEvent.bookingId == bookings_models.Booking.id,
+                finance_models.FinanceEvent.status.in_(
+                    (finance_models.FinanceEventStatus.PENDING, finance_models.FinanceEventStatus.READY)
+                ),
+            ),
+        )
+        .outerjoin(
+            # max 1 row joined thanks to idx_uniq_booking_id
+            finance_models.Pricing,
+            sa.and_(
+                finance_models.Pricing.bookingId == bookings_models.Booking.id,
+                finance_models.Pricing.status != finance_models.PricingStatus.CANCELLED,
+            ),
+        )
+        .options(
+            sa.orm.load_only(bookings_models.Booking.status),
+            sa.orm.contains_eager(bookings_models.Booking.finance_events).load_only(finance_models.FinanceEvent.status),
+            sa.orm.contains_eager(bookings_models.Booking.pricings).load_only(
+                finance_models.Pricing.pricingPointId, finance_models.Pricing.status
+            ),
+        )
+        .filter(models.Stock.offerId == offer.id)
+        .all()
+    )
+
+    # After offer is moved, price categories must remain linked to labels defined for the related venue.
+    # Extra SQL queries to avoid multiplying the number of rows in case of many labels
+    original_price_category_labels = {price_category.priceCategoryLabel for price_category in offer.priceCategories}
+    labels_mapping = {
+        price_category_label: _get_or_create_same_price_category_label(destination_venue, price_category_label)
+        for price_category_label in original_price_category_labels
+    }
+    with transaction():
+        offer.venue = destination_venue
+        offer.offererAddressId = destination_venue.offererAddressId
+        db.session.add(offer)
+
+        for price_category in offer.priceCategories:
+            price_category.priceCategoryLabel = labels_mapping[price_category.priceCategoryLabel]
+            db.session.add(price_category)
+
+        for booking in bookings:
+            assert not booking.isReimbursed
+            booking.venueId = destination_venue.id
+
+            # when offer has priced bookings, pricing point for destination venue must be the same as pricing point
+            # used for pricing (same as venue pricing point at the time pricing was processed)
+            pricing = booking.pricings[0] if booking.pricings else None
+            if pricing and pricing.pricingPointId != destination_pricing_point_id:
+                raise exceptions.BookingsHaveOtherPricingPoint()
+
+            finance_event = booking.finance_events[0] if booking.finance_events else None
+            if finance_event:
+                finance_event.venueId = destination_venue.id
+                finance_event.pricingPointId = destination_pricing_point_id
+                if finance_event.status == finance_models.FinanceEventStatus.PENDING:
+                    finance_event.status = finance_models.FinanceEventStatus.READY
+                    finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(booking)
+                db.session.add(finance_event)
+
+            db.session.add(booking)
+
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            {offer_id},
+            reason=search.IndexationReason.OFFER_UPDATE,
+            log_extra={"changes": {"venueId"}},
+        )
+    )
 
 
 def move_event_offer(
