@@ -339,19 +339,23 @@ class UserTest:
         assert user.proValidationStatus == ValidationStatus.VALIDATED
 
     @pytest.mark.parametrize(
-        "active_offerer,permanent_venue,virtual_venue,at_least_one_offer,has_partner_page",
+        "active_offerer,permanent_venue,virtual_venue,at_least_one_offer,is_pro_user,has_partner_page",
         [
-            (False, True, False, True, False),
-            (True, False, False, True, False),
-            (True, True, True, True, False),
-            (True, True, False, False, False),
-            (True, True, False, True, True),
+            (False, True, False, True, True, False),
+            (True, False, False, True, True, False),
+            (True, True, True, True, True, False),
+            (True, True, False, False, True, False),
+            (True, True, False, True, False, False),
+            (True, True, False, True, True, True),
         ],
     )
     def test_has_partner_page(
-        self, active_offerer, permanent_venue, virtual_venue, at_least_one_offer, has_partner_page
+        self, active_offerer, permanent_venue, virtual_venue, at_least_one_offer, is_pro_user, has_partner_page
     ):
-        user = users_factories.UserFactory()
+        if is_pro_user:
+            user = users_factories.ProFactory()
+        else:
+            user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory(isActive=active_offerer)
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
