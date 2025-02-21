@@ -552,11 +552,10 @@ class HeadlineOffer(PcObject, Base, Model):
 
     @isActive.expression  # type: ignore[no-redef]
     def isActive(cls) -> bool:  # pylint: disable=no-self-argument
-        now = datetime.datetime.utcnow()
         offer_alias = sa_orm.aliased(Offer)  # avoids cartesian product
         return sa.and_(
-            sa.or_(sa.func.upper(cls.timespan) == None, (sa.func.upper(cls.timespan) > now)),
-            sa.func.lower(cls.timespan) <= now,
+            sa.or_(sa.func.upper(cls.timespan) == None, (sa.func.upper(cls.timespan) > sa.func.now())),
+            sa.func.lower(cls.timespan) <= sa.func.now(),
             offer_alias.id == cls.offerId,
             offer_alias.status == OfferStatus.ACTIVE,
         )
