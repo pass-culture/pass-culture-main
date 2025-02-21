@@ -72,14 +72,19 @@ def decide_v3_credit_eligibility(
         return None
 
     eligibility: users_models.EligibilityType | None = None
+
+    first_eligible_registration_datetime = get_first_eligible_registration_date(user, birth_date)
+    if first_eligible_registration_datetime:
+        eligibility = get_extended_eligibility_at_date(
+            birth_date, first_eligible_registration_datetime, user.departementCode
+        )
+        if eligibility:
+            return eligibility
+
     if registration_datetime:
         eligibility = get_eligibility_at_date(birth_date, registration_datetime, user.departementCode)
     if eligibility:
         return eligibility
-
-    first_eligible_registration_datetime = get_first_eligible_registration_date(user, birth_date)
-    if first_eligible_registration_datetime:
-        return get_extended_eligibility_at_date(birth_date, first_eligible_registration_datetime, user.departementCode)
 
     if 17 <= user_age <= 18:
         eligibility = users_models.EligibilityType.AGE17_18

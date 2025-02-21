@@ -189,6 +189,17 @@ class DecideV3CreditEligibilityTest:
 
         assert eligibility is None
 
+    def test_user_registered_before_decree_has_the_eligibility_before_decree(self):
+        one_day_before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        one_day_after_decree = settings.CREDIT_V3_DECREE_DATETIME + relativedelta(days=1)
+
+        with time_machine.travel(one_day_before_decree):
+            user = users_factories.IdentityValidatedUserFactory(age=18)
+
+        with time_machine.travel(one_day_after_decree):
+            eligibility = user.eligibility
+            assert eligibility == users_models.EligibilityType.AGE18
+
 
 @pytest.mark.usefixtures("db_session")
 class EligibilityForNextRecreditActivationStepsTest:
