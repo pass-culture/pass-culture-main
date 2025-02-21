@@ -20,6 +20,7 @@ export const getFilteredIndividualBookingsAdapter = async (
     }
     const {
       venueId,
+      offererId,
       offererAddressId,
       offerId,
       eventDate,
@@ -32,6 +33,7 @@ export const getFilteredIndividualBookingsAdapter = async (
     const bookings = await api.getBookingsPro(
       page,
       // @ts-expect-error api expect number
+      offererId,
       venueId,
       offerId,
       eventDate,

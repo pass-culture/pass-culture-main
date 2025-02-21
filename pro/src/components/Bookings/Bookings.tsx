@@ -81,6 +81,10 @@ export const BookingsContainer = <
       offerId: selectedOffererId?.toString(),
     },
   }
+  if (selectedOffererId !== null) {
+      initialAppliedFilters.offererId = selectedOffererId.toString()
+  }
+
   const [appliedPreFilters, setAppliedPreFilters] = useState<PreFiltersParams>(
     initialAppliedFilters
   )
@@ -167,7 +171,8 @@ export const BookingsContainer = <
       params.has('bookingBeginningDate') ||
       params.has('bookingEndingDate') ||
       params.has('offerType') ||
-      params.has('offerEventDate')
+      params.has('offerEventDate') ||
+      params.has('offererId')
     ) {
       const filterToLoad: PreFiltersParams = {
         offerVenueId:
@@ -194,11 +199,17 @@ export const BookingsContainer = <
             : initialAppliedFilters.bookingEndingDate),
         offerEventDate:
           params.get('offerEventDate') ?? initialAppliedFilters.offerEventDate,
+        offererId: params.get('offererId') ?? initialAppliedFilters.offererId,
       }
-
       setAppliedPreFilters(filterToLoad)
     }
-  }, [location])
+  }, [location, selectedOffererId])
+
+  useEffect(() => {
+    if (selectedOffererId !== null) {
+      updateUrl({...appliedPreFilters, offererId: selectedOffererId.toString()})
+    }
+  }, [selectedOffererId])
 
   const updateUrl = (filter: PreFiltersParams) => {
     const partialUrlInfo = {
@@ -218,6 +229,7 @@ export const BookingsContainer = <
       ...(filter.offererAddressId
         ? { offererAddressId: filter.offererAddressId }
         : {}),
+      ...(filter.offererId ? { offererId: filter.offererId } : {}),
     } as Partial<PreFiltersParams>
 
     setUrlParams({
