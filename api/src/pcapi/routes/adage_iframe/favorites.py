@@ -1,8 +1,7 @@
 from pcapi.core.educational import exceptions as educational_exceptions
-from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational.api import favorites as educational_api
 from pcapi.core.educational.repository import find_redactor_by_email
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import atomic
 from pcapi.routes.adage_iframe import blueprint
@@ -27,7 +26,8 @@ def post_collective_offer_favorites(authenticated_information: AuthenticatedInfo
     if redactor is None:
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
 
-    educational_api.add_offer_to_favorite_adage(redactor_id=redactor.id, offer_id=offer.id)
+    redactor.favoriteCollectiveOffers.append(offer)
+    db.session.add(redactor)
 
 
 @blueprint.adage_iframe.route("/collective/templates/<int:offer_id>/favorites", methods=["POST"])
@@ -36,7 +36,7 @@ def post_collective_offer_favorites(authenticated_information: AuthenticatedInfo
 @adage_jwt_required
 def post_collective_template_favorites(authenticated_information: AuthenticatedInformation, offer_id: int) -> None:
     try:
-        offerTemplate = educational_repository.get_collective_offer_template_by_id(offer_id=offer_id)
+        offer_template = educational_repository.get_collective_offer_template_by_id(offer_id=offer_id)
     except educational_exceptions.CollectiveOfferTemplateNotFound:
         raise ApiErrors({"offer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
@@ -44,7 +44,8 @@ def post_collective_template_favorites(authenticated_information: AuthenticatedI
     if redactor is None:
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
 
-    educational_api.add_offer_template_to_favorite_adage(redactor_id=redactor.id, offer_id=offerTemplate.id)
+    redactor.favoriteCollectiveOfferTemplates.append(offer_template)
+    db.session.add(redactor)
 
 
 @blueprint.adage_iframe.route("/collective/offer/<int:offer_id>/favorites", methods=["DELETE"])
@@ -57,13 +58,13 @@ def delete_favorite_for_collective_offer(authenticated_information: Authenticate
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
 
     try:
-        educational_repository.get_collective_offer_by_id(offer_id=offer_id)
+        offer = educational_repository.get_collective_offer_by_id(offer_id=offer_id)
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors({"offer": ["Aucune offre trouvée pour cet id"]}, status_code=404)
 
-    educational_models.CollectiveOfferEducationalRedactor.query.filter_by(
-        educationalRedactorId=redactor.id, collectiveOfferId=offer_id
-    ).delete(synchronize_session=False)
+    if offer in redactor.favoriteCollectiveOffers:
+        redactor.favoriteCollectiveOffers.remove(offer)
+        db.session.add(redactor)
 
 
 @blueprint.adage_iframe.route("/collective/template/<int:offer_template_id>/favorites", methods=["DELETE"])
@@ -78,13 +79,12 @@ def delete_favorite_for_collective_offer_template(
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
 
     try:
-        educational_repository.get_collective_offer_template_by_id(offer_id=offer_template_id)
+        offer_template = educational_repository.get_collective_offer_template_by_id(offer_id=offer_template_id)
     except educational_exceptions.CollectiveOfferTemplateNotFound:
         raise ApiErrors({"offer_template": ["Aucune offre template trouvée pour cet id"]}, status_code=404)
 
-    educational_models.CollectiveOfferTemplateEducationalRedactor.query.filter_by(
-        educationalRedactorId=redactor.id, collectiveOfferTemplateId=offer_template_id
-    ).delete(synchronize_session=False)
+    redactor.favoriteCollectiveOfferTemplates.remove(offer_template)
+    db.session.add(redactor)
 
 
 @blueprint.adage_iframe.route("/collective/favorites", methods=["GET"])
