@@ -551,11 +551,10 @@ class HeadlineOffer(PcObject, Base, Model):
 
     @isActive.expression  # type: ignore[no-redef]
     def isActive(cls) -> bool:  # pylint: disable=no-self-argument
-        now = datetime.datetime.utcnow()
         offer_alias = sa_orm.aliased(Offer)  # avoids cartesian product
         return sa.and_(
-            sa.or_(sa.func.upper(cls.timespan) == None, (sa.func.upper(cls.timespan) > now)),
-            sa.func.lower(cls.timespan) <= now,
+            sa.or_(sa.func.upper(cls.timespan) == None, (sa.func.upper(cls.timespan) > sa.func.now())),
+            sa.func.lower(cls.timespan) <= sa.func.now(),
             offer_alias.id == cls.offerId,
             offer_alias.status == OfferStatus.ACTIVE,
         )
@@ -1061,9 +1060,14 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             return self.offererAddress.address.fullAddress
         return f"{label} - {self.offererAddress.address.fullAddress}"
 
-    @property
+    @hybrid_property
     def is_headline_offer(self) -> bool:
         return any(headline_offer.isActive for headline_offer in self.headlineOffers)
+
+    @is_headline_offer.expression  # type: ignore[no-redef]
+    def is_headline_offer(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
+        headline_offer_alias = sa_orm.aliased(HeadlineOffer)
+        return sa.exists().where(headline_offer_alias.offerId == cls.id, headline_offer_alias.isActive)
 
 
 class ActivationCode(PcObject, Base, Model):

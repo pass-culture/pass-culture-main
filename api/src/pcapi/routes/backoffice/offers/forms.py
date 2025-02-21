@@ -49,6 +49,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     OFFERER = "Entité juridique"
     TAG = "Tag"
     VISA = "Visa d'exploitation"
+    HEADLINE = "Offres à la une"
 
 
 class IndividualOffersAlgoliaSearchAttributes(enum.Enum):
@@ -96,6 +97,7 @@ form_field_configuration = {
     },
     "SYNCHRONIZED": {"field": "boolean", "operator": ["NULLABLE"]},
     "PROVIDER": {"field": "provider", "operator": ["IN", "NOT_IN"]},
+    "HEADLINE": {"field": "boolean", "operator": ["EQUALS"]},
 }
 
 algolia_form_field_configuration = {
