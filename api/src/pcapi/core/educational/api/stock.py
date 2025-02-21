@@ -55,7 +55,6 @@ def create_collective_stock(
 
     collective_stock = educational_models.CollectiveStock(
         collectiveOffer=collective_offer,
-        beginningDatetime=start,  # TODO: this field is still required, the column will be removed later
         startDatetime=start,
         endDatetime=end,
         bookingLimitDatetime=booking_limit_datetime,

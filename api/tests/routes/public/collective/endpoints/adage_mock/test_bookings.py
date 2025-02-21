@@ -108,7 +108,6 @@ class ConfirmCollectiveBookingTest(AdageMockEndpointHelper):
         # because this validation is not ran after and before that.
         start = pending_booking.collectiveStock.startDatetime.replace(month=10)
         pending_booking.collectiveStock.startDatetime = start
-        pending_booking.collectiveStock.beginningDatetime = start
 
         # pending booking price is within the the institution's budget
         # but some special rules apply at the end of the year: the

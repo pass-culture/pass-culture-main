@@ -45,8 +45,6 @@ class EducationalBookingPerYearResponse(educational_schemas.AdageBaseResponseMod
     cancellationReason: CollectiveBookingCancellationReasons | None
     confirmationLimitDate: datetime
     totalAmount: decimal.Decimal
-    # TODO: once Adage has made the switch to startDatetime, we can remove beginningDatetime here
-    beginningDatetime: datetime
     startDatetime: datetime
     endDatetime: datetime
     venueTimezone: str
@@ -74,7 +72,6 @@ def get_collective_bookings_per_year_response(
             cancellationReason=booking.cancellationReason,
             confirmationLimitDate=booking.confirmationLimitDate,
             totalAmount=booking.collectiveStock.price,
-            beginningDatetime=booking.collectiveStock.startDatetime,
             startDatetime=booking.collectiveStock.startDatetime,
             endDatetime=booking.collectiveStock.endDatetime,
             venueTimezone=booking.collectiveStock.collectiveOffer.venue.timezone,
@@ -121,7 +118,6 @@ def serialize_collective_booking(
     return educational_schemas.EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
         address=_get_collective_offer_address(offer),
-        beginningDatetime=stock.startDatetime,
         startDatetime=stock.startDatetime,
         endDatetime=stock.endDatetime,
         cancellationDate=collective_booking.cancellationDate,
@@ -243,7 +239,6 @@ def serialize_reimbursement_notification(
     return educational_schemas.AdageReimbursementNotification(
         accessibility=_get_educational_offer_accessibility(offer),
         address=_get_collective_offer_address(offer),
-        beginningDatetime=stock.startDatetime,
         startDatetime=stock.startDatetime,
         endDatetime=stock.endDatetime,
         cancellationDate=collective_booking.cancellationDate,

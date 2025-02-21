@@ -1469,8 +1469,6 @@ class CollectiveStock(PcObject, Base, Model):
 
     dateModified: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    beginningDatetime: datetime = sa.Column(sa.DateTime, index=True, nullable=False)
-
     startDatetime: datetime = sa.Column(sa.DateTime, nullable=False)
     endDatetime: datetime = sa.Column(sa.DateTime, nullable=False)
     sa.Index("ix_collective_stock_startDatetime_endDatetime", startDatetime, endDatetime)
