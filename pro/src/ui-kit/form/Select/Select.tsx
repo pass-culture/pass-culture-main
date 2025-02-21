@@ -31,6 +31,7 @@ export const Select = ({
   isLabelHidden,
   classNameLabel,
   classNameFooter,
+  hideAsterisk,
   ...selectAttributes
 }: SelectProps): JSX.Element => {
   const [field, meta] = useField({ name, type: 'select' })
@@ -58,6 +59,7 @@ export const Select = ({
       isLabelHidden={isLabelHidden}
       classNameLabel={classNameLabel}
       classNameFooter={classNameFooter}
+      hideAsterisk={hideAsterisk}
     >
       <SelectInput
         disabled={disabled}

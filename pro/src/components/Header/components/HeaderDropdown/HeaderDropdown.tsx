@@ -33,7 +33,6 @@ import fulValidateIcon from 'icons/full-validate.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { HelpDropdownMenu } from '../HeaderHelpDropdown/HelpDropdownMenu'
@@ -297,8 +296,8 @@ export const HeaderDropdown = () => {
                   styles['menu-item-review-dialog']
                 )}
               >
-                <DialogBuilder
-                  trigger={
+                <UserReviewDialog
+                  dialogTrigger={
                     <DropdownMenu.Item
                       asChild
                       onSelect={(e) => e.preventDefault()} //  Necessary to prenent selecting the item from closing the DropdownMenu
@@ -311,9 +310,7 @@ export const HeaderDropdown = () => {
                       </Button>
                     </DropdownMenu.Item>
                   }
-                >
-                  <UserReviewDialog />
-                </DialogBuilder>
+                />
                 <DropdownMenu.Separator className={styles['separator']} />
               </div>
             )}

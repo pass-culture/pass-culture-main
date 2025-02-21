@@ -4,17 +4,8 @@
 @use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.title {
-  @include fonts.title3;
-
-  margin-bottom: rem.torem(24px);
-}
-
 .section {
-  padding: rem.torem(16px);
-  border: 1px solid var(--color-medium-shadow);
-  border-radius: rem.torem(8px);
-  margin-bottom: rem.torem(16px);
+  margin-bottom: rem.torem(32px);
 }
 
 .legend {
@@ -45,8 +36,7 @@
 
 .action-buttons {
   display: flex;
-  gap: rem.torem(24px);
-  justify-content: center;
+  gap: rem.torem(8px);
 }
 
 .day-inputs {
@@ -87,10 +77,6 @@
   }
 }
 
-.quantity-input {
-  width: rem.torem(268px);
-}
-
 .monthly-option-input {
   width: auto;
   flex-grow: 1;
@@ -116,10 +102,6 @@
   .align-icon {
     @include size.input-center-with-top-margin(size.$button-icon-size);
   }
-
-  .price-category-input {
-    width: rem.torem(328px);
-  }
 }
 
 .mandatory {
@@ -127,4 +109,14 @@
 
   color: var(--color-grey-dark);
   margin-bottom: rem.torem(16px);
+}
+
+.form {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+
+  &-content {
+    flex-grow: 1;
+  }
 }
