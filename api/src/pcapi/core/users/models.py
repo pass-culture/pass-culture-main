@@ -250,8 +250,12 @@ class User(PcObject, Base, Model, DeactivableMixin):
             len(set(updated_roles) & {UserRole.ADMIN, UserRole.BENEFICIARY, UserRole.UNDERAGE_BENEFICIARY}) > 1
             or len(set(updated_roles) & {UserRole.PRO, UserRole.NON_ATTACHED_PRO}) > 1
         ):
-            msg = "User can't have roles " + " and ".join(r.value for r in updated_roles)
-            raise InvalidUserRoleException(msg)
+            role_exception = InvalidUserRoleException()
+            role_exception.add_error(
+                "roles",
+                "User can't have roles " + " and ".join(r.value for r in updated_roles),
+            )
+            raise role_exception
 
         self.roles = updated_roles
 
@@ -274,7 +278,13 @@ class User(PcObject, Base, Model, DeactivableMixin):
         from pcapi.core.users.exceptions import InvalidUserRoleException
 
         if self.has_admin_role:
-            raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
+            role_exception = InvalidUserRoleException()
+            role_exception.add_error(
+                "roles",
+                "User can't have both ADMIN and BENEFICIARY role",
+            )
+            raise role_exception
+
         self._add_role(UserRole.UNDERAGE_BENEFICIARY)
 
     def add_test_role(self) -> None:
