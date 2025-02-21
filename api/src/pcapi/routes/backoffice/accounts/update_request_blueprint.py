@@ -17,6 +17,7 @@ from pcapi import settings
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.users.personal_data_updated import send_beneficiary_personal_data_updated
@@ -64,6 +65,13 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
         users_models.UserAccountUpdateRequest.query.outerjoin(
             users_models.User, users_models.UserAccountUpdateRequest.userId == users_models.User.id
         )
+        .outerjoin(
+            finance_models.Deposit,
+            sa.and_(
+                finance_models.Deposit.userId == users_models.User.id,
+                finance_models.Deposit.expirationDate > datetime.datetime.utcnow(),
+            ),
+        )
         .outerjoin(aliased_instructor, users_models.UserAccountUpdateRequest.lastInstructorId == aliased_instructor.id)
         .options(
             sa.orm.contains_eager(users_models.UserAccountUpdateRequest.user).load_only(
@@ -85,6 +93,9 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
                 aliased_instructor.email,
                 aliased_instructor.firstName,
                 aliased_instructor.lastName,
+            ),
+            sa.orm.contains_eager(users_models.UserAccountUpdateRequest.user).contains_eager(
+                users_models.User.deposits
             ),
         )
     )
@@ -287,7 +298,19 @@ def get_accept_form(ds_application_id: int) -> utils.BackofficeResponse:
 
     update_request = (
         users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=ds_application_id)
-        .options(sa.orm.joinedload(users_models.UserAccountUpdateRequest.user))
+        .outerjoin(users_models.UserAccountUpdateRequest.user)
+        .outerjoin(
+            finance_models.Deposit,
+            sa.and_(
+                finance_models.Deposit.userId == users_models.User.id,
+                finance_models.Deposit.expirationDate > datetime.datetime.utcnow(),
+            ),
+        )
+        .options(
+            sa.orm.contains_eager(users_models.UserAccountUpdateRequest.user).contains_eager(
+                users_models.User.deposits
+            ),
+        )
         .one_or_none()
     )
     if not update_request:  # including when no userId is linked to the request
