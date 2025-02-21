@@ -486,6 +486,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
             can_be_searched
             and self.managingOfferer.isActive
             and self.managingOfferer.isValidated
+            and self.hasOffers
             and not_administrative
         )
 
