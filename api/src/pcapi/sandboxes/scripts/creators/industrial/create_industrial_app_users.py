@@ -285,15 +285,15 @@ def create_short_email_beneficiaries() -> dict[str, User]:
             needsToFillCulturalSurvey=False,
             deposit__expirationDate=datetime.utcnow() + relativedelta(years=3),
         )
-        if settings.IS_DEV:
-            db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))
-        else:
+        if settings.DATABASE_HAS_SPECIFIC_ROLES:
             db.session.execute(sa.text("SELECT disable_booking_update_trigger();"))
-        bookings_factory.BookingFactory(user=beneficiary_and_exunderage)
-        if settings.IS_DEV:
-            db.session.execute(sa.text("ALTER TABLE booking ENABLE TRIGGER booking_update;"))
         else:
+            db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))
+        bookings_factory.BookingFactory(user=beneficiary_and_exunderage)
+        if settings.DATABASE_HAS_SPECIFIC_ROLES:
             db.session.execute(sa.text("SELECT enable_booking_update_trigger();"))
+        else:
+            db.session.execute(sa.text("ALTER TABLE booking ENABLE TRIGGER booking_update;"))
 
         fraud_factories.BeneficiaryFraudCheckFactory(user=beneficiary_and_exunderage)
     users_factories.DepositGrantFactory(user=beneficiary_and_exunderage)

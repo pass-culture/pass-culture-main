@@ -73,6 +73,9 @@ DATABASE_POOL_SIZE = int(os.environ.get("DATABASE_POOL_SIZE", 20))
 DATABASE_STATEMENT_TIMEOUT = int(os.environ.get("DATABASE_STATEMENT_TIMEOUT", 0))
 DATABASE_LOCK_TIMEOUT = int(os.environ.get("DATABASE_LOCK_TIMEOUT", 0))
 DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT = int(os.environ.get("DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT", 0))
+# Managed databases have specific postgresql users and roles for pcapi, cron, backoffice or console.
+# Pull requests and local envs only have one user.
+DATABASE_HAS_SPECIFIC_ROLES = bool(int(os.environ.get("DATABASE_HAS_SPECIFIC_ROLES", "1")))
 SQLALCHEMY_ECHO = bool(int(os.environ.get("SQLALCHEMY_ECHO", "0")))
 
 # FLASK
