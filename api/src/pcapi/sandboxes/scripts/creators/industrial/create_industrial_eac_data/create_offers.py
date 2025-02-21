@@ -1119,9 +1119,9 @@ def create_national_programs() -> list[educational_models.NationalProgram]:
 
 
 def reset_offer_id_seq() -> None:
-    if settings.IS_DEV:
-        db.session.execute(sa.text("ALTER SEQUENCE collective_offer_id_seq RESTART WITH 1"))
-        db.session.execute(sa.text("ALTER SEQUENCE collective_offer_template_id_seq RESTART WITH 1"))
-    else:
+    if settings.DATABASE_HAS_SPECIFIC_ROLES:
         db.session.execute(sa.text("SELECT reset_sequence('collective_offer_id_seq')"))
         db.session.execute(sa.text("SELECT reset_sequence('collective_offer_template_id_seq')"))
+    else:
+        db.session.execute(sa.text("ALTER SEQUENCE collective_offer_id_seq RESTART WITH 1"))
+        db.session.execute(sa.text("ALTER SEQUENCE collective_offer_template_id_seq RESTART WITH 1"))
