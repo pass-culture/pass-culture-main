@@ -6,9 +6,9 @@ import { UserIdentityFormValues } from 'components/UserIdentityForm/types'
 
 import { Forms } from './constants'
 import { UserEmail, UserEmailInitialValues } from './UserEmail/UserEmail'
-import { UserIdentity } from './UserIdentity'
-import { UserPassword } from './UserPassword'
-import { UserPhone } from './UserPhone'
+import { UserIdentity } from './UserIdentity/UserIdentity'
+import { UserPassword } from './UserPassword/UserPassword'
+import { UserPhone } from './UserPhone/UserPhone'
 import styles from './UserProfile.module.scss'
 
 interface UserProfileProps {
