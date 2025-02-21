@@ -20,6 +20,7 @@ from pcapi.routes.serialization import finance_serialize
 from pcapi.routes.serialization.address_serialize import AddressResponseModel
 from pcapi.routes.serialization.venues_serialize import BannerMetaModel
 from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
+from pcapi.routes.shared import validation
 from pcapi.serialization.utils import to_camel
 import pcapi.utils.date as date_utils
 from pcapi.utils.email import sanitize_email
@@ -267,6 +268,9 @@ class CreateOffererQueryModel(BaseModel):
     postalCode: str
     siren: str
     street: str | None
+    phoneNumber: str | None
+
+    _validate_phone_number = validation.phone_number_validator("phoneNumber", nullable=True)
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):

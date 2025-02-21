@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ProUserCreationBodyV2Model } from 'apiClient/v1'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { BannerRGS } from 'components/BannerRGS/BannerRGS'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { LegalInfos } from 'components/LegalInfos/LegalInfos'
@@ -22,6 +23,7 @@ export const SignupForm = (): JSX.Element => {
   const navigate = useNavigate()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { isSubmitting } = useFormikContext<ProUserCreationBodyV2Model>()
+  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
 
   return (
     <>
@@ -58,14 +60,16 @@ export const SignupForm = (): JSX.Element => {
             autoComplete="new-password"
           />
         </FormLayout.Row>
-        <FormLayout.Row>
-          <PhoneNumberInput
-            name="phoneNumber"
-            label={
-              'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
-            }
-          />
-        </FormLayout.Row>
+        {!isNewSignupEnabled && (
+          <FormLayout.Row>
+            <PhoneNumberInput
+              name="phoneNumber"
+              label={
+                'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
+              }
+            />
+          </FormLayout.Row>
+        )}
         <FormLayout.Row>
           <Checkbox
             className={styles['checkbox-contact']}

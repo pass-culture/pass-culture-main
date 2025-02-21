@@ -3,7 +3,7 @@ export const SIGNUP_FORM_DEFAULT_VALUES = {
   password: '',
   lastName: '',
   firstName: '',
-  phoneNumber: '',
+  phoneNumber: null,
   contactOk: false,
   token: '',
 }

@@ -883,6 +883,9 @@ def create_pro_user_V2(pro_user: users_serialization.ProUserCreationBodyV2Model)
 
 
 def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) -> models.User:
+    if not FeatureToggle.WIP_2025_SIGN_UP.is_active() and pro_user.phone_number is None:
+        raise phone_validation_exceptions.RequiredPhoneNumber()
+
     user_kwargs = {
         k: v for k, v in pro_user.dict(by_alias=True).items() if k not in ("contactOk", "token", "_sa_instance_state")
     }
