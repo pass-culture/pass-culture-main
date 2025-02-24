@@ -11,6 +11,7 @@ from sqlalchemy.orm import joinedload
 import time_machine
 
 from pcapi import settings
+from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud import repository as fraud_repository
@@ -1364,7 +1365,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             user=user,
             type=fraud_models.FraudCheckType.EDUCONNECT,
             status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
             resultContent=fraud_factories.EduconnectContentFactory(
                 first_name="Léo",
                 last_name="Nard",
@@ -1375,11 +1375,8 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             user=user,
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(
-            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
-        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         is_success = subscription_api.activate_beneficiary_if_no_missing_step(user)
 
@@ -1575,6 +1572,88 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             )
 
         assert not subscription_api.requires_manual_review_before_activation(user, dms_fraud_check)
+
+    def test_pre_decree_underage_eligibility(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        user = users_factories.HonorStatementValidatedUserFactory(
+            age=17, beneficiaryFraudChecks__dateCreated=before_decree
+        )
+
+        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.is_beneficiary
+        assert user.deposit.type == finance_models.DepositType.GRANT_15_17
+
+    def test_pre_decree_18_eligibility(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        birth_date = before_decree - relativedelta(years=18)
+        user = users_factories.HonorStatementValidatedUserFactory(
+            validatedBirthDate=birth_date, beneficiaryFraudChecks__dateCreated=before_decree
+        )
+
+        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.is_beneficiary
+        assert user.deposit.type == finance_models.DepositType.GRANT_18
+
+    def test_pre_decree_18_eligibility_at_19_year_old(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        birth_date = before_decree - relativedelta(years=18)
+        user = users_factories.HonorStatementValidatedUserFactory(
+            validatedBirthDate=birth_date, beneficiaryFraudChecks__dateCreated=before_decree
+        )
+
+        year_when_user_is_19 = datetime.utcnow() + relativedelta(years=1)
+        with time_machine.travel(year_when_user_is_19):
+            is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.is_beneficiary
+        assert user.deposit.type == finance_models.DepositType.GRANT_18
+
+    def test_pre_decree_underage_transition_to_18(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        birth_date = before_decree - relativedelta(years=18)
+        user = users_factories.Transition1718Factory(
+            validatedBirthDate=birth_date, _phoneNumber="0123456789", dateCreated=before_decree
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user, dateCreated=before_decree)
+        fraud_factories.HonorStatementFraudCheckFactory(user=user, dateCreated=before_decree)
+
+        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.is_beneficiary
+        assert user.deposit.type == finance_models.DepositType.GRANT_18
+
+    def test_underage_transition_to_18_after_decree(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        user = users_factories.Transition1718Factory(_phoneNumber="0123456789", dateCreated=before_decree)
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        fraud_factories.HonorStatementFraudCheckFactory(user=user)
+
+        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.is_beneficiary
+        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+
+    @pytest.mark.parametrize("age", [18, 19, 20])
+    def test_post_decree_18_eligibility(self, age):
+        user = users_factories.HonorStatementValidatedUserFactory(age=18)
+
+        year_when_user_reached_age = datetime.utcnow() + relativedelta(years=age - 18)
+        with time_machine.travel(year_when_user_reached_age):
+            is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.is_beneficiary
+        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+
+        [recredit] = user.deposit.recredits
+        assert recredit.recreditType == finance_models.RecreditType.RECREDIT_18
 
 
 @pytest.mark.usefixtures("db_session")

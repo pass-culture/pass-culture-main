@@ -28,7 +28,7 @@ class DecideV3CreditEligibilityTest:
 
         assert eligibility == users_models.EligibilityType.AGE17_18
 
-    @time_machine.travel("2022-03-01 13:45:00")  # 2022-03-02 00:45 in Noumea timezone
+    @time_machine.travel("2025-03-01 13:45:00")  # 2025-03-02 00:45 in Noumea timezone
     def test_decide_underage_eligibility_with_timezone(self):
         today = date.today()
         march_2nd_seventeen_years_ago = today - relativedelta(years=17, days=-1)
@@ -106,7 +106,7 @@ class DecideV3CreditEligibilityTest:
         assert eligibility is None
 
     @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
-    @pytest.mark.parametrize("age", [15, 16, 17])
+    @pytest.mark.parametrize("age", [15, 16])
     def test_user_underage_eligibility_when_registered_before_decree(self, age):
         birth_date = date.today() - relativedelta(years=age, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
@@ -137,21 +137,6 @@ class DecideV3CreditEligibilityTest:
         eligibility = eligibility_api.decide_eligibility(user, birth_date, day_before_decree)
 
         assert eligibility == users_models.EligibilityType.UNDERAGE
-
-    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
-    def test_user_eighteen_eligibility_when_registered_before_decree(self):
-        birth_date = date.today() - relativedelta(years=18, months=1)
-        user = users_factories.UserFactory(dateOfBirth=birth_date)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            eligibilityType=users_models.EligibilityType.AGE18,
-            dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1),
-        )
-
-        eligibility = eligibility_api.decide_eligibility(user, birth_date, None)
-
-        assert eligibility == users_models.EligibilityType.AGE18
 
     @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
     def test_user_eighteen_eligibility_with_registration_datetime_before_decree(self):
@@ -426,12 +411,12 @@ class GetExtendedEligibilityTest:
         date_of_birth = datetime(2000, 2, 1, 0, 0)
 
         specified_date = date_of_birth + relativedelta(years=19, hours=8)
-        eligibility = eligibility_api.get_extended_eligibility_at_date(date_of_birth, specified_date, "987")  # utc-10
+        eligibility = eligibility_api.get_eligibility_at_date(date_of_birth, specified_date, "987")  # utc-10
 
         assert eligibility == users_models.EligibilityType.AGE18
 
         specified_date = date_of_birth + relativedelta(years=19, hours=12)
-        eligibility = eligibility_api.get_extended_eligibility_at_date(date_of_birth, specified_date, "75")  # utc+1
+        eligibility = eligibility_api.get_eligibility_at_date(date_of_birth, specified_date, "75")  # utc+1
 
         assert eligibility is None
 

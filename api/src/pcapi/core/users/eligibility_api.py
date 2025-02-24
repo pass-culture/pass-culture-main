@@ -17,7 +17,7 @@ class EligibilityError(Exception):
 def decide_eligibility(
     user: users_models.User,
     birth_date: datetime.date | None,
-    registration_datetime: datetime.datetime | None,
+    at_datetime: datetime.datetime | None = None,
 ) -> users_models.EligibilityType | None:
     """Returns the applicable eligibility of the user.
     It may be the current eligibility of the user if the age is between 15 and 18, or it may be the eligibility AGE18
@@ -27,8 +27,16 @@ def decide_eligibility(
         return None
 
     if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-        return decide_v3_credit_eligibility(user, birth_date, registration_datetime)
+        return decide_v3_credit_eligibility(user, birth_date, at_datetime)
 
+    return decide_v2_credit_eligibility(user, birth_date, at_datetime)
+
+
+def decide_v2_credit_eligibility(
+    user: users_models.User,
+    birth_date: datetime.date,
+    at_datetime: datetime.datetime | None,
+) -> users_models.EligibilityType | None:
     user_age_today = users_utils.get_age_from_birth_date(birth_date, user.departementCode)
     if user_age_today < 15:
         return None
@@ -37,7 +45,7 @@ def decide_eligibility(
     if user_age_today == 18:
         return users_models.EligibilityType.AGE18
 
-    eligibility_today = get_extended_eligibility_at_date(birth_date, datetime.datetime.utcnow(), user.departementCode)
+    eligibility_today = get_eligibility_at_date(birth_date, datetime.datetime.utcnow(), user.departementCode)
     if eligibility_today == users_models.EligibilityType.AGE18:
         return users_models.EligibilityType.AGE18
 
@@ -46,9 +54,7 @@ def decide_eligibility(
             user, birth_date, users_models.EligibilityType.AGE18
         )
         if first_eligible_registration_datetime:
-            return get_extended_eligibility_at_date(
-                birth_date, first_eligible_registration_datetime, user.departementCode
-            )
+            return get_eligibility_at_date(birth_date, first_eligible_registration_datetime, user.departementCode)
 
     return None
 
@@ -56,50 +62,50 @@ def decide_eligibility(
 def decide_v3_credit_eligibility(
     user: users_models.User,
     birth_date: datetime.date,
-    registration_datetime: datetime.datetime | None,
+    at_datetime: datetime.datetime | None,
 ) -> users_models.EligibilityType | None:
     """
-    An user eligibility determines what type of deposit can be granted.
-    Returns the first eligibility found using:
-    1. the age at registration_datetime
-    2. the age at first registration, looking into the user's fraud checks
-    3. the current age.
-
     This function assumes that the user.beneficiaryFraudChecks relation is already loaded.
     """
-    user_age = users_utils.get_age_from_birth_date(birth_date, user.departementCode)
-    if user_age < 15 or user_age > 20:
+    if at_datetime is None:
+        at_datetime = datetime.datetime.utcnow()
+
+    current_age = users_utils.get_age_from_birth_date(birth_date, user.departementCode)
+    if not (15 <= current_age <= 20):
         return None
 
-    eligibility: users_models.EligibilityType | None = None
-    if registration_datetime:
-        eligibility = get_eligibility_at_date(birth_date, registration_datetime, user.departementCode)
-    if eligibility:
-        return eligibility
+    eligibility_at_datetime = get_eligibility_at_date(birth_date, at_datetime, user.departementCode)
+    if eligibility_at_datetime:
+        return eligibility_at_datetime
 
-    first_eligible_registration_datetime = get_first_eligible_registration_date(user, birth_date)
-    if first_eligible_registration_datetime:
-        return get_extended_eligibility_at_date(birth_date, first_eligible_registration_datetime, user.departementCode)
+    pre_decree_eligibility = get_pre_decree_eligibility(user, birth_date, at_datetime)
+    if pre_decree_eligibility:
+        return pre_decree_eligibility
 
-    if 17 <= user_age <= 18:
-        eligibility = users_models.EligibilityType.AGE17_18
+    first_age_17_to_18_registration_date = get_first_eligible_registration_date(
+        user, birth_date, users_models.EligibilityType.AGE17_18
+    )
+    if first_age_17_to_18_registration_date:
+        return get_eligibility_at_date(birth_date, first_age_17_to_18_registration_date, user.departementCode)
 
-    return eligibility
+    current_eligibility = get_eligibility_at_date(birth_date, datetime.datetime.utcnow(), user.departementCode)
+    return current_eligibility
 
 
-def get_eligibility_at_date(
-    birth_date: datetime.date, specified_datetime: datetime.datetime, department_code: str | None = None
+def get_pre_decree_eligibility(
+    user: users_models.User, birth_date: datetime.date, at_datetime: datetime.datetime
 ) -> users_models.EligibilityType | None:
-    age = users_utils.get_age_at_date(birth_date, specified_datetime, department_code)
+    age = users_utils.get_age_at_date(birth_date, at_datetime, user.departementCode)
+    if 18 <= age <= 19:
+        pre_decree_eligibility = users_models.EligibilityType.AGE18
+    elif 15 <= age <= 17:
+        pre_decree_eligibility = users_models.EligibilityType.UNDERAGE
+    else:
+        return None
 
-    if specified_datetime < settings.CREDIT_V3_DECREE_DATETIME or not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-        if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
-            return users_models.EligibilityType.UNDERAGE
-        if constants.ELIGIBILITY_AGE_18 == age:
-            return users_models.EligibilityType.AGE18
-
-    if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and 17 <= age <= 18:
-        return users_models.EligibilityType.AGE17_18
+    first_registration_date = get_first_eligible_registration_date(user, birth_date, pre_decree_eligibility)
+    if first_registration_date:
+        return get_eligibility_at_date(birth_date, first_registration_date, user.departementCode)
 
     return None
 
@@ -121,7 +127,7 @@ def get_first_eligible_registration_date(
     eligible_registration_dates = [
         registration_date
         for registration_date in registration_dates
-        if get_extended_eligibility_at_date(birth_date, registration_date, user.departementCode) is not None
+        if get_eligibility_at_date(birth_date, registration_date, user.departementCode) is not None
     ]
     if eligible_registration_dates:
         return eligible_registration_dates[0]
@@ -129,49 +135,49 @@ def get_first_eligible_registration_date(
     return None
 
 
-def get_extended_eligibility_at_date(
-    date_of_birth: datetime.date | None, specified_datetime: datetime.datetime, department_code: str | None = None
+def get_eligibility_at_date(
+    birth_date: datetime.date, at_datetime: datetime.datetime, department_code: str | None = None
 ) -> users_models.EligibilityType | None:
-    """
-    Extended eligibility means that this function considers a non-eligible user eligible,
-    as long as they were eligible at the specified datetime
-
-    This is summed up as this pseudocode:  eligibility_start < specified_datetime < eligibility_end
-    """
-    tz_aware_datetime = specified_datetime
-    if not tz_aware_datetime.tzinfo:
-        tz_aware_datetime = tz_aware_datetime.replace(tzinfo=datetime.timezone.utc)
-
-    eligibility_start = get_eligibility_start_datetime(date_of_birth, specified_datetime, department_code)
-    eligibility_end = get_eligibility_end_datetime(date_of_birth, department_code)
-    if (
-        not date_of_birth
-        or not eligibility_start
-        or not eligibility_end
-        or not (eligibility_start <= tz_aware_datetime < eligibility_end)
-    ):
+    if not is_datetime_within_eligibility_period(birth_date, at_datetime, department_code):
         return None
 
-    age = users_utils.get_age_at_date(date_of_birth, specified_datetime, department_code)
-    if not age:
-        return None
+    age = users_utils.get_age_at_date(birth_date, at_datetime, department_code)
 
-    if specified_datetime < settings.CREDIT_V3_DECREE_DATETIME or not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
+    if at_datetime < settings.CREDIT_V3_DECREE_DATETIME or not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
         if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
             return users_models.EligibilityType.UNDERAGE
-        # If the user is older than 18 in UTC timezone, we consider them eligible until they reach eligibility_end
-        if constants.ELIGIBILITY_AGE_18 <= age:
+        if constants.ELIGIBILITY_AGE_18 == age:
             return users_models.EligibilityType.AGE18
 
-    if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and age >= 17:
+    if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and 17 <= age <= 18:
         return users_models.EligibilityType.AGE17_18
 
     return None
 
 
+def is_datetime_within_eligibility_period(
+    birth_date: datetime.date, at_datetime: datetime.datetime, department_code: str | None = None
+) -> bool:
+    tz_aware_datetime = at_datetime
+    if not tz_aware_datetime.tzinfo:
+        tz_aware_datetime = tz_aware_datetime.replace(tzinfo=datetime.timezone.utc)
+
+    eligibility_start = get_eligibility_start_datetime(birth_date, at_datetime, department_code)
+    eligibility_end = get_eligibility_end_datetime(birth_date, department_code)
+    if (
+        not birth_date
+        or not eligibility_start
+        or not eligibility_end
+        or not (eligibility_start <= tz_aware_datetime < eligibility_end)
+    ):
+        return False
+
+    return True
+
+
 def get_eligibility_start_datetime(
     date_of_birth: datetime.date | datetime.datetime | None,
-    specified_datetime: datetime.datetime,
+    at_datetime: datetime.datetime,
     department_code: str | None = None,
 ) -> datetime.datetime | None:
     if not date_of_birth:
@@ -181,7 +187,7 @@ def get_eligibility_start_datetime(
     fifteenth_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_UNDERAGE_RANGE[0])
     seventeenth_birthday = date_of_birth + relativedelta(years=17)
 
-    if specified_datetime < settings.CREDIT_V3_DECREE_DATETIME or not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
+    if at_datetime < settings.CREDIT_V3_DECREE_DATETIME or not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
         return fifteenth_birthday
 
     return seventeenth_birthday

@@ -48,7 +48,9 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
         return False
     if subscription_state.identity_fraud_check.resultContent is None:
         return False
-    if user.eligibility is None:
+
+    current_eligibility = user.eligibility
+    if current_eligibility is None:
         return False
 
     duplicate_beneficiary = fraud_api.get_duplicate_beneficiary(subscription_state.identity_fraud_check)
@@ -68,7 +70,14 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
         return False
 
     try:
-        activate_beneficiary_for_eligibility(user, subscription_state.identity_fraud_check, user.eligibility)
+        if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
+            eligibility = (
+                eligibility_api.get_pre_decree_eligibility(user, user.birth_date, datetime.datetime.utcnow())
+                or current_eligibility
+            )
+        else:
+            eligibility = current_eligibility
+        activate_beneficiary_for_eligibility(user, subscription_state.identity_fraud_check, eligibility)
     except (finance_exceptions.DepositTypeAlreadyGrantedException, finance_exceptions.UserHasAlreadyActiveDeposit):
         # this error may happen on identity provider concurrent requests
         logger.info("A deposit already exists for user %s", user.id)
@@ -500,7 +509,7 @@ def requires_manual_review_before_activation(
     return (
         identity_fraud_check.type == fraud_models.FraudCheckType.DMS
         and identity_fraud_check.status == fraud_models.FraudCheckStatus.OK
-        and not eligibility_api.get_extended_eligibility_at_date(
+        and not eligibility_api.get_eligibility_at_date(
             user.birth_date, identity_fraud_check.get_min_date_between_creation_and_registration(), user.departementCode
         )
     )

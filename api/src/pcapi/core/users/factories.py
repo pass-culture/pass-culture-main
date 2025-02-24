@@ -149,7 +149,11 @@ class PhoneValidatedUserFactory(EmailValidatedUserFactory):
             if not obj.phoneNumber:
                 obj.phoneNumber = f"+336{obj.id:08}"  # type: ignore[method-assign]
             obj.phoneValidationStatus = models.PhoneValidationStatusType.VALIDATED
-            fraud_checks.append(fraud_factories.PhoneValidationFraudCheckFactory(user=obj))
+            fraud_checks.append(
+                fraud_factories.PhoneValidationFraudCheckFactory(
+                    user=obj, dateCreated=kwargs.get("dateCreated", datetime.utcnow())
+                )
+            )
         return fraud_checks
 
     @factory.post_generation
@@ -284,7 +288,11 @@ class HonorStatementValidatedUserFactory(IdentityValidatedUserFactory):
         import pcapi.core.fraud.factories as fraud_factories
 
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
-        fraud_checks.append(fraud_factories.HonorStatementFraudCheckFactory(user=obj))
+        fraud_checks.append(
+            fraud_factories.HonorStatementFraudCheckFactory(
+                user=obj, dateCreated=kwargs.get("dateCreated", datetime.utcnow())
+            )
+        )
         return fraud_checks
 
     @factory.post_generation

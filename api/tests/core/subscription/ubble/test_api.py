@@ -459,11 +459,10 @@ class UbbleWorkflowV2Test:
         assert ko_fraud_check.eligibilityType == users_models.EligibilityType.AGE18
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.AGE_TOO_OLD]
 
-    @pytest.mark.parametrize("age", [19, 20])
-    def test_ubble_workflow_with_eligibility_change_with_first_attempt_at_18(self, requests_mock, age):
-        years_ago = datetime.date.today() - relativedelta(years=age, months=1)
-        user = users_factories.UserFactory(dateOfBirth=years_ago)
-        year_when_user_was_eighteen = datetime.datetime.utcnow() - relativedelta(years=age - 18)
+    def test_ubble_workflow_with_eligibility_change_with_first_attempt_at_18(self, requests_mock):
+        nineteen_years_ago = datetime.date.today() - relativedelta(years=19, months=1)
+        user = users_factories.UserFactory(dateOfBirth=nineteen_years_ago)
+        year_when_user_was_eighteen = datetime.datetime.utcnow() - relativedelta(years=1)
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.KO,
@@ -482,7 +481,7 @@ class UbbleWorkflowV2Test:
         )
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
-            json=build_ubble_identification_v2_response(age_at_registration=age),
+            json=build_ubble_identification_v2_response(age_at_registration=19),
         )
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
