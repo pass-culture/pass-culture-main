@@ -915,6 +915,12 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return [stock for stock in self.stocks if stock.isBookable]
 
     @property
+    def searchableStocks(self) -> list[Stock]:
+        if self.futureOffer and not self.isActive:
+            return self.stocks
+        return self.bookableStocks
+
+    @property
     def is_forbidden_to_underage(self) -> bool:
         return all(stock.is_forbidden_to_underage for stock in self.bookableStocks)
 
