@@ -49,7 +49,6 @@ from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 import pcapi.core.offers.validation as offers_validation
-import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.models import User
@@ -282,7 +281,10 @@ def _book_offer(
             _book_cinema_external_ticket(booking, stock, beneficiary)
 
         if stock.offer.isEventLinkedToTicketingService:
-            remaining_quantity = _book_event_external_ticket(booking, stock, beneficiary)
+            tickets, remaining_quantity = external_bookings_api.book_event_ticket(booking, stock, beneficiary)
+            booking.externalBookings = [
+                ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets
+            ]
             if remaining_quantity is None:
                 stock.quantity = None
             else:
@@ -457,29 +459,6 @@ def _book_cinema_external_ticket(booking: Booking, stock: Stock, beneficiary: Us
             "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
         },
     )
-
-
-def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> int | None:
-    assert stock.offer.lastProviderId  # helps mypy
-    provider = providers_repository.get_provider_enabled_for_pro_by_id(stock.offer.lastProviderId)
-    if not provider:
-        raise providers_exceptions.InactiveProvider()
-
-    venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
-        stock.offer.venueId, provider_id=provider.id
-    )
-
-    sentry_sdk.set_tag("external-provider", provider.name)
-    try:
-        tickets, remaining_quantity = external_bookings_api.book_event_ticket(
-            booking, stock, beneficiary, provider, venue_provider
-        )
-    except external_bookings_exceptions.ExternalBookingException as exc:
-        logger.exception("Could not book external ticket: %s", exc)
-        raise exc
-
-    booking.externalBookings = [ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets]
-    return remaining_quantity
 
 
 def cancel_booking_for_finance_incident(booking: Booking) -> None:

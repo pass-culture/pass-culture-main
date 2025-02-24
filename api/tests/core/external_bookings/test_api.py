@@ -114,7 +114,7 @@ class BookEventTicketTest:
         user = user_factories.BeneficiaryFactory(firstName="Jean", lastName="Passedemeyeur")
 
         with pytest.raises(external_bookings_exceptions.ExternalBookingException):
-            book_event_ticket(booking, stock, user, provider, None)
+            book_event_ticket(booking, stock, user)
 
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_book_an_event_ticket(self, requests_post):
@@ -174,7 +174,7 @@ class BookEventTicketTest:
         }
 
         # book
-        tickets, remaining_quantity = book_event_ticket(booking, stock, user, provider, None)
+        tickets, remaining_quantity = book_event_ticket(booking, stock, user)
 
         # checks
         requests_post.assert_called_with(
@@ -201,7 +201,7 @@ class BookEventTicketTest:
             ],
         }
 
-        tickets, remaining_quantity = book_event_ticket(booking, booking.stock, booking.user, provider, None)
+        tickets, remaining_quantity = book_event_ticket(booking, booking.stock, booking.user)
 
         assert not remaining_quantity
         assert {ticket.barcode for ticket in tickets} == {"1234567AJSQ", "1234567AJSA"}
@@ -220,7 +220,7 @@ class BookEventTicketTest:
         }
 
         with pytest.raises(external_bookings_exceptions.ExternalBookingException):
-            book_event_ticket(booking, booking.stock, booking.user, provider, None)
+            book_event_ticket(booking, booking.stock, booking.user)
 
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_raise_an_error_because_response_cant_be_parsed(self, requests_post):
@@ -237,7 +237,7 @@ class BookEventTicketTest:
         }
 
         with pytest.raises(external_bookings_exceptions.ExternalBookingException):
-            book_event_ticket(booking, booking.stock, booking.user, provider, None)
+            book_event_ticket(booking, booking.stock, booking.user)
 
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_book_an_event_ticket_using_venue_external_url(self, requests_post):
@@ -254,7 +254,7 @@ class BookEventTicketTest:
             idAtProvider="oh_mon_bel_id",
             id=42,
             name="La fête aux acouphènes",
-            venueId=venue.id,
+            venue=venue,
         )
         price_category = offers_factories.PriceCategoryFactory(
             offer=offer,
@@ -310,7 +310,7 @@ class BookEventTicketTest:
         }
 
         # book
-        book_event_ticket(booking, stock, user, provider, venue_provider)
+        book_event_ticket(booking, stock, user)
 
         # checks
         requests_post.assert_called_with(
@@ -341,7 +341,7 @@ class BookEventTicketTest:
 
         # try to book
         with pytest.raises(external_bookings_exceptions.ExternalBookingSoldOutError):
-            book_event_ticket(booking, stock, user, provider, None)
+            book_event_ticket(booking, stock, user)
 
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_raise_because_there_are_no_more_seats(self, requests_post):
@@ -363,7 +363,7 @@ class BookEventTicketTest:
 
         # try to book
         with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError):
-            book_event_ticket(booking, stock, user, provider, None)
+            book_event_ticket(booking, stock, user)
 
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_raise_because_there_is_an_unexpected_error(self, requests_post):
@@ -384,7 +384,7 @@ class BookEventTicketTest:
 
         # try to book
         with pytest.raises(external_bookings_exceptions.ExternalBookingException) as error:
-            book_event_ticket(booking, stock, user, provider, None)
+            book_event_ticket(booking, stock, user)
 
         assert str(error.value) == "External booking failed with status code 500 and message on est en carafe !!"
 
@@ -440,8 +440,6 @@ class BookEventTicketTest:
             booking_of_the_offer_without_address,
             stock_of_the_offer_without_address,
             user,
-            provider,
-            None,
         )
         external_call_body = json.loads(requests_post.call_args_list[0].kwargs["json"])
         assert external_call_body["venue_address"] == offer_without_address.venue.street
@@ -452,8 +450,6 @@ class BookEventTicketTest:
             booking_of_the_offer_with_adress,
             stock_of_the_offer_with_address,
             user,
-            provider,
-            None,
         )
         external_call_body = json.loads(requests_post.call_args_list[1].kwargs["json"])
 
