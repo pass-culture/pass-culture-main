@@ -116,6 +116,7 @@ def create_identity_verification(
             "redirect_url": redirect_url,
             "webhook_url": webhook_url,
         },
+        timeout=60,
     )
     response.raise_for_status()
 
@@ -157,6 +158,7 @@ def create_and_start_identity_verification(
             "webhook_url": webhook_url,
             "redirect_url": redirect_url,
         },
+        timeout=60,
     )
     response.raise_for_status()
 
