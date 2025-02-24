@@ -56,38 +56,51 @@ class CreateTestCasesTest:
         assert len(credit_v3_tests_users) == 8
 
         for user in credit_v3_tests_users:
-            assert user.is_beneficiary
             if user.email == "user18avantdecret@test.com":
                 assert user.age == 18
+                assert user.is_beneficiary
                 assert user.deposit.type == finance_models.DepositType.GRANT_18
+                assert user.deposit.amount == 300
 
             if user.email == "user18apresdecret@test.com":
                 assert user.age == 18
+                assert user.is_beneficiary
                 assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+                assert user.deposit.amount == 150
 
             if user.email == "user17avantdecret@test.com":
                 assert user.age == 17
+                assert user.is_beneficiary
                 assert user.deposit.type == finance_models.DepositType.GRANT_15_17
+                assert user.deposit.amount == 30
 
             if user.email == "user17apresdecret@test.com":
                 assert user.age == 17
+                assert user.is_beneficiary
                 assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+                assert user.deposit.amount == 50
 
             if user.email == "user16avantdecret@test.com":
                 assert user.age == 16
+                assert user.is_beneficiary
                 assert user.deposit.type == finance_models.DepositType.GRANT_15_17
+                assert user.deposit.amount == 30
 
             if user.email == "user16apresdecret@test.com":
                 assert user.age == 16
-                assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+                assert not user.is_beneficiary
+                assert not user.deposit
 
             if user.email == "user15avantdecret@test.com":
                 assert user.age == 15
+                assert user.is_beneficiary
                 assert user.deposit.type == finance_models.DepositType.GRANT_15_17
+                assert user.deposit.amount == 20
 
             if user.email == "user15apresdecret@test.com":
                 assert user.age == 15
-                assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+                assert not user.is_beneficiary
+                assert not user.deposit
 
     def test_create_users_for_credit_v3_tests_with_underage_deposits(self):
         create_users_for_credit_v3_tests()
