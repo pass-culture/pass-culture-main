@@ -76,7 +76,7 @@ def check_ministry_fund(
 
 def check_collective_stock_is_bookable(stock: models.CollectiveStock) -> None:
     if not stock.isBookable:
-        raise exceptions.StockNotBookable(stock.id)
+        raise exceptions.CollectiveStockNotBookable()
 
 
 def check_collective_booking_status(collective_booking: models.CollectiveBooking) -> None:
