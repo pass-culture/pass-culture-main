@@ -5173,6 +5173,7 @@ class UserRecreditAfterDecreeTest:
             fraud_factories.PhoneValidationFraudCheckFactory(user=user_2)
             user_2.phoneNumber = "+33610000000"
             fraud_factories.HonorStatementFraudCheckFactory(user=user_2)
+
             api.recredit_users()
 
         # User 1 is 17, and was recredited with RECREDIT_17 on its new deposit
