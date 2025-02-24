@@ -83,8 +83,9 @@ def delete_favorite_for_collective_offer_template(
     except educational_exceptions.CollectiveOfferTemplateNotFound:
         raise ApiErrors({"offer_template": ["Aucune offre template trouvée pour cet id"]}, status_code=404)
 
-    redactor.favoriteCollectiveOfferTemplates.remove(offer_template)
-    db.session.add(redactor)
+    if offer_template in redactor.favoriteCollectiveOfferTemplates:
+        redactor.favoriteCollectiveOfferTemplates.remove(offer_template)
+        db.session.add(redactor)
 
 
 @blueprint.adage_iframe.route("/collective/favorites", methods=["GET"])
