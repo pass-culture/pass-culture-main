@@ -278,6 +278,9 @@ class BaseOfferResponseGetterDict(GetterDict):
                 "visualDisability": offer.visualDisabilityCompliant,
             }
 
+        if key == "artists":
+            return [OfferArtist.from_orm(artist) for artist in product.artists] if product else []
+
         if key == "expense_domains":
             return get_expense_domains(offer)
 
@@ -396,10 +399,17 @@ class OfferChronicles(ConfiguredBaseModel):
     chronicles: list[OfferChronicle]
 
 
+class OfferArtist(ConfiguredBaseModel):
+    id: str
+    image: str
+    name: str
+
+
 class BaseOfferResponse(ConfiguredBaseModel):
     id: int
     accessibility: OfferAccessibilityResponse
     address: OfferAddressResponse | None
+    artists: list[OfferArtist]
     chronicles: list[ChroniclePreview]
     description: str | None
     expense_domains: list[ExpenseDomain]

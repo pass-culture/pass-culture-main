@@ -1327,6 +1327,16 @@ def test_public_api(client):
                     "title": "OfferAddressResponse",
                     "type": "object",
                 },
+                "OfferArtist": {
+                    "properties": {
+                        "id": {"title": "Id", "type": "string"},
+                        "image": {"title": "Image", "type": "string"},
+                        "name": {"title": "Name", "type": "string"},
+                    },
+                    "required": ["id", "image", "name"],
+                    "title": "OfferArtist",
+                    "type": "object",
+                },
                 "OfferChronicle": {
                     "properties": {
                         "author": {
@@ -1470,6 +1480,11 @@ def test_public_api(client):
                             "nullable": True,
                             "title": "OfferAddressResponse",
                         },
+                        "artists": {
+                            "items": {"$ref": "#/components/schemas/OfferArtist"},
+                            "title": "Artists",
+                            "type": "array",
+                        },
                         "chronicles": {
                             "items": {"$ref": "#/components/schemas/ChroniclePreview"},
                             "title": "Chronicles",
@@ -1523,6 +1538,7 @@ def test_public_api(client):
                     "required": [
                         "id",
                         "accessibility",
+                        "artists",
                         "chronicles",
                         "expenseDomains",
                         "isExpired",
@@ -1550,6 +1566,11 @@ def test_public_api(client):
                             "anyOf": [{"$ref": "#/components/schemas/OfferAddressResponse"}],
                             "nullable": True,
                             "title": "OfferAddressResponse",
+                        },
+                        "artists": {
+                            "items": {"$ref": "#/components/schemas/OfferArtist"},
+                            "title": "Artists",
+                            "type": "array",
                         },
                         "chronicles": {
                             "items": {"$ref": "#/components/schemas/ChroniclePreview"},
@@ -1605,6 +1626,7 @@ def test_public_api(client):
                     "required": [
                         "id",
                         "accessibility",
+                        "artists",
                         "chronicles",
                         "expenseDomains",
                         "isExpired",
