@@ -8,7 +8,7 @@
 }
 
 .educational-form .educational-form-adress-banner {
-  margin: 0 0 rem.torem(24px) 0;
+  margin: 0 0 rem.torem(8px) 0;
 }
 
 .educational-form-adress-banner {
@@ -16,6 +16,7 @@
   background: var(--color-grey-light);
   color: var(--color-grey-dark);
   border-radius: rem.torem(8px);
+  word-break: break-word;
 }
 
 .price-details textarea {
@@ -39,4 +40,12 @@
   display: flex;
   flex-direction: column;
   gap: rem.torem(36px);
+}
+
+.info-box-children {
+  margin-left: 16px;
+}
+
+.event-other-address {
+  margin-top: rem.torem(16px);
 }
