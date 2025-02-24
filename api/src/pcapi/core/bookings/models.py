@@ -4,6 +4,7 @@ from decimal import Decimal
 import enum
 from typing import TYPE_CHECKING
 
+import sqlalchemy as sa
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
 from sqlalchemy import Column
@@ -287,7 +288,7 @@ class Booking(PcObject, Base, Model):
 
     @isConfirmed.expression  # type: ignore[no-redef]
     def isConfirmed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
-        return and_(cls.cancellationLimitDate.is_not(None), cls.cancellationLimitDate <= datetime.utcnow())
+        return and_(cls.cancellationLimitDate.is_not(None), cls.cancellationLimitDate <= sa.func.now())
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
