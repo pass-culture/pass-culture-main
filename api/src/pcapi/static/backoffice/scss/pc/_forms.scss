@@ -1,5 +1,5 @@
 @mixin select-field {
-  height: 1em;
+  min-height: 100%;
   overflow: hidden;
   border-radius: 1rem;
 }
@@ -48,7 +48,7 @@ input {
 }
 
 .pc-search-inline{
-  height: 3.6em;
+  min-height: 3.6em;
   .form-select {
     height:100%;
   }
@@ -76,4 +76,10 @@ form[name="pro_search"] .pc-field-departments {
 .form-check-input.pc-full-opacity[disabled] ~ .form-check-label,
 .form-check-input.pc-full-opacity:disabled ~ .form-check-label {
   opacity: 1;
+}
+
+.form-floating {
+  > label {
+    z-index: auto !important;
+  }
 }
