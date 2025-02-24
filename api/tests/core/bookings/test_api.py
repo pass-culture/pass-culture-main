@@ -1444,7 +1444,7 @@ class CancelByBeneficiaryTest:
         assert stock.dnBookedQuantity == old_quantity - 1
 
     @patch("pcapi.core.bookings.api.external_bookings_api.cancel_event_ticket")
-    def test_cancel_external_booking_from_charlie_api(self, mocked_cancel_booking):
+    def test_cancel_external_booking_from_external_ticketing_service(self, mocked_cancel_booking):
         external_url = "https://book_my_offer.com"
         provider = providers_factories.ProviderFactory(
             name="Technical provider",

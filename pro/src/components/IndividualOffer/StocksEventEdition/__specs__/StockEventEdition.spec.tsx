@@ -312,7 +312,7 @@ describe('screens:StocksEventEdition', () => {
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
-  it('should allow user to try delete stock from an offer created from charlie api', async () => {
+  it('should allow user to try delete stock from an offer created from public API', async () => {
     apiOffer.lastProvider = {
       ...apiOffer.lastProvider,
       name: 'Provider',

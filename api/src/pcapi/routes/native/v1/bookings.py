@@ -82,7 +82,7 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
     except external_bookings_exceptions.ExternalBookingTimeoutException:
         raise ApiErrors({"code": "PROVIDER_BOOKING_TIMEOUT"})
     except external_bookings_exceptions.ExternalBookingException as error:
-        if stock.offer.lastProvider.hasProviderEnableCharlie:
+        if stock.offer.lastProvider.hasTicketingService:
             logger.info(
                 "Could not book offer: Error when booking external ticket. Message: %s",
                 str(error),

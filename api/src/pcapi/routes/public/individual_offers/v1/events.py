@@ -67,7 +67,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
     venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
     venue = utils.get_venue_with_offerer_address(body.location.venue_id)
 
-    if body.has_ticket and not (venue_provider.provider.hasProviderEnableCharlie or venue_provider.hasTicketingService):
+    if body.has_ticket and not (venue_provider.provider.hasTicketingService or venue_provider.hasTicketingService):
         raise api_errors.ApiErrors(
             {
                 "global": "You cannot create an event with `has_ticket=true` because you dont have a ticketing service enabled (neither at provider level nor at venue level)."

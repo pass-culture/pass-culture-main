@@ -68,7 +68,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
 
     # Charlie api connects an external event stock managed by a provider and allow tickets collection
     @property
-    def hasProviderEnableCharlie(self) -> bool:
+    def hasTicketingService(self) -> bool:
         return bool(self.bookingExternalUrl and self.cancelExternalUrl)
 
     @property

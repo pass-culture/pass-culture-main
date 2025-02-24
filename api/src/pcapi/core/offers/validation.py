@@ -551,7 +551,7 @@ def check_offer_withdrawal(
     # Only providers that have set a ticketing system at provider level or at venue level
     # can create offers with in app Withdrawal
     if withdrawal_type == models.WithdrawalTypeEnum.IN_APP:
-        has_ticketing_system_at_provider_level = provider and provider.hasProviderEnableCharlie
+        has_ticketing_system_at_provider_level = provider and provider.hasTicketingService
         has_ticketing_system_at_venue_level = venue_provider and venue_provider.hasTicketingService
         if not (has_ticketing_system_at_provider_level or has_ticketing_system_at_venue_level):
             raise exceptions.NonLinkedProviderCannotHaveInAppTicket()
