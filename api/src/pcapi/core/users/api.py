@@ -57,6 +57,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
+import pcapi.core.users.account as users_account
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.ds as users_ds
 import pcapi.core.users.repository as users_repository
@@ -954,7 +955,7 @@ def create_user_access_token(user: models.User) -> str:
     return create_access_token(identity=user.email, additional_claims={"user_claims": {"user_id": user.id}})
 
 
-def create_user_refresh_token(user: models.User, device_info: "account_serialization.TrustedDevice | None") -> str:
+def create_user_refresh_token(user: models.User, device_info: "users_account.TrustedDevice | None") -> str:
     if is_login_device_a_trusted_device(device_info, user):
         duration = datetime.timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES)
     else:
@@ -981,7 +982,7 @@ def create_account_creation_token(google_user: "google_oauth.GoogleUser") -> str
 
 
 def update_notification_subscription(
-    user: models.User, subscriptions: "account_serialization.NotificationSubscriptions | None", origin: str | None
+    user: models.User, subscriptions: "users_account.NotificationSubscriptions | None", origin: str | None
 ) -> None:
     if subscriptions is None:
         return
@@ -1218,7 +1219,7 @@ def save_flags(user: models.User, flags: dict) -> None:
                 raise ValueError()
 
 
-def save_trusted_device(device_info: "account_serialization.TrustedDevice", user: models.User) -> None:
+def save_trusted_device(device_info: "users_account.TrustedDevice", user: models.User) -> None:
     if not device_info.device_id:
         logger.info(
             "Invalid deviceId was provided for trusted device",
@@ -1240,7 +1241,7 @@ def save_trusted_device(device_info: "account_serialization.TrustedDevice", user
 
 
 def update_login_device_history(
-    device_info: "account_serialization.TrustedDevice", user: models.User
+    device_info: "users_account.TrustedDevice", user: models.User
 ) -> models.LoginDeviceHistory | None:
     if not device_info.device_id:
         logger.info(
@@ -1267,9 +1268,7 @@ def update_login_device_history(
     return login_device
 
 
-def should_save_login_device_as_trusted_device(
-    device_info: "account_serialization.TrustedDevice", user: models.User
-) -> bool:
+def should_save_login_device_as_trusted_device(device_info: "users_account.TrustedDevice", user: models.User) -> bool:
     if not device_info.device_id:
         return False
 
@@ -1284,9 +1283,7 @@ def should_save_login_device_as_trusted_device(
     ).scalar()
 
 
-def is_login_device_a_trusted_device(
-    device_info: "account_serialization.TrustedDevice | None", user: models.User
-) -> bool:
+def is_login_device_a_trusted_device(device_info: "users_account.TrustedDevice | None", user: models.User) -> bool:
     if device_info is None or not device_info.device_id:
         return False
 
@@ -1350,9 +1347,7 @@ def create_suspicious_login_email_token(
     )
 
 
-def save_device_info_and_notify_user(
-    user: models.User, device_info: "account_serialization.TrustedDevice | None"
-) -> None:
+def save_device_info_and_notify_user(user: models.User, device_info: "users_account.TrustedDevice | None") -> None:
     login_history = None
     if device_info is not None:
         if should_save_login_device_as_trusted_device(device_info, user):

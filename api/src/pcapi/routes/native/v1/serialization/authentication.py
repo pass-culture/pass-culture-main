@@ -1,5 +1,5 @@
+from pcapi.core.users.account import TrustedDevice
 from pcapi.core.users.models import AccountState
-from pcapi.routes.native.v1.serialization.account import TrustedDevice
 from pcapi.routes.serialization import ConfiguredBaseModel
 
 
