@@ -3,12 +3,12 @@ from sqlalchemy.orm import joinedload
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.reactions import models as reactions_models
+from pcapi.core.reactions import schemas as reactions_schemas
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.routes.native.v1.serialization.reaction import PostOneReactionRequest
 
 
-def bulk_update_or_create_reaction(user: User, reactions: list[PostOneReactionRequest]) -> None:
+def bulk_update_or_create_reaction(user: User, reactions: list[reactions_schemas.PostOneReactionRequest]) -> None:
     for reaction in reactions:
         update_or_create_reaction(user, reaction.offer_id, reaction.reaction_type)
     db.session.flush()
