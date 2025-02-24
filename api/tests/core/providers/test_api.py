@@ -231,7 +231,7 @@ class ConnectVenueToAllocineTest:
             isDuo=True,
             quantity=50,
         )
-        with pytest.raises(exceptions.UnknownVenueToAlloCine):
+        with pytest.raises(exceptions.NoMatchingAllocineTheater):
             api.connect_venue_to_allocine(venue, allocine_provider.id, payload)
 
 

@@ -103,7 +103,7 @@ def get_active_cinema_venue_provider(venue_id: int) -> providers_models.VenuePro
         .one_or_none()
     )
     if not cinema_venue_provider:
-        raise providers_exceptions.InactiveProvider(f"No active cinema venue provider found for venue #{venue_id}")
+        raise providers_exceptions.InactiveProvider()
     return cinema_venue_provider
 
 
