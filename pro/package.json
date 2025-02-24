@@ -92,7 +92,7 @@
     "@types/dompurify": "^3.2.0",
     "@types/lodash.isequal": "^4.5.8",
     "@types/lodash.memoize": "^4.1.9",
-    "@types/node": "^22.13.4",
+    "@types/node": "^22.13.5",
     "@types/query-string": "^6.3.0",
     "@types/react": "^18.3.13",
     "@types/react-avatar-editor": "^13.0.3",
