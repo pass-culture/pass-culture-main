@@ -60,7 +60,7 @@ class IdentityCheckContent(pydantic_v1.BaseModel):
 
         postal_code = self.get_postal_code()  # pylint: disable=assignment-from-none
         department = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
-        eligibility_at_registration = eligibility_api.get_extended_eligibility_at_date(
+        eligibility_at_registration = eligibility_api.get_eligibility_at_date(
             birth_date, registration_datetime, department
         )
 
