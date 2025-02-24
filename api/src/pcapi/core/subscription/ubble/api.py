@@ -98,16 +98,10 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
 def _fill_missing_content_test_fields(
     content: fraud_models.UbbleContent, fraud_check: fraud_models.BeneficiaryFraudCheck
 ) -> None:
-    user = fraud_check.user
-    is_v2 = is_v2_identification(content.identification_id)
-    if not is_v2:
-        if ubble_fraud_api.does_match_ubble_test_email(user.email):
-            content.birth_date = user.birth_date
-        return
-
     previous_ubble_content = fraud_check.source_data()
     assert isinstance(previous_ubble_content, fraud_models.UbbleContent)
 
+    user = fraud_check.user
     should_fill_content = (
         ubble_fraud_api.does_match_ubble_test_names(content)
         and previous_ubble_content.external_applicant_id is not None
@@ -118,6 +112,9 @@ def _fill_missing_content_test_fields(
         content.first_name = user.firstName
         content.last_name = user.lastName
         content.id_document_number = f"{user.id:012}"
+
+    if ubble_fraud_api.does_match_ubble_test_email(user.email):
+        content.birth_date = user.birth_date
 
 
 def is_v2_identification(identification_id: str | None) -> bool:
