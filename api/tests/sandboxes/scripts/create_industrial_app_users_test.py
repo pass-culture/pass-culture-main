@@ -141,7 +141,9 @@ class CreateTestCasesTest:
 
             if user.email == "user18redepotapresdecret@test.com":
                 assert user.age == 18
-                assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+                assert (
+                    user.deposit.type == finance_models.DepositType.GRANT_15_17
+                )  # Will be GRANT_17_18 after recredit_users
 
                 underage_deposit = next(
                     deposit for deposit in user.deposits if deposit.type == finance_models.DepositType.GRANT_15_17
@@ -169,17 +171,19 @@ class CreateTestCasesTest:
 
             if user.email == "user17anniversaireapresdecret@test.com":
                 assert user.age == 17
-                # At this point, the RECREDIT_17 is not yet applied.
+                # At this point, the RECREDIT_17 is not yet applied. We check the deposit is correct after recredit_users below
                 assert user.deposit.type == finance_models.DepositType.GRANT_15_17
                 assert user.deposit.amount == 20 + 30
-                # assert user.deposit.type == finance_models.DepositType.GRANT_17_18
-                # assert user.deposit.amount == 20 + 30 + 50
 
             if user.email == "user16anniversaireavantdecret@test.com":
                 assert user.age == 16
                 assert user.deposit.type == finance_models.DepositType.GRANT_15_17
-                assert user.deposit.amount == 20
-                assert not user.deposit.recredits
+                assert user.deposit.amount == 20 + 30
+                recredit_types_and_amounts = [
+                    (recredit.recreditType, recredit.amount) for recredit in user.deposit.recredits
+                ]
+                assert len(recredit_types_and_amounts) == 1
+                assert (finance_models.RecreditType.RECREDIT_16, 30) in recredit_types_and_amounts
 
             if user.email == "user16anniversaireapresdecret@test.com":
                 assert user.age == 16
@@ -189,12 +193,7 @@ class CreateTestCasesTest:
 
         recredit_users()
 
-        # check 16 yo users are not recredited
-        user_16_before_decree = User.query.filter_by(email="user16anniversaireavantdecret@test.com").one()
-        assert user_16_before_decree.deposit.type == finance_models.DepositType.GRANT_15_17
-        assert user_16_before_decree.deposit.amount == 20
-        assert not user_16_before_decree.deposit.recredits
-
+        # check 16 yo user is not recredited
         user_16_after_decree = User.query.filter_by(email="user16anniversaireapresdecret@test.com").one()
         assert user_16_after_decree.deposit.type == finance_models.DepositType.GRANT_15_17
         assert user_16_after_decree.deposit.amount == 20
@@ -211,3 +210,14 @@ class CreateTestCasesTest:
         ]
         assert (finance_models.RecreditType.RECREDIT_17, 50) in recredit_types_and_amounts
         assert (finance_models.RecreditType.PREVIOUS_DEPOSIT, 20 + 30) in recredit_types_and_amounts
+
+        # Check that the user 18 yo is recredited
+        user_18_after_decree = User.query.filter_by(email="user18redepotapresdecret@test.com").one()
+        assert user_18_after_decree.deposit.type == finance_models.DepositType.GRANT_17_18
+        assert user_18_after_decree.deposit.amount == 150 + 30 + 50
+
+        recredit_types_and_amounts = [
+            (recredit.recreditType, recredit.amount) for recredit in user_18_after_decree.deposit.recredits
+        ]
+        assert (finance_models.RecreditType.RECREDIT_18, 150) in recredit_types_and_amounts
+        assert (finance_models.RecreditType.PREVIOUS_DEPOSIT, 80) in recredit_types_and_amounts
