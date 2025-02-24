@@ -1,12 +1,14 @@
 import { FieldArray, useFormikContext } from 'formik'
 import { useRef } from 'react'
+
+import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+
 import { EmailInputRow } from './EmailInputRow/EmailInputRow'
 import styles from './FormNotifications.module.scss'
-import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 
 interface FormNotificationsProps {
   disableForm: boolean

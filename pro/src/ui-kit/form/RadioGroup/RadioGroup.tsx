@@ -58,6 +58,14 @@ export type RadioGroupProps = RequireAtLeastOne<
      * Callback function to handle changes in the radio group.
      */
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+    /**
+     * Custom CSS class applied to the children container.
+     */
+    childrenClassName?: string
+    /**
+     * Whether the group is optional.
+     */
+    isOptional?: boolean
   },
   'legend' | 'describedBy'
 >
@@ -94,6 +102,8 @@ export const RadioGroup = ({
   className,
   variant,
   onChange,
+  childrenClassName,
+  isOptional = true,
 }: RadioGroupProps): JSX.Element => {
   const [, meta] = useField({ name })
   const hasError = meta.touched && !!meta.error
@@ -106,8 +116,9 @@ export const RadioGroup = ({
       legend={legend}
       name={`radio-group-${name}`}
       ariaDescribedBy={describedBy}
-      isOptional
+      isOptional={isOptional}
       hideFooter
+      childrenClassName={childrenClassName}
     >
       {group.map((item) => (
         <div className={styles['radio-group-item']} key={item.value}>

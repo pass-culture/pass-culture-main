@@ -49,6 +49,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
       'createOfferer'
     )
+    cy.setFeatureFlags([{ name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true }])
   })
 
   it('I should be able to sign up with a new account and create a new offerer with an unknown SIREN (unknown SIRET)', () => {
@@ -75,6 +76,8 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.stepLog({ message: 'I fill identification form with a public name' })
     cy.url().should('contain', '/parcours-inscription/identification')
     cy.findByLabelText('Nom public').type(newVenueName)
+    // Make the venue open to public.
+    cy.findByText('Oui').click()
 
     cy.findByText('Étape suivante').click()
     cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
@@ -149,6 +152,7 @@ describe('Signup journey with known offerer...', () => {
       method: 'GET',
       url: `/venues/siret/**`,
     }).as('venuesSiret')
+    cy.setFeatureFlags([{ name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true }])
   })
 
   describe('...and unknown venue', () => {
@@ -170,6 +174,7 @@ describe('Signup journey with known offerer...', () => {
           })
         ).as('getSiret')
       })
+      cy.setFeatureFlags([{ name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true }])
     })
 
     it('I should be able to sign up with a new account and create a new venue with a known SIREN (unknown SIRET)', () => {
@@ -196,6 +201,8 @@ describe('Signup journey with known offerer...', () => {
       cy.stepLog({ message: 'I fill identification form with a public name' })
       cy.url().should('contain', '/parcours-inscription/identification')
       cy.findByLabelText('Nom public').type(newVenueName)
+      // Make the venue open to public.
+      cy.findByText('Oui').click()
 
       cy.findByText('Étape suivante').click()
       cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
@@ -248,6 +255,7 @@ describe('Signup journey with known offerer...', () => {
       })
       interceptSearch5Adresses()
       cy.intercept({ method: 'POST', url: '/offerers' }).as('postOfferers')
+      cy.setFeatureFlags([{ name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true }])
     })
 
     it('I should be able to sign up with a new account and a known offerer/venue and then create a new venue in the space', () => {
@@ -287,6 +295,8 @@ describe('Signup journey with known offerer...', () => {
       cy.findByLabelText('Adresse postale *').type('s') // previous search was too fast, this one raises suggestions
       cy.wait('@search5Address')
       cy.findByRole('option', { name: MOCKED_BACK_ADDRESS_LABEL }).click()
+      // Make the venue open to public.
+      cy.findByText('Oui').click()
 
       cy.findByText('Étape suivante').click()
       cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
@@ -380,8 +390,6 @@ describe('Signup journey with known offerer...', () => {
 })
 
 function goToOffererCreation(login: string) {
-  const password = 'user@AZERTY123'
-
   cy.stepLog({ message: 'I am logged in' })
   logInAndGoToPage(login, '/')
 

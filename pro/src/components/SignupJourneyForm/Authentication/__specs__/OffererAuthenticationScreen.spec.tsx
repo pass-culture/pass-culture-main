@@ -114,6 +114,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
         longitude: 0,
         postalCode: '75001',
         publicName: '',
+        isOpenToPublic: 'true',
       },
       setActivity: () => {},
       setOfferer: () => {},
