@@ -60,7 +60,7 @@ $body-bg: $gray-100;
 $link-color: $primary;
 $input-bg: $white;
 $form-select-bg: $white;
-$form-floating-height: auto;
+$form-floating-height: 100%;
 $form-check-input-bg: $white;
 $form-check-input-checked-bg-color: $primary;
 $form-check-input-checked-border-color: $primary;
@@ -97,6 +97,12 @@ $font-family-monospace:       SFMono-Regular, Menlo, Monaco, Consolas, "Liberati
 $card-bg:                           $white;
 $card-cap-bg:                       $card-bg;
 // scss-docs-end card-variables
+
+//scss-docs-start tab management
+$nav-tabs-link-active-bg: $white;
+// scss-docs-end card-variables
+
+$table-bg: inherit;
 
 $zindex-levels: map-merge($zindex-levels, (
   4: 4,
