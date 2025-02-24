@@ -46,6 +46,15 @@ def create_regular_pro_user() -> dict:
 
     return {"user": get_pro_user_helper(pro_user), "siren": offerer.siren, "venueName": venue.name}
 
+def create_regular_pro_user_already_onboarded() -> dict:
+    pro_user = users_factories.ProFactory()
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+    venue = offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True, adageId="1337") # Adding an adageId will make this user onboarded
+    offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+    offerers_factories.VenueLabelFactory(label="Musée de France")
+
+    return {"user": get_pro_user_helper(pro_user), "siren": offerer.siren, "venueName": venue.name}
 
 def create_pro_user_with_bookings() -> dict:
     pro_user = users_factories.ProFactory()
