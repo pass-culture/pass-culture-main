@@ -3,6 +3,7 @@ import json
 import logging
 
 import pydantic.v1 as pydantic_v1
+import sentry_sdk
 
 from pcapi import settings
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
@@ -111,9 +112,18 @@ def book_event_ticket(
     booking: bookings_models.Booking,
     stock: offers_models.Stock,
     beneficiary: users_models.User,
-    provider: providers_models.Provider,
-    venue_provider: providers_models.VenueProvider | None,
 ) -> tuple[list[external_bookings_models.Ticket], int | None]:
+    assert stock.offer.lastProviderId  # helps mypy
+    provider = providers_repository.get_provider_enabled_for_pro_by_id(stock.offer.lastProviderId)
+
+    if not provider:
+        raise providers_exceptions.InactiveProvider()
+    sentry_sdk.set_tag("external-provider", provider.name)
+
+    venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
+        stock.offer.venueId, provider_id=provider.id
+    )
+
     validation.check_ticketing_service_is_correctly_set(provider=provider, venue_provider=venue_provider)
 
     payload = serialize.ExternalEventBookingRequest.build_external_booking(stock, booking, beneficiary)
