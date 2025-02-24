@@ -1303,7 +1303,7 @@ class CollectiveOfferTemplate(
     def hasEndDatePassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(
             cls.dateRange.is_not(None),
-            cls.dateRange.contained_by(psycopg2.extras.DateTimeRange(upper=datetime.utcnow())),
+            sa.func.upper(cls.dateRange) < sa.func.now(),
         )
 
     @hybrid_property

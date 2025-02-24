@@ -104,7 +104,6 @@ class CreateCollectiveOfferStocksTest:
 
 @pytest.mark.usefixtures("db_session")
 class UnindexExpiredOffersTest:
-    @time_machine.travel("2020-01-05 10:00:00")
     @pytest.mark.settings(ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE=2)
     @mock.patch("pcapi.core.search.unindex_collective_offer_template_ids")
     def test_default_run_template(self, mock_unindex_collective_offer_template_ids) -> None:
