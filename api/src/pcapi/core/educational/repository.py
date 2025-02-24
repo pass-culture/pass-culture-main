@@ -485,7 +485,7 @@ def get_and_lock_collective_stock(stock_id: int) -> educational_models.Collectiv
         .one_or_none()
     )
     if not stock:
-        raise educational_exceptions.StockDoesNotExist()
+        raise educational_exceptions.CollectiveStockDoesNotExist()
     return stock
 
 

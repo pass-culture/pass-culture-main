@@ -1,7 +1,6 @@
 import typing
 
-from pcapi.domain.client_exceptions import ClientError
-from pcapi.models.api_errors import ApiErrors
+from pcapi.core.core_exception import CoreException
 
 
 if typing.TYPE_CHECKING:
@@ -10,21 +9,20 @@ if typing.TYPE_CHECKING:
     from pcapi.core.educational.models import CollectiveOfferTemplateAllowedAction
 
 
-class EducationalInstitutionUnknown(ClientError):
-    def __init__(self) -> None:
-        super().__init__("educationalInstitution", "Cette institution est inconnue")
+class EducationalException(CoreException):
+    pass
 
 
-class StockNotBookable(ClientError):
-    def __init__(self, stock_id: int) -> None:
-        super().__init__("stock", f"Le stock {stock_id} n'est pas réservable")
+class EducationalInstitutionUnknown(EducationalException):
+    pass
 
 
-class EducationalYearNotFound(ClientError):
-    def __init__(self) -> None:
-        super().__init__(
-            "educationalYear", "Aucune année scolaire correspondant à la réservation demandée n'a été trouvée"
-        )
+class CollectiveStockNotBookable(EducationalException):
+    pass
+
+
+class EducationalYearNotFound(EducationalException):
+    pass
 
 
 class InsufficientFund(Exception):
@@ -71,8 +69,8 @@ class CollectiveStockAlreadyExists(Exception):
     pass
 
 
-class StockDoesNotExist(ApiErrors):
-    status_code = 400
+class CollectiveStockDoesNotExist(EducationalException):
+    pass
 
 
 class PriceRequesteCantBedHigherThanActualPrice(Exception):

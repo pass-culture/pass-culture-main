@@ -5,7 +5,6 @@ from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.models import AdageFrontRoles
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
-from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import atomic
 from pcapi.routes.adage_iframe import blueprint
@@ -71,7 +70,7 @@ def book_collective_offer(
             status_code=403,
         )
 
-    except offers_exceptions.StockDoesNotExist:
+    except exceptions.CollectiveStockDoesNotExist:
         logger.info("Could not book offer: stock does not exist", extra={"stock_id": body.stockId})
         raise ApiErrors({"stock": "Stock introuvable"}, status_code=400)
     except exceptions.CollectiveStockNotBookableByUser:
@@ -81,7 +80,7 @@ def book_collective_offer(
         )
         raise ApiErrors({"code": "WRONG_UAI_CODE"}, status_code=403)
 
-    except exceptions.StockNotBookable:
+    except exceptions.CollectiveStockNotBookable:
         logger.info("Could not book offer: stock is not bookable", extra={"stock_id": body.stockId})
         raise ApiErrors({"stock": "Cette offre n'est pas disponible à la réservation"})
     except exceptions.EducationalInstitutionUnknown:
