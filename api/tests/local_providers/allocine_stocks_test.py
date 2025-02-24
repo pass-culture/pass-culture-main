@@ -16,7 +16,6 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.local_providers import AllocineStocks
 from pcapi.models import db
 from pcapi.repository import repository
-from pcapi.utils.human_ids import humanize
 
 import tests
 from tests.domain import fixtures
@@ -265,10 +264,7 @@ class UpdateObjectsTest:
     @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_create_offer_with_correct_thumb_and_increase_thumbCount_by_1(
-        self, mock_get_object_thumb, mock_call_allocine_api
-    ):
-        # Given
+    def test_should_create_product_mediation(self, mock_get_object_thumb, mock_call_allocine_api):
         mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
             fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
         )
@@ -286,83 +282,11 @@ class UpdateObjectsTest:
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
-        # When
         allocine_stocks_provider.updateObjects()
 
-        # Then
-        existing_offer = db.session.query(offers_models.Offer).one()
+        existing_offer = offers_models.Offer.query.one()
 
-        assert (
-            existing_offer.image.url
-            == f"http://localhost/storage/thumbs/mediations/{humanize(existing_offer.activeMediation.id)}"
-        )
-        assert existing_offer.activeMediation.thumbCount == 1
-
-    @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")
-    @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
-    @pytest.mark.usefixtures("db_session")
-    def test_should_create_offer_even_if_incorrect_thumb(self, mock_get_object_thumb, mock_call_allocine_api):
-        # Given
-        mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
-            fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
-        )
-        # Image that should raise a `pcapi.core.offers.exceptions.UnidentifiedImage`
-        file_path = Path(tests.__path__[0]) / "files" / "mouette_fake_jpg.jpg"
-        with open(file_path, "rb") as thumb_file:
-            mock_get_object_thumb.return_value = thumb_file.read()
-
-        venue = offerers_factories.VenueFactory(
-            managingOfferer__siren="775671464",
-            name="Cinema Allocine",
-            siret="77567146400110",
-            bookingEmail="toto@example.com",
-        )
-
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-        allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-
-        # When
-        allocine_stocks_provider.updateObjects()
-
-        # Then
-        existing_offer = db.session.query(offers_models.Offer).one()
-        assert existing_offer.activeMediation is None
-        assert allocine_stocks_provider.erroredThumbs == 1
-
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
-    @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")
-    @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
-    @pytest.mark.usefixtures("db_session")
-    def test_should_add_offer_thumb(self, mock_get_object_thumb, mock_call_allocine_api, mock_api_poster):
-        # Given
-        mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
-            fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
-        )
-        file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
-        with open(file_path, "rb") as thumb_file:
-            mock_get_object_thumb.return_value = thumb_file.read()
-
-        venue = offerers_factories.VenueFactory(
-            managingOfferer__siren="775671464",
-            name="Cinema Allocine",
-            siret="77567146400110",
-            bookingEmail="toto@example.com",
-        )
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-        allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-
-        # When
-        allocine_stocks_provider.updateObjects()
-
-        # Then
-        existing_offer = db.session.query(offers_models.Offer).one()
-        assert (
-            existing_offer.image.url
-            == f"http://localhost/storage/thumbs/mediations/{humanize(existing_offer.activeMediation.id)}"
-        )
-        assert existing_offer.activeMediation.thumbCount == 1
+        assert existing_offer.image.url == existing_offer.product.productMediations[0].url
 
     @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
@@ -858,21 +782,15 @@ class UpdateObjectsTest:
 
         created_offer = db.session.query(offers_models.Offer).one()
 
-        assert (
-            created_offer.thumbUrl
-            == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
-        )
-        assert created_offer.activeMediation.thumbCount == 1
+        assert created_offer.thumbUrl == created_offer.product.productMediations[0].url
+        assert len(created_offer.product.productMediations) == 1
         assert mock_get_object_thumb.call_count == 1
 
         allocine_stocks_provider.updateObjects()
         created_offer = db.session.query(offers_models.Offer).one()
 
-        assert (
-            created_offer.thumbUrl
-            == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
-        )
-        assert created_offer.activeMediation.thumbCount == 1
+        assert created_offer.thumbUrl == created_offer.product.productMediations[0].url
+        assert len(created_offer.product.productMediations) == 1
         assert mock_get_object_thumb.call_count == 1
 
 
