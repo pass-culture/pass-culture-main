@@ -125,13 +125,9 @@ def create_users_for_credit_v3_tests() -> None:
         deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - datetime.timedelta(days=1),
     )
 
-    ## 16yo user, beneficiary, started after decree
-    users_factories.BeneficiaryFactory(
-        firstName="User16",
-        lastName="Inscriptionapresdecret",
-        email="user16apresdecret@test.com",
-        age=16,
-        deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME + datetime.timedelta(days=1),
+    ## 16yo user, started after decree
+    users_factories.BaseUserFactory(
+        firstName="User16", lastName="Inscriptionapresdecret", email="user16apresdecret@test.com", age=16
     )
 
     ## 15yo user, beneficiary, started before decree
@@ -144,12 +140,8 @@ def create_users_for_credit_v3_tests() -> None:
     )
 
     ## 15yo user, beneficiary, started after decree
-    users_factories.BeneficiaryFactory(
-        firstName="User15",
-        lastName="Inscriptionapresdecret",
-        email="user15apresdecret@test.com",
-        age=15,
-        deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME + datetime.timedelta(days=1),
+    users_factories.BaseUserFactory(
+        firstName="User15", lastName="Inscriptionapresdecret", email="user15apresdecret@test.com", age=15
     )
 
     ### Users who had a deposit underage before the decree ###
