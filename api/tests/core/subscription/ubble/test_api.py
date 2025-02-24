@@ -221,6 +221,27 @@ class UbbleWorkflowV2Test:
 
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
 
+    def test_ubble_identification_approved_with_test_email(self, requests_mock):
+        user = users_factories.UserFactory(email="hello+ubble_test@example.com", age=17)
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            user=user,
+            thirdPartyId="idv_qwerty1234",
+            status=fraud_models.FraudCheckStatus.STARTED,
+        )
+        ignored_birth_date = datetime.date.today() - relativedelta(years=999)
+        requests_mock.get(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
+            json=build_ubble_identification_v2_response(
+                birth_date=ignored_birth_date, created_on=datetime.datetime.today()
+            ),
+        )
+
+        ubble_subscription_api.update_ubble_workflow(fraud_check)
+
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert user.validatedBirthDate == user.dateOfBirth.date()
+
     def test_ubble_identification_approved_but_user_too_young(self, requests_mock):
         user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
