@@ -104,7 +104,9 @@ class TransactionalEmail(Enum):
     EAC_NEW_PREBOOKING_TO_PRO = models.TemplatePro(id_prod=19, id_not_prod=19)
     EAC_ONE_DAY_AFTER_EVENT = models.TemplatePro(id_prod=24, id_not_prod=25, send_to_ehp=False)
     EAC_ONE_DAY_BEFORE_EVENT = models.TemplatePro(id_prod=23, id_not_prod=23, send_to_ehp=False)
-    EAC_PENDING_BOOKING_WITH_BOOKING_LIMIT_DATE_3_DAYS = models.TemplatePro(id_prod=22, id_not_prod=22)
+    EAC_PENDING_BOOKING_WITH_BOOKING_LIMIT_DATE_3_DAYS = models.TemplatePro(
+        id_prod=22, id_not_prod=22, send_to_ehp=False
+    )
     EAC_NEW_REQUEST_FOR_OFFER = models.TemplatePro(id_prod=54, id_not_prod=41)
     EAC_OFFERER_ACTIVATION_EMAIL = models.TemplatePro(id_prod=7, id_not_prod=7, send_to_ehp=False)
     EDUCATIONAL_BOOKING_CANCELLATION = models.TemplatePro(id_prod=17, id_not_prod=17, send_to_ehp=False)
