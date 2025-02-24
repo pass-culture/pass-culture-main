@@ -107,13 +107,13 @@ class AlgoliaSerializationMixin:
     def serialize_offer(cls, offer: offers_models.Offer, last_30_days_bookings: int) -> dict:
         venue = offer.venue
         offerer = venue.managingOfferer
-        prices = {stock.price for stock in offer.bookableStocks}
+        prices = {stock.price for stock in offer.searchableStocks}
         dates = set()
         times = set()
         if offer.isEvent:
-            dates = {stock.beginningDatetime.timestamp() for stock in offer.bookableStocks}  # type: ignore[union-attr]
+            dates = {stock.beginningDatetime.timestamp() for stock in offer.searchableStocks}  # type: ignore[union-attr]
             times = {
-                date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime) for stock in offer.bookableStocks  # type: ignore[arg-type]
+                date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime) for stock in offer.searchableStocks  # type: ignore[arg-type]
             }
         date_created = offer.dateCreated.timestamp()
         tags = [criterion.name for criterion in offer.criteria]
