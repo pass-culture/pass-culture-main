@@ -142,9 +142,10 @@ describe('Homepage', () => {
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(api.listOfferersNames).toHaveBeenCalled()
+
     expect(
       screen.getByText(
-        'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+        'Votre rattachement est en cours de traitement par les équipes du pass Culture'
       )
     ).toBeInTheDocument()
   })
@@ -234,7 +235,7 @@ describe('Homepage', () => {
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
     expect(
       screen.getByText(
-        'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+        'Votre rattachement est en cours de traitement par les équipes du pass Culture'
       )
     ).toBeInTheDocument()
   })

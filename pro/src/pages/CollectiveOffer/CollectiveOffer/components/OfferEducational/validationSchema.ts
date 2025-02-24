@@ -32,15 +32,7 @@ const isPhoneValid = (phone: string | undefined): boolean => {
 const isNotEmpty = (description: string | undefined): boolean =>
   description ? Boolean(description.trim().length > 0) : false
 
-export function getOfferEducationalValidationSchema(
-  {
-    isOfferAddressEnabled,
-  }: {
-    isOfferAddressEnabled?: boolean
-  } = {
-    isOfferAddressEnabled: false,
-  }
-) {
+export function getOfferEducationalValidationSchema() {
   return yup.object().shape({
     title: yup.string().max(110).required('Veuillez renseigner un titre'),
     description: yup
@@ -59,18 +51,8 @@ export function getOfferEducationalValidationSchema(
       ),
     offererId: yup
       .string()
-      .required(
-        isOfferAddressEnabled
-          ? 'Veuillez sélectionner une entité juridique'
-          : 'Veuillez sélectionner une structure'
-      ),
-    venueId: yup
-      .string()
-      .required(
-        isOfferAddressEnabled
-          ? 'Veuillez sélectionner une structure'
-          : 'Veuillez sélectionner un lieu'
-      ),
+      .required('Veuillez sélectionner une entité juridique'),
+    venueId: yup.string().required('Veuillez sélectionner une structure'),
     eventAddress: yup.object().shape({
       addressType: yup
         .string()

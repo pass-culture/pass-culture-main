@@ -6,7 +6,6 @@ import {
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import {
   Description,
   SummaryDescriptionList,
@@ -26,7 +25,6 @@ interface CollectiveOfferLocationSectionProps {
 export const CollectiveOfferLocationSection = ({
   offer,
 }: CollectiveOfferLocationSectionProps) => {
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const venueQuery = useSWR(
     [GET_VENUE_QUERY_KEY, offer.venue.id],
     ([, venueIdParam]) => api.getVenue(venueIdParam)
@@ -59,13 +57,7 @@ export const CollectiveOfferLocationSection = ({
   }
 
   return (
-    <SummarySubSection
-      title={
-        isOfferAddressEnabled
-          ? 'Localisation de l’événement'
-          : 'Lieu de l’événement'
-      }
-    >
+    <SummarySubSection title="Localisation de l’événement">
       <SummaryDescriptionList descriptions={descriptions} />
     </SummarySubSection>
   )

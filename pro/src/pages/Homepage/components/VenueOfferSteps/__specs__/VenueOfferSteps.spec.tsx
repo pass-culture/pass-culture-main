@@ -44,7 +44,7 @@ describe('VenueOfferSteps', () => {
   it('should display venue creation link if user has no venue', () => {
     props.hasVenue = false
     renderVenueOfferSteps(props)
-    expect(screen.getByText('Créer un lieu')).toBeInTheDocument()
+    expect(screen.getByText('Créer une structure')).toBeInTheDocument()
   })
 
   it('should not display venue creation link if user has venues', () => {

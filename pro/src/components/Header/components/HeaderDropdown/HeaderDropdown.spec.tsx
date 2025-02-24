@@ -1,14 +1,16 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { screen, within, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
-
 
 import { api } from 'apiClient/api'
 import {
   GetOffererNameResponseModel,
   GetOffererResponseModel,
 } from 'apiClient/v1'
-import { defaultGetOffererResponseModel, defaultGetOffererVenueResponseModel } from 'commons/utils/factories/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+} from 'commons/utils/factories/individualApiFactories'
 import { currentOffererFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
@@ -70,48 +72,13 @@ describe('App', () => {
     renderHeaderDropdown()
 
     await userEvent.click(screen.getByTestId('offerer-select'))
-    await userEvent.click(screen.getByText(/Changer de structure/))
+    await userEvent.click(screen.getByText(/Changer/))
 
     const offererList = screen.getByTestId('offerers-selection-menu')
     const offerers = within(offererList).getAllByRole('menuitemradio')
 
     expect(offerers[0].textContent).toEqual('A Structure')
     expect(offerers[1].textContent).toEqual('B Structure')
-  })
-
-  describe('OA feature flag', () => {
-    it('should display the right wording without the OA FF', async () => {
-      renderHeaderDropdown()
-      await userEvent.click(screen.getByTestId('offerer-select'))
-      await waitFor(() => {
-        expect(screen.getByTestId('offerer-header-label')).toBeInTheDocument()
-      })
-
-      const changeButton = screen.getByText('Changer de structure')
-      expect(changeButton).toBeInTheDocument()
-      await userEvent.click(changeButton)
-      await waitFor(() => {
-        expect(screen.getByText('Ajouter une nouvelle structure'))
-      })
-    })
-
-    it('should display the right wording with the OA FF', async () => {
-      renderHeaderDropdown({
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
-
-      await userEvent.click(screen.getByTestId('offerer-select'))
-      expect(
-        screen.queryByTestId('offerer-header-label')
-      ).not.toBeInTheDocument()
-
-      const changeButton = screen.getByText('Changer')
-      expect(changeButton).toBeInTheDocument()
-      await userEvent.click(changeButton)
-      await waitFor(() => {
-        expect(screen.getByText('Ajouter'))
-      })
-    })
   })
 
   describe('Switch Offerer', () => {
@@ -134,13 +101,12 @@ describe('App', () => {
       await userEvent.click(screen.getByTestId('offerer-select'))
 
       // Opens sub-menu
-      await userEvent.click(screen.getByText(/Changer de structure/))
+      await userEvent.click(screen.getByText(/Changer/))
 
       // Get structures list
       const offererList = screen.getByTestId('offerers-selection-menu')
       const offerers = within(offererList).getAllByRole('menuitemradio')
 
-      // Clic on one structure
       await userEvent.click(offerers[0])
 
       expect(api.getOfferer).toHaveBeenCalledOnce()
@@ -170,7 +136,7 @@ describe('App', () => {
       await userEvent.click(screen.getByTestId('offerer-select'))
 
       // Opens sub-menu
-      await userEvent.click(screen.getByText(/Changer de structure/))
+      await userEvent.click(screen.getByText(/Changer/))
 
       // Get structures list
       const offererList = screen.getByTestId('offerers-selection-menu')
@@ -186,7 +152,9 @@ describe('App', () => {
       // Stored search filters should be reset, while filters
       // visibility must be remembered.
       Object.values(locallyStoredFilterConfig).forEach((key) => {
-        const storedConfiguration = JSON.parse(sessionStorage.getItem(key) || '{}')
+        const storedConfiguration = JSON.parse(
+          sessionStorage.getItem(key) || '{}'
+        )
         const { filtersVisibility, storedFilters } = storedConfiguration
 
         expect(storedFilters).toEqual({})

@@ -163,13 +163,10 @@ describe('OffererAuthenticationForm', () => {
   })
 
   it('should render form with manual address feature', async () => {
-    renderOffererAuthenticationForm(
-      {
-        initialValues: initialValues,
-        contextValue: contextValue,
-      },
-      { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
-    )
+    renderOffererAuthenticationForm({
+      initialValues: initialValues,
+      contextValue: contextValue,
+    })
 
     // The toggle button "Renseignez l’adresse manuellement" should be visible
     const manualAddressToggle = screen.getByRole('button', {

@@ -51,7 +51,7 @@ describe('PricingPoint', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText(
-        'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement *'
+        'Structure avec SIRET utilisée pour le calcul de votre barème de remboursement *'
       ),
       '1'
     )
@@ -85,7 +85,7 @@ describe('PricingPoint', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText(
-        'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement *'
+        'Structure avec SIRET utilisée pour le calcul de votre barème de remboursement *'
       ),
       '1'
     )
@@ -101,76 +101,5 @@ describe('PricingPoint', () => {
     expect(mockNotifyError).toHaveBeenCalledWith(
       'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'
     )
-  })
-
-  describe('OA feature flag', () => {
-    it('should display the right wording without the OA FF', async () => {
-      renderPricingPoints(defaultProps)
-
-      expect(
-        screen.getByText('Sélectionner un lieu dans la liste')
-      ).toBeInTheDocument()
-
-      expect(
-        screen.getByText(
-          'Comment ajouter vos coordonnées bancaires sur un lieu sans SIRET ?'
-        )
-      ).toBeInTheDocument()
-
-      expect(
-        screen.getByText(
-          /Si vous souhaitez vous faire rembourser les offres de votre lieu sans SIRET, vous devez sélectionner un lieu avec SIRET dans votre structure/
-        )
-      ).toBeInTheDocument()
-
-      expect(
-        screen.getByText(/ci-dessous le lieu avec SIRET :/)
-      ).toBeInTheDocument()
-
-      const select = screen.getByRole('combobox', {
-        name: /Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement/,
-      })
-      expect(select).toBeInTheDocument()
-
-      await userEvent.selectOptions(select, '1')
-      await userEvent.click(screen.getByText('Valider la sélection'))
-
-      expect(screen.getByText(/ce lieu avec SIRET/)).toBeInTheDocument()
-    })
-    it('should display the right wording with the OA FF', async () => {
-      renderPricingPoints(defaultProps, {
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
-
-      expect(
-        screen.getByText('Sélectionner une structure dans la liste')
-      ).toBeInTheDocument()
-
-      expect(
-        screen.getByText(
-          'Comment ajouter vos coordonnées bancaires sur une structure sans SIRET ?'
-        )
-      ).toBeInTheDocument()
-
-      expect(
-        screen.getByText(
-          /Si vous souhaitez vous faire rembourser les offres de votre structure sans SIRET, vous devez sélectionner une structure avec SIRET dans votre entité/
-        )
-      ).toBeInTheDocument()
-
-      expect(
-        screen.getByText(/ci-dessous la structure avec SIRET :/)
-      ).toBeInTheDocument()
-
-      const select = screen.getByRole('combobox', {
-        name: /Structure avec SIRET utilisée pour le calcul de votre barème de remboursement/,
-      })
-      expect(select).toBeInTheDocument()
-
-      await userEvent.selectOptions(select, '1')
-      await userEvent.click(screen.getByText('Valider la sélection'))
-
-      expect(screen.getByText(/cette structure avec SIRET/)).toBeInTheDocument()
-    })
   })
 })

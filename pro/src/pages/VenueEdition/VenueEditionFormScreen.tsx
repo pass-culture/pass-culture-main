@@ -1,7 +1,6 @@
 import { useLocation } from 'react-router-dom'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { PartnerPageIndividualSection } from 'pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageIndividualSection'
 import { Callout } from 'ui-kit/Callout/Callout'
 
@@ -16,15 +15,11 @@ interface VenueEditionProps {
 export const VenueEditionFormScreen = ({
   venue,
 }: VenueEditionProps): JSX.Element => {
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
   const location = useLocation()
 
   if (venue.isVirtual) {
     return (
-      <Callout
-        title={`${isOfferAddressEnabled ? 'Cette structure' : 'Ce lieu'} vous permet uniquement de créer des offres numériques, ${isOfferAddressEnabled ? 'elle' : 'il'} n’est pas visible sur l’application pass Culture.`}
-      >
+      <Callout title="Cette structure vous permet uniquement de créer des offres numériques, elle n’est pas visible sur l’application pass Culture.">
         Vous n’avez pas d’informations à remplir à destination du grand public.
         Si vous souhaitez modifier d’autres informations, vous pouvez vous
         rendre dans la page "Paramètres généraux".

@@ -137,7 +137,9 @@ describe('CollectiveDataEdition', () => {
       expect(
         screen.getByText('Présentation pour les enseignants')
       ).toBeInTheDocument()
-      expect(screen.getByText('Informations du lieu')).toBeInTheDocument()
+      expect(
+        screen.getByText('Informations de la structure')
+      ).toBeInTheDocument()
       expect(screen.getByText('Contact')).toBeInTheDocument()
     })
 
@@ -459,29 +461,6 @@ describe('CollectiveDataEdition', () => {
       renderCollectiveDataEdition()
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-    })
-  })
-
-  describe('OA feature flag', () => {
-    it('should display the right wording without the OA FF', async () => {
-      renderCollectiveDataEdition({}, { initialRouterEntries: ['/'] })
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      await waitFor(() => {
-        expect(screen.getByText('Informations du lieu')).toBeInTheDocument()
-      })
-    })
-    it('should display the right wording with the OA FF', async () => {
-      renderCollectiveDataEdition(
-        {},
-        { initialRouterEntries: ['/'], features: ['WIP_ENABLE_OFFER_ADDRESS'] }
-      )
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      await waitFor(() => {
-        expect(
-          screen.getByText('Informations de la structure')
-        ).toBeInTheDocument()
-      })
     })
   })
 })

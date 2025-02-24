@@ -19,10 +19,8 @@ const offerFormUrlRegex = new RegExp(
 )
 
 export const getValidationSchema = ({
-  isOfferAddressEnabled = false,
   isDigitalOffer = false,
 }: {
-  isOfferAddressEnabled: boolean
   isDigitalOffer: boolean
 }) => {
   return yup.object().shape({
@@ -74,13 +72,7 @@ export const getValidationSchema = ({
       then: (schema) =>
         schema.required('Veuillez sélectionner un genre musical'),
     }),
-    venueId: yup
-      .string()
-      .required(
-        isOfferAddressEnabled
-          ? 'Veuillez sélectionner une structure'
-          : 'Veuillez sélectionner un lieu'
-      ),
+    venueId: yup.string().required('Veuillez sélectionner une structure'),
     url: isDigitalOffer
       ? yup
           .string()

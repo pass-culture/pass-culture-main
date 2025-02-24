@@ -56,7 +56,7 @@ describe('VenueOfferSteps', () => {
   it('should track creation venue', async () => {
     renderVenueOfferSteps()
 
-    await userEvent.click(screen.getByText(/Créer un lieu/))
+    await userEvent.click(screen.getByText(/Créer une structure/))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
@@ -98,7 +98,7 @@ describe('VenueOfferSteps', () => {
 
     await userEvent.click(
       screen.getByText(
-        /Je ne dispose pas de lieu propre, quel type de lieu créer ?/
+        /Je ne dispose pas de structure propre, quel type de structure créer ?/
       )
     )
 

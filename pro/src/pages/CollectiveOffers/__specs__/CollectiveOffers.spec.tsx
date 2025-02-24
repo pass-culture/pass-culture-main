@@ -14,7 +14,7 @@ import {
   CollectiveOfferStatus,
 } from 'apiClient/v1'
 import {
-  ALL_VENUES_OPTION,
+  ALL_OFFERERS_OPTION,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from 'commons/core/Offers/constants'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
@@ -244,7 +244,7 @@ describe('route CollectiveOffers', () => {
         const firstVenueOption = screen.getByRole('option', {
           name: proVenues[0].name,
         })
-        const venueSelect = screen.getByLabelText('Lieu')
+        const venueSelect = screen.getByLabelText('Structure')
         await userEvent.selectOptions(venueSelect, firstVenueOption)
 
         await userEvent.click(screen.getByText('Rechercher'))
@@ -441,7 +441,7 @@ describe('route CollectiveOffers', () => {
         name: proVenues[0].name,
       })
 
-      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
+      const venueSelect = screen.getByDisplayValue(ALL_OFFERERS_OPTION.label)
 
       await userEvent.selectOptions(venueSelect, firstVenueOption)
 
@@ -516,7 +516,7 @@ describe('route CollectiveOffers', () => {
         name: proVenues[0].name,
       })
 
-      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
+      const venueSelect = screen.getByDisplayValue(ALL_OFFERERS_OPTION.label)
 
       await userEvent.selectOptions(venueSelect, venueOptionToSelect)
 

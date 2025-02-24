@@ -223,7 +223,7 @@ describe('VenueFormScreen', () => {
 
     expect(
       screen.getByText(
-        /Ce lieu vous permet uniquement de créer des offres numériques/
+        /Cette structure vous permet uniquement de créer des offres numériques/
       )
     ).toBeInTheDocument()
 
@@ -291,32 +291,6 @@ describe('VenueFormScreen', () => {
     expect(
       screen.getByText('Modalités d’accessibilité via acceslibre')
     ).toBeInTheDocument()
-  })
-
-  describe('OA feature flag', () => {
-    it('should display the right wording without the OA FF', () => {
-      renderForm({ ...baseVenue, isVirtual: true })
-
-      expect(
-        screen.getByText(
-          /Ce lieu vous permet uniquement de créer des offres numériques, il/
-        )
-      ).toBeInTheDocument()
-    })
-    it('should display the right wording with the OA FF', () => {
-      renderForm(
-        { ...baseVenue, isVirtual: true },
-        {
-          features: ['WIP_ENABLE_OFFER_ADDRESS'],
-        }
-      )
-
-      expect(
-        screen.getByText(
-          /Cette structure vous permet uniquement de créer des offres numériques, elle/
-        )
-      ).toBeInTheDocument()
-    })
   })
 
   it('should not send opening hours if the field was not filled, and if there were no opening hours already added previously', async () => {

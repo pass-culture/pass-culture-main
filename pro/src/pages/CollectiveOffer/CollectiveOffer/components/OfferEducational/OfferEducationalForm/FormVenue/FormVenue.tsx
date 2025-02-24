@@ -12,13 +12,12 @@ import {
 } from 'commons/core/OfferEducational/types'
 import { applyVenueDefaultsToFormValues } from 'commons/core/OfferEducational/utils/applyVenueDefaultsToFormValues'
 import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Select } from 'ui-kit/form/Select/Select'
 
-import { STRUCTURE_LABEL, VENUE_LABEL } from '../../constants/labels'
+import { STRUCTURE_LABEL } from '../../constants/labels'
 
 import styles from './FormVenue.module.scss'
 
@@ -41,7 +40,6 @@ export const FormVenue = ({
   isOfferCreated,
   offer,
 }: FormVenueProps): JSX.Element => {
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const lastBookingStatus = isCollectiveOffer(offer)
     ? offer.lastBookingStatus
     : null
@@ -89,16 +87,15 @@ export const FormVenue = ({
           variant={CalloutVariant.INFO}
           className={styles['no-offerer-callout']}
         >
-          Vous ne pouvez pas créer d’offre collective tant que votre{' '}
-          {isOfferAddressEnabled ? 'entité juridique' : 'structure'} n’est pas
-          validée.
+          Vous ne pouvez pas créer d’offre collective tant que votre entité
+          juridique n’est pas validée.
         </Callout>
       )}
       {isEligible && venuesOptions.length > 0 && (
         <FormLayout.Row>
           <Select
             disabled={venuesOptions.length === 1 || disableVenueSelection}
-            label={isOfferAddressEnabled ? STRUCTURE_LABEL : VENUE_LABEL}
+            label={STRUCTURE_LABEL}
             name="venueId"
             options={venuesOptions}
             onChange={async (event) => {
@@ -123,16 +120,14 @@ export const FormVenue = ({
             links={[
               {
                 href: '/parcours-inscription/structure',
-                label: `Renseigner ${isOfferAddressEnabled ? 'une structure' : 'un lieu'}`,
+                label: 'Renseigner une structure',
               },
             ]}
             className={styles['banner-place-adress-info']}
             variant={CalloutVariant.ERROR}
           >
             Pour proposer des offres à destination d’un groupe scolaire, vous
-            devez renseigner{' '}
-            {isOfferAddressEnabled ? 'une structure' : 'un lieu'} pour pouvoir
-            être remboursé.
+            devez renseigner une structure pour pouvoir être remboursé.
           </Callout>
         )}
     </FormLayout.Section>

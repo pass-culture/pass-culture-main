@@ -14,7 +14,6 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_HAS_BOOKINGS_QUERY_KEY,
-  GET_OFFERER_ADDRESS_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
@@ -22,6 +21,7 @@ import { PreFiltersParams } from 'commons/core/Bookings/types'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { Audience } from 'commons/core/shared/types'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
+import { useOffererAddresses } from 'commons/hooks/swr/useOffererAddresses'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { stringify } from 'commons/utils/query-string'
@@ -78,11 +78,8 @@ export const BookingsContainer = <
   const initialAppliedFilters = {
     ...DEFAULT_PRE_FILTERS,
     ...{
-      offerId: selectedOffererId?.toString(),
+      offererId: selectedOffererId?.toString() ?? '',
     },
-  }
-  if (selectedOffererId !== null) {
-      initialAppliedFilters.offererId = selectedOffererId.toString()
   }
 
   const [appliedPreFilters, setAppliedPreFilters] = useState<PreFiltersParams>(
@@ -107,12 +104,7 @@ export const BookingsContainer = <
 
   const { data: offerer } = useOfferer(selectedOffererId)
 
-  const offererAddressQuery = useSWR(
-    [GET_OFFERER_ADDRESS_QUERY_KEY, selectedOffererId],
-    ([, offererIdParam]) =>
-      offererIdParam ? api.getOffererAddresses(offererIdParam, true) : [],
-    { fallbackData: [] }
-  )
+  const offererAddressQuery = useOffererAddresses()
   const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
 
   const bookingsQuery = useSWR(
@@ -199,7 +191,10 @@ export const BookingsContainer = <
             : initialAppliedFilters.bookingEndingDate),
         offerEventDate:
           params.get('offerEventDate') ?? initialAppliedFilters.offerEventDate,
-        offererId: selectedOffererId !== null ? selectedOffererId.toString() : DEFAULT_PRE_FILTERS.offererId,
+        offererId:
+          selectedOffererId !== null
+            ? selectedOffererId.toString()
+            : DEFAULT_PRE_FILTERS.offererId,
       }
       setAppliedPreFilters(filterToLoad)
     }

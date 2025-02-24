@@ -1,35 +1,22 @@
-import {
-  AddressResponseIsLinkedToVenueModel,
-  GetOfferVenueResponseModel,
-} from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { AddressResponseIsLinkedToVenueModel } from 'apiClient/v1'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
 import style from './VenueDetails.module.scss'
 
 interface VenueDetailsProps {
-  venue: GetOfferVenueResponseModel
   address?: AddressResponseIsLinkedToVenueModel | null
   withdrawalDetails?: string
 }
 
 export const VenueDetails = ({
-  venue,
   address,
   withdrawalDetails,
 }: VenueDetailsProps): JSX.Element => {
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
   function computeAddress() {
     let venueAddressString = '-'
     let label = '-'
 
-    if (!isOfferAddressEnabled) {
-      label = venue.publicName || venue.name
-      venueAddressString = [label, venue.street, venue.postalCode, venue.city]
-        .filter((str) => Boolean(str))
-        .join(' - ')
-    } else if (address) {
+    if (address) {
       const { street, postalCode, city } = address
 
       label = address.label || '-'

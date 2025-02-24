@@ -10,6 +10,7 @@ import {
 import {
   ALL_VENUES_OPTION,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  ALL_OFFERERS_OPTION,
 } from 'commons/core/Offers/constants'
 import * as useNotification from 'commons/hooks/useNotification'
 import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
@@ -192,7 +193,10 @@ describe('CollectiveOffersScreen', () => {
 
   it('should render venue filter with default option selected and given venues as options', () => {
     const expectedSelectOptions = [
-      { id: [ALL_VENUES_OPTION.value], value: ALL_VENUES_OPTION.label },
+      {
+        id: [ALL_VENUES_OPTION.value],
+        value: ALL_OFFERERS_OPTION.label,
+      },
       { id: [proVenues[0].id], value: proVenues[0].name },
       {
         id: [proVenues[1].id],
@@ -520,13 +524,10 @@ describe('CollectiveOffersScreen', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display "Structure" instead of "Lieu" of the WIP_ENABLE_OFFER_ADDRESS FF is active', () => {
-    renderOffers(
-      {
-        ...props,
-      },
-      { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
-    )
+  it('should display "Structure"', () => {
+    renderOffers({
+      ...props,
+    })
 
     // In filters
     expect(

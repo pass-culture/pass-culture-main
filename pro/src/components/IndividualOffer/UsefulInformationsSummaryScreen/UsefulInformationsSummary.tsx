@@ -4,7 +4,6 @@ import {
   OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
@@ -27,8 +26,6 @@ export function UsefulInformationsSummaryScreen({
   offer,
 }: DetailsSummaryScreenProps) {
   const practicalInfoDescriptions: Description[] = []
-
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   if (offer.withdrawalType) {
     practicalInfoDescriptions.push({
@@ -64,7 +61,7 @@ export function UsefulInformationsSummaryScreen({
           })}
           aria-label="Modifier les détails de l’offre"
         >
-          {!offer.isDigital && isOfferAddressEnabled && (
+          {!offer.isDigital && (
             <SummarySubSection title="Localisation de l’offre">
               <SummaryDescriptionList
                 descriptions={[

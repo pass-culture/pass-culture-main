@@ -1,13 +1,9 @@
 import { useFormikContext } from 'formik'
 
-import {
-  CategoryResponseModel,
-  SubcategoryResponseModel,
-} from 'apiClient/v1'
+import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import fullMoreIcon from 'icons/full-more.svg'
@@ -52,7 +48,6 @@ export const DetailsForm = ({
   const { values, handleChange } = useFormikContext<DetailsFormValues>()
   const { subcategoryId } = values
   const { offer } = useIndividualOfferContext()
-  const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const isSubCategorySelected =
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
@@ -86,14 +81,12 @@ export const DetailsForm = ({
             {venuesOptions.length > 1 && (
               <FormLayout.Row>
                 <Select
-                  label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
+                  label="Qui propose l’offre ?"
                   name="venueId"
                   options={venuesOptions}
                   defaultOption={{
                     value: '',
-                    label: offerAddressEnabled
-                      ? 'Sélectionner la structure'
-                      : 'Sélectionner le partenaire',
+                    label: 'Sélectionner la structure',
                   }}
                   onChange={(ev) => {
                     if (isProductBased) {

@@ -68,7 +68,6 @@ describe('setInitialFormValues', () => {
           label: 'Centre commercial',
         },
       },
-      isOfferAddressEnabled: true,
     })
 
     const expectedFormValues = {

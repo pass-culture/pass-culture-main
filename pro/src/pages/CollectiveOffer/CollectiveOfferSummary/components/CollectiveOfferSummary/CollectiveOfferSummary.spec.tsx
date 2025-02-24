@@ -330,39 +330,4 @@ describe('CollectiveOfferSummary', () => {
 
     expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(3)
   })
-
-  describe('OA feature flag', () => {
-    it('should display the right wording without the OA FF', async () => {
-      renderCollectiveOfferSummary({ ...props, offerEditLink: undefined })
-
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      expect(
-        screen.getByText('Lieu de rattachement de votre offre')
-      ).toBeInTheDocument()
-      const summaryList = screen.getByTestId(
-        'summary-description-list'
-      ).childNodes
-      expect(summaryList[0].textContent).toContain('Structure')
-      expect(summaryList[1].textContent).toContain('Lieu')
-    })
-
-    it('should display the right wording with the OA FF', async () => {
-      renderCollectiveOfferSummary(
-        { ...props, offerEditLink: undefined },
-        {
-          features: ['WIP_ENABLE_OFFER_ADDRESS'],
-        }
-      )
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      expect(
-        screen.getByText('Structure de rattachement de votre offre')
-      ).toBeInTheDocument()
-      const summaryList = screen.getByTestId(
-        'summary-description-list'
-      ).childNodes
-      expect(summaryList[0].textContent).toContain('Entité juridique')
-      expect(summaryList[1].textContent).toContain('Structure')
-    })
-  })
 })

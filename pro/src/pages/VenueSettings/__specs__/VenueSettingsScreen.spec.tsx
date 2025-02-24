@@ -148,7 +148,7 @@ describe('VenueSettingsScreen', () => {
     await renderForm()
 
     const siretField = await screen.findByRole('textbox', {
-      name: /SIRET du lieu/,
+      name: /SIRET de la structure/,
     })
     const nameField = await screen.findByRole('textbox', {
       name: /Raison sociale/,
@@ -183,37 +183,11 @@ describe('VenueSettingsScreen', () => {
     expect(emailField).toHaveValue('contact@lieuexemple.com')
   })
 
-  it('should render with manual address fields when WIP_ENABLE_OFFER_ADDRESS feature is enabled', async () => {
-    await renderForm({ features: ['WIP_ENABLE_OFFER_ADDRESS'] })
+  it('should render with manual address fields', async () => {
+    await renderForm()
 
     expect(
       await screen.findByText(/Vous ne trouvez pas votre adresse/)
-    ).toBeInTheDocument()
-  })
-
-  it('should display the address change modal when updating venue address', async () => {
-    await renderForm({ features: ['WIP_ENABLE_OFFER_ADDRESS'] })
-
-    await userEvent.click(
-      screen.getByRole('button', { name: /Vous ne trouvez pas votre adresse/ })
-    )
-
-    const cityField = screen.getByRole('textbox', { name: /Ville/ })
-    const streetField = screen.getByRole('textbox', { name: /Adresse postale/ })
-    const postalCodeField = screen.getByRole('textbox', { name: /Code postal/ })
-    const coordsField = screen.getByRole('textbox', { name: /Coordonnées GPS/ })
-
-    await userEvent.type(cityField, 'Changed city')
-    await userEvent.type(streetField, 'Changed street')
-    await userEvent.type(postalCodeField, '00000')
-    await userEvent.type(coordsField, '49.999, 3.3333')
-
-    await userEvent.click(screen.getByText('Enregistrer'))
-
-    expect(
-      await screen.findByText(
-        /Ce changement d'adresse ne va pas s’appliquer sur vos offres/
-      )
     ).toBeInTheDocument()
   })
 
@@ -246,22 +220,6 @@ describe('VenueSettingsScreen', () => {
       venueTypeCode: 'Théâtre',
       withdrawalDetails:
         "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
-    })
-  })
-  describe('OA feature flag', () => {
-    it('should display the right wording without the OA FF', async () => {
-      await renderForm()
-      expect(
-        screen.getByText(/Si votre lieu est labellisé/)
-      ).toBeInTheDocument()
-    })
-    it('should display the right wording with the OA FF', async () => {
-      await renderForm({
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
-      expect(
-        screen.getByText(/Si votre structure est labellisée/)
-      ).toBeInTheDocument()
     })
   })
 })

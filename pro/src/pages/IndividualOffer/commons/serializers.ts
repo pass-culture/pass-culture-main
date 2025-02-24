@@ -83,22 +83,14 @@ export const serializePatchOffer = ({
   }
 
   let addressValues = {}
-  // Once WIP_ENABLE_OFFER_ADDRESS have been adopted, just remove this condition and place Object address in the lower return
-  //  (address data would always be present in payload)
-  if (
-    sentValues.city &&
-    sentValues.latitude &&
-    sentValues.longitude &&
-    sentValues.postalCode &&
-    sentValues.street
-  ) {
+  if (!offer.isDigital) {
     addressValues = {
       address: {
-        city: removeQuotes(sentValues.city.trim()),
-        latitude: sentValues.latitude,
-        longitude: sentValues.longitude,
-        postalCode: sentValues.postalCode,
-        street: removeQuotes(sentValues.street.trim()),
+        city: removeQuotes(sentValues.city?.trim() ?? ''),
+        latitude: sentValues.latitude ?? '',
+        longitude: sentValues.longitude ?? '',
+        postalCode: sentValues.postalCode ?? '',
+        street: removeQuotes(sentValues.street?.trim() ?? ''),
         label: sentValues.locationLabel,
         isManualEdition: sentValues.manuallySetAddress,
         isVenueAddress:

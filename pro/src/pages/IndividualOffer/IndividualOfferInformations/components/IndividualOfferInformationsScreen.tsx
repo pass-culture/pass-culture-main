@@ -62,7 +62,6 @@ export const IndividualOfferInformationsScreen = ({
   const { mutate } = useSWRConfig()
   const { subCategories, publishedOfferWithSameEAN } =
     useIndividualOfferContext()
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
 
   const [isUpdatesWarningDialogOpen, setIsUpdatesWarningDialogOpen] =
@@ -201,7 +200,6 @@ export const IndividualOfferInformationsScreen = ({
 
   const validationSchema = getValidationSchema({
     subcategories: conditionalFields,
-    isOfferAddressEnabled,
     isDigitalOffer: offer.isDigital,
   })
 

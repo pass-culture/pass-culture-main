@@ -55,7 +55,7 @@ describe('screens | OfferEducational : event address step', () => {
     })
     renderComponent(props)
 
-    const venuesSelect = await screen.findByLabelText('Lieu *')
+    const venuesSelect = await screen.findByLabelText('Structure *')
     await userEvent.selectOptions(venuesSelect, ['43'])
 
     const accessibilityCheckboxes = screen.queryAllByRole('checkbox', {
@@ -82,11 +82,11 @@ describe('screens | OfferEducational : event address step', () => {
 
     renderComponent(props)
 
-    const venuesSelect = await screen.findByLabelText('Lieu *')
+    const venuesSelect = await screen.findByLabelText('Structure *')
     await userEvent.selectOptions(venuesSelect, [firstVenueId.toString()])
 
     const offerVenueSelect = await screen.findByLabelText(
-      'Sélectionner le lieu *'
+      'Sélectionner la structure *'
     )
     expect(offerVenueSelect).toHaveValue(firstVenueId.toString())
 

@@ -5,7 +5,6 @@ import {
   ALL_CATEGORIES_OPTION,
   ALL_OFFERER_ADDRESS_OPTION,
   ALL_STATUS,
-  ALL_VENUES_OPTION,
   CREATION_MODES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
 } from 'commons/core/Offers/constants'
@@ -26,7 +25,6 @@ interface IndividualOffersSearchFiltersProps {
   setSelectedFilters: Dispatch<SetStateAction<SearchFiltersParams>>
   disableAllFilters: boolean
   resetFilters: () => void
-  venues: SelectOption[]
   offererAddresses: SelectOption[]
   categories?: SelectOption[]
 }
@@ -49,11 +47,9 @@ export const IndividualOffersSearchFilters = ({
   setSelectedFilters,
   resetFilters,
   disableAllFilters,
-  venues,
   offererAddresses,
   categories,
 }: IndividualOffersSearchFiltersProps): JSX.Element => {
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const areCollectiveNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
@@ -69,10 +65,6 @@ export const IndividualOffersSearchFilters = ({
 
   const storeNameOrIsbnSearchValue = (event: FormEvent<HTMLInputElement>) => {
     updateSearchFilters({ nameOrIsbn: event.currentTarget.value })
-  }
-
-  const storeSelectedVenue = (event: FormEvent<HTMLSelectElement>) => {
-    updateSearchFilters({ venueId: event.currentTarget.value })
   }
 
   const storeSelectedOfferAddress = (event: FormEvent<HTMLSelectElement>) => {
@@ -157,30 +149,17 @@ export const IndividualOffersSearchFilters = ({
             options={statusFilterOptions}
           />
         </FieldLayout>
-        {isOfferAddressEnabled ? (
-          <FieldLayout label="Localisation" name="address" isOptional>
-            <SelectInput
-              defaultOption={ALL_OFFERER_ADDRESS_OPTION}
-              onChange={storeSelectedOfferAddress}
-              disabled={offererAddresses.length === 0 || disableAllFilters}
-              name="address"
-              options={offererAddresses}
-              data-testid="address-select"
-              value={selectedFilters.offererAddressId}
-            />
-          </FieldLayout>
-        ) : (
-          <FieldLayout label="Lieu" name="lieu" isOptional>
-            <SelectInput
-              defaultOption={ALL_VENUES_OPTION}
-              onChange={storeSelectedVenue}
-              disabled={disableAllFilters}
-              name="lieu"
-              options={venues}
-              value={selectedFilters.venueId}
-            />
-          </FieldLayout>
-        )}
+        <FieldLayout label="Localisation" name="address" isOptional>
+          <SelectInput
+            defaultOption={ALL_OFFERER_ADDRESS_OPTION}
+            onChange={storeSelectedOfferAddress}
+            disabled={offererAddresses.length === 0 || disableAllFilters}
+            name="address"
+            options={offererAddresses}
+            data-testid="address-select"
+            value={selectedFilters.offererAddressId}
+          />
+        </FieldLayout>
         {categories && (
           <FieldLayout label="Catégorie" name="categorie" isOptional>
             <SelectInput

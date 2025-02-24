@@ -40,36 +40,6 @@ describe('Offerers', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display the adresses', () => {
-    renderOfferers({
-      selectedOfferer: {
-        ...defaultGetOffererResponseModel,
-        managedVenues: [
-          {
-            ...defaultGetOffererVenueResponseModel,
-            id: 1,
-            name: 'Ma structure permanente',
-            isPermanent: true,
-          },
-          {
-            ...defaultGetOffererVenueResponseModel,
-            id: 2,
-            name: 'Ma seconde structure',
-            isPermanent: false,
-          },
-        ],
-        isActive: true,
-      },
-    })
-    expect(
-      screen.getByRole('heading', { level: 3, name: /Ma structure permanente/ })
-    ).toBeInTheDocument()
-    expect(screen.getByText('Vos adresses')).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { level: 3, name: /Ma seconde structure/ })
-    ).toBeInTheDocument()
-  })
-
   it('should display venue creation link', () => {
     renderOfferers(
       {
@@ -84,22 +54,19 @@ describe('Offerers', () => {
     )
 
     expect(
-      screen.getByRole('link', { name: 'Ajouter un lieu' })
+      screen.getByRole('link', { name: 'Ajouter une structure' })
     ).toHaveAttribute('href', '/parcours-inscription/structure')
   })
 
   it('should display the new informative modal for offer address', async () => {
-    renderOfferers(
-      {
-        selectedOfferer: {
-          ...defaultGetOffererResponseModel,
-          id: 200,
-          managedVenues: [defaultGetOffererVenueResponseModel],
-          isActive: true,
-        },
+    renderOfferers({
+      selectedOfferer: {
+        ...defaultGetOffererResponseModel,
+        id: 200,
+        managedVenues: [defaultGetOffererVenueResponseModel],
+        isActive: true,
       },
-      { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
-    )
+    })
 
     const addVenueButton = screen.getByRole('button', {
       name: 'Ajouter un lieu',
