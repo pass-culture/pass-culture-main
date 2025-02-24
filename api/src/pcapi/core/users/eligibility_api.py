@@ -3,6 +3,8 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
+from pcapi.core.fraud import models as fraud_models
+from pcapi.core.history import models as history_models
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -254,3 +256,68 @@ def is_18_or_above_eligibility(eligibility: users_models.EligibilityType | None,
         return age >= 18
 
     return False
+
+
+def get_known_birthday_at_date(user: users_models.User, at_date: datetime.date) -> datetime.date | None:
+    """Finds the birth date of the user at the given date, as the app would have known it at that time.
+
+    Args:
+        user (users_models.User): user
+        at_date (datetime.date): date at which to find the presumed birth date
+
+    Returns:
+        datetime.date | None: the birth date of the user at the given date, or None if no birth date is found
+    """
+
+    identity_provider_birthday_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.status == fraud_models.FraudCheckStatus.OK
+        and fraud_check.get_identity_check_birth_date() is not None
+        and fraud_check.dateCreated < at_date
+    ]
+    last_identity_provider_birthday_check = max(
+        identity_provider_birthday_checks, key=lambda check: check.dateCreated, default=None
+    )
+
+    birthday_actions = [
+        action
+        for action in user.action_history
+        if action.actionType == history_models.ActionType.INFO_MODIFIED
+        and action.extraData["modified_info"].get("validatedBirthDate") is not None
+        and action.actionDate < at_date
+    ]
+    last_birthday_action = max(birthday_actions, key=lambda action: action.actionDate, default=None)
+
+    match last_identity_provider_birthday_check, last_birthday_action:
+        case None, None:
+            if user.dateOfBirth is None:
+                return None
+            known_birthday_at_date = user.dateOfBirth.date()
+
+        case check, None:
+            assert check is not None
+            known_birthday_at_date = check.get_identity_check_birth_date()
+
+        case None, action:
+            assert action is not None
+            known_birthday_at_date = datetime.datetime.strptime(
+                action.extraData["modified_info"]["validatedBirthDate"]["new_info"], "%Y-%m-%d"
+            ).date()
+
+        case check, action:
+            assert check is not None
+            assert action is not None
+            if check.dateCreated < action.actionDate:
+                known_birthday_at_date = datetime.datetime.strptime(
+                    action.extraData["modified_info"]["validatedBirthDate"]["new_info"], "%Y-%m-%d"
+                ).date()
+            else:
+                known_birthday_at_date = check.get_identity_check_birth_date()
+
+        case _:
+            raise ValueError(
+                f"unexpected {last_identity_provider_birthday_check = }, {last_birthday_action = } combination for user {user.id =}"
+            )
+
+    return known_birthday_at_date
