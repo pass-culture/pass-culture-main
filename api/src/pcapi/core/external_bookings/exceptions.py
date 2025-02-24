@@ -2,6 +2,10 @@ class ExternalBookingException(Exception):
     pass
 
 
+class ExternalBookingConfigurationException(ExternalBookingException):
+    pass
+
+
 class ExternalBookingTimeoutException(Exception):
     pass
 

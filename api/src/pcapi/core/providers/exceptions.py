@@ -23,11 +23,3 @@ class NoCinemaProviderPivot(VenueProviderException):
 
 class InactiveProvider(VenueProviderException):
     pass
-
-
-class UnknownProvider(VenueProviderException):
-    pass
-
-
-class ShowIdNotFound(VenueProviderException):
-    pass
