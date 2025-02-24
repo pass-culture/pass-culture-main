@@ -77,7 +77,7 @@ class ProductMediationFactory(BaseFactory):
 
     product = factory.SubFactory(ProductFactory)
     uuid = factory.LazyFunction(lambda: str(uuid.uuid4()))
-    imageType = offers_models.TiteliveImageType.RECTO
+    imageType = offers_models.ImageType.RECTO
 
 
 class EventProductFactory(ProductFactory):

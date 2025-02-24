@@ -1676,7 +1676,7 @@ def offer_mediation_link(mediation_id: int, thumb_count: int) -> str | None:
 def product_mediation_link(uuid: str) -> str | None:
     mediation = offers_models.ProductMediation(
         uuid=uuid,
-        imageType=offers_models.TiteliveImageType.RECTO,
+        imageType=offers_models.ImageType.RECTO,
         productId=0,
     )
     return mediation.url
