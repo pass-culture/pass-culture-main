@@ -209,4 +209,20 @@ describe('OffererAuthenticationForm', () => {
     await userEvent.type(publicNameField, 'Public name')
     expect(publicNameField).toHaveValue('Public name')
   })
+
+  it('should render radio buttons to toggle open to public when feature is enabled', async () => {
+    renderOffererAuthenticationForm(
+      {
+        initialValues: initialValues,
+        contextValue: contextValue,
+      },
+      { features: ['WIP_IS_OPEN_TO_PUBLIC'] }
+    )
+
+    const yesRadio = await screen.findByRole('radio', { name: 'Oui' })
+    const noRadio = await screen.findByRole('radio', { name: 'Non' })
+
+    expect(yesRadio).toBeInTheDocument()
+    expect(noRadio).toBeInTheDocument()
+  })
 })

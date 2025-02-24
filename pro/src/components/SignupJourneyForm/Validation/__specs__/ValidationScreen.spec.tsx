@@ -314,6 +314,7 @@ describe('ValidationScreen', () => {
             postalCode: '75001',
           },
           token: 'token',
+          isOpenToPublic: false,
         })
       }
     )

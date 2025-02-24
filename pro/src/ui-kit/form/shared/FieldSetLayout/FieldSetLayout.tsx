@@ -19,6 +19,10 @@ interface FieldSetLayoutProps {
    * or when all fields are mandatory and the form indicates that all fields are mandatory
    */
   hideAsterisk?: boolean
+  /**
+   * Class name for children container
+   */
+  childrenClassName?: string
 }
 
 export const FieldSetLayout = ({
@@ -32,24 +36,32 @@ export const FieldSetLayout = ({
   isOptional = false,
   ariaDescribedBy,
   hideAsterisk = false,
+  childrenClassName,
 }: FieldSetLayoutProps): JSX.Element => {
   const showError = Boolean(error) || !hideFooter
   return (
     <fieldset
       className={cn(styles['fieldset-layout'], className)}
       data-testid={dataTestId}
-      aria-required={!isOptional}
-      aria-describedby={ariaDescribedBy}
+      aria-labelledby="fieldsetlayout-legend"
+      aria-describedby={`fieldsetlayout-error ${ariaDescribedBy}`}
     >
       {legend && (
-        <legend className={styles['fieldset-layout-legend']}>
+        <legend
+          id="fieldsetlayout-legend"
+          className={styles['fieldset-layout-legend']}
+        >
           {legend}
           {!isOptional && !hideAsterisk && ' *'}
         </legend>
       )}
-      <div>{children}</div>
+      <div className={childrenClassName}>{children}</div>
       {showError && (
-        <div className={styles['fieldset-layout-error']}>
+        <div
+          id="fieldsetlayout-error"
+          className={styles['fieldset-layout-error']}
+          aria-live="assertive"
+        >
           {!!error && <FieldError name={name}>{error}</FieldError>}
         </div>
       )}

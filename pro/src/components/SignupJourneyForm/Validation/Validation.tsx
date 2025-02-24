@@ -98,6 +98,7 @@ export const Validation = (): JSX.Element => {
       const token = await getReCaptchaToken('saveNewOnboardingData')
 
       const data: SaveNewOnboardingDataQueryModel = {
+        isOpenToPublic: offerer.isOpenToPublic === 'true',
         publicName: offerer.publicName ?? '',
         siret: offerer.siret.replaceAll(' ', ''),
         venueTypeCode:

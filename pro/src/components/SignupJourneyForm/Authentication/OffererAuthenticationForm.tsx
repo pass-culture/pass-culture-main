@@ -6,6 +6,7 @@ import { AddressSelect } from 'components/Address/Address'
 import { Address } from 'components/Address/types'
 import { AddressManual } from 'components/AddressManual/AddressManual'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { OpenToPublicToggle } from 'components/OpenToPublicToggle/OpenToPublicToggle'
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -25,11 +26,13 @@ export interface OffererAuthenticationFormValues
   'search-addressAutocomplete': string
   coords?: string
   manuallySetAddress?: boolean
+  isOpenToPublic?: string
 }
 
 export const OffererAuthenticationForm = (): JSX.Element => {
   const formik = useFormikContext<OffererAuthenticationFormValues>()
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
 
   const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
     useField('manuallySetAddress')
@@ -76,6 +79,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
             {manuallySetAddress.value && <AddressManual />}
           </>
         )}
+        {isOpenToPublicEnabled && <OpenToPublicToggle />}
       </FormLayout.Row>
     </FormLayout.Section>
   )
