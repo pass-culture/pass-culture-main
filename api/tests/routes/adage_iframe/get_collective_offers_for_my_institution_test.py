@@ -34,9 +34,8 @@ class CollectiveOfferTest:
     # 1. fetch redactor
     # 2. fetch collective offer and related data
     # 3. fetch feature toggle
-    # 4. fetch institutions
-    # 5. fetch the offerVenue's details (Venue)
-    num_queries = 5
+    # 4. fetch the offerVenue's details (Venue)
+    num_queries = 4
 
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_get_collective_offer_for_my_institution_without_feature_toggle(self, eac_client, redactor):

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def serialize_collective_offer(
-    offer: educational_models.CollectiveOffer, is_favorite: bool
+    offer: educational_models.CollectiveOffer,
 ) -> serialize_offers.CollectiveOfferResponseModel:
     offer_venue_id = offer.offerVenue.get("venueId")
     if offer_venue_id:
@@ -20,27 +20,24 @@ def serialize_collective_offer(
     else:
         offer_venue = None
 
-    return serialize_offers.CollectiveOfferResponseModel.build(
-        offer=offer, offerVenue=offer_venue, is_favorite=is_favorite
-    )
+    return serialize_offers.CollectiveOfferResponseModel.build(offer=offer, offerVenue=offer_venue)
 
 
 def serialize_collective_offer_template(
-    offer: educational_models.CollectiveOfferTemplate, is_favorite: bool
+    offer_template: educational_models.CollectiveOfferTemplate, is_favorite: bool
 ) -> serialize_offers.CollectiveOfferTemplateResponseModel:
-    offer_venue_id = offer.offerVenue.get("venueId", None)
+    offer_venue_id = offer_template.offerVenue.get("venueId", None)
     if offer_venue_id:
         offer_venue = get_venue_by_id(offer_venue_id)
     else:
         offer_venue = None
 
     return serialize_offers.CollectiveOfferTemplateResponseModel.build(
-        offer=offer, offerVenue=offer_venue, is_favorite=is_favorite
+        offer=offer_template, offerVenue=offer_venue, is_favorite=is_favorite
     )
 
 
 class FavoritesResponseModel(BaseModel):
-    favoritesOffer: list[serialize_offers.CollectiveOfferResponseModel]
     favoritesTemplate: list[serialize_offers.CollectiveOfferTemplateResponseModel]
 
     class Config:

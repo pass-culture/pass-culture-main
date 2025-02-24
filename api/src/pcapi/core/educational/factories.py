@@ -357,11 +357,7 @@ class DomainToNationalProgramFactory(BaseFactory):
         model = models.DomainToNationalProgram
 
 
-class EducationalRedactorWithFavoriteCollectiveOffer(EducationalRedactorFactory):
-    favoriteCollectiveOffers = factory.List([factory.SubFactory(CollectiveOfferFactory)])
-
-
-class EducationalRedactorWithFavoriteCollectiveOfferTemplate(EducationalRedactorFactory):
+class EducationalRedactorWithFavoriteCollectiveOfferTemplateFactory(EducationalRedactorFactory):
     favoriteCollectiveOfferTemplates = factory.List([factory.SubFactory(CollectiveOfferTemplateFactory)])
 
 

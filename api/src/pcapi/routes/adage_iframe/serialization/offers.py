@@ -185,7 +185,6 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     imageUrl: str | None
     teacher: EducationalRedactorResponseModel | None
     nationalProgram: NationalProgramModel | None
-    isFavorite: bool | None
     formats: typing.Sequence[EacFormat] | None
     isTemplate: bool = False
 
@@ -193,7 +192,6 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     def build(
         cls,
         offer: educational_models.CollectiveOffer,
-        is_favorite: bool,
         offerVenue: offerers_models.Venue | None = None,
     ) -> "CollectiveOfferResponseModel":
         return cls(
@@ -225,7 +223,6 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
             imageUrl=offer.imageUrl,
             teacher=offer.teacher,
             nationalProgram=offer.nationalProgram,
-            isFavorite=is_favorite,
             audioDisabilityCompliant=offer.audioDisabilityCompliant,
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
             motorDisabilityCompliant=offer.motorDisabilityCompliant,

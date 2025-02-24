@@ -77,17 +77,13 @@ def get_collective_offer(
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_NOT_FOUND"}, status_code=404)
 
-    redactor = _get_redactor(authenticated_information)
-    if redactor:
-        is_favorite = offer in redactor.favoriteCollectiveOffers
-    else:
-        is_favorite = False
+    _get_redactor(authenticated_information)
 
     offer_venue = _get_offer_venue(offer)
+
     return serializers.CollectiveOfferResponseModel.build(
         offer=offer,
         offerVenue=offer_venue,
-        is_favorite=is_favorite,
     )
 
 
@@ -239,7 +235,7 @@ def get_collective_offers_for_my_institution(
     if authenticated_information.uai is None:
         raise ApiErrors({"institutionId": "institutionId is required"}, status_code=400)
 
-    redactor = _get_redactor(authenticated_information)
+    _get_redactor(authenticated_information)
 
     offers = [
         offer
@@ -247,13 +243,6 @@ def get_collective_offers_for_my_institution(
         if offer.isBookable
     ]
 
-    current_user_favorite_offers = educational_repository.get_user_favorite_offers_from_uai(
-        redactor_id=redactor.id if redactor else None, uai=authenticated_information.uai
-    )
-
-    serialized_favorite_offers = [
-        serialize_collective_offer(offer=offer, is_favorite=offer.id in current_user_favorite_offers)
-        for offer in offers
-    ]
+    serialized_favorite_offers = [serialize_collective_offer(offer) for offer in offers]
 
     return serializers.ListCollectiveOffersResponseModel(collectiveOffers=serialized_favorite_offers)
