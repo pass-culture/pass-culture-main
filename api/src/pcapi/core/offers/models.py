@@ -128,6 +128,7 @@ class OfferExtraData(typing.TypedDict, total=False):
 
 
 class ImageType(enum.Enum):
+    POSTER = "POSTER"
     RECTO = "recto"
     VERSO = "verso"
 
@@ -204,6 +205,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     def images(self) -> dict[str, str | None]:
         if self.productMediations:
             return {
+                "poster": next((pm.url for pm in self.productMediations if pm.imageType == ImageType.POSTER), None),
                 "recto": next((pm.url for pm in self.productMediations if pm.imageType == ImageType.RECTO), None),
                 "verso": next((pm.url for pm in self.productMediations if pm.imageType == ImageType.VERSO), None),
             }
@@ -941,6 +943,8 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         if product_images is None:
             return None
         images = {}
+        if product_images.get("poster"):
+            images["poster"] = OfferImage(product_images.get("poster"), credit=None)
         if product_images.get("recto"):
             images["recto"] = OfferImage(product_images.get("recto"), credit=None)
         if product_images.get("verso"):
@@ -952,7 +956,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     @property
     def image(self) -> OfferImage | None:
         if self.images:
-            return self.images.get("recto") if self.images.get("recto") else self.images.get("verso")
+            return self.images.get("poster") or self.images.get("recto") or self.images.get("verso")
         return None
 
     @property
