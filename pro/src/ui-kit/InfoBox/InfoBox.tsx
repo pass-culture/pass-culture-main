@@ -32,6 +32,7 @@ interface InfoBoxProps {
    * An optional link to include in the InfoBox.
    */
   link?: InfoBoxLinkProps
+  className?: string
 }
 
 /**
@@ -54,9 +55,9 @@ interface InfoBoxProps {
  * - **Consistent Styling**: Ensure the InfoBox styling maintains a good color contrast ratio for accessibility.
  * - **Icon Usage**: The `ShadowTipsHelpIcon` is used to visually emphasize the content's informative nature. Provide meaningful ARIA labels if needed.
  */
-export const InfoBox = ({ children, link }: InfoBoxProps): JSX.Element => {
+export const InfoBox = ({ children, link, className }: InfoBoxProps): JSX.Element => {
   return (
-    <div className={cn(styles['info-box'])}>
+    <div className={cn(className, styles['info-box'])}>
       <div className={styles['info-box-header']}>
         <div className={cn(styles['info-box-bar'])} />
         <div className={styles['info-box-title']}>

@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import {
   GetEducationalOffererResponseModel,
@@ -8,18 +8,17 @@ import {
 } from 'apiClient/v1'
 import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import {
-  offerInterventionOptions,
-} from 'commons/core/shared/interventionOptions'
+import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { interventionAreaMultiSelect } from 'commons/utils/interventionAreaMultiSelect'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
+import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
-import { MultiSelect } from 'ui-kit/MultiSelect/MultiSelect'
+import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 import {
   EVENT_ADDRESS_OFFERER_LABEL,
@@ -29,7 +28,6 @@ import {
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
   EVENT_ADDRESS_OTHER_LABEL,
   EVENT_ADDRESS_SCHOOL_LABEL,
-  INTERVENTION_AREA_LABEL,
 } from '../../constants/labels'
 import styles from '../OfferEducationalForm.module.scss'
 
@@ -52,20 +50,101 @@ export const FormPracticalInformation = ({
 
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
+  const handleMultiSelectChange = useCallback((selectedOption: Option[], addedOptions: Option[], removedOptions: Option[]) => {
+    const newSelectedOptions = interventionAreaMultiSelect({
+      selectedOption,
+      addedOptions,
+      removedOptions,
+    })
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    setFieldValue('interventionArea', Array.from(newSelectedOptions))
+  }, [setFieldValue])
+
+  const MultiSelectComponent = (
+    <MultiSelect
+      label="Département(s)"
+      name="interventionArea"
+      buttonLabel="Département(s)"
+      options={offerInterventionOptions}
+      selectedOptions={offerInterventionOptions.filter((op) => values.interventionArea.includes(op.id))}
+      defaultOptions={offerInterventionOptions.filter((option) => values.interventionArea.includes(option.id))}
+      disabled={disableForm}
+      hasSearch
+      searchLabel="Rechercher"
+      hasSelectAllOptions
+      onSelectedOptionsChanged={handleMultiSelectChange}
+      onBlur={() => setFieldTouched('interventionArea', true)}
+      showError={touched.interventionArea && !!errors.interventionArea}
+      error={touched.interventionArea && errors.interventionArea ? String(errors.interventionArea) : undefined}
+    />
+  )
+
   const adressTypeRadios = [
     {
       label: isOfferAddressEnabled
         ? EVENT_ADDRESS_VENUE_LABEL
         : EVENT_ADDRESS_OFFERER_LABEL,
       value: OfferAddressType.OFFERER_VENUE,
+      childrenOnChecked: (
+        <FormLayout.Row>
+          <Select
+            disabled={venuesOptions.length === 1 || disableForm}
+            label={
+              isOfferAddressEnabled
+                ? EVENT_ADDRESS_VENUE_SELECT_LABEL
+                : EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL
+            }
+            name="eventAddress.venueId"
+            options={venuesOptions}
+          />
+          {currentVenue && (
+            <div className={styles['educational-form-adress-banner']}>
+              {currentVenue.name}
+              <br />
+              {currentVenue.street}, {currentVenue.postalCode}{' '}
+              {currentVenue.city}
+            </div>
+          )}
+        </FormLayout.Row>
+      ),
     },
     {
       label: EVENT_ADDRESS_SCHOOL_LABEL,
       value: OfferAddressType.SCHOOL,
-    },
+      childrenOnChecked: (
+        <FormLayout.Row
+          sideComponent={
+            <InfoBox className={styles['info-box-children']}>
+              La zone de mobilité permet d’indiquer aux enseignants sur ADAGE où
+              vous pouvez vous déplacer en France.
+            </InfoBox>
+          }
+        >
+        {MultiSelectComponent}
+        </FormLayout.Row>
+    )},
     {
       label: EVENT_ADDRESS_OTHER_LABEL,
       value: OfferAddressType.OTHER,
+      childrenOnChecked: (
+        <FormLayout.Row
+          sideComponent={
+            <InfoBox className={styles['info-box-children']}>
+              La zone de mobilité permet d’indiquer aux enseignants sur ADAGE où
+              vous pouvez vous déplacer en France.
+            </InfoBox>
+          }
+        >
+          {MultiSelectComponent}
+          <TextArea
+            label={EVENT_ADDRESS_OTHER_ADDRESS_LABEL}
+            maxLength={200}
+            name="eventAddress.otherAddress"
+            disabled={disableForm}
+            className={styles['event-other-address']}
+          />
+        </FormLayout.Row>
+      ),
     },
   ]
 
@@ -143,90 +222,10 @@ export const FormPracticalInformation = ({
           group={adressTypeRadios}
           legend="Adresse où se déroulera l’évènement : *"
           name="eventAddress.addressType"
+          variant={RadioVariant.BOX}
           disabled={disableForm}
         />
       </FormLayout.Row>
-
-      {values.eventAddress.addressType === OfferAddressType.OFFERER_VENUE && (
-        <FormLayout.Row>
-          <Select
-            disabled={venuesOptions.length === 1 || disableForm}
-            label={
-              isOfferAddressEnabled
-                ? EVENT_ADDRESS_VENUE_SELECT_LABEL
-                : EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL
-            }
-            name="eventAddress.venueId"
-            options={venuesOptions}
-          />
-          {currentVenue && (
-            <div className={styles['educational-form-adress-banner']}>
-              {currentVenue.name}
-              <br />
-              {currentVenue.street}, {currentVenue.postalCode}{' '}
-              {currentVenue.city}
-            </div>
-          )}
-        </FormLayout.Row>
-      )}
-      {values.eventAddress.addressType !== OfferAddressType.OFFERER_VENUE && (
-        <FormLayout.Row
-          sideComponent={
-            <InfoBox>
-              La zone de mobilité permet d’indiquer aux enseignants sur ADAGE où
-              vous pouvez vous déplacer en France.
-            </InfoBox>
-          }
-        >
-          <MultiSelect
-            label={INTERVENTION_AREA_LABEL}
-            name="interventionArea"
-            buttonLabel="Département(s)"
-            options={offerInterventionOptions}
-            selectedOptions={offerInterventionOptions.filter((op) =>
-              values.interventionArea.includes(op.id)
-            )}
-            defaultOptions={offerInterventionOptions.filter((option) =>
-              values.interventionArea.includes(option.id)
-            )}
-            disabled={disableForm}
-            hasSearch
-            searchLabel="Rechercher"
-            hasSelectAllOptions
-            onSelectedOptionsChanged={(
-              selectedOption,
-              addedOptions,
-              removedOptions
-            ) => {
-              const newSelectedOptions = interventionAreaMultiSelect({
-                selectedOption,
-                addedOptions,
-                removedOptions,
-              })
-
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              setFieldValue('interventionArea', Array.from(newSelectedOptions))
-            }}
-            onBlur={() => setFieldTouched('interventionArea', true)}
-            showError={touched.interventionArea && !!errors.formats}
-            error={
-              touched.interventionArea && errors.interventionArea
-                ? String(errors.interventionArea)
-                : undefined
-            }
-          />
-        </FormLayout.Row>
-      )}
-      {values.eventAddress.addressType === OfferAddressType.OTHER && (
-        <FormLayout.Row>
-          <TextArea
-            label={EVENT_ADDRESS_OTHER_ADDRESS_LABEL}
-            maxLength={200}
-            name="eventAddress.otherAddress"
-            disabled={disableForm}
-          />
-        </FormLayout.Row>
-      )}
     </FormLayout.Section>
   )
 }

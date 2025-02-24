@@ -2,12 +2,12 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .info-box {
+  @include fonts.body-accent;
+
   &-header {
     display: flex;
     align-items: center;
     margin-bottom: rem.torem(4px);
-
-    @include fonts.body-accent;
   }
 
   &-bar {
@@ -29,7 +29,6 @@
   &-title {
     @include fonts.body-accent-xs;
 
-    background-color: var(--color-white);
     color: var(--color-secondary-light);
     display: flex;
     align-items: center;

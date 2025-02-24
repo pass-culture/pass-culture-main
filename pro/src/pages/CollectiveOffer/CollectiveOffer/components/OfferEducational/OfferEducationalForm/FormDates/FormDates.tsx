@@ -62,41 +62,44 @@ export const FormDates = ({
           {
             label: 'À une date ou une période précise',
             value: 'specific_dates',
+            childrenOnChecked: (
+              <>
+                <Callout
+                  variant={CalloutVariant.INFO}
+                  className={styles.banner}
+                >
+                  {`Votre offre sera ${deactivateWording} automatiquement à l’issue des dates
+            précisées ci-dessous.`}
+                </Callout>
+                <FormLayout.Row className={styles['row-container']}>
+                  <DatePicker
+                    name="beginningDate"
+                    label="Date de début"
+                    disabled={disableForm}
+                    minDate={minBeginningDate}
+                    onChange={handleBeginningDateChange}
+                  />
+                  <DatePicker
+                    name="endingDate"
+                    label="Date de fin"
+                    disabled={disableForm}
+                    minDate={minDateForEndingDate}
+                  />
+                  <TimePicker
+                    name="hour"
+                    label="Horaire"
+                    disabled={disableForm}
+                    isOptional
+                  />
+                </FormLayout.Row>
+              </>
+            ),
           },
         ]}
         variant={RadioVariant.BOX}
         describedBy={subtitleId}
         name="datesType"
       />
-      {values.datesType === 'specific_dates' && (
-        <>
-          <Callout variant={CalloutVariant.INFO} className={styles.banner}>
-            {`Votre offre sera ${deactivateWording} automatiquement à l’issue des dates
-            précisées ci-dessous.`}
-          </Callout>
-          <FormLayout.Row className={styles['row-container']}>
-            <DatePicker
-              name="beginningDate"
-              label="Date de début"
-              disabled={disableForm}
-              minDate={minBeginningDate}
-              onChange={handleBeginningDateChange}
-            />
-            <DatePicker
-              name="endingDate"
-              label="Date de fin"
-              disabled={disableForm}
-              minDate={minDateForEndingDate}
-            />
-            <TimePicker
-              name="hour"
-              label="Horaire"
-              disabled={disableForm}
-              isOptional
-            />
-          </FormLayout.Row>
-        </>
-      )}
     </div>
   )
 }
