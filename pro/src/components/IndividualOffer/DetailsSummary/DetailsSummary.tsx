@@ -6,7 +6,6 @@ import { GET_MUSIC_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OfferAppPreview } from 'components/OfferAppPreview/OfferAppPreview'
@@ -37,7 +36,6 @@ type DetailsSummaryScreenProps = {
 export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
@@ -57,6 +55,10 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
   const conditionalFields = subcategory?.conditionalFields || []
 
   const aboutDescriptions: Description[] = [
+    {
+      title: 'Structure',
+      text: offerData.venuePublicName || offerData.venueName,
+    },
     { title: 'Titre de l’offre', text: offerData.name },
     { title: 'Description', text: offerData.description },
   ].concat(
@@ -67,11 +69,6 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
         }
       : []
   )
-  const venueName = offerData.venuePublicName || offerData.venueName
-  aboutDescriptions.unshift({
-    title: isOfferAddressEnabled ? 'Structure' : 'Lieu',
-    text: venueName,
-  })
 
   const typeDescriptions: Description[] = [
     { title: 'Catégorie', text: offerData.categoryName },

@@ -1,6 +1,5 @@
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { OffersTable } from 'components/OffersTable/OffersTable'
 import { OffersTableHead } from 'components/OffersTable/OffersTableHead/OffersTableHead'
 import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
@@ -46,8 +45,6 @@ export const IndividualOffersTable = ({
   isAtLeastOneOfferChecked,
   selectedFilters,
 }: IndividualOffersTableProps) => {
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
   const onPreviousPageClick = () =>
     applySelectedFiltersAndRedirect(
       { ...selectedFilters, page: currentPageNumber - 1 },
@@ -84,9 +81,7 @@ export const IndividualOffersTable = ({
         toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
         columns={[
           CELLS_DEFINITIONS.NAME,
-          isOfferAddressEnabled
-            ? CELLS_DEFINITIONS.ADDRESS
-            : CELLS_DEFINITIONS.VENUE,
+          CELLS_DEFINITIONS.ADDRESS,
           CELLS_DEFINITIONS.STOCKS,
           CELLS_DEFINITIONS.STATUS,
         ]}

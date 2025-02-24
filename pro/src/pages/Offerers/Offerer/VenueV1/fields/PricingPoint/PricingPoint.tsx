@@ -7,7 +7,6 @@ import { api } from 'apiClient/api'
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -27,8 +26,6 @@ export interface PricingPointProps {
 }
 
 export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
   const [canSubmit, setCanSubmit] = useState(true)
   const [isInputDisabled, setIsInputDisabled] = useState(false)
   const [isConfirmSiretDialogOpen, setIsConfirmSiretDialogOpen] =
@@ -64,7 +61,7 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
   const pricingPointOptions: SelectOption[] = [
     {
       value: '',
-      label: `Sélectionner ${isOfferAddressEnabled ? 'une structure' : 'un lieu'} dans la liste`,
+      label: 'Sélectionner une structure dans la liste',
     },
   ]
 
@@ -84,19 +81,17 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
           links={[
             {
               href: `https://aide.passculture.app/hc/fr/articles/4413973462929--Acteurs-Culturels-Comment-rattacher-mes-points-de-remboursement-et-mes-coordonn%C3%A9es-bancaires-%C3%A0-un-SIRET-de-r%C3%A9f%C3%A9rence-`,
-              label: `Comment ajouter vos coordonnées bancaires sur ${isOfferAddressEnabled ? 'une structure' : 'un lieu'} sans SIRET ?`,
+              label: `Comment ajouter vos coordonnées bancaires sur une structure sans SIRET ?`,
               isExternal: true,
             },
           ]}
           className={`${styles['desk-callout']}`}
         >
-          Si vous souhaitez vous faire rembourser les offres de votre{' '}
-          {isOfferAddressEnabled ? 'structure' : 'lieu'} sans SIRET, vous devez
-          sélectionner {isOfferAddressEnabled ? 'une structure' : 'un lieu'}{' '}
-          avec SIRET dans votre {isOfferAddressEnabled ? 'entité' : 'structure'}{' '}
-          afin de permettre le calcul de votre barème de remboursement.
-          Attention, vous ne pourrez plus modifier votre sélection après
-          validation.
+          Si vous souhaitez vous faire rembourser les offres de votre structure
+          sans SIRET, vous devez sélectionner une structure avec SIRET dans
+          votre entité afin de permettre le calcul de votre barème de
+          remboursement. Attention, vous ne pourrez plus modifier votre
+          sélection après validation.
         </Callout>
       )}
 
@@ -109,16 +104,13 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
         onConfirm={handleClick}
         icon={strokeValidIcon}
         title="Êtes-vous sûr de vouloir sélectionner"
-        secondTitle={`${isOfferAddressEnabled ? 'cette structure' : 'ce lieu'} avec SIRET\u00a0?`}
+        secondTitle={`cette structure avec SIRET\u00a0?`}
         isLoading={isSubmitingPricingPoint}
         open={isConfirmSiretDialogOpen}
       >
         <p className={styles['text-dialog']}>
-          Vous avez sélectionné{' '}
-          {isOfferAddressEnabled
-            ? 'une structure avec SIRET qui sera utilisée'
-            : 'un lieu avec SIRET qui sera utilisé'}{' '}
-          pour le calcul de vos remboursements
+          Vous avez sélectionné une structure avec SIRET qui sera utilisée pour
+          le calcul de vos remboursements
           <br />
           Ce choix ne pourra pas être modifié.
         </p>
@@ -136,8 +128,7 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
           <span className={styles['text-hightlight']}>
             Sélectionner et valider{' '}
           </span>
-          ci-dessous {isOfferAddressEnabled ? 'la structure' : 'le lieu'} avec
-          SIRET :
+          ci-dessous la structure avec SIRET :
         </p>
       )}
 
@@ -149,7 +140,7 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
             name="venueSiret"
             data-testid={'pricingPointSelect'}
             onChange={formik.handleChange}
-            label={`${isOfferAddressEnabled ? 'Structure avec SIRET utilisée' : 'Lieu avec SIRET utilisé'} pour le calcul de votre barème de remboursement`}
+            label="Structure avec SIRET utilisée pour le calcul de votre barème de remboursement"
             options={pricingPointOptions}
           />
         </div>

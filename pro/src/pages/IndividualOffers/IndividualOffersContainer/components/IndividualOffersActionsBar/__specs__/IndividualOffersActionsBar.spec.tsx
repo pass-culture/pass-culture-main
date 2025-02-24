@@ -412,9 +412,7 @@ describe('ActionsBar', () => {
         defaultUseLocationValue
       )
       props.areAllOffersSelected = true
-      renderActionsBar(props, {
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
+      renderActionsBar(props)
 
       const expectedBody = {
         categoryId: null,

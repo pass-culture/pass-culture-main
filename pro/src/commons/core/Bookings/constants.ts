@@ -37,11 +37,6 @@ export const DEFAULT_PRE_FILTERS = {
   offerId: undefined,
 }
 
-export const ALL_VENUES_OPTION: SelectOption = {
-  label: 'Tous les lieux',
-  value: ALL_VENUES,
-}
-
 export const ALL_STRUCTURES_OPTION: SelectOption = {
   label: 'Toutes les structures',
   value: ALL_STRUCTURES,

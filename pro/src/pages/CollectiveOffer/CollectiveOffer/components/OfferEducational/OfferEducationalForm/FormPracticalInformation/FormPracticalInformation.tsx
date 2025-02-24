@@ -10,7 +10,6 @@ import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
 import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { interventionAreaMultiSelect } from 'commons/utils/interventionAreaMultiSelect'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
@@ -21,9 +20,7 @@ import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 import {
-  EVENT_ADDRESS_OFFERER_LABEL,
   EVENT_ADDRESS_VENUE_LABEL,
-  EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL,
   EVENT_ADDRESS_VENUE_SELECT_LABEL,
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
   EVENT_ADDRESS_OTHER_LABEL,
@@ -47,8 +44,6 @@ export const FormPracticalInformation = ({
 
   const [currentVenue, setCurrentVenue] =
     useState<GetEducationalOffererVenueResponseModel | null>(null)
-
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const handleMultiSelectChange = useCallback(
     (
@@ -95,19 +90,13 @@ export const FormPracticalInformation = ({
 
   const adressTypeRadios = [
     {
-      label: isOfferAddressEnabled
-        ? EVENT_ADDRESS_VENUE_LABEL
-        : EVENT_ADDRESS_OFFERER_LABEL,
+      label: EVENT_ADDRESS_VENUE_LABEL,
       value: OfferAddressType.OFFERER_VENUE,
       childrenOnChecked: (
         <FormLayout.Row>
           <Select
             disabled={venuesOptions.length === 1 || disableForm}
-            label={
-              isOfferAddressEnabled
-                ? EVENT_ADDRESS_VENUE_SELECT_LABEL
-                : EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL
-            }
+            label={EVENT_ADDRESS_VENUE_SELECT_LABEL}
             name="eventAddress.venueId"
             options={venuesOptions}
           />

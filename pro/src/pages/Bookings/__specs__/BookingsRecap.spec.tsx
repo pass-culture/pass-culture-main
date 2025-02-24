@@ -1,11 +1,13 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
+import { GetOffererAddressResponseModel } from 'apiClient/v1'
 import { ApiError } from 'apiClient/v2'
 import { ApiRequestOptions } from 'apiClient/v2/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v2/core/ApiResult'
 import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
+import { ALL_OFFERER_ADDRESS_OPTION } from 'commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { RootState } from 'commons/store/rootReducer'
 import {
@@ -16,7 +18,11 @@ import {
   bookingRecapFactory,
   venueListItemFactory,
 } from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory, currentOffererFactory } from 'commons/utils/factories/storeFactories'
+import { offererAddressFactory } from 'commons/utils/factories/offererAddressFactories'
+import {
+  sharedCurrentUserFactory,
+  currentOffererFactory,
+} from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 
@@ -29,6 +35,7 @@ vi.mock('apiClient/api', () => ({
     getVenues: vi.fn(),
     getUserHasBookings: vi.fn(),
     getBookingsCsv: vi.fn(),
+    getOffererAddresses: vi.fn(),
   },
 }))
 
@@ -41,22 +48,30 @@ vi.mock('commons/utils/date', async () => {
 
 const NTH_ARGUMENT_GET_BOOKINGS = {
   page: 1,
-  venueId: 3,
   eventDate: 5,
   bookingBeginningDate: 7,
   bookingEndingDate: 8,
+  offererAddressId: 9,
 }
 
 const user = sharedCurrentUserFactory()
-const venue = venueListItemFactory()
 
-const renderBookingsRecap = (overrides?: Partial<RootState>) => {
+const renderBookingsRecap = (
+  overrides: Partial<RootState> = {
+    user: { currentUser: user },
+    offerer: currentOffererFactory(),
+  }
+) => {
   return renderWithProviders(
     <>
       <Bookings />
       <Notification />
     </>,
-    { initialRouterEntries: ['/reservations'], user, storeOverrides: overrides}
+    {
+      initialRouterEntries: ['/reservations'],
+      user,
+      storeOverrides: overrides,
+    }
   )
 }
 
@@ -64,7 +79,23 @@ const waitForCompleteLoading = async () => {
   await waitFor(() =>
     expect(screen.getByRole('button', { name: 'Afficher' })).not.toBeDisabled()
   )
+
+  await waitFor(() => {
+    expect(
+      within(screen.getByLabelText('Localisation')).getAllByRole('option')
+        .length
+    ).toBe(3)
+  })
 }
+
+const offererAddress: GetOffererAddressResponseModel[] = [
+  offererAddressFactory({
+    label: 'Label',
+  }),
+  offererAddressFactory({
+    city: 'New York',
+  }),
+]
 
 describe('components | BookingsRecap | Pro user', () => {
   beforeEach(() => {
@@ -76,8 +107,11 @@ describe('components | BookingsRecap | Pro user', () => {
     }
     vi.spyOn(api, 'getBookingsPro').mockResolvedValue(emptyBookingsRecapPage)
     vi.spyOn(api, 'getProfile').mockResolvedValue(user)
-    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [venue] })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [venueListItemFactory()],
+    })
     vi.spyOn(api, 'getUserHasBookings').mockResolvedValue({ hasBookings: true })
+    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
   })
 
   it('should show a pre-filter section', async () => {
@@ -85,7 +119,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await waitForCompleteLoading()
 
     const eventDateFilter = screen.getByLabelText('Date de l’évènement')
-    const eventVenueFilter = screen.getByLabelText('Lieu')
+    const eventVenueFilter = screen.getByLabelText('Localisation')
     const eventBookingPeriodFilter = screen.getByText('Période de réservation')
     expect(eventDateFilter).toBeInTheDocument()
     expect(eventVenueFilter).toBeInTheDocument()
@@ -119,15 +153,17 @@ describe('components | BookingsRecap | Pro user', () => {
     await waitForCompleteLoading()
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
-      venue.id.toString()
+      screen.getByLabelText('Localisation'),
+      offererAddress[0].id.toString()
     )
     await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
-      spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
-    ).toBe(venue.id.toString())
+      spyGetBookingsPro.mock.calls[0][
+        NTH_ARGUMENT_GET_BOOKINGS.offererAddressId - 1
+      ]
+    ).toBe(offererAddress[0].id.toString())
   })
 
   it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
@@ -159,8 +195,8 @@ describe('components | BookingsRecap | Pro user', () => {
     await waitForCompleteLoading()
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
-      venue.id.toString()
+      screen.getByLabelText('Localisation'),
+      offererAddress[0].id.toString()
     )
     await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
@@ -169,7 +205,7 @@ describe('components | BookingsRecap | Pro user', () => {
     )
     await userEvent.click(resetButton)
 
-    expect(screen.getByLabelText('Lieu')).toHaveValue(
+    expect(screen.getByLabelText('Localisation')).toHaveValue(
       DEFAULT_PRE_FILTERS.offerVenueId
     )
   })
@@ -204,8 +240,8 @@ describe('components | BookingsRecap | Pro user', () => {
     await waitForCompleteLoading()
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
-      venue.id.toString()
+      screen.getByLabelText('Localisation'),
+      offererAddress[0].id.toString()
     )
     const beginningPeriodInput = screen.getByLabelText('Début de la période')
     const endingPeriodInput = screen.getByLabelText('Fin de la période')
@@ -219,7 +255,7 @@ describe('components | BookingsRecap | Pro user', () => {
     const resetButton = await screen.findByText('Réinitialiser les filtres')
     await userEvent.click(resetButton)
 
-    expect(screen.getByLabelText('Lieu')).toHaveValue(
+    expect(screen.getByLabelText('Localisation')).toHaveValue(
       DEFAULT_PRE_FILTERS.offerVenueId
     )
 
@@ -241,21 +277,24 @@ describe('components | BookingsRecap | Pro user', () => {
     await waitForCompleteLoading()
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
-      venue.id.toString()
+      screen.getByLabelText('Localisation'),
+      offererAddress[0].id.toString()
     )
     await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     const resetButton = await screen.findByText('Réinitialiser les filtres')
     await userEvent.click(resetButton)
 
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: 'Réinitialiser les filtres' })
+      ).toBeDisabled()
+    })
     expect(
-      screen.getByRole('button', { name: 'Réinitialiser les filtres' })
-    ).toBeDisabled()
-    const choosePreFiltersMessage = await screen.findByText(
-      'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
-    )
-    expect(choosePreFiltersMessage).toBeInTheDocument()
+      screen.queryByText(
+        'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
+      )
+    ).toBeInTheDocument()
   })
 
   it('should have a CSV download button', async () => {
@@ -280,7 +319,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     expect(api.getBookingsCsv).toHaveBeenCalledWith(
       1,
-      null,
+      1,
       null,
       null,
       null,
@@ -334,8 +373,8 @@ describe('components | BookingsRecap | Pro user', () => {
     await waitForCompleteLoading()
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
-      venue.id.toString()
+      screen.getByLabelText('Localisation'),
+      offererAddress[0].id.toString()
     )
     await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
@@ -350,14 +389,18 @@ describe('components | BookingsRecap | Pro user', () => {
       spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.page - 1]
     ).toBe(1)
     expect(
-      spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
-    ).toBe(venue.id.toString())
+      spyGetBookingsPro.mock.calls[0][
+        NTH_ARGUMENT_GET_BOOKINGS.offererAddressId - 1
+      ]
+    ).toBe(offererAddress[0].id.toString())
     expect(
       spyGetBookingsPro.mock.calls[1][NTH_ARGUMENT_GET_BOOKINGS.page - 1]
     ).toBe(2)
     expect(
-      spyGetBookingsPro.mock.calls[1][NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
-    ).toBe(venue.id.toString())
+      spyGetBookingsPro.mock.calls[1][
+        NTH_ARGUMENT_GET_BOOKINGS.offererAddressId - 1
+      ]
+    ).toBe(offererAddress[0].id.toString())
   })
 
   it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
@@ -489,10 +532,6 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should reset bookings recap list when applying filters', async () => {
     const booking = bookingRecapFactory()
     const otherVenueBooking = bookingRecapFactory()
-    const otherVenue = venueListItemFactory()
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
-      venues: [venue, otherVenue],
-    })
     const paginatedBookingRecapReturned = {
       page: 1,
       pages: 1,
@@ -513,15 +552,15 @@ describe('components | BookingsRecap | Pro user', () => {
     await waitForCompleteLoading()
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
-      otherVenue.id.toString()
+      screen.getByLabelText('Localisation'),
+      offererAddress[0].id.toString()
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
-      venue.id.toString()
+      screen.getByLabelText('Localisation'),
+      ALL_OFFERER_ADDRESS_OPTION.label
     )
     await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
@@ -544,8 +583,8 @@ describe('components | BookingsRecap | Pro user', () => {
     await waitForCompleteLoading()
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
-      venue.id.toString()
+      screen.getByLabelText('Localisation'),
+      offererAddress[0].id.toString()
     )
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 
@@ -568,8 +607,8 @@ describe('components | BookingsRecap | Pro user', () => {
     await waitForCompleteLoading()
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
-      venue.id.toString()
+      screen.getByLabelText('Localisation'),
+      offererAddress[0].id.toString()
     )
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 
@@ -587,8 +626,8 @@ describe('components | BookingsRecap | Pro user', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
-      venue.publicName ?? venue.name
+      screen.getByLabelText('Localisation'),
+      '1 Rue de paris 75001 New York'
     )
 
     const informationalMessage = await screen.findByTestId(
@@ -602,13 +641,13 @@ describe('components | BookingsRecap | Pro user', () => {
     await waitForCompleteLoading()
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
-      venue.publicName ?? venue.name
+      screen.getByLabelText('Localisation'),
+      '1 Rue de paris 75001 New York'
     )
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
-      screen.getByText('Tous les lieux')
+      screen.getByLabelText('Localisation'),
+      screen.getByText(ALL_OFFERER_ADDRESS_OPTION.label)
     )
 
     const informationalMessage = screen.queryByText(
@@ -622,8 +661,8 @@ describe('components | BookingsRecap | Pro user', () => {
     await waitForCompleteLoading()
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
-      venue.publicName ?? venue.name
+      screen.getByLabelText('Localisation'),
+      '1 Rue de paris 75001 New York'
     )
 
     const informationalMessage = screen.queryByText(
@@ -654,7 +693,9 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should fetch API for CSV using selectedOffererId', async () => {
-    renderBookingsRecap({offerer: currentOffererFactory({selectedOffererId: 42})})
+    renderBookingsRecap({
+      offerer: currentOffererFactory({ selectedOffererId: 42 }),
+    })
     await waitForCompleteLoading()
 
     // submit utils method wait for button to become disabled then enabled.
@@ -676,5 +717,4 @@ describe('components | BookingsRecap | Pro user', () => {
       null
     )
   })
-
 })

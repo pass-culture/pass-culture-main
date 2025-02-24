@@ -170,7 +170,6 @@ describe('Summary', () => {
 
     expect(screen.getByText(categories[0].proLabel)).toBeInTheDocument()
     expect(screen.getByText(subCategories[0].proLabel)).toBeInTheDocument()
-    expect(screen.getByText('ma venue (nom public)')).toBeInTheDocument()
     expect(screen.getByText('détails de retrait')).toBeInTheDocument()
     expect(screen.getByText('Non accessible')).toBeInTheDocument()
     expect(screen.getByText('booking@example.com')).toBeInTheDocument()
@@ -184,6 +183,29 @@ describe('Summary', () => {
     await expectOfferFields()
     expect(screen.getByText('Retour à la liste des offres')).toBeInTheDocument()
     expect(screen.getByText('Visualiser dans l’app')).toBeInTheDocument()
+  })
+
+  it('should render public name if available', async () => {
+    renderSummary(customContext)
+
+    await expectOfferFields()
+    expect(screen.getByText('ma venue (nom public)')).toBeInTheDocument()
+  })
+
+  it('should render name if no public name available', async () => {
+    renderSummary({
+      ...customContext,
+      offer: getIndividualOfferFactory({
+        ...customContext.offer,
+        venue: getOfferVenueFactory({
+          name: 'ma venue (name)',
+          publicName: null,
+        }),
+      }),
+    })
+
+    await expectOfferFields()
+    expect(screen.getByText('ma venue (name)')).toBeInTheDocument()
   })
 
   describe('On Creation', () => {
@@ -638,8 +660,7 @@ describe('Summary', () => {
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
-        ),
-        { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
+        )
       )
 
       expect(await screen.findByText(/Structure/)).toBeInTheDocument()
@@ -677,8 +698,7 @@ describe('Summary', () => {
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
-        ),
-        { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
+        )
       )
 
       expect(await screen.findByText(/Structure/)).toBeInTheDocument()

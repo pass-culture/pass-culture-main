@@ -86,7 +86,7 @@ describe('CollectiveDmsTimeline', () => {
       },
       hasAdageId: true,
       expectedLabel:
-        'Votre lieu a été référencé dans ADAGE par les équipes du Ministère de l’Education Nationale',
+        'Votre structure a été référencée dans ADAGE par les équipes du Ministère de l’Education Nationale',
     },
     {
       collectiveDmsApplication: {
@@ -151,68 +151,6 @@ describe('CollectiveDmsTimeline', () => {
       })
     }
   )
-
-  describe('should replace "lieu" by "structure" if WIP_ENABLE_OFFER_ADDRESS is enabled', () => {
-    let props: CollectiveDmsTimelineProps = {
-      collectiveDmsApplication: {
-        ...defaultDMSApplicationForEAC,
-      },
-    }
-
-    afterEach(() => {
-      props = {
-        collectiveDmsApplication: {
-          ...defaultDMSApplicationForEAC,
-        },
-      }
-    })
-
-    it('should display awaiting Adage step', () => {
-      props.collectiveDmsApplication.state = DMSApplicationstatus.ACCEPTE
-      props.hasAdageId = false
-
-      renderCollectiveDmsTimeline(props, {
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
-
-      expect(
-        screen.getByText(/Votre structure doit encore être référencée/)
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(/Votre structure est en cours d’ajout dans ADAGE/)
-      ).toBeInTheDocument()
-    })
-
-    it('should display success Adage step', () => {
-      props.collectiveDmsApplication.state = DMSApplicationstatus.ACCEPTE
-      props.hasAdageId = true
-      props.hasAdageIdForMoreThan30Days = false
-
-      renderCollectiveDmsTimeline(props, {
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
-
-      expect(
-        screen.getByText(/Votre structure doit encore être référencée/)
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(/Votre structure a été référencée/)
-      ).toBeInTheDocument()
-    })
-
-    it('should display disabled Adage step', () => {
-      props.collectiveDmsApplication.state =
-        DMSApplicationstatus.EN_CONSTRUCTION
-
-      renderCollectiveDmsTimeline(props, {
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
-
-      expect(
-        screen.getByText(/Votre structure a été ajoutée dans ADAGE/)
-      ).toBeInTheDocument()
-    })
-  })
 
   it('should display dates for status', () => {
     const collectiveDmsApplication = {

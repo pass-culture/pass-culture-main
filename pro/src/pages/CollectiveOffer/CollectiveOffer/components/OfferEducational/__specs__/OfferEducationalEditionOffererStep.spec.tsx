@@ -74,7 +74,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     })
     expect(offerTypeTitle).toBeInTheDocument()
 
-    const venueSelect = await screen.findByLabelText('Lieu *')
+    const venueSelect = await screen.findByLabelText('Structure *')
 
     expect(venueSelect).toBeInTheDocument()
     expect(venueSelect).toHaveValue(thirdVenueId.toString())
@@ -106,7 +106,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     }
     renderComponent(props)
 
-    const venueSelect = await screen.findByLabelText('Lieu *')
+    const venueSelect = await screen.findByLabelText('Structure *')
 
     expect(venueSelect).toBeInTheDocument()
     expect(venueSelect).toHaveValue(thirdVenueId.toString())

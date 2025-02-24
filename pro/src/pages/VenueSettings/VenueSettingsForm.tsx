@@ -8,7 +8,6 @@ import {
   VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { resetAddressFields } from 'commons/utils/resetAddressFields'
 import { AddressSelect } from 'components/Address/Address'
 import { AddressManual } from 'components/AddressManual/AddressManual'
@@ -55,8 +54,6 @@ export const VenueSettingsForm = ({
 
   const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
     useField('manuallySetAddress')
-
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const toggleManuallySetAddress = async () => {
     const isAddressManual = !manuallySetAddress.value
@@ -109,26 +106,24 @@ export const VenueSettingsForm = ({
                 <AddressSelect disabled={manuallySetAddress.value} />
               </FormLayout.Row>
 
-              {isOfferAddressEnabled && (
-                <>
-                  <FormLayout.Row>
-                    <Button
-                      variant={ButtonVariant.QUATERNARY}
-                      icon={
-                        manuallySetAddress.value ? fullBackIcon : fullNextIcon
-                      }
-                      onClick={toggleManuallySetAddress}
-                    >
-                      {manuallySetAddress.value ? (
-                        <>Revenir à la sélection automatique</>
-                      ) : (
-                        <>Vous ne trouvez pas votre adresse ?</>
-                      )}
-                    </Button>
-                  </FormLayout.Row>
-                  {manuallySetAddress.value && <AddressManual />}
-                </>
-              )}
+              <>
+                <FormLayout.Row>
+                  <Button
+                    variant={ButtonVariant.QUATERNARY}
+                    icon={
+                      manuallySetAddress.value ? fullBackIcon : fullNextIcon
+                    }
+                    onClick={toggleManuallySetAddress}
+                  >
+                    {manuallySetAddress.value ? (
+                      <>Revenir à la sélection automatique</>
+                    ) : (
+                      <>Vous ne trouvez pas votre adresse ?</>
+                    )}
+                  </Button>
+                </FormLayout.Row>
+                {manuallySetAddress.value && <AddressManual />}
+              </>
             </>
           )}
         </FormLayout.Section>
@@ -155,7 +150,7 @@ export const VenueSettingsForm = ({
                 options={[
                   {
                     value: '',
-                    label: `Si votre ${isOfferAddressEnabled ? 'structure est labellisée' : 'lieu est labellisé'}  précisez-le en le sélectionnant`,
+                    label: `Si votre structure est labellisée précisez-le en le sélectionnant`,
                   },
                   ...venueLabels,
                 ]}

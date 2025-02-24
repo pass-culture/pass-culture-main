@@ -3,7 +3,6 @@ import {
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
 } from 'apiClient/adage'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types'
 
 import { getInterventionAreaLabelsToDisplay } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
@@ -42,8 +41,6 @@ function getLocationForOfferVenue(
 export const AdageOfferInfoSection = ({
   offer,
 }: AdageOfferInfoSectionProps) => {
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
   const offerVenue = offer.offerVenue
 
   const location = getLocationForOfferVenue(offerVenue)
@@ -56,9 +53,7 @@ export const AdageOfferInfoSection = ({
     <>
       <div className={styles['offer-section-group-item-description']}>
         <h3 className={styles['offer-section-group-item-subtitle']}>
-          {isOfferAddressEnabled
-            ? 'Localisation de l’offre'
-            : 'Lieu où se déroulera l’offre'}
+          Localisation de l’offre
         </h3>
         {location}
       </div>

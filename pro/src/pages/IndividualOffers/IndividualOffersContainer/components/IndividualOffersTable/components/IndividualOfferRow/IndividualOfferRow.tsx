@@ -6,11 +6,9 @@ import {
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
 import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferNameCell'
-import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
 
 import { AddressCell } from './components/AddressCell'
 import { IndividualActionsCells } from './components/IndividualActionsCells'
@@ -31,7 +29,6 @@ export const IndividualOfferRow = ({
 }: IndividualOfferRowProps) => {
   const rowId = `collective-offer-${offer.id}`
   const { headlineOffer, isHeadlineOfferAvailable } = useHeadlineOfferContext()
-  const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const offerLink = getIndividualOfferUrl({
     offerId: offer.id,
@@ -70,21 +67,12 @@ export const IndividualOfferRow = ({
         displayLabel
         displayThumb
       />
-      {offerAddressEnabled ? (
-        <AddressCell
-          rowId={rowId}
-          address={offer.address}
-          className={styles['individual-cell-venue']}
-          displayLabel
-        />
-      ) : (
-        <OfferVenueCell
-          rowId={rowId}
-          venue={offer.venue}
-          className={styles['individual-cell-venue']}
-          displayLabel
-        />
-      )}
+      <AddressCell
+        rowId={rowId}
+        address={offer.address}
+        className={styles['individual-cell-venue']}
+        displayLabel
+      />
       <OfferRemainingStockCell
         rowId={rowId}
         stocks={offer.stocks}

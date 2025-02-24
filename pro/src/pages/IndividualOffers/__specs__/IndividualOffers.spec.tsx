@@ -17,7 +17,6 @@ import {
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   ALL_CREATION_MODES,
-  ALL_VENUES_OPTION,
   CREATION_MODES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
 } from 'commons/core/Offers/constants'
@@ -108,6 +107,12 @@ const renderOffers = async (
   )
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+  await waitFor(() => {
+    expect(
+      within(screen.getByLabelText('Localisation')).getAllByRole('option')
+        .length
+    ).toBe(3)
+  })
 }
 
 describe('route Offers', () => {
@@ -120,6 +125,7 @@ describe('route Offers', () => {
       offerersNames: [],
     })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
+    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
   })
 
   describe('filters', () => {
@@ -258,16 +264,20 @@ describe('route Offers', () => {
         })
       })
 
-      it('should load offers with selected venue filter', async () => {
+      it('should load offers with selected adress filter', async () => {
         vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
 
         await renderOffers()
 
-        const firstVenueOption = screen.getByRole('option', {
-          name: proVenues[0].name,
-        })
-        const venueSelect = screen.getByLabelText('Lieu')
-        await userEvent.selectOptions(venueSelect, firstVenueOption)
+        const offererAddressOption = screen.getByLabelText('Localisation')
+
+        const firstOffererAddressOption =
+          within(offererAddressOption).getAllByRole('option')[1]
+
+        await userEvent.selectOptions(
+          offererAddressOption,
+          firstOffererAddressOption
+        )
 
         await userEvent.click(screen.getByText('Rechercher'))
 
@@ -276,13 +286,13 @@ describe('route Offers', () => {
             undefined,
             '1',
             undefined,
-            proVenues[0].id.toString(),
             undefined,
             undefined,
             undefined,
             undefined,
             undefined,
-            undefined
+            undefined,
+            '2'
           )
         })
       })
@@ -483,17 +493,20 @@ describe('route Offers', () => {
       })
     })
 
-    it('should have venue value when user filters by venue', async () => {
+    it('should have adress value when user filters by venue', async () => {
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
 
       await renderOffers()
 
-      const firstVenueOption = screen.getByRole('option', {
-        name: proVenues[0].name,
-      })
-      const venueSelect = screen.getByLabelText('Lieu')
+      const offererAddressOption = screen.getByLabelText('Localisation')
 
-      await userEvent.selectOptions(venueSelect, firstVenueOption)
+      const firstOffererAddressOption =
+        within(offererAddressOption).getAllByRole('option')[1]
+
+      await userEvent.selectOptions(
+        offererAddressOption,
+        firstOffererAddressOption
+      )
       await userEvent.click(screen.getByText('Rechercher'))
 
       await waitFor(() => {
@@ -501,13 +514,13 @@ describe('route Offers', () => {
           undefined,
           '1',
           undefined,
-          proVenues[0].id.toString(),
           undefined,
           undefined,
           undefined,
           undefined,
           undefined,
-          undefined
+          undefined,
+          '2'
         )
       })
     })
@@ -771,28 +784,35 @@ describe('route Offers', () => {
 
       await renderOffers(filters)
 
-      const firstVenueOption = screen.getByRole('option', {
-        name: proVenues[0].name,
+      const offererAddressOption = screen.getByLabelText('Localisation')
+
+      await waitFor(() => {
+        expect(within(offererAddressOption).getAllByRole('option').length).toBe(
+          3
+        )
       })
 
-      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
+      const firstOffererAddressOption =
+        within(offererAddressOption).getAllByRole('option')[1]
 
-      await userEvent.selectOptions(venueSelect, firstVenueOption)
+      await userEvent.selectOptions(
+        offererAddressOption,
+        firstOffererAddressOption
+      )
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenNthCalledWith(
-          2,
+        expect(api.listOffers).toHaveBeenLastCalledWith(
           undefined,
           '1',
           undefined,
-          proVenues[0].id.toString(),
+          '666',
           undefined,
           undefined,
           undefined,
           undefined,
           undefined,
-          undefined
+          '2'
         )
       })
 
@@ -829,30 +849,37 @@ describe('route Offers', () => {
       }
       await renderOffers(filters)
 
-      const venueOptionToSelect = screen.getByRole('option', {
-        name: proVenues[0].name,
+      const offererAddressOption = screen.getByLabelText('Localisation')
+
+      await waitFor(() => {
+        expect(within(offererAddressOption).getAllByRole('option').length).toBe(
+          3
+        )
       })
 
-      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
+      const firstOffererAddressOption =
+        within(offererAddressOption).getAllByRole('option')[1]
 
-      await userEvent.selectOptions(venueSelect, venueOptionToSelect)
+      await userEvent.selectOptions(
+        offererAddressOption,
+        firstOffererAddressOption
+      )
       await userEvent.click(screen.getByText('Rechercher'))
 
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledTimes(2)
       })
-      expect(api.listOffers).toHaveBeenNthCalledWith(
-        2,
+      expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
         '1',
         undefined,
-        proVenues[0].id.toString(),
+        '666',
         undefined,
         undefined,
         undefined,
         undefined,
         undefined,
-        undefined
+        '2'
       )
 
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
@@ -906,85 +933,41 @@ describe('route Offers', () => {
     })
   })
 
-  describe('With WIP_ENABLE_OFFER_ADDRESS FF', () => {
-    beforeEach(() => {
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
-      vi.spyOn(api, 'getOffererAddresses').mockResolvedValueOnce(offererAddress)
+  it('should have offerer address value when user filters by address', async () => {
+    vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+    vi.spyOn(api, 'getOffererAddresses').mockResolvedValueOnce(offererAddress)
+    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
+      defaultGetOffererResponseModel
+    )
+    await renderOffers(DEFAULT_SEARCH_FILTERS)
+    const offererAddressOption = screen.getByLabelText('Localisation')
+
+    await waitFor(() => {
+      expect(within(offererAddressOption).getAllByRole('option').length).toBe(3)
     })
 
-    it('should display venue header without the FF', async () => {
-      await renderOffers()
-      expect(
-        screen.queryByRole('columnheader', { name: 'Lieu' })
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByRole('columnheader', { name: 'Localisation' })
-      ).not.toBeInTheDocument()
-    })
+    const firstOffererAddressOption =
+      within(offererAddressOption).getAllByRole('option')[1]
 
-    it('should display address header with the FF', async () => {
-      await renderOffers(DEFAULT_SEARCH_FILTERS, ['WIP_ENABLE_OFFER_ADDRESS'])
-      expect(
-        screen.queryByRole('columnheader', { name: 'Lieu' })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('columnheader', { name: 'Localisation' })
-      ).toBeInTheDocument()
-    })
+    await userEvent.selectOptions(
+      offererAddressOption,
+      firstOffererAddressOption
+    )
+    await userEvent.click(screen.getByText('Rechercher'))
 
-    it('should display venue header with the FF for collective offers', async () => {
-      await renderOffers(
-        {
-          ...DEFAULT_SEARCH_FILTERS,
-          audience: Audience.COLLECTIVE,
-        },
-        ['WIP_ENABLE_OFFER_ADDRESS']
+    await waitFor(() => {
+      expect(api.listOffers).toHaveBeenCalledWith(
+        undefined,
+        defaultGetOffererResponseModel.id.toString(),
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        offererAddress[1].id.toString()
       )
-      expect(
-        screen.queryByRole('columnheader', { name: 'Lieu' })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('columnheader', { name: 'Localisation' })
-      ).toBeInTheDocument()
-    })
-
-    it('should have offerer address value when user filters by address', async () => {
-      vi.spyOn(api, 'getOffererAddresses').mockResolvedValueOnce(offererAddress)
-      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
-        defaultGetOffererResponseModel
-      )
-      await renderOffers(DEFAULT_SEARCH_FILTERS, ['WIP_ENABLE_OFFER_ADDRESS'])
-      const offererAddressOption = screen.getByLabelText('Localisation')
-
-      await waitFor(() => {
-        expect(within(offererAddressOption).getAllByRole('option').length).toBe(
-          3
-        )
-      })
-
-      const firstOffererAddressOption =
-        within(offererAddressOption).getAllByRole('option')[1]
-
-      await userEvent.selectOptions(
-        offererAddressOption,
-        firstOffererAddressOption
-      )
-      await userEvent.click(screen.getByText('Rechercher'))
-
-      await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledWith(
-          undefined,
-          defaultGetOffererResponseModel.id.toString(),
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          offererAddress[1].id.toString()
-        )
-      })
     })
   })
 

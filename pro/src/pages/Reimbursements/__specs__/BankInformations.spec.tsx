@@ -99,7 +99,7 @@ describe('BankInformations', () => {
 
     expect(
       await screen.findByText(
-        /Sélectionnez les lieux dont les offres seront remboursées sur ce compte bancaire/
+        /Sélectionnez les structures dont les offres seront remboursées sur ce compte bancaire/
       )
     ).toBeInTheDocument()
 
@@ -140,7 +140,7 @@ describe('BankInformations', () => {
 
     expect(
       screen.queryByText(
-        /Attention : le ou les lieux désélectionnés ne seront plus remboursés sur ce compte bancaire/
+        /Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire/
       )
     ).toBeInTheDocument()
 

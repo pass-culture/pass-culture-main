@@ -113,7 +113,7 @@ describe('LinkVenueDialog', () => {
     await userEvent.click(selectSiretButton)
     await userEvent.selectOptions(
       screen.getByLabelText(
-        'Lieu avec SIRET utilisé pour le calcul du barème de remboursement'
+        'Structure avec SIRET utilisée pour le calcul du barème de remboursement'
       ),
       screen.getByRole('option', { name: 'RAISON SOCIALE - 123456789' })
     )
@@ -155,7 +155,7 @@ describe('LinkVenueDialog', () => {
     )
     await userEvent.selectOptions(
       screen.getByLabelText(
-        'Lieu avec SIRET utilisé pour le calcul du barème de remboursement'
+        'Structure avec SIRET utilisée pour le calcul du barème de remboursement'
       ),
       screen.getByRole('option', { name: 'raison - 123456789' })
     )
@@ -177,7 +177,7 @@ describe('LinkVenueDialog', () => {
     renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
 
     expect(
-      screen.getByText('Certains de vos lieux n’ont pas de SIRET')
+      screen.getByText('Certaines de vos structures n’ont pas de SIRET')
     ).toBeInTheDocument()
   })
 
@@ -261,70 +261,5 @@ describe('LinkVenueDialog', () => {
     expect(checkbox).toBeChecked()
     await userEvent.click(checkbox)
     expect(checkbox).not.toBeChecked()
-  })
-
-  describe('WIP_ENABLE_OFFER_ADDRESS 2', () => {
-    it('should display pricing point pop-in with term "structures"', async () => {
-      const managedVenues = [
-        { ...defaultManagedVenues, id: 1, hasPricingPoint: false },
-      ]
-
-      renderLinkVenuesDialog(
-        1,
-        defaultBankAccount,
-        managedVenues,
-        undefined,
-        undefined,
-        {
-          features: ['WIP_ENABLE_OFFER_ADDRESS'],
-        }
-      )
-
-      const selectSiretButton = screen.getByRole('button', {
-        name: 'Sélectionner un SIRET',
-      })
-      await userEvent.click(selectSiretButton)
-
-      expect(
-        screen.getByRole('heading', {
-          name: /Sélectionnez un SIRET pour la structure “Mon super lieu”/,
-        })
-      ).toBeInTheDocument()
-
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Valider la sélection' })
-      )
-
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        'Veuillez sélectionner un SIRET'
-      )
-    })
-
-    it('should use "structures" instead of "lieux"', () => {
-      const managedVenues = [
-        { ...defaultManagedVenues, id: 1, hasPricingPoint: true },
-        { ...defaultManagedVenues, id: 2, hasPricingPoint: false },
-      ]
-
-      renderLinkVenuesDialog(
-        1,
-        defaultBankAccount,
-        managedVenues,
-        undefined,
-        undefined,
-        {
-          features: ['WIP_ENABLE_OFFER_ADDRESS'],
-        }
-      )
-
-      expect(
-        screen.getByText('Certaines de vos structures n’ont pas de SIRET')
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          'Sélectionnez un SIRET pour chacune de ces structures avant de pouvoir les rattacher à ce compte bancaire.'
-        )
-      ).toBeInTheDocument()
-    })
   })
 })

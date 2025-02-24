@@ -84,8 +84,8 @@ describe('filter bookings by bookings period', () => {
     await userEvent.clear(offerEventDateInput)
     await userEvent.type(offerEventDateInput, '2020-12-13')
 
-    const offerVenuIdInput = screen.getByLabelText('Lieu')
-    await userEvent.selectOptions(offerVenuIdInput, '12')
+    const offerVenuIdInput = screen.getByLabelText('Localisation')
+    await userEvent.selectOptions(offerVenuIdInput, '21')
 
     const periodBeginningDateInput = screen.getByLabelText(
       'Début de la période'
@@ -108,14 +108,14 @@ describe('filter bookings by bookings period', () => {
       bookingStatusFilter: 'reimbursed',
       offerEventDate: '2020-12-13',
       offerId: undefined,
-      offerVenueId: '12',
-      offererAddressId: 'all',
-      offererId: 'all'
+      offerVenueId: 'all',
+      offererAddressId: '21',
+      offererId: 'all',
     })
   })
 
   it('should be able to filter by offererAddress', async () => {
-    renderPreFilters(props, ['WIP_ENABLE_OFFER_ADDRESS'])
+    renderPreFilters(props)
 
     const offerVenuIdInput = screen.getByLabelText('Localisation')
     await userEvent.selectOptions(offerVenuIdInput, '21')
@@ -129,26 +129,14 @@ describe('filter bookings by bookings period', () => {
       offerId: DEFAULT_PRE_FILTERS.offerId,
       offerVenueId: DEFAULT_PRE_FILTERS.offerVenueId,
       offererAddressId: '21',
-      offererId: 'all'
+      offererId: 'all',
     })
   })
 
   it('should not display offererAddress for collective audiance', () => {
     props.audience = Audience.COLLECTIVE
-    renderPreFilters(props, ['WIP_ENABLE_OFFER_ADDRESS'])
+    renderPreFilters(props)
 
     expect(screen.queryByLabelText('Localisation')).not.toBeInTheDocument()
-  })
-
-  it('should use "Structure" instead of "Lieu" if the WIP_ENABLE_OFFER_ADDRESS FF is active', () => {
-    props.audience = Audience.COLLECTIVE
-    renderPreFilters(props, ['WIP_ENABLE_OFFER_ADDRESS'])
-
-    expect(
-      screen.getByRole('combobox', { name: 'Structure' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('option', { name: 'Toutes les structures' })
-    ).toBeInTheDocument()
   })
 })

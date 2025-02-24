@@ -15,7 +15,7 @@ import { defaultEditionProps } from '../__tests-utils__/defaultProps'
 import {
   EMAIL_LABEL,
   NOTIFICATIONS_EMAIL_LABEL,
-  VENUE_LABEL,
+  STRUCTURE_LABEL,
 } from '../constants/labels'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
@@ -43,7 +43,7 @@ describe('screens | OfferEducational', () => {
       mode: Mode.READ_ONLY,
     }
     renderWithProviders(<OfferEducational {...props} />)
-    await screen.findByLabelText(`${VENUE_LABEL} *`)
+    await screen.findByLabelText(`${STRUCTURE_LABEL} *`)
 
     const inputs = [
       screen.getByLabelText(`Formats`),
@@ -51,7 +51,7 @@ describe('screens | OfferEducational', () => {
       screen.getByLabelText('Indiquez la durée de l’évènement', {
         exact: false,
       }),
-      screen.getByLabelText(`${VENUE_LABEL} *`),
+      screen.getByLabelText(`${STRUCTURE_LABEL} *`),
       screen.getByLabelText('Autre'), // one of every option
       screen.getByLabelText('Collège - 3e'), // one of every option
       screen.getByLabelText('Visuel'), // one of every option

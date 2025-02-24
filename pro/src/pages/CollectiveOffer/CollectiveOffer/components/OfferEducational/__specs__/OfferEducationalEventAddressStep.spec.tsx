@@ -41,14 +41,18 @@ describe('screens | OfferEducational : event address step', () => {
     it('should display venue radio buttons with pre-selected offerer venue and a disabled select', async () => {
       renderOfferEducational(props)
 
-      expect(await screen.findByLabelText('Dans votre lieu')).toBeChecked()
+      expect(await screen.findByLabelText('Dans votre structure')).toBeChecked()
       expect(
         screen.getByLabelText('Dans l’établissement scolaire')
       ).not.toBeChecked()
       expect(screen.getByLabelText('Autre')).not.toBeChecked()
 
-      expect(screen.getByLabelText('Sélectionner le lieu *')).toHaveValue('1')
-      expect(screen.getByLabelText('Sélectionner le lieu *')).toBeDisabled()
+      expect(screen.getByLabelText('Sélectionner la structure *')).toHaveValue(
+        '1'
+      )
+      expect(
+        screen.getByLabelText('Sélectionner la structure *')
+      ).toBeDisabled()
 
       expect(
         await screen.findByText('Venue name', { exact: false, selector: 'div' })
@@ -66,7 +70,7 @@ describe('screens | OfferEducational : event address step', () => {
       expect(screen.getByLabelText('Autre')).toBeChecked()
 
       expect(
-        screen.queryByLabelText('Sélectionner le lieu *')
+        screen.queryByLabelText('Sélectionner la structure *')
       ).not.toBeInTheDocument()
 
       expect(
@@ -89,7 +93,7 @@ describe('screens | OfferEducational : event address step', () => {
       ).toBeChecked()
 
       expect(
-        screen.queryByLabelText('Sélectionner le lieu *')
+        screen.queryByLabelText('Sélectionner la structure *')
       ).not.toBeInTheDocument()
 
       expect(
@@ -126,12 +130,12 @@ describe('screens | OfferEducational : event address step', () => {
       renderOfferEducational(props)
 
       // wait for page to be rendered
-      const offererSelect = await screen.findByLabelText('Lieu *')
+      const offererSelect = await screen.findByLabelText('Structure *')
       // select venue to open step Address
       await userEvent.selectOptions(offererSelect, [firstVenueId])
 
       const offerVenueSelect = await screen.findByLabelText(
-        'Sélectionner le lieu *'
+        'Sélectionner la structure *'
       )
       expect(offerVenueSelect).toHaveValue(firstVenueId)
       expect(offerVenueSelect.children).toHaveLength(3)
@@ -147,20 +151,22 @@ describe('screens | OfferEducational : event address step', () => {
       renderOfferEducational(props)
 
       // wait for page to be rendered
-      const offererSelect = await screen.findByLabelText('Lieu *')
+      const offererSelect = await screen.findByLabelText('Structure *')
       // select venue to open step Address
       await userEvent.selectOptions(offererSelect, [firstVenueId])
 
       const offerVenueSelect = await screen.findByLabelText(
-        'Sélectionner le lieu *'
+        'Sélectionner la structure *'
       )
       expect(offerVenueSelect).toHaveValue(firstVenueId)
 
       await userEvent.click(await screen.findByLabelText('Autre'))
       expect(screen.getByLabelText('Autre')).toBeChecked()
 
-      await userEvent.click(await screen.findByLabelText('Dans votre lieu'))
-      expect(screen.getByLabelText('Dans votre lieu')).toBeChecked()
+      await userEvent.click(
+        await screen.findByLabelText('Dans votre structure')
+      )
+      expect(screen.getByLabelText('Dans votre structure')).toBeChecked()
 
       expect(offerVenueSelect).toHaveValue(firstVenueId)
     })
@@ -185,11 +191,11 @@ describe('screens | OfferEducational : event address step', () => {
         },
       })
 
-      const venuesSelect = await screen.findByLabelText('Lieu *')
+      const venuesSelect = await screen.findByLabelText('Structure *')
 
       await userEvent.selectOptions(venuesSelect, [venueId])
 
-      expect(screen.queryByLabelText('Lieu *')).toHaveValue(venueId)
+      expect(screen.queryByLabelText('Structure *')).toHaveValue(venueId)
 
       await userEvent.click(await screen.findByLabelText('Autre'))
 

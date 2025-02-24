@@ -7,7 +7,6 @@ import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { pluralizeString } from 'commons/utils/pluralize'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
@@ -47,7 +46,6 @@ export const LinkVenuesDialog = ({
     .map((venue) => venue.id)
   const notification = useNotification()
   const { logEvent } = useAnalytics()
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const initialVenuesIds = selectedBankAccount.linkedVenues.map(
     (venue) => venue.id
@@ -125,24 +123,17 @@ export const LinkVenuesDialog = ({
         >
           {hasVenuesWithoutPricingPoint && (
             <Callout
-              title={
-                isOfferAddressEnabled
-                  ? 'Certaines de vos structures n’ont pas de SIRET'
-                  : 'Certains de vos lieux n’ont pas de SIRET'
-              }
+              title="Certaines de vos structures n’ont pas de SIRET"
               variant={CalloutVariant.ERROR}
               className={styles['dialog-callout']}
             >
-              Sélectionnez un SIRET pour{' '}
-              {isOfferAddressEnabled
-                ? 'chacune de ces structures'
-                : 'chacun de ces lieux'}{' '}
-              avant de pouvoir les rattacher à ce compte bancaire.
+              Sélectionnez un SIRET pour chacune de ces structures avant de
+              pouvoir les rattacher à ce compte bancaire.
             </Callout>
           )}
           <div className={styles['dialog-subtitle']}>
-            Sélectionnez les {isOfferAddressEnabled ? 'structures' : 'lieux'}{' '}
-            dont les offres seront remboursées sur ce compte bancaire.
+            Sélectionnez les structures dont les offres seront remboursées sur
+            ce compte bancaire.
           </div>
           <FormikProvider value={formik}>
             <form
@@ -173,10 +164,12 @@ export const LinkVenuesDialog = ({
                     }
                   />
                   <span className={styles['dialog-select-all-count']}>
-                    {selectedVenuesIds.length}{' '}
-                    {isOfferAddressEnabled
-                      ? `${pluralizeString('structure sélectionnée', selectedVenuesIds.length)}`
-                      : `${pluralizeString('lieu', selectedVenuesIds.length, 'x')} ${pluralizeString('sélectionné', selectedVenuesIds.length)}`}
+                    `{selectedVenuesIds.length}{' '}
+                    {pluralizeString(
+                      'structure sélectionnée',
+                      selectedVenuesIds.length
+                    )}
+                    `
                   </span>
                 </div>
 
@@ -233,11 +226,7 @@ export const LinkVenuesDialog = ({
         })}
         icon={strokeWarningIcon}
         onCancel={() => setShowUnlinkVenuesDialog(false)}
-        title={
-          isOfferAddressEnabled
-            ? 'Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire'
-            : 'Attention : le ou les lieux désélectionnés ne seront plus remboursés sur ce compte bancaire'
-        }
+        title="Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire"
         onConfirm={() => {
           setShowUnlinkVenuesDialog(false)
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
