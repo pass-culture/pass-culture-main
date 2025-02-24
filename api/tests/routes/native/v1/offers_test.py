@@ -18,8 +18,8 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.factories import OffererAddressFactory
 from pcapi.core.offerers.factories import VenueFactory
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.models import ImageType
 from pcapi.core.offers.models import OfferReport
-from pcapi.core.offers.models import TiteliveImageType
 from pcapi.core.providers.constants import BookFormat
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -716,7 +716,7 @@ class OffersTest:
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         uuid = "1"
         product_mediation = offers_factories.ProductMediationFactory(
-            product=product, uuid=uuid, imageType=TiteliveImageType.RECTO
+            product=product, uuid=uuid, imageType=ImageType.RECTO
         )
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
@@ -743,9 +743,9 @@ class OffersTest:
         product = offers_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.LIVRE_PAPIER.id)
         uuid = "recto"
         product_mediation = offers_factories.ProductMediationFactory(
-            product=product, uuid=uuid, imageType=TiteliveImageType.RECTO
+            product=product, uuid=uuid, imageType=ImageType.RECTO
         )
-        offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.VERSO)
+        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.VERSO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -792,7 +792,7 @@ class OffersTest:
 
     def test_get_offer_with_mediation_and_product_mediation(self, client):
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.RECTO)
+        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -1557,7 +1557,7 @@ class OffersV2Test:
     def test_get_offer_with_product_mediation_and_thumb(self, client):
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         uuid = "11111111"
-        offers_factories.ProductMediationFactory(product=product, uuid=uuid, imageType=TiteliveImageType.RECTO)
+        offers_factories.ProductMediationFactory(product=product, uuid=uuid, imageType=ImageType.RECTO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -1579,8 +1579,8 @@ class OffersV2Test:
         product = offers_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.LIVRE_PAPIER.id)
         first_uuid = "11111111"
         second_uuid = "22222222"
-        offers_factories.ProductMediationFactory(product=product, uuid=first_uuid, imageType=TiteliveImageType.RECTO)
-        offers_factories.ProductMediationFactory(product=product, uuid=second_uuid, imageType=TiteliveImageType.VERSO)
+        offers_factories.ProductMediationFactory(product=product, uuid=first_uuid, imageType=ImageType.RECTO)
+        offers_factories.ProductMediationFactory(product=product, uuid=second_uuid, imageType=ImageType.VERSO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -1623,7 +1623,7 @@ class OffersV2Test:
 
     def test_get_offer_with_mediation_and_product_mediation(self, client):
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.RECTO)
+        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )

@@ -6,7 +6,7 @@ from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
-from pcapi.core.offers.models import TiteliveImageType
+from pcapi.core.offers.models import ImageType
 from pcapi.utils.db import MagicEnum
 
 
@@ -28,7 +28,7 @@ def upgrade() -> None:
         sa.Column("fieldsUpdated", postgresql.ARRAY(sa.String(length=100)), server_default="{}", nullable=False),
         sa.Column("productId", sa.BigInteger(), nullable=False),
         sa.Column("url", sa.String(length=255), nullable=False),
-        sa.Column("imageType", MagicEnum(TiteliveImageType), nullable=False),
+        sa.Column("imageType", MagicEnum(ImageType), nullable=False),
         sa.Column("lastProviderId", sa.BigInteger(), nullable=True),
         sa.ForeignKeyConstraint(
             ["lastProviderId"],

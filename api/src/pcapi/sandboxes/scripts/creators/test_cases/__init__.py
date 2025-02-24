@@ -25,7 +25,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers.models import TiteliveImageType
+from pcapi.core.offers.models import ImageType
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.reactions.factories import ReactionFactory
@@ -370,7 +370,7 @@ def _create_library_with_writers() -> None:
                 name=f"Livre - {artist.name} - {num + 1}", subcategoryId=subcategories.LIVRE_PAPIER.id
             )
             image_path = next(image_paths)
-            mediation = offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.RECTO)
+            mediation = offers_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
             thumb_storage.create_thumb(product, image_path.read_bytes(), keep_ratio=True, object_id=mediation.uuid)
             offers_factories.ArtistProductLinkFactory(
                 artist_id=artist.id, product_id=product.id, artist_type=ArtistType.AUTHOR
@@ -986,12 +986,12 @@ def create_product_with_multiple_images() -> None:
     offers_factories.ProductMediationFactory(
         product=product,
         uuid="222A",
-        imageType=TiteliveImageType.RECTO,
+        imageType=ImageType.RECTO,
     )
     offers_factories.ProductMediationFactory(
         product=product,
         uuid="222A_1",
-        imageType=TiteliveImageType.VERSO,
+        imageType=ImageType.VERSO,
     )
 
 

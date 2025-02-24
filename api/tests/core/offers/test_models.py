@@ -744,8 +744,8 @@ class HeadlineOfferTest:
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             gcuCompatibilityType=models.GcuCompatibilityType.COMPATIBLE,
         )
-        factories.ProductMediationFactory(product=product, imageType=models.TiteliveImageType.RECTO)
-        factories.ProductMediationFactory(product=product, imageType=models.TiteliveImageType.VERSO)
+        factories.ProductMediationFactory(product=product, imageType=models.ImageType.RECTO)
+        factories.ProductMediationFactory(product=product, imageType=models.ImageType.VERSO)
 
         offer = factories.OfferFactory(product=product)
         headline_offer = factories.HeadlineOfferFactory(offer=offer, without_mediation=True)
