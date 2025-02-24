@@ -105,14 +105,13 @@ describe('Cookie management with no login', () => {
 })
 
 describe('Cookie management with login', () => {
-  const password = 'user@AZERTY123'
   let login1: string
 
   before(() => {
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',
-      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user_already_onboarded',
       (response) => {
         login1 = response.body.user.email
       }
@@ -145,7 +144,7 @@ describe('Cookie management with login', () => {
 
     cy.sandboxCall(
       'GET',
-      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user_already_onboarded',
       (response) => {
         const login2 = response.body.user.email
         logInAndGoToPage(login2, '/accueil', false)
@@ -167,7 +166,7 @@ describe('Cookie management with login', () => {
 
     cy.sandboxCall(
       'GET',
-      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user_already_onboarded',
       (response) => {
         cy.wrap(response.body.user.email).as('login')
       }
