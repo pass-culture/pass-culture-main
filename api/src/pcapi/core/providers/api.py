@@ -233,7 +233,7 @@ def connect_venue_to_allocine(
     if not pivot:
         theater = providers_repository.get_allocine_theater(venue)
         if not theater:
-            raise providers_exceptions.UnknownVenueToAlloCine()
+            raise providers_exceptions.NoMatchingAllocineTheater()
         pivot = providers_models.AllocinePivot(
             venue=venue,
             theaterId=theater.theaterId,

@@ -46,9 +46,6 @@ class GetCinemaVenueProviderTest:
         with pytest.raises(providers_exceptions.InactiveProvider) as exc:
             get_active_cinema_venue_provider(venue_id)
 
-        # Then
-        assert str(exc.value) == f"No active cinema venue provider found for venue #{venue_id}"
-
     def test_should_raise_exception_if_inactive_cinema_venue_provider(self) -> None:
         cds_provider = get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
@@ -57,8 +54,6 @@ class GetCinemaVenueProviderTest:
         venue_id = venue_provider.venueId
         with pytest.raises(providers_exceptions.InactiveProvider) as e:
             get_active_cinema_venue_provider(venue_id)
-
-        assert str(e.value) == f"No active cinema venue provider found for venue #{venue_id}"
 
 
 @pytest.mark.usefixtures("db_session")

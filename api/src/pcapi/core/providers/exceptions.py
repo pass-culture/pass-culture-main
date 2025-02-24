@@ -5,7 +5,7 @@ class ProviderException(CoreException):
     pass
 
 
-class VenueProviderException(Exception):
+class VenueProviderException(ProviderException):
     pass
 
 
@@ -13,7 +13,7 @@ class NoPriceSpecified(VenueProviderException):
     pass
 
 
-class UnknownVenueToAlloCine(VenueProviderException):
+class NoMatchingAllocineTheater(VenueProviderException):
     pass
 
 
@@ -21,5 +21,5 @@ class NoCinemaProviderPivot(VenueProviderException):
     pass
 
 
-class InactiveProvider(VenueProviderException):
+class InactiveProvider(ProviderException):
     pass

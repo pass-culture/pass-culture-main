@@ -87,7 +87,7 @@ def create_venue_provider(
                 venueIdAtOfferProvider=body.venueIdAtOfferProvider,
             ),
         )
-    except exceptions.UnknownVenueToAlloCine:
+    except exceptions.NoMatchingAllocineTheater:
         raise ApiErrors(
             {
                 "allocine": [
@@ -107,8 +107,6 @@ def create_venue_provider(
         )
     except exceptions.NoPriceSpecified:
         raise ApiErrors({"price": ["Il est obligatoire de saisir un prix."]})
-    except exceptions.VenueProviderException:
-        raise ApiErrors({"global": ["Le fournisseur n'a pas pu être configuré."]})
 
     # We don't want to start a synchronization for providers linked to an offerer
     # since creating a venue_provider in this case only delegate the right for an

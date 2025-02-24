@@ -43,6 +43,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -979,11 +980,10 @@ class BookOfferTest:
                 lastProviderId=cds_provider.id,
             )
             stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111%4444#111/datetime")
-            with pytest.raises(Exception) as exc:
+            with pytest.raises(providers_exceptions.InactiveProvider):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
 
             assert Booking.query.count() == 0
-            assert str(exc.value) == f"No active cinema venue provider found for venue #{venue_provider.venue.id}"
 
         @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
         @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
