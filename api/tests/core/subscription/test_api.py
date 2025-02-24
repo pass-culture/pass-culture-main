@@ -1655,6 +1655,25 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         [recredit] = user.deposit.recredits
         assert recredit.recreditType == finance_models.RecreditType.RECREDIT_18
 
+    @pytest.mark.parametrize("age", [18, 19, 20])
+    def test_post_decree_when_registration_started_at_17(self, age):
+        starting_age = 17
+        user = users_factories.HonorStatementValidatedUserFactory(age=starting_age, _phoneNumber="0123456789")
+
+        year_when_user_reached_age = datetime.utcnow() + relativedelta(years=age - starting_age)
+        with time_machine.travel(year_when_user_reached_age):
+            fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+            fraud_factories.HonorStatementFraudCheckFactory(user=user)
+
+            is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.is_beneficiary
+        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+
+        recredit_types = [recredit.recreditType for recredit in user.deposit.recredits]
+        assert set(recredit_types) == {finance_models.RecreditType.RECREDIT_17, finance_models.RecreditType.RECREDIT_18}
+
 
 @pytest.mark.usefixtures("db_session")
 class SubscriptionMessageTest:

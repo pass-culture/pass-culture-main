@@ -3047,15 +3047,9 @@ def _recredit_user_v3(user: users_models.User) -> models.Recredit | None:
         return None
     if not (user_eligibility := user.eligibility):
         return None
+
     if user.deposit.type == DepositType.GRANT_17_18:
-        recredit_type_to_create = conf.RECREDIT_TYPE_AGE_MAPPING[user.age]
-        if not recredit_type_to_create:
-            return None
-        if any(
-            recredit.recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[user.age] for recredit in user.deposit.recredits
-        ):
-            return None
-        return _recredit_deposit(user.deposit, user.age, recredit_type_to_create)
+        return _recredit_grant_17_18_deposit_using_age(user)
 
     domains_credit = get_domains_credit(user)
     if not domains_credit:
@@ -3102,6 +3096,40 @@ def _recredit_user_v2(user: users_models.User) -> models.Recredit | None:
         latest_recredit = _recredit_deposit(deposit, age, recredit_type=conf.RECREDIT_TYPE_AGE_MAPPING[age])
 
     return latest_recredit
+
+
+def _recredit_grant_17_18_deposit_using_age(user: users_models.User) -> models.Recredit | None:
+    from pcapi.core.users import eligibility_api
+
+    current_age = user.age
+    if not current_age or not user.deposit:
+        return None
+
+    age_at_first_registration: int | None = None
+    first_registration_datetime = eligibility_api.get_first_eligible_registration_date(
+        user, user.birth_date, users_models.EligibilityType.AGE17_18
+    )
+    if first_registration_datetime:
+        age_at_first_registration = users_utils.get_age_at_date(
+            user.birth_date, first_registration_datetime, user.departementCode
+        )
+
+    latest_age_related_recredit: models.Recredit | None = None
+    starting_age, end_age = sorted([age_at_first_registration or current_age, current_age])
+    for age_to_recredit in range(starting_age, end_age + 1):
+        recredit_type_to_create = conf.RECREDIT_TYPE_AGE_MAPPING.get(age_to_recredit)
+        if not recredit_type_to_create:
+            continue
+
+        has_been_recredited = any(
+            recredit.recreditType == recredit_type_to_create for recredit in user.deposit.recredits
+        )
+        if has_been_recredited:
+            continue
+
+        latest_age_related_recredit = _recredit_deposit(user.deposit, age_to_recredit, recredit_type_to_create)
+
+    return latest_age_related_recredit
 
 
 def _recredit_deposit(
@@ -3173,6 +3201,7 @@ def upsert_deposit(
 
     if not user.deposit:
         raise ValueError(f"failed to create deposit for {user = }")
+
     _recredit_user(user)
 
     return user.deposit
@@ -3264,7 +3293,7 @@ def create_deposit_v2(
         and beneficiary.age
         and age_at_registration
     ):
-        _recredit_user(beneficiary)
+        _recredit_user_v2(beneficiary)
 
     return deposit
 
@@ -3524,6 +3553,7 @@ def recredit_user_if_no_missing_step(user: users_models.User) -> None:
 
     user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
     db.session.add(user)
+
     external_attributes_api.update_external_user(user)
     push_notifications.track_account_recredited(user.id, user.deposit, len(user.deposits))
     if feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and recredit.amount > 0:
@@ -3540,7 +3570,7 @@ def recredit_user_if_no_missing_step(user: users_models.User) -> None:
         transactional_mails.send_recredit_email_to_underage_beneficiary(user, recredit.amount, domains_credit)
 
 
-def get_last_age_related_user_recredit(user: users_models.User) -> models.RecreditType | None:
+def get_latest_age_related_user_recredit(user: users_models.User) -> models.RecreditType | None:
     """
     This function assumes that the user.deposits and the deposit.recredits relationships are already loaded.
 
