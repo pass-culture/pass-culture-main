@@ -128,6 +128,7 @@ class OfferExtraData(typing.TypedDict, total=False):
 
 
 class ImageType(enum.Enum):
+    POSTER = "POSTER"
     RECTO = "RECTO"
     VERSO = "VERSO"
 
@@ -991,25 +992,27 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             if url:
                 return {ImageType.RECTO.value: OfferImage(url, activeMediation.credit)}
 
-        product_images = self.product.images if self.product else None
-        if product_images is None:
+        if not self.product:
             return None
-        images = {}
-        if product_images.get(ImageType.RECTO.value):
-            images[ImageType.RECTO.value] = OfferImage(product_images.get(ImageType.RECTO.value), credit=None)
-        if product_images.get(ImageType.VERSO.value):
-            images[ImageType.VERSO.value] = OfferImage(product_images.get(ImageType.VERSO.value), credit=None)
-        if images:
-            return images
-        return None
+
+        product_images = self.product.images
+        if not product_images:
+            return None
+
+        images = {
+            image_type.value: OfferImage(product_images[image_type.value], credit=None)
+            for image_type in ImageType
+            if product_images.get(image_type.value)
+        }
+        return images or None
 
     @property
     def image(self) -> OfferImage | None:
         if self.images:
             return (
-                self.images.get(ImageType.RECTO.value)
-                if self.images.get(ImageType.RECTO.value)
-                else self.images.get(ImageType.VERSO.value)
+                self.images.get(ImageType.POSTER.value)
+                or self.images.get(ImageType.RECTO.value)
+                or self.images.get(ImageType.VERSO.value)
             )
         return None
 
