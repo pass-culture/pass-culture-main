@@ -4498,6 +4498,16 @@ class CreateDepositV3Test:
         assert deposit.type == models.DepositType.GRANT_18
         assert deposit.amount == 300
 
+    def test_create_deposit_age_18_expires_underage_deposit(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        user = users_factories.BeneficiaryFactory(age=17, dateCreated=before_decree)
+
+        deposit = api.create_deposit(user, "created by test", users_models.EligibilityType.AGE18)
+
+        assert deposit.type == models.DepositType.GRANT_18
+        underage_deposit = min(*user.deposits, key=lambda d: d.id)
+        assert underage_deposit.expirationDate < datetime.datetime.utcnow()
+
     @time_machine.travel("2025-03-03")
     def test_17yo_becomes_17_18_when(self):
         user = users_factories.HonorStatementValidatedUserFactory(validatedBirthDate=datetime.date(2008, 1, 1))
@@ -5190,7 +5200,7 @@ class UserRecreditAfterDecreeTest:
         assert user_2.deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_18
         assert user_2.deposit.amount == 30 + 150  #  30 (credit 17 before decree) + 150 (for 18 year old after decree)
 
-    def test_recredt_email_is_sent_to_18_years_old_users(self):
+    def test_recredit_email_is_sent_to_18_years_old_users(self):
         with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1, months=1)):
             user = users_factories.BeneficiaryFactory(age=17, deposit__type=models.DepositType.GRANT_17_18)
 
