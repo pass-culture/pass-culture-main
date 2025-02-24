@@ -609,12 +609,6 @@ class CollectiveOffer(
         "OfferValidationRule", secondary="validation_rule_collective_offer_link", back_populates="collectiveOffers"
     )
 
-    educationalRedactorsFavorite: sa_orm.Mapped[list["EducationalRedactor"]] = relationship(
-        "EducationalRedactor",
-        secondary="collective_offer_educational_redactor",
-        back_populates="favoriteCollectiveOffers",
-    )
-
     formats: list[subcategories.EacFormat] | None = sa.Column(
         postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=True
     )
@@ -1726,12 +1720,6 @@ class EducationalRedactor(PcObject, Base, Model):
         "CollectiveOfferRequest", back_populates="educationalRedactor"
     )
 
-    favoriteCollectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = relationship(
-        "CollectiveOffer",
-        secondary="collective_offer_educational_redactor",
-        back_populates="educationalRedactorsFavorite",
-    )
-
     favoriteCollectiveOfferTemplates: sa_orm.Mapped[list["CollectiveOfferTemplate"]] = relationship(
         "CollectiveOfferTemplate",
         secondary="collective_offer_template_educational_redactor",
@@ -2239,19 +2227,6 @@ class NationalProgramOfferTemplateLinkHistory(PcObject, Base, Model):
     nationalProgramId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("national_program.id", ondelete="CASCADE"), nullable=False
     )
-
-
-class CollectiveOfferEducationalRedactor(PcObject, Base, Model):
-    """Allow adding to favorite the collective offer for adage user"""
-
-    __tablename__ = "collective_offer_educational_redactor"
-
-    educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
-    collectiveOfferId: int = sa.Column(sa.BigInteger, sa.ForeignKey("collective_offer.id"), nullable=False)
-    collectiveOffer: sa_orm.Mapped["CollectiveOffer"] = sa.orm.relationship(
-        "CollectiveOffer", foreign_keys=[collectiveOfferId], viewonly=True
-    )
-    __table_args__ = (UniqueConstraint("educationalRedactorId", "collectiveOfferId", name="unique_redactorId_offer"),)
 
 
 class CollectiveOfferTemplateEducationalRedactor(PcObject, Base, Model):

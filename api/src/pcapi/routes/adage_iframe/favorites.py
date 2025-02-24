@@ -12,24 +12,6 @@ from pcapi.routes.adage_iframe.serialization.favorites import FavoritesResponseM
 from pcapi.serialization.decorator import spectree_serialize
 
 
-@blueprint.adage_iframe.route("/collective/offers/<int:offer_id>/favorites", methods=["POST"])
-@atomic()
-@spectree_serialize(on_success_status=204, api=blueprint.api)
-@adage_jwt_required
-def post_collective_offer_favorites(authenticated_information: AuthenticatedInformation, offer_id: int) -> None:
-    try:
-        offer = educational_repository.get_collective_offer_by_id(offer_id=offer_id)
-    except educational_exceptions.CollectiveOfferNotFound:
-        raise ApiErrors({"offer": "l'offre est introuvable"}, status_code=404)
-
-    redactor = find_redactor_by_email(authenticated_information.email)
-    if redactor is None:
-        raise ApiErrors({"message": "Redactor not found"}, status_code=403)
-
-    redactor.favoriteCollectiveOffers.append(offer)
-    db.session.add(redactor)
-
-
 @blueprint.adage_iframe.route("/collective/templates/<int:offer_id>/favorites", methods=["POST"])
 @atomic()
 @spectree_serialize(on_success_status=204, api=blueprint.api)
@@ -46,25 +28,6 @@ def post_collective_template_favorites(authenticated_information: AuthenticatedI
 
     redactor.favoriteCollectiveOfferTemplates.append(offer_template)
     db.session.add(redactor)
-
-
-@blueprint.adage_iframe.route("/collective/offer/<int:offer_id>/favorites", methods=["DELETE"])
-@atomic()
-@spectree_serialize(on_success_status=204, api=blueprint.api)
-@adage_jwt_required
-def delete_favorite_for_collective_offer(authenticated_information: AuthenticatedInformation, offer_id: int) -> None:
-    redactor = find_redactor_by_email(authenticated_information.email)
-    if redactor is None:
-        raise ApiErrors({"message": "Redactor not found"}, status_code=403)
-
-    try:
-        offer = educational_repository.get_collective_offer_by_id(offer_id=offer_id)
-    except educational_exceptions.CollectiveOfferNotFound:
-        raise ApiErrors({"offer": ["Aucune offre trouvée pour cet id"]}, status_code=404)
-
-    if offer in redactor.favoriteCollectiveOffers:
-        redactor.favoriteCollectiveOffers.remove(offer)
-        db.session.add(redactor)
 
 
 @blueprint.adage_iframe.route("/collective/template/<int:offer_template_id>/favorites", methods=["DELETE"])
@@ -97,22 +60,14 @@ def get_collective_favorites(authenticated_information: AuthenticatedInformation
     if redactor is None:
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
 
-    offers = educational_repository.get_all_offer_by_redactor_id(redactor_id=redactor.id)
-
-    templates = educational_repository.get_all_offer_template_by_redactor_id(redactor_id=redactor.id)
+    offer_templates = educational_repository.get_all_offer_template_by_redactor_id(redactor_id=redactor.id)
 
     if authenticated_information.uai is None:
         raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
 
-    serialized_favorite_offers = [
-        serialize_favorites.serialize_collective_offer(offer=offer, is_favorite=True) for offer in offers
-    ]
-
     serialized_favorite_templates = [
-        serialize_favorites.serialize_collective_offer_template(offer=template, is_favorite=True)
-        for template in templates
+        serialize_favorites.serialize_collective_offer_template(offer_template=offer_template, is_favorite=True)
+        for offer_template in offer_templates
     ]
 
-    return FavoritesResponseModel(
-        favoritesOffer=serialized_favorite_offers, favoritesTemplate=serialized_favorite_templates
-    )
+    return FavoritesResponseModel(favoritesTemplate=serialized_favorite_templates)

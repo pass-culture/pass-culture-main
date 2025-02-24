@@ -1,6 +1,5 @@
 from decimal import Decimal
 import logging
-import typing
 
 from sqlalchemy.sql.expression import func
 
@@ -77,14 +76,10 @@ def get_classroom_playlist(
 
     return serializers.ListCollectiveOfferTemplateResponseModel(
         collectiveOffers=[
-            typing.cast(
-                serializers.CollectiveOfferTemplateResponseModel,
-                serialize_collective_offer(
-                    offer=item.collective_offer_template,
-                    serializer=serializers.CollectiveOfferTemplateResponseModel,
-                    is_favorite=item.collective_offer_template in redactor.favoriteCollectiveOfferTemplates,
-                    venue_distance=item.distanceInKm,
-                ),
+            serialize_collective_offer_template(
+                offer=item.collective_offer_template,
+                is_favorite=item.collective_offer_template in redactor.favoriteCollectiveOfferTemplates,
+                venue_distance=item.distanceInKm,
             )
             for item in playlist_items
         ]
@@ -97,20 +92,21 @@ def format_distance(distance: float | None) -> Decimal | None:
     return Decimal.from_float(distance).quantize(Decimal("1.0"))
 
 
-def serialize_collective_offer(
-    offer: educational_models.CollectiveOffer,
-    serializer: type[serializers.CollectiveOfferResponseModel] | type[serializers.CollectiveOfferTemplateResponseModel],
+def serialize_collective_offer_template(
+    offer: educational_models.CollectiveOfferTemplate,
     is_favorite: bool,
     venue_distance: float | None = None,
     event_distance: float | None = None,
-) -> serializers.CollectiveOfferResponseModel | serializers.CollectiveOfferTemplateResponseModel:
+) -> serializers.CollectiveOfferTemplateResponseModel:
     offer_venue_id = offer.offerVenue.get("venueId")
     if offer_venue_id:
         offer_venue = get_venue_by_id(offer_venue_id)
     else:
         offer_venue = None
 
-    serialized_offer = serializer.build(offer=offer, offerVenue=offer_venue, is_favorite=is_favorite)
+    serialized_offer = serializers.CollectiveOfferTemplateResponseModel.build(
+        offer=offer, offerVenue=offer_venue, is_favorite=is_favorite
+    )
 
     serialized_offer.venue.distance = format_distance(venue_distance)
     serialized_offer.offerVenue.distance = format_distance(event_distance)
@@ -172,20 +168,15 @@ def new_template_offers_playlist(
 
     return serializers.ListCollectiveOfferTemplateResponseModel(
         collectiveOffers=[
-            typing.cast(
-                serializers.CollectiveOfferTemplateResponseModel,
-                serialize_collective_offer(
-                    offer=item.collective_offer_template,
-                    serializer=serializers.CollectiveOfferTemplateResponseModel,
-                    is_favorite=item.collective_offer_template in redactor.favoriteCollectiveOfferTemplates,
-                    event_distance=(
-                        item.distanceInKm
-                        if item.collective_offer_template.offerVenue["addressType"]
-                        == OfferAddressType.OFFERER_VENUE.value
-                        else None
-                    ),
-                    venue_distance=item.distanceInKm,
+            serialize_collective_offer_template(
+                offer=item.collective_offer_template,
+                is_favorite=item.collective_offer_template in redactor.favoriteCollectiveOfferTemplates,
+                event_distance=(
+                    item.distanceInKm
+                    if item.collective_offer_template.offerVenue["addressType"] == OfferAddressType.OFFERER_VENUE.value
+                    else None
                 ),
+                venue_distance=item.distanceInKm,
             )
             for item in playlist_items
         ]

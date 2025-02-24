@@ -11,7 +11,7 @@ class AdageFavoriteDeleteTest:
         template = educational_factories.CollectiveOfferTemplateFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
 
-        educational_redactor = educational_factories.EducationalRedactorWithFavoriteCollectiveOfferTemplate(
+        educational_redactor = educational_factories.EducationalRedactorWithFavoriteCollectiveOfferTemplateFactory(
             favoriteCollectiveOfferTemplates=[template]
         )
 
@@ -30,7 +30,7 @@ class AdageFavoriteDeleteTest:
         template = educational_factories.CollectiveOfferTemplateFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
 
-        educational_redactor = educational_factories.EducationalRedactorWithFavoriteCollectiveOfferTemplate(
+        educational_redactor = educational_factories.EducationalRedactorWithFavoriteCollectiveOfferTemplateFactory(
             favoriteCollectiveOfferTemplates=[template]
         )
 

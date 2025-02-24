@@ -306,10 +306,9 @@ class DeleteVenueTest:
     def test_delete_cascade_venue_should_remove_collective_offers_stocks_and_templates(self):
         # Given
         venue_to_delete = offerers_factories.VenueFactory()
-        offer1 = educational_factories.CollectiveOfferFactory(venue=venue_to_delete)
-        educational_factories.EducationalRedactorWithFavoriteCollectiveOffer(favoriteCollectiveOffers=[offer1])
+        educational_factories.CollectiveOfferFactory(venue=venue_to_delete)
         template1 = educational_factories.CollectiveOfferTemplateFactory(venue=venue_to_delete)
-        educational_factories.EducationalRedactorWithFavoriteCollectiveOfferTemplate(
+        educational_factories.EducationalRedactorWithFavoriteCollectiveOfferTemplateFactory(
             favoriteCollectiveOfferTemplates=[template1]
         )
         educational_factories.CollectiveStockFactory(collectiveOffer__venue=venue_to_delete)
@@ -1213,7 +1212,7 @@ class DeleteOffererTest:
         # Given
         venue = offerers_factories.CollectiveVenueFactory()
         template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
-        educational_factories.EducationalRedactorWithFavoriteCollectiveOfferTemplate(
+        educational_factories.EducationalRedactorWithFavoriteCollectiveOfferTemplateFactory(
             favoriteCollectiveOfferTemplates=[template]
         )
         educational_factories.PlaylistFactory(venue=venue, collective_offer_template=None)

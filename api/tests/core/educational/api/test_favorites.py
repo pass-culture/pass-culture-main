@@ -14,15 +14,6 @@ def redactor_fixture():
 
 class GetRedactorAllFavoritesCountTest:
     def test_count(self, redactor):
-        redactor.favoriteCollectiveOffers = [factories.CollectiveStockFactory().collectiveOffer]
-        redactor.favoriteCollectiveOfferTemplates = [factories.CollectiveOfferTemplateFactory()]
-        assert get_redactor_favorites_count(redactor.id) == 1
-
-    def test_only_collective_offers(self, redactor):
-        redactor.favoriteCollectiveOffers = [factories.CollectiveStockFactory().collectiveOffer]
-        assert get_redactor_favorites_count(redactor.id) == 0
-
-    def test_only_collective_offer_templates(self, redactor):
         redactor.favoriteCollectiveOfferTemplates = [factories.CollectiveOfferTemplateFactory()]
         assert get_redactor_favorites_count(redactor.id) == 1
 
@@ -30,7 +21,6 @@ class GetRedactorAllFavoritesCountTest:
         assert get_redactor_favorites_count(redactor.id) == 0
 
     def test_ignore_not_eligible_for_search_offers(self, redactor):
-        redactor.favoriteCollectiveOffers = [factories.CollectiveStockFactory().collectiveOffer]
         redactor.favoriteCollectiveOfferTemplates = [factories.CollectiveOfferTemplateFactory()]
         factories.CollectiveOfferFactory(teacher=redactor)
         assert get_redactor_favorites_count(redactor.id) == 1

@@ -1288,30 +1288,6 @@ def get_educational_institution_public(
     ).one_or_none()
 
 
-def get_all_offer_by_redactor_id(redactor_id: int) -> list[educational_models.CollectiveOffer]:
-    return (
-        educational_models.CollectiveOffer.query.join(
-            educational_models.EducationalRedactor, educational_models.CollectiveOffer.educationalRedactorsFavorite
-        )
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
-                educational_models.CollectiveStock.collectiveBookings
-            ),
-            sa_orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
-            sa_orm.joinedload(educational_models.CollectiveOffer.domains),
-            sa_orm.joinedload(educational_models.CollectiveOffer.teacher),
-            sa_orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(
-                offerers_models.Venue.managingOfferer
-            ),
-            sa_orm.joinedload(educational_models.CollectiveOffer.venue).selectinload(
-                offerers_models.Venue.googlePlacesInfo
-            ),
-        )
-        .filter(educational_models.EducationalRedactor.id == redactor_id)
-        .all()
-    )
-
-
 def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[educational_models.CollectiveOfferTemplate]:
     return (
         educational_models.CollectiveOfferTemplate.query.join(
@@ -1330,20 +1306,6 @@ def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[educational_
         .filter(educational_models.EducationalRedactor.id == redactor_id)
         .all()
     )
-
-
-def get_user_favorite_offers_from_uai(redactor_id: int | None, uai: str) -> set[int]:
-    if not redactor_id:
-        return set()
-    query = (
-        educational_models.CollectiveOffer.query.join(
-            educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
-        )
-        .filter(educational_models.EducationalInstitution.institutionId == uai)
-        .join(educational_models.EducationalRedactor, educational_models.CollectiveOffer.educationalRedactorsFavorite)
-        .filter(educational_models.EducationalRedactor.id == redactor_id)
-    )
-    return {offer.id for offer in query}
 
 
 def get_venue_base_query() -> BaseQuery:

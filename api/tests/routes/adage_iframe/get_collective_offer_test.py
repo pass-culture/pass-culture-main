@@ -60,10 +60,9 @@ class CollectiveOfferTest:
         # 1. fetch redactor
         # 2. fetch collective offer and related data
         # 3. fetch the offerVenue's details (Venue)
-        # 4. find out if its a redactor's favorite
-        # 5. fetch feature toggle
-        # 6. fetch the venue's images
-        with assert_num_queries(6):
+        # 4. fetch feature toggle
+        # 5. fetch the venue's images
+        with assert_num_queries(5):
             response = eac_client.get(dst)
 
         # Then
@@ -137,31 +136,9 @@ class CollectiveOfferTest:
                 "civility": offer.teacher.civility,
             },
             "nationalProgram": {"id": offer.nationalProgramId, "name": offer.nationalProgram.name},
-            "isFavorite": False,
             "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
             "isTemplate": False,
         }
-
-    def test_is_a_redactors_favorite(self, eac_client):
-        """Ensure that the isFavorite field is true only if the
-        redactor added it to its favorites.
-        """
-        offer = educational_factories.CollectiveStockFactory().collectiveOffer
-        educational_factories.EducationalRedactorFactory(email=EMAIL, favoriteCollectiveOffers=[offer])
-
-        dst = url_for("adage_iframe.get_collective_offer", offer_id=offer.id)
-
-        # 1. fetch redactor
-        # 2. fetch collective offer and related data
-        # 3. find out if its a redactor's favorite
-        # 4. fetch feature toggle
-        # 5. fetch the venue's images
-        with assert_num_queries(5):
-            response = eac_client.get(dst)
-
-        # Then
-        assert response.status_code == 200
-        assert response.json["isFavorite"]
 
     def test_should_return_404_when_no_collective_offer(self, eac_client, redactor):
         response = eac_client.get("/adage-iframe/collective/offers/0")
