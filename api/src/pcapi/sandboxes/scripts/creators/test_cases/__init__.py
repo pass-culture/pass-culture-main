@@ -17,6 +17,8 @@ from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.finance.enum import DepositType
 from pcapi.core.finance.factories import RecreditFactory
 from pcapi.core.finance.models import RecreditType
+from pcapi.core.fraud import factories as fraud_factories
+from pcapi.core.fraud.models import FraudCheckType
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
@@ -183,24 +185,23 @@ def create_users_for_credit_v3_tests() -> None:
         firstName="User18",
         lastName="Redepotavantdecret",
         email="user18redepotapresdecret@test.com",
-        validatedBirthDate=user_birthdate,
-        deposit__dateCreated=one_day_after_decree,
         dateCreated=first_activation_date,
+        age=17,  # set at 17yo and correct at 18yo afterwards
     )
-    # then add the previous deposit they would have had at 15
-    user18_redepotapresdecret_underage_deposit = users_factories.DepositGrantFactory(
-        user=user18_redepotapresdecret,
-        dateCreated=first_activation_date,
-        type=DepositType.GRANT_15_17,
-        amount=20 + 30 + 30,
-        expirationDate=user_birthdate + relativedelta(years=18),
-    )
-    RecreditFactory(
-        deposit=user18_redepotapresdecret_underage_deposit, amount=30, recreditType=RecreditType.RECREDIT_16
-    )
-    RecreditFactory(
-        deposit=user18_redepotapresdecret_underage_deposit, amount=30, recreditType=RecreditType.RECREDIT_17
-    )
+    # then update the deposit they would have had at 15
+    RecreditFactory(deposit=user18_redepotapresdecret.deposit, amount=30, recreditType=RecreditType.RECREDIT_16)
+    RecreditFactory(deposit=user18_redepotapresdecret.deposit, amount=30, recreditType=RecreditType.RECREDIT_17)
+    user18_redepotapresdecret.deposit.expirationDate = user_birthdate + relativedelta(years=21)
+    user18_redepotapresdecret.deposit.amount = 20 + 30 + 30  # 20 initial amount + 2 recredits above
+
+    # Set real age to 18
+    user18_redepotapresdecret.validatedBirthDate = user_birthdate.date()
+    # finish missing steps
+    fraud_factories.BeneficiaryFraudCheckFactory(user=user18_redepotapresdecret, type=FraudCheckType.UBBLE)
+    fraud_factories.PhoneValidationFraudCheckFactory(user=user18_redepotapresdecret)
+    user18_redepotapresdecret.phoneNumber = "+33612345678"
+    fraud_factories.ProfileCompletionFraudCheckFactory(user=user18_redepotapresdecret)
+    fraud_factories.HonorStatementFraudCheckFactory(user=user18_redepotapresdecret)
 
     ## 17yo user, beneficiary, with birthday before decree
     first_activation_date = one_day_before_decree - relativedelta(years=2)  # User created at 15 yo
@@ -229,18 +230,19 @@ def create_users_for_credit_v3_tests() -> None:
     # Add recredit 16
     RecreditFactory(deposit=user_17_after_decree.deposit, amount=30, recreditType=RecreditType.RECREDIT_16)
     # Set real age to 17
-    user_17_after_decree.validatedBirthDate = one_day_after_decree - relativedelta(years=17)
+    user_17_after_decree.validatedBirthDate = (one_day_after_decree - relativedelta(years=17)).date()
 
     ## 16yo user, beneficiary, with birthday before decree
     user_16_before_decree = users_factories.BeneficiaryFactory(
         firstName="User16",
         lastName="Anniversaireavantreforme",
         email="user16anniversaireavantdecret@test.com",
-        age=15,  # create user at 15 yo
+        validatedBirthDate=one_day_before_decree - relativedelta(years=16),
         deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - datetime.timedelta(days=1),
+        deposit__amount=20 + 30,
     )
-    # Set real age to 16
-    user_16_before_decree.validatedBirthDate = one_day_before_decree - relativedelta(years=16)
+    # Set Recredits that happened before the decree
+    RecreditFactory(deposit=user_16_before_decree.deposit, amount=30, recreditType=RecreditType.RECREDIT_16)
 
     ## 16yo user, beneficiary, with birthday after decree
     user_16_after_decree = users_factories.BeneficiaryFactory(
@@ -251,7 +253,7 @@ def create_users_for_credit_v3_tests() -> None:
         deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - datetime.timedelta(days=1),
     )
     # Set real age to 16
-    user_16_after_decree.validatedBirthDate = one_day_after_decree - relativedelta(years=16)
+    user_16_after_decree.validatedBirthDate = (one_day_after_decree - relativedelta(years=16)).date()
 
 
 def create_artists() -> None:
