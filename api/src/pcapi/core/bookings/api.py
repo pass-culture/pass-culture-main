@@ -421,10 +421,12 @@ def _book_cinema_external_ticket(booking: Booking, stock: Stock, beneficiary: Us
             if FeatureToggle.DISABLE_EMS_EXTERNAL_BOOKINGS.is_active():
                 raise feature.DisabledFeatureError("DISABLE_EMS_EXTERNAL_BOOKINGS is active")
         case _:
-            raise providers_exceptions.UnknownProvider(f"Unknown Provider: {venue_provider_name}")
+            raise external_bookings_exceptions.ExternalBookingConfigurationException(
+                f"Unknown cinema provider: {venue_provider_name}"
+            )
     show_id = cinema_providers_utils.get_showtime_id_from_uuid(stock.idAtProviders, venue_provider_name)
     if not show_id:
-        raise providers_exceptions.ShowIdNotFound("Could not retrieve show_id")
+        raise external_bookings_exceptions.ExternalBookingConfigurationException("Could not retrieve show_id")
     try:
         tickets = external_bookings_api.book_cinema_ticket(
             venue_id=stock.offer.venueId,
