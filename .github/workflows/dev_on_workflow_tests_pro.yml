@@ -21,10 +21,18 @@ jobs:
     name: "Code/Type/Style Quality check"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4
+      - name: Enable Corepack
+        run: corepack enable
       - uses: actions/setup-node@v4
         with:
           node-version-file: "pro/.nvmrc"
+      - run: yarn install
+      - run: yarn tsc -b
+      - run: yarn lint:dead-code
+      - run: yarn lint:js
+      - run: yarn lint:scss
+
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
@@ -36,11 +44,6 @@ jobs:
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - run: yarn install --immutable
-      - run: yarn tsc -b
-      - run: yarn lint:dead-code
-      - run: yarn lint:js
-      - run: yarn lint:scss
 
   pro-run-tests:
     name: "Pro Unit tests"
@@ -50,7 +53,10 @@ jobs:
         shardIndex: [1, 2]
         shardTotal: [2]
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
 
       - uses: actions/setup-node@v4
         with:
@@ -62,6 +68,8 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
+      - run: yarn install
+
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
@@ -73,8 +81,6 @@ jobs:
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - run: yarn install --immutable
 
       - name: Run tests with coverage
         run: yarn test:unit:ci --reporter=blob --reporter=allure-vitest/reporter --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
@@ -153,11 +159,15 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4
+      - name: Enable Corepack
+        run: corepack enable
 
       - uses: actions/setup-node@v4
         with:
           node-version-file: "pro/.nvmrc"
+
+      - run: yarn install
 
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
@@ -170,8 +180,6 @@ jobs:
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - run: yarn install --immutable
 
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4

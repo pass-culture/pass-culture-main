@@ -65,3 +65,5 @@ allure-report/
 
 # proxy environement management
 /proxy/build
+
+.yarn/
