@@ -2611,10 +2611,10 @@
   dependencies:
     query-string "*"
 
-"@types/react-avatar-editor@^13.0.3":
-  version "13.0.3"
-  resolved "https://registry.yarnpkg.com/@types/react-avatar-editor/-/react-avatar-editor-13.0.3.tgz#98f4dc5a2413c1436b0bee7c08b43ccbc3b2d067"
-  integrity sha512-icRAOKLKjkIsExFAiFSquztByJwpyTKEgnBRYSuLG2V81bM3LtQZi7hRS+Hr+4AXreq0yNRjVZiMOVeEeh6DLg==
+"@types/react-avatar-editor@^13.0.4":
+  version "13.0.4"
+  resolved "https://registry.yarnpkg.com/@types/react-avatar-editor/-/react-avatar-editor-13.0.4.tgz#df1eb46b380cda6f1db16b34bfb8519036d7d04e"
+  integrity sha512-WQjmacEOoEYQb6CkAXYspmtruCPXFzLjEI92zV27yqveGBRkh7Quo5oYMvAgaEeqpXsGEr/wzXcdSTaH982Wtg==
   dependencies:
     "@types/react" "*"
 
