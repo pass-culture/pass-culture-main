@@ -1,15 +1,13 @@
 import classnames from 'classnames'
-import { FormikProvider, useFormik } from 'formik'
-import isEqual from 'lodash.isequal'
 import { useState, useEffect, useRef } from 'react'
+import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
-import * as yup from 'yup'
 
 import { useVenuesFromOfferer } from 'commons/hooks/swr/useVenuesFromOfferer'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { useIncome } from 'pages/Reimbursements/Income/useIncome'
-import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
+import { MultiSelect } from 'ui-kit/MultiSelect/MultiSelect'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './Income.module.scss'
@@ -17,89 +15,77 @@ import { IncomeError } from './IncomeError/IncomeError'
 import { IncomeNoData } from './IncomeNoData/IncomeNoData'
 import { IncomeResultsBox } from './IncomeResultsBox/IncomeResultsBox'
 
+type Option = {
+  id: string
+  label: string
+}
+
 type VenueFormValues = {
-  selectedVenues: string[]
-  'search-selectedVenues': string
+  selectedVenues: Option[]
 }
 
 export const Income = () => {
   const firstYearFilterRef = useRef<HTMLButtonElement>(null)
-
-  const [previouslySelectedOffererId, setPreviouslySelectedOffererId] =
-    useState<number | null>(null)
-  const [debouncedSelectedVenues, setDebouncedSelectedVenues] = useState<
-    string[]
-  >([])
   const [activeYear, setActiveYear] = useState<number>()
-
   const selectedOffererId = useSelector(selectCurrentOffererId)
+
   const {
     data: venues,
     isLoading: areVenuesLoading,
     error: venuesApiError,
   } = useVenuesFromOfferer(selectedOffererId)
-  const hasVenuesData = venues.length > 0
-  const venuesDataReady = !areVenuesLoading && !venuesApiError && hasVenuesData
-  const hasSingleVenue = venuesDataReady && venues.length === 1
-  const venueValues = venues.map((v: {
-    value: string
-    label: string
-  }) => v.value)
 
-  const formik = useFormik<VenueFormValues>({
-    // SelectAutocomplete has two fields:
-    // - selectedVenues: for the <select> menu & SelectedValuesTags
-    // - 'search-selectedVenues': for the search input
-    initialValues: {
+  const venueValues = venues.map((v) => ({
+    id: v.value,
+    label: v.label,
+  }))
+
+  const {
+    register,
+    watch,
+    setValue,
+    setError,
+    reset,
+    formState: { errors },
+  } = useForm<VenueFormValues>({
+    values: {
       selectedVenues: venueValues,
-      'search-selectedVenues': '',
     },
-    validationSchema: yup.object().shape({
-      selectedVenues: yup.array().test({
-        name: 'selectedVenues',
-        message: 'Vous devez sélectionner au moins un partenaire',
-        test: (value) => {
-          return (value || []).length > 0
-        },
-      }),
-      'search-selectedVenues': yup.string(),
-    }),
-    enableReinitialize: true,
-    onSubmit: () => {},
   })
 
-  useEffect(() => {
-    const newSelectedVenues = [...formik.values.selectedVenues]
-    const selectionHasChanged = !isEqual(
-      newSelectedVenues,
-      debouncedSelectedVenues
-    )
+  const selectedWatch = watch('selectedVenues')
+  const selected = selectedWatch.map((v) => v.id)
 
-    if (selectionHasChanged) {
-      if (selectedOffererId !== previouslySelectedOffererId) {
-        // Offerer has changed.
-        setDebouncedSelectedVenues(newSelectedVenues)
-        setPreviouslySelectedOffererId(selectedOffererId)
-      } else if (newSelectedVenues.length !== 0) {
-        // Venues have changed.
-        const debounced = setTimeout(() => {
-          setDebouncedSelectedVenues(newSelectedVenues)
-          setActiveYear(undefined)
-        }, 1000)
-        return () => clearTimeout(debounced)
-      }
+  const hasVenuesData = venues.length > 0
+  const hasSingleVenue = venues.length === 1
+
+  const onChange = (selectedOption: any[]) => {
+    if (selectedOption.length === 0) {
+      setError('selectedVenues', {
+        message: 'Vous devez sélectionner au moins un partenaire',
+      })
+    } else {
+      reset()
     }
 
-    return
-  }, [selectedOffererId, formik.values])
+    const debounced = setTimeout(() => {
+      setValue(
+        'selectedVenues',
+        selectedOption.map((v) => v)
+      )
+    }, 1000)
+    return () => clearTimeout(debounced)
+  }
 
   const {
     isIncomeLoading,
     incomeApiError,
     incomeDataReady,
     incomeByYear,
+    hasIncomeData,
     years,
-  } = useIncome(debouncedSelectedVenues)
+  } = useIncome(selected)
+
   const finalActiveYear = activeYear || years[0]
   const activeYearIncome = incomeByYear?.[finalActiveYear] || {}
   const activeYearHasData =
@@ -113,116 +99,119 @@ export const Income = () => {
     }
   }, [hasSingleVenue, incomeDataReady])
 
+  if (areVenuesLoading) {
+    return <Spinner testId="venues-spinner" />
+  }
+
+  if (venuesApiError) {
+    return <IncomeError />
+  }
+
   return (
     <>
-      <div role="status">
-        {!venuesDataReady && (
-          <>
-            {areVenuesLoading ? (
-              <Spinner testId="venues-spinner" />
-            ) : venuesApiError ? (
-              <IncomeError />
-            ) : (
-              <IncomeNoData type="venues" />
-            )}
-          </>
-        )}
-      </div>
-      {venuesDataReady && (
+      {!hasVenuesData ? (
+        <IncomeNoData type="venues" />
+      ) : (
         <>
-          {!hasSingleVenue && <FormLayout.MandatoryInfo />}
-          <div className={styles['income-filters']}>
-            <FormikProvider value={formik}>
-              {!hasSingleVenue && (
-                <SelectAutocomplete
-                  className={styles['income-filters-by-venue']}
-                  selectedValuesTagsClassName={
-                    styles['income-filters-by-venue-selected-tags']
-                  }
-                  name="selectedVenues"
+          {!hasSingleVenue && (
+            <>
+              <FormLayout.MandatoryInfo />
+              <div className={styles['income-filters']}>
+                <MultiSelect
+                  {...register('selectedVenues', { minLength: 1 })}
+                  required={true}
+                  buttonLabel="Partenaire(s) sélectionné(s)"
+                  className={styles['income-input']}
                   label="Partenaire(s) sélectionné(s)"
-                  options={venues}
-                  multi
-                  shouldFocusOnMount
-                  preventOpenOnFirstFocus
+                  options={venueValues}
+                  defaultOptions={venueValues}
+                  hasSearch
+                  searchLabel="Recherche"
+                  onSelectedOptionsChanged={(selectedOption) =>
+                    onChange(selectedOption)
+                  }
+                  error={errors.selectedVenues?.message}
+                  onBlur={() => {}}
                 />
+              </div>
+            </>
+          )}
+
+          {isIncomeLoading ? (
+            <div id="income-results" role="status">
+              <Spinner testId="income-spinner" />
+            </div>
+          ) : incomeApiError ? (
+            <div id="income-results" role="status">
+              <IncomeError />
+            </div>
+          ) : (
+            <>
+              {!hasIncomeData ? (
+                <IncomeNoData type="income" />
+              ) : (
+                <>
+                  <ul
+                    className={classnames(
+                      styles['income-filters'],
+                      styles['income-filters-by-year'],
+                      {
+                        [styles['income-filters-by-year-is-only-filter']]:
+                          hasSingleVenue,
+                      }
+                    )}
+                    aria-label="Filtrage par année"
+                  >
+                    {years.map((year) => (
+                      <li key={year}>
+                        <button
+                          id={`income-filter-by-year-${year}-${year === finalActiveYear}`}
+                          {...(year === finalActiveYear
+                            ? { ref: firstYearFilterRef }
+                            : {})}
+                          type="button"
+                          onClick={() => setActiveYear(year)}
+                          aria-label={`Afficher les revenus de l'année ${year}`}
+                          aria-controls="income-results"
+                          aria-current={year === finalActiveYear}
+                          className={classnames(
+                            styles['income-filters-by-year-button'],
+                            {
+                              [styles['income-filters-by-year-button-active']]:
+                                year === finalActiveYear,
+                            }
+                          )}
+                        >
+                          {year}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {!activeYearHasData ? (
+                    <IncomeNoData type="income-year" />
+                  ) : (
+                    <div className={styles['income-results']}>
+                      {activeYearIncome.revenue && (
+                        <div className={styles['income-box']}>
+                          <IncomeResultsBox
+                            type="revenue"
+                            income={activeYearIncome.revenue}
+                          />
+                        </div>
+                      )}
+                      {activeYearIncome.expectedRevenue && (
+                        <IncomeResultsBox
+                          type="expectedRevenue"
+                          income={activeYearIncome.expectedRevenue}
+                        />
+                      )}
+                    </div>
+                  )}
+                </>
               )}
-            </FormikProvider>
-            {incomeDataReady && (
-              <>
-                {!hasSingleVenue && (
-                  <span className={styles['income-filters-divider']} />
-                )}
-                <ul
-                  className={classnames(styles['income-filters-by-year'], {
-                    [styles['income-filters-by-year-is-only-filter']]:
-                      hasSingleVenue,
-                  })}
-                  aria-label="Filtrage par année"
-                >
-                  {years.map((year) => (
-                    <li key={year}>
-                      <button
-                        id={`income-filter-by-year-${year}-${year === finalActiveYear}`}
-                        {...(year === finalActiveYear
-                          ? { ref: firstYearFilterRef }
-                          : {})}
-                        type="button"
-                        onClick={() => setActiveYear(year)}
-                        aria-label={`Afficher les revenus de l'année ${year}`}
-                        aria-controls="income-results"
-                        aria-current={year === finalActiveYear}
-                        className={classnames(
-                          styles['income-filters-by-year-button'],
-                          {
-                            [styles['income-filters-by-year-button-active']]:
-                              year === finalActiveYear,
-                          }
-                        )}
-                      >
-                        {year}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </div>
-          <div id="income-results" role="status">
-            {!incomeDataReady && (
-              <>
-                {isIncomeLoading ? (
-                  <Spinner testId="income-spinner" />
-                ) : incomeApiError ? (
-                  <IncomeError />
-                ) : (
-                  <IncomeNoData type="income" />
-                )}
-              </>
-            )}
-            {incomeDataReady && (
-              <>
-                {!activeYearHasData ? (
-                  <IncomeNoData type="income-year" />
-                ) : (
-                  <div className={styles['income-results']}>
-                    {activeYearIncome.revenue && (
-                      <IncomeResultsBox
-                        type="revenue"
-                        income={activeYearIncome.revenue}
-                      />
-                    )}
-                    {activeYearIncome.expectedRevenue && (
-                      <IncomeResultsBox
-                        type="expectedRevenue"
-                        income={activeYearIncome.expectedRevenue}
-                      />
-                    )}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+            </>
+          )}
         </>
       )}
     </>

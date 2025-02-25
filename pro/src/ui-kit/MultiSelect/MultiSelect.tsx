@@ -1,5 +1,12 @@
 import cn from 'classnames'
-import { useEffect, useId, useRef, useState } from 'react'
+import {
+  ForwardedRef,
+  forwardRef,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react'
 
 import { useOnClickOrFocusOutside } from 'commons/hooks/useOnClickOrFocusOutside'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
@@ -107,149 +114,156 @@ type MultiSelectProps = {
  * - When open, the dropdown panel is navigable using arrow keys.
  *
  */
-export const MultiSelect = ({
-  className,
-  options,
-  selectedOptions,
-  defaultOptions = [],
-  hasSearch = false,
-  searchLabel,
-  label,
-  hasSelectAllOptions,
-  disabled = false,
-  onSelectedOptionsChanged,
-  error,
-  name,
-  buttonLabel,
-  required = false,
-  asterisk = true,
-  onBlur,
-}: MultiSelectProps): JSX.Element => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [selectedItems, setSelectedItems] = useState<Option[]>(defaultOptions)
-  const isSelectAllChecked = selectedItems.length === options.length
+export const MultiSelect = forwardRef(
+  (
+    {
+      className,
+      options,
+      selectedOptions,
+      defaultOptions = [],
+      hasSearch = false,
+      searchLabel,
+      label,
+      hasSelectAllOptions,
+      disabled = false,
+      onSelectedOptionsChanged,
+      error,
+      name,
+      buttonLabel,
+      required = false,
+      asterisk = true,
+      onBlur,
+    }: MultiSelectProps,
+    forwardedRef: ForwardedRef<HTMLFieldSetElement>
+  ): JSX.Element => {
+    const [isOpen, setIsOpen] = useState(false)
+    const [selectedItems, setSelectedItems] = useState<Option[]>(defaultOptions)
+    const isSelectAllChecked = selectedItems.length === options.length
 
-  const containerRef = useRef<HTMLDivElement>(null)
-  const id = useId()
+    const containerRef = useRef<HTMLDivElement>(null)
+    const id = useId()
 
-  const toggleDropdown = () => setIsOpen((prev) => !prev)
+    const toggleDropdown = () => setIsOpen((prev) => !prev)
 
-  useEffect(() => {
-    if (selectedOptions) {
-      setSelectedItems(selectedOptions)
+    useEffect(() => {
+      if (selectedOptions) {
+        setSelectedItems(selectedOptions)
+      }
+    }, [selectedOptions])
+
+    function updateSelectedItems(updatedSelectedItems: Option[]) {
+      const currentIds = new Set(selectedItems.map((item) => item.id))
+      const updatedIds = new Set(updatedSelectedItems.map((item) => item.id))
+
+      const removedOptionsIds = new Set(
+        [...currentIds].filter((id) => !updatedIds.has(id))
+      )
+
+      const addedOptionsIds = new Set(
+        [...updatedIds].filter((id) => !currentIds.has(id))
+      )
+
+      onSelectedOptionsChanged(
+        updatedSelectedItems,
+        options.filter((op) => addedOptionsIds.has(op.id)),
+        options.filter((op) => removedOptionsIds.has(op.id))
+      )
+      setSelectedItems(updatedSelectedItems)
     }
-  }, [selectedOptions])
 
-  function updateSelectedItems(updatedSelectedItems: Option[]) {
-    const currentIds = new Set(selectedItems.map((item) => item.id))
-    const updatedIds = new Set(updatedSelectedItems.map((item) => item.id))
+    const handleSelectItem = (item: Option) => {
+      const updatedItems = selectedItems.some((i) => i.id === item.id)
+        ? selectedItems.filter((i) => i.id !== item.id)
+        : [...selectedItems, item]
 
-    const removedOptionsIds = new Set(
-      [...currentIds].filter((id) => !updatedIds.has(id))
-    )
-
-    const addedOptionsIds = new Set(
-      [...updatedIds].filter((id) => !currentIds.has(id))
-    )
-
-    onSelectedOptionsChanged(
-      updatedSelectedItems,
-      options.filter((op) => addedOptionsIds.has(op.id)),
-      options.filter((op) => removedOptionsIds.has(op.id))
-    )
-    setSelectedItems(updatedSelectedItems)
-  }
-
-  const handleSelectItem = (item: Option) => {
-    const updatedItems = selectedItems.some((i) => i.id === item.id)
-      ? selectedItems.filter((i) => i.id !== item.id)
-      : [...selectedItems, item]
-
-    updateSelectedItems(updatedItems)
-  }
-
-  const handleSelectAll = () => {
-    const updatedItems = isSelectAllChecked ? [] : options
-    updateSelectedItems(updatedItems)
-  }
-
-  const handleRemoveTag = (itemId: string) => {
-    const updatedItems = selectedItems.filter((item) => item.id !== itemId)
-    updateSelectedItems(updatedItems)
-  }
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') {
-      setIsOpen(false)
+      updateSelectedItems(updatedItems)
     }
-  }
 
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
+    const handleSelectAll = () => {
+      const updatedItems = isSelectAllChecked ? [] : options
+      updateSelectedItems(updatedItems)
     }
-  }, [])
 
-  useOnClickOrFocusOutside(containerRef, () => setIsOpen(false))
+    const handleRemoveTag = (itemId: string) => {
+      const updatedItems = selectedItems.filter((item) => item.id !== itemId)
+      updateSelectedItems(updatedItems)
+    }
 
-  return (
-    <fieldset className={styles.container} onBlur={onBlur}>
-      {label && (
-        <label className={styles['container-label']}>
-          {label} {required && asterisk && '*'}
-        </label>
-      )}
-      <div className={cn(className, styles['container-input'])}>
-        <div ref={containerRef}>
-          <MultiSelectTrigger
-            id={id}
-            buttonLabel={buttonLabel}
-            fieldLabel={label}
-            isOpen={isOpen}
-            toggleDropdown={toggleDropdown}
-            selectedCount={selectedItems.length}
-            disabled={disabled}
-            error={error}
-          />
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false)
+      }
+    }
 
-          {isOpen && (
-            <MultiSelectPanel
-              id={id}
-              label={label}
-              options={options.map((option) => ({
-                ...option,
-                checked: selectedItems.some((item) => item.id === option.id),
-              }))}
-              onOptionSelect={handleSelectItem}
-              onSelectAll={handleSelectAll}
-              isAllChecked={isSelectAllChecked}
-              hasSearch={hasSearch}
-              searchLabel={searchLabel}
-              hasSelectAllOptions={hasSelectAllOptions}
-            />
-          )}
-        </div>
-        <div
-          role="alert"
-          className={styles['container-error']}
-          id={`error-details-${name}`}
-        >
-          {error && <FieldError name={name}>{error}</FieldError>}
-        </div>
-      </div>
+    useEffect(() => {
+      document.addEventListener('keydown', handleKeyDown)
 
-      <SelectedValuesTags
-        disabled={disabled}
-        selectedOptions={selectedItems.map((item) => item.id)}
-        removeOption={handleRemoveTag}
-        fieldName="tags"
-        optionsLabelById={selectedItems.reduce(
-          (acc, item) => ({ ...acc, [item.id]: item.label }),
-          {}
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown)
+      }
+    }, [])
+
+    useOnClickOrFocusOutside(containerRef, () => setIsOpen(false))
+
+    return (
+      <fieldset className={styles.container} onBlur={onBlur} ref={forwardedRef}>
+        {label && (
+          <label className={styles['container-label']}>
+            {label} {required && asterisk && '*'}
+          </label>
         )}
-      />
-    </fieldset>
-  )
-}
+        <div className={cn(className, styles['container-input'])}>
+          <div ref={containerRef}>
+            <MultiSelectTrigger
+              id={id}
+              buttonLabel={buttonLabel}
+              fieldLabel={label}
+              isOpen={isOpen}
+              toggleDropdown={toggleDropdown}
+              selectedCount={selectedItems.length}
+              disabled={disabled}
+              error={error}
+            />
+
+            {isOpen && (
+              <MultiSelectPanel
+                id={id}
+                label={label}
+                options={options.map((option) => ({
+                  ...option,
+                  checked: selectedItems.some((item) => item.id === option.id),
+                }))}
+                onOptionSelect={handleSelectItem}
+                onSelectAll={handleSelectAll}
+                isAllChecked={isSelectAllChecked}
+                hasSearch={hasSearch}
+                searchLabel={searchLabel}
+                hasSelectAllOptions={hasSelectAllOptions}
+              />
+            )}
+          </div>
+          <div
+            role="alert"
+            className={styles['container-error']}
+            id={`error-details-${name}`}
+          >
+            {error && <FieldError name={name}>{error}</FieldError>}
+          </div>
+        </div>
+
+        <SelectedValuesTags
+          disabled={disabled}
+          selectedOptions={selectedItems.map((item) => item.id)}
+          removeOption={handleRemoveTag}
+          fieldName="tags"
+          optionsLabelById={selectedItems.reduce(
+            (acc, item) => ({ ...acc, [item.id]: item.label }),
+            {}
+          )}
+        />
+      </fieldset>
+    )
+  }
+)
+
+MultiSelect.displayName = 'MultiSelect'

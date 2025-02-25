@@ -34,6 +34,7 @@ export const useIncome = (selectedVenues: string[]) => {
     incomeApiError,
     incomeDataReady,
     incomeByYear,
+    hasIncomeData,
     years,
   }
 }
