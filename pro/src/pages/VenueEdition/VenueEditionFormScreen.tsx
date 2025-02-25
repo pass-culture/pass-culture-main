@@ -5,7 +5,6 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { PartnerPageIndividualSection } from 'pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageIndividualSection'
 import { Callout } from 'ui-kit/Callout/Callout'
 
-import { AccesLibreSection } from './AccesLibreSection/AccesLibreSection'
 import { VenueEditionForm } from './VenueEditionForm'
 import styles from './VenueEditionFormScreen.module.scss'
 import { VenueEditionReadOnly } from './VenueEditionReadOnly'
@@ -58,13 +57,6 @@ export const VenueEditionFormScreen = ({
         <VenueEditionForm venue={venue} />
       ) : (
         <VenueEditionReadOnly venue={venue} />
-      )}
-
-      {venue.externalAccessibilityData && (
-        <>
-          <hr className={styles['separator']} />
-          <AccesLibreSection venue={venue} />
-        </>
       )}
     </>
   )

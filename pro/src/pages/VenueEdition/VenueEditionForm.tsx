@@ -17,7 +17,7 @@ import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
-import { Accessibility } from './Accessibility/Accessibility'
+import { AccessibilityForm } from './AccessibilityForm/AccessibilityForm'
 import { OpeningHoursForm } from './OpeningHoursForm/OpeningHoursForm'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
 import { serializeEditVenueBodyModel } from './serializers'
@@ -99,8 +99,8 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     }
   }
 
-  const showAccessibilitySection = !venue.externalAccessibilityData
-  const validateAccessibility = !venue.isVirtual && showAccessibilitySection
+  const isAccessibilityDefinedViaAccesLibre = !!venue.externalAccessibilityData
+  const validateAccessibility = !venue.isVirtual && !isAccessibilityDefinedViaAccesLibre
 
   return (
     <Formik
@@ -110,10 +110,9 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     >
       <Form>
         <ScrollToFirstErrorAfterSubmit />
-
         <FormLayout fullWidthActions>
           <FormLayout.Section title="Vos informations pour le grand public">
-            {showAccessibilitySection && <MandatoryInfo />}
+            {validateAccessibility && <MandatoryInfo />}
             <FormLayout.SubSection
               title="À propos de votre activité"
               description={
@@ -132,13 +131,16 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 />
               </FormLayout.Row>
             </FormLayout.SubSection>
-
             {venue.isPermanent && (
               <FormLayout.SubSection title="Horaires d'ouverture">
                 <OpeningHoursForm />
               </FormLayout.SubSection>
             )}
-
+            <AccessibilityForm
+              isVenuePermanent={Boolean(venue.isPermanent)}
+              externalAccessibilityId={venue.externalAccessibilityId}
+              externalAccessibilityData={venue.externalAccessibilityData}
+            />
             <FormLayout.SubSection
               title="Contact"
               description="Ces informations permettront aux bénéficiaires de vous contacter en cas de besoin."
@@ -150,7 +152,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   isOptional
                 />
               </FormLayout.Row>
-
               <FormLayout.Row>
                 <TextInput
                   name="email"
@@ -159,7 +160,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   isOptional
                 />
               </FormLayout.Row>
-
               <FormLayout.Row>
                 <TextInput
                   name="webSite"
@@ -169,13 +169,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 />
               </FormLayout.Row>
             </FormLayout.SubSection>
-
-            {showAccessibilitySection && (
-              <Accessibility
-                isCreatingVenue={false}
-                isVenuePermanent={Boolean(venue.isPermanent)}
-              />
-            )}
           </FormLayout.Section>
         </FormLayout>
 

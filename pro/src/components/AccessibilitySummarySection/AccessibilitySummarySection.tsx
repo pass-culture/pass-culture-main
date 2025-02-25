@@ -19,12 +19,14 @@ interface AccessibilitySummarySectionProps {
   accessibleItem: AccessibleItem
   accessibleWording: string
   callout?: ReactNode
+  shouldShowDivider?: boolean
 }
 
 export const AccessibilitySummarySection = ({
   accessibleItem,
   accessibleWording,
   callout,
+  shouldShowDivider = true,
 }: AccessibilitySummarySectionProps) => {
   const {
     visualDisabilityCompliant,
@@ -38,7 +40,7 @@ export const AccessibilitySummarySection = ({
     mentalDisabilityCompliant ||
     audioDisabilityCompliant
   return (
-    <SummarySubSection title="Modalités d’accessibilité">
+    <SummarySubSection title="Modalités d’accessibilité" shouldShowDivider={shouldShowDivider}>
       {callout && <div className={styles['callout']}>{callout}</div>}
       <SummaryDescriptionList
         descriptions={[
