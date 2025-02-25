@@ -254,9 +254,7 @@ class AccountTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         client.with_token(user.email)
 
-        expected_num_queries = (
-            7  # user + beneficiary_fraud_review + beneficiary_fraud_check + feature + deposit + booking + achievement
-        )
+        expected_num_queries = 8  # user + beneficiary_fraud_review + beneficiary_fraud_check + feature + deposit + booking + achievement + action_history
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
         assert response.status_code == 200
@@ -286,9 +284,7 @@ class AccountTest:
         )
 
         client.with_token(user.email)
-        expected_num_queries = (
-            7  # user + beneficiary_fraud_review + beneficiary_fraud_check + feature + deposit + booking + achievement
-        )
+        expected_num_queries = 8  # user + beneficiary_fraud_review + beneficiary_fraud_check + feature + deposit + booking + achievement + action_history
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
             assert response.status_code == 200

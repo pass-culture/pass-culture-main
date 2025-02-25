@@ -28,6 +28,7 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
+from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.repository import atomic
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_gdpr_users import create_industrial_gdpr_users
@@ -194,8 +195,13 @@ def create_users_for_credit_v3_tests() -> None:
     user18_redepotapresdecret.deposit.expirationDate = user_birthdate + relativedelta(years=21)
     user18_redepotapresdecret.deposit.amount = 20 + 30 + 30  # 20 initial amount + 2 recredits above
 
-    # Set real age to 18
-    user18_redepotapresdecret.validatedBirthDate = user_birthdate.date()
+    # Set real age to 18 via admin action
+    users_api.update_user_info(
+        user18_redepotapresdecret,
+        author=users_factories.AdminFactory(),
+        validated_birth_date=user_birthdate.date(),
+    )
+
     # finish missing steps
     fraud_factories.BeneficiaryFraudCheckFactory(user=user18_redepotapresdecret, type=FraudCheckType.UBBLE)
     fraud_factories.PhoneValidationFraudCheckFactory(user=user18_redepotapresdecret)
