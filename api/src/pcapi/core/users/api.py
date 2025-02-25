@@ -709,6 +709,15 @@ def update_user_info(
             user.validatedBirthDate = validated_birth_date
             if _has_underage_deposit(user) and not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
                 _update_underage_beneficiary_deposit_expiration_date(user)
+            if (
+                FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active()
+                and user.deposit
+                and user.has_active_deposit
+                and validated_birth_date is not None
+            ):
+                twenty_first_birthday = validated_birth_date + relativedelta(years=21)
+                user.deposit.expirationDate = datetime.datetime.combine(twenty_first_birthday, datetime.time.min)
+
     if id_piece_number is not UNCHANGED:
         if id_piece_number != user.idPieceNumber:
             snapshot.set("idPieceNumber", old=user.idPieceNumber, new=id_piece_number)
