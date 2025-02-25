@@ -187,6 +187,7 @@ def create_users_for_credit_v3_tests() -> None:
         email="user18redepotapresdecret@test.com",
         dateCreated=first_activation_date,
         age=17,  # set at 17yo and correct at 18yo afterwards
+        validatedBirthDate=one_day_after_decree.date() - relativedelta(years=17),
     )
     # then update the deposit they would have had at 15
     RecreditFactory(deposit=user18_redepotapresdecret.deposit, amount=30, recreditType=RecreditType.RECREDIT_16)
@@ -223,7 +224,8 @@ def create_users_for_credit_v3_tests() -> None:
         firstName="User17",
         lastName="Anniversaireaprèsréforme",
         email="user17anniversaireapresdecret@test.com",
-        age=16,  # create user at 16 yo, we chage it to 17 yo later
+        age=16,  # set at 16yo and correct at 17yo afterwards
+        validatedBirthDate=one_day_after_decree.date() - relativedelta(years=16),
         dateCreated=first_activation_date,
         deposit__amount=20 + 30,
     )

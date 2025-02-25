@@ -12,6 +12,7 @@ import uuid
 from dateutil.relativedelta import relativedelta
 import factory
 from factory import LazyAttribute
+from factory import LazyFunction
 import time_machine
 
 from pcapi import settings
@@ -56,7 +57,10 @@ class BaseUserFactory(BaseFactory):
     class Params:
         age = 40
 
-    dateOfBirth = LazyAttribute(lambda o: date.today() - relativedelta(years=o.age))
+    dateCreated = LazyFunction(datetime.utcnow)
+    dateOfBirth = LazyAttribute(
+        lambda o: datetime.combine((o.dateCreated - relativedelta(years=o.age)).date(), time.min)
+    )
     comment = LazyAttribute(lambda o: str(o.__dict__))
     isEmailValidated = False
 
@@ -236,7 +240,7 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
     - identity validation
     """
 
-    validatedBirthDate = LazyAttribute(lambda o: datetime.utcnow().date() - relativedelta(years=o.age))
+    validatedBirthDate = LazyAttribute(lambda o: o.dateCreated - relativedelta(years=o.age))
 
     @classmethod
     def set_custom_attributes(cls, obj: models.User, **kwargs: typing.Any) -> None:
