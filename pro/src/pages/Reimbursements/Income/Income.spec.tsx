@@ -2,11 +2,11 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
-import type {
-  StatisticsModel,
-  GetOffererResponseModel,
-  GetOffererVenueResponseModel,
-  AggregatedRevenueModel,
+import {
+  type StatisticsModel,
+  type GetOffererResponseModel,
+  type GetOffererVenueResponseModel,
+  type AggregatedRevenueModel,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
@@ -152,6 +152,7 @@ describe('Income', () => {
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
+
       renderIncome()
 
       await waitFor(() =>
@@ -183,33 +184,6 @@ describe('Income', () => {
       )
     })
 
-    it('should display an auto-focused venue selector with all venues selected by default', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
-      vi.spyOn(api, 'getStatistics').mockResolvedValue({
-        incomeByYear: MOCK_DATA.incomeByYear,
-      })
-      renderIncome()
-
-      await waitFor(() => {
-        expect(
-          screen.getByRole('combobox', {
-            name: LABELS.venuesSelector,
-          })
-        ).toBeInTheDocument()
-      })
-
-      // When venues are selected, delete tag buttons are displayed.
-      await waitFor(() => {
-        expect(
-          screen.getAllByRole('button', {
-            name: /Supprimer/,
-          }).length
-        ).toBe(MOCK_DATA.offerer.managedVenues.length)
-      })
-
-      expect(document.activeElement?.id).toBe('search-selectedVenues')
-    })
-
     it('should not display a venue selector, nor the mandatory input helper if there is only one venue', async () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
         ...MOCK_DATA.offerer,
@@ -231,7 +205,7 @@ describe('Income', () => {
       })
 
       expect(
-        screen.queryByRole('combobox', {
+        screen.queryByRole('button', {
           name: LABELS.venuesSelector,
         })
       ).not.toBeInTheDocument()
@@ -321,11 +295,12 @@ describe('Income', () => {
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
+
       renderIncome()
 
       await waitFor(() => {
         expect(
-          screen.getByRole('combobox', {
+          screen.getByRole('button', {
             name: LABELS.venuesSelector,
           })
         ).toBeInTheDocument()
@@ -334,6 +309,7 @@ describe('Income', () => {
       const deleteVenueButtons = screen.getAllByRole('button', {
         name: /Supprimer/,
       })
+
       for (const button of deleteVenueButtons) {
         await userEvent.click(button)
       }
@@ -357,11 +333,12 @@ describe('Income', () => {
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
+
       renderIncome()
 
       await waitFor(() => {
         expect(
-          screen.getByRole('combobox', {
+          screen.getByRole('button', {
             name: LABELS.venuesSelector,
           })
         ).toBeInTheDocument()

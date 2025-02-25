@@ -72,20 +72,26 @@ export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
       : income.individual
 
   return (
-    <BoxRounded className={styles['income-results-box']}>
-      <IncomeResultsSubBox title={totalLabel} number={total} help={totalHelp} />
-      {shouldDisplayIncomeDetails && (
-        <div className={styles['income-results-box-subbox']}>
-          <IncomeResultsSubBox
-            title="Part individuelle"
-            number={income.individual}
-          />
-          <IncomeResultsSubBox
-            title="Part collective"
-            number={income.collective}
-          />
-        </div>
-      )}
+    <BoxRounded>
+      <div className={styles['income-results-box']}>
+        <IncomeResultsSubBox
+          title={totalLabel}
+          number={total}
+          help={totalHelp}
+        />
+        {shouldDisplayIncomeDetails && (
+          <>
+            <IncomeResultsSubBox
+              title="Part individuelle"
+              number={income.individual}
+            />
+            <IncomeResultsSubBox
+              title="Part collective"
+              number={income.collective}
+            />
+          </>
+        )}
+      </div>
     </BoxRounded>
   )
 }
