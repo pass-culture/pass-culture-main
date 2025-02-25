@@ -859,6 +859,11 @@ class UnknownNationalProgram(OfferValidationError):
     msg = "National program unknown"
 
 
+class InactiveNationalProgram(OfferValidationError):
+    field = "national_program"
+    msg = "National program inactive"
+
+
 class IllegalNationalProgram(OfferValidationError):
     field = "national_program"
     msg = "National program known, but can't be used in this context"
@@ -870,18 +875,26 @@ class MissingDomains(OfferValidationError):
 
 
 def validate_national_program(
-    nationalProgramId: int | None, domains: typing.Sequence[educational_models.EducationalDomain] | None
+    national_program_id: int | None,
+    domains: typing.Sequence[educational_models.EducationalDomain] | None,
+    check_program_is_active: bool = True,
 ) -> None:
-    if not nationalProgramId:
+    if not national_program_id:
         return
 
     if not domains:
         raise MissingDomains()
 
-    nps = {np.id for domain in domains for np in domain.nationalPrograms}
-    if nationalProgramId not in nps:
-        if not np_api.get_national_program(nationalProgramId):
-            raise UnknownNationalProgram()
+    national_program = np_api.get_national_program(national_program_id)
+
+    if not national_program:
+        raise UnknownNationalProgram()
+
+    if check_program_is_active and not national_program.isActive:
+        raise InactiveNationalProgram()
+
+    valid_national_program_ids = {np.id for domain in domains for np in domain.nationalPrograms}
+    if national_program_id not in valid_national_program_ids:
         raise IllegalNationalProgram()
 
 

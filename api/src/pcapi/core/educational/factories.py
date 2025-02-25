@@ -352,6 +352,11 @@ class NationalProgramFactory(BaseFactory):
     name = factory.Sequence("Dispositif national {}".format)
 
 
+class DomainToNationalProgramFactory(BaseFactory):
+    class Meta:
+        model = models.DomainToNationalProgram
+
+
 class EducationalRedactorWithFavoriteCollectiveOffer(EducationalRedactorFactory):
     favoriteCollectiveOffers = factory.List([factory.SubFactory(CollectiveOfferFactory)])
 

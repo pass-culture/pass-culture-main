@@ -258,6 +258,9 @@ def create_collective_offer_template(
     db.session.flush()
 
     if offer_data.nationalProgramId:
+        offer_validation.validate_national_program(
+            national_program_id=offer_data.nationalProgramId, domains=educational_domains
+        )
         national_program_api.link_or_unlink_offer_to_program(offer_data.nationalProgramId, collective_offer_template)
 
     logger.info(
@@ -320,6 +323,9 @@ def create_collective_offer(
     db.session.flush()
 
     if offer_data.nationalProgramId:
+        offer_validation.validate_national_program(
+            national_program_id=offer_data.nationalProgramId, domains=educational_domains
+        )
         national_program_api.link_or_unlink_offer_to_program(offer_data.nationalProgramId, collective_offer)
 
     logger.info(
@@ -605,7 +611,11 @@ def edit_collective_offer_public(
                 raise exceptions.EducationalDomainsNotFound()
 
             if feature.FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API.is_active():
-                offer_validation.validate_national_program(new_values.get("nationalProgramId"), domains)
+                offer_validation.validate_national_program(
+                    national_program_id=new_values.get("nationalProgramId"),
+                    domains=domains,
+                    check_program_is_active=False,  # do not check if program is active so that existing offers with inactive program can still be patched
+                )
             offer.domains = domains
         elif key in ("educationalInstitutionId", "educationalInstitution"):
             if value is None:

@@ -110,8 +110,8 @@ describe('CollectiveDataEdition', () => {
       ],
     })
     vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([
-      { id: 1, name: 'domain 1' },
-      { id: 2, name: 'domain 2' },
+      { id: 1, name: 'domain 1', nationalPrograms: [] },
+      { id: 2, name: 'domain 2', nationalPrograms: [] },
     ])
     vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
     vi.spyOn(api, 'editVenueCollectiveData').mockResolvedValue({
