@@ -707,6 +707,15 @@ class UpdateUserInfoTest:
 
         assert user.deposits[0].expirationDate == underaged_beneficiary_expiration_date
 
+    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
+    def test_update_user_info_also_updates_deposit_expiration_date(self):
+        user = users_factories.BeneficiaryFactory()
+        previous_deposit_expiration_date = user.deposit.expirationDate
+        users_api.update_user_info(user, author=user, validated_birth_date=user.birth_date - relativedelta(years=1))
+
+        new_deposit_expiration_date = user.deposit.expirationDate
+        assert new_deposit_expiration_date == previous_deposit_expiration_date - relativedelta(years=1)
+
 
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
