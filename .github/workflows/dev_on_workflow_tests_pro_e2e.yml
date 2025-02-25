@@ -37,6 +37,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - uses: technote-space/workflow-conclusion-action@v3
 
       - uses: actions/setup-node@v4

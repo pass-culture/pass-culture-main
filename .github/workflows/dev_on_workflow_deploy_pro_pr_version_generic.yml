@@ -31,7 +31,7 @@ on:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
     outputs:
-      pro_url: 
+      pro_url:
         description: "The pro (firebase) preview URL"
         value: ${{ jobs.deploy_on_firebase.outputs.pro_url }}
 
@@ -50,9 +50,11 @@ jobs:
       - uses: actions/checkout@v4.2.2
         with:
           ref: ${{ inputs.REF }}
+      - name: Enable Corepack
+        run: corepack enable
       - uses: actions/setup-node@v4
         with:
-          node-version-file: 'pro/.nvmrc'
+          node-version-file: "pro/.nvmrc"
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
         uses: "google-github-actions/auth@v2"

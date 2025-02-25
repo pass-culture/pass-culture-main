@@ -77,11 +77,11 @@
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.7",
+    "@hookform/devtools": "^4.3.3",
     "@storybook/addon-a11y": "^8.5.8",
     "@storybook/addon-controls": "^8.5.8",
     "@storybook/addon-docs": "^8.5.8",
     "@storybook/blocks": "^8.5.5",
-    "@hookform/devtools": "^4.3.3",
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/react": "^8.5.8",
     "@storybook/react-vite": "^8.5.8",
@@ -146,7 +146,7 @@
   "engines": {
     "node": ">=20 <21"
   },
-  "packageManager": "yarn@1.22.22",
+  "packageManager": "yarn@3.8.7",
   "browserslist": [
     ">0.2%",
     "not dead",
