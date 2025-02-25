@@ -92,6 +92,14 @@ def decide_v3_credit_eligibility(
     return current_eligibility
 
 
+def get_pre_decree_or_current_eligibility(user: users_models.User) -> users_models.EligibilityType | None:
+    if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
+        pre_decree_eligibility = get_pre_decree_eligibility(user, user.birth_date, datetime.datetime.utcnow())
+    else:
+        pre_decree_eligibility = None
+    return pre_decree_eligibility or user.eligibility
+
+
 def get_pre_decree_eligibility(
     user: users_models.User, birth_date: datetime.date, at_datetime: datetime.datetime
 ) -> users_models.EligibilityType | None:

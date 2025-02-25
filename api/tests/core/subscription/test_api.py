@@ -1632,7 +1632,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert is_user_activated
         assert user.is_beneficiary
         assert user.deposit.type == finance_models.DepositType.GRANT_15_17
-        assert user.deposit.amount == 20 + 0
+        assert user.deposit.amount == 20
 
     def test_pre_decree_18_eligibility(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
@@ -2416,6 +2416,22 @@ class StepperTest:
             subtitle=f"Pour débloquer tes 150€ tu dois suivre les étapes suivantes{u_nbsp}:",
         )
 
+    def test_get_stepper_title_pre_decree_18_yo(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        birth_date = before_decree - relativedelta(years=18)
+        user = users_factories.HonorStatementValidatedUserFactory(
+            validatedBirthDate=birth_date, beneficiaryFraudChecks__dateCreated=before_decree
+        )
+
+        title_and_subtitle = subscription_api.get_stepper_title_and_subtitle(
+            user, subscription_api.get_user_subscription_state(user)
+        )
+
+        assert title_and_subtitle == subscription_models.SubscriptionStepperDetails(
+            title=f"C'est très rapide{u_nbsp}!",
+            subtitle=f"Pour débloquer tes 300€ tu dois suivre les étapes suivantes{u_nbsp}:",
+        )
+
     def test_get_stepper_title_underage_user(self):
         user = users_factories.EligibleUnderageFactory(age=17)
         assert subscription_api.get_stepper_title_and_subtitle(
@@ -2423,6 +2439,22 @@ class StepperTest:
         ) == subscription_models.SubscriptionStepperDetails(
             title=f"C'est très rapide{u_nbsp}!",
             subtitle=f"Pour débloquer tes 50€ tu dois suivre les étapes suivantes{u_nbsp}:",
+        )
+
+    def test_get_stepper_title_pre_decree_17_yo(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        birth_date = before_decree - relativedelta(years=17)
+        user = users_factories.HonorStatementValidatedUserFactory(
+            validatedBirthDate=birth_date, beneficiaryFraudChecks__dateCreated=before_decree
+        )
+
+        title_and_subtitle = subscription_api.get_stepper_title_and_subtitle(
+            user, subscription_api.get_user_subscription_state(user)
+        )
+
+        assert title_and_subtitle == subscription_models.SubscriptionStepperDetails(
+            title=f"C'est très rapide{u_nbsp}!",
+            subtitle=f"Pour débloquer tes 30€ tu dois suivre les étapes suivantes{u_nbsp}:",
         )
 
     def test_get_stepper_title_18_yo_retrying_ubble(self):
