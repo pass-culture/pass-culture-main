@@ -132,6 +132,7 @@ jobs:
         with:
           environment: ${{ inputs.environment }}
           app_name: pcapi
+          app_version: ${{ inputs.app_version }}
           additional_args: ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
           registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
           registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
