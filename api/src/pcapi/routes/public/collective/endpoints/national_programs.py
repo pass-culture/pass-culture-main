@@ -1,4 +1,6 @@
-import pcapi.core.educational.models as educational_models
+import typing
+
+from pcapi.core.educational import models as educational_models
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -27,7 +29,10 @@ def get_national_programs() -> serialization.ListNationalProgramsResponseModel:
 
     List national programs (for instance: `Collège au cinéma`, `Jeunes en librairie`...)
     """
-    query = educational_models.NationalProgram.query
+    programs: typing.Iterable[educational_models.NationalProgram] = educational_models.NationalProgram.query.filter(
+        educational_models.NationalProgram.isActive.is_(True)
+    )
+
     return serialization.ListNationalProgramsResponseModel(
-        __root__=[serialization.NationalProgramModel(id=program.id, name=program.name) for program in query]
+        __root__=[serialization.NationalProgramModel(id=program.id, name=program.name) for program in programs]
     )

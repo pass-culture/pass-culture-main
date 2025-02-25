@@ -3,17 +3,23 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.categories import subcategories
+from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
-import pcapi.core.educational.exceptions as educational_exceptions
-import pcapi.core.educational.factories as educational_factories
-import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
-import pcapi.core.users.factories as users_factories
 
 
 def base_offer_payload(
-    venue, domains=None, subcategory_id=None, template_id=None, national_program_id=None, formats=None
+    venue,
+    domains=None,
+    subcategory_id=None,
+    template_id=None,
+    national_program_id=None,
+    formats=None,
+    add_domain_to_program=True,
 ) -> dict:
     if domains is None:
         domains = [educational_factories.EducationalDomainFactory().id]
@@ -21,8 +27,11 @@ def base_offer_payload(
     if not subcategory_id:
         subcategory_id = subcategories.SPECTACLE_REPRESENTATION.id
 
-    if not national_program_id:
+    if not national_program_id and domains:
         national_program_id = educational_factories.NationalProgramFactory().id
+
+    if national_program_id and add_domain_to_program:
+        educational_factories.DomainToNationalProgramFactory(nationalProgramId=national_program_id, domainId=domains[0])
 
     if formats is None:
         formats = [subcategories.EacFormat.CONCERT.value]
@@ -442,7 +451,7 @@ class Returns404Test:
         domain = educational_factories.EducationalDomainFactory()
 
         # When
-        data = base_offer_payload(venue=venue, domains=[0, domain.id])
+        data = base_offer_payload(venue=venue, domains=[0, domain.id], add_domain_to_program=False)
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -458,7 +467,7 @@ class Returns404Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
-        data = base_offer_payload(venue=venue, national_program_id=-1)
+        data = base_offer_payload(venue=venue, national_program_id=-1, add_domain_to_program=False)
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -466,6 +475,35 @@ class Returns404Test:
         # Then
         assert response.status_code == 400
         assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"}
+
+    def test_create_collective_offer_with_inactive_national_program(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+
+        national_program = educational_factories.NationalProgramFactory(isActive=False)
+        data = base_offer_payload(venue=venue, national_program_id=national_program.id)
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"}
+
+    def test_create_collective_offer_with_invalid_national_program(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+
+        national_program = educational_factories.NationalProgramFactory()
+        domain = educational_factories.EducationalDomainFactory()
+        data = base_offer_payload(
+            venue=venue, national_program_id=national_program.id, domains=[domain.id], add_domain_to_program=False
+        )
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}
 
     def test_create_collective_offer_with_no_collective_offer_template(self, client):
         # Given

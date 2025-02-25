@@ -105,6 +105,7 @@ class Returns200Test:
         user,
     ):
         national_program = educational_factories.NationalProgramFactory()
+        domains[0].nationalPrograms.append(national_program)
 
         # When
         data = {**payload, "nationalProgramId": national_program.id}
@@ -361,6 +362,27 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
+
+    def test_national_program_inactive(self, pro_client, payload, domains):
+        national_program = educational_factories.NationalProgramFactory(isActive=False)
+        domains[0].nationalPrograms.append(national_program)
+
+        data = {**payload, "nationalProgramId": national_program.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"}
+
+    def test_national_program_invalid(self, pro_client, payload):
+        national_program = educational_factories.NationalProgramFactory()
+
+        data = {**payload, "nationalProgramId": national_program.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}
 
 
 class InvalidDatesTest:

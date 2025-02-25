@@ -2071,8 +2071,11 @@ class EducationalDomain(PcObject, Base, Model):
     collectiveOfferTemplates: list["CollectiveOfferTemplate"] = relationship(
         "CollectiveOfferTemplate", secondary="collective_offer_template_domain", back_populates="domains"
     )
-    nationalPrograms: sa_orm.Mapped[list["NationalProgram"]] = sa.orm.relationship(
-        "NationalProgram", back_populates="domains", secondary="domain_to_national_program"
+    nationalPrograms: sa_orm.Mapped[list["NationalProgram"]] = sa_orm.relationship(
+        "NationalProgram",
+        back_populates="domains",
+        secondary="domain_to_national_program",
+        order_by="NationalProgram.name",
     )
 
 
@@ -2200,6 +2203,9 @@ class NationalProgram(PcObject, Base, Model):
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
     domains: sa_orm.Mapped[list["EducationalDomain"]] = sa.orm.relationship(
         "EducationalDomain", back_populates="nationalPrograms", secondary="domain_to_national_program"
+    )
+    isActive: sa_orm.Mapped[bool] = sa.Column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True
     )
 
 

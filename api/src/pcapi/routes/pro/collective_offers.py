@@ -231,15 +231,24 @@ def create_collective_offer(
             {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"},
             status_code=404,
         )
-    except educational_exceptions.NationalProgramNotFound:
+    except (educational_exceptions.NationalProgramNotFound, offers_validation.UnknownNationalProgram):
         logger.info(
             "Could not create offer: national program not found",
             extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
-        raise ApiErrors(
-            {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"},
-            status_code=400,
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"}, status_code=400)
+    except offers_validation.IllegalNationalProgram:
+        logger.info(
+            "Could not create offer: invalid national program",
+            extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}, status_code=400)
+    except offers_validation.InactiveNationalProgram:
+        logger.info(
+            "Could not create offer: inactive national program",
+            extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
+        )
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"}, status_code=400)
     except educational_exceptions.CollectiveOfferTemplateForbiddenAction:
         raise ApiErrors(
             {"code": "COLLECTIVE_OFFER_TEMPLATE_FORBIDDEN_ACTION"},
@@ -640,12 +649,24 @@ def create_collective_offer_template(
             extra={"offer_name": body.name, "venue_id": body.venue_id, "template_id": body.template_id},
         )
         raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
-    except educational_exceptions.NationalProgramNotFound:
+    except (educational_exceptions.NationalProgramNotFound, offers_validation.UnknownNationalProgram):
         logger.info(
             "Could not create offer: national program not found",
             extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
         raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"}, status_code=400)
+    except offers_validation.IllegalNationalProgram:
+        logger.info(
+            "Could not create offer: invalid national program",
+            extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
+        )
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}, status_code=400)
+    except offers_validation.InactiveNationalProgram:
+        logger.info(
+            "Could not create offer: inactive national program",
+            extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
+        )
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"}, status_code=400)
     except offers_exceptions.UrlandFormBothSetError:
         logger.info(
             "Could not set both contact url and contact form",
