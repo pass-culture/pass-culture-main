@@ -1,3 +1,4 @@
+import datetime
 import enum
 import typing
 
@@ -118,7 +119,7 @@ class ActionHistory(PcObject, Base, Model):
     sa.Index("ix_action_history_actionType", actionType, postgresql_using="hash")
 
     # nullable because of old suspensions without date migrated here; but mandatory for new actions
-    actionDate = sa.Column(sa.DateTime, nullable=True, server_default=sa.func.now())
+    actionDate = sa.Column(sa.DateTime, nullable=True, server_default=sa.func.now(), default=datetime.datetime.utcnow)
 
     # User (beneficiary, pro, admin...) who *initiated* the action
     # nullable because of old actions without known author migrated here or lines which must be kept in case an admin
