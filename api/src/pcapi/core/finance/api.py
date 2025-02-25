@@ -3306,7 +3306,7 @@ def create_deposit_v2(
         and beneficiary.age
         and age_at_registration
     ):
-        _recredit_user_v2(beneficiary)
+        _recredit_user(beneficiary)
 
     return deposit
 

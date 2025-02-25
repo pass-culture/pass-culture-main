@@ -1576,7 +1576,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
     def test_pre_decree_underage_eligibility(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         user = users_factories.HonorStatementValidatedUserFactory(
-            age=17, beneficiaryFraudChecks__dateCreated=before_decree
+            age=17, beneficiaryFraudChecks__dateCreated=before_decree, dateCreated=before_decree
         )
 
         is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
@@ -1584,6 +1584,55 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert is_user_activated
         assert user.is_beneficiary
         assert user.deposit.type == finance_models.DepositType.GRANT_15_17
+        assert user.deposit.amount == 30
+
+    def test_pre_decree_at_17_when_registration_started_at_15(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        seventeen_years_ago = before_decree - relativedelta(years=17)
+        year_when_user_was_fifteen = before_decree - relativedelta(years=2)
+        user = users_factories.HonorStatementValidatedUserFactory(
+            validatedBirthDate=seventeen_years_ago,
+            beneficiaryFraudChecks__dateCreated=year_when_user_was_fifteen,
+        )
+
+        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.is_beneficiary
+        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+        assert user.deposit.amount == 20 + 0 + 50
+
+    def test_pre_decree_at_17_when_registration_started_at_16(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        seventeen_years_ago = before_decree - relativedelta(years=17)
+        year_when_user_was_sixteen = before_decree - relativedelta(years=1)
+        user = users_factories.HonorStatementValidatedUserFactory(
+            validatedBirthDate=seventeen_years_ago,
+            beneficiaryFraudChecks__dateCreated=year_when_user_was_sixteen,
+        )
+
+        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.is_beneficiary
+        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+        assert user.deposit.amount == 30 + 50
+
+    def test_pre_decree_at_16_when_registration_started_at_15(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        sixteen_years_ago = before_decree - relativedelta(years=16)
+        year_when_user_was_fifteen = before_decree - relativedelta(years=1)
+        user = users_factories.HonorStatementValidatedUserFactory(
+            validatedBirthDate=sixteen_years_ago,
+            beneficiaryFraudChecks__dateCreated=year_when_user_was_fifteen,
+        )
+
+        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.is_beneficiary
+        assert user.deposit.type == finance_models.DepositType.GRANT_15_17
+        assert user.deposit.amount == 20 + 0
 
     def test_pre_decree_18_eligibility(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
@@ -1615,9 +1664,9 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
     def test_pre_decree_underage_transition_to_18(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
-        birth_date = before_decree - relativedelta(years=18)
+        eighteen_years_ago = before_decree - relativedelta(years=18)
         user = users_factories.Transition1718Factory(
-            validatedBirthDate=birth_date, _phoneNumber="0123456789", dateCreated=before_decree
+            validatedBirthDate=eighteen_years_ago, _phoneNumber="0123456789", dateCreated=before_decree
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user, dateCreated=before_decree)
         fraud_factories.HonorStatementFraudCheckFactory(user=user, dateCreated=before_decree)
