@@ -68,6 +68,12 @@ def get_generated_user() -> utils.BackofficeResponse:
     if user and settings.UBBLE_MOCK_CONFIG_URL:
         link_to_ubble_mock = settings.UBBLE_MOCK_CONFIG_URL + f"?{urlencode({'userId': user.id})}"
 
+    if user:
+        birth_date = user.dateOfBirth.date() if user.dateOfBirth else None
+        ubble_form = forms.UbbleConfigurationForm(birth_date=birth_date)
+    else:
+        ubble_form = forms.UbbleConfigurationForm()
+
     return render_template(
         "dev/users_generator.html",
         link_to_app=link_to_app,
@@ -75,7 +81,7 @@ def get_generated_user() -> utils.BackofficeResponse:
         user=user,
         form=form,
         dst=url_for("backoffice_web.dev.generate_user"),
-        ubble_configuration_form=forms.UbbleConfigurationForm(),
+        ubble_configuration_form=ubble_form,
     )
 
 
@@ -209,14 +215,13 @@ def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
 
     # Ubble response codes can be tested by inserting the ones we want in the external applicant id of the Ubble
     # applicant. See https://docs.ubble.ai/#section/Testing/Declined-verification-on-retry-after-checks-inconclusive
-    second_response_code = form.second_response_code.data
-    if second_response_code:
-        applicant_id_suffix = "A" + second_response_code.ljust(20, "0")
+    final_response_code = form.final_response_code.data
+    intermediate_response_code = form.intermediate_response_code.data
+    if intermediate_response_code:
+        external_applicant_id = f"eaplt_{intermediate_response_code}A{final_response_code}".ljust(32, "0")
     else:
-        applicant_id_suffix = "".ljust(21, "0")
+        external_applicant_id = f"eaplt_{final_response_code}".ljust(32, "0")
 
-    first_response_code = form.first_response_code.data
-    external_applicant_id = f"eaplt_{first_response_code}{applicant_id_suffix}"
     ubble_fraud_check = fraud_models.BeneficiaryFraudCheck(
         user=user,
         eligibilityType=user.eligibility,

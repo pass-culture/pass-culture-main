@@ -73,17 +73,7 @@ class UserDeletionForm(utils.PCForm):
     email = fields.PCEmailField("compte_sso_jeune@example.com")
 
 
-def _get_ubble_first_response_code_choices() -> list[tuple[int, str]]:
-    ok_response_codes = [(UBBLE_OK_REASON_CODE, "10000 - OK")]
-    ubble_error_reason_code_choices = [
-        (reason_code, f"{reason_code} - {fraud_reason_code.name}")
-        for reason_code, fraud_reason_code in UBBLE_REASON_CODE_MAPPING.items()
-        if reason_code > 60000
-    ]
-    return ok_response_codes + ubble_error_reason_code_choices
-
-
-def _get_ubble_final_response_code_choices() -> list[tuple[int, str]]:
+def _get_ubble_final_code_choices() -> list[tuple[int, str]]:
     ok_response_codes = [(UBBLE_OK_REASON_CODE, "10000 - OK")]
     ubble_final_error_reason_code_choices = [
         (reason_code, f"{reason_code} - {fraud_reason_code.name}")
@@ -93,13 +83,22 @@ def _get_ubble_final_response_code_choices() -> list[tuple[int, str]]:
     return ok_response_codes + ubble_final_error_reason_code_choices
 
 
+def _get_ubble_intermediate_code_choices() -> list[tuple[int, str]]:
+    ubble_intermediate_reason_code_choices = [
+        (reason_code, f"{reason_code} - {fraud_reason_code.name}")
+        for reason_code, fraud_reason_code in UBBLE_REASON_CODE_MAPPING.items()
+        if 61000 < reason_code < 62000
+    ]
+    return ubble_intermediate_reason_code_choices
+
+
 class UbbleConfigurationForm(utils.PCForm):
     birth_date = fields.PCDateField("Date de naissance")
-    first_response_code = fields.PCSelectField(
-        "Premier code de réponse", choices=_get_ubble_first_response_code_choices()
+    final_response_code = fields.PCSelectField(
+        "Code de réponse final", choices=_get_ubble_final_code_choices(), default=10000
     )
-    second_response_code = fields.PCSelectField(
-        "Second code de réponse",
-        choices=_get_ubble_final_response_code_choices(),
+    intermediate_response_code = fields.PCSelectField(
+        "Code de réponse intermédiaire (optionnel)",
+        choices=_get_ubble_intermediate_code_choices(),
         validators=(wtforms.validators.Optional(),),
     )
