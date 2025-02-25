@@ -99,6 +99,47 @@ export function logInAndGoToPage(
 }
 
 /**
+ * Logs in with the provided email and navigates to the didactic onboarding page.
+ * Optionally sets the default cookie to close the cookie popup on all pages.
+ *
+ * @param {string} login - The email to use for login (password used is a default one).
+ * @param {boolean} [setDefaultCookieOrejime=true] - Optional parameter to close the cookie popup on all pages (default is true).
+ */
+export function logInAndSeeDidacticOnboarding(
+  login: string,
+  setDefaultCookieOrejime = true
+) {
+  const password = 'user@AZERTY123'
+  cy.stepLog({ message: `I am logged in with account ${login}` })
+  cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
+  cy.intercept({ method: 'GET', url: '/offerers/names' }).as('offererNames')
+
+  cy.visit('/connexion')
+  if (setDefaultCookieOrejime) {
+    cy.setCookie(
+      'orejime',
+      '{"firebase":true,"hotjar":true,"beamer":true,"sentry":true}'
+    )
+  }
+
+  cy.get('#email').type(login)
+  cy.get('#password').type(password)
+  cy.get('button[type=submit]').click()
+  cy.wait(['@signinUser', '@offererNames'])
+
+  cy.stepLog({ message: `I open the /onboarding page` })
+  cy.visit('/onboarding')
+
+  cy.findAllByTestId('spinner').should('not.exist')
+
+  cy.findByText('Bienvenue sur le pass Culture Pro !')
+  cy.findByText('À qui souhaitez-vous proposer votre première offre ?')
+  cy.findByText('Aux jeunes sur l’application mobile pass Culture')
+  cy.findByText('Aux enseignants sur la plateforme ADAGE')
+  cy.findAllByText('Commencer').should('have.length', 2)
+}
+
+/**
  * Same as `logInAndGoToPage` but encapsulated in a `session()` in order
  * to be able to reuse the browser session, then the connexion and data
  * created with Factory routes
