@@ -3117,7 +3117,7 @@ def _recredit_grant_17_18_deposit_using_age(user: users_models.User) -> models.R
     latest_age_related_recredit: models.Recredit | None = None
     starting_age, end_age = sorted([age_at_first_registration or current_age, current_age])
     for age_to_recredit in range(starting_age, end_age + 1):
-        recredit_type_to_create = conf.RECREDIT_TYPE_AGE_MAPPING.get(age_to_recredit)
+        recredit_type_to_create = conf.get_recredit_mapping().get(age_to_recredit)
         if not recredit_type_to_create:
             continue
 
