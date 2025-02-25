@@ -3,25 +3,10 @@
 @use "styles/mixins/_size.scss" as size;
 
 .sections-container {
-  margin-top: rem.torem(32px);
-  display: flex;
-  flex-wrap: wrap;
-  gap: rem.torem(16px);
-
-  @media (min-width: size.$tablet) {
-    flex-wrap: nowrap;
-  }
-}
-
-.sections-column {
   display: flex;
   flex-direction: column;
   gap: rem.torem(24px);
-  width: 100%;
-
-  @media (min-width: size.$tablet) {
-    width: 50%;
-  }
+  max-width: rem.torem(486px);
 }
 
 .details {
@@ -55,6 +40,6 @@
   }
 }
 
-.edit-link {
-  padding-left: rem.torem(16px);
+.callout {
+  margin-top: rem.torem(16px);
 }

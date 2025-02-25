@@ -6,22 +6,24 @@ import fullDownIcon from 'icons/full-down.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import styles from './AccesLibreCollapse.module.scss'
+import styles from './ExternalAccessibilityCollapse.module.scss'
 
-export interface AccesLibreCollapseProps {
+export interface ExternalAccessibilityCollapseProps {
   title: string
+  titleHeadingLevel?: 'h3' | 'h4'
   isAccessible: boolean
   icon: string
   children: ReactNode
 }
 
-export const AccesLibreCollapse = ({
+export const ExternalAccessibilityCollapse = ({
   title,
+  titleHeadingLevel = 'h4',
   isAccessible,
   icon,
   children,
-}: AccesLibreCollapseProps) => {
-  const [isOpen, setIsOpen] = React.useState(true)
+}: ExternalAccessibilityCollapseProps) => {
+  const [isOpen, setIsOpen] = React.useState(false)
   const contentId = useId()
 
   const toggleCollapse = () => {
@@ -48,15 +50,18 @@ export const AccesLibreCollapse = ({
             width="16"
           />
         </div>
-
         <div className={styles['title-container']}>
-          <h3 className={styles['title']}>{title}</h3>
+          {titleHeadingLevel === 'h3' ? (
+            <h3 className={styles['title']}>{title}</h3>
+          ) : (
+            <h4 className={styles['title']}>{title}</h4>
+          )}
           <div className={styles['accessibility-label']}>
             {isAccessible ? 'Accessible' : 'Non accessible'}
           </div>
         </div>
-
         <button
+          type="button"
           className={styles['collapse-button']}
           onClick={toggleCollapse}
           aria-label={`Voir les détails pour ${title}`}
@@ -73,7 +78,6 @@ export const AccesLibreCollapse = ({
           />
         </button>
       </header>
-
       <div
         className={cn(styles['content'], { [styles['open']]: isOpen })}
         id={contentId}

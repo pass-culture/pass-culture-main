@@ -60,7 +60,7 @@ $info-box-margin-left: rem.torem(24px);
     margin-bottom: rem.torem(32px);
 
     &-title {
-      margin-bottom: rem.torem(24px);
+      margin-bottom: rem.torem(16px);
 
       @include fonts.title4;
     }

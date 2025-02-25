@@ -2,10 +2,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_outline.scss" as outline;
 
-.section {
-  padding: rem.torem(8px);
-}
-
 .header {
   display: flex;
   align-items: center;
@@ -56,6 +52,8 @@
   margin: 0;
   padding: 0;
   color: var(--color-grey-semi-dark);
+  height: rem.torem(24px);
+  width: rem.torem(24px);
 
   &:focus-visible {
     @include outline.focus-outline;
@@ -74,8 +72,7 @@
 
 .content {
   display: none;
-  margin-top: rem.torem(16px);
-  padding-left: rem.torem(16px);
+  margin: rem.torem(16px) 0;
 
   &.open {
     display: block;

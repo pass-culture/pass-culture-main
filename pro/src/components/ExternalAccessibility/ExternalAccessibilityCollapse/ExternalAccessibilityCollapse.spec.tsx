@@ -5,35 +5,35 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import strokeAccessibilityLeg from 'icons/stroke-accessibility-leg.svg'
 
 import {
-  AccesLibreCollapse,
-  AccesLibreCollapseProps,
-} from '../AccesLibreCollapse'
+  ExternalAccessibilityCollapse,
+  ExternalAccessibilityCollapseProps,
+} from './ExternalAccessibilityCollapse'
 
-const renderAccesLibreCollapse = (
-  props: Partial<AccesLibreCollapseProps> = {}
+const renderExternalAccessibilityCollaspse = (
+  props: Partial<ExternalAccessibilityCollapseProps> = {}
 ) => {
   renderWithProviders(
-    <AccesLibreCollapse
+    <ExternalAccessibilityCollapse
       icon={strokeAccessibilityLeg}
       title="Handicap moteur"
       isAccessible
       {...props}
     >
       Content
-    </AccesLibreCollapse>
+    </ExternalAccessibilityCollapse>
   )
 }
 
-describe('AccesLibreCollapse', () => {
+describe('ExternalAccessibilityCollapse', () => {
   it('should open and close', async () => {
-    renderAccesLibreCollapse()
+    renderExternalAccessibilityCollaspse()
 
     expect(screen.getByText('Handicap moteur')).toBeInTheDocument()
-    expect(screen.getByText('Content')).toBeVisible()
+    expect(screen.queryByText('Content')).not.toBeInTheDocument()
 
     await userEvent.click(
       screen.getByLabelText('Voir les détails pour Handicap moteur')
     )
-    expect(screen.queryByText('Content')).not.toBeInTheDocument()
+    expect(screen.queryByText('Content')).toBeInTheDocument()
   })
 })

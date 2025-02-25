@@ -1,11 +1,12 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
+import { AccessibilitySummarySection as InternalAccessibilitySummarySubSection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
+import { ExternalAccessibility } from 'components/ExternalAccessibility/ExternalAccessibility'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { OpeningHoursReadOnly } from 'pages/VenueEdition/OpeningHoursReadOnly/OpeningHoursReadOnly'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
+
+import { AccessibilityCallout } from './AccessibilityCallout/AccessibilityCallout'
 
 interface VenueEditionReadOnlyProps {
   venue: GetVenueResponseModel
@@ -35,6 +36,31 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         <OpeningHoursReadOnly openingHours={venue.openingHours} />
       )}
 
+      {venue.externalAccessibilityData ? (
+        <>
+          <SummarySubSection
+            title="Modalités d’accessibilité via acceslibre"
+            shouldShowDivider={false}
+          >
+            <ExternalAccessibility
+              externalAccessibilityId={venue.externalAccessibilityId}
+              externalAccessibilityData={venue.externalAccessibilityData}
+            />
+          </SummarySubSection>
+        </>
+      ): (
+        <InternalAccessibilitySummarySubSection
+          callout={
+            venue.isPermanent ? (
+              <AccessibilityCallout />
+            ) : null
+          }
+          accessibleItem={venue}
+          accessibleWording="Votre établissement est accessible aux publics en situation de handicap :"
+          shouldShowDivider={false}
+        />
+      )}
+
       <SummarySubSection
         title="Informations de contact"
         shouldShowDivider={false}
@@ -56,31 +82,6 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
           ]}
         />
       </SummarySubSection>
-
-      {!venue.externalAccessibilityData && (
-        <AccessibilitySummarySection
-          callout={
-            venue.isPermanent ? (
-              <Callout
-                links={[
-                  {
-                    href: 'https://acceslibre.beta.gouv.fr/',
-                    label: 'Aller sur acceslibre.beta.gouv.fr ',
-                    isExternal: true,
-                  },
-                ]}
-                variant={CalloutVariant.INFO}
-              >
-                Renseignez facilement les modalités d’accessibilité de votre
-                établissement sur la plateforme collaborative
-                acceslibre.beta.gouv.fr
-              </Callout>
-            ) : null
-          }
-          accessibleItem={venue}
-          accessibleWording="Votre établissement est accessible aux publics en situation de handicap :"
-        />
-      )}
     </SummarySection>
   )
 }

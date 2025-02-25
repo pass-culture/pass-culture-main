@@ -1,0 +1,9 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.callout {
+  margin-top: rem.torem(16px);
+}
+
+.apply-on-all-offers-checkbox {
+  margin-top: rem.torem(16px);
+}
