@@ -3,73 +3,25 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .income {
+  &-box {
+    margin-bottom: rem.torem(24px);
+  }
+
+  &-input {
+    max-width: rem.torem(350px);
+  }
+
   &-filters {
     display: flex;
     flex-direction: column;
     margin-bottom: rem.torem(20px);
-    row-gap: rem.torem(10px);
-
-    @media (min-width: size.$tablet) {
-      margin-bottom: rem.torem(12px);
-      flex-direction: row;
-    }
-
-    &-divider {
-      display: none;
-
-      @media (min-width: size.$tablet) {
-        display: block;
-        margin-top: rem.torem(26.75px);
-        margin-right: rem.torem(24px);
-        width: rem.torem(1px);
-        height: rem.torem(40px);
-        background: var(--color-grey-semi-dark);
-      }
-    }
-
-    &-by-venue {
-      max-width: rem.torem(300px);
-      margin-right: rem.torem(24px);
-
-      // Selected tags must be displayed to occupy available width.
-      // Width must be calculated based on the viewport width minus
-      // various padding values since they belong to a component that
-      // is not a direct child of the main content container and
-      // has a restricted width.
-      &-selected-tags {
-        width: calc(100vw - size.$main-content-padding-xs * 2);
-
-        @media screen and (min-width: size.$tablet) {
-          width: calc(100vw - (size.$main-content-padding) * 2);
-        }
-
-        @media (min-width: size.$laptop) {
-          // On very large screens the layout does not exceed 90rem.
-          width: calc(
-            100vw - (size.$main-content-padding * 2) - size.$side-nav-width
-          );
-          max-width: calc(
-            size.$desktop - (size.$main-content-padding * 2) -
-              size.$side-nav-width
-          );
-        }
-      }
-    }
+    row-gap: rem.torem(24px);
 
     &-by-year {
       display: flex;
       flex-flow: row wrap;
       flex-direction: row;
       gap: rem.torem(8px);
-      height: fit-content;
-
-      @media (min-width: size.$tablet) {
-        margin-top: rem.torem(26.75px);
-
-        &-is-only-filter {
-          margin-top: 0;
-        }
-      }
 
       &-button {
         display: flex;
@@ -80,7 +32,7 @@
         padding: rem.torem(10px);
         color: var(--color-black);
         border: solid rem.torem(1px) var(--color-grey-dark);
-        border-radius: rem.torem(4px);
+        border-radius: rem.torem(10px);
 
         &:hover,
         &:focus {
