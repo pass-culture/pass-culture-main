@@ -748,8 +748,9 @@ def duplicate_offer_and_stock(
         interventionArea=original_offer.interventionArea,
         domains=original_offer.domains,
         template=original_offer.template,  # type: ignore[arg-type]
-        lastValidationDate=original_offer.lastValidationDate,
-        lastValidationType=original_offer.lastValidationType,
+        lastValidationDate=None,
+        lastValidationType=None,
+        lastValidationAuthorUserId=None,
         validation=offer_mixin.OfferValidationStatus.DRAFT,
         audioDisabilityCompliant=original_offer.audioDisabilityCompliant,
         mentalDisabilityCompliant=original_offer.mentalDisabilityCompliant,

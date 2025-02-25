@@ -299,8 +299,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 404
 
-    def test_duplicate_collective_offer_validation_informations(self, client):
-        # Given
+    def test_duplicate_collective_offer_validation_information(self, client):
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -320,13 +319,11 @@ class Returns200Test:
         offer_id = offer.id
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        # When
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 
-        # Then
         assert response.status_code == 201
         duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
-        assert duplicate.lastValidationDate.date() == lastValidationDate
         assert duplicate.validation == offers_models.OfferValidationStatus.DRAFT
-        assert duplicate.lastValidationType == OfferValidationType.MANUAL
-        assert not duplicate.lastValidationAuthorUserId
+        assert duplicate.lastValidationDate is None
+        assert duplicate.lastValidationType is None
+        assert duplicate.lastValidationAuthorUserId is None
