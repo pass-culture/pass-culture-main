@@ -22,13 +22,9 @@ import { adageSearchViewSelector } from 'commons/store/adageFilter/selectors'
 import { LOGS_DATA } from 'commons/utils/config'
 import fullGoTop from 'icons/full-go-top.svg'
 import fullGrid from 'icons/full-grid.svg'
-import fullLinkIcon from 'icons/full-link.svg'
 import fullList from 'icons/full-list.svg'
-import TFMAC2025 from 'pages/AdageIframe/app/components/HighlightBanner/assets/TFMAC-2025.png'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
 import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -83,10 +79,7 @@ export const Offers = ({
     ? scopedResults.find((res) => res.indexId === indexId)?.results
     : nonScopedResult
 
-  const targetDate = new Date('2025-02-03').getTime()
-  const currentDate = Date.now()
-
-  const showDiffuseHelp = (submitCount ?? 0) > 0 && currentDate >= targetDate
+  const showDiffuseHelp = (submitCount ?? 0) > 0
 
   const isInSuggestions = indexId?.startsWith('no_results_offers')
 
@@ -178,15 +171,6 @@ export const Offers = ({
     })
   }
 
-
-  const logOpenHighlightBanner = (bannerName: string) => {
-    apiAdage.logOpenHighlightBanner({
-      iframeFrom: location.pathname,
-      queryId: results.queryID,
-      banner: bannerName,
-    })
-  }
-
   return (
     <>
       <div className={styles['offers-view']}>
@@ -242,7 +226,7 @@ export const Offers = ({
                 viewType={adageViewType}
               />
             )}
-            {adageViewType === 'list' && index === 0 && showDiffuseHelp ? (
+            {adageViewType === 'list' && index === 0 && showDiffuseHelp && (
               <HighlightBanner
                 title={'Le saviez-vous ?'}
                 description={
@@ -250,36 +234,6 @@ export const Offers = ({
                 }
                 localStorageKey={'DIFFUSE_HELP_ADAGE_SEEN'}
                 img={<ShadowTipsHelpIcon className={styles['highlight-banner-icon']} />}
-              />
-            ) : adageViewType === 'list' && index === 0 && currentDate < targetDate && (
-              <HighlightBanner
-                title={
-                  'Permettre aux jeunes de découvrir les métiers de la culture !'
-                }
-                description={
-                  'Du 24 janvier au 2 février 2025, le pass Culture propose aux jeunes de 15 à 20 ans une multitude de rencontres avec les métiers des arts et de la culture sur leur application pass Culture.'
-                }
-                localStorageKey={'TFMAC_2025_ADAGE_SEEN'}
-                img={
-                  <img
-                    src={TFMAC2025}
-                    className={styles['banner']}
-                    alt="La culture en vrai, métiers des arts et de la culture"
-                  />
-                }
-                primaryButton={
-                  <ButtonLink
-                    variant={ButtonVariant.PRIMARY}
-                    to="https://pass.culture.fr/TFMAC-2025"
-                    isExternal
-                    opensInNewTab
-                    icon={fullLinkIcon}
-                    className={styles['highlight-banner-button']}
-                    onClick={() => logOpenHighlightBanner('TFMAC-2025')}
-                  >
-                    en savoir plus
-                  </ButtonLink>
-                }
               />
             )}
             {adageViewType === 'list' &&
