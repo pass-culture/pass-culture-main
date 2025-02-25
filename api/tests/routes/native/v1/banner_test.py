@@ -98,7 +98,8 @@ class BannerTest:
         )
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # credit v3 FF
+        expected_num_queries = self.expected_num_queries_without_subscription_check + 1  # action_history
+        with assert_num_queries(expected_num_queries + 1):  # credit v3 FF
             response = client.get("/native/v1/banner?isGeolocated=false")
             assert response.status_code == 200
 
@@ -117,7 +118,7 @@ class BannerTest:
         )
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_with_subscription_check):
+        with assert_num_queries(self.expected_num_queries_with_subscription_check + 2):  # action_history ; credit v3 FF
             response = client.get("/native/v1/banner?isGeolocated=false")
             assert response.status_code == 200
 
@@ -157,7 +158,7 @@ class BannerTest:
         fraud_factories.UbbleRetryFraudCheckFactory(user=user)
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_with_subscription_check):
+        with assert_num_queries(self.expected_num_queries_with_subscription_check + 1):  # action_history
             response = client.get("/native/v1/banner")
             assert response.status_code == 200
 

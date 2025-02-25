@@ -224,20 +224,30 @@ def _is_fraud_check_relevant_for_age(fraud_check: fraud_models.BeneficiaryFraudC
 
 
 def _is_fraud_check_relevant_for_underage(fraud_check: fraud_models.BeneficiaryFraudCheck) -> bool:
-    user = fraud_check.user
-    if not user.birth_date:
+    age_at_fraud_check = _get_age_at_fraud_check(fraud_check)
+    if age_at_fraud_check is None:
         return False
-
-    age_at_fraud_check = users_utils.get_age_at_date(user.birth_date, fraud_check.dateCreated, user.departementCode)
     return eligibility_api.is_underage_eligibility(fraud_check.eligibilityType, age_at_fraud_check)
 
 
 def _is_fraud_check_relevant_for_18_or_above(
     fraud_check: fraud_models.BeneficiaryFraudCheck,
 ) -> bool:
+    age_at_fraud_check = _get_age_at_fraud_check(fraud_check)
+    if age_at_fraud_check is None:
+        return False
+    return eligibility_api.is_18_or_above_eligibility(fraud_check.eligibilityType, age_at_fraud_check)
+
+
+def _get_age_at_fraud_check(fraud_check: fraud_models.BeneficiaryFraudCheck) -> int | None:
     user = fraud_check.user
     if not user.birth_date:
-        return False
+        return None
 
-    age_at_fraud_check = users_utils.get_age_at_date(user.birth_date, fraud_check.dateCreated, user.departementCode)
-    return eligibility_api.is_18_or_above_eligibility(fraud_check.eligibilityType, age_at_fraud_check)
+    known_birthdate_at_fraud_check = eligibility_api.get_known_birthday_at_date(
+        fraud_check.user, fraud_check.dateCreated
+    )
+    if known_birthdate_at_fraud_check is None:
+        known_birthdate_at_fraud_check = user.birth_date
+
+    return users_utils.get_age_at_date(known_birthdate_at_fraud_check, fraud_check.dateCreated, user.departementCode)
