@@ -69,4 +69,5 @@ def generate_user(user_data: GenerateUserData) -> users_models.User:
         age=user_data.age,
         beneficiaryFraudChecks__type=id_provider,
         beneficiaryFraudChecks__dateCreated=user_data.date_created,
+        dateCreated=user_data.date_created,
     )
