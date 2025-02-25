@@ -1,6 +1,7 @@
 import decimal
 
 import pcapi.core.offers.models as offers_models
+from pcapi.core.users import models as users_models
 from pcapi.models.feature import FeatureToggle
 
 from . import models
@@ -78,14 +79,34 @@ RECREDIT_TYPE_AMOUNT_MAPPING = {
 
 def get_credit_amount_per_age(age: int) -> decimal.Decimal | None:
     if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-        match age:
-            case 17:
-                return GRANTED_DEPOSIT_AMOUNT_17_v3
-            case 18:
-                return GRANTED_DEPOSIT_AMOUNT_18_v3
-            case _:
-                return None
+        return _get_deposit_17_18_credit_amount_per_age(age)
 
+    return _get_pre_decree_credit_amount_per_age(age)
+
+
+def get_credit_amount_per_age_and_eligibility(
+    age: int, eligibility: users_models.EligibilityType | None
+) -> decimal.Decimal | None:
+    if eligibility is None:
+        return None
+
+    if eligibility == users_models.EligibilityType.AGE17_18:
+        return _get_deposit_17_18_credit_amount_per_age(age)
+
+    return _get_pre_decree_credit_amount_per_age(age)
+
+
+def _get_deposit_17_18_credit_amount_per_age(age: int) -> decimal.Decimal | None:
+    match age:
+        case 17:
+            return GRANTED_DEPOSIT_AMOUNT_17_v3
+        case 18:
+            return GRANTED_DEPOSIT_AMOUNT_18_v3
+        case _:
+            return None
+
+
+def _get_pre_decree_credit_amount_per_age(age: int) -> decimal.Decimal | None:
     match age:
         case 15:
             return GRANTED_DEPOSIT_AMOUNT_15

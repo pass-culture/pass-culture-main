@@ -4,6 +4,7 @@ import pcapi.core.finance.conf as finance_conf
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
+from pcapi.core.users import eligibility_api
 import pcapi.core.users.models as users_models
 import pcapi.routes.native.v1.serialization.banner as serializers
 from pcapi.utils.string import u_nbsp
@@ -96,7 +97,8 @@ def _get_activation_banner(
             text=serializers.BannerText.RETRY_IDENTITY_CHECK_BANNER.value,
         )
 
-    amount_to_display = finance_conf.get_credit_amount_per_age(user.age)
+    eligibility_to_activate = eligibility_api.get_pre_decree_or_current_eligibility(user)
+    amount_to_display = finance_conf.get_credit_amount_per_age_and_eligibility(user.age, eligibility_to_activate)
     if amount_to_display is None:
         return None
 
