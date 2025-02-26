@@ -294,6 +294,7 @@ class NextSubscriptionStepTest:
             assert user.is_beneficiary
             assert user.deposit.amount == 50 + 150
             assert user.recreditAmountToShow == 150
+            assert mails_testing.outbox[0]["params"]["CREDIT"] == 150
 
     @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME + relativedelta(years=1))
     def test_user_with_modified_birth_date_can_get_their_deposit_activated(self):
