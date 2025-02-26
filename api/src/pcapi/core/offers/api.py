@@ -1578,8 +1578,6 @@ def report_offer(
 def get_shows_remaining_places_from_provider(provider_class: str | None, offer: models.Offer) -> dict[str, int]:
     match provider_class:
         case "CDSStocks":
-            if not feature.FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_CDS_IMPLEMENTATION is inactive")
             show_ids = [
                 cinema_providers_utils.get_cds_show_id_from_uuid(stock.idAtProviders)
                 for stock in offer.bookableStocks
@@ -1590,22 +1588,16 @@ def get_shows_remaining_places_from_provider(provider_class: str | None, offer: 
                 return {}
             return external_bookings_api.get_shows_stock(offer.venueId, cleaned_show_ids)
         case "BoostStocks":
-            if not feature.FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
             film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
             if not film_id:
                 return {}
             return external_bookings_api.get_movie_stocks(offer.venueId, film_id)
         case "CGRStocks":
-            if not feature.FeatureToggle.ENABLE_CGR_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_CGR_INTEGRATION is inactive")
             cgr_allocine_film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
             if not cgr_allocine_film_id:
                 return {}
             return external_bookings_api.get_movie_stocks(offer.venueId, cgr_allocine_film_id)
         case "EMSStocks":
-            if not feature.FeatureToggle.ENABLE_EMS_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_EMS_INTEGRATION is inactive")
             film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
             if not film_id:
                 return {}

@@ -1168,6 +1168,7 @@ class CancelBookingTest:
         )
         stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%4444#111/datetime")
         booking = booking_factories.BookingFactory(user=user, stock=stock)
+        booking_factories.ExternalBookingFactory(booking=booking)
         mocked_cancel_external_booking.side_effect = UnexpectedCinemaProvider("Unknown Provider: Toto")
 
         client = client.with_token(self.identifier)
@@ -1194,6 +1195,7 @@ class CancelBookingTest:
         )
         stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%4444#111/datetime")
         booking = booking_factories.BookingFactory(user=user, stock=stock)
+        booking_factories.ExternalBookingFactory(booking=booking)
 
         mocked_cancel_external_booking.side_effect = InactiveProvider(
             f"No active cinema venue provider found for venue #{venue_provider.venue.id}"
