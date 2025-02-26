@@ -292,7 +292,8 @@ class NextSubscriptionStepTest:
             subscription_state = subscription_api.get_user_subscription_state(user)
             assert subscription_state.young_status.status_type == young_status.YoungStatusType.BENEFICIARY
             assert user.is_beneficiary
-            assert user.deposit.amount == 200
+            assert user.deposit.amount == 50 + 150
+            assert user.recreditAmountToShow == 150
 
     @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME + relativedelta(years=1))
     def test_user_with_modified_birth_date_can_get_their_deposit_activated(self):
