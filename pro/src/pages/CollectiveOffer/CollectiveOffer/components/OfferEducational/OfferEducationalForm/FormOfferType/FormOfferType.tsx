@@ -96,7 +96,7 @@ export const FormOfferType = ({
               }}
               onBlur={() => setFieldTouched('domains', true)}
               disabled={disableForm}
-              showError={touched.domains && !!errors.domains}
+              required={true}
               error={
                 touched.domains && errors.domains
                   ? String(errors.domains)
@@ -105,6 +105,7 @@ export const FormOfferType = ({
             />
           </FormLayout.Row>
         )}
+
         <FormLayout.Row>
           <MultiSelect
             options={eacFormatOptions}
@@ -121,9 +122,9 @@ export const FormOfferType = ({
                 ...selectedOptions.map((elm) => elm.id),
               ])
             }
+            required={true}
             disabled={disableForm}
             onBlur={() => setFieldTouched('formats', true)}
-            showError={touched.formats && !!errors.formats}
             error={
               touched.formats && errors.formats
                 ? String(errors.formats)

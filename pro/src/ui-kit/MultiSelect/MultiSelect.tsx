@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 
 import { useOnClickOrFocusOutside } from 'commons/hooks/useOnClickOrFocusOutside'
-import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
+import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 
 import { SelectedValuesTags } from '../SelectedValuesTags/SelectedValuesTags'
 
@@ -49,8 +49,11 @@ type MultiSelectProps = {
   name: string
   /** Label for the dropdown button */
   buttonLabel: string
-  isOptional?: boolean
-  showError?: boolean
+  /** field is required */
+  required?: boolean
+  /** display asterik  */
+  asterisk?: boolean
+
   /** Trigger function to display error message when element is unfocus */
   onBlur?: () => void
 } & (
@@ -114,8 +117,8 @@ export const MultiSelect = ({
   error,
   name,
   buttonLabel,
-  isOptional = false,
-  showError = false,
+  required = false,
+  asterisk = true,
   onBlur,
 }: MultiSelectProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false)
@@ -188,14 +191,13 @@ export const MultiSelect = ({
   useOnClickOrFocusOutside(containerRef, () => setIsOpen(false))
 
   return (
-    <FieldLayout
-      label={label}
-      name={name}
-      error={error}
-      showError={showError}
-      isOptional={isOptional}
-    >
-      <fieldset className={styles.container} onBlur={onBlur}>
+    <fieldset onBlur={onBlur}>
+      {label && (
+        <label className={styles['container-label']}>
+          {label} {required && asterisk && '*'}
+        </label>
+      )}
+      <div className={styles.container}>
         <div ref={containerRef}>
           <MultiSelectTrigger
             id={id}
@@ -236,7 +238,14 @@ export const MultiSelect = ({
             {}
           )}
         />
-      </fieldset>
-    </FieldLayout>
+        <div
+          role="alert"
+          className={styles['container-error']}
+          id={`error-details-${name}`}
+        >
+          {error && <FieldError name={name}>{error}</FieldError>}
+        </div>
+      </div>
+    </fieldset>
   )
 }
