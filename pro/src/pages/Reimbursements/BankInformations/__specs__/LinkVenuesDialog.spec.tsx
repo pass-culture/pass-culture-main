@@ -82,7 +82,7 @@ describe('LinkVenueDialog', () => {
 
     expect(
       screen.getByRole('heading', {
-        name: /Sélectionnez un SIRET pour le lieu “Mon super lieu”/,
+        name: /Sélectionnez un SIRET pour la structure “Mon super lieu”/,
       })
     ).toBeInTheDocument()
   })
@@ -263,7 +263,7 @@ describe('LinkVenueDialog', () => {
     expect(checkbox).not.toBeChecked()
   })
 
-  describe('WIP_ENABLE_OFFER_ADDRESS', () => {
+  describe('WIP_ENABLE_OFFER_ADDRESS 2', () => {
     it('should display pricing point pop-in with term "structures"', async () => {
       const managedVenues = [
         { ...defaultManagedVenues, id: 1, hasPricingPoint: false },
