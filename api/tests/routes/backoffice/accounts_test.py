@@ -1551,7 +1551,6 @@ class SendValidationCodeTest(PostEndpointHelper):
             assert not sms_testing.requests, f"[{idx}] {len(sms_testing.requests)} sms sent"
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 class UpdatePublicAccountReviewTest(PostEndpointHelper):
     endpoint = "backoffice_web.public_accounts.review_public_account"
     endpoint_kwargs = {"user_id": 1}
@@ -1583,7 +1582,8 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
         assert user.has_beneficiary_role is False
 
     def test_set_beneficiary_on_underage(self, authenticated_client, legit_user):
-        user = users_factories.UnderageBeneficiaryFactory()
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        user = users_factories.BeneficiaryFactory(age=17, dateCreated=before_decree)
 
         base_form = {
             "status": fraud_models.FraudReviewStatus.OK.name,
@@ -1695,6 +1695,42 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
         assert (
             "Le compte est déjà bénéficiaire (18+) il ne peut pas aussi être bénéficiaire (15-17)"
             in html_parser.extract_alert(response.data)
+        )
+
+    def test_pre_decree_eligibility_from_v3_eligibility(self, authenticated_client, legit_user):
+        user = users_factories.BeneficiaryFactory()
+
+        base_form = {
+            "status": fraud_models.FraudReviewStatus.OK.name,
+            "eligibility": users_models.EligibilityType.AGE18.name,
+            "reason": "test",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
+        assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        assert (
+            "Le compte est déjà bénéficiaire du Pass 17-18, il ne peut pas aussi être bénéficiaire de l'ancien Pass 18"
+            in html_parser.extract_alert(response.data)
+        )
+
+    def test_unlocks_recredit_18(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory(age=17)
+        eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18, months=1)
+        user.validatedBirthDate = eighteen_years_ago
+
+        base_form = {
+            "status": fraud_models.FraudReviewStatus.OK.name,
+            "eligibility": users_models.EligibilityType.AGE17_18.name,
+            "reason": "test",
+        }
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
+        assert response.status_code == 303
+
+        user = users_models.User.query.filter_by(id=user.id).one()
+        assert any(
+            recredit.recreditType == finance_models.RecreditType.RECREDIT_18 for recredit in user.deposit.recredits
         )
 
 
