@@ -1,4 +1,5 @@
 /* istanbul ignore file */
+import fillThumbUp from 'icons/fill-thumb-up.svg'
 import fullAddUserIcon from 'icons/full-add-user.svg'
 import fullArchiveIcon from 'icons/full-archive.svg'
 import fullArrowLeftIcon from 'icons/full-arrow-left.svg'
@@ -134,7 +135,6 @@ import strokeVisualArtIcon from 'icons/stroke-visual-art.svg'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
 import strokeWipIcon from 'icons/stroke-wip.svg'
 import strokeWrongIcon from 'icons/stroke-wrong.svg'
-
 interface IconListItem {
   src: string
   viewBox?: string
@@ -143,6 +143,7 @@ interface IconListItem {
 // Those icons are put in the order of the design library here:
 // https://www.figma.com/file/AEXCkb4KbUyPmB4BRFa88s/PRO---Library?type=design&node-id=8059-111986&t=sLfFXFbaXGFLjdhX-0
 export const fullIcons: IconListItem[] = [
+  { src: fillThumbUp},
   { src: fullPauseIcon },
   { src: fullPlayIcon },
   { src: fullValidateIcon },

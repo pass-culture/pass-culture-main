@@ -1,13 +1,18 @@
 import { useFormikContext } from 'formik'
+import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  INDIVIDUAL_OFFER_SUBTYPE,
+  OFFER_WIZARD_MODE,
+} from 'commons/core/Offers/constants'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { HeadlineOfferVideoBanner } from 'components/HeadlineOfferVideoBanner/HeadlineOfferVideoBanner'
 import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
@@ -56,6 +61,13 @@ export const DetailsSubForm = ({
   onImageDelete,
   imageOffer,
 }: DetailsSubFormProps) => {
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const queryOfferType = queryParams.get('offer-type')
+  const shouldDisplayVideoBanner =
+    queryOfferType === INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT ||
+    queryOfferType === INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
+
   const mode = useOfferWizardMode()
   const {
     values: { categoryId, showType, subcategoryConditionalFields },
@@ -122,6 +134,9 @@ export const DetailsSubForm = ({
               hideActionButtons={isProductBased}
             />
           )}
+
+          {shouldDisplayVideoBanner && <HeadlineOfferVideoBanner />}
+
           {displayArtisticInformations && (
             <FormLayout.Section title="Informations artistiques">
               {hasMusicType(categoryId, subcategoryConditionalFields) && (

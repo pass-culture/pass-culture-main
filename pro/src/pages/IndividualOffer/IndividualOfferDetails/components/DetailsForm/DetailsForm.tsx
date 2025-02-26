@@ -151,6 +151,7 @@ export const DetailsForm = ({
           filteredSubcategories={filteredSubcategories}
         />
       )}
+
       {isSubCategorySelected && (
         <DetailsSubForm
           isEanSearchDisplayed={isEanSearchDisplayed}
