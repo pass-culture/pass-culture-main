@@ -214,10 +214,12 @@ class CreateTestCasesTest:
         # Check that the user 18 yo is recredited
         user_18_after_decree = User.query.filter_by(email="user18redepotapresdecret@test.com").one()
         assert user_18_after_decree.deposit.type == finance_models.DepositType.GRANT_17_18
-        assert user_18_after_decree.deposit.amount == 150 + 30 + 50
+        assert (
+            user_18_after_decree.deposit.amount == 150 + 30 + 50 - 15
+        )  # there is a reimbursed booking of 15 on his old deposit
 
         recredit_types_and_amounts = [
             (recredit.recreditType, recredit.amount) for recredit in user_18_after_decree.deposit.recredits
         ]
         assert (finance_models.RecreditType.RECREDIT_18, 150) in recredit_types_and_amounts
-        assert (finance_models.RecreditType.PREVIOUS_DEPOSIT, 80) in recredit_types_and_amounts
+        assert (finance_models.RecreditType.PREVIOUS_DEPOSIT, 80 - 15) in recredit_types_and_amounts
