@@ -23,10 +23,12 @@ import pcapi.core.providers.repository as providers_repository
 import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.models.feature import FeatureToggle
 import pcapi.tasks.external_api_booking_notification_tasks as external_api_booking_notification
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import ExternalApiBookingNotificationRequest
 from pcapi.utils import requests
+import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.utils.queue import add_to_queue
 
 from . import exceptions
@@ -47,24 +49,32 @@ EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS = settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SEC
 
 
 def get_shows_stock(venue_id: int, shows_id: list[int]) -> dict[str, int]:
-    client = _get_external_bookings_client_api(venue_id)
+    client = _instantiate_cinema_api_client(venue_id)
     return client.get_shows_remaining_places(shows_id)
 
 
 def get_movie_stocks(venue_id: int, movie_id: str) -> dict[str, int]:
-    client = _get_external_bookings_client_api(venue_id)
+    client = _instantiate_cinema_api_client(venue_id)
     return client.get_film_showtimes_stocks(movie_id)
 
 
 def cancel_booking(venue_id: int, barcodes: list[str]) -> None:
-    client = _get_external_bookings_client_api(venue_id)
+    client = _instantiate_cinema_api_client(venue_id)
     client.cancel_booking(barcodes)
 
 
 def book_cinema_ticket(
-    venue_id: int, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
+    venue_id: int, stock_id_at_providers: str | None, booking: bookings_models.Booking, beneficiary: users_models.User
 ) -> list[external_bookings_models.Ticket]:
-    client = _get_external_bookings_client_api(venue_id)
+    local_class, _ = _get_cinema_local_class_and_id(venue_id)
+    _check_cinema_booking_is_enabled(local_class)
+
+    client = _instantiate_cinema_api_client(venue_id)
+
+    show_id = cinema_providers_utils.get_showtime_id_from_uuid(stock_id_at_providers, local_class)
+    if not show_id:
+        raise exceptions.ExternalBookingConfigurationException("Could not retrieve show_id")
+
     return client.book_ticket(show_id, booking, beneficiary)
 
 
@@ -75,10 +85,41 @@ def disable_external_bookings() -> None:
     db.session.commit()
 
 
-def _get_external_bookings_client_api(venue_id: int) -> external_bookings_models.ExternalBookingsClientAPI:
-    cinema_venue_provider = get_active_cinema_venue_provider(venue_id)
-    cinema_id = cinema_venue_provider.venueIdAtOfferProvider
-    match cinema_venue_provider.provider.localClass:
+def _check_cinema_integration_is_enabled(local_class: str) -> None:
+    try:
+        integration_is_enabled_ff = {
+            "CDSStocks": FeatureToggle.ENABLE_CDS_IMPLEMENTATION,
+            "BoostStocks": FeatureToggle.ENABLE_BOOST_API_INTEGRATION,
+            "CGRStocks": FeatureToggle.ENABLE_CGR_INTEGRATION,
+            "EMSStocks": FeatureToggle.ENABLE_EMS_INTEGRATION,
+        }[local_class]
+        if not integration_is_enabled_ff.is_active():
+            raise feature.DisabledFeatureError(f"{integration_is_enabled_ff.name} is inactive")
+    except KeyError:
+        raise ValueError(f"Unknown cinema provider: {local_class}")
+
+
+def _check_cinema_booking_is_enabled(local_class: str) -> None:
+    try:
+        booking_is_disabled_ff = {
+            "CDSStocks": FeatureToggle.DISABLE_CDS_EXTERNAL_BOOKINGS,
+            "BoostStocks": FeatureToggle.DISABLE_BOOST_EXTERNAL_BOOKINGS,
+            "CGRStocks": FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS,
+            "EMSStocks": FeatureToggle.DISABLE_EMS_EXTERNAL_BOOKINGS,
+        }[local_class]
+        if booking_is_disabled_ff.is_active():
+            raise feature.DisabledFeatureError(f"{booking_is_disabled_ff.name} is active")
+    except KeyError:
+        raise ValueError(f"Unknown cinema provider: {local_class}")
+
+
+def _instantiate_cinema_api_client(venue_id: int) -> external_bookings_models.ExternalBookingsClientAPI:
+    local_class, cinema_id = _get_cinema_local_class_and_id(venue_id)
+    sentry_sdk.set_tag("cinema-provider-local-class", local_class)
+
+    _check_cinema_integration_is_enabled(local_class)
+
+    match local_class:
         case "CDSStocks":
             api_url = settings.CDS_API_URL
             cds_cinema_details = providers_repository.get_cds_cinema_details(cinema_id)
@@ -94,7 +135,7 @@ def _get_external_bookings_client_api(venue_id: int) -> external_bookings_models
         case "EMSStocks":
             return EMSClientAPI(cinema_id, request_timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
         case _:
-            raise ValueError(f"Unknown Provider: {cinema_venue_provider.provider.localClass}")
+            raise ValueError(f"Unknown cinema provider: {local_class}")
 
 
 def get_active_cinema_venue_provider(venue_id: int) -> providers_models.VenueProvider:
@@ -106,6 +147,17 @@ def get_active_cinema_venue_provider(venue_id: int) -> providers_models.VenuePro
     if not cinema_venue_provider:
         raise providers_exceptions.InactiveProvider()
     return cinema_venue_provider
+
+
+def _get_cinema_local_class_and_id(venue_id: int) -> tuple[str, str]:
+    cinema_venue_provider = (
+        providers_repository.get_cinema_venue_provider_query(venue_id)
+        .filter(providers_models.VenueProvider.isActive)
+        .one_or_none()
+    )
+    if not cinema_venue_provider:
+        raise providers_exceptions.InactiveProvider()
+    return cinema_venue_provider.provider.localClass, cinema_venue_provider.venueIdAtOfferProvider
 
 
 def book_event_ticket(
@@ -216,6 +268,8 @@ def cancel_event_ticket(
     is_booking_saved: bool,
     venue_provider: providers_models.VenueProvider | None,
 ) -> None:
+    sentry_sdk.set_tag("external-provider", provider.name)
+
     validation.check_ticketing_service_is_correctly_set(provider=provider, venue_provider=venue_provider)
 
     payload = serialize.ExternalEventCancelBookingRequest.build_external_cancel_booking(barcodes)

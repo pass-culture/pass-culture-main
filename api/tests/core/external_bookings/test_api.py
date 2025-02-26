@@ -8,7 +8,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.utils import generate_hmac_signature
 from pcapi.core.external_bookings.api import EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS
-from pcapi.core.external_bookings.api import _get_external_bookings_client_api
+from pcapi.core.external_bookings.api import _instantiate_cinema_api_client
 from pcapi.core.external_bookings.api import book_event_ticket
 from pcapi.core.external_bookings.api import cancel_event_ticket
 from pcapi.core.external_bookings.api import get_active_cinema_venue_provider
@@ -57,7 +57,7 @@ class GetCinemaVenueProviderTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class GetExternalBookingsClientApiTest:
+class InstantiateCinemaApiClientTest:
     def test_should_return_client_api_according_to_name(self) -> None:
         # Given
         cds_provider = get_provider_by_local_class("CDSStocks")
@@ -73,7 +73,7 @@ class GetExternalBookingsClientApiTest:
 
         # When
         venue_id = venue_provider.venueId
-        client_api = _get_external_bookings_client_api(venue_id)
+        client_api = _instantiate_cinema_api_client(venue_id)
 
         # Then
         assert isinstance(client_api, CineDigitalServiceAPI)
@@ -95,7 +95,7 @@ class GetExternalBookingsClientApiTest:
         # When
         venue_id = venue_provider.venueId
         with pytest.raises(Exception) as e:
-            _get_external_bookings_client_api(venue_id)
+            _instantiate_cinema_api_client(venue_id)
 
         # Then
         assert str(e.value) == "No row was found when one was required"

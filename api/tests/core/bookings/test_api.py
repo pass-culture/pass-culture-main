@@ -1153,6 +1153,7 @@ class CancelByBeneficiaryTest:
     def test_cancel_booking(self, mocked_cancel_external_booking):
         stock = offers_factories.StockFactory(offer__bookingEmail="offerer@example.com")
         booking = bookings_factories.BookingFactory.create_batch(20, stock=stock)[0]
+        bookings_factories.ExternalBookingFactory(booking=booking)
         user = booking.user
         with assert_no_duplicated_queries():
             api.cancel_booking_by_beneficiary(user, booking)

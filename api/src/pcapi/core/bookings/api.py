@@ -5,7 +5,6 @@ import logging
 import typing
 
 from flask import current_app
-import sentry_sdk
 import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
 
@@ -55,7 +54,6 @@ from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_and_lock_user
 from pcapi.core.users.utils import get_age_at_date
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
@@ -65,7 +63,6 @@ from pcapi.repository import transaction
 import pcapi.serialization.utils as serialization_utils
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils import queue
-import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.utils.requests import exceptions as requests_exceptions
 from pcapi.workers import push_notification_job
 from pcapi.workers import user_emails_job
@@ -278,7 +275,20 @@ def _book_offer(
 
         if is_cinema_external_ticket_applicable:
             offers_validation.check_offer_is_from_current_cinema_provider(stock.offer)
-            _book_cinema_external_ticket(booking, stock, beneficiary)
+            tickets = external_bookings_api.book_cinema_ticket(
+                venue_id=stock.offer.venueId,
+                stock_id_at_providers=stock.idAtProviders,
+                booking=booking,
+                beneficiary=beneficiary,
+            )
+            booking.externalBookings = [
+                ExternalBooking(
+                    barcode=ticket.barcode,
+                    seat=ticket.seat_number,
+                    additional_information=ticket.additional_information,
+                )
+                for ticket in tickets
+            ]
 
         if stock.offer.isEventLinkedToTicketingService:
             tickets, remaining_quantity = external_bookings_api.book_event_ticket(booking, stock, beneficiary)
@@ -393,72 +403,6 @@ def book_offer(
     update_external_pro(stock.offer.venue.bookingEmail)
 
     return booking
-
-
-def _book_cinema_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> None:
-    venue_provider_name = external_bookings_api.get_active_cinema_venue_provider(
-        stock.offer.venueId
-    ).provider.localClass
-    sentry_sdk.set_tag("cinema-venue-provider", venue_provider_name)
-
-    match venue_provider_name:
-        case "CDSStocks":
-            if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_CDS_IMPLEMENTATION is inactive")
-            if FeatureToggle.DISABLE_CDS_EXTERNAL_BOOKINGS.is_active():
-                raise feature.DisabledFeatureError("DISABLE_CDS_EXTERNAL_BOOKINGS is active")
-        case "BoostStocks":
-            if not FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
-            if FeatureToggle.DISABLE_BOOST_EXTERNAL_BOOKINGS.is_active():
-                raise feature.DisabledFeatureError("DISABLE_BOOST_EXTERNAL_BOOKINGS is active")
-        case "CGRStocks":
-            if not FeatureToggle.ENABLE_CGR_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_CGR_INTEGRATION is inactive")
-            if FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS.is_active():
-                raise feature.DisabledFeatureError("DISABLE_CGR_EXTERNAL_BOOKINGS is active")
-        case "EMSStocks":
-            if not FeatureToggle.ENABLE_EMS_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_EMS_INTEGRATION is inactive")
-            if FeatureToggle.DISABLE_EMS_EXTERNAL_BOOKINGS.is_active():
-                raise feature.DisabledFeatureError("DISABLE_EMS_EXTERNAL_BOOKINGS is active")
-        case _:
-            raise external_bookings_exceptions.ExternalBookingConfigurationException(
-                f"Unknown cinema provider: {venue_provider_name}"
-            )
-    show_id = cinema_providers_utils.get_showtime_id_from_uuid(stock.idAtProviders, venue_provider_name)
-    if not show_id:
-        raise external_bookings_exceptions.ExternalBookingConfigurationException("Could not retrieve show_id")
-    try:
-        tickets = external_bookings_api.book_cinema_ticket(
-            venue_id=stock.offer.venueId,
-            show_id=show_id,
-            booking=booking,
-            beneficiary=beneficiary,
-        )
-    except external_bookings_exceptions.ExternalBookingSoldOutError:
-        logger.exception("Could not book this offer as it's sold out.")
-        raise
-    except external_bookings_exceptions.ExternalBookingTimeoutException:
-        raise
-    except Exception as exc:
-        logger.exception("Could not book external ticket: %s", exc)
-        raise external_bookings_exceptions.ExternalBookingException
-
-    booking.externalBookings = [
-        ExternalBooking(
-            barcode=ticket.barcode, seat=ticket.seat_number, additional_information=ticket.additional_information
-        )
-        for ticket in tickets
-    ]
-    logger.info(
-        "Successfully booked an offer",
-        extra={
-            "booking_id": booking.id,
-            "booking_token": booking.token,
-            "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
-        },
-    )
 
 
 def cancel_booking_for_finance_incident(booking: Booking) -> None:
@@ -610,7 +554,7 @@ def _execute_cancel_booking(
                         finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
                         booking=booking,
                     )
-                if not one_side_cancellation:
+                if not one_side_cancellation and booking.isExternal:
                     _cancel_external_booking(booking, stock)
             except (
                 BookingIsAlreadyUsed,
@@ -642,47 +586,18 @@ def _execute_cancel_booking(
 
 def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
     offer = stock.offer
+    barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
 
-    if not booking.isExternal:
-        return None
-
+    # FIXME: `offer.lastProvider.hasTicketingService` is legacy to support old public API
     if offer.lastProvider and (
         offer.isEventLinkedToTicketingService or offer.lastProvider.hasTicketingService
-    ):  # FIXME: `offer.lastProvider.hasTicketingService` is legacy to support old public API
-        sentry_sdk.set_tag("external-provider", offer.lastProvider.name)
-        barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
+    ):  # Linked to ticketing service
         venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
             offer.venueId, offer.lastProvider.id
         )
-        try:
-            external_bookings_api.cancel_event_ticket(offer.lastProvider, stock, barcodes, True, venue_provider)
-        except external_bookings_exceptions.ExternalBookingException:
-            logger.exception("Could not cancel external ticket")
-            raise external_bookings_exceptions.ExternalBookingException
-        except external_bookings_exceptions.ExternalBookingAlreadyCancelledError as error:
-            logger.info("External ticket already cancelled for booking: %s. Error %s", booking.id, str(error))
-            raise error
-        return None
-
-    venue_provider_name = external_bookings_api.get_active_cinema_venue_provider(offer.venueId).provider.localClass
-    sentry_sdk.set_tag("cinema-venue-provider", venue_provider_name)
-    match venue_provider_name:
-        case "CDSStocks":
-            if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_CDS_IMPLEMENTATION is inactive")
-        case "BoostStocks":
-            if not FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
-        case "CGRStocks":
-            if not FeatureToggle.ENABLE_CGR_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_CGR_INTEGRATION is inactive")
-        case "EMSStocks":
-            if not FeatureToggle.ENABLE_EMS_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_EMS_INTEGRATION is inactive")
-        case _:
-            raise offers_exceptions.UnexpectedCinemaProvider(f"Unknown Provider: {venue_provider_name}")
-    barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
-    external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
+        external_bookings_api.cancel_event_ticket(offer.lastProvider, stock, barcodes, True, venue_provider)
+    else:  # cinema provider
+        external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
 
 
 def _cancel_bookings_from_stock(
