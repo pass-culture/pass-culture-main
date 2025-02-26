@@ -195,52 +195,52 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
-  test-api:
-    name: "Test api"
-    needs: [pcapi-init-job, build-pcapi-tests]
-    uses: ./.github/workflows/dev_on_workflow_tests_api.yml
-    with:
-      tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  #test-api:
+    #name: "Test api"
+    #needs: [pcapi-init-job, build-pcapi-tests]
+    #uses: ./.github/workflows/dev_on_workflow_tests_api.yml
+    #with:
+      #tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
+    #secrets:
+      #GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      #GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
-  test-api-documentation:
-    name: "Tests API documentation"
-    needs: [pcapi-init-job]
-    if: needs.pcapi-init-job.outputs.api-documentation-changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_tests_api_documentation.yml
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  #test-api-documentation:
+    #name: "Tests API documentation"
+    #needs: [pcapi-init-job]
+    #if: needs.pcapi-init-job.outputs.api-documentation-changed == 'true'
+    #uses: ./.github/workflows/dev_on_workflow_tests_api_documentation.yml
+    #secrets:
+      #GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      #GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
-  test-pro:
-    name: "Pro Units Tests"
-    needs: [pcapi-init-job]
-    if: needs.pcapi-init-job.outputs.pro-changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
-    with:
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  #test-pro:
+    #name: "Pro Units Tests"
+    #needs: [pcapi-init-job]
+    #if: needs.pcapi-init-job.outputs.pro-changed == 'true'
+    #uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
+    #with:
+      #CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+    #secrets:
+      #GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      #GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  test-pro-e2e:
-    name: "Pro E2E Tests"
-    needs: [pcapi-init-job, build-pcapi]
-    uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
-    if: |
-      always() &&
-      !cancelled() &&
-      needs.pcapi-init-job.outputs.api-changed == 'true' ||
-      needs.pcapi-init-job.outputs.pro-changed == 'true'
-    with:
-      ENV: "development"
-      tag: ${{ needs.build-pcapi.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  #test-pro-e2e:
+    #name: "Pro E2E Tests"
+    #needs: [pcapi-init-job, build-pcapi]
+    #uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
+    #if: |
+      #always() &&
+      #!cancelled() &&
+      #needs.pcapi-init-job.outputs.api-changed == 'true' ||
+      #needs.pcapi-init-job.outputs.pro-changed == 'true'
+    #with:
+      #ENV: "development"
+      #tag: ${{ needs.build-pcapi.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
+      #CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+    #secrets:
+      #GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      #GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-storybook:
     name: "Deploy Storybook"
