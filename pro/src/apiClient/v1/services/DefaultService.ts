@@ -59,6 +59,7 @@ import type { GetVenuesOfOffererFromSiretResponseModel } from '../models/GetVenu
 import type { HasInvoiceResponseModel } from '../models/HasInvoiceResponseModel';
 import type { HeadlineOfferCreationBodyModel } from '../models/HeadlineOfferCreationBodyModel';
 import type { HeadlineOfferDeleteBodyModel } from '../models/HeadlineOfferDeleteBodyModel';
+import type { HeadLineOfferResponseModel } from '../models/HeadLineOfferResponseModel';
 import type { InviteMemberQueryModel } from '../models/InviteMemberQueryModel';
 import type { InvoiceListV2ResponseModel } from '../models/InvoiceListV2ResponseModel';
 import type { LinkVenueToBankAccountBodyModel } from '../models/LinkVenueToBankAccountBodyModel';
@@ -74,7 +75,6 @@ import type { ListVenueProviderResponse } from '../models/ListVenueProviderRespo
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
 import type { OffererEligibilityResponseModel } from '../models/OffererEligibilityResponseModel';
-import type { OffererHeadLineOfferResponseModel } from '../models/OffererHeadLineOfferResponseModel';
 import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
 import type { OfferStatus } from '../models/OfferStatus';
 import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
@@ -1476,12 +1476,12 @@ export class DefaultService {
   /**
    * get_offerer_headline_offer <GET>
    * @param offererId
-   * @returns OffererHeadLineOfferResponseModel OK
+   * @returns HeadLineOfferResponseModel OK
    * @throws ApiError
    */
   public getOffererHeadlineOffer(
     offererId: number,
-  ): CancelablePromise<OffererHeadLineOfferResponseModel> {
+  ): CancelablePromise<HeadLineOfferResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{offerer_id}/headline-offer',
@@ -1896,12 +1896,12 @@ export class DefaultService {
   /**
    * upsert_headline_offer <POST>
    * @param requestBody
-   * @returns void
+   * @returns HeadLineOfferResponseModel Created
    * @throws ApiError
    */
   public upsertHeadlineOffer(
     requestBody?: HeadlineOfferCreationBodyModel,
-  ): CancelablePromise<void> {
+  ): CancelablePromise<HeadLineOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/offers/upsert_headline',

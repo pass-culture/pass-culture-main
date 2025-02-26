@@ -22,11 +22,14 @@ logger = logging.getLogger(__name__)
 @private_api.route("/offers/upsert_headline", methods=["POST"])
 @login_required
 @spectree_serialize(
-    on_success_status=204,
+    response_model=headline_offer_serialize.HeadLineOfferResponseModel,
+    on_success_status=201,
     api=blueprint.pro_private_schema,
 )
 @atomic()
-def upsert_headline_offer(body: headline_offer_serialize.HeadlineOfferCreationBodyModel) -> None:
+def upsert_headline_offer(
+    body: headline_offer_serialize.HeadlineOfferCreationBodyModel,
+) -> headline_offer_serialize.HeadLineOfferResponseModel:
 
     offer = offers_repository.get_offer_by_id(body.offer_id, load_options=["headline_offer", "venue"])
 
@@ -36,7 +39,7 @@ def upsert_headline_offer(body: headline_offer_serialize.HeadlineOfferCreationBo
 
     rest.check_user_has_access_to_offerer(current_user, offerer_id)
     try:
-        offers_api.upsert_headline_offer(offer)
+        headline_offer = offers_api.upsert_headline_offer(offer)
     except exceptions.CannotRemoveHeadlineOffer:
         raise api_errors.ApiErrors(
             errors={"global": ["Une erreur est survenue au moment du retrait de l'offre à la une"]},
@@ -69,6 +72,7 @@ def upsert_headline_offer(body: headline_offer_serialize.HeadlineOfferCreationBo
         raise api_errors.ApiErrors(
             errors={"global": ["Une offre doit avoir une image pour être mise à la une"]},
         )
+    return headline_offer_serialize.HeadLineOfferResponseModel.from_orm(headline_offer.offer)
 
 
 @private_api.route("/offers/delete_headline", methods=["POST"])
