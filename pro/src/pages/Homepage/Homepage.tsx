@@ -71,8 +71,9 @@ export const Homepage = (): JSX.Element => {
     data: selectedOfferer,
     error: offererApiError,
     isLoading: isOffererLoading,
-    isValidating: isOffererValidating
+    isValidating: isOffererValidating,
   } = useOfferer(selectedOffererId, true)
+
   const isUserOffererValidated = !offererApiError
 
   const hasNoVenueVisible = useMemo(() => {
@@ -122,13 +123,12 @@ export const Homepage = (): JSX.Element => {
           <LinkVenueCallout offerer={selectedOfferer} />
           <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
         </div>
-        {!isOffererValidating &&
-          (selectedOfferer || offererApiError) && (
-            <OffererBanners
-              isUserOffererValidated={isUserOffererValidated}
-              offerer={selectedOfferer}
-            />
-          )}
+        {!isOffererValidating && (selectedOfferer || offererApiError) && (
+          <OffererBanners
+            isUserOffererValidated={isUserOffererValidated}
+            offerer={selectedOfferer}
+          />
+        )}
 
         {selectedOfferer?.isValidated && selectedOfferer.isActive && (
           <section className={styles['section']}>

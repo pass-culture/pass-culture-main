@@ -17,10 +17,14 @@ import {
   GET_DATA_ERROR_MESSAGE,
   SAVED_OFFERER_ID_KEY,
 } from 'commons/core/shared/constants'
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { useNotification } from 'commons/hooks/useNotification'
 import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
-import { selecteOffererIsOnboarded } from 'commons/store/offerer/selectors'
+import {
+  selectCurrentOffererId,
+  selecteOffererIsOnboarded,
+} from 'commons/store/offerer/selectors'
 import { updateUser } from 'commons/store/user/reducer'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { storageAvailable } from 'commons/utils/storageAvailable'
@@ -66,6 +70,13 @@ export const App = (): JSX.Element | null => {
   useLogNavigation()
   useLogExtraProData()
 
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+
+  const { error: offererApiError, isValidating: isOffererValidating } =
+    useOfferer(selectedOffererId, true)
+
+  const isAwaitingRattachment = !isOffererValidating && offererApiError
+
   useEffect(() => {
     if (location.search.includes('logout')) {
       api.signout()
@@ -92,15 +103,15 @@ export const App = (): JSX.Element | null => {
   if (isDidacticOnboardingEnabled) {
     if (
       location.pathname.includes('accueil') &&
-      isOffererOnboarded !== null &&
-      !isOffererOnboarded
+      isOffererOnboarded === false &&
+      !isAwaitingRattachment
     ) {
       return <Navigate to="/onboarding" replace />
     }
     if (
       location.pathname.includes('onboarding') &&
-      isOffererOnboarded &&
-      !searchParams.get('userHasJustOnBoarded')
+      (isAwaitingRattachment ||
+        (isOffererOnboarded && !searchParams.get('userHasJustOnBoarded')))
     ) {
       return <Navigate to="/accueil" replace />
     }
