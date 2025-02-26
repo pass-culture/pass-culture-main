@@ -5298,9 +5298,9 @@ class LastAgeRelatedRecreditTest:
     def test_last_recredit_17(self):
         user = users_factories.BeneficiaryFactory(age=17)
 
-        last_recredit_type = api.get_latest_age_related_user_recredit(user)
+        last_recredit = api.get_latest_age_related_user_recredit(user)
 
-        assert last_recredit_type == models.RecreditType.RECREDIT_17
+        assert last_recredit.recreditType == models.RecreditType.RECREDIT_17
 
     def test_last_recredit_18(self):
         user = users_factories.BeneficiaryFactory(age=17)
@@ -5311,18 +5311,29 @@ class LastAgeRelatedRecreditTest:
             dateCreated=datetime.datetime.utcnow() - relativedelta(weeks=1),
         )
 
-        last_recredit_type = api.get_latest_age_related_user_recredit(user)
+        last_recredit = api.get_latest_age_related_user_recredit(user)
 
-        assert last_recredit_type == models.RecreditType.RECREDIT_18
+        assert last_recredit.recreditType == models.RecreditType.RECREDIT_18
 
-    @pytest.mark.parametrize("age", [15, 16, 17])
-    def test_last_recredit_15_17_deposit(self, age):
+    def test_last_recredit_15_17_deposit(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
-        user = users_factories.BeneficiaryFactory(age=age, dateCreated=before_decree)
+        user = users_factories.BeneficiaryFactory(age=17, dateCreated=before_decree)
+        factories.RecreditFactory(
+            deposit=user.deposit,
+            amount=Decimal("30"),
+            recreditType=models.RecreditType.RECREDIT_17,
+            dateCreated=datetime.datetime.utcnow() - relativedelta(weeks=1),
+        )
+        factories.RecreditFactory(
+            deposit=user.deposit,
+            amount=Decimal("30"),
+            recreditType=models.RecreditType.RECREDIT_16,
+            dateCreated=datetime.datetime.utcnow() - relativedelta(weeks=1),
+        )
 
-        last_recredit_type = api.get_latest_age_related_user_recredit(user)
+        last_recredit = api.get_latest_age_related_user_recredit(user)
 
-        assert last_recredit_type == conf.RECREDIT_TYPE_AGE_MAPPING[age]
+        assert last_recredit.recreditType == models.RecreditType.RECREDIT_17
 
 
 class ValidateFinanceIncidentTest:

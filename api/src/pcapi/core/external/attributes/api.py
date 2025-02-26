@@ -427,7 +427,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     domains_credit = get_domains_credit(user, user_bookings) if not is_pro_user else None
     bookings_attributes = get_bookings_categories_and_subcategories(user_bookings)
     booking_venues_count = len({booking.venueId for booking in user_bookings})
-    last_recredit_type = finance_api.get_latest_age_related_user_recredit(user)
+    last_recredit = finance_api.get_latest_age_related_user_recredit(user)
 
     # Call only once to limit to one get_wallet_balance query
     has_remaining_credit = user.has_remaining_credit
@@ -466,7 +466,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         last_booking_date=user_bookings[0].dateCreated if user_bookings else None,
         last_favorite_creation_date=last_favorite.dateCreated if last_favorite else None,
         last_name=user.lastName,
-        last_recredit_type=last_recredit_type,
+        last_recredit_type=last_recredit.recreditType if last_recredit else None,
         last_visit_date=user.lastConnectionDate,
         marketing_email_subscription=user.get_notification_subscriptions().marketing_email,
         marketing_push_subscription=user.get_notification_subscriptions().marketing_push,

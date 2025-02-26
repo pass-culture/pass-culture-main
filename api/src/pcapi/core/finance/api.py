@@ -3527,7 +3527,7 @@ def recredit_user_if_no_missing_step(user: users_models.User) -> None:
         transactional_mails.send_recredit_email_to_underage_beneficiary(user, recredit.amount, domains_credit)
 
 
-def get_latest_age_related_user_recredit(user: users_models.User) -> models.RecreditType | None:
+def get_latest_age_related_user_recredit(user: users_models.User) -> models.Recredit | None:
     """
     This function assumes that the user.deposits and the deposit.recredits relationships are already loaded.
 
@@ -3537,13 +3537,22 @@ def get_latest_age_related_user_recredit(user: users_models.User) -> models.Recr
         return None
 
     if user.deposit.type == models.DepositType.GRANT_17_18:
-        recredit_types = [recredit.recreditType for recredit in user.deposit.recredits]
-        for recredit_type in [models.RecreditType.RECREDIT_18, models.RecreditType.RECREDIT_17]:
-            if recredit_type in recredit_types:
-                return recredit_type
+        recredit_types = [models.RecreditType.RECREDIT_18, models.RecreditType.RECREDIT_17]
+    elif user.deposit.type == models.DepositType.GRANT_15_17:
+        recredit_types = [
+            models.RecreditType.RECREDIT_17,
+            models.RecreditType.RECREDIT_16,
+            models.RecreditType.RECREDIT_15,
+        ]
+    else:
+        return None
 
-    if user.deposit.type == models.DepositType.GRANT_15_17 and user.age:
-        return conf.get_recredit_mapping().get(user.age)
+    for recredit_type in recredit_types:
+        latest_age_recredit = next(
+            (recredit for recredit in user.deposit.recredits if recredit_type == recredit.recreditType), None
+        )
+        if latest_age_recredit:
+            return latest_age_recredit
 
     return None
 
