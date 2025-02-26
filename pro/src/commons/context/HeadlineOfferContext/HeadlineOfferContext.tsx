@@ -5,7 +5,7 @@ import useSWR, { useSWRConfig } from 'swr'
 
 
 import { api } from 'apiClient/api'
-import { OffererHeadLineOfferResponseModel } from 'apiClient/v1'
+import { HeadLineOfferResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, GET_VENUES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
@@ -25,7 +25,7 @@ type UpsertHeadlineOfferParams = {
 }
 
 type HeadlineOfferContextValues = {
-  headlineOffer: OffererHeadLineOfferResponseModel | null
+  headlineOffer: HeadLineOfferResponseModel | null
   upsertHeadlineOffer: (params: UpsertHeadlineOfferParams) => Promise<void>
   removeHeadlineOffer: () => Promise<void>
   isHeadlineOfferBannerOpen: boolean

@@ -30,9 +30,20 @@ class Returns200Test:
         client = client.with_session_auth(pro_user.email)
         response = client.post("/offers/upsert_headline", json=data)
 
-        assert response.status_code == 204
+        assert response.status_code == 201
         assert offer.is_headline_offer
-        assert offers_models.HeadlineOffer.query.one()
+        headline_offer = offers_models.HeadlineOffer.query.one()
+        assert headline_offer
+
+        assert response.json == {
+            "id": headline_offer.offer.id,
+            "image": {
+                "credit": headline_offer.offer.image.credit,
+                "url": headline_offer.offer.image.url,
+            },
+            "name": headline_offer.offer.name,
+            "venueId": headline_offer.venue.id,
+        }
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer.id},
@@ -61,7 +72,7 @@ class Returns200Test:
         client = client.with_session_auth(pro_user.email)
         response = client.post("/offers/upsert_headline", json=data)
 
-        assert response.status_code == 204
+        assert response.status_code == 201
         assert offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.count() == 2
 
@@ -87,7 +98,7 @@ class Returns200Test:
         client = client.with_session_auth(pro_user.email)
         response = client.post("/offers/upsert_headline", json=data)
 
-        assert response.status_code == 204
+        assert response.status_code == 201
 
         assert not offer.is_headline_offer
         assert another_offer.is_headline_offer
@@ -118,7 +129,8 @@ class Returns200Test:
         client = client.with_session_auth(pro_user.email)
         response = client.post("/offers/upsert_headline", json=data)
 
-        assert response.status_code == 204
+        assert response.status_code == 201
+        assert response.json["id"] == another_offer.id
 
         assert not offer.is_headline_offer
         assert another_offer.is_headline_offer

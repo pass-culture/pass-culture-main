@@ -24,6 +24,7 @@ from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import atomic
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
+from pcapi.routes.serialization import headline_offer_serialize
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests
@@ -312,13 +313,13 @@ def get_offerer_addresses(
 @login_required
 @atomic()
 @spectree_serialize(
-    response_model=offerers_serialize.OffererHeadLineOfferResponseModel,
+    response_model=headline_offer_serialize.HeadLineOfferResponseModel,
     api=blueprint.pro_private_schema,
     on_success_status=200,
 )
 def get_offerer_headline_offer(
     offerer_id: int,
-) -> offerers_serialize.OffererHeadLineOfferResponseModel:
+) -> headline_offer_serialize.HeadLineOfferResponseModel:
     check_user_has_access_to_offerer(current_user, offerer_id)
 
     try:
@@ -328,7 +329,7 @@ def get_offerer_headline_offer(
 
     if not offerer_headline_offer:
         raise ResourceNotFoundError()
-    return offerers_serialize.OffererHeadLineOfferResponseModel.from_orm(offerer_headline_offer)
+    return headline_offer_serialize.HeadLineOfferResponseModel.from_orm(offerer_headline_offer)
 
 
 @private_api.route("/offerers/<int:offerer_id>/eligibility", methods=["GET"])

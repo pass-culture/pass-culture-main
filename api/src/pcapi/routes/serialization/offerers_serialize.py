@@ -429,16 +429,6 @@ class OffererAddressResponseModel(BaseModel):
         orm_mode = True
 
 
-class OffererHeadLineOfferResponseModel(BaseModel):
-    id: int
-    name: str
-    image: offers_models.OfferImage | None
-    venueId: int
-
-    class Config:
-        orm_mode = True
-
-
 class OffererEligibilityResponseModel(BaseModel):
     offerer_id: int
     has_adage_id: bool | None
