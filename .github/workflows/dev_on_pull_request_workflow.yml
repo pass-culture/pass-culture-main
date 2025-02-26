@@ -28,7 +28,7 @@ jobs:
       checksum-tag-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
       checksum-console-tag-exists: ${{ steps.check-console-checksum-tag.outputs.tag-exists }}
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: false
@@ -59,7 +59,7 @@ jobs:
             api/poetry.lock
             pro/yarn.lock
       # checkout source branch of the pull request
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0

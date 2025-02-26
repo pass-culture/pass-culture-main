@@ -15,7 +15,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
         with:
@@ -33,7 +33,7 @@ jobs:
             DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
 
       # Checkout rendered-manifests repository
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4
         with:
           repository: pass-culture/rendered-manifests
           token: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}

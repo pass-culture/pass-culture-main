@@ -40,7 +40,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
         with:
@@ -71,7 +71,7 @@ jobs:
           api_token_github: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
 
       # Checkout pass-culture-deployment repository containing pcapi helm value files
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4
         with:
           repository: pass-culture/pass-culture-deployment
           ref: master
