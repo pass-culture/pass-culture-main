@@ -1977,18 +1977,6 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
 
 
 def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
-    count_past_stocks = (
-        models.Stock.query.with_entities(models.Stock.id)
-        .filter(
-            models.Stock.offerId == offer.id,
-            models.Stock.beginningDatetime < datetime.datetime.utcnow(),
-            models.Stock.isSoftDeleted.is_(False),
-        )
-        .count()
-    )
-    if count_past_stocks > 0:
-        raise exceptions.OfferEventInThePast(count_past_stocks)
-
     count_reimbursed_bookings = (
         bookings_models.Booking.query.with_entities(bookings_models.Booking.id)
         .join(bookings_models.Booking.stock)
@@ -2033,12 +2021,12 @@ def check_can_move_collective_offer_venue(
 def get_venues_with_same_pricing_point(
     offer: models.Offer | educational_models.CollectiveOffer,
 ) -> list[offerers_models.Venue]:
-    venues_choices = (
+    venues_choices_query = (
         offerers_models.Venue.query.filter(
             offerers_models.Venue.managingOffererId == offer.venue.managingOffererId,
             offerers_models.Venue.id != offer.venueId,
         )
-        .join(
+        .outerjoin(
             offerers_models.VenuePricingPointLink,
             sa.and_(
                 offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
@@ -2057,8 +2045,14 @@ def get_venues_with_same_pricing_point(
             ),
         )
         .order_by(offerers_models.Venue.common_name)
-        .all()
     )
+    if offer.venue.current_pricing_point_link:
+        venues_choices_query = venues_choices_query.filter(
+            offerers_models.VenuePricingPointLink.pricingPointId
+            == offer.venue.current_pricing_point_link.pricingPointId
+        )
+    venues_choices = venues_choices_query.all()
+
     if not venues_choices:
         raise exceptions.NoDestinationVenue()
 
@@ -2096,8 +2090,9 @@ def move_offer(
         raise exceptions.ForbiddenDestinationVenue()
 
     destination_pricing_point_link = destination_venue.current_pricing_point_link
-    assert destination_pricing_point_link  # for mypy - it would not be in venue_choices without link
-    destination_pricing_point_id = destination_pricing_point_link.pricingPointId
+    destination_pricing_point_id = None
+    if destination_pricing_point_link:
+        destination_pricing_point_id = destination_pricing_point_link.pricingPointId
 
     bookings = (
         bookings_models.Booking.query.join(bookings_models.Booking.stock)
@@ -2163,9 +2158,8 @@ def move_offer(
                 if finance_event.status == finance_models.FinanceEventStatus.PENDING:
                     finance_event.status = finance_models.FinanceEventStatus.READY
                     finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(booking)
-                db.session.add(finance_event)
-
-            db.session.add(booking)
+                db.session.add(finance_event)  # TODO(xordoquy): is that really usefull ?
+            db.session.add(booking)  # TODO(xordoquy): is that really usefull ?
 
     on_commit(
         partial(
