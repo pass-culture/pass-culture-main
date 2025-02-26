@@ -195,6 +195,9 @@ def create_users_for_credit_v3_tests() -> None:
     user18_redepotapresdecret.deposit.expirationDate = user_birthdate + relativedelta(years=21)
     user18_redepotapresdecret.deposit.amount = 20 + 30 + 30  # 20 initial amount + 2 recredits above
 
+    # add a reimbursed booking to old deposit
+    bookings_factories.ReimbursedBookingFactory(user=user18_redepotapresdecret, quantity=1, amount=15)
+
     # Set real age to 18 via admin action
     users_api.update_user_info(
         user18_redepotapresdecret,
