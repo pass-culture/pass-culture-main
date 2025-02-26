@@ -50,15 +50,22 @@ export const FormPracticalInformation = ({
 
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
-  const handleMultiSelectChange = useCallback((selectedOption: Option[], addedOptions: Option[], removedOptions: Option[]) => {
-    const newSelectedOptions = interventionAreaMultiSelect({
-      selectedOption,
-      addedOptions,
-      removedOptions,
-    })
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    setFieldValue('interventionArea', Array.from(newSelectedOptions))
-  }, [setFieldValue])
+  const handleMultiSelectChange = useCallback(
+    (
+      selectedOption: Option[],
+      addedOptions: Option[],
+      removedOptions: Option[]
+    ) => {
+      const newSelectedOptions = interventionAreaMultiSelect({
+        selectedOption,
+        addedOptions,
+        removedOptions,
+      })
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      setFieldValue('interventionArea', Array.from(newSelectedOptions))
+    },
+    [setFieldValue]
+  )
 
   const MultiSelectComponent = (
     <MultiSelect
@@ -66,8 +73,12 @@ export const FormPracticalInformation = ({
       name="interventionArea"
       buttonLabel="Département(s)"
       options={offerInterventionOptions}
-      selectedOptions={offerInterventionOptions.filter((op) => values.interventionArea.includes(op.id))}
-      defaultOptions={offerInterventionOptions.filter((option) => values.interventionArea.includes(option.id))}
+      selectedOptions={offerInterventionOptions.filter((op) =>
+        values.interventionArea.includes(op.id)
+      )}
+      defaultOptions={offerInterventionOptions.filter((option) =>
+        values.interventionArea.includes(option.id)
+      )}
       disabled={disableForm}
       hasSearch
       searchLabel="Rechercher"
@@ -75,7 +86,11 @@ export const FormPracticalInformation = ({
       onSelectedOptionsChanged={handleMultiSelectChange}
       onBlur={() => setFieldTouched('interventionArea', true)}
       showError={touched.interventionArea && !!errors.interventionArea}
-      error={touched.interventionArea && errors.interventionArea ? String(errors.interventionArea) : undefined}
+      error={
+        touched.interventionArea && errors.interventionArea
+          ? String(errors.interventionArea)
+          : undefined
+      }
     />
   )
 
@@ -120,9 +135,10 @@ export const FormPracticalInformation = ({
             </InfoBox>
           }
         >
-        {MultiSelectComponent}
+          {MultiSelectComponent}
         </FormLayout.Row>
-    )},
+      ),
+    },
     {
       label: EVENT_ADDRESS_OTHER_LABEL,
       value: OfferAddressType.OTHER,

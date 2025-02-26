@@ -10,6 +10,20 @@
   width: 100%;
   max-width: rem.torem(542px);
   position: relative;
+  margin-bottom: rem.torem(8px);
+
+  &-label {
+    display: block;
+    margin-bottom: rem.torem(8px);
+  }
+
+  &-error {
+    margin-top: rem.torem(8px);
+
+    svg {
+      flex: 0 0 rem.torem(15px);
+    }
+  }
 }
 
 .legend {

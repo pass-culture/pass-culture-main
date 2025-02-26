@@ -121,12 +121,12 @@ export const CollectiveDataForm = ({
                   <MultiSelect
                     name="collectiveStudents"
                     label="Public cible"
+                    required={true}
                     options={studentOptions}
                     defaultOptions={studentOptions.filter((option) =>
                       formik.values.collectiveStudents.includes(option.label)
                     )}
                     hasSearch
-                    isOptional
                     searchLabel="Public cible"
                     onSelectedOptionsChanged={(selectedOption) =>
                       formik.setFieldValue('collectiveStudents', [
@@ -138,10 +138,6 @@ export const CollectiveDataForm = ({
                     buttonLabel="Public cible"
                     onBlur={() =>
                       formik.setFieldTouched('collectiveStudents', true)
-                    }
-                    showError={
-                      formik.touched.collectiveStudents &&
-                      !!formik.errors.collectiveStudents
                     }
                     error={
                       formik.touched.collectiveStudents &&
@@ -173,12 +169,12 @@ export const CollectiveDataForm = ({
                   <MultiSelect
                     name="collectiveDomains"
                     label="Domaine artistique et culturel"
+                    required={true}
                     options={domains}
                     defaultOptions={domains.filter((option) =>
                       formik.values.collectiveDomains.includes(option.id)
                     )}
                     hasSearch
-                    isOptional
                     searchLabel="Domaines artistiques et culturel"
                     onSelectedOptionsChanged={(selectedOption) =>
                       formik.setFieldValue('collectiveDomains', [
@@ -189,10 +185,6 @@ export const CollectiveDataForm = ({
                     onBlur={() =>
                       formik.setFieldTouched('collectiveDomains', true)
                     }
-                    showError={
-                      formik.touched.collectiveDomains &&
-                      !!formik.errors.collectiveDomains
-                    }
                     error={
                       formik.touched.collectiveDomains &&
                       formik.errors.collectiveDomains
@@ -201,11 +193,11 @@ export const CollectiveDataForm = ({
                     }
                   />
                 </FormLayout.Row>
-
                 <FormLayout.Row>
                   <MultiSelect
                     name="collectiveInterventionArea"
                     label="Zone de mobilité"
+                    required={true}
                     options={offerInterventionOptions}
                     selectedOptions={offerInterventionOptions.filter((op) =>
                       formik.values.collectiveInterventionArea.includes(op.id)
@@ -217,7 +209,6 @@ export const CollectiveDataForm = ({
                     )}
                     hasSelectAllOptions
                     hasSearch
-                    isOptional
                     searchLabel="Rechercher"
                     onSelectedOptionsChanged={(
                       selectedOption,
@@ -240,10 +231,6 @@ export const CollectiveDataForm = ({
                     onBlur={() =>
                       formik.setFieldTouched('collectiveDomains', true)
                     }
-                    showError={
-                      formik.touched.collectiveInterventionArea &&
-                      !!formik.errors.collectiveInterventionArea
-                    }
                     error={
                       formik.touched.collectiveInterventionArea &&
                       formik.errors.collectiveInterventionArea
@@ -252,7 +239,6 @@ export const CollectiveDataForm = ({
                     }
                   />
                 </FormLayout.Row>
-
                 <FormLayout.Row>
                   <Select
                     options={[
