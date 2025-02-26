@@ -578,9 +578,7 @@ def handle_ok_manual_review(
     users_api.update_user_information_from_external_source(user, source_data)
 
     if eligibility is None:
-        eligibility = eligibility_api.decide_eligibility(
-            user, source_data.get_birth_date(), source_data.get_registration_datetime()
-        )
+        eligibility = eligibility_api.get_pre_decree_or_current_eligibility(user)
         if not eligibility:
             raise EligibilityError("Aucune éligibilité trouvée. Veuillez renseigner une éligibilité.")
 

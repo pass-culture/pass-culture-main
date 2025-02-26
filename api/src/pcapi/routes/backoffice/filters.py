@@ -820,9 +820,11 @@ def format_eligibility_value(tunnel_type: str) -> str:
 def format_eligibility_type(eligibility_type: users_models.EligibilityType) -> str:
     match eligibility_type:
         case users_models.EligibilityType.UNDERAGE:
-            return "Pass 15-17"
+            return "Ancien Pass 15-17"
         case users_models.EligibilityType.AGE18:
-            return "Pass 18"
+            return "Ancien Pass 18"
+        case users_models.EligibilityType.AGE17_18:
+            return "Pass 17-18"
         case _:
             return eligibility_type.value
 

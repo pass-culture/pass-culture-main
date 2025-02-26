@@ -1156,13 +1156,22 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
 
     eligibility = users_models.EligibilityType[form.eligibility.data]
     if form.status.data == fraud_models.FraudReviewStatus.OK.value:
-        if eligibility == users_models.EligibilityType.UNDERAGE:
-            if users_models.UserRole.BENEFICIARY in user.roles:
-                flash(
-                    "Le compte est déjà bénéficiaire (18+) il ne peut pas aussi être bénéficiaire (15-17)",
-                    "warning",
-                )
-                return redirect(get_public_account_link(user_id), code=303)
+        if user.has_beneficiary_role and eligibility == users_models.EligibilityType.UNDERAGE:
+            flash(
+                "Le compte est déjà bénéficiaire (18+) il ne peut pas aussi être bénéficiaire (15-17)",
+                "warning",
+            )
+            return redirect(get_public_account_link(user_id), code=303)
+
+        has_grant_17_18_deposit = (
+            user.deposit is not None and user.deposit.type == finance_models.DepositType.GRANT_17_18
+        )
+        if has_grant_17_18_deposit and eligibility == users_models.EligibilityType.AGE18:
+            flash(
+                "Le compte est déjà bénéficiaire du Pass 17-18, il ne peut pas aussi être bénéficiaire de l'ancien Pass 18",
+                "warning",
+            )
+            return redirect(get_public_account_link(user_id), code=303)
 
     try:
         if eligibility == users_models.EligibilityType.AGE18 and user.has_underage_beneficiary_role:
