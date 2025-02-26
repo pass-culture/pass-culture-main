@@ -1,0 +1,79 @@
+
+.pc-table-manager-dropdown{
+  padding: 16px !important;
+  
+  .pc-drop-down-header{
+    display:flex;
+    justify-content: space-between;
+    span{
+      display:inline-block;
+      margin-right:8px;
+    }
+
+    i:before{
+      margin: 8px;
+    }
+    
+  }
+  
+  .pc-table-manager-buttons{
+    display:flex;
+    justify-content: space-between;
+    margin-top:16px;
+    margin-bottom:16px;
+    
+    a{
+      margin:0 4px;
+    }
+    
+    a:last-child{
+      margin-right:0;
+    }
+
+    a:first-child{
+      margin-left:0;
+    }
+  }
+
+  .pc-table-manager-draggable{
+    margin:0;
+    padding:0;
+    
+    > li{
+      border-color: $gray-300;
+      border-style: solid;
+      border-width: 1px;
+      margin: 8px 0;
+      padding:0;
+      display:flex;
+      justify-content: space-between;
+      
+      > div{
+        .pc-table-manager-toggle-visibility{
+          margin: 8px;
+        }
+        
+        > .pc-column-title{
+          margin: 0;
+          padding: 8px;
+          font-weight: 400;
+          display:inline-block;
+          line-height:16px;
+        }
+      }
+      
+      > i:before{
+        display: inline-block;
+        margin:8px;
+        line-height:16px;
+        text-align:center;
+        vertical-align:middle;
+        font-size:16px;
+      }
+
+      .pc-table-manager-disabled {
+        color: $gray-600;
+      }
+    }
+  }
+}
