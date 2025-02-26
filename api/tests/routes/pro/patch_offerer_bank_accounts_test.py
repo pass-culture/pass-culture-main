@@ -277,9 +277,7 @@ class OffererPatchBankAccountsTest:
             .count()
         )
 
-        actions_logged = history_models.ActionHistory.query.order_by(
-            history_models.ActionHistory.actionDate, history_models.ActionHistory.venueId
-        ).all()
+        actions_logged = history_models.ActionHistory.query.order_by(history_models.ActionHistory.venueId).all()
 
         assert len(actions_logged) == len(actions_occured)
 
