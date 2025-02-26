@@ -76,7 +76,7 @@ jobs:
       # will contain a json string with an array of n elements, each being a string of spec files delimited by ,
       test-chunks: ${{ steps['set-test-chunks'].outputs['test-chunks'] }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - id: set-test-chunks
         name: Set Chunks
         # get all spec files from the e2e directory, group them to be at most 3 at a time and transform them to json

@@ -14,7 +14,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
@@ -38,7 +38,7 @@ jobs:
           version: ">= 363.0.0"
 
       # Checkout rendered-manifests repository
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4
         with:
           repository: pass-culture/rendered-manifests
           token: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
@@ -97,7 +97,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:

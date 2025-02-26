@@ -15,7 +15,7 @@ jobs:
     name: 'Send slack notification'
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4
       - name: 'Authentification to Google'
         uses: 'google-github-actions/auth@v2'
         with:
