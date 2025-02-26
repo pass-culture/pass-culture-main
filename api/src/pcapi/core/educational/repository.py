@@ -409,14 +409,19 @@ def get_paginated_collective_bookings_for_educational_year(
     return query.all()
 
 
-def get_expired_collective_offers_template() -> BaseQuery:
-    """Return a query of collective offers template whose latest booking limit occurs within
-    the given interval.
+def get_expired_or_archived_collective_offers_template() -> BaseQuery:
+    """Return a query of collective offer templates that are either expired (end date has passed)
+    or archived.
     """
     return (
-        educational_models.CollectiveOfferTemplate.query.group_by(educational_models.CollectiveOfferTemplate.id)
+        db.session.query(educational_models.CollectiveOfferTemplate.id)
         .order_by(educational_models.CollectiveOfferTemplate.id)
-        .filter_by(hasEndDatePassed=True)
+        .filter(
+            sa.or_(
+                educational_models.CollectiveOfferTemplate.hasEndDatePassed.is_(True),  # type: ignore[attr-defined]
+                educational_models.CollectiveOfferTemplate.isArchived.is_(True),  # type: ignore[attr-defined]
+            )
+        )
     )
 
 

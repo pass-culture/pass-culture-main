@@ -11,7 +11,7 @@ from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api import stock as educational_api_stock
 import pcapi.core.educational.api.institution as institution_api
-from pcapi.core.educational.api.offer import unindex_expired_collective_offers_template
+from pcapi.core.educational.api.offer import unindex_expired_or_archived_collective_offers_template
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -104,7 +104,7 @@ class CreateCollectiveOfferStocksTest:
 
 @pytest.mark.usefixtures("db_session")
 class UnindexExpiredOffersTest:
-    @pytest.mark.settings(ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE=2)
+    @pytest.mark.settings(ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE=3)
     @mock.patch("pcapi.core.search.unindex_collective_offer_template_ids")
     def test_default_run_template(self, mock_unindex_collective_offer_template_ids) -> None:
         # Given
@@ -126,6 +126,16 @@ class UnindexExpiredOffersTest:
                 end=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
             ),
         )
+        # Archived template offer
+        collective_offer_template_3 = educational_factories.CollectiveOfferTemplateFactory(
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateRange=db_utils.make_timerange(
+                start=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+                end=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+            ),
+            dateArchived=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            isActive=False,
+        )
         # Non expired template offer with dateRange overlapping today
         educational_factories.CollectiveOfferTemplateFactory(
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
@@ -135,11 +145,11 @@ class UnindexExpiredOffersTest:
             ),
         )
         # When
-        unindex_expired_collective_offers_template()
+        unindex_expired_or_archived_collective_offers_template()
 
         # Then
         assert mock_unindex_collective_offer_template_ids.mock_calls == [
-            mock.call([collective_offer_template_1.id, collective_offer_template_2.id]),
+            mock.call([collective_offer_template_1.id, collective_offer_template_2.id, collective_offer_template_3.id]),
         ]
 
 
