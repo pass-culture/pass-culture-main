@@ -82,11 +82,11 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
         )
 
 
-def unindex_expired_collective_offers_template(process_all_expired: bool = False) -> None:
-    """Unindex collective offers template that have expired."""
+def unindex_expired_or_archived_collective_offers_template(process_all_expired: bool = False) -> None:
+    """Unindex collective offers template that have expired or are archived."""
     page = 0
     limit = settings.ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE
-    while collective_offer_template_ids := _get_expired_collective_offer_template_ids(page, limit):
+    while collective_offer_template_ids := _get_expired_or_archived_collective_offer_template_ids(page, limit):
         logger.info(
             "[ALGOLIA] Found %d expired collective offers template to unindex",
             len(collective_offer_template_ids),
@@ -710,11 +710,11 @@ def attach_image(
         db.session.commit()
 
 
-def _get_expired_collective_offer_template_ids(
+def _get_expired_or_archived_collective_offer_template_ids(
     page: int,
     limit: int,
 ) -> list[int]:
-    collective_offers_template = educational_repository.get_expired_collective_offers_template()
+    collective_offers_template = educational_repository.get_expired_or_archived_collective_offers_template()
     collective_offers_template = collective_offers_template.offset(page * limit).limit(limit)
     return [offer_template.id for offer_template in collective_offers_template]
 

@@ -67,6 +67,7 @@ def full_index_collective_template_offers(start: int, end: int) -> None:
             search.get_base_query_for_collective_template_offer_indexation()
             .filter(
                 collective_offers_models.CollectiveOfferTemplate.isActive.is_(True),
+                collective_offers_models.CollectiveOfferTemplate.isArchived.is_(False),  # type: ignore[attr-defined]
                 collective_offers_models.CollectiveOfferTemplate.id.between(start, min(start + BATCH_SIZE, end)),
             )
             .order_by(collective_offers_models.CollectiveOfferTemplate.id)

@@ -5,7 +5,7 @@ import click
 
 from pcapi import settings
 from pcapi.core import search
-from pcapi.core.educational.api.offer import unindex_expired_collective_offers_template
+from pcapi.core.educational.api.offer import unindex_expired_or_archived_collective_offers_template
 import pcapi.core.educational.repository as collective_offers_repository
 from pcapi.core.offerers import api as offerers_api
 import pcapi.core.offers.api as offers_api
@@ -56,8 +56,8 @@ def delete_expired_offers_in_algolia() -> None:
 @blueprint.cli.command("delete_expired_collective_offers_template_in_algolia")
 @log_cron_with_transaction
 def delete_expired_collective_offers_template_in_algolia() -> None:
-    """Unindex collective offers template that have expired."""
-    unindex_expired_collective_offers_template()
+    """Unindex collective offers template that have expired or are archived."""
+    unindex_expired_or_archived_collective_offers_template()
 
 
 @blueprint.cli.command("index_offers_in_error_in_algolia_by_offer")
