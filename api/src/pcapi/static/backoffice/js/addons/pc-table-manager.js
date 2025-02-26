@@ -5,6 +5,11 @@ class PcTableManager extends PcAddOn {
   static SELECTOR = '.pc-table-manager'
   static DRAGGABLE =  '.pc-table-manager-draggable'
   static VISIBILITY = '.pc-table-manager-toggle-visibility'
+  static DISPLAY_ALL = '.pc-table-manager-display-all'
+  static DISPLAY_NONE = '.pc-table-manager-display-none'
+  static DISPLAY_DEFAULT = '.pc-table-manager-display-default'
+  static CLOSE_BUTTON = ".pc-table-manager-close-menu"
+  static DROPDOWN_MENU = ".pc-table-manager-dropdown"
 
   get $tables() {
     return document.querySelectorAll(PcTableManager.SELECTOR)
@@ -99,56 +104,121 @@ class PcTableManager extends PcAddOn {
   }
   /** MENU **/
   #initializeMenu = ($table, configuration) => {
-    const div = document.createElement('div')
-    div.classList.add('dropdown')
+    const $container = document.createElement('div')
+    $container.id = "pc-table-manager-menu-container-" + configuration.id
+    $container.classList.add('dropdown')
+    this.#createMenu($container, configuration, false)
+    $table.before($container)
+  }
+
+  #createMenu = ($container, configuration, open) => {
     const elements = []
     configuration.columns.forEach((column) => {
       elements.push(
         `
-          <li class="dropdown-item me-3" draggable="true" data-pc-target-column-id="${column.id}">
-            <i class="bi bi-grip-vertical"></i>
-            ${column.name}
-            <i class="bi pc-table-manager-toggle-visibility link-primary h5 position-absolute end-0 pe-2 bi-eye${column.display?'':'-slash'}"></i>
+          <li class="dropdown-item" draggable="true" data-pc-target-column-id="${column.id}">
+            <div>
+              <input type="checkbox" class="form-check-input pc-table-manager-toggle-visibility" data-pc-target-table-id="${configuration.id}" data-pc-target-column-id="${column.id}"  ${column.display?'checked':''}/>
+              <span class="pc-column-title${column.display?' ':' pc-table-manager-disabled'}">${column.name}</span>
+            </div>
+            <i class="bi bi-grip-vertical${column.display?' ':' pc-table-manager-disabled'}"></i>
           </li>
         `
       )
     })
-
+    
     const innerHTML = `
-      <button class="btn p0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-three-dots-vertical"></i>
-      </button>
-      <ul class="dropdown-menu pc-table-manager-draggable" data-pc-target-table-id="${configuration.id}">
-        ${elements.join("\n")}
-      </ul>
+        <button class="btn btn-outline-primary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-layout-three-columns"></i>
+          Colonnes
+        </button>
+      <div class="dropdown-menu pc-table-manager-dropdown${open?' show':''}"  data-pc-target-table-id="${configuration.id}">
+        <div class="pc-drop-down-header">
+          <span>
+            Affichez et ordonnez les<br/>colonnes de votre choix.
+          </span>
+          <i class="bi bi-x-lg pc-table-manager-close-menu" data-pc-target-table-id="${configuration.id}"></i>
+        </div>
+        <div class="pc-table-manager-buttons">
+          <a class="link-primary pc-table-manager-display-all" href="" data-pc-target-table-id="${configuration.id}">Tout afficher</a>
+          <a class="link-primary pc-table-manager-display-none" href="" data-pc-target-table-id="${configuration.id}">Tout masquer</a>
+          <a class="link-primary pc-table-manager-display-default" href="" data-pc-target-table-id="${configuration.id}">Réinitialiser</a></div>
+        <ul class="pc-table-manager-draggable" data-pc-target-table-id="${configuration.id}">
+          ${elements.join("\n")}
+        </ul>
+      </div>
     `
-    div.innerHTML = innerHTML
-    $table.before(div)
+    $container.innerHTML = innerHTML
+  }
+
+  #stopPropagation = (event) => {
+    event.stopPropagation()
+  }
+
+  #onCloseMenuClick = (event) => {
+    const tableId = event.target.dataset.pcTargetTableId
+    const $container = document.querySelector(`#pc-table-manager-menu-container-${tableId}`)
+    const $menu = $container.querySelector('.pc-table-manager-dropdown')
+    $menu.classList.remove('show')
   }
 
   #onVisibilityToggleClick = (event) => {
     event.stopPropagation()
-    const configuration = this.#getConfigurationForEdit(event.target.parentElement.parentElement.dataset.pcTargetTableId)
-    const columnId = event.target.parentElement.dataset.pcTargetColumnId
+    const configuration = this.#getConfigurationForEdit(event.target.dataset.pcTargetTableId)
+    const columnId = event.target.dataset.pcTargetColumnId
     configuration.columns.forEach((column) => {
+
       if (column.id == columnId){
-        column.display = !event.target.classList.contains('bi-eye')
+        column.display = event.target.checked
       }
     })
-
-    if (event.target.classList.contains('bi-eye')){
-      event.target.classList.remove('bi-eye')
-      event.target.classList.add('bi-eye-slash')
-    } else {
-      event.target.classList.add('bi-eye')
-      event.target.classList.remove('bi-eye-slash')
-    }
     this.applyConfiguration(configuration)
   }
 
+  #onDisplayAllClick = (event) => {
+    event.stopPropagation()
+    event.preventDefault()
+    const configuration = this.#getConfigurationForEdit(event.target.dataset.pcTargetTableId)
+    configuration.columns.forEach((column) => {
+      column.display = true
+    })
+    this.applyConfiguration(configuration)
+  }
+
+  #onDisplayNoneClick = (event) => {
+    event.stopPropagation()
+    event.preventDefault()
+    const configuration = this.#getConfigurationForEdit(event.target.dataset.pcTargetTableId)
+    configuration.columns.forEach((column) => {
+      column.display = false
+    })
+    this.applyConfiguration(configuration)
+  }
+
+  #onDisplayDefaultClick = (event) => {
+    event.stopPropagation()
+    event.preventDefault()
+    this.restoreDefaultConfiguration(event.target.dataset.pcTargetTableId)
+  }
+
   /** DRAG AND DROP **/
-  #isValidTarget = ($element) => {
-    return $element.tagName === 'LI' && $element.classList.contains('dropdown-item')
+  #getValidTarget = ($element) => {
+    if($element.tagName === 'BODY'){
+      return null
+    }
+    else if($element.tagName === 'LI' && $element.classList.contains('dropdown-item')){
+      return $element
+    }
+    else{
+      return this.#getValidTarget($element.parentElement)
+    }
+  }
+
+  #resetDropTarget = ($element) => {
+    $element.classList.remove('pc-table-manager-target')
+    $element.style.marginTop = ''
+    $element.style.marginBottom = ''
+    delete $element.position
   }
 
   #onDragStart = (event) => {
@@ -156,7 +226,7 @@ class PcTableManager extends PcAddOn {
     event.target.parentElement.dataset.pcTableManagerDraggableHeight = event.target.getBoundingClientRect().height
     setTimeout(() => {
       event.target.classList.add('d-none')
-      event.target.parentElement.appendChild(event.target) // small hack to avoir graophical glicth
+      event.target.parentElement.appendChild(event.target) // small hack to avoir graphical glicth
     }, 0)
   }
 
@@ -172,9 +242,7 @@ class PcTableManager extends PcAddOn {
       } else {
         $dropTarget.after(event.target)
       }
-      $dropTarget.classList.remove('pc-table-manager-target')
-      $dropTarget.style.paddingTop = ''
-      $dropTarget.style.paddingBottom = ''
+      this.#resetDropTarget($dropTarget)
     }
     //compute and render new table
     const configuration = this.#getConfigurationForEdit($parent.dataset.pcTargetTableId)
@@ -191,99 +259,45 @@ class PcTableManager extends PcAddOn {
   }
 
   #onDragOver = (event) => {
-    const $target = event.target
-    if(this.#isValidTarget($target)) {  
+    const $target = this.#getValidTarget(event.target)
+    if($target !== null) {
       const targetBox = $target.getBoundingClientRect()
       const position = (event.clientY - targetBox.top) / targetBox.height
       $target.classList.add('pc-table-manager-target')
       if (position < 0.5) {
         // we are on the top part of the target
-        if($target.style.paddingTop == '') {
+        if($target.style.marginTop == '') {
           //manage a clean spacing when moving the element
-          const rawPadding = window.getComputedStyle($target, null).getPropertyValue('padding-top')
-          let padding = parseInt(rawPadding.replace(/[^0-9]/g, ''))
-          padding += parseInt($target.parentElement.dataset.pcTableManagerDraggableHeight)
-          $target.style.paddingTop = padding + 'px'
-          $target.style.paddingBottom = ''
-
+          const rawPadding = window.getComputedStyle($target, null).getPropertyValue('margin-top')
+          let margin = parseInt(rawPadding.replace(/[^0-9]/g, ''))
+          margin += parseInt($target.parentElement.dataset.pcTableManagerDraggableHeight)
+          $target.style.marginTop = margin + 'px'
+          $target.style.marginBottom = ''
         }
         $target.dataset.position = 'after'
       } else {
         // we are on the bottom part of the target
-        if($target.style.paddingBottom == '') {
+        if($target.style.marginBottom == '') {
           //manage a clean spacing when moving the element
-          const rawPadding = window.getComputedStyle($target, null).getPropertyValue('padding-bottom')
-          let padding = parseInt(rawPadding.replace(/[^0-9]/g, ''))
-          padding += parseInt($target.parentElement.dataset.pcTableManagerDraggableHeight)
-          $target.style.paddingBottom = padding + 'px'
-          $target.style.paddingTop = ''
+          const rawPadding = window.getComputedStyle($target, null).getPropertyValue('margin-bottom')
+          let margin = parseInt(rawPadding.replace(/[^0-9]/g, ''))
+          margin += parseInt($target.parentElement.dataset.pcTableManagerDraggableHeight)
+          $target.style.marginBottom = margin + 'px'
+          $target.style.marginTop = ''
         }
         $target.dataset.position = 'before'
       }
-      if ($target.previousElementSibling !== null) {
-        $target.previousElementSibling.classList.remove('pc-table-manager-target')
-        $target.previousElementSibling.style.paddingBottom = ''
-        $target.previousElementSibling.style.paddingTop = ''
-        delete $target.previousElementSibling.dataset.position
-      }
-      if ($target.nextElementSibling !== null) {
-        $target.nextElementSibling.classList.remove('pc-table-manager-target')
-        $target.nextElementSibling.style.paddingBottom = ''
-        $target.nextElementSibling.style.paddingTop = ''
-        delete $target.nextElementSibling.dataset.position
-      }
+      $target.parentElement.querySelectorAll('.pc-table-manager-target').forEach(($element) => {
+        if ($element !== $target) {
+          this.#resetDropTarget($element)
+        }
+      })
     }
   }
   /** END DRAG AND DROP **/
-
-  #getConfigurationForEdit = (id) => {
-    return structuredClone(this.configurations[id])
-  }
-
-  #needUpdate = (previousConfiguration, configuration) => {
-    for(let i=0; i<previousConfiguration.columns.length; i++){
-      if (
-        previousConfiguration.columns[i].id != configuration.columns[i].id
-        || previousConfiguration.columns[i].display != configuration.columns[i].display
-      ){
-        return true
-      }
-    }
-    return false
-  }
-
-  initialize = () => {
-    this.configurations = {}
-    this.$tables.forEach(($table) => {
-      const defaultConfiguration = this.#initializeTableFromHtml($table)
-      this.configurations[defaultConfiguration.id] = defaultConfiguration
-      const oldConfiguration = this.getConfiguration(defaultConfiguration.id)
-      const configuration = this.#mergeConfigurations(oldConfiguration, defaultConfiguration)
-      this.applyConfiguration(configuration)
-      this.#initializeMenu($table, configuration)
-    })
-  }
-
-  bindEvents = () => {
-    EventHandler.on(document.body, 'dragstart', PcTableManager.DRAGGABLE, this.#onDragStart)
-    EventHandler.on(document.body, 'dragend', PcTableManager.DRAGGABLE, this.#onDragEnd)
-    EventHandler.on(document.body, 'dragover', PcTableManager.DRAGGABLE, this.#onDragOver)
-    EventHandler.on(document.body, 'click', PcTableManager.VISIBILITY, this.#onVisibilityToggleClick)
-  }
-
-  unbindEvents = () => {
-    EventHandler.off(document.body, 'dragstart', PcTableManager.DRAGGABLE, this.#onDragStart)
-    EventHandler.off(document.body, 'dragend', PcTableManager.DRAGGABLE, this.#onDragEnd)
-    EventHandler.off(document.body, 'dragover', PcTableManager.DRAGGABLE, this.#onDragOver)
-    EventHandler.off(document.body, 'click', PcTableManager.VISIBILITY, this.#onVisibilityToggleClick)
-  }
-
-  applyConfiguration = (configuration) => {
-    // Only in prototype
-    const startTime = performance.now()
-
+  #applyConfigurationOnTable = (configuration) => {
     const previousConfiguration = this.configurations[configuration.id]
-    const $table = document.querySelector(`table[data-pc-table-manager-id="${configuration.id}"]`);
+    const $table = document.querySelector(`table[data-pc-table-manager-id="${configuration.id}"]`)
     
     if(! this.#needUpdate(previousConfiguration, configuration)){
       // fast path to not blink the table if nothing changed
@@ -322,6 +336,76 @@ class PcTableManager extends PcAddOn {
       })
     })
     $table.classList.remove('d-none')
+  }
+
+  #applyConfigurationOnMenu = (configuration) => {
+    const $container = document.querySelector(`#pc-table-manager-menu-container-${configuration.id}`)
+    if ($container !== null){
+      const $menu = $container.querySelector('.pc-table-manager-dropdown')
+      this.#createMenu($container, configuration, $menu.classList.contains('show'))
+    }
+  }
+
+  #getConfigurationForEdit = (id) => {
+    return structuredClone(this.configurations[id])
+  }
+
+  #needUpdate = (previousConfiguration, configuration) => {
+    for(let i=0; i<previousConfiguration.columns.length; i++){
+      if (
+        previousConfiguration.columns[i].id != configuration.columns[i].id
+        || previousConfiguration.columns[i].display != configuration.columns[i].display
+      ){
+        return true
+      }
+    }
+    return false
+  }
+
+  initialize = () => {
+    this.configurations = {}
+    this.defaultConfigurations = {}
+    this.$tables.forEach(($table) => {
+      const defaultConfiguration = this.#initializeTableFromHtml($table)
+      this.defaultConfigurations[defaultConfiguration.id] = defaultConfiguration
+      this.configurations[defaultConfiguration.id] = defaultConfiguration
+      const oldConfiguration = this.getConfiguration(defaultConfiguration.id)
+      const configuration = this.#mergeConfigurations(oldConfiguration, defaultConfiguration)
+      this.applyConfiguration(configuration)
+      this.#initializeMenu($table, configuration)
+    })
+  }
+
+  bindEvents = () => {
+    EventHandler.on(document.body, 'dragstart', PcTableManager.DRAGGABLE, this.#onDragStart)
+    EventHandler.on(document.body, 'dragend', PcTableManager.DRAGGABLE, this.#onDragEnd)
+    EventHandler.on(document.body, 'dragover', PcTableManager.DRAGGABLE, this.#onDragOver)
+    EventHandler.on(document.body, 'click', PcTableManager.VISIBILITY, this.#onVisibilityToggleClick)
+    EventHandler.on(document.body, 'click', PcTableManager.DISPLAY_ALL, this.#onDisplayAllClick)
+    EventHandler.on(document.body, 'click', PcTableManager.DISPLAY_NONE, this.#onDisplayNoneClick)
+    EventHandler.on(document.body, 'click', PcTableManager.DISPLAY_DEFAULT, this.#onDisplayDefaultClick)
+    EventHandler.on(document.body, 'click', PcTableManager.CLOSE_BUTTON, this.#onCloseMenuClick)
+    EventHandler.on(document.body, 'click', PcTableManager.DROPDOWN_MENU, this.#stopPropagation)
+  }
+  
+
+  unbindEvents = () => {
+    EventHandler.off(document.body, 'dragstart', PcTableManager.DRAGGABLE, this.#onDragStart)
+    EventHandler.off(document.body, 'dragend', PcTableManager.DRAGGABLE, this.#onDragEnd)
+    EventHandler.off(document.body, 'dragover', PcTableManager.DRAGGABLE, this.#onDragOver)
+    EventHandler.off(document.body, 'click', PcTableManager.VISIBILITY, this.#onVisibilityToggleClick)
+    EventHandler.off(document.body, 'click', PcTableManager.DISPLAY_ALL, this.#onDisplayAllClick)
+    EventHandler.off(document.body, 'click', PcTableManager.DISPLAY_NONE, this.#onDisplayNoneClick)
+    EventHandler.off(document.body, 'click', PcTableManager.DISPLAY_DEFAULT, this.#onDisplayDefaultClick)
+    EventHandler.off(document.body, 'click', PcTableManager.CLOSE_BUTTON, this.#onCloseMenuClick)
+    EventHandler.off(document.body, 'click', PcTableManager.DROPDOWN_MENU, this.#stopPropagation)
+  }
+
+  applyConfiguration = (configuration) => {
+    // Only in prototype
+    const startTime = performance.now()
+    this.#applyConfigurationOnTable(configuration)
+    this.#applyConfigurationOnMenu(configuration)
     this.saveConfiguration(configuration)
     this.configurations[configuration.id] = configuration
 
@@ -343,5 +427,10 @@ class PcTableManager extends PcAddOn {
     return null
   }
 
-
+  restoreDefaultConfiguration = (configurationId) => {
+    const configuration = this.defaultConfigurations[configurationId]
+    if(configuration){
+      this.applyConfiguration(configuration)
+    }
+  }
 }
