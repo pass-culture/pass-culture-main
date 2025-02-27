@@ -3196,7 +3196,9 @@ def upsert_deposit(
     Create a deposit for the user. If the deposit already exists, try to recredit the user instead.
     """
     if not user.has_active_deposit:
-        return create_deposit(user, deposit_source, eligibility, age_at_registration)
+        deposit = create_deposit(user, deposit_source, eligibility, age_at_registration)
+        user.recreditAmountToShow = deposit.amount
+        return deposit
 
     if not user.deposit:
         raise ValueError(f"failed to create deposit for {user = }")
@@ -3205,8 +3207,7 @@ def upsert_deposit(
         recredit = _recredit_user(user)
         if not recredit:
             raise exceptions.UserCannotBeRecredited()
-
-        user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
+        user.recreditAmountToShow = recredit.amount
 
     return user.deposit
 
@@ -3264,7 +3265,9 @@ def create_deposit_v3(
     db.session.add(deposit)
     db.session.flush()
 
-    _recredit_user(beneficiary)
+    latest_recredit = _recredit_user(beneficiary)
+    if latest_recredit:
+        return latest_recredit.deposit
 
     return deposit
 
@@ -3310,7 +3313,9 @@ def create_deposit_v2(
         and beneficiary.age
         and age_at_registration
     ):
-        _recredit_user(beneficiary)
+        latest_recredit = _recredit_user(beneficiary)
+        if latest_recredit:
+            return latest_recredit.deposit
 
     return deposit
 
