@@ -17,6 +17,8 @@ export const VenueEditionFormScreen = ({
   venue,
 }: VenueEditionProps): JSX.Element => {
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
+  const shouldDisplayPartnerPageSection = !isOpenToPublicEnabled
 
   const location = useLocation()
 
@@ -41,15 +43,14 @@ export const VenueEditionFormScreen = ({
               Les informations que vous renseignez ci-dessous sont affichées
               dans votre page partenaire, visible sur l’application pass Culture
             </Callout>
-            <PartnerPageIndividualSection
+            {shouldDisplayPartnerPageSection && <PartnerPageIndividualSection
               venueId={venue.id}
               venueName={venue.name}
               offererId={venue.managingOfferer.id}
               isVisibleInApp={Boolean(venue.isVisibleInApp)}
-            />
+            />}
           </div>
-
-          <hr className={styles['separator']} />
+          {shouldDisplayPartnerPageSection && <hr className={styles['separator']} />}
         </>
       )}
 

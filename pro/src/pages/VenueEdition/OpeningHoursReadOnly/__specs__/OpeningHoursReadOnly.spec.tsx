@@ -29,7 +29,13 @@ describe('OpeningHoursReadOnly', () => {
       SUNDAY: null,
     }
 
-    render(<OpeningHoursReadOnly openingHours={openingHours} />)
+    render(
+      <OpeningHoursReadOnly
+        isOpenToPublicEnabled={false}
+        isOpenToPublic={false}
+        openingHours={openingHours}
+      />
+    )
 
     expect(screen.getByText(/Lundi/)).toBeInTheDocument()
     expect(screen.getByText(/Mardi/)).toBeInTheDocument()
@@ -42,13 +48,34 @@ describe('OpeningHoursReadOnly', () => {
 
   it('should display no opening hours !', () => {
     const openingHours = undefined
-    render(<OpeningHoursReadOnly openingHours={openingHours} />)
+    render(
+      <OpeningHoursReadOnly
+        isOpenToPublicEnabled={false}
+        isOpenToPublic={false}
+        openingHours={openingHours}
+      />
+    )
 
     expect(
       screen.getByText(
         /Vous n’avez pas renseigné d’horaire d’ouverture. Votre établissement est indiqué comme fermé sur l’application./
       )
     ).toBeInTheDocument()
+  })
+
+  describe('when open to public feature is enabled', () => {
+    it('should display a specific message when the venue is not open to public', () => {
+      const openingHours = undefined
+      render(
+        <OpeningHoursReadOnly
+          isOpenToPublicEnabled
+          isOpenToPublic={false}
+          openingHours={openingHours}
+        />
+      )
+
+      expect(screen.getByText(/Accueil du public dans la structure : Non/)).toBeInTheDocument()
+    })
   })
 })
 
