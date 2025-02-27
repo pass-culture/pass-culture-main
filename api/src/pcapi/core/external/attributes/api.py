@@ -340,6 +340,18 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         else bool(venues)
     )
 
+    venues_types = set()
+    # Since `venue.venueTypeCode` is not a MagicEnum
+    # we have to access it differently given the state of the venue
+    # (committed or flushed within a transaction)
+    for venue in all_venues:
+        # Not yet committed
+        if isinstance(venue.venueTypeCode, offerers_models.VenueTypeCode):
+            venues_types.add(venue.venueTypeCode.name)
+        # Committed with the session up to date, the `venueTypeCode` is now only a string
+        else:
+            venues_types.add(venue.venueTypeCode)
+
     return models.ProAttributes(
         is_pro=True,
         is_active_pro=bool(offerers_names),
@@ -350,7 +362,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         offerers_tags=offerers_tags,
         venues_ids={venue.id for venue in all_venues},
         venues_names={venue.publicName or venue.name for venue in all_venues},
-        venues_types={venue.venueTypeCode.name for venue in all_venues},
+        venues_types=venues_types,
         venues_labels={venue.venueLabel.label for venue in all_venues if venue.venueLabelId},
         departement_code={
             venue.offererAddress.address.departmentCode
