@@ -180,6 +180,7 @@ def get_offerer_stats_dashboard_url(
 
 
 @private_api.route("/offerers/new", methods=["POST"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=201, response_model=offerers_serialize.PostOffererResponseModel, api=blueprint.pro_private_schema
