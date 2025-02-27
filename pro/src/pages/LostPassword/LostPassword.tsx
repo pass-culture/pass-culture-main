@@ -1,4 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import cn from 'classnames'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { api } from 'apiClient/api'
@@ -7,16 +9,22 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { Hero } from 'ui-kit/Hero/Hero'
 
+import emailIcon from './assets/email.svg'
 import styles from './LostPassword.module.scss'
 import { validationSchema } from './validationSchema'
 
@@ -27,8 +35,10 @@ type UserEmailFormValues = {
 }
 
 export const LostPassword = (): JSX.Element => {
+  const [email, setEmail] = useState<string>('')
   useRedirectLoggedUser()
   useInitReCaptcha()
+  const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
 
   const notification = useNotification()
 
@@ -41,13 +51,14 @@ export const LostPassword = (): JSX.Element => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid, isSubmitSuccessful },
+    formState: { errors, isValid },
   } = hookForm
 
   const submitChangePasswordRequest = async (formValues: FormValues) => {
     try {
       const token = await getReCaptchaToken('resetPassword')
       await api.resetPassword({ token, email: formValues.email })
+      setEmail(formValues.email)
     } catch (e) {
       if (e === RECAPTCHA_ERROR) {
         notification.error(RECAPTCHA_ERROR_MESSAGE)
@@ -56,21 +67,53 @@ export const LostPassword = (): JSX.Element => {
     }
   }
 
+  const successComponent = is2025SignUpEnabled ? (
+    <section className={styles['change-password-request-success']}>
+      <img
+        src={emailIcon}
+        alt=""
+        className={styles['change-password-request-success-icon']}
+      />
+      <h1 className={styles['change-password-request-success-title']}>
+        Vous allez recevoir un email !
+      </h1>
+      <p className={styles['change-password-request-success-body']}>
+        Cliquez sur le lien que nous vous avons envoyé par email à{' '}
+        <b>{email}</b>
+      </p>
+      <Callout variant={CalloutVariant.DEFAULT}>
+        <p className={styles['change-password-request-success-info']}>
+          Vous n’avez pas reçu notre email ? <br /> Vérifiez vos spams ou
+          cliquez ici pour le recevoir à nouveau.
+        </p>
+      </Callout>
+    </section>
+  ) : (
+    <Hero
+      linkLabel="Retourner sur la page de connexion"
+      linkTo="/"
+      text="Vous allez recevoir par email les instructions pour définir un nouveau mot de passe."
+      title="Merci !"
+    />
+  )
+
   return (
-    <Layout layout="logged-out">
-      {isSubmitSuccessful ? (
-        <Hero
-          linkLabel="Retourner sur la page de connexion"
-          linkTo="/"
-          text="Vous allez recevoir par email les instructions pour définir un nouveau mot de passe."
-          title="Merci !"
-        />
+    <Layout layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}>
+      {email ? (
+        successComponent
       ) : (
-        <section className={styles['change-password-request-form']}>
-          <h1 className={styles['title']}>Mot de passe oublié ?</h1>
+        <section
+          className={cn(styles['change-password-request-form'], {
+            [styles['change-password-request-form-old']]: !is2025SignUpEnabled,
+          })}
+        >
+          <h1 className={styles['title']}>
+            Mot de passe oublié{!is2025SignUpEnabled && ' ?'}
+          </h1>
           <p className={styles['subtitle']}>
-            Indiquez ci-dessous l’adresse email avec laquelle vous avez créé
-            votre compte.
+            {is2025SignUpEnabled
+              ? 'Entrez votre email pour recevoir un lien de réinitialisation.'
+              : 'Indiquez ci-dessous l’adresse email avec laquelle vous avez créé votre compte.'}
           </p>
           <form onSubmit={handleSubmit(submitChangePasswordRequest)}>
             <FormLayout>
@@ -91,9 +134,21 @@ export const LostPassword = (): JSX.Element => {
                   variant={ButtonVariant.PRIMARY}
                   disabled={!isValid}
                 >
-                  Valider
+                  {is2025SignUpEnabled ? 'Réinitialiser' : 'Valider'}
                 </Button>
               </FormLayout.Row>
+              {is2025SignUpEnabled && (
+                <FormLayout.Row>
+                  <ButtonLink
+                    to="/connexion"
+                    className={styles['back-button']}
+                    variant={ButtonVariant.TERNARY}
+                    icon={fullNextIcon}
+                  >
+                    Retour à la connexion
+                  </ButtonLink>
+                </FormLayout.Row>
+              )}
             </FormLayout>
           </form>
         </section>
