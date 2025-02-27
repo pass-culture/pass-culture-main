@@ -19,7 +19,7 @@ describe('UserIdentity', () => {
     )
 
     expect(
-      screen.getByRole('textbox', { name: 'Prénom *' })
+      screen.getByRole('textbox', { name: 'Prénom' })
     ).toBeInTheDocument()
   })
 
@@ -36,7 +36,7 @@ describe('UserIdentity', () => {
     )
 
     expect(
-      screen.queryByRole('textbox', { name: 'Prénom *' })
+      screen.queryByRole('textbox', { name: 'Prénom' })
     ).not.toBeInTheDocument()
   })
 })

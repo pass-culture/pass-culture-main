@@ -19,7 +19,7 @@ describe('UserPhone', () => {
     )
 
     expect(
-      screen.getByRole('textbox', { name: 'Téléphone *' })
+      screen.getByRole('textbox', { name: 'Téléphone' })
     ).toBeInTheDocument()
   })
 
