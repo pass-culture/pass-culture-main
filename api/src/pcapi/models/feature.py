@@ -121,7 +121,6 @@ class FeatureToggle(enum.Enum):
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
     WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
-    WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
     WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE = "Activer l'association des offres collectives à des adresses."
     WIP_EAN_CREATION = "Activer la création d'offre par EAN"
     WIP_COLLAPSED_MEMORIZED_FILTERS = "Activer la fonction de masquage et de mémorisation des filtres en sessionStorage"

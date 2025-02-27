@@ -194,7 +194,7 @@
 </svg>
 <h1>Note de débit</h1>{% set currency_symbol = "CFP" if is_caledonian_invoice else "€" %}
 <div class="customerInfo">
-    <p><b>{{ ff_wording.offerer }} :</b> {{ bank_account.offerer.name }} - {{ bank_account.offerer.identifier }}</p>
+    <p><b>Entité juridique :</b> {{ bank_account.offerer.name }} - {{ bank_account.offerer.identifier }}</p>
     <p><b>Compte bancaire :</b> {{ bank_account_label }} - {{ bank_account_iban }}</p>
 </div>
 <h3 class="coloredTitle">

@@ -48,7 +48,6 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.token import random_token
 
 
@@ -68,27 +67,6 @@ BOOKING_DATE_STATUS_MAPPING: dict[BookingStatusFilter, InstrumentedAttribute] = 
     BookingStatusFilter.VALIDATED: Booking.dateUsed,
     BookingStatusFilter.REIMBURSED: Booking.reimbursementDate,
 }
-
-LEGACY_BOOKING_EXPORT_HEADER = [
-    "Lieu",
-    "Nom de l’offre",
-    "Date de l'évènement",
-    "EAN",
-    "Prénom du bénéficiaire",
-    "Nom du bénéficiaire",
-    "Email du bénéficiaire",
-    "Téléphone du bénéficiaire",
-    "Date et heure de réservation",
-    "Date et heure de validation",
-    "Contremarque",
-    "Intitulé du tarif",
-    "Prix de la réservation",
-    "Statut de la contremarque",
-    "Date et heure de remboursement",
-    "Type d'offre",
-    "Code postal du bénéficiaire",
-    "Duo",
-]
 
 BOOKING_EXPORT_HEADER = [
     "Structure",
@@ -116,9 +94,7 @@ BOOKING_LOAD_OPTIONS = Sequence[typing.Literal["offerer",]]
 
 
 def booking_export_header() -> list[str]:
-    if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        return BOOKING_EXPORT_HEADER
-    return LEGACY_BOOKING_EXPORT_HEADER
+    return BOOKING_EXPORT_HEADER
 
 
 def find_by_pro_user(
@@ -822,13 +798,7 @@ def _write_csv_row(csv_writer: typing.Any, booking: Booking, booking_duo_column:
     row: tuple[typing.Any, ...] = (
         booking.venueName,
         booking.offerName,
-    )
-    if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        location = (
-            f"{booking.locationName} - {booking.locationStreet} {booking.locationPostalCode} {booking.locationCity}"
-        )
-        row += (location,)
-    row += (
+        f"{booking.locationName} - {booking.locationStreet} {booking.locationPostalCode} {booking.locationCity}",
         convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
         booking.ean,
         booking.beneficiaryFirstName,
@@ -923,13 +893,10 @@ def _serialize_csv_report(query: BaseQuery) -> str:
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(booking_export_header())
     for booking in query.yield_per(1000):
-        row: tuple[typing.Any, ...] = (booking.venueName, booking.offerName)
-        if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            location = (
-                f"{booking.locationName} - {booking.locationStreet} {booking.locationPostalCode} {booking.locationCity}"
-            )
-            row += (location,)
-        row += (
+        row: tuple[typing.Any, ...] = (
+            booking.venueName,
+            booking.offerName,
+            f"{booking.locationName} - {booking.locationStreet} {booking.locationPostalCode} {booking.locationCity}",
             convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
             booking.ean,
             booking.beneficiaryFirstName,
@@ -965,7 +932,6 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
     bold = workbook.add_format({"bold": 1})
     currency_format = workbook.add_format({"num_format": "###0.00[$€-fr-FR]"})
     col_width = 18
-    should_add_location = FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active()
 
     worksheet = workbook.add_worksheet()
     row = 0
@@ -976,12 +942,10 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
     row = 1
     data: tuple[typing.Any, ...]
     for booking in query.yield_per(1000):
-        data = (booking.venueName, booking.offerName)
-        if should_add_location:
-            data += (
-                f"{booking.locationName} - {booking.locationStreet} {booking.locationPostalCode} {booking.locationCity}",
-            )
-        data += (
+        data = (
+            booking.venueName,
+            booking.offerName,
+            f"{booking.locationName} - {booking.locationStreet} {booking.locationPostalCode} {booking.locationCity}",
             str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking)),
             booking.ean,
             booking.beneficiaryFirstName,
