@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
@@ -43,6 +43,7 @@ import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Validation.module.scss'
 
 export const Validation = (): JSX.Element => {
+  const [loading, setLoading] = useState(false)
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
@@ -91,6 +92,7 @@ export const Validation = (): JSX.Element => {
   }
 
   const onSubmit = async () => {
+    setLoading(true)
     try {
       /* istanbul ignore next: ENV dependant */
       const token = await getReCaptchaToken('saveNewOnboardingData')
@@ -168,6 +170,7 @@ export const Validation = (): JSX.Element => {
       } else {
         notify.error('Erreur lors de la création de votre structure')
       }
+      setLoading(false)
     }
   }
 
@@ -254,7 +257,7 @@ export const Validation = (): JSX.Element => {
         previousTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
         nextTo={SIGNUP_JOURNEY_STEP_IDS.COMPLETED}
         onClickNext={onSubmit}
-        isDisabled={false}
+        isDisabled={loading}
         withRightIcon={false}
         nextStepTitle="Valider et créer ma structure"
         legalCategoryCode={offerer.legalCategoryCode}
