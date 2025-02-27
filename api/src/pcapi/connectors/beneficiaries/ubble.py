@@ -87,6 +87,7 @@ def create_applicant(external_applicant_id: str, email: str) -> str:
     response = session.post(
         build_url("/v2/applicants"),
         json={"external_applicant_id": external_applicant_id, "email": email},
+        timeout=60,
     )
     response.raise_for_status()
 
@@ -135,7 +136,9 @@ def create_identity_verification(
 def create_identity_verification_attempt(identification_id: str, redirect_url: str) -> str:
     session = _configure_v2_session()
     response = session.post(
-        build_url(f"/v2/identity-verifications/{identification_id}/attempts"), json={"redirect_url": redirect_url}
+        build_url(f"/v2/identity-verifications/{identification_id}/attempts"),
+        json={"redirect_url": redirect_url},
+        timeout=60,
     )
     response.raise_for_status()
 
@@ -178,6 +181,7 @@ def get_identity_verification(identification_id: str) -> fraud_models.UbbleConte
     response = requests.get(
         build_url(f"/v2/identity-verifications/{identification_id}"),
         cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+        timeout=60,
     )
     response.raise_for_status()
 
