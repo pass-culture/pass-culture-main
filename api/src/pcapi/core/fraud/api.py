@@ -586,7 +586,7 @@ def handle_ok_manual_review(
         subscription_api.activate_beneficiary_for_eligibility(user, fraud_check, eligibility)
 
     except subscription_exceptions.InvalidEligibilityTypeException as err:
-        raise EligibilityError(f"L'égibilité '{eligibility.value}' n'existe pas !") from err
+        raise EligibilityError(f"L'éligibilité '{eligibility.value}' n'est pas applicable à cet utilisateur") from err
 
     except subscription_exceptions.InvalidAgeException as err:
         err_msg = (
