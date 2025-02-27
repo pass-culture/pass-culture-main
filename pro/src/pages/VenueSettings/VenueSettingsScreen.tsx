@@ -18,6 +18,7 @@ import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
+import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import fullBackIcon from 'icons/full-back.svg'
 import strokeErrorIcon from 'icons/stroke-error.svg'
 import { generateSiretValidationSchema } from 'pages/VenueSettings/SiretOrCommentFields/validationSchema'
@@ -29,7 +30,6 @@ import { VenueSettingsFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
 import { VenueSettingsForm } from './VenueSettingsForm'
 import styles from './VenueSettingsScreen.module.scss'
-import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 
 interface VenueSettingsScreenProps {
   initialValues: VenueSettingsFormValues
