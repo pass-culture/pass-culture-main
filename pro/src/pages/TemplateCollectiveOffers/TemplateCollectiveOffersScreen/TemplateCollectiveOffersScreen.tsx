@@ -68,14 +68,17 @@ export const TemplateCollectiveOffersScreen = ({
   )
 
   const hasOffers = currentPageOffersSubset.length > 0
+  const hasFilters = hasCollectiveSearchFilters({
+    searchFilters: initialSearchFilters,
+    defaultFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+    ignore: ['nameOrIsbn']
+  })
+  const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.nameOrIsbn
 
   const userHasNoOffers =
     !isLoading &&
     !hasOffers &&
-    !hasCollectiveSearchFilters({
-      searchFilters: urlSearchFilters,
-      defaultFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
-    })
+    !hasFiltersOrNameSearch
 
   const areAllOffersSelected =
     selectedOffers.length > 0 &&
@@ -149,14 +152,6 @@ export const TemplateCollectiveOffersScreen = ({
       })
     }
   }
-
-  const hasFilters = hasCollectiveSearchFilters({
-    searchFilters: initialSearchFilters,
-    defaultFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-    ignore: ['nameOrIsbn'],
-  })
-  const hasFiltersOrNameSearch =
-    hasFilters || !!initialSearchFilters.nameOrIsbn
 
   return (
     <div>

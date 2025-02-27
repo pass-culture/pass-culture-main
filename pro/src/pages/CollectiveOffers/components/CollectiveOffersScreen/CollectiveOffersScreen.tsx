@@ -71,7 +71,6 @@ export const CollectiveOffersScreen = ({
   )
 
   const hasOffers = currentPageOffersSubset.length > 0
-
   const hasFilters = hasCollectiveSearchFilters({
     searchFilters: initialSearchFilters,
     defaultFilters: defaultCollectiveFilters,
@@ -79,7 +78,7 @@ export const CollectiveOffersScreen = ({
   })
   const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.nameOrIsbn
 
-  const userHasNoOffers = !isLoading && !hasOffers && !hasFilters
+  const userHasNoOffers = !isLoading && !hasOffers && !hasFiltersOrNameSearch
 
   const areAllOffersSelected =
     selectedOffers.length > 0 &&

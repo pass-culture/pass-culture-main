@@ -60,9 +60,9 @@ export const IndividualOffersContainer = ({
   )
 
   const hasOffers = currentPageOffersSubset.length > 0
-
   const hasFilters = hasSearchFilters({ searchFilters: initialSearchFilters, ignore: ['nameOrIsbn'] })
   const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.nameOrIsbn
+
   const userHasNoOffers = !isLoading && !hasOffers && !hasFiltersOrNameSearch
 
   const areAllOffersSelected =
