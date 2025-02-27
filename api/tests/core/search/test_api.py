@@ -116,6 +116,9 @@ def test_index_offers_of_venues_in_queue(app):
     search.index_offers_of_venues_in_queue()
     assert app.redis_client.scard(queue) == 1
 
+    search.index_offers_of_venues_in_queue()
+    assert app.redis_client.scard(queue) == 0
+
     assert bookable_offer.id in search_testing.search_store["offers"]
     assert unbookable_offer.id not in search_testing.search_store["offers"]
     assert closed_offer.id not in search_testing.search_store["offers"]
