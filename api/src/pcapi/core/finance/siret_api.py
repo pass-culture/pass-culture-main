@@ -10,7 +10,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.utils import db as db_utils
@@ -221,13 +220,8 @@ def check_can_remove_siret(
     override_revenue_check: bool = False,
     check_offerer_has_other_siret: bool = False,
 ) -> None:
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        venue_label = "partenaire culturel"
-    else:
-        venue_label = "lieu"
-
     if not venue.siret:
-        raise CheckError(f"Ce {venue_label} n'a pas de SIRET")
+        raise CheckError("Ce partenaire culturel n'a pas de SIRET")
 
     if check_offerer_has_other_siret:
         if not any(
@@ -235,7 +229,9 @@ def check_can_remove_siret(
             for offerer_venue in venue.managingOfferer.managedVenues
             if offerer_venue.siret and offerer_venue.id != venue.id
         ):
-            raise CheckError(f"L'entité juridique gérant ce {venue_label} n'a pas d'autre {venue_label} avec SIRET")
+            raise CheckError(
+                "L'entité juridique gérant ce partenaire culturel n'a pas d'autre partenaire culturel avec SIRET"
+            )
 
     if not comment:
         raise CheckError("Le commentaire est obligatoire")
@@ -246,12 +242,12 @@ def check_can_remove_siret(
     # were deleted, they would be recreated under the "validated"
     # status and they would not be blocked anymore.
     if has_pending_pricings(venue):
-        raise CheckError(f"Ce {venue_label} a des valorisations en attente")
+        raise CheckError("Ce partenaire culturel a des valorisations en attente")
 
     if not override_revenue_check:
         revenue = get_yearly_revenue(venue.id)
         if revenue and revenue >= YEARLY_REVENUE_THRESHOLD:
-            raise CheckError(f"Ce {venue_label} a un chiffre d'affaires de l'année élevé : {revenue}")
+            raise CheckError(f"Ce partenaire culturel a un chiffre d'affaires de l'année élevé : {revenue}")
 
 
 def remove_siret(
@@ -266,11 +262,6 @@ def remove_siret(
     old_siret = venue.siret
     now = datetime.datetime.utcnow()
 
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        venue_label = "partenaire culturel"
-    else:
-        venue_label = "lieu"
-
     new_siret: str | None = None
     if new_pricing_point_id:
         new_pricing_point_venue: offerers_models.Venue = offerers_models.Venue.query.filter(
@@ -280,7 +271,7 @@ def remove_siret(
         ).one_or_none()
         if not new_pricing_point_venue:
             raise CheckError(
-                f"Le nouveau point de valorisation doit être un {venue_label} avec SIRET sur la même entité juridique"
+                "Le nouveau point de valorisation doit être un partenaire culturel avec SIRET sur la même entité juridique"
             )
         new_siret = new_pricing_point_venue.siret
 
@@ -364,24 +355,19 @@ def check_can_remove_pricing_point(
     venue: offerers_models.Venue,
     override_revenue_check: bool = False,
 ) -> None:
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        venue_label = "partenaire culturel"
-    else:
-        venue_label = "lieu"
-
     if venue.siret:
-        raise CheckError(f"Vous ne pouvez supprimer le point de valorisation d'un {venue_label} avec SIRET")
+        raise CheckError("Vous ne pouvez supprimer le point de valorisation d'un partenaire culturel avec SIRET")
 
     if not venue.current_pricing_point:
-        raise CheckError(f"Ce {venue_label} n'a pas de point de valorisation actif")
+        raise CheckError("Ce partenaire culturel n'a pas de point de valorisation actif")
 
     # Same conditions as in `check_can_remove_siret`
     if has_pending_pricings(venue):
-        raise CheckError(f"Ce {venue_label} a des valorisations en attente")
+        raise CheckError("Ce partenaire culturel a des valorisations en attente")
     if not override_revenue_check:
         revenue = get_yearly_revenue(venue.id)
         if revenue and revenue >= YEARLY_REVENUE_THRESHOLD:
-            raise CheckError(f"Ce {venue_label} a un chiffre d'affaires de l'année élevé : {revenue}")
+            raise CheckError(f"Ce partenaire culturel a un chiffre d'affaires de l'année élevé : {revenue}")
 
 
 def remove_pricing_point_link(

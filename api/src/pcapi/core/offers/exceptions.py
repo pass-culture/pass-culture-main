@@ -1,7 +1,6 @@
 import typing
 
 from pcapi.domain.client_exceptions import ClientError
-from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 
 
@@ -349,20 +348,14 @@ class OfferHasReimbursedBookings(MoveOfferBaseException):
 
 class NoDestinationVenue(MoveOfferBaseException):
     def __init__(self) -> None:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            message = "Il n'existe aucun partenaire culturel avec point de valorisation vers lequel transférer l'offre"
-        else:
-            message = "Il n'existe aucun lieu avec point de valorisation vers lequel transférer l'offre"
-        super().__init__(message)
+        super().__init__(
+            "Il n'existe aucun partenaire culturel avec point de valorisation vers lequel transférer l'offre"
+        )
 
 
 class ForbiddenDestinationVenue(MoveOfferBaseException):
     def __init__(self) -> None:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            message = "Ce partenaire culturel n'est pas éligible au transfert de l'offre"
-        else:
-            message = "Ce lieu n'est pas éligible au transfert de l'offre"
-        super().__init__(message)
+        super().__init__("Ce partenaire culturel n'est pas éligible au transfert de l'offre")
 
 
 class OffererVirtualVenueNotFound(Exception):
@@ -377,11 +370,9 @@ class OfferVenueShouldNotBeVirtual(Exception):
 
 class BookingsHaveOtherPricingPoint(MoveOfferBaseException):
     def __init__(self) -> None:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            message = "Il existe des réservations valorisées sur un autre point de valorisation que celui du nouveau partenaire culturel"
-        else:
-            message = "Il existe des réservations valorisées sur un autre point de valorisation que celui du nouveau partenaire culturel"
-        super().__init__(message)
+        super().__init__(
+            "Il existe des réservations valorisées sur un autre point de valorisation que celui du nouveau partenaire culturel"
+        )
 
 
 class CollectiveOfferContactRequestError(Exception):
@@ -425,7 +416,6 @@ class VenueHasAlreadyAnActiveHeadlineOffer(Exception):
 
 
 class OfferWithoutImageCanNotBeHeadline(Exception):
-
     def __init__(self) -> None:
         super().__init__("headlineOffer", "Offers without images can not be set to the headline")
 

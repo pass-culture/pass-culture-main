@@ -2618,8 +2618,7 @@ def test_invoices_csv_commercial_gesture():
 
 
 @pytest.mark.usefixtures("clean_temp_files", "css_font_http_request_mock")
-@pytest.mark.parametrize("with_oa", [True, False])
-def test_invoice_pdf_commercial_gesture(features, monkeypatch, with_oa):
+def test_invoice_pdf_commercial_gesture(features, monkeypatch):
     invoice_htmls = []
 
     def _store_invoice_pdf(invoice_storage_id, invoice_html) -> None:
@@ -2698,7 +2697,6 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch, with_oa):
 
     cutoff = datetime.datetime.utcnow() + datetime.timedelta(days=1)
     batch = api.generate_cashflows_and_payment_files(cutoff)
-    features.WIP_ENABLE_OFFER_ADDRESS = with_oa
     api.generate_invoices_and_debit_notes(batch)
 
     invoices = models.Invoice.query.all()
@@ -2792,7 +2790,7 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch, with_oa):
     assert reimbursement_by_venue_row["Dont offres collectives (TTC)"] == "0,00 €"
     assert reimbursement_by_venue_row["Dont offres individuelles (TTC)"] == "308,40 €"
     assert reimbursement_by_venue_row["Incidents (TTC)"] == "10,10 €"
-    assert reimbursement_by_venue_row["Structures" if with_oa else "Lieux"] == venue.name
+    assert reimbursement_by_venue_row["Structures"] == venue.name
     assert reimbursement_by_venue_row["Montant de la contribution offreur (TTC)"] == "0,00 €"
     assert reimbursement_by_venue_row["Montant des réservations validées (TTC)"] == "298,30 €"
     assert reimbursement_by_venue_row["Montant remboursé (TTC)"] == "308,40 €"
@@ -3892,7 +3890,6 @@ class GenerateInvoiceTest:
 
 
 class PrepareInvoiceContextTest:
-
     def test_context(self, invoice_data):
         bank_account, stocks, _venue = invoice_data
         user = users_factories.RichBeneficiaryFactory()
