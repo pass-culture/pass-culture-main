@@ -19,7 +19,7 @@ class GetAcceptedAsBeneficiaryEmailSendinblueTest:
 
         # Then
         assert email.template == TransactionalEmail.ACCEPTED_AS_BENEFICIARY_V3.value
-        assert email.params == {"CREDIT": 42}
+        assert email.params == {"CREDIT": 150}
 
 
 class GetAcceptedAsUnderageBeneficiaryEmailSendinblueTest:
