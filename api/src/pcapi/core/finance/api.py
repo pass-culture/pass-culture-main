@@ -3325,6 +3325,7 @@ def expire_current_deposit_for_user(user: users_models.User) -> None:
             models.Deposit.dateUpdated: datetime.datetime.utcnow(),
         },
     )
+    db.session.flush()
 
 
 def _can_be_recredited(user: users_models.User, age: int | None = None) -> bool:
