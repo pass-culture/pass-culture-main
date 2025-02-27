@@ -5,6 +5,7 @@ import * as utils from 'commons/utils/recaptcha'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { LostPassword } from '../LostPassword'
+import { beforeEach, expect } from 'vitest'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -13,9 +14,9 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderLostPassword = (url: string) => {
+const renderLostPassword = (features: string[] = []) => {
   renderWithProviders(<LostPassword />, {
-    initialRouterEntries: [url],
+    features,
   })
 }
 
@@ -27,10 +28,9 @@ describe('LostPassword', () => {
         remove: vi.fn(),
       } as unknown as HTMLScriptElement)
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
-      const url = '/demande-mot-de-passe'
 
       // when
-      renderLostPassword(url)
+      renderLostPassword()
 
       // then
       // user can fill and submit email
@@ -42,6 +42,57 @@ describe('LostPassword', () => {
 
       // he has been redirected to next step
       expect(screen.getByText(/Merci/)).toBeInTheDocument()
+    })
+
+    describe('WIP_2025_SIGN_UP alternatives', () => {
+      beforeEach(() => {
+        vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+          remove: vi.fn(),
+        } as unknown as HTMLScriptElement)
+        vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+      })
+
+      it('should display the right texts without the FF', async () => {
+        renderLostPassword()
+        expect(screen.getByText('Mot de passe oublié ?')).toBeInTheDocument()
+        expect(
+          screen.getByText(
+            'Indiquez ci-dessous l’adresse email avec laquelle vous avez créé votre compte.'
+          )
+        ).toBeInTheDocument()
+        expect(screen.getByText('Valider')).toBeInTheDocument()
+        expect(
+          screen.queryByText('Retour à la connexion')
+        ).not.toBeInTheDocument()
+
+        await userEvent.type(
+          screen.getByLabelText(/Adresse email */),
+          'coucou@example.com'
+        )
+        await userEvent.click(screen.getByText(/Valider/))
+        expect(screen.getByText(/Merci/)).toBeInTheDocument()
+      })
+
+      it('should display the right texts with the FF', async () => {
+        renderLostPassword(['WIP_2025_SIGN_UP']) // ggignore
+        expect(screen.getByText('Mot de passe oublié')).toBeInTheDocument()
+        expect(
+          screen.getByText(
+            'Entrez votre email pour recevoir un lien de réinitialisation.'
+          )
+        ).toBeInTheDocument()
+        expect(screen.getByText('Réinitialiser')).toBeInTheDocument()
+        expect(screen.getByText('Retour à la connexion')).toBeInTheDocument()
+
+        await userEvent.type(
+          screen.getByLabelText(/Adresse email */),
+          'coucou@example.com'
+        )
+        await userEvent.click(screen.getByText(/Réinitialiser/))
+        expect(
+          screen.getByText(/Vous allez recevoir un email !/)
+        ).toBeInTheDocument()
+      })
     })
   })
 })

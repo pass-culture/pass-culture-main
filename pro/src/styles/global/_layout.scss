@@ -16,7 +16,7 @@ textarea {
   @include fonts.body;
 }
 
-strong {
+strong, b {
   font-family: var(--typography-body-accent-font-family);
 }
 
