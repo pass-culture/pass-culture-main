@@ -95,7 +95,6 @@ export const WithError: StoryObj<typeof MultiSelect> = {
     ...defaultProps,
     buttonLabel: 'Départements',
     label: 'Sélectionner des départements',
-    showError: true,
     error: 'Veuillez sélectionner un département',
     onBlur: () => {},
     name: 'départements',

@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useEffect, useId, useRef, useState } from 'react'
 
 import { useOnClickOrFocusOutside } from 'commons/hooks/useOnClickOrFocusOutside'
@@ -53,6 +54,8 @@ type MultiSelectProps = {
   required?: boolean
   /** display asterik  */
   asterisk?: boolean
+  /** this class offers the possibility of limiting the size of the multiselect  */
+  className?: string
 
   /** Trigger function to display error message when element is unfocus */
   onBlur?: () => void
@@ -105,6 +108,7 @@ type MultiSelectProps = {
  *
  */
 export const MultiSelect = ({
+  className,
   options,
   selectedOptions,
   defaultOptions = [],
@@ -191,13 +195,13 @@ export const MultiSelect = ({
   useOnClickOrFocusOutside(containerRef, () => setIsOpen(false))
 
   return (
-    <fieldset onBlur={onBlur}>
+    <fieldset className={styles.container} onBlur={onBlur}>
       {label && (
         <label className={styles['container-label']}>
           {label} {required && asterisk && '*'}
         </label>
       )}
-      <div className={styles.container}>
+      <div className={cn(className, styles['container-input'])}>
         <div ref={containerRef}>
           <MultiSelectTrigger
             id={id}
@@ -227,17 +231,6 @@ export const MultiSelect = ({
             />
           )}
         </div>
-
-        <SelectedValuesTags
-          disabled={disabled}
-          selectedOptions={selectedItems.map((item) => item.id)}
-          removeOption={handleRemoveTag}
-          fieldName="tags"
-          optionsLabelById={selectedItems.reduce(
-            (acc, item) => ({ ...acc, [item.id]: item.label }),
-            {}
-          )}
-        />
         <div
           role="alert"
           className={styles['container-error']}
@@ -246,6 +239,17 @@ export const MultiSelect = ({
           {error && <FieldError name={name}>{error}</FieldError>}
         </div>
       </div>
+
+      <SelectedValuesTags
+        disabled={disabled}
+        selectedOptions={selectedItems.map((item) => item.id)}
+        removeOption={handleRemoveTag}
+        fieldName="tags"
+        optionsLabelById={selectedItems.reduce(
+          (acc, item) => ({ ...acc, [item.id]: item.label }),
+          {}
+        )}
+      />
     </fieldset>
   )
 }

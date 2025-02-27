@@ -121,7 +121,6 @@ export const CollectiveDataForm = ({
                   <MultiSelect
                     name="collectiveStudents"
                     label="Public cible"
-                    required={true}
                     options={studentOptions}
                     defaultOptions={studentOptions.filter((option) =>
                       formik.values.collectiveStudents.includes(option.label)
@@ -169,7 +168,6 @@ export const CollectiveDataForm = ({
                   <MultiSelect
                     name="collectiveDomains"
                     label="Domaine artistique et culturel"
-                    required={true}
                     options={domains}
                     defaultOptions={domains.filter((option) =>
                       formik.values.collectiveDomains.includes(option.id)
@@ -197,7 +195,6 @@ export const CollectiveDataForm = ({
                   <MultiSelect
                     name="collectiveInterventionArea"
                     label="Zone de mobilité"
-                    required={true}
                     options={offerInterventionOptions}
                     selectedOptions={offerInterventionOptions.filter((op) =>
                       formik.values.collectiveInterventionArea.includes(op.id)
