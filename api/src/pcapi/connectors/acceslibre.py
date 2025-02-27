@@ -550,7 +550,7 @@ class AcceslibreBackend(BaseBackend):
                 f"Error connecting AccesLibre API for {url} and query parameters: {query_params}"
             )
         if settings.ACCESLIBRE_SHOULD_AVOID_TOO_MANY_REQUESTS:
-            time.sleep(0.3)  # request limit on acceslibre side is 3 per seconds
+            time.sleep(0.34)  # request limit on acceslibre side is 3 per seconds
         if response.status_code == 200:
             try:
                 return response.json()
