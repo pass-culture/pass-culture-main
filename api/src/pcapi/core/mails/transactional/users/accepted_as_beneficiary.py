@@ -1,9 +1,10 @@
 import logging
 
 from pcapi.core import mails
-from pcapi.core.finance import api as finance_api
+from pcapi.core.finance.conf import get_credit_amount_per_age_and_eligibility
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.users.eligibility_api import get_pre_decree_or_current_eligibility
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.models.feature import FeatureToggle
@@ -42,11 +43,14 @@ def get_accepted_as_underage_beneficiary_email_data(user: User) -> models.Transa
 def get_accepted_as_beneficiary_email_v3_data(user: User) -> models.TransactionalEmailData:
     assert user.deposit  # helps mypy
 
-    recredit = finance_api.get_latest_age_related_user_recredit(user)
-    credited_amount = recredit.amount if recredit else user.deposit.amount
+    eligibility_to_activate = get_pre_decree_or_current_eligibility(user)
+    assert user.age
+    amount_to_display = get_credit_amount_per_age_and_eligibility(user.age, eligibility_to_activate)
+    if amount_to_display is None:
+        amount_to_display = user.deposit.amount
     return models.TransactionalEmailData(
         template=TransactionalEmail.ACCEPTED_AS_BENEFICIARY_V3.value,
-        params={"CREDIT": int(credited_amount)},
+        params={"CREDIT": int(amount_to_display)},
     )
 
 
