@@ -494,7 +494,7 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
     history_api.add_action(history_models.ActionType.VENUE_CREATED, author=author, venue=venue)
 
     db.session.add_all([venue, adage_venue_address])
-    db.session.commit()
+    db.session.flush()
 
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
@@ -979,6 +979,7 @@ def create_offerer(
         if not user_offerer:
             user_offerer = models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
             db.session.add(user_offerer)
+            db.session.flush()
 
         if offerer.isRejected:
             # When offerer was rejected, it is considered as a new offerer in validation process;
@@ -1006,6 +1007,7 @@ def create_offerer(
         _fill_in_offerer(offerer, offerer_informations)
         user_offerer = grant_user_offerer_access(offerer, user)
         db.session.add_all([offerer, user_offerer])
+        db.session.flush()
 
     if is_new:
         assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
