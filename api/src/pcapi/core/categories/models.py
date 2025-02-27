@@ -183,19 +183,20 @@ class SearchNode:
         children: list["SearchNode"] | None = None,
         search_value: str | None = None,
         gtls: list[str] | None = None,
-        positions: dict[str, int] | None = None,
         included_subcategories: list[str] | None = None,
     ) -> None:
         self.included_subcategories = included_subcategories or []
         self.label = label
         self.gtls = gtls
         self.children = children or []
-        self.positions = positions
         self.search_value = search_value
+        self.positions: dict[str, int] = {}
         self.parents: list["SearchNode"] = []
 
         for child in self.children:
             child.parents.append(self)
+            if self.search_value:
+                child.positions[self.search_value] = self.children.index(child)
 
         _register_node(self)
 
