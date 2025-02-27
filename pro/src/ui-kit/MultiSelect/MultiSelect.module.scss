@@ -5,12 +5,14 @@
 @use "styles/mixins/_outline.scss" as outline;
 
 .container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: rem.torem(542px);
-  position: relative;
   margin-bottom: rem.torem(8px);
+
+  &-input {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+  }
 
   &-label {
     display: block;
@@ -25,6 +27,7 @@
     }
   }
 }
+
 
 .legend {
   @include fonts.body;

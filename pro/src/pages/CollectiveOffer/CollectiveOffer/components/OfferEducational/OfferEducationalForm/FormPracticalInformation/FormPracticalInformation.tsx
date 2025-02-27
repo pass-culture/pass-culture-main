@@ -85,7 +85,6 @@ export const FormPracticalInformation = ({
       hasSelectAllOptions
       onSelectedOptionsChanged={handleMultiSelectChange}
       onBlur={() => setFieldTouched('interventionArea', true)}
-      showError={touched.interventionArea && !!errors.interventionArea}
       error={
         touched.interventionArea && errors.interventionArea
           ? String(errors.interventionArea)
