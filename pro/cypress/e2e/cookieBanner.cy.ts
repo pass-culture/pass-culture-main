@@ -110,12 +110,13 @@ describe('Cookie management with login', () => {
 
   before(() => {
     cy.visit('/connexion')
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
-    }).then((response) => {
-      login1 = response.body.user.email
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      (response) => {
+        login1 = response.body.user.email
+      }
+    )
   })
 
   it('I should be able to choose a specific cookie, log in with another account and check that specific cookie is checked', () => {
@@ -142,13 +143,14 @@ describe('Cookie management with login', () => {
     cy.contains('Se déconnecter').click()
     cy.url().should('contain', '/connexion')
 
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
-    }).then((response) => {
-      const login2 = response.body.user.email
-      logInAndGoToPage(login2, '/accueil', false)
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      (response) => {
+        const login2 = response.body.user.email
+        logInAndGoToPage(login2, '/accueil', false)
+      }
+    )
 
     cy.stepLog({ message: 'I open the cookie management option' })
     cy.findByText('Gestion des cookies').click()
@@ -163,12 +165,13 @@ describe('Cookie management with login', () => {
     cy.stepLog({ message: 'I clear all cookies in Browser' })
     cy.clearCookies()
 
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
-    }).then((response) => {
-      cy.wrap(response.body.user.email).as('login')
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      (response) => {
+        cy.wrap(response.body.user.email).as('login')
+      }
+    )
 
     cy.get('@login').then((login) =>
       logInAndGoToPage(login.toString(), '/accueil', false)

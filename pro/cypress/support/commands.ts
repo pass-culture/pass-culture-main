@@ -148,4 +148,15 @@ Cypress.Commands.add('stepLog', ({ message }) => {
   })
 })
 
+Cypress.Commands.add(
+  'sandboxCall',
+  (method: 'GET' | 'POST', url: string, onRequest: (response: any) => void) => {
+    cy.request({
+      method,
+      url,
+      timeout: 1000 * 120, // With test parralelization, the api could be slower, so, we'll wait a little.
+    }).then((response) => onRequest(response))
+  }
+)
+
 export {}

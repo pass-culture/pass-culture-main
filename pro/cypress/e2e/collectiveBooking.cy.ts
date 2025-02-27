@@ -10,16 +10,21 @@ describe('Search for collective bookings', () => {
 
   before(() => {
     cy.visit('/connexion')
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_bookings',
-    }).then((response) => {
-      login = response.body.user.email
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_bookings',
+      (response) => {
+        login = response.body.user.email
+      }
+    )
   })
 
   beforeEach(() => {
-    sessionLogInAndGoToPage('Session Collective Booking', login, '/reservations/collectives')
+    sessionLogInAndGoToPage(
+      'Session Collective Booking',
+      login,
+      '/reservations/collectives'
+    )
   })
 
   it('I should be able to find collective bookings by offers', () => {

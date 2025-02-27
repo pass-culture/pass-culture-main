@@ -10,14 +10,15 @@ describe('ADAGE discovery', () => {
     cy.getFakeAdageToken().then((value) => {
       adageToken = value
     })
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_adage_environment',
-    }).then((response) => {
-      offerId = response.body.offerId
-      offerName = response.body.offerName
-      venueName = response.body.venueName
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_adage_environment',
+      (response) => {
+        offerId = response.body.offerId
+        offerName = response.body.offerName
+        venueName = response.body.venueName
+      }
+    )
     cy.intercept(
       'GET',
       'http://localhost:5001/collective/educational-domains'

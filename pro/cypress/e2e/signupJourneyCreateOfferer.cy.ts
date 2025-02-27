@@ -16,12 +16,13 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
 
   beforeEach(() => {
     cy.visit('/connexion')
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_new_pro_user',
-    }).then((response) => {
-      login = response.body.user.email
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_new_pro_user',
+      (response) => {
+        login = response.body.user.email
+      }
+    )
     cy.intercept('GET', `/sirene/siret/**`, (req) =>
       req.reply({
         statusCode: 200,
