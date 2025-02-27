@@ -1526,6 +1526,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         )
         assert user.deposit.source == f"dossier FraudCheckType.EDUCONNECT [{identity_fraud_check.thirdPartyId}]"
         assert user.deposit.amount == 50
+        assert user.recreditAmountToShow == 50
 
     def test_rejected_identity(self):
         user = self.eligible_user(validate_phone=False)
@@ -1721,6 +1722,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.is_beneficiary
         assert user.deposit.type == finance_models.DepositType.GRANT_15_17
         assert user.deposit.amount == 30
+        assert user.recreditAmountToShow == 30
 
     def test_pre_decree_at_17_when_registration_started_at_15(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
@@ -1737,6 +1739,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.is_beneficiary
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
         assert user.deposit.amount == 20 + 0 + 50
+        assert user.recreditAmountToShow == 70
 
     def test_pre_decree_at_17_when_registration_started_at_16(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
@@ -1753,6 +1756,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.is_beneficiary
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
         assert user.deposit.amount == 30 + 50
+        assert user.recreditAmountToShow == 80
 
     def test_pre_decree_at_16_when_registration_started_at_15(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
@@ -1769,6 +1773,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.is_beneficiary
         assert user.deposit.type == finance_models.DepositType.GRANT_15_17
         assert user.deposit.amount == 20
+        assert user.recreditAmountToShow == 20
 
     def test_pre_decree_18_eligibility(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
@@ -1782,6 +1787,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert is_user_activated
         assert user.is_beneficiary
         assert user.deposit.type == finance_models.DepositType.GRANT_18
+        assert user.recreditAmountToShow == 300
 
     def test_pre_decree_18_eligibility_at_19_year_old(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
@@ -1812,6 +1818,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert is_user_activated
         assert user.is_beneficiary
         assert user.deposit.type == finance_models.DepositType.GRANT_18
+        assert user.recreditAmountToShow == 300
 
     def test_underage_transition_to_18_after_decree(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
@@ -1824,6 +1831,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert is_user_activated
         assert user.is_beneficiary
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+        assert user.recreditAmountToShow == 150
 
     @pytest.mark.parametrize("age", [18, 19, 20])
     def test_post_decree_18_eligibility(self, age):
@@ -1839,6 +1847,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
         [recredit] = user.deposit.recredits
         assert recredit.recreditType == finance_models.RecreditType.RECREDIT_18
+        assert user.recreditAmountToShow == 150
 
     @pytest.mark.parametrize("age", [18, 19, 20])
     def test_post_decree_when_registration_started_at_17(self, age):
@@ -1858,6 +1867,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
         recredit_types = [recredit.recreditType for recredit in user.deposit.recredits]
         assert set(recredit_types) == {finance_models.RecreditType.RECREDIT_17, finance_models.RecreditType.RECREDIT_18}
+        assert user.recreditAmountToShow == 200
 
 
 @pytest.mark.usefixtures("db_session")
