@@ -2,11 +2,13 @@ import datetime
 import itertools
 import pathlib
 import random
+import uuid
 
 from dateutil.relativedelta import relativedelta
 from factory.faker import faker
 
 from pcapi import settings
+from pcapi.connectors import thumb_storage
 from pcapi.core.achievements import factories as achievements_factories
 from pcapi.core.achievements import models as achievements_models
 from pcapi.core.artist import factories as artist_factories
@@ -319,6 +321,62 @@ def create_artists() -> None:
             artist_id=artist_3.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
     artist_factories.ArtistAliasFactory(artist_id=artist_3.id, artist_alias_name="Rollman Marina")
+
+    _create_library_with_writers()
+
+
+def _create_library_with_writers() -> None:
+    venue = offerers_factories.VenueFactory(
+        name="Librairie des artistes", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
+    )
+    artists = [
+        artist_factories.ArtistFactory(
+            name="Annie Ernaux",
+            description="Professeure de lettres et écrivaine française",
+            image="https://upload.wikimedia.org/wikipedia/commons/a/a6/Annie_Ernaux_in_2022_%289_av_11%29.jpg",
+            image_license="Creative Commons Attribution-Share Alike 4.0",
+            image_license_url="https://creativecommons.org/licenses/by-sa/4.0/",
+        ),
+        artist_factories.ArtistFactory(
+            name="George Sand",
+            description="Romancière, dramaturge, épistolière, critique littéraire et journaliste française",
+            image="https://upload.wikimedia.org/wikipedia/commons/e/ee/George_Sand.PNG",
+        ),
+        artist_factories.ArtistFactory(
+            name="Miguel de Cervantes",
+            description="Romancier, poète et dramaturge espagnol",
+            image="https://upload.wikimedia.org/wikipedia/commons/4/47/Miguel_de_Cervantes_2.jpg",
+        ),
+        artist_factories.ArtistFactory(
+            name="Jane Austen",
+            description="Romancière et femme de lettres anglaise",
+        ),
+        artist_factories.ArtistFactory(
+            name="Ernest Hemingway",
+            description="Écrivain, journaliste et correspondant de guerre américain",
+            image="https://upload.wikimedia.org/wikipedia/commons/2/28/ErnestHemingway.jpg",
+        ),
+        artist_factories.ArtistFactory(),
+        artist_factories.ArtistFactory(),
+        artist_factories.ArtistFactory(),
+        artist_factories.ArtistFactory(),
+        artist_factories.ArtistFactory(),
+    ]
+
+    image_paths = itertools.cycle(pathlib.Path(generic_picture_thumbs.__path__[0]).iterdir())
+    for artist in artists:
+        for num in range(5):
+            product = offers_factories.ProductFactory(
+                name=f"Livre - {artist.name} - {num + 1}", subcategoryId=subcategories.LIVRE_PAPIER.id
+            )
+            image_path = next(image_paths)
+            offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.RECTO)
+            thumb_storage.create_thumb(product, image_path.read_bytes(), storage_id_suffix_str="", keep_ratio=True)
+            offers_factories.ArtistProductLinkFactory(
+                artist_id=artist.id, product_id=product.id, artist_type=ArtistType.AUTHOR
+            )
+            offer = offers_factories.OfferFactory(product=product, venue=venue)
+            offers_factories.StockFactory.create_batch(5, offer=offer)
 
 
 def create_offers_with_gtls() -> None:
