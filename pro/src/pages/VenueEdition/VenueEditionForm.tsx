@@ -11,6 +11,7 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
@@ -24,7 +25,6 @@ import { setInitialFormValues } from './setInitialFormValues'
 import { VenueEditionFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
 import { VenueFormActionBar } from './VenueFormActionBar/VenueFormActionBar'
-import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 
 interface VenueFormProps {
   venue: GetVenueResponseModel
