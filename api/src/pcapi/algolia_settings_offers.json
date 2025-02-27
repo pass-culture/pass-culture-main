@@ -128,5 +128,8 @@
             "offer.searchGroupNamev2:MUSEES_VISITES_CULTURELLES"
         ]
     ],
-    "numericAttributesForFiltering": null
+    "numericAttributesForFiltering": [
+            "offer.prices",
+            "offer.releaseDate"
+    ]
 }
