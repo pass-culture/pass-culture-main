@@ -8,6 +8,7 @@ import wtforms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
+from pcapi.models import feature
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import search
@@ -64,15 +65,18 @@ class EditAccountForm(utils.PCForm):
     marketing_email_subscription = fields.PCSwitchBooleanField("Abonné aux emails marketing", full_row=True)
 
 
+def _get_excluded_eligibilities() -> list[users_models.EligibilityType]:
+    if feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
+        return []
+    return [users_models.EligibilityType.AGE17_18]
+
+
 class ManualReviewForm(FlaskForm):
     status = fields.PCSelectWithPlaceholderValueField(
         "Statut",
         choices=utils.choices_from_enum(fraud_models.FraudReviewStatus, formatter=filters.format_fraud_review_status),
     )
-    eligibility = fields.PCSelectWithPlaceholderValueField(
-        "Éligibilité",
-        choices=utils.choices_from_enum(users_models.EligibilityType, formatter=filters.format_eligibility_type),
-    )
+    eligibility = fields.PCSelectWithPlaceholderValueField("Éligibilité", choices=[], validate_choice=False)
     reason = fields.PCOptCommentField("Raison du changement")
 
 

@@ -19,6 +19,7 @@ import sqlalchemy as sa
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
+from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import api as finance_api
@@ -46,13 +47,16 @@ from pcapi.core.users.email import update as email_update
 from pcapi.core.users.models import EligibilityType
 from pcapi.domain.password import random_password
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
+from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.forms import utils as forms_utils
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.utils import email as email_utils
 
@@ -427,15 +431,27 @@ def render_public_account_details(
                     "password_invalidation_form": empty_forms.EmptyForm(),
                 }
             )
+
+        manual_review_form = None
+        if utils.has_current_user_permission(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW):
+            manual_review_form = account_forms.ManualReviewForm()
+            excluded_eligibilities = []
+            if not (
+                feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active()
+                and datetime.datetime.utcnow() > settings.CREDIT_V3_DECREE_DATETIME
+            ):
+                excluded_eligibilities.append(users_models.EligibilityType.AGE17_18)
+            manual_review_form.eligibility.choices = forms_utils.choices_from_enum(
+                users_models.EligibilityType,
+                formatter=filters.format_eligibility_type,
+                exclude_opts=excluded_eligibilities,
+            )
+
         kwargs.update(
             {
                 "edit_account_form": edit_account_form,
                 "edit_account_dst": url_for(".update_public_account", user_id=user.id),
-                "manual_review_form": (
-                    account_forms.ManualReviewForm()
-                    if utils.has_current_user_permission(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW)
-                    else None
-                ),
+                "manual_review_form": manual_review_form,
                 "manual_review_dst": url_for(".review_public_account", user_id=user.id),
                 "send_validation_code_form": empty_forms.EmptyForm(),
                 "manual_phone_validation_form": empty_forms.EmptyForm(),
