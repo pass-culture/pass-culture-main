@@ -46,8 +46,7 @@ export const OffersTableHead = ({
         >
           <div className={styles['offers-thead-th-checkbox-wrapper']}>
             <BaseCheckbox
-              inputClassName={styles['offers-thead-th-checkbox-input']}
-              labelClassName={styles['offers-thead-th-checkbox-label']}
+              exceptionnallyHideLabelDespiteA11y
               checked={areAllOffersSelected}
               partialCheck={!areAllOffersSelected && isAtLeastOneOfferChecked}
               onChange={toggleSelectAllCheckboxes}

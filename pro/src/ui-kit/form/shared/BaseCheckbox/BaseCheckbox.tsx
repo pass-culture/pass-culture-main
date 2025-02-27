@@ -60,13 +60,7 @@ export const BaseCheckbox = forwardRef(
       }
     }, [partialCheck])
 
-    const labelClasses = cn(
-      styles['base-checkbox-label'],
-      {
-        [styles['visually-hidden']]: exceptionnallyHideLabelDespiteA11y,
-      },
-      labelClassName
-    )
+    const labelClasses = cn(styles['base-checkbox-label'], labelClassName)
     const containerClasses = cn(styles['base-checkbox'], className, {
       [styles['box-variant']]: variant === CheckboxVariant.BOX,
       [styles['has-error']]: hasError,
@@ -100,7 +94,14 @@ export const BaseCheckbox = forwardRef(
                   />
                 </span>
               )}
-              {label}
+              <div
+                className={cn({
+                  [styles['visually-hidden']]:
+                    exceptionnallyHideLabelDespiteA11y,
+                })}
+              >
+                {label}
+              </div>
               {description && (
                 <p className={styles['base-checkbox-description']}>
                   {description}
