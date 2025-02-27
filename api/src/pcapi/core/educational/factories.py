@@ -218,10 +218,17 @@ def _get_current_educational_year() -> int:
 
 def create_educational_year(date_time: datetime.datetime) -> models.EducationalYear:
     beginning_year = _get_educational_year_beginning(date_time)
+    adage_id = beginning_year - ADAGE_STARTING_EDUCATIONAL_YEAR
+
     return EducationalYearFactory(
         beginningDate=datetime.datetime(beginning_year, 9, 1),
         expirationDate=datetime.datetime(beginning_year + 1, 8, 31, 23, 59, 59),
+        adageId=adage_id,
     )
+
+
+def _get_current_educational_year_adage_id() -> int:
+    return _get_current_educational_year() - ADAGE_STARTING_EDUCATIONAL_YEAR
 
 
 class EducationalCurrentYearFactory(EducationalYearFactory):
@@ -229,10 +236,7 @@ class EducationalCurrentYearFactory(EducationalYearFactory):
     expirationDate = factory.LazyFunction(
         lambda: datetime.datetime(_get_current_educational_year() + 1, 8, 31, 23, 59, 59)
     )
-
-
-def _get_current_educational_year_adage_id() -> int:
-    return _get_current_educational_year() - ADAGE_STARTING_EDUCATIONAL_YEAR
+    adageId = factory.LazyFunction(_get_current_educational_year_adage_id)
 
 
 class EducationalDepositFactory(BaseFactory):
