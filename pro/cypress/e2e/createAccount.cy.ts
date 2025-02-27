@@ -3,12 +3,13 @@ import { logInAndGoToPage } from '../support/helpers.ts'
 describe('Account creation', () => {
   beforeEach(() => {
     cy.visit('/inscription')
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/clear_email_list',
-    }).then((response) => {
-      expect(response.status).to.eq(200)
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/clear_email_list',
+      (response) => {
+        expect(response.status).to.eq(200)
+      }
+    )
   })
 
   it('I should be able to create an account', () => {

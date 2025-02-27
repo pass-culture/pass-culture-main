@@ -14,37 +14,39 @@ describe('Adage confirmation', () => {
 
   beforeEach(() => {
     cy.visit('/connexion')
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_active_collective_offer',
-    }).then((response) => {
-      expect(response.status).to.eq(200)
-      login = response.body.user.email
-      offer = response.body.offer
-      stock = response.body.stock
-      providerApiKey = response.body.providerApiKey
-      cy.intercept({
-        method: 'GET',
-        url: `/collective/offers?offererId=${offer.id}`,
-      }).as('collectiveOffers')
-      cy.intercept({
-        method: 'GET',
-        url: '/collective/offers?offererId=1&status=BOOKED',
-      }).as('collectiveOffersBOOKED')
-      cy.intercept({
-        method: 'GET',
-        url: '/collective/offers?offererId=1&status=PREBOOKED',
-      }).as('collectiveOffersPREBOOKED')
-      cy.intercept({ method: 'GET', url: `/collective/offers/${offer.id}` }).as(
-        'collectiveOfferDetails'
-      )
-      cy.request({
-        method: 'GET',
-        url: 'http://localhost:5001/sandboxes/clear_email_list',
-      }).then((response) => {
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_pro_user_with_active_collective_offer',
+      (response) => {
         expect(response.status).to.eq(200)
-      })
-    })
+        login = response.body.user.email
+        offer = response.body.offer
+        stock = response.body.stock
+        providerApiKey = response.body.providerApiKey
+        cy.intercept({
+          method: 'GET',
+          url: `/collective/offers?offererId=${offer.id}`,
+        }).as('collectiveOffers')
+        cy.intercept({
+          method: 'GET',
+          url: '/collective/offers?offererId=1&status=BOOKED',
+        }).as('collectiveOffersBOOKED')
+        cy.intercept({
+          method: 'GET',
+          url: '/collective/offers?offererId=1&status=PREBOOKED',
+        }).as('collectiveOffersPREBOOKED')
+        cy.intercept({
+          method: 'GET',
+          url: `/collective/offers/${offer.id}`,
+        }).as('collectiveOfferDetails')
+        cy.request({
+          method: 'GET',
+          url: 'http://localhost:5001/sandboxes/clear_email_list',
+        }).then((response) => {
+          expect(response.status).to.eq(200)
+        })
+      }
+    )
     cy.setFeatureFlags([
       { name: 'ENABLE_COLLECTIVE_NEW_STATUSES', isActive: true },
     ])

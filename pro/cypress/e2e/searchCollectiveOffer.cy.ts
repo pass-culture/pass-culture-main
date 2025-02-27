@@ -18,18 +18,19 @@ describe('Search collective offers', () => {
 
   before(() => {
     cy.visit('/connexion')
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_offers',
-    }).then((response) => {
-      login = response.body.user.email
-      offerPublishedTemplate = response.body.offerPublishedTemplate
-      offerPublished = response.body.offerPublished
-      offerDraft = response.body.offerDraft
-      offerInInstruction = response.body.offerInInstruction
-      offerNotConform = response.body.offerNotConform
-      offerArchived = response.body.offerArchived
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_offers',
+      (response) => {
+        login = response.body.user.email
+        offerPublishedTemplate = response.body.offerPublishedTemplate
+        offerPublished = response.body.offerPublished
+        offerDraft = response.body.offerDraft
+        offerInInstruction = response.body.offerInInstruction
+        offerNotConform = response.body.offerNotConform
+        offerArchived = response.body.offerArchived
+      }
+    )
     cy.setFeatureFlags([
       { name: 'ENABLE_COLLECTIVE_NEW_STATUSES', isActive: true },
     ])

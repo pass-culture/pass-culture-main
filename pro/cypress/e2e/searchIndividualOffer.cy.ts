@@ -19,20 +19,21 @@ describe('Search individual offers', () => {
   before(() => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_individual_offers',
-    }).then((response) => {
-      login = response.body.user.email
-      venueName = response.body.venue.name
-      offerName1 = response.body.offer1.name
-      offerName2 = response.body.offer2.name
-      offerName3 = response.body.offer3.name
-      offerName4 = response.body.offer4.name
-      offerName5 = response.body.offer5.name
-      offerName6 = response.body.offer6.name
-      offerName7 = response.body.offer7.name
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_pro_user_with_individual_offers',
+      (response) => {
+        login = response.body.user.email
+        venueName = response.body.venue.name
+        offerName1 = response.body.offer1.name
+        offerName2 = response.body.offer2.name
+        offerName3 = response.body.offer3.name
+        offerName4 = response.body.offer4.name
+        offerName5 = response.body.offer5.name
+        offerName6 = response.body.offer6.name
+        offerName7 = response.body.offer7.name
+      }
+    )
   })
 
   beforeEach(() => {

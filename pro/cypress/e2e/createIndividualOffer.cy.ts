@@ -12,13 +12,14 @@ describe('Create individual offers', () => {
   before(() => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
-    }).then((response) => {
-      login = response.body.user.email
-      venueName = response.body.venueName
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      (response) => {
+        login = response.body.user.email
+        venueName = response.body.venueName
+      }
+    )
     cy.setFeatureFlags([{ name: 'WIP_ENABLE_OFFER_ADDRESS', isActive: false }])
   })
 
@@ -78,10 +79,7 @@ describe('Create individual offers', () => {
     cy.wait(['@getOffer', '@patchOffer'])
 
     cy.stepLog({ message: 'I fill in prices' })
-    cy.findByLabelText('Intitulé du tarif').should(
-      'have.value',
-      'Tarif unique'
-    )
+    cy.findByLabelText('Intitulé du tarif').should('have.value', 'Tarif unique')
     cy.findByText('Ajouter un tarif').click()
     cy.findByText('Ajouter un tarif').click()
 

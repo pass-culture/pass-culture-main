@@ -14,18 +14,19 @@ describe('Desk (Guichet) feature', () => {
   before(() => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_bookings',
-    }).then((response) => {
-      login = response.body.user.email
-      tokenConfirmed = response.body.tokenConfirmed
-      tokenTooSoon = response.body.tokenTooSoon
-      tokenUsed = response.body.tokenUsed
-      tokenCanceled = response.body.tokenCanceled
-      tokenReimbursed = response.body.tokenReimbursed
-      tokenOther = response.body.tokenOther
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_pro_user_with_bookings',
+      (response) => {
+        login = response.body.user.email
+        tokenConfirmed = response.body.tokenConfirmed
+        tokenTooSoon = response.body.tokenTooSoon
+        tokenUsed = response.body.tokenUsed
+        tokenCanceled = response.body.tokenCanceled
+        tokenReimbursed = response.body.tokenReimbursed
+        tokenOther = response.body.tokenOther
+      }
+    )
   })
 
   beforeEach(() => {

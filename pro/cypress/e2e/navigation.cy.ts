@@ -5,12 +5,13 @@ describe('Navigation', () => {
 
   beforeEach(() => {
     cy.visit('/connexion')
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
-    }).then((response) => {
-      login = response.body.user.email
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      (response) => {
+        login = response.body.user.email
+      }
+    )
   })
 
   it('I should see the top of the page when changing page', () => {

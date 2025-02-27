@@ -6,19 +6,21 @@ describe('Collaborator list feature', () => {
 
   beforeEach(() => {
     cy.visit('/connexion')
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
-    }).then((response) => {
-      login = response.body.user.email
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      (response) => {
+        login = response.body.user.email
+      }
+    )
 
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/clear_email_list',
-    }).then((response) => {
-      expect(response.status).to.eq(200)
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/clear_email_list',
+      (response) => {
+        expect(response.status).to.eq(200)
+      }
+    )
     randomEmail = `collaborator${Math.random()}@example.com`
   })
 

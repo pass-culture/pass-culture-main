@@ -11,13 +11,14 @@ describe('Create collective offers', () => {
 
   beforeEach(() => {
     cy.visit('/connexion')
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_offers',
-    }).then((response) => {
-      login = response.body.user.email
-      offerDraft = response.body.offerDraft
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_offers',
+      (response) => {
+        login = response.body.user.email
+        offerDraft = response.body.offerDraft
+      }
+    )
     cy.intercept(
       'GET',
       'http://localhost:5001/collective/educational-domains',

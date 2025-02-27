@@ -10,12 +10,13 @@ describe('Create individual offers with OA', () => {
   before(() => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
-    }).then((response) => {
-      login = response.body.user.email
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      (response) => {
+        login = response.body.user.email
+      }
+    )
     cy.setFeatureFlags([{ name: 'WIP_ENABLE_OFFER_ADDRESS', isActive: true }])
   })
 
