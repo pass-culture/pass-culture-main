@@ -61,9 +61,7 @@ class OffererPatchBankAccountsTest:
 
         assert len(bank_account.venueLinks) == 1
 
-        actions_logged = history_models.ActionHistory.query.order_by(
-            history_models.ActionHistory.actionDate, history_models.ActionHistory.venueId
-        ).all()
+        actions_logged = history_models.ActionHistory.query.order_by(history_models.ActionHistory.venueId).all()
 
         assert len(actions_logged) == len(actions_occured)
 
@@ -150,9 +148,7 @@ class OffererPatchBankAccountsTest:
 
         assert not bank_account.venueLinks
 
-        actions_logged = history_models.ActionHistory.query.order_by(
-            history_models.ActionHistory.actionDate, history_models.ActionHistory.venueId
-        ).all()
+        actions_logged = history_models.ActionHistory.query.order_by(history_models.ActionHistory.venueId).all()
 
         assert len(actions_logged) == len(actions_occured) == 0
 
@@ -193,9 +189,7 @@ class OffererPatchBankAccountsTest:
 
         assert not bank_account.venueLinks
 
-        actions_logged = history_models.ActionHistory.query.order_by(
-            history_models.ActionHistory.actionDate, history_models.ActionHistory.venueId
-        ).all()
+        actions_logged = history_models.ActionHistory.query.order_by(history_models.ActionHistory.venueId).all()
 
         assert len(actions_logged) == len(actions_occured) == 0
 
@@ -408,9 +402,7 @@ class OffererPatchBankAccountsTest:
             else:
                 assert link.timespan.upper is None
 
-        actions_logged = history_models.ActionHistory.query.order_by(
-            history_models.ActionHistory.actionDate, history_models.ActionHistory.venueId
-        ).all()
+        actions_logged = history_models.ActionHistory.query.order_by(history_models.ActionHistory.venueId).all()
 
         assert len(actions_logged) == len(actions_occured)
 
@@ -515,9 +507,7 @@ class OffererPatchBankAccountsTest:
                 ), "Already existing and current bank-account-venues links shouldn't changed !"
             assert link.timespan.upper is None
 
-        actions_logged = history_models.ActionHistory.query.order_by(
-            history_models.ActionHistory.actionDate, history_models.ActionHistory.venueId
-        ).all()
+        actions_logged = history_models.ActionHistory.query.order_by(history_models.ActionHistory.venueId).all()
 
         assert len(actions_logged) == len(actions_occured)
 
@@ -582,9 +572,7 @@ class OffererPatchBankAccountsTest:
 
         assert len(bank_account.venueLinks) == 1
 
-        actions_logged = history_models.ActionHistory.query.order_by(
-            history_models.ActionHistory.actionDate, history_models.ActionHistory.venueId
-        ).all()
+        actions_logged = history_models.ActionHistory.query.order_by(history_models.ActionHistory.venueId).all()
 
         assert len(actions_logged) == len(actions_occured)
 
