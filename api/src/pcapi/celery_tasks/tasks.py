@@ -19,6 +19,11 @@ def celery_async_task(
         @wraps(f)
         def task(payload: dict) -> None:
             try:
+                # We want to ensure payload is JSON serializable, we do that by encoding and decoding
+                # to and from json. This is needed because Celery uses the __repr__ of the task to pass
+                # it so values like dates and Decimal will be preserved instead of being transformed to their
+                # JSON representation.
+                # This is the same behavior that we have on cloud_tasks
                 parsed_payload = model.parse_obj(payload)
                 parsed_payload = json.loads(parsed_payload.json())
                 parsed_payload = model.parse_obj(parsed_payload)
