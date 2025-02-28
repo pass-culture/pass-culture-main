@@ -237,7 +237,6 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
                         thumb_storage.create_thumb(
                             product,
                             image_bytes,
-                            storage_id_suffix_str="",
                             keep_ratio=True,
                             object_id=image_id,
                         )

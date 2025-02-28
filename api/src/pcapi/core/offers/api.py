@@ -1219,7 +1219,6 @@ def create_mediation(
         create_thumb(
             mediation,
             image_as_bytes,
-            storage_id_suffix_str="",
             crop_params=crop_params,
             ratio=aspect_ratio,
             keep_ratio=keep_ratio,
