@@ -811,6 +811,16 @@ def create_offers_templates_with_different_displayed_status(
         )
 
 
+def _set_offer_location_columns(
+    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
+    location_option: LocationOption,
+    offerer: offerers_models.Offerer,
+) -> None:
+    offer.locationType = location_option.get("locationType")
+    offer.locationComment = location_option.get("locationComment")
+    offer.offererAddressId = get_offer_address_id(location_option=location_option, managing_offerer=offerer)
+
+
 def create_offers_booking_with_different_offer_venues(
     *,
     institutions: list[educational_models.EducationalInstitution],
@@ -841,12 +851,8 @@ def create_offers_booking_with_different_offer_venues(
         )
 
         if with_new_format:
-            collective_offer = collective_stock.collectiveOffer
-            collective_offer.location_type = location_option.get("locationType")
-            collective_offer.location_comment = location_option.get("locationComment")
-            collective_offer.offererAddressId = get_offer_address_id(
-                location_option=location_option,
-                managing_offerer=venue.managingOfferer,
+            _set_offer_location_columns(
+                offer=collective_stock.collectiveOffer, location_option=location_option, offerer=venue.managingOfferer
             )
 
 
@@ -874,11 +880,8 @@ def create_offers_templates_with_different_offer_venues(
         )
 
         if with_new_format:
-            collective_offer_template.location_type = location_option.get("locationType")
-            collective_offer_template.location_comment = location_option.get("locationComment")
-            collective_offer_template.offererAddressId = get_offer_address_id(
-                location_option=location_option,
-                managing_offerer=venue.managingOfferer,
+            _set_offer_location_columns(
+                offer=collective_offer_template, location_option=location_option, offerer=venue.managingOfferer
             )
 
 
