@@ -206,8 +206,7 @@ def create_draft_offer(
 ) -> models.Offer:
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
-    if feature.FeatureToggle.WIP_URL_IN_OFFER_DRAFT.is_active():
-        validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
+    validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
     validation.check_offer_name_does_not_contain_ean(body.name)
 
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}

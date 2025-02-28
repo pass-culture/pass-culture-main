@@ -155,7 +155,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION = (
         "Activer la personnalisation tu tableau des offres individuelles dans le BO"
     )
-    WIP_URL_IN_OFFER_DRAFT = "Activer la validation concernant l'url dans la création d'un brouillon d'offre"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -235,7 +234,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_HEADLINE_OFFER,
     FeatureToggle.WIP_IS_OPEN_TO_PUBLIC,
     FeatureToggle.WIP_UBBLE_V2,
-    FeatureToggle.WIP_URL_IN_OFFER_DRAFT,
     # Please keep alphabetic order
 )
 

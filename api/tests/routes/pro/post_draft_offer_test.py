@@ -281,7 +281,6 @@ class Returns201Test:
         assert offer.visualDisabilityCompliant == True
 
 
-@pytest.mark.features(WIP_URL_IN_OFFER_DRAFT=True)
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
 
