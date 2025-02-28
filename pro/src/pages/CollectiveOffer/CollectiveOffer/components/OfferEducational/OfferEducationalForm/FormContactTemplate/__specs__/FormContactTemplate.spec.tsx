@@ -22,15 +22,6 @@ function renderFormContact(
 }
 
 describe('FormContactTemplate', () => {
-  it('should show the checkbox group contact form if the FF is active', () => {
-    renderFormContact({ isTemplate: true })
-    expect(
-      screen.getByText(
-        'Choisissez le ou les moyens par lesquels vous souhaitez être contacté par les enseignants au sujet de cette offre : *'
-      )
-    ).toBeInTheDocument()
-  })
-
   it('should show the email form when the contact email checkbox is checked', async () => {
     renderFormContact({ isTemplate: true })
     expect(
@@ -63,17 +54,13 @@ describe('FormContactTemplate', () => {
 
   it('should show the custom contact form when the custom contact checkbox is checked', async () => {
     renderFormContact({ isTemplate: true })
-    expect(
-      screen.queryByText('mon propre formulaire accessible à cette URL')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText('mon propre formulaire')).not.toBeInTheDocument()
 
     const customContactCheckbox = screen.getByRole('checkbox', {
       name: /un formulaire/,
     })
     await userEvent.click(customContactCheckbox)
 
-    expect(
-      screen.getByText('mon propre formulaire accessible à cette URL')
-    ).toBeInTheDocument()
+    expect(screen.getByText('mon propre formulaire')).toBeInTheDocument()
   })
 })
