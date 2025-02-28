@@ -238,7 +238,7 @@ def validate_booking_by_token(token: str) -> None:
         raise api_errors.ResourceNotFoundError({"global": "This countermark cannot be found"})
 
     try:
-        bookings_validation.check_is_usable(booking)
+        bookings_api.mark_as_used(booking, booking_models.BookingValidationAuthorType.OFFERER)
     except exceptions.BookingIsAlreadyRefunded:
         raise api_errors.ForbiddenError({"payment": "This booking has already been reimbursed"})
     except exceptions.BookingIsAlreadyUsed:
@@ -247,8 +247,6 @@ def validate_booking_by_token(token: str) -> None:
         raise api_errors.ResourceGoneError({"booking": "This booking has been cancelled"})
     except exceptions.BookingIsNotConfirmed as exc:
         raise api_errors.ForbiddenError({"booking": str(exc)})
-
-    bookings_api.mark_as_used(booking, booking_models.BookingValidationAuthorType.OFFERER)
 
 
 @blueprints.public_api.route("/public/bookings/v1/keep/token/<token>", methods=["PATCH"])
