@@ -25,7 +25,7 @@ vi.mock('commons/utils/windowMatchMedia', () => ({
 vi.mock('apiClient/api', () => ({
   api: {
     getProfile: vi.fn().mockResolvedValue({}),
-    signupProV2: vi.fn(),
+    signupPro: vi.fn(),
     listOfferersNames: vi.fn(),
   },
 }))
@@ -52,7 +52,7 @@ const renderSignUp = (options?: RenderWithProvidersOptions) =>
 
 describe('Signup', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'signupProV2').mockResolvedValue()
+    vi.spyOn(api, 'signupPro').mockResolvedValue()
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
@@ -282,7 +282,7 @@ describe('Signup', () => {
           expect(submitButton).toBeEnabled()
           await userEvent.click(submitButton)
 
-          expect(api.signupProV2).toHaveBeenCalledWith({
+          expect(api.signupPro).toHaveBeenCalledWith({
             contactOk: false,
             email: 'test@example.com',
             firstName: 'Prénom',
@@ -308,7 +308,7 @@ describe('Signup', () => {
           remove: vi.fn(),
         } as unknown as HTMLScriptElement)
         vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
-        vi.spyOn(api, 'signupProV2').mockRejectedValue(
+        vi.spyOn(api, 'signupPro').mockRejectedValue(
           new ApiError(
             {
               method: 'GET',
@@ -351,7 +351,7 @@ describe('Signup', () => {
         await userEvent.tab()
 
         await userEvent.click(submitButton)
-        expect(api.signupProV2).toHaveBeenCalledTimes(1)
+        expect(api.signupPro).toHaveBeenCalledTimes(1)
 
         expect(
           await screen.findByText(

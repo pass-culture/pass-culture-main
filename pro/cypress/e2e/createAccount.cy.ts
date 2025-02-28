@@ -24,7 +24,7 @@ describe('Account creation', () => {
     cy.findByLabelText('Numéro de téléphone').type('612345678')
 
     cy.stepLog({ message: 'I submit' })
-    cy.intercept({ method: 'POST', url: '/v2/users/signup/pro' }).as(
+    cy.intercept({ method: 'POST', url: '/users/signup' }).as(
       'signupUser'
     )
     cy.findByText('Créer mon compte').click()
