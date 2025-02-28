@@ -298,6 +298,8 @@ def get_known_birthday_at_date(user: users_models.User, at_date: datetime.date) 
         action
         for action in user.action_history
         if action.actionType == history_models.ActionType.INFO_MODIFIED
+        and action.extraData
+        and "modified_info" in action.extraData
         and action.extraData["modified_info"].get("validatedBirthDate") is not None
         and action.actionDate < at_date
     ]
