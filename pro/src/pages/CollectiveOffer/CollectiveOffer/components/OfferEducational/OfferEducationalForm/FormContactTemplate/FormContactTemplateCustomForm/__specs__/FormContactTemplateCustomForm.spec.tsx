@@ -12,7 +12,10 @@ function renderFormContactCustomForm(
 ) {
   return renderWithProviders(
     <Formik initialValues={initialValues} onSubmit={() => {}}>
-      <FormContactTemplateCustomForm disableForm={false} />
+      <FormContactTemplateCustomForm
+        disableForm={false}
+        describedBy="parent-id"
+      />
     </Formik>
   )
 }
@@ -27,7 +30,7 @@ describe('FormContactTemplateCustomForm', () => {
 
     expect(
       screen.getByRole('radio', {
-        name: 'mon propre formulaire accessible à cette URL',
+        name: 'mon propre formulaire',
       })
     ).toBeInTheDocument()
   })
@@ -45,7 +48,7 @@ describe('FormContactTemplateCustomForm', () => {
 
     expect(
       screen.getByRole('radio', {
-        name: 'mon propre formulaire accessible à cette URL',
+        name: 'mon propre formulaire',
       })
     ).toBeChecked()
 
