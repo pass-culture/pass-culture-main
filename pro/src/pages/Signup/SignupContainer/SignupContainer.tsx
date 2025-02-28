@@ -35,7 +35,7 @@ export const SignupContainer = (): JSX.Element => {
     try {
       /* istanbul ignore next : ENV dependant */
       values.token = await getReCaptchaToken('signup')
-      await api.signupProV2({ ...values })
+      await api.signupPro({ ...values })
       onHandleSuccess()
     } catch (response) {
       if (response === RECAPTCHA_ERROR) {
