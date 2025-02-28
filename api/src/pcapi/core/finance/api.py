@@ -3203,11 +3203,10 @@ def upsert_deposit(
     if not user.deposit:
         raise ValueError(f"failed to create deposit for {user = }")
 
-    if feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-        recredit = _recredit_user(user)
-        if not recredit:
-            raise exceptions.UserCannotBeRecredited()
-        user.recreditAmountToShow = recredit.amount
+    recredit = _recredit_user(user)
+    if not recredit:
+        raise exceptions.UserCannotBeRecredited()
+    user.recreditAmountToShow = recredit.amount
 
     return user.deposit
 
