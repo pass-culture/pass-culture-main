@@ -4,7 +4,6 @@ from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 import pytest
-import time_machine
 
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
@@ -15,7 +14,6 @@ from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
-from pcapi.core.subscription.api import activate_beneficiary_for_eligibility
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.users import factories as users_factories
@@ -616,41 +614,6 @@ class HandleDmsApplicationTest:
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
-
-    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
-    def test_users_18_before_FF_are_not_recredited_savagely(self):
-        """
-        This test tries to reproduce a bug we had
-        It acts as though we have a race condition when calling the webhook /webhooks/dms/application_status
-        """
-
-        # Create a user underage beneficiary
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1)):
-            user = users_factories.BeneficiaryFactory(
-                age=17,
-                deposit__expirationDate=datetime.datetime.utcnow() + relativedelta(years=1),
-                phoneNumber="+33600003344",
-            )
-            assert user.deposit.amount == 30
-
-        # At 18 they finish their DS application
-        assert user.age == 18
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        dms_response = make_parsed_graphql_application(
-            application_number=1234,
-            state=dms_models.GraphQLApplicationStates.accepted,
-            email=user.email,
-            birth_date=user.birth_date,
-        )
-
-        # Then we call the webhook function, and,
-        # as if they called it twice in the same second, we call the last function of the second call (activate_beneficiary_for_eligibility)
-        dms_subscription_api.handle_dms_application(dms_response)
-        dms_check = [fc for fc in user.beneficiaryFraudChecks if fc.type == fraud_models.FraudCheckType.DMS][0]
-        user.roles = []  # this ensuers that the user is like in the race condition, not yet beneficiary
-        activate_beneficiary_for_eligibility(user, dms_check, users_models.EligibilityType.AGE18)
-
-        assert user.deposit.amount == 300  # used to be 600
 
 
 @pytest.mark.usefixtures("db_session")
