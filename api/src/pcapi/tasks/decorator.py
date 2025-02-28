@@ -38,15 +38,16 @@ def task(
 
         @wraps(f)
         def delay(payload: pydantic_v1.BaseModel) -> None:
-            payload_dict = json.loads(payload.json())
             if settings.IS_JOB_SYNCHRONOUS:
-                f(payload.parse_obj(payload_dict))
+                f(payload)
                 return
+
+            payload = json.loads(payload.json())
 
             cloud_task.enqueue_internal_task(
                 queue,
                 path,
-                payload_dict,
+                payload,
                 deduplicate=deduplicate,
                 delayed_seconds=delayed_seconds,
                 task_request_timeout=task_request_timeout,
