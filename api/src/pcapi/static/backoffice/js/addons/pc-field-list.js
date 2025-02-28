@@ -10,6 +10,7 @@ class PcFieldList extends PcAddOn {
   static PC_FIELD_LIST_CONTAINER_SELECTOR = '[data-field-list-container]'
   static PC_FIELD_LIST_UL_SELECTOR = 'ul.field-list'
   static ADD_BUTTON_SELECTOR = '.field-list-add-btn'
+  static REMOVE_ALL_BUTTON_SELECTOR = '.field-list-rm-all-btn'
   static REMOVE_BUTTON_SELECTOR = '.field-list-rm-btn'
   static FIELD_ELEMENT_BEARING_VALUE_SELECTOR = '.value-element-form'
   static FIELD_LABEL_SELECTOR = '.label-element-form'
@@ -37,11 +38,13 @@ class PcFieldList extends PcAddOn {
     this.initialize()
     EventHandler.on(document.body, 'click', PcFieldList.ADD_BUTTON_SELECTOR, this.#onAdd)
     EventHandler.on(document.body, 'click', PcFieldList.REMOVE_BUTTON_SELECTOR, this.#onRemove)
+    EventHandler.on(document.body, 'click', PcFieldList.REMOVE_ALL_BUTTON_SELECTOR, this.#onRemoveAll)
   }
 
   unbindEvents = () => {
     EventHandler.off(document.body, 'click', PcFieldList.ADD_BUTTON_SELECTOR, this.#onAdd)
     EventHandler.off(document.body, 'click', PcFieldList.REMOVE_BUTTON_SELECTOR, this.#onRemove)
+    EventHandler.off(document.body, 'click', PcFieldList.REMOVE_ALL_BUTTON_SELECTOR, this.#onRemoveAll)
   }
 
   #getFieldListContainerFromId(fieldListContainerId) {
@@ -87,7 +90,7 @@ class PcFieldList extends PcAddOn {
     if (maxEntries && maxEntries !== undefined) {
       const fieldsCount = $ul.children.length
       if (fieldsCount >= maxEntries - 1) {
-        this.#changeButtonDisplay($ul, PcFieldList.ADD_BUTTON_SELECTOR, "none")
+        this.#changeButtonDisplay($ul, PcFieldList.ADD_BUTTON_SELECTOR, false)
       }
       if (fieldsCount >= maxEntries && !skipError) {
         throw new Error('Already max entries');
@@ -100,7 +103,8 @@ class PcFieldList extends PcAddOn {
     if (minEntries && minEntries !== undefined) {
       const fieldsCount = $ul.children.length
       if (fieldsCount <= minEntries) {
-        this.#changeButtonDisplay($ul, PcFieldList.REMOVE_BUTTON_SELECTOR, "none")
+        this.#changeButtonDisplay($ul, PcFieldList.REMOVE_BUTTON_SELECTOR, false)
+        this.#changeButtonDisplay($ul.parentElement, PcFieldList.REMOVE_ALL_BUTTON_SELECTOR, false)
       }
       if (fieldsCount < minEntries && !skipError) {
         throw new Error('Already min entries');
@@ -225,23 +229,42 @@ class PcFieldList extends PcAddOn {
     })
   }
 
+  #getButtonFromEvent = (event) => {
+      return event.target.closest('button')
+  }
+
   #onAdd = (event) => {
-    const { fieldListContainerId } = event.target.dataset
+    const $target = this.#getButtonFromEvent(event)
+    const { fieldListContainerId } = $target.dataset
     const $fieldListContainer = this.#getFieldListContainerFromId(fieldListContainerId)
     const $ul = $fieldListContainer.querySelector(PcFieldList.PC_FIELD_LIST_UL_SELECTOR)
     this.#filterMaxEntries($ul)
     this.#cloneElementFunction($ul)
     this.#changeButtonDisplay($ul, PcFieldList.REMOVE_BUTTON_SELECTOR, true)
+    this.#changeButtonDisplay($fieldListContainer, PcFieldList.REMOVE_ALL_BUTTON_SELECTOR, true)
   }
 
   #onRemove = (event) => {
-    const { fieldListContainerId } = event.target.dataset
+    const $target = this.#getButtonFromEvent(event)
+    const { fieldListContainerId } = $target.dataset
     const $fieldListContainer = this.#getFieldListContainerFromId(fieldListContainerId)
     const $ul = $fieldListContainer.querySelector(PcFieldList.PC_FIELD_LIST_UL_SELECTOR)
     const $li = event.target.parentElement // remove button is within li
     $li.remove()
     this.#filterMinEntries($ul)
     this.#changeButtonDisplay($ul, PcFieldList.ADD_BUTTON_SELECTOR, true)
+  }
+
+  #onRemoveAll = (event) => {
+    const $target = this.#getButtonFromEvent(event)
+    const $ul = $target.parentElement.querySelector(PcFieldList.PC_FIELD_LIST_UL_SELECTOR)
+    const minEntries = Number($ul.dataset.minEntries)
+    if (minEntries && minEntries !== undefined) {
+      while($ul.children.length > minEntries){
+        $ul.lastElementChild.remove()
+      }
+    }
+    this.#filterMinEntries($ul, false)
   }
 
 }
