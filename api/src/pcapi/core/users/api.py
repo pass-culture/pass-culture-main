@@ -873,12 +873,7 @@ def get_domains_credit(
     return domains_credit
 
 
-def create_pro_user_V2(pro_user: users_serialization.ProUserCreationBodyV2Model) -> models.User:
-    new_pro_user = create_pro_user(pro_user)
-    repository.add_to_session(new_pro_user)  # valide user with pcapi.validation.models.user
-    history_api.add_action(history_models.ActionType.USER_CREATED, author=new_pro_user, user=new_pro_user)
-    repository.save()  # keep commit with repository.save() to catch IntegrityError when email is duplicated
-
+def create_and_send_signup_email_confirmation(new_pro_user: models.User) -> None:
     token = token_utils.Token.create(
         token_utils.TokenType.EMAIL_VALIDATION,
         ttl=constants.EMAIL_VALIDATION_TOKEN_FOR_PRO_LIFE_TIME,
@@ -888,7 +883,6 @@ def create_pro_user_V2(pro_user: users_serialization.ProUserCreationBodyV2Model)
     transactional_mails.send_email_validation_to_pro_email(new_pro_user, token)
 
     external_attributes_api.update_external_pro(new_pro_user.email)
-    return new_pro_user
 
 
 def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) -> models.User:
@@ -925,6 +919,8 @@ def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) ->
 
     db.session.add(new_pro_user)
     db.session.flush()
+
+    history_api.add_action(history_models.ActionType.USER_CREATED, author=new_pro_user, user=new_pro_user)
 
     return new_pro_user
 

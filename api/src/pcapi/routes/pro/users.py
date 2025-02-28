@@ -17,6 +17,7 @@ from pcapi.core import token as token_utils
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import transactional as transactional_mails
+from pcapi.core.subscription.phone_validation import exceptions as phone_exceptions
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
@@ -31,6 +32,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import atomic
 from pcapi.routes.serialization import users as users_serializers
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
@@ -42,6 +44,29 @@ from . import blueprint
 
 
 logger = logging.getLogger(__name__)
+
+
+@blueprint.pro_private_api.route("/users/signup", methods=["POST"])
+@atomic()
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+def signup_pro(body: users_serializers.ProUserCreationBodyV2Model) -> None:
+    try:
+        check_web_recaptcha_token(
+            body.token,
+            settings.RECAPTCHA_SECRET,
+            original_action="signup",
+            minimal_score=settings.RECAPTCHA_MINIMAL_SCORE,
+        )
+    except ReCaptchaException:
+        raise ApiErrors({"token": "The given token is invalid"})
+
+    try:
+        pro_user = users_api.create_pro_user(body)
+        users_api.create_and_send_signup_email_confirmation(pro_user)
+    except phone_exceptions.InvalidPhoneNumber:
+        raise ApiErrors(errors={"phoneNumber": ["Le numéro de téléphone est invalide"]})
+    except users_exceptions.UserAlreadyExistsException:
+        raise ApiErrors(errors={"email": ["l'email existe déjà"]})
 
 
 @blueprint.pro_private_api.route("/users/tuto-seen", methods=["PATCH"])

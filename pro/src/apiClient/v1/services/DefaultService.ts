@@ -2555,6 +2555,26 @@ export class DefaultService {
     });
   }
   /**
+   * signup_pro <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public signupPro(
+    requestBody?: ProUserCreationBodyV2Model,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/users/signup',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * patch_user_tuto_seen <PATCH>
    * @returns void
    * @throws ApiError
