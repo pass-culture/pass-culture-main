@@ -175,11 +175,11 @@ class DepositSpecificCapsTest:
         assert specific_caps.DIGITAL_CAP == Decimal(200)
         assert specific_caps.PHYSICAL_CAP is None
 
-    def should_have_100_euros_cap_when_deposit_17_18(self):
+    def should_have_50_euros_cap_when_deposit_17_18(self):
         user = users_factories.BeneficiaryGrant18Factory(deposit__type=DepositType.GRANT_17_18, deposit__version=1)
         specific_caps = user.deposit.specific_caps
 
-        assert specific_caps.DIGITAL_CAP == Decimal(100)
+        assert specific_caps.DIGITAL_CAP == Decimal(50)
         assert specific_caps.PHYSICAL_CAP is None
 
 
