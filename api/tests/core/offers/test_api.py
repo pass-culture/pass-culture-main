@@ -1149,7 +1149,6 @@ class CreateMediationV2Test:
         assert len(os.listdir(self.THUMBS_DIR)) == existing_number_of_files
 
 
-@pytest.mark.features(WIP_URL_IN_OFFER_DRAFT=True)
 @pytest.mark.usefixtures("db_session")
 class CreateDraftOfferTest:
     def test_create_draft_offer_from_scratch(self):
