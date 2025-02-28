@@ -371,7 +371,7 @@ def _create_library_with_writers() -> None:
             )
             image_path = next(image_paths)
             offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.RECTO)
-            thumb_storage.create_thumb(product, image_path.read_bytes(), storage_id_suffix_str="", keep_ratio=True)
+            thumb_storage.create_thumb(product, image_path.read_bytes(), keep_ratio=True)
             offers_factories.ArtistProductLinkFactory(
                 artist_id=artist.id, product_id=product.id, artist_type=ArtistType.AUTHOR
             )

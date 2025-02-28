@@ -317,7 +317,6 @@ def _upload_thumb(
     create_thumb(
         model_with_thumb=pc_object,
         image_as_bytes=image_as_bytes,
-        storage_id_suffix_str="",
         keep_ratio=keep_poster_ratio,
     )
 
