@@ -178,13 +178,13 @@ export const PhoneNumberInput = ({
           maxLength={maxLength}
           aria-describedby={formatId}
         />
-        <div className={styles['phone-number-input-footer']}>
-          {meta.error && meta.touched && (
+        {meta.error && meta.touched && (
+          <div className={styles['phone-number-input-footer']}>
             <div className={styles['phone-number-input-error']}>
               <FieldError name={name}>{meta.error}</FieldError>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </fieldset>
   )
