@@ -38,7 +38,7 @@ class ProOffererAttachmentInvitationTest:
     def test_email_data_existing_not_validated_user(self):
         offerer = offerers_factories.OffererFactory(name="Le Théâtre SAS")
         user = users_factories.UserFactory(isEmailValidated=False)
-        token = token_utils.Token.create(token_utils.TokenType.EMAIL_VALIDATION, None, user_id=user.id)
+        token = token_utils.Token.create(token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, None, user_id=user.id)
 
         mail_data = oai.retrieve_data_for_offerer_attachment_invitation_existing_user_with_not_validated_email(
             offerer, user

@@ -8,7 +8,9 @@ class ValidateUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_validate_user_token(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__isEmailValidated=False)
-        token = token_utils.Token.create(token_utils.TokenType.EMAIL_VALIDATION, None, user_id=user_offerer.user.id)
+        token = token_utils.Token.create(
+            token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, None, user_id=user_offerer.user.id
+        )
         response = client.patch(f"/validate/user/{token.encoded_token}")
         assert response.status_code == 204
         assert user_offerer.user.isEmailValidated

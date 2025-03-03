@@ -782,7 +782,7 @@ class TrustedDeviceFeatureTest:
             user = users_factories.UserFactory(isEmailValidated=False)
             users_factories.TrustedDeviceFactory(user=user, deviceId=device_info["deviceId"])
             token = token_utils.Token.create(
-                type_=token_utils.TokenType.EMAIL_VALIDATION,
+                type_=token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
                 ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
                 user_id=user.id,
             ).encoded_token
@@ -802,7 +802,7 @@ class TrustedDeviceFeatureTest:
         def should_not_extend_refresh_token_lifetime_on_email_validation_when_device_is_unknown(self, client):
             user = users_factories.UserFactory(isEmailValidated=False)
             token = token_utils.Token.create(
-                type_=token_utils.TokenType.EMAIL_VALIDATION,
+                type_=token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
                 ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
                 user_id=user.id,
             ).encoded_token
@@ -1050,7 +1050,7 @@ class InactiveAccountRequestResetPasswordTest:
 class EmailValidationTest:
     def initialize_token(self, user, is_expired=False):
         token = token_utils.Token.create(
-            type_=token_utils.TokenType.EMAIL_VALIDATION,
+            type_=token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
             ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
             user_id=user.id,
         )

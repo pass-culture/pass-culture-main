@@ -197,7 +197,7 @@ class TransactionalEmailWithTemplateTest:
     def test_to_dev_send_email_confirmation_email(self, mock_send_transactional_email_task, db_session):
         user = users_factories.UserFactory(email="john.stiles@gmail.com")
         token = token_utils.Token.create(
-            type_=token_utils.TokenType.EMAIL_VALIDATION,
+            type_=token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
             ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
             user_id=user.id,
         )
@@ -210,7 +210,7 @@ class TransactionalEmailWithTemplateTest:
     def test_to_dev_send_email_confirmation_email_through_celery(self, mock_send_transactional_email_task, db_session):
         user = users_factories.UserFactory(email="john.celery@gmail.com")
         token = token_utils.Token.create(
-            type_=token_utils.TokenType.EMAIL_VALIDATION,
+            type_=token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
             ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
             user_id=user.id,
         )

@@ -1466,7 +1466,7 @@ class ResendValidationEmailTest(PostEndpointHelper):
         assert updated_user.isEmailValidated is False
 
         # check that a new token has been generated
-        assert token_utils.Token.token_exists(token_utils.TokenType.EMAIL_VALIDATION, user.id)
+        assert token_utils.Token.token_exists(token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, user.id)
 
         # check that email is sent
         assert len(mails_testing.outbox) == 1

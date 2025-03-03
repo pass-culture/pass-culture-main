@@ -133,7 +133,7 @@ def generate_user() -> utils.BackofficeResponse:
         raise NotFound()
 
     token = token_utils.Token.create(
-        token_utils.TokenType.EMAIL_VALIDATION, users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME, user.id
+        token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME, user.id
     )
     return redirect(
         url_for("backoffice_web.dev.get_generated_user", userId=user.id, accessToken=token.encoded_token), code=303
@@ -237,7 +237,7 @@ def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
 
     flash("La réponse d'Ubble v2 a été configurée pour cet utilisateur", "success")
 
-    token = token_utils.Token.get_token(token_utils.TokenType.EMAIL_VALIDATION, user.id)
+    token = token_utils.Token.get_token(token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, user.id)
     access_token = token.encoded_token if token else None
     return redirect(
         url_for("backoffice_web.dev.get_generated_user", userId=user.id, accessToken=access_token), code=303
