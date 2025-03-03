@@ -17,7 +17,7 @@ class SendProUserValidationEmailTest:
     def test_sends_email_to_pro_user(self):
         # Given
         user = users_factories.ProFactory()
-        token = token_utils.Token.create(token_utils.TokenType.EMAIL_VALIDATION, ttl=None, user_id=user.id)
+        token = token_utils.Token.create(token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, ttl=None, user_id=user.id)
 
         # When
         send_email_validation_to_pro_email(user, token)

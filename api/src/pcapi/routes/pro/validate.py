@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def validate_user(token: str) -> None:
     try:
-        stored_token = token_utils.Token.load_and_check(token, token_utils.TokenType.EMAIL_VALIDATION)
+        stored_token = token_utils.Token.load_and_check(token, token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION)
         user_to_validate = users_models.User.query.get_or_404(stored_token.user_id)
         stored_token.expire()
         users_api.validate_pro_user_email(user_to_validate)

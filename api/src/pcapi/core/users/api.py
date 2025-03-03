@@ -321,7 +321,7 @@ def update_user_information_from_external_source(
 
 def request_email_confirmation(user: models.User) -> None:
     token = token_utils.Token.create(
-        token_utils.TokenType.EMAIL_VALIDATION,
+        token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
         constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
         user.id,
     )
@@ -875,7 +875,7 @@ def get_domains_credit(
 
 def create_and_send_signup_email_confirmation(new_pro_user: models.User) -> None:
     token = token_utils.Token.create(
-        token_utils.TokenType.EMAIL_VALIDATION,
+        token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
         ttl=constants.EMAIL_VALIDATION_TOKEN_FOR_PRO_LIFE_TIME,
         user_id=new_pro_user.id,
     )
