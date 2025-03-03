@@ -134,9 +134,8 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   }
 
   return (
-    <Layout layout={'sticky-actions'}>
+    <Layout layout={'sticky-actions'} mainHeading="Créer une offre réservable">
       <div className="container">
-        <h1 className={styles['title']}>Créer une offre réservable</h1>
         <h2 className={styles['sub-title']} id="search-filter">
           Rechercher l’offre vitrine à dupliquer
         </h2>
