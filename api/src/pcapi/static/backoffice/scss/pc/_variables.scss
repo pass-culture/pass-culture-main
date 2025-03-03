@@ -98,6 +98,10 @@ $card-bg:                           $white;
 $card-cap-bg:                       $card-bg;
 // scss-docs-end card-variables
 
+//drop down
+$dropdown-link-active-bg: inherited;
+$dropdown-link-active-color: inherited;
+
 $zindex-levels: map-merge($zindex-levels, (
   4: 4,
   5: 5
