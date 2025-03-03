@@ -302,6 +302,9 @@ class AlgoliaSerializationMixin:
         if artists:
             object_to_index["artists"] = artists
 
+        if offer.publicationDate and not offer.isReleased:
+            object_to_index["_tags"] = ["is_future"]
+
         for section in ("offer", "offerer", "venue"):
             object_to_index[section] = {
                 key: value for key, value in object_to_index[section].items() if value is not None
