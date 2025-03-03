@@ -1807,8 +1807,12 @@ class ActivateBeneficiaryIfNoMissingStepTest:
     def test_pre_decree_underage_transition_to_18(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         eighteen_years_ago = before_decree - relativedelta(years=18)
+        next_week = datetime.today() + relativedelta(weeks=1)
         user = users_factories.Transition1718Factory(
-            validatedBirthDate=eighteen_years_ago, _phoneNumber="0123456789", dateCreated=before_decree
+            validatedBirthDate=eighteen_years_ago,
+            _phoneNumber="0123456789",
+            dateCreated=before_decree,
+            deposit__expirationDate=next_week,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user, dateCreated=before_decree)
         fraud_factories.HonorStatementFraudCheckFactory(user=user, dateCreated=before_decree)
