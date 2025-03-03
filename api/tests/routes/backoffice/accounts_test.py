@@ -2402,7 +2402,7 @@ class GetUserRegistrationStepCreditV3Test(GetEndpointHelper):
         # 5. Pass 15-17 ✓
         now = datetime.datetime.utcnow()
         birth_date = now - relativedelta(years=17, months=7)
-        settings.CREDIT_V3_DECREE_DATETIME = birth_date + relativedelta(years=17, months=1)
+        settings.CREDIT_V3_DECREE_DATETIME = birth_date + relativedelta(years=17, months=2)
         user = users_factories.UserFactory(
             dateCreated=birth_date + relativedelta(years=17, months=1),
             dateOfBirth=birth_date,
@@ -2515,12 +2515,12 @@ class GetUserRegistrationStepCreditV3Test(GetEndpointHelper):
         # 5. Pass 17 ✓
         now = datetime.datetime.utcnow()
         birth_date = now - relativedelta(years=17, months=7)
-        settings.CREDIT_V3_DECREE_DATETIME = birth_date + relativedelta(years=15)
+        settings.CREDIT_V3_DECREE_DATETIME = birth_date + relativedelta(years=17, months=3)
         user = users_factories.UserFactory(
-            dateCreated=birth_date + relativedelta(years=17, months=1),
+            dateCreated=birth_date + relativedelta(years=17, months=4),
             dateOfBirth=birth_date,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            roles=[users_models.UserRole.BENEFICIARY],
+            roles=[users_models.UserRole.UNDERAGE_BENEFICIARY],
             validatedBirthDate=birth_date,
         )
         users_factories.DepositGrantFactory(
@@ -2702,9 +2702,9 @@ class GetUserRegistrationStepCreditV3Test(GetEndpointHelper):
         # 6. Pass 18 ✓
         now = datetime.datetime.utcnow()
         birth_date = now - relativedelta(years=18, months=3)
-        settings.CREDIT_V3_DECREE_DATETIME = birth_date + relativedelta(years=17)
+        settings.CREDIT_V3_DECREE_DATETIME = birth_date + relativedelta(years=18, months=1, days=10)
         user = users_factories.UserFactory(
-            dateCreated=birth_date + relativedelta(years=18, months=1),
+            dateCreated=birth_date + relativedelta(years=18, months=1, days=11),
             dateOfBirth=birth_date,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             roles=[users_models.UserRole.BENEFICIARY],
@@ -2786,10 +2786,10 @@ class GetUserRegistrationStepCreditV3Test(GetEndpointHelper):
         # 5. Phone validation ✓
         # 6. Pass 18 ✓
         now = datetime.datetime.utcnow()
-        birth_date = now - relativedelta(years=18, months=3)
-        settings.CREDIT_V3_DECREE_DATETIME = birth_date + relativedelta(years=18)
+        birth_date = now - relativedelta(years=18, months=6)
+        settings.CREDIT_V3_DECREE_DATETIME = birth_date + relativedelta(years=18, months=3)
         user = users_factories.UserFactory(
-            dateCreated=settings.CREDIT_V3_DECREE_DATETIME + relativedelta(days=2),
+            dateCreated=birth_date + relativedelta(years=18, months=2),
             dateOfBirth=birth_date,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             roles=[users_models.UserRole.BENEFICIARY],
