@@ -4498,11 +4498,11 @@ class CreateDepositV3Test:
         assert deposit.type == models.DepositType.GRANT_18
         assert deposit.amount == 300
 
-    def test_create_deposit_age_18_expires_underage_deposit(self):
+    def test_upsert_deposit_age_18_expires_underage_deposit(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         user = users_factories.BeneficiaryFactory(age=17, dateCreated=before_decree)
 
-        deposit = api.create_deposit(user, "created by test", users_models.EligibilityType.AGE18)
+        deposit = api.upsert_deposit(user, "created by test", users_models.EligibilityType.AGE18)
 
         assert deposit.type == models.DepositType.GRANT_18
         underage_deposit = min(*user.deposits, key=lambda d: d.id)

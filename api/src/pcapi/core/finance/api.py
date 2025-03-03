@@ -3195,6 +3195,15 @@ def upsert_deposit(
     """
     Create a deposit for the user. If the deposit already exists, try to recredit the user instead.
     """
+    if eligibility == users_models.EligibilityType.AGE18:
+        has_active_underage_deposit = (
+            user.deposit
+            and user.deposit.type == DepositType.GRANT_15_17
+            and (user.deposit.expirationDate is None or user.deposit.expirationDate >= datetime.datetime.utcnow())
+        )
+        if has_active_underage_deposit:
+            expire_current_deposit_for_user(user)
+
     if not user.has_active_deposit:
         deposit = create_deposit(user, deposit_source, eligibility, age_at_registration)
         user.recreditAmountToShow = deposit.amount
@@ -3230,21 +3239,7 @@ def create_deposit_v3(
     eligibility: users_models.EligibilityType,
     age_at_registration: int | None,
 ) -> models.Deposit:
-    if eligibility == users_models.EligibilityType.UNDERAGE:
-        return create_deposit_v2(beneficiary, deposit_source, eligibility, age_at_registration)
-
-    if eligibility == users_models.EligibilityType.AGE18:
-        has_active_underage_deposit = (
-            beneficiary.deposit
-            and beneficiary.deposit.type == DepositType.GRANT_15_17
-            and (
-                beneficiary.deposit.expirationDate is None
-                or beneficiary.deposit.expirationDate >= datetime.datetime.utcnow()
-            )
-        )
-        if has_active_underage_deposit:
-            expire_current_deposit_for_user(beneficiary)
-
+    if eligibility in [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE18]:
         return create_deposit_v2(beneficiary, deposit_source, eligibility, age_at_registration)
 
     if repository.deposit_exists_for_beneficiary_and_type(beneficiary, DepositType.GRANT_17_18):
@@ -3325,7 +3320,7 @@ def expire_current_deposit_for_user(user: users_models.User) -> None:
         models.Deposit.expirationDate > datetime.datetime.utcnow(),
     ).update(
         {
-            models.Deposit.expirationDate: datetime.datetime.utcnow() - datetime.timedelta(seconds=1),
+            models.Deposit.expirationDate: datetime.datetime.utcnow() - datetime.timedelta(seconds=5),
             models.Deposit.dateUpdated: datetime.datetime.utcnow(),
         },
     )
