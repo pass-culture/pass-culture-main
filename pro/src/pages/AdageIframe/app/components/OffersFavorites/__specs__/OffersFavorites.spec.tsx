@@ -59,7 +59,6 @@ describe('OffersFavorites', () => {
 
   beforeEach(() => {
     vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValue({
-      favoritesOffer: [],
       favoritesTemplate: [],
     })
   })
@@ -92,7 +91,6 @@ describe('OffersFavorites', () => {
 
   it('should display the list of favorites', async () => {
     vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValueOnce({
-      favoritesOffer: [],
       favoritesTemplate: [mockOffer],
     })
 
@@ -110,7 +108,6 @@ describe('OffersFavorites', () => {
   it('should redirect to main adage page when clicking the catalogue button', async () => {
     vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValueOnce({
       favoritesTemplate: [],
-      favoritesOffer: [],
     })
 
     renderAdageFavoritesOffers(user)
@@ -126,7 +123,6 @@ describe('OffersFavorites', () => {
 
   it('should show an offer card', async () => {
     vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValueOnce({
-      favoritesOffer: [],
       favoritesTemplate: [mockOffer],
     })
 
@@ -143,10 +139,9 @@ describe('OffersFavorites', () => {
 
   it('should reload favorites when favorite is removed', async () => {
     vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValue({
-      favoritesOffer: [],
       favoritesTemplate: [mockOffer],
     })
-    vi.spyOn(apiAdage, 'deleteFavoriteForCollectiveOffer').mockResolvedValue()
+    vi.spyOn(apiAdage, 'deleteFavoriteForCollectiveOfferTemplate').mockResolvedValue()
 
     renderAdageFavoritesOffers(user)
 
@@ -157,7 +152,7 @@ describe('OffersFavorites', () => {
     expect(mockMutate).toHaveBeenNthCalledWith(
       1,
       [GET_COLLECTIVE_FAVORITES],
-      { favoritesOffer: [], favoritesTemplate: [] },
+      { favoritesTemplate: [] },
       {
         revalidate: false,
       }

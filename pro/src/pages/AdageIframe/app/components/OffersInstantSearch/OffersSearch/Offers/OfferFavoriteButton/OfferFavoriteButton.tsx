@@ -9,6 +9,7 @@ import { useNotification } from 'commons/hooks/useNotification'
 import fullStarIcon from 'icons/full-star.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
+import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
 import {
   ListIconButton,
   ListIconButtonVariant,
@@ -31,7 +32,7 @@ export const OfferFavoriteButton = ({
   className,
   viewType,
 }: OfferFavoriteButtonProps): JSX.Element => {
-  const [isFavorite, setIsFavorite] = useState(offer.isFavorite)
+  const [isFavorite, setIsFavorite] = useState(isCollectiveOfferTemplate(offer) ? offer.isFavorite : false)
   const [isLoading, setIsLoading] = useState(false)
   const { setFavoriteCount } = useAdageUser()
 

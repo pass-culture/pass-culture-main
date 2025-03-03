@@ -13,7 +13,7 @@ export const OffersFavorites = () => {
   const { data: offers, isLoading } = useSWR(
     [GET_COLLECTIVE_FAVORITES],
     () => apiAdage.getCollectiveFavorites(),
-    { fallbackData: { favoritesTemplate: [], favoritesOffer: [] } }
+    { fallbackData: { favoritesTemplate: [] } }
   )
   const { mutate } = useSWRConfig()
 
@@ -23,7 +23,6 @@ export const OffersFavorites = () => {
         favoritesTemplate: offers.favoritesTemplate.filter(
           (offer) => offer.id !== id
         ),
-        favoritesOffer: offers.favoritesOffer,
       }
 
       await mutate([GET_COLLECTIVE_FAVORITES], newFavoriteOffers, {
