@@ -499,12 +499,14 @@ def test_serialize_future_offer():
     assert serialized["offer"]["prices"] == [decimal.Decimal("10.00")]
     assert serialized["offer"]["dates"] == [beginning_date.timestamp()]
     assert serialized["offer"]["times"] == [12 * 60 * 60 + 15 * 60]
+    assert serialized["_tags"] == ["is_future"]
 
     serialized = algolia.AlgoliaBackend().serialize_offer(offer_2, 0)
     assert "publicationDate" not in serialized["offer"]
     assert serialized["offer"]["prices"] == [decimal.Decimal("8.50")]
     assert serialized["offer"]["dates"] == []
     assert serialized["offer"]["times"] == []
+    assert "_tags" not in serialized
 
 
 def test_serialize_collective_offer_template():
