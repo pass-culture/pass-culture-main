@@ -5,7 +5,7 @@ import pytest
 from pcapi import settings
 from pcapi.core import token as token_utils
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.pro.email_validation import send_email_validation_to_pro_email
+from pcapi.core.mails.transactional.pro.email_validation import send_signup_email_confirmation_to_pro
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.users.factories as users_factories
 

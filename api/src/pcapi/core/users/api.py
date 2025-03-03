@@ -880,7 +880,7 @@ def create_and_send_signup_email_confirmation(new_pro_user: models.User) -> None
         user_id=new_pro_user.id,
     )
 
-    transactional_mails.send_email_validation_to_pro_email(new_pro_user, token)
+    transactional_mails.send_signup_email_confirmation_to_pro(new_pro_user, token)
 
     external_attributes_api.update_external_pro(new_pro_user.email)
 
