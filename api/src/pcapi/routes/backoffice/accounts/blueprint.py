@@ -554,35 +554,35 @@ def _get_tunnel_type(user: users_models.User) -> TunnelType:
     ————————————————————————————
     Signup at 15 or 16 years old
     ————————————————————————————
-    Signup age: 15 or 16 | Decree age: before signup | Current age: 15 or 16 → Tunnel: not eligible
-    Signup age: 15 or 16 | Decree age: before signup | Current age: 17 → Tunnel: Pass 17
-    Signup age: 15 or 16 | Decree age: before signup | Current age: 18 → Tunnel: Pass 17 / Pass 18
+    Signup age: 15 or 16 | Age at decree start: < 15 or 16 | Current age: 15 or 16 → Tunnel: not eligible
+    Signup age: 15 or 16 | Age at decree start: < 15 or 16 | Current age: 17 → Tunnel: Pass 17
+    Signup age: 15 or 16 | Age at decree start: < 15 or 16 | Current age: 18 → Tunnel: Pass 17 / Pass 18
 
-    Signup age: 15 or 16 | Decree age: 15 or 16 | Current age: 15 or 16 → Tunnel: Pass 15-17
-    Signup age: 15 or 16 | Decree age: 15 or 16 | Current age: 17 → Tunnel: Pass 15-17 / Pass 17
-    Signup age: 15 or 16 | Decree age: 15 or 16 | Current age: 18 → Tunnel: Pass 15-17 / Pass 17 / Pass 18
+    Signup age: 15 or 16 | Age at decree start: 15 or 16 | Current age: 15 or 16 → Tunnel: Pass 15-17
+    Signup age: 15 or 16 | Age at decree start: 15 or 16 | Current age: 17 → Tunnel: Pass 15-17 / Pass 17
+    Signup age: 15 or 16 | Age at decree start: 15 or 16 | Current age: 18 → Tunnel: Pass 15-17 / Pass 17 / Pass 18
 
-    Signup age: 15 or 16 | Decree age: 17 | Current age: 17 → Tunnel: Pass 15-17
-    Signup age: 15 or 16 | Decree age: 17 | Current age: 18 → Tunnel: Pass 15-17 / Pass 18
+    Signup age: 15 or 16 | Age at decree start: 17 | Current age: 17 → Tunnel: Pass 15-17
+    Signup age: 15 or 16 | Age at decree start: 17 | Current age: 18 → Tunnel: Pass 15-17 / Pass 18
 
-    Signup age: 15 or 16 | Decree age: 18 | Current age: 18 → Tunnel: Pass 15-17 / Pass 18 (old)
+    Signup age: 15 or 16 | Age at decree start: 18 | Current age: 18 → Tunnel: Pass 15-17 / Pass 18 (old)
 
     ——————————————————————
     Signup at 17 years old
     ——————————————————————
-    Signup age: 17 | Decree age: before signup | Current age: 17 → Tunnel: Pass 17
-    Signup age: 17 | Decree age: before signup | Current age: 18 → Tunnel: Pass 17 / Pass 18
+    Signup age: 17 | Age at decree start: < 17 | Current age: 17 → Tunnel: Pass 17
+    Signup age: 17 | Age at decree start: < 17 | Current age: 18 → Tunnel: Pass 17 / Pass 18
 
-    Signup age: 17 | Decree age: 17 | Current age: 17 → Tunnel: Pass 15-17
-    Signup age: 17 | Decree age: 17 | Current age: 18 → Tunnel: Pass 15-17 / Pass 18
+    Signup age: 17 | Age at decree start: 17 | Current age: 17 → Tunnel: Pass 15-17
+    Signup age: 17 | Age at decree start: 17 | Current age: 18 → Tunnel: Pass 15-17 / Pass 18
 
-    Signup age: 17 | Decree age: 18 | Current age: 18 → Tunnel: Pass 15-17 / Pass 18 (old)
+    Signup age: 17 | Age at decree start: 18 | Current age: 18 → Tunnel: Pass 15-17 / Pass 18 (old)
 
     ——————————————————————
     Signup at 18 years old
     ——————————————————————
-    Signup age: 18 | Decree age: before signup | Current age: 18 → Tunnel: Pass 18
-    Signup age: 18 | Decree age: 18 | Current age: 18 → Tunnel: Pass 18 (old)
+    Signup age: 18 | Sign up before decree → Tunnel: Pass 18 (old)
+    Signup age: 18 | Sign up after decree → Tunnel: Pass 18
     """
     if user.birth_date is None:
         return TunnelType.NOT_ELIGIBLE
@@ -652,6 +652,10 @@ def _get_tunnel_type(user: users_models.User) -> TunnelType:
     # Decree start at age 17
     if signup_age == users_constants.ELIGIBILITY_AGE_17 and age_at_decree_start == users_constants.ELIGIBILITY_AGE_17:
         if age_now == users_constants.ELIGIBILITY_AGE_17:
+            if user_creation_date >= settings.CREDIT_V3_DECREE_DATETIME:
+                # After decree start
+                return TunnelType.AGE17
+            # Before decree start
             return TunnelType.UNDERAGE
         if age_now == users_constants.ELIGIBILITY_AGE_18:
             return TunnelType.UNDERAGE_AGE18
@@ -664,14 +668,12 @@ def _get_tunnel_type(user: users_models.User) -> TunnelType:
     ##########################
     # Signup at 18 years old #
     ##########################
-    # After decree start
-    if signup_age == users_constants.ELIGIBILITY_AGE_18 and age_at_decree_start < signup_age:
-        if age_now >= users_constants.ELIGIBILITY_AGE_18:
+    if signup_age == users_constants.ELIGIBILITY_AGE_18:
+        if user_creation_date >= settings.CREDIT_V3_DECREE_DATETIME:
+            # After decree start
             return TunnelType.AGE18
-    # Decree start at age 18
-    if signup_age == users_constants.ELIGIBILITY_AGE_18 and age_at_decree_start >= users_constants.ELIGIBILITY_AGE_18:
-        if age_now >= users_constants.ELIGIBILITY_AGE_18:
-            return TunnelType.AGE18_OLD
+        # Before decree start
+        return TunnelType.AGE18_OLD
 
     return TunnelType.NOT_ELIGIBLE
 
