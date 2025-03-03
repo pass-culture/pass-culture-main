@@ -10,9 +10,6 @@ import time_machine
 from pcapi import settings
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.history import factories as history_factories
-from pcapi.core.history import models as history_models
-from pcapi.core.users import api as users_api
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -598,58 +595,3 @@ class GetFirstRegistrationDateTest:
             )
             is None
         )
-
-
-@pytest.mark.usefixtures("db_session")
-class GetKnownBirthdateAtDateTest:
-    def test_last_age_change_before_date_by_identity_provider(self):
-        identity_check_known_birthday = date.today() - relativedelta(years=27)
-        last_week = datetime.utcnow() - relativedelta(weeks=1)
-        user = users_factories.IdentityValidatedUserFactory(
-            validatedBirthDate=identity_check_known_birthday, beneficiaryFraudChecks__dateCreated=last_week
-        )
-        # support action that should be ignored
-        users_api.update_user_info(
-            user, author=users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=date(9999, 1, 1)
-        )
-
-        yesterday = datetime.utcnow() - relativedelta(days=1)
-        yesterday_known_birthday = eligibility_api.get_known_birthday_at_date(user, yesterday)
-
-        assert yesterday_known_birthday == identity_check_known_birthday
-
-    def test_last_age_change_before_date_by_support_actions(self):
-        identity_check_known_birth_date = date.today() - relativedelta(years=27)
-        last_week = datetime.utcnow() - relativedelta(weeks=1)
-        user = users_factories.IdentityValidatedUserFactory(
-            validatedBirthDate=identity_check_known_birth_date, beneficiaryFraudChecks__dateCreated=last_week
-        )
-
-        support_known_birthday = date.today() - relativedelta(years=18)
-        users_api.update_user_info(
-            user, author=users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=support_known_birthday
-        )
-
-        # identity provider check that should be ignored
-        tomorrow = datetime.utcnow() + relativedelta(days=1)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
-            user=user,
-            dateCreated=tomorrow,
-        )
-
-        currently_known_birthday = eligibility_api.get_known_birthday_at_date(user, datetime.utcnow())
-
-        assert currently_known_birthday == support_known_birthday
-
-    @pytest.mark.parametrize("falsy_value", [None, {}])
-    def test_does_not_crash_on_empty_action(self, falsy_value):
-        user = users_factories.UserFactory()
-        history_factories.ActionHistoryFactory(
-            user=user, actionType=history_models.ActionType.INFO_MODIFIED, extraData=falsy_value
-        )
-
-        birthday = eligibility_api.get_known_birthday_at_date(user, datetime.utcnow())
-
-        assert birthday == user.dateOfBirth.date()
