@@ -15,7 +15,7 @@ type CheckboxGroupProps = RequireAtLeastOne<
     describedBy?: string
     group: {
       name: string
-      label: string
+      label: string | React.ReactNode
       icon?: string
       onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
       childrenOnChecked?: JSX.Element

@@ -8,7 +8,7 @@ import {
 interface CheckboxGroupItemProps {
   setGroupTouched(): void
   name: string
-  label: string
+  label: string | React.ReactNode
   description?: string
   icon?: string
   hasError?: boolean

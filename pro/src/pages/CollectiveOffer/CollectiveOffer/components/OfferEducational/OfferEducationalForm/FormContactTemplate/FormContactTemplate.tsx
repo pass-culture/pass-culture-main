@@ -21,7 +21,7 @@ export const FormContactTemplate = ({
     contactOptionsMeta.touched && Boolean(contactOptionsMeta.error)
   const ariaDescribedBy = hasError ? 'error-contactOptions' : undefined
 
-  const formCheckBoxId = useId()
+  const formCheckboxLabelId = useId()
 
   const contactOptions = [
     {
@@ -59,13 +59,12 @@ export const FormContactTemplate = ({
     },
     {
       name: 'contactOptions.form',
-      label: 'Via un formulaire',
-      id: formCheckBoxId,
+      label: <span id={formCheckboxLabelId}>Via un formulaire</span>,
       ariaDescribedBy,
       childrenOnChecked: (
         <FormContactTemplateCustomForm
           disableForm={disableForm}
-          describedBy={formCheckBoxId}
+          describedBy={formCheckboxLabelId}
         />
       ),
     },
