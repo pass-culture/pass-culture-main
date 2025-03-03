@@ -502,7 +502,9 @@ class AccountCreationTest:
         assert len(push_testing.requests) == 2
         assert len(users_testing.sendinblue_requests) == 1
 
-        email_validation_token_exists = token_utils.Token.token_exists(token_utils.TokenType.EMAIL_VALIDATION, user.id)
+        email_validation_token_exists = token_utils.Token.token_exists(
+            token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, user.id
+        )
 
         assert email_validation_token_exists
 
@@ -639,7 +641,7 @@ class AccountCreationEmailExistsTest:
     def test_email_exists_but_not_validated(self, client):
         user = users_factories.UserFactory(email=self.identifier, isEmailValidated=False)
         token_utils.Token.create(
-            type_=token_utils.TokenType.EMAIL_VALIDATION,
+            type_=token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
             ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
             user_id=user.id,
         )

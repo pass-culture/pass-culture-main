@@ -32,10 +32,10 @@ def retrieve_data_for_offerer_attachment_invitation_existing_user_with_validated
 def retrieve_data_for_offerer_attachment_invitation_existing_user_with_not_validated_email(
     offerer: offerers_models.Offerer, user: users_models.User
 ) -> models.TransactionalEmailData:
-    token = token_utils.Token.get_token(token_utils.TokenType.EMAIL_VALIDATION, user.id)
+    token = token_utils.Token.get_token(token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, user.id)
     if not token:
         token = token_utils.Token.create(
-            token_utils.TokenType.EMAIL_VALIDATION,
+            token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
             # FIXME (yacine, 2024-04-08): for now, the pro user cannot re-send the token themselves.
             # The default (30 minutes) TTL could thus be too low, so we use an augmented TTL. Once
             # pro users can re-send tokens, we can use the default TTL (EMAIL_VALIDATION_TOKEN_LIFE_TIME).

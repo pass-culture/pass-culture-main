@@ -26,7 +26,7 @@ class TokenType(enum.Enum):
     EMAIL_CHANGE_CONFIRMATION = "update_email_confirmation"
     EMAIL_CHANGE_NEW_EMAIL_SELECTION = "update_email_new_mail_selection"
     EMAIL_CHANGE_VALIDATION = "update_email_validation"
-    EMAIL_VALIDATION = "email_validation"
+    SIGNUP_EMAIL_CONFIRMATION = "email_validation"
     PHONE_VALIDATION = "phone_validation"
     SUSPENSION_SUSPICIOUS_LOGIN = "suspension_suspicious_login"
     RESET_PASSWORD = "reset_password"

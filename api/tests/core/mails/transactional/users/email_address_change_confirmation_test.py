@@ -15,7 +15,7 @@ class SendinblueAddressEmailChangeConfirmationTest:
         # Given
         user = users_factories.UserFactory.create(email="fabien+test@example.net")
         token = token_utils.Token.create(
-            type_=token_utils.TokenType.EMAIL_VALIDATION,
+            type_=token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
             ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
             user_id=user.id,
         )

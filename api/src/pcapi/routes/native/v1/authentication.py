@@ -139,7 +139,9 @@ def change_password(user: User, body: ChangePasswordRequest) -> None:
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=ValidateEmailResponse)
 def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     try:
-        token = token_utils.Token.load_and_check(body.email_validation_token, token_utils.TokenType.EMAIL_VALIDATION)
+        token = token_utils.Token.load_and_check(
+            body.email_validation_token, token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION
+        )
     except users_exceptions.InvalidToken:
         raise ApiErrors({"token": ["Le token de validation d'email est invalide."]})
 
