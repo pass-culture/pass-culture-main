@@ -36,13 +36,13 @@ export interface LayoutProps {
     | 'logged-out'
     | 'sign-up'
   showFooter?: boolean
-  mainBanner?: React.ReactNode
+  mainTopElement?: React.ReactNode
 }
 
 export const Layout = ({
   children,
   mainHeading,
-  mainBanner,
+  mainTopElement,
   layout = 'basic',
   showFooter = layout !== 'funnel',
 }: LayoutProps) => {
@@ -209,7 +209,7 @@ export const Layout = ({
                   </>
                 ) : (
                   <>
-                    {mainBanner}
+                    {mainTopElement}
                     <div
                       className={cn(
                         styles.content,

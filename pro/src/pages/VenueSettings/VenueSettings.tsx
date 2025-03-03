@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams , useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -11,12 +11,16 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import fullBackIcon from 'icons/full-back.svg'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueSettingsScreen } from './VenueSettingsScreen'
 
 const VenueSettings = (): JSX.Element | null => {
+  const navigate = useNavigate()
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const { offererId, venueId } = useParams<{
@@ -73,7 +77,18 @@ const VenueSettings = (): JSX.Element | null => {
   }))
 
   return (
-    <Layout>
+    <Layout
+      mainHeading='Paramètres généraux'
+      mainTopElement={
+        <Button
+          variant={ButtonVariant.TERNARYPINK}
+          icon={fullBackIcon}
+          onClick={() => navigate(-1)}
+        >
+          Retour vers la page précédente
+        </Button>
+      }
+    >
       <VenueSettingsScreen
         initialValues={setInitialFormValues({ venue, isOfferAddressEnabled })}
         offerer={offerer}
