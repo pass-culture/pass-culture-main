@@ -53,7 +53,7 @@ describe('screens | OfferEducational', () => {
       }),
       screen.getByLabelText(`${STRUCTURE_LABEL} *`),
       screen.getByLabelText('Autre'), // one of every option
-      screen.getByLabelText('Collège - 3e'), // one of every option
+      screen.getByLabelText('Collège'), // one of every option
       screen.getByLabelText('Visuel'), // one of every option
       screen.getByLabelText('Téléphone', { exact: false }),
       screen.getByLabelText(`${EMAIL_LABEL} *`),
