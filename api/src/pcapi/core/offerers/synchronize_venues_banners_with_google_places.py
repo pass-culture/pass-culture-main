@@ -188,7 +188,20 @@ def synchronize_venues_banners_with_google_places(
                 continue
 
             nb_places_found += 1
-            place_details = get_place_photos_and_owner(venue.googlePlacesInfo.placeId)
+            try:
+                place_details = get_place_photos_and_owner(venue.googlePlacesInfo.placeId)
+            except googlemaps.exceptions.ApiError as exc:
+                # https://developers.google.com/maps/documentation/places/web-service/place-id#id-errors
+                if exc.status == "NOT_FOUND":
+                    place_id = get_place_id(venue.common_name, venue.street, venue.city, venue.postalCode)
+                    if not place_id:
+                        continue
+
+                    venue.googlePlacesInfo.placeId = place_id
+                    place_details = get_place_photos_and_owner(venue.googlePlacesInfo.placeId)
+                else:
+                    raise
+
             if not (place_details and place_details.photos):
                 continue
             nb_places_with_photo += 1
@@ -207,7 +220,7 @@ def synchronize_venues_banners_with_google_places(
             db.session.commit()
         except Exception as e:  # pylint: disable=broad-except
             logger.exception(
-                "[gmaps_banner_synchro]venue id: %s error %s: ",
+                "[gmaps_banner_synchro]venue id: %s error: %s",
                 venue.id,
                 e,
                 extra={"venue_id": venue.id, "error": e},
