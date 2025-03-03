@@ -26,7 +26,11 @@ export interface LayoutProps {
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
    */
-  mainHeading?: string
+  mainHeading?: React.ReactNode
+  /**
+   * Any content to display above the main heading.
+   */
+  mainTopElement?: React.ReactNode
   layout?:
     | 'basic'
     | 'funnel'
@@ -36,7 +40,6 @@ export interface LayoutProps {
     | 'logged-out'
     | 'sign-up'
   showFooter?: boolean
-  mainTopElement?: React.ReactNode
 }
 
 export const Layout = ({

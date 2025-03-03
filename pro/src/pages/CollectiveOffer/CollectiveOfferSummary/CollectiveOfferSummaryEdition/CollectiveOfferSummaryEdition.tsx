@@ -2,7 +2,6 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
-import { Layout } from 'app/App/layout/Layout'
 import {
   Mode,
   isCollectiveOfferTemplate,
@@ -41,42 +40,40 @@ export const CollectiveOfferSummaryEdition = ({
   const visibilityEditLink = `/offre/${offer.id}/collectif/visibilite/edition`
 
   return (
-    <Layout layout={'sticky-actions'}>
-      <CollectiveOfferLayout
-        subTitle={offer.name}
-        isTemplate={offer.isTemplate}
+    <CollectiveOfferLayout
+      subTitle={offer.name}
+      isTemplate={offer.isTemplate}
+      offer={offer}
+    >
+      <OfferEducationalActions
+        className={styles.actions}
+        isBooked={
+          isCollectiveOfferTemplate(offer)
+            ? false
+            : Boolean(offer.collectiveStock?.isBooked)
+        }
         offer={offer}
-      >
-        <OfferEducationalActions
-          className={styles.actions}
-          isBooked={
-            isCollectiveOfferTemplate(offer)
-              ? false
-              : Boolean(offer.collectiveStock?.isBooked)
-          }
-          offer={offer}
-          mode={Mode.EDITION}
-        />
+        mode={Mode.EDITION}
+      />
 
-        <CollectiveOfferSummary
-          offer={offer}
-          offerEditLink={offerEditLink}
-          stockEditLink={stockEditLink}
-          visibilityEditLink={visibilityEditLink}
-        />
+      <CollectiveOfferSummary
+        offer={offer}
+        offerEditLink={offerEditLink}
+        stockEditLink={stockEditLink}
+        visibilityEditLink={visibilityEditLink}
+      />
 
-        <ActionsBarSticky>
-          <ActionsBarSticky.Left>
-            <ButtonLink
-              variant={ButtonVariant.PRIMARY}
-              to={computeCollectiveOffersUrl({})}
-            >
-              Retour à la liste des offres
-            </ButtonLink>
-          </ActionsBarSticky.Left>
-        </ActionsBarSticky>
-      </CollectiveOfferLayout>
-    </Layout>
+      <ActionsBarSticky>
+        <ActionsBarSticky.Left>
+          <ButtonLink
+            variant={ButtonVariant.PRIMARY}
+            to={computeCollectiveOffersUrl({})}
+          >
+            Retour à la liste des offres
+          </ButtonLink>
+        </ActionsBarSticky.Left>
+      </ActionsBarSticky>
+    </CollectiveOfferLayout>
   )
 }
 

@@ -3,25 +3,8 @@
 @use "styles/mixins/_size.scss" as size;
 
 .eac-layout {
-  position: relative;
-
   &-tag {
     margin-bottom: rem.torem(4px);
-  }
-
-  &-headings {
-    margin-bottom: rem.torem(24px);
-    padding-top: rem.torem(56px);
-  
-    @media (min-width: size.$tablet) {
-      padding-top: 0;
-    }
-  }
-
-  &-heading {
-    @include fonts.title1;
-
-    margin-bottom: rem.torem(32px);
   }
 
   &-sub-heading {
