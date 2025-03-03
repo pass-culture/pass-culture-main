@@ -22,7 +22,9 @@ const defaultValues: OfferEducationalFormValues = {
     ...(Object.fromEntries(
       Object.keys(StudentLevels).map((level) => [level, true])
     ) as Record<StudentLevels, boolean>),
-    all: false,
+    college: false,
+    lycee: false,
+    marseille: false,
   },
   phone: '',
   offererId: '123',

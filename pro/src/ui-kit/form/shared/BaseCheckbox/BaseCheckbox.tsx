@@ -31,6 +31,7 @@ export interface BaseCheckboxProps
   ariaDescribedBy?: string
   childrenOnChecked?: JSX.Element
   labelId?: string
+  shouldShowChildren?: boolean
 }
 
 export const BaseCheckbox = forwardRef(
@@ -49,6 +50,7 @@ export const BaseCheckbox = forwardRef(
       ariaDescribedBy,
       childrenOnChecked,
       labelId,
+      shouldShowChildren = false,
       ...props
     }: BaseCheckboxProps,
     forwardedRef: ForwardedRef<HTMLInputElement>
@@ -113,11 +115,11 @@ export const BaseCheckbox = forwardRef(
           </span>
         </div>
         <div>
-          {childrenOnChecked && props.checked && (
+          {(childrenOnChecked && props.checked) || shouldShowChildren ? (
             <div className={styles['base-checkbox-children-on-checked']}>
               {childrenOnChecked}
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     )

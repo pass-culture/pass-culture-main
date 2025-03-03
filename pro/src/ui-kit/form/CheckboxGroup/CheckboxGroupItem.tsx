@@ -18,6 +18,7 @@ interface CheckboxGroupItemProps {
   variant?: CheckboxVariant
   childrenOnChecked?: JSX.Element
   labelId?: string
+  shouldShowChildren?: boolean
 }
 
 export const CheckboxGroupItem = ({
@@ -32,6 +33,7 @@ export const CheckboxGroupItem = ({
   variant,
   childrenOnChecked,
   labelId,
+  shouldShowChildren,
 }: CheckboxGroupItemProps): JSX.Element => {
   const [field] = useField({ name, type: 'checkbox' })
 
@@ -55,6 +57,7 @@ export const CheckboxGroupItem = ({
       variant={variant}
       childrenOnChecked={childrenOnChecked}
       labelId={labelId}
+      shouldShowChildren={shouldShowChildren}
     />
   )
 }
