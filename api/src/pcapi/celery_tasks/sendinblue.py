@@ -10,7 +10,6 @@ from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRe
 @celery_async_task(
     name="mails.tasks.update_contact_attributes",
     autoretry_for=(SendinblueApiException,),
-    retry_backoff=True,
     model=UpdateSendinblueContactRequest,
 )
 def update_contact_attributes_task_celery(payload: UpdateSendinblueContactRequest) -> None:
@@ -20,7 +19,6 @@ def update_contact_attributes_task_celery(payload: UpdateSendinblueContactReques
 @celery_async_task(
     name="mails.tasks.send_transactional_email_primary",
     autoretry_for=(SendinblueApiException,),
-    retry_backoff=True,
     model=SendTransactionalEmailRequest,
 )
 def send_transactional_email_primary_task_celery(payload: SendTransactionalEmailRequest) -> None:
@@ -30,7 +28,6 @@ def send_transactional_email_primary_task_celery(payload: SendTransactionalEmail
 @celery_async_task(
     name="mails.tasks.send_transactional_email_secondary",
     autoretry_for=(SendinblueApiException,),
-    retry_backoff=True,
     model=SendTransactionalEmailRequest,
 )
 def send_transactional_email_secondary_task_celery(payload: SendTransactionalEmailRequest) -> None:
