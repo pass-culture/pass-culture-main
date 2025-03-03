@@ -21,8 +21,10 @@ export const DEFAULT_EAC_FORM_VALUES: OfferEducationalFormValues = {
   },
   interventionArea: [],
   participants: {
-    all: false,
     ...buildStudentLevelsMapWithDefaultValue(false),
+    college: false,
+    lycee: false,
+    marseille: false,
   },
   accessibility: {
     visual: false,

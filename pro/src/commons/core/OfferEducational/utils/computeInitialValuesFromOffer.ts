@@ -111,9 +111,9 @@ export const computeInitialValuesFromOffer = (
   }
 
   const participants = {
-    all: Object.values(StudentLevels).every((student) =>
-      offer.students.includes(student)
-    ),
+    college: false,
+    lycee: false,
+    marseille: false,
     ...buildStudentLevelsMapWithDefaultValue(
       (studentKey: StudentLevels) => offer.students.includes(studentKey),
       isMarseilleEnabled
