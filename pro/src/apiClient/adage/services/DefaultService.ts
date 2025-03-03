@@ -121,27 +121,6 @@ export class DefaultService {
     });
   }
   /**
-   * delete_favorite_for_collective_offer <DELETE>
-   * @param offerId
-   * @returns void
-   * @throws ApiError
-   */
-  public deleteFavoriteForCollectiveOffer(
-    offerId: number,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'DELETE',
-      url: '/adage-iframe/collective/offer/{offer_id}/favorites',
-      path: {
-        'offer_id': offerId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
    * get_collective_offer_templates <GET>
    * @param ids
    * @returns ListCollectiveOfferTemplateResponseModel OK
@@ -244,27 +223,6 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * post_collective_offer_favorites <POST>
-   * @param offerId
-   * @returns void
-   * @throws ApiError
-   */
-  public postCollectiveOfferFavorites(
-    offerId: number,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/adage-iframe/collective/offers/{offer_id}/favorites',
-      path: {
-        'offer_id': offerId,
-      },
-      errors: {
-        403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
     });

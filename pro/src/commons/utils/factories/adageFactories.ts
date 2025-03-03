@@ -82,7 +82,6 @@ export const defaultCollectiveOffer: CollectiveOfferResponseModel = {
   },
   isSoldOut: false,
   isExpired: false,
-  isFavorite: false,
   visualDisabilityCompliant: true,
   mentalDisabilityCompliant: true,
   audioDisabilityCompliant: true,
