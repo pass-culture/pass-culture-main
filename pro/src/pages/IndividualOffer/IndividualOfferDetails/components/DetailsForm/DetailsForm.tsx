@@ -1,14 +1,12 @@
 import { useFormikContext } from 'formik'
 
-import {
-  CategoryResponseModel,
-  SubcategoryResponseModel,
-} from 'apiClient/v1'
+import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { HeadlineOfferVideoBanner } from 'components/HeadlineOfferVideoBanner/HeadlineOfferVideoBanner'
 import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import fullMoreIcon from 'icons/full-more.svg'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
@@ -158,16 +156,20 @@ export const DetailsForm = ({
           filteredSubcategories={filteredSubcategories}
         />
       )}
+
       {isSubCategorySelected && (
-        <DetailsSubForm
-          isEanSearchDisplayed={isEanSearchDisplayed}
-          isProductBased={isProductBased}
-          isOfferCD={isSubCategoryCD(subcategoryId)}
-          readOnlyFields={readOnlyFields}
-          onImageUpload={onImageUpload}
-          onImageDelete={onImageDelete}
-          imageOffer={imageOffer}
-        />
+        <>
+          <DetailsSubForm
+            isEanSearchDisplayed={isEanSearchDisplayed}
+            isProductBased={isProductBased}
+            isOfferCD={isSubCategoryCD(subcategoryId)}
+            readOnlyFields={readOnlyFields}
+            onImageUpload={onImageUpload}
+            onImageDelete={onImageDelete}
+            imageOffer={imageOffer}
+          />
+          <HeadlineOfferVideoBanner />
+        </>
       )}
     </>
   )
