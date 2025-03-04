@@ -187,6 +187,11 @@ class SyncUserAccountUpdateRequestsTest:
         assert uaur.dateLastInstructorMessage == datetime(2024, 11, 26, 10, 22, 16)
         assert uaur.flags == [users_models.UserAccountUpdateFlag.WAITING_FOR_CORRECTION]
 
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == "usager@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.UPDATE_REQUEST_NO_USER_FOUND.value)
+        assert mails_testing.outbox[0]["params"]["DS_APPLICATION_NUMBER"] == uaur.dsApplicationId
+
     @patch(
         "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
         return_value=ds_fixtures.DS_RESPONSE_ACCOUNT_HAS_SAME,
@@ -337,6 +342,11 @@ class SyncUserAccountUpdateRequestsTest:
         assert uaur.dateLastInstructorMessage is None
         assert uaur.flags == [users_models.UserAccountUpdateFlag.MISSING_VALUE]
 
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == "nouvelle.adresse@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.UPDATE_REQUEST_NO_USER_FOUND.value)
+        assert mails_testing.outbox[0]["params"]["DS_APPLICATION_NUMBER"] == uaur.dsApplicationId
+
     @patch(
         "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
         return_value=ds_fixtures.DS_RESPONSE_INVALID_VALUE,
@@ -433,11 +443,21 @@ class SyncUserAccountUpdateRequestsTest:
         }
 
         assert uaur.status == dms_models.GraphQLApplicationStates.without_continuation
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0]["To"] == "beneficiaire@example.com"
-        assert mails_testing.outbox[0]["template"] == asdict(
-            TransactionalEmail.UPDATE_REQUEST_MARKED_WITHOUT_CONTINUATION.value
-        )
+        if with_found_user:
+            assert len(mails_testing.outbox) == 1
+            assert mails_testing.outbox[0]["To"] == "beneficiaire@example.com"
+            assert mails_testing.outbox[0]["template"] == asdict(
+                TransactionalEmail.UPDATE_REQUEST_MARKED_WITHOUT_CONTINUATION.value
+            )
+        else:
+            assert len(mails_testing.outbox) == 2
+            assert mails_testing.outbox[0]["To"] == "beneficiaire@example.com"
+            assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.UPDATE_REQUEST_NO_USER_FOUND.value)
+            assert mails_testing.outbox[0]["params"]["DS_APPLICATION_NUMBER"] == uaur.dsApplicationId
+            assert mails_testing.outbox[1]["To"] == "beneficiaire@example.com"
+            assert mails_testing.outbox[1]["template"] == asdict(
+                TransactionalEmail.UPDATE_REQUEST_MARKED_WITHOUT_CONTINUATION.value
+            )
 
     @time_machine.travel("2025-01-16 17:12")
     def test_sync_with_set_without_continuation_without_user_message(self, instructor):
@@ -483,9 +503,12 @@ class SyncUserAccountUpdateRequestsTest:
             }
 
         assert uaur.status == dms_models.GraphQLApplicationStates.without_continuation
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0]["To"] == "nouvelle.adresse@example.com"
-        assert mails_testing.outbox[0]["template"] == asdict(
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0]["To"] == "beneficiaire@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.UPDATE_REQUEST_NO_USER_FOUND.value)
+        assert mails_testing.outbox[0]["params"]["DS_APPLICATION_NUMBER"] == uaur.dsApplicationId
+        assert mails_testing.outbox[1]["To"] == "nouvelle.adresse@example.com"
+        assert mails_testing.outbox[1]["template"] == asdict(
             TransactionalEmail.UPDATE_REQUEST_MARKED_WITHOUT_CONTINUATION.value
         )
 
