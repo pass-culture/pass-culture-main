@@ -106,7 +106,7 @@ describe('ValidationScreen', () => {
     })
   })
 
-  it('should see activity screen if no activity data is set but an offerer is set', () => {
+  it('should see activity screen if no activity data is set but an offerer is set', async () => {
     renderValidationScreen({
       ...contextValue,
       offerer: {
@@ -117,7 +117,9 @@ describe('ValidationScreen', () => {
         ...addressInformations,
       },
     })
-    expect(screen.getByText('Activite')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Activite')).toBeInTheDocument()
+    })
   })
 
   it('should see the data from the previous forms for validation', async () => {
@@ -127,6 +129,7 @@ describe('ValidationScreen', () => {
         venueTypeCode: 'MUSEUM',
         socialUrls: ['url1', 'url2'],
         targetCustomer: Target.EDUCATIONAL,
+        phoneNumber: undefined,
       },
       offerer: {
         name: 'nom',
@@ -153,6 +156,7 @@ describe('ValidationScreen', () => {
           venueTypeCode: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
+          phoneNumber: undefined,
         },
         offerer: {
           name: 'nom',
@@ -265,6 +269,7 @@ describe('ValidationScreen', () => {
           venueTypeCode: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
+          phoneNumber: undefined,
         },
         offerer: {
           name: 'nom',
@@ -334,6 +339,7 @@ describe('ValidationScreen', () => {
           venueTypeCode: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
+          phoneNumber: undefined,
         },
         offerer: {
           name: 'nom',

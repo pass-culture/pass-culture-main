@@ -110,6 +110,7 @@ def _create_pro_user(row: dict) -> User:
         postalCode="75001",
         siren=siret[:9],
         street="1 place de la Concorde",
+        phoneNumber=None,
     )
     new_onboarding_info = offerers_api.NewOnboardingInfo(
         target=offerers_models.Target.INDIVIDUAL_AND_EDUCATIONAL,
