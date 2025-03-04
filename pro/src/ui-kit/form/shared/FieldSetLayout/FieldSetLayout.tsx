@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { isValidElement } from 'react'
 
 import { FieldError } from '../FieldError/FieldError'
 
@@ -6,7 +7,7 @@ import styles from './FieldSetLayout.module.scss'
 
 interface FieldSetLayoutProps {
   children: React.ReactNode
-  legend?: string
+  legend?: string | React.ReactNode
   className?: string
   error?: string
   name: string
@@ -17,6 +18,7 @@ interface FieldSetLayoutProps {
   /**
    * Can be false only when it's the only field in a form and it's mandatory,
    * or when all fields are mandatory and the form indicates that all fields are mandatory
+   * or when the legend itself handles the asterisk
    */
   hideAsterisk?: boolean
   /**
@@ -49,7 +51,11 @@ export const FieldSetLayout = ({
       {legend && (
         <legend
           id="fieldsetlayout-legend"
-          className={styles['fieldset-layout-legend']}
+          className={
+            isValidElement(legend)
+              ? undefined
+              : styles['fieldset-layout-legend']
+          }
         >
           {legend}
           {!isOptional && !hideAsterisk && ' *'}
