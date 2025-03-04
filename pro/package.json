@@ -136,7 +136,7 @@
     "vitest": "^3.0.6",
     "vitest-axe": "^0.1.0",
     "vitest-canvas-mock": "^0.3.3",
-    "vitest-fetch-mock": "^0.4.3"
+    "vitest-fetch-mock": "^0.4.5"
   },
   "resolutions": {
     "@babel/traverse": ">=7.23.2",
