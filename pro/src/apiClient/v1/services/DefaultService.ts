@@ -2610,6 +2610,27 @@ export class DefaultService {
     });
   }
   /**
+   * validate_user <PATCH>
+   * @param token
+   * @returns void
+   * @throws ApiError
+   */
+  public validateUser(
+    token: string,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/users/validate_signup/{token}',
+      path: {
+        'token': token,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * has_invoice <GET>
    * @param offererId
    * @returns HasInvoiceResponseModel OK
@@ -2695,27 +2716,6 @@ export class DefaultService {
       url: '/v2/users/signup/pro',
       body: requestBody,
       mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * validate_user <PATCH>
-   * @param token
-   * @returns void
-   * @throws ApiError
-   */
-  public validateUser(
-    token: string,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/validate/user/{token}',
-      path: {
-        'token': token,
-      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

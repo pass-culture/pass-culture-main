@@ -30,6 +30,7 @@ from pcapi.core.users.email import repository as email_repository
 from pcapi.domain.password import check_password_validity
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
@@ -67,6 +68,20 @@ def signup_pro(body: users_serializers.ProUserCreationBodyV2Model) -> None:
         raise ApiErrors(errors={"phoneNumber": ["Le numéro de téléphone est invalide"]})
     except users_exceptions.UserAlreadyExistsException:
         raise ApiErrors(errors={"email": ["l'email existe déjà"]})
+
+
+@blueprint.pro_private_api.route("/users/validate_signup/<token>", methods=["PATCH"])
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+def validate_user(token: str) -> None:
+    try:
+        stored_token = token_utils.Token.load_and_check(token, token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION)
+        user_to_validate = users_models.User.query.get_or_404(stored_token.user_id)
+        stored_token.expire()
+        users_api.validate_pro_user_email(user_to_validate)
+    except users_exceptions.InvalidToken:
+        errors = ResourceNotFoundError()
+        errors.add_error("global", "Ce lien est invalide")
+        raise errors
 
 
 @blueprint.pro_private_api.route("/users/tuto-seen", methods=["PATCH"])
