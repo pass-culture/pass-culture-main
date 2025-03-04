@@ -20,12 +20,12 @@ class SendProUserValidationEmailTest:
         token = token_utils.Token.create(token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, ttl=None, user_id=user.id)
 
         # When
-        send_email_validation_to_pro_email(user, token)
+        send_signup_email_confirmation_to_pro(user, token)
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0]["To"] == user.email
-        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.EMAIL_VALIDATION_TO_PRO.value)
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.SIGNUP_EMAIL_CONFIRMATION_TO_PRO.value)
         assert mails_testing.outbox[0]["params"] == {
             "EMAIL_VALIDATION_LINK": f"{settings.PRO_URL}/inscription/validation/{token.encoded_token}",
         }
