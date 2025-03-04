@@ -2555,6 +2555,26 @@ export class DefaultService {
     });
   }
   /**
+   * signup_pro <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public signupPro(
+    requestBody?: ProUserCreationBodyV2Model,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/users/signup',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * patch_user_tuto_seen <PATCH>
    * @returns void
    * @throws ApiError
@@ -2583,6 +2603,27 @@ export class DefaultService {
       url: '/users/validate_email',
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * validate_user <PATCH>
+   * @param token
+   * @returns void
+   * @throws ApiError
+   */
+  public validateUser(
+    token: string,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/users/validate_signup/{token}',
+      path: {
+        'token': token,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -2675,27 +2716,6 @@ export class DefaultService {
       url: '/v2/users/signup/pro',
       body: requestBody,
       mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * validate_user <PATCH>
-   * @param token
-   * @returns void
-   * @throws ApiError
-   */
-  public validateUser(
-    token: string,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/validate/user/{token}',
-      path: {
-        'token': token,
-      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

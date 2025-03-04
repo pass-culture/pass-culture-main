@@ -110,7 +110,7 @@ class TransactionalEmail(Enum):
     EAC_NEW_REQUEST_FOR_OFFER = models.TemplatePro(id_prod=54, id_not_prod=41)
     EAC_OFFERER_ACTIVATION_EMAIL = models.TemplatePro(id_prod=7, id_not_prod=7, send_to_ehp=False)
     EDUCATIONAL_BOOKING_CANCELLATION = models.TemplatePro(id_prod=17, id_not_prod=17, send_to_ehp=False)
-    EMAIL_VALIDATION_TO_PRO = models.TemplatePro(id_prod=6, id_not_prod=6)
+    SIGNUP_EMAIL_CONFIRMATION_TO_PRO = models.TemplatePro(id_prod=6, id_not_prod=6)
     EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO = models.TemplatePro(id_prod=37, id_not_prod=36)
     PRO_EMAIL_CHANGE_CONFIRMATION = models.TemplatePro(id_prod=14, id_not_prod=14, use_priority_queue=True)
     PRO_EMAIL_CHANGE_REQUEST = models.TemplatePro(id_prod=15, id_not_prod=15, use_priority_queue=True)
