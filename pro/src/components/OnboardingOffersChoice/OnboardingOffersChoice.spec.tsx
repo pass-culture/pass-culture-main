@@ -18,7 +18,7 @@ describe('OnboardingOffersChoice Component', () => {
     }))
     renderWithProviders(<OnboardingOffersChoice />, {
       storeOverrides: {
-        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: false },
+        offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: false, hasPartnerPage: false },
       },
     })
   })

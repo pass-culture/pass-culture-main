@@ -22,7 +22,7 @@ const renderOnboardingCollectiveModal = (
   return renderWithProviders(<OnboardingCollectiveModal />, {
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
-      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: false },
+      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: false, hasPartnerPage: false },
     },
     user: sharedCurrentUserFactory(),
     ...options,

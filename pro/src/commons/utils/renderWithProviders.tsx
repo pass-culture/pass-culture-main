@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { SWRConfig } from "swr";
 
-import { FeatureResponseModel, SharedCurrentUserResponseModel } from "apiClient/v1";
+import { FeatureResponseModel, SharedCurrentUserResponseModel, GetOffererResponseModel } from "apiClient/v1";
 import { RootState } from "commons/store/rootReducer";
 import { configureTestStore } from "commons/store/testUtils";
 
@@ -14,6 +14,7 @@ export type RenderWithProvidersOptions = {
   initialRouterEntries?: string[]
   features?: string[]
   user?: SharedCurrentUserResponseModel | null
+  offerer?: GetOffererResponseModel | null
 }
 
 const createRouterFromOverrides = (

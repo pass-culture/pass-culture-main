@@ -74,6 +74,7 @@ describe('<OnboardingOfferIndividual />', () => {
           isOnboarded: false,
           selectedOffererId: 42,
           offererNames: [],
+          hasPartnerPage: true,
         },
       },
     })

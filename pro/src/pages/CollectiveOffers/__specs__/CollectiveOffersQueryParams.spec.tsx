@@ -59,6 +59,7 @@ const renderOffers = async (
           selectedOffererId: 1,
           offererNames: [],
           isOnboarded: true,
+          hasPartnerPage: true,
         },
       }
     }

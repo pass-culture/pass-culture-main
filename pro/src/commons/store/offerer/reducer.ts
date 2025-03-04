@@ -6,12 +6,14 @@ export type OffererState = {
   offererNames: null | GetOffererNameResponseModel[]
   selectedOffererId: number | null
   isOnboarded: boolean | null
+  hasPartnerPage: boolean | null
 }
 
 const initialState: OffererState = {
   offererNames: null,
   selectedOffererId: null,
   isOnboarded: null,
+  hasPartnerPage: null,
 }
 
 const offererSlice = createSlice({
@@ -36,6 +38,12 @@ const offererSlice = createSlice({
     ) => {
       state.isOnboarded = action.payload
     },
+    updateOffererHasPartnerPage: (
+      state: OffererState,
+      action: PayloadAction<boolean | null>
+    ) => {
+      state.hasPartnerPage = action.payload
+    },
   },
 })
 
@@ -45,4 +53,5 @@ export const {
   updateOffererNames,
   updateSelectedOffererId,
   updateOffererIsOnboarded,
+  updateOffererHasPartnerPage,
 } = offererSlice.actions
