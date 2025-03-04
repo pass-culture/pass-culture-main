@@ -11,7 +11,7 @@ import { CheckboxGroupItem } from './CheckboxGroupItem'
 type CheckboxGroupProps = RequireAtLeastOne<
   {
     groupName: string
-    legend?: string
+    legend?: string | React.ReactNode
     describedBy?: string
     group: {
       name: string
@@ -24,6 +24,7 @@ type CheckboxGroupProps = RequireAtLeastOne<
     isOptional?: boolean
     variant?: CheckboxVariant
     inline?: boolean
+    hideAsterisk?: boolean
   },
   'legend' | 'describedBy'
 >
@@ -37,6 +38,7 @@ export const CheckboxGroup = ({
   isOptional,
   variant,
   inline = false,
+  hideAsterisk,
 }: CheckboxGroupProps): JSX.Element => {
   const [, meta, helpers] = useField({ name: groupName })
   const hasError = meta.touched && !!meta.error
@@ -49,6 +51,7 @@ export const CheckboxGroup = ({
       ariaDescribedBy={describedBy}
       isOptional={isOptional}
       hideFooter
+      hideAsterisk={hideAsterisk}
     >
       <div
         className={classNames(styles['checkbox-group'], {

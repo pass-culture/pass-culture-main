@@ -1,5 +1,4 @@
 import { useFormikContext } from 'formik'
-import { useId } from 'react'
 
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
@@ -16,17 +15,18 @@ export const FormAccessibility = ({
   disableForm,
 }: FormAccessibilityProps): JSX.Element => {
   const { setFieldValue } = useFormikContext<OfferEducationalFormValues>()
-  const subtitleId = useId()
 
   return (
     <div className={styles['container']}>
-      <h2 id={subtitleId} className={styles['subtitle']}>
-        À quel type de handicap votre offre est-elle accessible ? *
-      </h2>
       <CheckboxGroup
         group={useAccessibilityOptions(setFieldValue)}
+        legend={
+          <h2 className={styles['subtitle']}>
+            À quel type de handicap votre offre est-elle accessible ? *
+          </h2>
+        }
+        hideAsterisk
         groupName="accessibility"
-        describedBy={subtitleId}
         disabled={disableForm}
         variant={CheckboxVariant.BOX}
       />
