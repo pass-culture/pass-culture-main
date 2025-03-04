@@ -3,7 +3,6 @@ import { FormikProvider, useFormik } from 'formik'
 
 import { api } from 'apiClient/api'
 import { ManagedVenues } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -12,7 +11,7 @@ import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { Select } from 'ui-kit/form/Select/Select'
 
 import styles from './PricingPointDialog.module.scss'
-import { getValidationSchema } from './validationSchema'
+import { validationSchema } from './validationSchema'
 
 type PricingPointFormValues = {
   pricingPointId?: string
@@ -32,7 +31,6 @@ export const PricingPointDialog = ({
   updateVenuePricingPoint,
 }: PricingPointDialogProps) => {
   const notification = useNotification()
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const formik = useFormik<PricingPointFormValues>({
     initialValues: {
       pricingPointId: undefined,
@@ -53,7 +51,7 @@ export const PricingPointDialog = ({
         )
       }
     },
-    validationSchema: getValidationSchema(),
+    validationSchema: validationSchema,
   })
 
   if (!selectedVenue) {
@@ -76,18 +74,17 @@ export const PricingPointDialog = ({
       <Callout className={styles['callout']}>
         Comme indiqué dans nos CGUs, le barème de remboursement se définit sur
         la base d’un établissement et donc d’un SIRET. Afin de vous faire
-        rembourser les offres de{' '}
-        {isOfferAddressEnabled ? 'cette structure' : 'ce lieu'}, vous devez
-        sélectionner le SIRET à partir duquel sera calculé votre taux de
-        remboursement. Attention, vous ne pourrez plus modifier votre choix
-        après validation.{' '}
+        rembourser les offres de cette structure, vous devez sélectionner le
+        SIRET à partir duquel sera calculé votre taux de remboursement.
+        Attention, vous ne pourrez plus modifier votre choix après
+        validation.{' '}
       </Callout>
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} className={styles['dialog-form']}>
           <Select
             id="pricingPointId"
             name="pricingPointId"
-            label={`${isOfferAddressEnabled ? 'Structure avec SIRET utilisée' : 'Lieu avec SIRET utilisé'} pour le calcul du barème de remboursement`}
+            label="Structure avec SIRET utilisée pour le calcul du barème de remboursement"
             options={venuesOptions}
             className={styles['venues-select']}
             hideAsterisk

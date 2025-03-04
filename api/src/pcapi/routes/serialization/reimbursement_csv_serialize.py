@@ -17,7 +17,6 @@ import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.finance.utils as finance_utils
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.date import MONTHS_IN_FRENCH
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.string import u_nbsp
@@ -84,10 +83,10 @@ class ReimbursementDetails:
         "N° de virement",
         "Intitulé du compte bancaire",
         "IBAN",
-        "Raison sociale du lieu",
-        "Adresse du lieu",
-        "SIRET du lieu",
+        "SIRET de la structure",
+        "Raison sociale de la structure",
         "Nom de l'offre",
+        "Adresse de l'offre",
         "N° de réservation (offre collective)",
         "Nom (offre collective)",
         "Prénom (offre collective)",
@@ -133,7 +132,7 @@ class ReimbursementDetails:
         # Venue info
         self.venue_name = payment_info.venue_name
         self.venue_common_name = payment_info.venue_common_name
-        if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active() and not is_collective:
+        if not is_collective:
             self.address = _build_full_address(
                 getattr(payment_info, "address_street", None),
                 getattr(payment_info, "address_postal_code", None),
@@ -207,10 +206,10 @@ class ReimbursementDetails:
             self.cashflow_batch_label,
             self.bank_account_label,
             self.iban,
-            self.venue_name,
-            self.address,
             self.venue_siret,
+            self.venue_name,
             self.offer_name,
+            self.address,
             self.collective_booking_id,
             self.redactor_last_name,
             self.redactor_first_name,
@@ -224,28 +223,10 @@ class ReimbursementDetails:
             self.reimbursed_amount,
             self.offer_type,
         ]
-        if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            rows[6:10] = [
-                self.venue_siret,
-                self.venue_name,
-                self.offer_name,
-                self.address,
-            ]
         return rows
 
     @classmethod
     def get_csv_headers(cls) -> list[str]:
-        if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            return (
-                cls.CSV_HEADER[0:6]
-                + [
-                    "SIRET de la structure",
-                    "Raison sociale de la structure",
-                    "Nom de l'offre",
-                    "Adresse de l'offre",
-                ]
-                + cls.CSV_HEADER[10:]
-            )
         return cls.CSV_HEADER
 
 

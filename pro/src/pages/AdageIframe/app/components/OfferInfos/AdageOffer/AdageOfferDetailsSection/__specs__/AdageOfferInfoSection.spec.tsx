@@ -39,7 +39,7 @@ describe('AdageOfferInfoSection', () => {
 
     expect(screen.getByText('offer address test')).toBeInTheDocument()
     expect(
-      screen.getByRole('heading', { name: 'Lieu où se déroulera l’offre' })
+      screen.getByRole('heading', { name: 'Localisation de l’offre' })
     ).toBeInTheDocument()
   })
 
@@ -145,17 +145,14 @@ describe('OA feature flag', () => {
         ...defaultCollectiveOffer,
       },
     })
-    expect(screen.getByText('Lieu où se déroulera l’offre')).toBeInTheDocument()
+    expect(screen.getByText('Localisation de l’offre')).toBeInTheDocument()
   })
   it('should display the right wording with the OA FF', () => {
-    renderAdageOfferInfoSection(
-      {
-        offer: {
-          ...defaultCollectiveOffer,
-        },
+    renderAdageOfferInfoSection({
+      offer: {
+        ...defaultCollectiveOffer,
       },
-      { features: ['WIP_ENABLE_OFFER_ADDRESS'] }
-    )
+    })
     expect(screen.getByText('Localisation de l’offre')).toBeInTheDocument()
   })
 })

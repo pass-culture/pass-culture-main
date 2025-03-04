@@ -8,8 +8,7 @@ import {
 } from 'apiClient/v1'
 import {
   ALL_FORMATS_OPTION,
-  ALL_STRUCTURES_OPTION,
-  ALL_VENUES_OPTION,
+  ALL_OFFERERS_OPTION,
   COLLECTIVE_OFFER_TYPES_OPTIONS,
 } from 'commons/core/Offers/constants'
 import { useDefaultCollectiveSearchFilters } from 'commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
@@ -87,7 +86,6 @@ export const CollectiveOffersSearchFilters = ({
   const areCollectiveNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
 
@@ -234,15 +232,9 @@ export const CollectiveOffersSearchFilters = ({
             disabled={disableAllFilters}
           />
         </FormikProvider>
-        <FieldLayout
-          label={isOfferAddressEnabled ? 'Structure' : 'Lieu'}
-          name="lieu"
-          isOptional
-        >
+        <FieldLayout label="Structure" name="lieu" isOptional>
           <SelectInput
-            defaultOption={
-              isOfferAddressEnabled ? ALL_STRUCTURES_OPTION : ALL_VENUES_OPTION
-            }
+            defaultOption={ALL_OFFERERS_OPTION}
             onChange={storeSelectedVenue}
             disabled={disableAllFilters}
             name="lieu"

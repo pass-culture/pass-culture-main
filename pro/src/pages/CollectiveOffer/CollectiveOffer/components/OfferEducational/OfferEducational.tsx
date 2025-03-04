@@ -82,7 +82,6 @@ export const OfferEducational = ({
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const { mutate } = useSWRConfig()
 
   const { lieu: venueId, requete: requestId } = queryParamsFromOfferer(location)
@@ -187,9 +186,7 @@ export const OfferEducational = ({
   const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit,
-    validationSchema: getOfferEducationalValidationSchema({
-      isOfferAddressEnabled,
-    }),
+    validationSchema: getOfferEducationalValidationSchema(),
   })
 
   if (

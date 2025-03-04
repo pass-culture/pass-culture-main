@@ -2,6 +2,14 @@ import { WithdrawalTypeEnum } from 'apiClient/v1'
 
 import { getValidationSchema } from '../validationSchema'
 
+const defaultLocation = {
+  locationLabel: 'label',
+  offerLocation: 'location',
+  addressAutocomplete: 'autocomplete',
+  street: 'street',
+  postalCode: '93160',
+  city: 'city',
+}
 const defaultAccessibility = {
   accessibility: {
     mental: false,
@@ -11,18 +19,22 @@ const defaultAccessibility = {
     none: true,
   },
 }
+const defaultValue = {
+  ...defaultAccessibility,
+  ...defaultLocation,
+}
 
 describe('getValidationSchema', () => {
   it('should validate withdrawalType correctly', async () => {
     const schema = getValidationSchema({ subcategories: ['withdrawalType'] })
     await expect(
       schema.validate({
-        ...defaultAccessibility,
+        ...defaultValue,
         withdrawalType: WithdrawalTypeEnum.BY_EMAIL,
       })
     ).resolves.toBeTruthy()
 
-    await expect(schema.validate({ ...defaultAccessibility })).rejects.toThrow(
+    await expect(schema.validate({ ...defaultValue })).rejects.toThrow(
       'Veuillez sélectionner l’une de ces options'
     )
   })
@@ -31,7 +43,7 @@ describe('getValidationSchema', () => {
     const schema = getValidationSchema({ subcategories: ['withdrawalDelay'] })
     await expect(
       schema.validate({
-        ...defaultAccessibility,
+        ...defaultValue,
         withdrawalType: WithdrawalTypeEnum.BY_EMAIL,
         withdrawalDelay: 'Some delay',
       })
@@ -39,7 +51,7 @@ describe('getValidationSchema', () => {
 
     await expect(
       schema.validate({
-        ...defaultAccessibility,
+        ...defaultValue,
         withdrawalType: WithdrawalTypeEnum.BY_EMAIL,
         withdrawalDelay: '',
       })
@@ -50,14 +62,14 @@ describe('getValidationSchema', () => {
     const schema = getValidationSchema({ subcategories: ['bookingContact'] })
     await expect(
       schema.validate({
-        ...defaultAccessibility,
+        ...defaultValue,
         bookingContact: 'valid@example.com',
       })
     ).resolves.toBeTruthy()
 
     await expect(
       schema.validate({
-        ...defaultAccessibility,
+        ...defaultValue,
         bookingContact: 'invalid-email',
       })
     ).rejects.toThrow(
@@ -66,7 +78,7 @@ describe('getValidationSchema', () => {
 
     await expect(
       schema.validate({
-        ...defaultAccessibility,
+        ...defaultValue,
         bookingContact: 'user@passculture.app',
       })
     ).rejects.toThrow('Ce mail doit vous appartenir')
@@ -83,6 +95,7 @@ describe('getValidationSchema', () => {
           motor: false,
           none: false,
         },
+        ...defaultLocation,
       })
     ).resolves.toBeTruthy()
 
@@ -95,6 +108,7 @@ describe('getValidationSchema', () => {
           motor: false,
           none: false,
         },
+        ...defaultLocation,
       })
     ).rejects.toThrow(
       'Veuillez sélectionner au moins un critère d’accessibilité'
@@ -105,7 +119,7 @@ describe('getValidationSchema', () => {
     const schema = getValidationSchema({ subcategories: [] })
     await expect(
       schema.validate({
-        ...defaultAccessibility,
+        ...defaultValue,
         receiveNotificationEmails: true,
         bookingEmail: 'valid@example.com',
       })
@@ -113,7 +127,7 @@ describe('getValidationSchema', () => {
 
     await expect(
       schema.validate({
-        ...defaultAccessibility,
+        ...defaultValue,
         receiveNotificationEmails: true,
         bookingEmail: 'invalid-email',
       })
@@ -127,14 +141,34 @@ describe('getValidationSchema', () => {
     await expect(
       schema.validate({
         externalTicketOfficeUrl: 'https://example.com',
-        ...defaultAccessibility,
+        ...defaultValue,
       })
     ).resolves.toBeTruthy()
 
     await expect(
-      schema.validate({ externalTicketOfficeUrl: 'invalid-url' })
+      schema.validate({
+        externalTicketOfficeUrl: 'invalid-url',
+        ...defaultValue,
+      })
     ).rejects.toThrow(
       'Veuillez renseigner une URL valide. Ex : https://exemple.com'
     )
+  })
+
+  it('should validate address correctly', async () => {
+    const schema = getValidationSchema({ subcategories: [] })
+    await expect(schema.validate(defaultValue)).resolves.toBeTruthy()
+
+    await expect(schema.validate(defaultAccessibility)).rejects.toThrow(
+      'Veuillez sélectionner un choix'
+    )
+
+    const virtualSchema = getValidationSchema({
+      subcategories: [],
+      isDigitalOffer: true,
+    })
+    await expect(
+      virtualSchema.validate(defaultAccessibility)
+    ).resolves.toBeTruthy()
   })
 })

@@ -77,11 +77,11 @@ describe('LinkVenueDialog', () => {
 
     expect(
       screen.getByText(
-        /Sélectionnez les lieux dont les offres seront remboursées sur ce compte bancaire/
+        /Sélectionnez les structures dont les offres seront remboursées sur ce compte bancaire/
       )
     ).toBeInTheDocument()
 
-    expect(screen.getByText(/1 lieu sélectionné/)).toBeInTheDocument()
+    expect(screen.getByText(/1 structure sélectionnée/)).toBeInTheDocument()
 
     expect(screen.getByLabelText('Lieu 1')).toBeChecked()
     expect(screen.getByLabelText('Lieu 2')).not.toBeChecked()

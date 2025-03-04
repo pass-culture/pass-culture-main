@@ -31,7 +31,6 @@ export type IndividualOffersContainerProps = {
       audience?: Audience
     }
   ) => void
-  venues: SelectOption[]
   offererAddresses: SelectOption[]
   categories?: SelectOption[]
   offers?: ListOffersOfferResponseModel[]
@@ -42,7 +41,6 @@ export const IndividualOffersContainer = ({
   isLoading,
   initialSearchFilters,
   redirectWithSelectedFilters,
-  venues,
   offererAddresses,
   categories,
   offers = [],
@@ -52,7 +50,9 @@ export const IndividualOffersContainer = ({
     ListOffersOfferResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
-  const isCollapsedMemorizedFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
+  const isCollapsedMemorizedFiltersEnabled = useActiveFeature(
+    'WIP_COLLAPSED_MEMORIZED_FILTERS'
+  )
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -60,7 +60,11 @@ export const IndividualOffersContainer = ({
   )
 
   const hasOffers = currentPageOffersSubset.length > 0
-  const hasFilters = hasSearchFilters({ searchFilters: initialSearchFilters, ignore: ['nameOrIsbn'] })
+
+  const hasFilters = hasSearchFilters({
+    searchFilters: initialSearchFilters,
+    ignore: ['nameOrIsbn'],
+  })
   const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.nameOrIsbn
 
   const userHasNoOffers = !isLoading && !hasOffers && !hasFiltersOrNameSearch
@@ -92,7 +96,7 @@ export const IndividualOffersContainer = ({
 
   const resetFilters = (resetNameOrIsbn = true) => {
     onResetFilters(resetNameOrIsbn)
-     const newFilters = {
+    const newFilters = {
       ...DEFAULT_SEARCH_FILTERS,
       ...(!resetNameOrIsbn && { nameOrIsbn: initialSearchFilters.nameOrIsbn }),
     }
@@ -137,7 +141,6 @@ export const IndividualOffersContainer = ({
         resetFilters={() => resetFilters(!isCollapsedMemorizedFiltersEnabled)}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
-        venues={venues}
         offererAddresses={offererAddresses}
       />
       {userHasNoOffers ? (

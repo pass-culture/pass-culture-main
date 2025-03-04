@@ -20,7 +20,6 @@ describe('Create individual offers', () => {
         venueName = response.body.venueName
       }
     )
-    cy.setFeatureFlags([{ name: 'WIP_ENABLE_OFFER_ADDRESS', isActive: false }])
   })
 
   beforeEach(() => {

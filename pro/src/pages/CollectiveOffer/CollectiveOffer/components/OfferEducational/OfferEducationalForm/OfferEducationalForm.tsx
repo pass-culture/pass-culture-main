@@ -77,8 +77,6 @@ export const OfferEducationalForm = ({
   const { values, setFieldValue, initialValues, dirty } =
     useFormikContext<OfferEducationalFormValues>()
 
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
   const areCollectiveNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
@@ -110,7 +108,7 @@ export const OfferEducationalForm = ({
           newVenuesOptions = [
             {
               value: '',
-              label: `Sélectionner ${isOfferAddressEnabled ? 'une structure' : 'un lieu'}`,
+              label: `Sélectionner une structure`,
             },
             ...sortByLabel(newVenuesOptions),
           ]

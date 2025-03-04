@@ -63,7 +63,7 @@ describe('useLogExtraProData', () => {
     await renderLogExtraProData()
 
     await userEvent.click(screen.getByTestId('offerer-select'))
-    await userEvent.click(screen.getByText(/Changer de structure/))
+    await userEvent.click(screen.getByText(/Changer/))
     await userEvent.click(screen.getByText('super structure'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(2)

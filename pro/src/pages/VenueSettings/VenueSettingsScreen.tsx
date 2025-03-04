@@ -15,12 +15,9 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
-import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import fullBackIcon from 'icons/full-back.svg'
-import strokeErrorIcon from 'icons/stroke-error.svg'
 import { generateSiretValidationSchema } from 'pages/VenueSettings/SiretOrCommentFields/validationSchema'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -55,59 +52,7 @@ export const VenueSettingsScreen = ({
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
 
-  const [isAddressChangeDialogOpen, setIsAddressChangeDialogOpen] =
-    useState(false)
-
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
-  const handleCancelAddressChangeDialog = () => {
-    setIsAddressChangeDialogOpen(false)
-  }
-
-  const handleConfirmAddressChangeDialog = () => {
-    setIsAddressChangeDialogOpen(true)
-    formik.handleSubmit()
-  }
-
-  const handleDialogAddressChange = () => {
-    const latitudeMeta = formik.getFieldMeta('latitude')
-    const longitudeMeta = formik.getFieldMeta('longitude')
-    const coordsMeta = formik.getFieldMeta('coords')
-    const streetMeta = formik.getFieldMeta('street')
-    const postalCodeMeta = formik.getFieldMeta('postalCode')
-    const cityMeta = formik.getFieldMeta('city')
-
-    // If any of the address fields changed, we should display the dialog
-    if (
-      (latitudeMeta.touched &&
-        latitudeMeta.value !== latitudeMeta.initialValue) ||
-      (longitudeMeta.touched &&
-        longitudeMeta.value !== longitudeMeta.initialValue) ||
-      (postalCodeMeta.touched &&
-        postalCodeMeta.value !== postalCodeMeta.initialValue) ||
-      (coordsMeta.touched && coordsMeta.value !== coordsMeta.initialValue) ||
-      (cityMeta.touched && cityMeta.value !== cityMeta.initialValue) ||
-      (streetMeta.touched && streetMeta.value !== streetMeta.initialValue)
-    ) {
-      if (isAddressChangeDialogOpen) {
-        setIsAddressChangeDialogOpen(false)
-      } else {
-        setIsAddressChangeDialogOpen(true)
-        return false
-      }
-    }
-    return true
-  }
-
   const onSubmit = async (values: VenueSettingsFormValues) => {
-    if (
-      !handleDialogAddressChange() &&
-      isOfferAddressEnabled &&
-      venue.hasOffers
-    ) {
-      return
-    }
-
     try {
       await api.editVenue(
         venue.id,
@@ -142,11 +87,7 @@ export const VenueSettingsScreen = ({
       }
 
       if (!formErrors || Object.keys(formErrors).length === 0) {
-        notify.error(
-          isOfferAddressEnabled
-            ? 'Erreur inconnue lors de la sauvegarde de la structure.'
-            : 'Erreur inconnue lors de la sauvegarde du lieu.'
-        )
+        notify.error('Erreur inconnue lors de la sauvegarde de la structure.')
       } else {
         notify.error(
           'Une ou plusieurs erreurs sont présentes dans le formulaire'
@@ -201,24 +142,6 @@ export const VenueSettingsScreen = ({
             offerer={offerer}
           />
         </form>
-
-        {isOfferAddressEnabled && (
-          <ConfirmDialog
-            cancelText="Annuler"
-            confirmText="Confirmer le changement d'adresse"
-            leftButtonAction={handleCancelAddressChangeDialog}
-            onCancel={() => setIsAddressChangeDialogOpen(false)}
-            onConfirm={handleConfirmAddressChangeDialog}
-            icon={strokeErrorIcon}
-            title="Ce changement d'adresse ne va pas s’appliquer sur vos offres"
-            open={isAddressChangeDialogOpen && venue.hasOffers}
-          >
-            <p>
-              Si vous souhaitez rectifier leur localisation, vous devez les
-              modifier individuellement.
-            </p>
-          </ConfirmDialog>
-        )}
       </FormikProvider>
     </>
   )

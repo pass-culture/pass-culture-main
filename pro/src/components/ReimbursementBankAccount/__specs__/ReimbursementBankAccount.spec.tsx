@@ -87,7 +87,7 @@ describe('ReimbursementBankAccount', () => {
     expect(screen.getByText(/en cours de validation/)).toBeInTheDocument()
     expect(screen.getByText('Voir le dossier')).toBeInTheDocument()
     expect(
-      screen.queryByText('Lieu rattaché à ce compte bancaire')
+      screen.queryByText('Structure rattéchée à ce compte bancaire')
     ).not.toBeInTheDocument()
   })
 
@@ -102,7 +102,7 @@ describe('ReimbursementBankAccount', () => {
     expect(screen.getByText(/informations manquantes/)).toBeInTheDocument()
     expect(screen.getByText(/Compléter le dossier/)).toBeInTheDocument()
     expect(
-      screen.queryByText('Lieu rattaché à ce compte bancaire')
+      screen.queryByText('Structure rattéchée à ce compte bancaire')
     ).not.toBeInTheDocument()
   })
 
@@ -117,7 +117,7 @@ describe('ReimbursementBankAccount', () => {
     expect(screen.getByText(/en cours de validation/)).toBeInTheDocument()
     expect(screen.getByText('Voir le dossier')).toBeInTheDocument()
     expect(
-      screen.queryByText('Lieu rattaché à ce compte bancaire')
+      screen.queryByText('Structure rattachée à ce compte bancaire')
     ).not.toBeInTheDocument()
   })
 
@@ -134,16 +134,14 @@ describe('ReimbursementBankAccount', () => {
       )
     ).not.toBeInTheDocument()
 
+    expect(screen.getByText(/Structure rattachée/)).toBeInTheDocument()
+
     expect(
-      screen.getByText('Lieu rattaché à ce compte bancaire')
+      screen.getByText('Aucune structure n’est rattachée à ce compte bancaire.')
     ).toBeInTheDocument()
 
     expect(
-      screen.getByText('Aucun lieu n’est rattaché à ce compte bancaire.')
-    ).toBeInTheDocument()
-
-    expect(
-      screen.getByRole('button', { name: 'Rattacher un lieu' })
+      screen.getByRole('button', { name: 'Rattacher une structure' })
     ).toBeInTheDocument()
   })
 
@@ -153,7 +151,7 @@ describe('ReimbursementBankAccount', () => {
 
     expect(
       screen.getByText(
-        'Aucun lieu n’est rattaché à ce compte bancaire. Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire.'
+        'Aucune structure n’est rattachée à ce compte bancaire. Désélectionnez une structure déjà rattachée et rattachez-la à ce compte bancaire.'
       )
     ).toBeInTheDocument()
   })
@@ -174,7 +172,7 @@ describe('ReimbursementBankAccount', () => {
     ).not.toBeInTheDocument()
 
     expect(
-      screen.getByText('Certains de vos lieux ne sont pas rattachés.')
+      screen.getByText('Certaines de vos structures ne sont pas rattachées.')
     ).toBeInTheDocument()
     expect(screen.getByText('Le Petit Rintintin')).toBeInTheDocument()
 
@@ -188,7 +186,7 @@ describe('ReimbursementBankAccount', () => {
     renderReimbursementBankAccount(bankAccount, managedVenues)
 
     expect(
-      screen.getByText('Certains de vos lieux ne sont pas rattachés.')
+      screen.getByText('Certaines de vos structures ne sont pas rattachées.')
     ).toBeInTheDocument()
   })
 
@@ -222,7 +220,7 @@ describe('ReimbursementBankAccount', () => {
     ).not.toBeInTheDocument()
 
     expect(
-      screen.queryByText('Certains de vos lieux ne sont pas rattachés.')
+      screen.queryByText('Certaines de vos structures ne sont pas rattachées.')
     ).not.toBeInTheDocument()
   })
 
@@ -243,7 +241,7 @@ describe('ReimbursementBankAccount', () => {
       renderReimbursementBankAccount(bankAccount, managedVenues)
 
       await userEvent.click(
-        screen.getByRole('button', { name: 'Rattacher un lieu' })
+        screen.getByRole('button', { name: 'Rattacher une structure' })
       )
       expect(mockLogEvent).toHaveBeenCalledWith(
         BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
@@ -298,7 +296,7 @@ describe('ReimbursementBankAccount', () => {
     renderReimbursementBankAccount(bankAccount, managedVenues)
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Rattacher un lieu' })
+      screen.getByRole('button', { name: 'Rattacher une structure' })
     )
     expect(mockUpdateButtonClick).toHaveBeenCalled()
   })
@@ -307,12 +305,10 @@ describe('ReimbursementBankAccount', () => {
     bankAccount.linkedVenues = []
     renderReimbursementBankAccount(bankAccount, [])
 
-    expect(
-      screen.getByText('Lieu rattaché à ce compte bancaire')
-    ).toBeInTheDocument()
+    expect(screen.getByText(/Structure rattachée/)).toBeInTheDocument()
 
     expect(
-      screen.queryByRole('button', { name: 'Rattacher un lieu' })
+      screen.queryByRole('button', { name: 'Rattacher une structure' })
     ).not.toBeInTheDocument()
 
     expect(
@@ -330,16 +326,14 @@ describe('ReimbursementBankAccount', () => {
     ).not.toBeInTheDocument()
 
     expect(
-      screen.queryByText('Certains de vos lieux ne sont pas rattachés.')
+      screen.queryByText('Certaines de vos structures ne sont pas rattachées.')
     ).not.toBeInTheDocument()
   })
 
-  it('should display the correct button with WIP_ENABLE_OFFER_ADDRESS', () => {
+  it('should display the correct button', () => {
     bankAccount.linkedVenues = []
     managedVenues[0].bankAccountId = null
-    renderReimbursementBankAccount(bankAccount, managedVenues, 0, false, {
-      features: ['WIP_ENABLE_OFFER_ADDRESS'],
-    })
+    renderReimbursementBankAccount(bankAccount, managedVenues, 0, false)
 
     expect(
       screen.getByText(/Aucune structure n’est rattachée à ce compte bancaire./)
@@ -348,7 +342,7 @@ describe('ReimbursementBankAccount', () => {
   })
 
   describe('plurals', () => {
-    it('should display "lieux" plurals', () => {
+    it('should display "structures" plurals', () => {
       // Adds a second linked venue
       bankAccount.linkedVenues.push({
         id: 316,
@@ -360,31 +354,7 @@ describe('ReimbursementBankAccount', () => {
       })
       renderReimbursementBankAccount(bankAccount, managedVenues, 0, false)
 
-      expect(
-        screen.getByText('Lieux rattachés à ce compte bancaire')
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText('Certains de vos lieux ne sont pas rattachés.')
-      ).toBeInTheDocument()
-    })
-
-    it('should display "structures" plurals (WIP_ENABLE_OFFER_ADDRESS)', () => {
-      // Adds a second linked venue
-      bankAccount.linkedVenues.push({
-        id: 316,
-        commonName: 'Le Petit Rintintin 2',
-      })
-      // Adds a venue not linked to a bank account
-      managedVenues.push({
-        ...defaultManagedVenues,
-      })
-      renderReimbursementBankAccount(bankAccount, managedVenues, 0, false, {
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
-
-      expect(
-        screen.getByText('Structures rattachées à ce compte bancaire')
-      ).toBeInTheDocument()
+      expect(screen.getByText(/Structures rattachées/)).toBeInTheDocument()
     })
   })
 })

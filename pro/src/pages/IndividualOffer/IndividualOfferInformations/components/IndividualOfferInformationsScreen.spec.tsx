@@ -104,7 +104,28 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     })
 
     vi.spyOn(api, 'getVenues').mockResolvedValue({
-      venues: [{ ...venueListItemFactory({ id: 1 }) }],
+      venues: [
+        {
+          ...venueListItemFactory({
+            id: 1,
+            publicName: 'Lieu Nom Public Pour Test',
+          }),
+          address: {
+            banId: '75101_9575_00003',
+            city: 'Paris',
+            id: 945,
+            id_oa: 1,
+            inseeCode: '75056',
+            isLinkedToVenue: false,
+            isManualEdition: false,
+            label: 'MINISTERE DE LA CULTURE',
+            latitude: 48.87171,
+            longitude: 2.30829,
+            postalCode: '75001',
+            street: '3 Rue de Valois',
+          },
+        },
+      ],
     })
   })
 
@@ -133,36 +154,8 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display offer location if venue is physical and WIP_ENABLE_OFFER_ADDRESS is active', async () => {
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
-      venues: [
-        {
-          ...venueListItemFactory({
-            // id should be the same as in offer
-            id: 1,
-            publicName: 'Lieu Nom Public Pour Test',
-          }),
-          address: {
-            banId: '75101_9575_00003',
-            city: 'Paris',
-            id: 945,
-            id_oa: 1,
-            inseeCode: '75056',
-            isLinkedToVenue: false,
-            isManualEdition: false,
-            label: 'MINISTERE DE LA CULTURE',
-            latitude: 48.87171,
-            longitude: 2.30829,
-            postalCode: '75001',
-            street: '3 Rue de Valois',
-          },
-        },
-      ],
-    })
-
-    renderUsefulInformationScreen(props, contextValue, {
-      features: ['WIP_ENABLE_OFFER_ADDRESS'],
-    })
+  it('should display offer location if venue is physical', async () => {
+    renderUsefulInformationScreen(props, contextValue)
 
     // Block should be visible at this point
     expect(
@@ -214,14 +207,28 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       /Informations de retrait/
     )
 
+    await userEvent.click(
+      screen.getByRole('radio', {
+        name: 'Lieu Nom Public Pour Test – 3 Rue de Valois 75001 Paris',
+      })
+    )
     await userEvent.type(withdrawalField, 'My information')
     await userEvent.click(screen.getByLabelText(/Visuel/))
     await userEvent.click(screen.getByLabelText(/Psychique ou cognitif/))
-
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
     expect(api.patchOffer).toHaveBeenCalledOnce()
     expect(api.patchOffer).toHaveBeenCalledWith(3, {
+      address: {
+        city: 'Paris',
+        isManualEdition: undefined,
+        isVenueAddress: true,
+        label: 'MINISTERE DE LA CULTURE',
+        latitude: '48.87171',
+        longitude: '2.30829',
+        postalCode: '75001',
+        street: '3 Rue de Valois',
+      },
       audioDisabilityCompliant: true,
       bookingContact: undefined,
       bookingEmail: null,
@@ -340,9 +347,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
           isManualEdition: true,
         })
 
-      renderUsefulInformationScreen(propsWithOfferAddress, contextValue, {
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
+      renderUsefulInformationScreen(propsWithOfferAddress, contextValue)
 
       const cityField = await screen.findByRole('textbox', {
         name: /Ville/,
@@ -377,9 +382,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
           isManualEdition: true,
         })
 
-      renderUsefulInformationScreen(propsWithOfferAddress, contextValue, {
-        features: ['WIP_ENABLE_OFFER_ADDRESS'],
-      })
+      renderUsefulInformationScreen(propsWithOfferAddress, contextValue)
 
       const withdrawalInformationsField = await screen.findByRole('textbox', {
         name: /Informations de retrait/,

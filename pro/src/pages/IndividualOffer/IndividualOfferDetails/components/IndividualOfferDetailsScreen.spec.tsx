@@ -139,7 +139,7 @@ const MOCK_DATA = {
 const LABELS = {
   title: /Titre de l’offre/,
   description: /Description/,
-  venue: /Lieu/,
+  venue: /Qui propose l’offre ?/,
   category: /Catégorie/,
   subcategory: /Sous-catégorie/,
   ean: /EAN/,
@@ -344,7 +344,7 @@ describe('IndividualOfferDetails', () => {
     await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
     expect(screen.getByText('Veuillez renseigner un titre')).toBeInTheDocument()
     expect(
-      screen.getByText('Veuillez sélectionner un lieu')
+      screen.getByText('Veuillez sélectionner une structure')
     ).toBeInTheDocument()
     expect(
       screen.getByText('Veuillez sélectionner un type de spectacle')
@@ -381,7 +381,10 @@ describe('IndividualOfferDetails', () => {
       'My super description'
     )
 
-    await userEvent.selectOptions(await screen.findByLabelText(/Lieu/), '189')
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Qui propose l’offre ?/),
+      '189'
+    )
 
     await userEvent.selectOptions(
       await screen.findByLabelText('Catégorie *'),
@@ -867,7 +870,7 @@ describe('IndividualOfferDetails', () => {
       contextValue,
     })
 
-    expect(screen.queryByText(/Lieu/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Qui propose l’offre ?/)).not.toBeInTheDocument()
   })
 
   it('should not render venue field when there is just one physical venue', () => {
@@ -882,7 +885,7 @@ describe('IndividualOfferDetails', () => {
       contextValue,
     })
 
-    expect(screen.queryByText(/Lieu/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Qui propose l’offre ?/)).not.toBeInTheDocument()
   })
 
   it('should not render venue field when there is one physical venue and one virtual venue', () => {
@@ -900,7 +903,7 @@ describe('IndividualOfferDetails', () => {
       contextValue,
     })
 
-    expect(screen.queryByText(/Lieu/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Qui propose l’offre ?/)).not.toBeInTheDocument()
   })
 
   describe('onboarding', () => {

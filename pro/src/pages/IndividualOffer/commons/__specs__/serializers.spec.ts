@@ -191,6 +191,23 @@ describe('IndividualOffer:commons:serializers', () => {
       ).toEqual(patchBody)
     })
 
+    it('should serialize patchBody with empty address when venue is digital', () => {
+      formValues = {
+        ...formValues,
+        locationLabel: '',
+        manuallySetAddress: false,
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { address, ...body } = patchBody
+
+      expect(
+        serializePatchOffer({
+          offer: getIndividualOfferFactory({ isDigital: true }),
+          formValues,
+        })
+      ).toEqual(body)
+    })
+
     it('should send isVenueAddress flag set to true when user select the venue location', () => {
       formValues = {
         ...formValues,
@@ -211,7 +228,7 @@ describe('IndividualOffer:commons:serializers', () => {
       ).toEqual(patchBody)
     })
 
-    it('should send isVenueAddress flag set to false when user select another location (WIP_ENABLE_OFFER_ADDRESS)', () => {
+    it('should send isVenueAddress flag set to false when user select another location', () => {
       formValues = {
         ...formValues,
         offerLocation: OFFER_LOCATION.OTHER_ADDRESS, // user choosed to set another address

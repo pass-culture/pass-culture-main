@@ -9,7 +9,6 @@ import {
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
 import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferRefundWarning } from 'components/IndividualOffer/UsefulInformationScreen/UsefulInformationForm/components/OfferRefundWarning'
@@ -54,7 +53,6 @@ export const UsefulInformationForm = ({
     setFieldValue,
     handleChange,
   } = useFormikContext<UsefulInformationFormValues>()
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const accessibilityOptionsGroups = useAccessibilityOptions(setFieldValue)
 
   const { subCategories } = useIndividualOfferContext()
@@ -99,7 +97,7 @@ export const UsefulInformationForm = ({
 
   return (
     <>
-      {isOfferAddressEnabled && !offer.isDigital && (
+      {!offer.isDigital && (
         <OfferLocation venue={selectedVenue} readOnlyFields={readOnlyFields} />
       )}
       <FormLayout.Section title="Retrait de l’offre">

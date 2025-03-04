@@ -55,7 +55,6 @@ export const OFFER_STATUS_DRAFT = OfferStatus.DRAFT
 
 const ALL_OFFERS = ''
 const ALL_VENUES = 'all'
-const ALL_STRUCTURES = 'all'
 export const ALL_OFFERER_ADDRESSES = 'all'
 export const ALL_OFFERERS = 'all'
 const ALL_CATEGORIES = 'all'
@@ -113,9 +112,9 @@ export const ALL_VENUES_OPTION: SelectOption = {
   value: ALL_VENUES,
 }
 
-export const ALL_STRUCTURES_OPTION: SelectOption = {
+export const ALL_OFFERERS_OPTION: SelectOption = {
   label: 'Toutes les structures',
-  value: ALL_STRUCTURES,
+  value: ALL_OFFERERS,
 }
 
 export const ALL_OFFERER_ADDRESS_OPTION: SelectOption = {

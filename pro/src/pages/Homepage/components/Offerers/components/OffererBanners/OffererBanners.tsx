@@ -1,5 +1,4 @@
 import { GetOffererResponseModel } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 
@@ -17,7 +16,6 @@ export const OffererBanners = ({
   offerer,
 }: OffererBannersProps) => {
   const hasAtLeastOnePhysicalVenue = hasOffererAtLeastOnePhysicalVenue(offerer)
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   if (!isUserOffererValidated) {
     return (
@@ -35,10 +33,8 @@ export const OffererBanners = ({
         ]}
       >
         <strong>
-          {isOfferAddressEnabled
-            ? 'Votre rattachement'
-            : 'Le rattachement à votre structure'}{' '}
-          est en cours de traitement par les équipes du pass Culture
+          Votre rattachement est en cours de traitement par les équipes du pass
+          Culture
         </strong>
         <br />
         Un email vous sera envoyé lors de la validation de votre rattachement.
@@ -68,16 +64,14 @@ export const OffererBanners = ({
         <br />
         {hasAtLeastOnePhysicalVenue ? (
           <>
-            {isOfferAddressEnabled
-              ? 'Vos offres seront publiées sous réserve de validation de votre structure.'
-              : 'Toutes les offres créées à l’échelle de vos lieux seront publiées sous réserve de validation de votre structure.'}
+            Vos offres seront publiées sous réserve de validation de votre
+            structure.
           </>
         ) : (
           <>
-            Nous vous invitons à créer{' '}
-            {isOfferAddressEnabled ? 'une structure' : 'un lieu'} afin de
-            pouvoir proposer des offres physiques ou des évènements. Vous pouvez
-            dès à présent créer des offres numériques.
+            Nous vous invitons à créer une structure afin de pouvoir proposer
+            des offres physiques ou des évènements. Vous pouvez dès à présent
+            créer des offres numériques.
             <br />
             L’ensemble de ces offres seront publiées sous réserve de validation
             de votre structure.
@@ -95,7 +89,7 @@ export const OffererBanners = ({
         links={[
           {
             href: `https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-`,
-            label: `En savoir plus sur la création d’${isOfferAddressEnabled ? 'une structure' : 'un lieu'}`,
+            label: `En savoir plus sur la création d’une structure`,
             'aria-label':
               'Acteurs Culturels: Comment ajouter de nouveaux lieux sur votre espace et les paramétrer ? (Nouvelle fenêtre, site https://aide.passculture.app)',
             isExternal: true,
@@ -103,10 +97,9 @@ export const OffererBanners = ({
         ]}
       >
         <p>
-          Nous vous invitons à créer{' '}
-          {isOfferAddressEnabled ? 'une structure' : 'un lieu'}, cela vous
-          permettra ensuite de créer des offres physiques ou des évènements qui
-          seront réservables.
+          Nous vous invitons à créer une structure, cela vous permettra ensuite
+          de créer des offres physiques ou des évènements qui seront
+          réservables.
         </p>
         <br />
         <p>

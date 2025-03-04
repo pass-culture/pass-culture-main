@@ -1,5 +1,4 @@
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getIndividualOfferImage'
 
 import style from './OfferAppPreview.module.scss'
@@ -13,10 +12,7 @@ interface OfferAppPreviewProps {
 export const OfferAppPreview = ({
   offer,
 }: OfferAppPreviewProps): JSX.Element => {
-  const { venue } = offer
   const image = getIndividualOfferImage(offer)
-
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const cropPreviewText = (text: string, maxLength = 300): string => {
     if (text.trim().length > maxLength) {
@@ -60,8 +56,7 @@ export const OfferAppPreview = ({
 
         {!offer.isDigital && (
           <VenueDetails
-            venue={venue}
-            address={isOfferAddressEnabled ? offer.address : undefined}
+            address={offer.address}
             withdrawalDetails={
               offer.withdrawalDetails
                 ? cropPreviewText(offer.withdrawalDetails)

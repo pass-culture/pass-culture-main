@@ -17,7 +17,6 @@ describe('Create individual offers with OA', () => {
         login = response.body.user.email
       }
     )
-    cy.setFeatureFlags([{ name: 'WIP_ENABLE_OFFER_ADDRESS', isActive: true }])
   })
 
   beforeEach(() => {
@@ -74,10 +73,7 @@ describe('Create individual offers with OA', () => {
     cy.wait(['@getOffer', '@patchOffer'])
 
     cy.stepLog({ message: 'I fill in prices' })
-    cy.findByLabelText('Intitulé du tarif').should(
-      'have.value',
-      'Tarif unique'
-    )
+    cy.findByLabelText('Intitulé du tarif').should('have.value', 'Tarif unique')
 
     cy.findByLabelText('Prix par personne').type('100')
 

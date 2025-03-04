@@ -2563,14 +2563,7 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
         invoice_date = (invoice.date + datetime.timedelta(days=2)).strftime("%d/%m/%Y")
     period_start, period_end = get_invoice_period(batch.cutoff)
 
-    ff_wording = {
-        "venue": "structure" if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active() else "lieu",
-        "venues": "Structures" if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active() else "Lieux",
-        "offerer": "Entité juridique" if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active() else "Structure",
-    }
-
     return dict(
-        ff_wording=ff_wording,
         invoice=invoice,
         is_caledonian_invoice=is_caledonian_invoice,
         cashflows=cashflows,

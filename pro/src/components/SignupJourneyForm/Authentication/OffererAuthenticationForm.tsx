@@ -31,7 +31,6 @@ export interface OffererAuthenticationFormValues
 
 export const OffererAuthenticationForm = (): JSX.Element => {
   const formik = useFormikContext<OffererAuthenticationFormValues>()
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
 
   const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
@@ -63,22 +62,18 @@ export const OffererAuthenticationForm = (): JSX.Element => {
           suggestionLimit={5}
           disabled={manuallySetAddress.value}
         />
-        {isOfferAddressEnabled && (
-          <>
-            <Button
-              variant={ButtonVariant.QUATERNARY}
-              icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
-              onClick={toggleManuallySetAddress}
-            >
-              {manuallySetAddress.value ? (
-                <>Revenir à la sélection automatique</>
-              ) : (
-                <>Vous ne trouvez pas votre adresse ?</>
-              )}
-            </Button>
-            {manuallySetAddress.value && <AddressManual />}
-          </>
-        )}
+        <Button
+          variant={ButtonVariant.QUATERNARY}
+          icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
+          onClick={toggleManuallySetAddress}
+        >
+          {manuallySetAddress.value ? (
+            <>Revenir à la sélection automatique</>
+          ) : (
+            <>Vous ne trouvez pas votre adresse ?</>
+          )}
+        </Button>
+        {manuallySetAddress.value && <AddressManual />}
         {isOpenToPublicEnabled && <OpenToPublicToggle />}
       </FormLayout.Row>
     </FormLayout.Section>

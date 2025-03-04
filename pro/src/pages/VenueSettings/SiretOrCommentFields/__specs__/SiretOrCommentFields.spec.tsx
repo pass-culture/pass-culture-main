@@ -93,9 +93,11 @@ describe('components | SiretOrCommentFields', () => {
       props,
       validationSchema,
     })
-    const siretField = screen.getByLabelText('SIRET du lieu *')
+    const siretField = screen.getByLabelText('SIRET de la structure *')
     expect(siretField).toBeInTheDocument()
-    const commentField = screen.queryByText('Commentaire du lieu sans SIRET')
+    const commentField = screen.queryByText(
+      'Commentaire de la structure sans SIRET'
+    )
     expect(commentField).not.toBeInTheDocument()
   })
 
@@ -108,13 +110,13 @@ describe('components | SiretOrCommentFields', () => {
     })
 
     const toggle = screen.getByRole('button', {
-      name: 'Ce lieu possède un SIRET',
+      name: 'Cette structure possède un SIRET',
     })
     await userEvent.click(toggle)
-    const siretField = screen.queryByText('SIRET du lieu')
+    const siretField = screen.queryByText('SIRET de la structure')
     expect(siretField).not.toBeInTheDocument()
     const commentField = screen.getByLabelText(
-      'Commentaire du lieu sans SIRET',
+      'Commentaire de la structure sans SIRET',
       {
         exact: false,
       }
@@ -132,7 +134,7 @@ describe('components | SiretOrCommentFields', () => {
     })
 
     const toggle = screen.getByRole('button', {
-      name: 'Ce lieu possède un SIRET',
+      name: 'Cette structure possède un SIRET',
     })
     expect(toggle).toBeDisabled()
   })
@@ -146,7 +148,7 @@ describe('components | SiretOrCommentFields', () => {
         validationSchema,
       })
 
-      const siretInput = screen.getByLabelText('SIRET du lieu', {
+      const siretInput = screen.getByLabelText('SIRET de la structure', {
         exact: false,
       })
       await userEvent.type(siretInput, '01234567800000')
@@ -198,7 +200,7 @@ describe('components | SiretOrCommentFields', () => {
       })
 
       const siretInput: HTMLInputElement = screen.getByLabelText(
-        'SIRET du lieu',
+        'SIRET de la structure',
         {
           exact: false,
         }
@@ -217,7 +219,7 @@ describe('components | SiretOrCommentFields', () => {
       })
 
       const siretInput: HTMLInputElement = screen.getByLabelText(
-        'SIRET du lieu',
+        'SIRET de la structure',
         {
           exact: false,
         }
@@ -235,7 +237,7 @@ describe('components | SiretOrCommentFields', () => {
         validationSchema,
       })
 
-      const siretInput = screen.getByLabelText('SIRET du lieu', {
+      const siretInput = screen.getByLabelText('SIRET de la structure', {
         exact: false,
       })
       await userEvent.click(siretInput)
@@ -255,7 +257,7 @@ describe('components | SiretOrCommentFields', () => {
         validationSchema,
       })
 
-      const siretInput = screen.getByLabelText('SIRET du lieu', {
+      const siretInput = screen.getByLabelText('SIRET de la structure', {
         exact: false,
       })
       await userEvent.click(siretInput)
@@ -277,7 +279,7 @@ describe('components | SiretOrCommentFields', () => {
         props,
         validationSchema,
       })
-      const siretInput = screen.getByLabelText('SIRET du lieu', {
+      const siretInput = screen.getByLabelText('SIRET de la structure', {
         exact: false,
       })
       await userEvent.click(siretInput)
@@ -300,80 +302,13 @@ describe('components | SiretOrCommentFields', () => {
       })
 
       const toggle = screen.getByRole('button', {
-        name: 'Ce lieu possède un SIRET',
+        name: 'Cette structure possède un SIRET',
       })
       await userEvent.click(toggle)
       await userEvent.click(buttonSubmit)
 
       expect(
         screen.getByText('Veuillez renseigner un commentaire')
-      ).toBeInTheDocument()
-    })
-  })
-
-  describe('OA feature flag', () => {
-    it('should display the right wording without the OA FF', async () => {
-      await renderSiretOrComment({
-        initialValues,
-        onSubmit,
-        props,
-        validationSchema: generateSiretValidationSchema(false, false, null),
-      })
-
-      expect(
-        screen.getByText(
-          /Le SIRET du lieu doit être lié au SIREN de votre structure. Attention, ce SIRET ne sera plus modifiable et ne pourra plus être utilisé pour un autre lieu/
-        )
-      ).toBeInTheDocument()
-
-      const toggle = screen.getByRole('button', {
-        name: 'Ce lieu possède un SIRET',
-      })
-      expect(toggle).toBeInTheDocument()
-
-      expect(screen.getByLabelText(/SIRET du lieu/)).toBeInTheDocument()
-      await userEvent.click(toggle)
-      expect(
-        screen.getByLabelText(/Commentaire du lieu sans SIRET/)
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          /Par exemple : le lieu est un équipement culturel qui n’appartient pas à ma structure/
-        )
-      ).toBeInTheDocument()
-    })
-
-    it('should display the right wording with the OA FF', async () => {
-      await renderSiretOrComment({
-        initialValues,
-        onSubmit,
-        props,
-        validationSchema: generateSiretValidationSchema(false, false, null),
-        options: {
-          features: ['WIP_ENABLE_OFFER_ADDRESS'],
-        },
-      })
-
-      expect(
-        screen.getByText(
-          /Le SIRET de la structure doit être lié au SIREN de votre entitée juridique. Attention, ce SIRET ne sera plus modifiable et ne pourra plus être utilisé pour une autre structure/
-        )
-      ).toBeInTheDocument()
-
-      const toggle = screen.getByRole('button', {
-        name: 'Cette structure possède un SIRET',
-      })
-      expect(toggle).toBeInTheDocument()
-
-      expect(screen.getByLabelText(/SIRET de la structure/)).toBeInTheDocument()
-      await userEvent.click(toggle)
-      expect(
-        screen.getByLabelText(/Commentaire de la structure sans SIRET/)
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          /Par exemple : la structure est un équipement culturel qui n’appartient pas à mon entitée juridique/
-        )
       ).toBeInTheDocument()
     })
   })

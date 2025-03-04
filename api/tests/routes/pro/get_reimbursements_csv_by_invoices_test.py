@@ -68,7 +68,6 @@ def test_with_pricings(client):
     queries += 1  # check user has acces to offerers
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
-    queries += 1  # feature flag
     with testing.assert_num_queries(queries):
         response = client.get(f"/v2/reimbursements/csv?{invoices_references_str}")
         assert response.status_code == 200
@@ -148,7 +147,6 @@ def test_with_pricings_collective_use_case(client):
     queries += 1  # check user has access to offerers
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
-    queries += 1  # feature flag
     with testing.assert_num_queries(queries):
         response = client.get(f"/v2/reimbursements/csv?{invoices_references_str}")
         assert response.status_code == 200
@@ -235,7 +233,6 @@ def test_return_only_searched_invoice(client):
     queries += 1  # check user has access to offerers
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
-    queries += 1  # feature flag
     with testing.assert_num_queries(queries):
         response = client.get(f"/v2/reimbursements/csv?invoicesReferences={invoice_reference}")
         assert response.status_code == 200

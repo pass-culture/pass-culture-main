@@ -60,7 +60,7 @@ const renderOffers = async (
           offererNames: [],
           isOnboarded: true,
         },
-      }
+      },
     }
   )
 
@@ -173,7 +173,8 @@ describe('route CollectiveOffers', () => {
       const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
       })
-      const venueSelect = screen.getByLabelText('Lieu')
+
+      const venueSelect = screen.getByLabelText('Structure')
 
       await userEvent.selectOptions(venueSelect, firstVenueOption)
       await userEvent.click(screen.getByText('Rechercher'))

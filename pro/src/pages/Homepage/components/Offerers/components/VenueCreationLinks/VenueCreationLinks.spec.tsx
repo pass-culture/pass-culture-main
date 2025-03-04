@@ -29,7 +29,7 @@ describe('VenueCrationLinks', () => {
 
     renderWithProviders(<VenueCreationLinks offerer={offerer} />)
 
-    expect(screen.queryByText('Ajouter un lieu')).not.toBeInTheDocument()
+    expect(screen.queryByText('Ajouter une structure')).not.toBeInTheDocument()
   })
 
   it('should display creation links when user has a venue created', async () => {
@@ -40,7 +40,7 @@ describe('VenueCrationLinks', () => {
 
     renderWithProviders(<VenueCreationLinks offerer={offerer} />)
 
-    await userEvent.click(screen.getByText('Ajouter un lieu'))
+    await userEvent.click(screen.getByText('Ajouter une structure'))
 
     expect(mockLogEvent).toHaveBeenNthCalledWith(
       1,

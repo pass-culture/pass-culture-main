@@ -27,7 +27,6 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const { logEvent } = useAnalytics()
   const location = useLocation()
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const virtualVenue = getVirtualVenueFromOfferer(offerer)
   const physicalVenues = getPhysicalVenuesFromOfferer(offerer)
@@ -55,21 +54,19 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
             })
           }}
         >
-          {isOfferAddressEnabled ? 'Ajouter une structure' : 'Ajouter un lieu'}
+          Ajouter une structure
         </ButtonLink>
       </div>
-      {isOfferAddressEnabled && (
-        <div className={styles['add-venue-button']}>
-          <DialogBuilder
-            className={dialogNoVenueStyles['dialog']}
-            trigger={
-              <Button variant={ButtonVariant.SECONDARY}>Ajouter un lieu</Button>
-            }
-          >
-            <DialogNoVenue />
-          </DialogBuilder>
-        </div>
-      )}
+      <div className={styles['add-venue-button']}>
+        <DialogBuilder
+          className={dialogNoVenueStyles['dialog']}
+          trigger={
+            <Button variant={ButtonVariant.SECONDARY}>Ajouter un lieu</Button>
+          }
+        >
+          <DialogNoVenue />
+        </DialogBuilder>
+      </div>
     </div>
   )
 }

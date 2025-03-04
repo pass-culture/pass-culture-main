@@ -10,12 +10,10 @@ const isAnyTrue = (values: Record<string, boolean>): boolean =>
 
 type ValidationSchemaProps = {
   subcategories: string[]
-  isOfferAddressEnabled?: boolean
   isDigitalOffer?: boolean
 }
 export const getValidationSchema = ({
   subcategories,
-  isOfferAddressEnabled = false,
   isDigitalOffer = false,
 }: ValidationSchemaProps) => {
   const validationSchema = {
@@ -75,6 +73,6 @@ export const getValidationSchema = ({
 
   return yup.object().shape({
     ...validationSchema,
-    ...(isOfferAddressEnabled && !isDigitalOffer ? locationSchema : {}),
+    ...(!isDigitalOffer ? locationSchema : {}),
   })
 }

@@ -11,12 +11,12 @@ import {
 import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   ALL_OFFERER_ADDRESS_OPTION,
-  ALL_VENUES_OPTION,
   DEFAULT_SEARCH_FILTERS,
 } from 'commons/core/Offers/constants'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import * as useNotification from 'commons/hooks/useNotification'
-import { listOffersOfferFactory ,
+import {
+  listOffersOfferFactory,
   venueListItemFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from 'commons/utils/factories/offererAddressFactories'
@@ -29,7 +29,6 @@ import {
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 import { computeAddressDisplayName } from 'repository/venuesService'
-
 
 import {
   IndividualOffersContainer,
@@ -71,25 +70,6 @@ const categoriesAndSubcategories = {
   ],
   subcategories: [],
 }
-
-const proVenues = [
-  {
-    id: 'JI',
-    name: 'Ma venue',
-    offererName: 'Mon offerer',
-    isVirtual: false,
-  },
-  {
-    id: 'JQ',
-    name: 'Ma venue virtuelle',
-    offererName: 'Mon offerer',
-    isVirtual: true,
-  },
-]
-const proVenuesOptions = [
-  { value: 'JI', label: 'Ma venue' },
-  { value: 'JQ', label: 'Mon offerer - Offre numérique' },
-]
 
 const offererAddress: GetOffererAddressResponseModel[] = [
   offererAddressFactory({
@@ -139,7 +119,6 @@ describe('IndividualOffersScreen', () => {
       offers: offersRecap,
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
       redirectWithSelectedFilters: vi.fn(),
-      venues: proVenuesOptions,
       offererAddresses: offererAddressOptions,
       categories: categoriesAndSubcategories.categories.map(
         ({ id, proLabel }) => ({ value: id, label: proLabel })
@@ -163,7 +142,7 @@ describe('IndividualOffersScreen', () => {
     const headers = screen.getAllByRole('columnheader')
     expect(headers[0].textContent).toEqual('Tout sélectionner')
     expect(headers[1].textContent).toEqual('Nom de l’offre')
-    expect(headers[2].textContent).toEqual('Lieu')
+    expect(headers[2].textContent).toEqual('Localisation')
     expect(headers[3].textContent).toEqual('Stocks')
     expect(headers[4].textContent).toEqual('Statut')
     expect(headers[5].textContent).toEqual('Actions')
@@ -269,21 +248,21 @@ describe('IndividualOffersScreen', () => {
 
     await searchAndChecked({ nameOrIsbn: 'Test' })
 
-    expect(screen.getByLabelText(/Lieu/)).toBeInTheDocument()
-    await userEvent.selectOptions(screen.getByLabelText(/Lieu/), 'JI')
+    expect(screen.getByLabelText(/Localisation/)).toBeInTheDocument()
+    await userEvent.selectOptions(screen.getByLabelText(/Localisation/), '1')
 
     await searchAndChecked({
       nameOrIsbn: 'Test',
-      venueId: 'JI',
+      offererAddressId: '1',
     })
 
-    await userEvent.selectOptions(screen.getByLabelText(/Lieu/), 'JQ')
+    await userEvent.selectOptions(screen.getByLabelText(/Localisation/), '2')
 
     await userEvent.click(screen.getByText('Rechercher'))
 
     await searchAndChecked({
       nameOrIsbn: 'Test',
-      venueId: 'JQ',
+      offererAddressId: '2',
     })
 
     expect(screen.getByLabelText(/Mode de création/)).toBeInTheDocument()
@@ -295,7 +274,7 @@ describe('IndividualOffersScreen', () => {
 
     await searchAndChecked({
       nameOrIsbn: 'Test',
-      venueId: 'JQ',
+      offererAddressId: '2',
       creationMode: 'imported',
     })
 
@@ -309,7 +288,7 @@ describe('IndividualOffersScreen', () => {
 
     await searchAndChecked({
       nameOrIsbn: 'Test',
-      venueId: 'JQ',
+      offererAddressId: '2',
       creationMode: 'imported',
       periodBeginningDate: '2025-02-02',
       periodEndingDate: '2025-02-03',
@@ -323,7 +302,7 @@ describe('IndividualOffersScreen', () => {
 
     await searchAndChecked({
       nameOrIsbn: 'Test',
-      venueId: 'JQ',
+      offererAddressId: '2',
       creationMode: 'imported',
       periodBeginningDate: '2025-02-02',
       periodEndingDate: '2025-02-03',
@@ -336,34 +315,6 @@ describe('IndividualOffersScreen', () => {
     await searchAndChecked({})
 
     redirectWithSelectedFiltersSpy.mockRestore()
-  })
-
-  it('should render venue filter with default option selected and given venues as options', () => {
-    const expectedSelectOptions = [
-      { id: [ALL_VENUES_OPTION.value], value: ALL_VENUES_OPTION.label },
-      { id: [proVenues[0].id], value: proVenues[0].name },
-      {
-        id: [proVenues[1].id],
-        value: `${proVenues[1].offererName} - Offre numérique`,
-      },
-    ]
-
-    renderOffers(props)
-
-    const defaultOption = screen.getByDisplayValue(
-      expectedSelectOptions[0].value
-    )
-    expect(defaultOption).toBeInTheDocument()
-
-    const firstVenueOption = screen.getByRole('option', {
-      name: expectedSelectOptions[1].value,
-    })
-    expect(firstVenueOption).toBeInTheDocument()
-
-    const secondVenueOption = screen.getByRole('option', {
-      name: expectedSelectOptions[2].value,
-    })
-    expect(secondVenueOption).toBeInTheDocument()
   })
 
   it('should render offerer address filter with default option selected and given venues as options', () => {
@@ -382,27 +333,13 @@ describe('IndividualOffersScreen', () => {
       },
     ]
 
-    renderOffers(props, {
-      features: ['WIP_ENABLE_OFFER_ADDRESS'],
-    })
+    renderOffers(props)
 
     const addressSelect = screen.getByLabelText('Localisation')
     expect(addressSelect).not.toBeDisabled()
 
     const addressOptions = addressSelect.querySelectorAll('option')
     expect(addressOptions.length).toBe(expectedSelectOptions.length)
-  })
-
-  it('should render venue filter with given venue selected', () => {
-    const expectedSelectOptions = [
-      { id: [proVenues[0].id], value: proVenues[0].name },
-    ]
-    const filters = { ...DEFAULT_SEARCH_FILTERS, venueId: proVenues[0].id }
-
-    renderOffers({ ...props, initialSearchFilters: filters })
-
-    const venueSelect = screen.getByDisplayValue(expectedSelectOptions[0].value)
-    expect(venueSelect).toBeInTheDocument()
   })
 
   it('should render creation mode filter with given creation mode selected', () => {
@@ -661,7 +598,7 @@ describe('IndividualOffersScreen', () => {
     vi.spyOn(api, 'getVenues').mockResolvedValue({
       venues: [
         venueListItemFactory({ name: 'Une venue physique & permanente' }),
-      ]
+      ],
     })
     vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue({
       id: 42,

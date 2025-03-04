@@ -5,14 +5,10 @@ import { VenueSettingsFormValues } from './types'
 
 export const setInitialFormValues = ({
   venue,
-  isOfferAddressEnabled = false,
 }: {
   venue: GetVenueResponseModel
-  isOfferAddressEnabled?: boolean
 }): VenueSettingsFormValues => {
-  // if WIP_ENABLE_OFFER_ADDRESS is enabled, it will takes address fields from "venue.address" object instead of "venue"
-  const addressFields =
-    isOfferAddressEnabled && venue.address ? venue.address : venue
+  const addressFields = venue.address || venue
 
   let autoCompleteStreet = addressFields.street
     ? addressFields.street + ' '

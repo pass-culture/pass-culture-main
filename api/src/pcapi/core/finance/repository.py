@@ -15,7 +15,6 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.models as users_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 
@@ -312,29 +311,28 @@ def _get_sent_pricings_for_individual_bookings(
         .join(bookings_models.Booking.venue)
     )
 
-    if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        sub = sqla.select(
-            offerers_models.OffererAddress.id,
-            geography_models.Address.street,
-            geography_models.Address.postalCode,
-            geography_models.Address.city,
-        ).join_from(
-            offerers_models.OffererAddress,
-            geography_models.Address,
-            offerers_models.OffererAddress.addressId == geography_models.Address.id,
-        )
-        sub_venue = sub.subquery("addresses_venue")
-        sub_offer = sub.subquery("addresses_offer")
-        columns.extend(
-            [
-                sqla_func.coalesce(sub_offer.c.street, sub_venue.c.street).label("address_street"),
-                sqla_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode).label("address_postal_code"),
-                sqla_func.coalesce(sub_offer.c.city, sub_venue.c.city).label("address_city"),
-            ]
-        )
-        query = query.join(sub_venue, sub_venue.c.id == offerers_models.Venue.offererAddressId, isouter=True).join(
-            sub_offer, sub_offer.c.id == offers_models.Offer.offererAddressId, isouter=True
-        )
+    sub = sqla.select(
+        offerers_models.OffererAddress.id,
+        geography_models.Address.street,
+        geography_models.Address.postalCode,
+        geography_models.Address.city,
+    ).join_from(
+        offerers_models.OffererAddress,
+        geography_models.Address,
+        offerers_models.OffererAddress.addressId == geography_models.Address.id,
+    )
+    sub_venue = sub.subquery("addresses_venue")
+    sub_offer = sub.subquery("addresses_offer")
+    columns.extend(
+        [
+            sqla_func.coalesce(sub_offer.c.street, sub_venue.c.street).label("address_street"),
+            sqla_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode).label("address_postal_code"),
+            sqla_func.coalesce(sub_offer.c.city, sub_venue.c.city).label("address_city"),
+        ]
+    )
+    query = query.join(sub_venue, sub_venue.c.id == offerers_models.Venue.offererAddressId, isouter=True).join(
+        sub_offer, sub_offer.c.id == offers_models.Offer.offererAddressId, isouter=True
+    )
 
     return (
         query.order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc()).with_entities(
@@ -496,31 +494,29 @@ def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
         .join(bookings_models.Booking.venue)
         .order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc())
     )
-    if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        sub = sqla.select(
-            offerers_models.OffererAddress.id,
-            geography_models.Address.street,
-            geography_models.Address.postalCode,
-            geography_models.Address.city,
-        ).join_from(
-            offerers_models.OffererAddress,
-            geography_models.Address,
-            offerers_models.OffererAddress.addressId == geography_models.Address.id,
-        )
-        sub_venue = sub.subquery("addresses_venue")
-        sub_offer = sub.subquery("addresses_offer")
-        columns.extend(
-            [
-                sqla_func.coalesce(sub_offer.c.street, sub_venue.c.street).label("address_street"),
-                sqla_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode).label("address_postal_code"),
-                sqla_func.coalesce(sub_offer.c.city, sub_venue.c.city).label("address_city"),
-            ]
-        )
-        query = query.join(sub_venue, sub_venue.c.id == offerers_models.Venue.offererAddressId, isouter=True).join(
-            sub_offer, sub_offer.c.id == offers_models.Offer.offererAddressId, isouter=True
-        )
-    query = query.with_entities(
-        *columns,
+    sub = sqla.select(
+        offerers_models.OffererAddress.id,
+        geography_models.Address.street,
+        geography_models.Address.postalCode,
+        geography_models.Address.city,
+    ).join_from(
+        offerers_models.OffererAddress,
+        geography_models.Address,
+        offerers_models.OffererAddress.addressId == geography_models.Address.id,
+    )
+    sub_venue = sub.subquery("addresses_venue")
+    sub_offer = sub.subquery("addresses_offer")
+    columns.extend(
+        [
+            sqla_func.coalesce(sub_offer.c.street, sub_venue.c.street).label("address_street"),
+            sqla_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode).label("address_postal_code"),
+            sqla_func.coalesce(sub_offer.c.city, sub_venue.c.city).label("address_city"),
+        ]
+    )
+    query = (
+        query.join(sub_venue, sub_venue.c.id == offerers_models.Venue.offererAddressId, isouter=True)
+        .join(sub_offer, sub_offer.c.id == offers_models.Offer.offererAddressId, isouter=True)
+        .with_entities(*columns)
     )
     return query.all()
 

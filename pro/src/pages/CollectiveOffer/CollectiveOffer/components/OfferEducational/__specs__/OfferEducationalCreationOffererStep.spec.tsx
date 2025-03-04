@@ -40,7 +40,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
     it('should test eligibility and display venue input if offerer is eligible', async () => {
       renderOfferEducational(props)
 
-      expect(await screen.findByLabelText('Lieu *')).toBeInTheDocument()
+      expect(await screen.findByLabelText('Structure *')).toBeInTheDocument()
     })
 
     it('should test eligibility and display an error message with a link if the offerer is not eligible', async () => {
@@ -79,7 +79,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       renderWithProviders(<OfferEducational {...props} userOfferer={null} />)
       expect(
         await screen.findByText(
-          /Vous ne pouvez pas créer d’offre collective tant que votre structure n’est pas validée./
+          /Vous ne pouvez pas créer d’offre collective tant que votre entité juridique n’est pas validée./
         )
       ).toBeInTheDocument()
       expect(
@@ -112,7 +112,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
         name: 'Quel est le type de votre offre ?',
       })
 
-      const venueSelect = await screen.findByLabelText('Lieu *')
+      const venueSelect = await screen.findByLabelText('Structure *')
 
       expect(venueSelect).toBeInTheDocument()
       expect(venueSelect).toHaveValue(
@@ -145,10 +145,10 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
     it('should require a venue selection from the user', async () => {
       renderOfferEducational(props)
-      const venueSelect = await screen.findByLabelText('Lieu *')
+      const venueSelect = await screen.findByLabelText('Structure *')
 
       expect(venueSelect).toHaveValue('')
-      expect(venueSelect).toHaveDisplayValue('Sélectionner un lieu')
+      expect(venueSelect).toHaveDisplayValue('Sélectionner une structure')
       expect(venueSelect.children).toHaveLength(4)
       expect(venueSelect).toBeEnabled()
       expect(screen.queryByTestId('error-venueId')).not.toBeInTheDocument()
@@ -163,7 +163,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       await userEvent.tab()
 
       expect(
-        await screen.findByText('Veuillez sélectionner un lieu')
+        await screen.findByText('Veuillez sélectionner une structure')
       ).toBeInTheDocument()
 
       await userEvent.selectOptions(venueSelect, venue1Id.toString())
@@ -183,9 +183,9 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
     it('should display venues by alphabeticall order', async () => {
       renderOfferEducational(props)
-      const venueSelect = await screen.findByLabelText('Lieu *')
+      const venueSelect = await screen.findByLabelText('Structure *')
       const venuesOptions = venueSelect.children
-      expect(venuesOptions[0].textContent).toEqual('Sélectionner un lieu')
+      expect(venuesOptions[0].textContent).toEqual('Sélectionner une structure')
       expect(venuesOptions[1].textContent).toEqual('A - Venue 3')
       expect(venuesOptions[2].textContent).toEqual('Venue 1')
       expect(venuesOptions[3].textContent).toEqual('Venue 2')

@@ -5,7 +5,6 @@ import { GetOffererResponseModel, VenueTypeResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { Card } from 'components/Card/Card'
 import { RedirectDialog } from 'components/RedirectDialog/RedirectDialog'
 import { SoftDeletedOffererWarning } from 'components/SoftDeletedOffererWarning/SoftDeletedOffererWarning'
@@ -39,7 +38,6 @@ export const Offerers = ({
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
   const { logEvent } = useAnalytics()
-  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   useEffect(() => {
     if (location.search === '?success') {
@@ -112,31 +110,7 @@ export const Offerers = ({
           )}
 
           {selectedOfferer && !isOffererSoftDeleted && (
-            <>
-              {!isOfferAddressEnabled && (
-                <>
-                  {/*
-                   * The whole sectionning of the homepage should be refactored to account
-                   * for the new blocks introduced by the partner page feature but it
-                   * is too complex to do so for now (it would require adding another level
-                   * of section nesting DOM depending on if the FF is on or not)
-                   * For now we use h3 here with manual margin, but will revise sectioning
-                   * with h2 and the homepage margin style once the WIP_PARTNER_PAGE FF is removed.
-                   */}
-                  <h3 className={styles['title']} style={{ marginTop: '16px' }}>
-                    Vos adresses
-                  </h3>
-
-                  <p>
-                    Renseignez ci-dessous les lieux dans lesquels vous proposez
-                    vos offres. Si le lieu appartient à votre structure une page
-                    partenaire y sera automatiquement associée.
-                  </p>
-                </>
-              )}
-
-              <VenueList offerer={selectedOfferer} />
-            </>
+            <VenueList offerer={selectedOfferer} />
           )}
         </>
       )}

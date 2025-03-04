@@ -13,6 +13,7 @@ import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
+  getOfferVenueFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import {
   renderWithProviders,
@@ -79,7 +80,6 @@ describe('DetailsSummaryScreen', () => {
     renderDetailsSummaryScreen(offer)
 
     expect(screen.getAllByText('Offre de test')).toHaveLength(2)
-    expect(screen.getAllByText('Mon Lieu')).toHaveLength(2) // Both present in main section and in preview section
     expect(screen.getByText('Catégorie A')).toBeInTheDocument()
     expect(screen.getByText('1234567891234')).toBeInTheDocument()
     expect(screen.getByText(/Modifier/)).toBeInTheDocument()
@@ -110,7 +110,7 @@ describe('DetailsSummaryScreen', () => {
     })
   })
 
-  it('should have "Structure" section if WIP_ENABLE_OFFER_ADDRESS FF is active', async () => {
+  it('should have "Structure" section', () => {
     const offer = getIndividualOfferFactory({
       name: 'Offre de test',
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
@@ -122,12 +122,33 @@ describe('DetailsSummaryScreen', () => {
           postalCode: '1',
         }),
       },
+      venue: getOfferVenueFactory({ publicName: undefined }),
     })
 
-    renderDetailsSummaryScreen(offer, {
-      features: ['WIP_ENABLE_OFFER_ADDRESS'],
+    renderDetailsSummaryScreen(offer)
+
+    expect(screen.getByText(/Structure/)).toBeInTheDocument()
+    expect(screen.getByText(/Le nom du lieu/)).toBeInTheDocument()
+  })
+
+  it('should have "Structure" section with publicName', () => {
+    const offer = getIndividualOfferFactory({
+      name: 'Offre de test',
+      subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+      address: {
+        ...getAddressResponseIsLinkedToVenueModelFactory({
+          label: 'mon adresse',
+          city: 'ma ville',
+          street: 'ma street',
+          postalCode: '1',
+        }),
+      },
+      venue: getOfferVenueFactory({ publicName: 'TATA' }),
     })
 
-    expect(await screen.findByText(/Structure/)).toBeInTheDocument()
+    renderDetailsSummaryScreen(offer)
+
+    expect(screen.getByText(/Structure/)).toBeInTheDocument()
+    expect(screen.getByText('TATA')).toBeInTheDocument()
   })
 })
