@@ -1,12 +1,11 @@
-import clsx from 'clsx';
-import Heading from '@theme/Heading';
-import styles from './styles.module.css';
+import Heading from '@theme/Heading'
+import styles from './styles.module.css'
 
 type FeatureItem = {
-  title: string;
-  description: JSX.Element;
-  imageUrl: string;
-};
+  title: string
+  description: JSX.Element
+  imageUrl: string
+}
 
 const FeatureList: FeatureItem[] = [
   {
@@ -14,7 +13,9 @@ const FeatureList: FeatureItem[] = [
     imageUrl: '/img/manage_stock.jpg',
     description: (
       <>
-        With pass Culture API you will be able to create and manage easy all your stocks, whether you are a bookshop, a music shop or a digital platform. 
+        With pass Culture API you will be able to create and manage easy all
+        your stocks, whether you are a bookshop, a music shop or a digital
+        platform.
       </>
     ),
   },
@@ -23,7 +24,9 @@ const FeatureList: FeatureItem[] = [
     imageUrl: '/img/theater.jpg',
     description: (
       <>
-        If you are a concert hall, a theater, a museum, a movie theater, or other cultural partner organizing events, pass Culture API will help you manage your gauge and directly send tickets to beneficiary. 
+        If you are a concert hall, a theater, a museum, a movie theater, or
+        other cultural partner organizing events, pass Culture API will help you
+        manage your gauge and directly send tickets to beneficiary.
       </>
     ),
   },
@@ -32,7 +35,8 @@ const FeatureList: FeatureItem[] = [
     imageUrl: '/img/scholar_group.jpg',
     description: (
       <>
-        The pass Culture API enables you to create bookable offers for scholar groups. 
+        The pass Culture API enables you to create bookable offers for scholar
+        groups.
       </>
     ),
   },
@@ -41,7 +45,12 @@ const FeatureList: FeatureItem[] = [
     imageUrl: '/img/integration_access.jpg',
     description: (
       <>
-        <a href='https://passculture.typeform.com/to/JHmbK9Hg'>Fill this form</a> to obtain your access. You will receive your dedicated API key and an access to your integration environment so you can see the situation for pass Culture users : beneficiary user and cultural actor user.. 
+        <a href="https://passculture.typeform.com/to/JHmbK9Hg">
+          Fill this form
+        </a>{' '}
+        to obtain your access. You will receive your dedicated API key and an
+        access to your integration environment so you can see the situation for
+        pass Culture users : beneficiary user and cultural actor user..
       </>
     ),
   },
@@ -50,7 +59,9 @@ const FeatureList: FeatureItem[] = [
     imageUrl: '/img/your_integration.jpg',
     description: (
       <>
-        In this documentation, you will find tutorials to help you design your integration and all the different resources. Do not hesitate to download our openAPI specifications and reuse it in Postman for instance.
+        In this documentation, you will find tutorials to help you design your
+        integration and all the different resources. Do not hesitate to download
+        our openAPI specifications and reuse it in Postman for instance.
       </>
     ),
   },
@@ -59,36 +70,41 @@ const FeatureList: FeatureItem[] = [
     imageUrl: '/img/production_access.jpg',
     description: (
       <>
-        Once your integration is completed, we will ask you a short documentation of it that we will published on our help center and a quick demo. If your integration is public, we can organize a share communication.
+        Once your integration is completed, we will ask you a short
+        documentation of it that we will published on our help center and a
+        quick demo. If your integration is public, we can organize a share
+        communication.
       </>
     ),
   },
-];
+]
 
-function Feature({title, description, imageUrl}: FeatureItem) {
+function Feature({ title, description, imageUrl }: FeatureItem) {
   return (
-    <div className={clsx('col col--4')}>
+    <li className="col col--4">
       <div className="text--center">
-        <img src={imageUrl} className={styles.featureSvg} />
+        <img src={imageUrl} className={styles['feature-svg']} alt="" />
       </div>
       <div className="text--center padding-horiz--md">
-        <Heading as="h3">{title}</Heading>
+        <Heading as="h2" className={styles['feature-title']}>
+          {title}
+        </Heading>
         <p>{description}</p>
       </div>
-    </div>
-  );
+    </li>
+  )
 }
 
 export default function HomepageFeatures(): JSX.Element {
   return (
     <section className={styles.features}>
       <div className="container">
-        <div className="row">
+        <ul className={`row  ${styles['features-list']}`}>
           {FeatureList.map((props, idx) => (
             <Feature key={idx} {...props} />
           ))}
-        </div>
+        </ul>
       </div>
     </section>
-  );
+  )
 }
