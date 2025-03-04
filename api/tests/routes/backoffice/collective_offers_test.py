@@ -753,6 +753,21 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         assert html_parser.extract_alert(response.data) == "Le filtre FARMOTS est invalide."
 
+    def test_list_offers_by_invalid_operand(self, authenticated_client):
+        query_args = {
+            "search-0-search_field": "REGION",
+            "search-0-operator": "EQUALS",
+            "search-0-region": "Bretagne",
+        }
+        with assert_num_queries(2):  # only session + current user
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
+
+        assert (
+            html_parser.extract_alert(response.data)
+            == "L'opérateur « est égal à » n'est pas supporté par le filtre Région."
+        )
+
     @pytest.mark.parametrize(
         "search_field,operator,operand",
         [
