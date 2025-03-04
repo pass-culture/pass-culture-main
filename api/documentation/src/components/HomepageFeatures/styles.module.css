@@ -5,7 +5,15 @@
   width: 100%;
 }
 
-.featureSvg {
+.feature-title {
+  font-size: 1.25rem;
+}
+
+.feature-svg {
   height: 200px;
   width: 200px;
+}
+
+.features-list {
+  list-style: none;
 }
