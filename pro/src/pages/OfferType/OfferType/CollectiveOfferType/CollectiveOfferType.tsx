@@ -125,7 +125,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
           </Callout>
         )}
       {!offerer?.allowedOnAdage &&
-        (lastDmsApplication ? (
+        (lastDmsApplication && (
           <Callout
             variant={CalloutVariant.INFO}
             links={[
@@ -136,27 +136,6 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
             ]}
           >
             Vous avez une demande de référencement en cours de traitement
-          </Callout>
-        ) : (
-          <Callout
-            links={[
-              {
-                href: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
-                label: 'Faire une demande de référencement',
-                isExternal: true,
-              },
-              {
-                href: 'https://aide.passculture.app/hc/fr/articles/5700215550364',
-                label:
-                  'Ma demande de référencement a été acceptée mais je ne peux toujours pas créer d’offres collectives',
-                isExternal: true,
-              },
-            ]}
-            variant={CalloutVariant.ERROR}
-          >
-            Pour proposer des offres à destination d’un groupe scolaire, vous
-            devez être référencé auprès du ministère de l’Éducation Nationale et
-            du ministère de la Culture.
           </Callout>
         ))}
     </>
