@@ -2,8 +2,10 @@ import { useFormikContext } from 'formik'
 
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
-import { FormLayout } from 'components/FormLayout/FormLayout'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
+import { CheckboxVariant } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+
+import styles from './FormAccessibility.module.scss'
 
 interface FormAccessibilityProps {
   disableForm: boolean
@@ -15,15 +17,19 @@ export const FormAccessibility = ({
   const { setFieldValue } = useFormikContext<OfferEducationalFormValues>()
 
   return (
-    <FormLayout.Section title="À quel type de handicap votre offre est-elle accessible ?">
-      <FormLayout.Row>
-        <CheckboxGroup
-          group={useAccessibilityOptions(setFieldValue)}
-          groupName="accessibility"
-          legend="Cette offre est accessible au public en situation de handicap :"
-          disabled={disableForm}
-        />
-      </FormLayout.Row>
-    </FormLayout.Section>
+    <div className={styles['container']}>
+      <CheckboxGroup
+        group={useAccessibilityOptions(setFieldValue)}
+        legend={
+          <h2 className={styles['subtitle']}>
+            À quel type de handicap votre offre est-elle accessible ? *
+          </h2>
+        }
+        hideAsterisk
+        groupName="accessibility"
+        disabled={disableForm}
+        variant={CheckboxVariant.BOX}
+      />
+    </div>
   )
 }

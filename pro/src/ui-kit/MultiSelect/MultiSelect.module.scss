@@ -45,7 +45,7 @@
   padding: rem.torem(8px) rem.torem(12px);
   background-color: var(--color-white);
   border: 1px solid var(--color-grey-semi-dark);
-  border-radius: rem.torem(10px);
+  border-radius: rem.torem(8px);
   width: 100%;
   cursor: pointer;
   height: rem.torem(42px);
@@ -114,7 +114,7 @@
   color: var(--color-black);
 
   &-disabled {
-    color: var(--color-grey-dark)
+    color: var(--color-grey-dark);
   }
 }
 
