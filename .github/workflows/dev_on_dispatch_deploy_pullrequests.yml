@@ -253,12 +253,12 @@ jobs:
           echo "=== exec: flask sandbox -n ${{ inputs.sandbox }}"
           export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
           start=$(date +%s.%N)
-          envsubst < .github/workflows/templates/pullrequest-db-init-05.yaml | kubectl -n pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} apply -f -
+          envsubst < .github/workflows/templates/pullrequest-db-init-sandbox.yaml | kubectl -n pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} apply -f -
           while true;
           do
-          kubectl logs -n pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} -f jobs/pullrequest-db-init-05-${DATE} && break
+          kubectl logs -n pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} -f jobs/pullrequest-db-init-sandbox-${DATE} && break
           done
-          kubectl wait --for=condition=complete --timeout=1800s -n pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} jobs/pullrequest-db-init-05-${DATE}
+          kubectl wait --for=condition=complete --timeout=1800s -n pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} jobs/pullrequest-db-init-sandbox-${DATE}
           end=$(date +%s.%N)
           duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
           {
