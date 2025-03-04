@@ -1,6 +1,8 @@
 import cn from 'classnames'
 
 import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
+import { useMediaQuery } from 'commons/hooks/useMediaQuery'
+import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -115,6 +117,7 @@ export const CollectiveOfferConfirmationScreen = ({
   isShowcase,
   institutionDisplayName,
 }: CollectiveOfferConfirmationProps): JSX.Element => {
+  const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
   const { title, description, icon } = mapOfferStatusToData(
     offerStatus,
     isShowcase,
@@ -128,6 +131,10 @@ export const CollectiveOfferConfirmationScreen = ({
         <div className={styles['confirmation-section']}>
           <div className={styles['confirmation-section-header']}>
             <h1 className={styles['confirmation-section-title']}>{title}</h1>
+            <BackToNavLink
+              isMobileScreen={isMobileScreen}
+              className={styles['confirmation-section-back-to-nav-link']}
+            />
           </div>
           <p className={styles['form-layout-section-description']}>
             {description}

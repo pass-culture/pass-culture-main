@@ -19,17 +19,13 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
-import fullBackIcon from 'icons/full-back.svg'
 import strokeErrorIcon from 'icons/stroke-error.svg'
 import { generateSiretValidationSchema } from 'pages/VenueSettings/SiretOrCommentFields/validationSchema'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { serializeEditVenueBodyModel } from './serializers'
 import { VenueSettingsFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
 import { VenueSettingsForm } from './VenueSettingsForm'
-import styles from './VenueSettingsScreen.module.scss'
 
 interface VenueSettingsScreenProps {
   initialValues: VenueSettingsFormValues
@@ -179,17 +175,7 @@ export const VenueSettingsScreen = ({
 
   return (
     <>
-      <Button
-        variant={ButtonVariant.TERNARYPINK}
-        icon={fullBackIcon}
-        onClick={() => navigate(-1)}
-      >
-        Retour vers la page précédente
-      </Button>
-
-      <h1 className={styles['title']}>Paramètres généraux</h1>
       <MandatoryInfo />
-
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} noValidate>
           <VenueSettingsForm

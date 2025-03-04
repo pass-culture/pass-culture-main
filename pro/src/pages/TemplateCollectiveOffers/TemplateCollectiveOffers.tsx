@@ -119,22 +119,24 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
     { fallbackData: [] }
   )
 
+  if (offersQuery.isLoading) {
+    return <Layout>
+      <Spinner />
+    </Layout>
+  }
+
   return (
-    <Layout>
-      {offersQuery.isLoading ? (
-        <Spinner />
-      ) : (
-        <TemplateCollectiveOffersScreen
-          currentPageNumber={currentPageNumber}
-          initialSearchFilters={apiFilters}
-          isLoading={offersQuery.isLoading}
-          offerer={offerer}
-          offers={offersQuery.data}
-          redirectWithUrlFilters={redirectWithUrlFilters}
-          urlSearchFilters={urlSearchFilters}
-          venues={venues}
-        />
-      )}
+    <Layout mainHeading='Offres vitrines'>
+      <TemplateCollectiveOffersScreen
+        currentPageNumber={currentPageNumber}
+        initialSearchFilters={apiFilters}
+        isLoading={offersQuery.isLoading}
+        offerer={offerer}
+        offers={offersQuery.data}
+        redirectWithUrlFilters={redirectWithUrlFilters}
+        urlSearchFilters={urlSearchFilters}
+        venues={venues}
+      />
     </Layout>
   )
 }
