@@ -993,6 +993,21 @@ class ListOffersTest(GetEndpointHelper):
 
         assert html_parser.extract_alert(response.data) == "Le filtre CATEGRY est invalide."
 
+    def test_list_offers_by_invalid_operand(self, authenticated_client):
+        query_args = {
+            "search-0-search_field": "REGION",
+            "search-0-operator": "EQUALS",
+            "search-0-region": "Bretagne",
+        }
+        with assert_num_queries(3):  # only session + current user + rollback
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
+
+        assert (
+            html_parser.extract_alert(response.data)
+            == "L'opérateur « est égal à » n'est pas supporté par le filtre Région."
+        )
+
     @pytest.mark.parametrize(
         "search_field,operator,operand",
         [
@@ -1054,7 +1069,7 @@ class ListOffersTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
-        assert "Not a valid choice." in html_parser.extract_warnings(response.data)[0]
+        assert html_parser.extract_alert(response.data) == "L'opérateur OUT n'est pas supporté par le filtre CATEGORY."
 
     @pytest.mark.parametrize(
         "search_field,value",

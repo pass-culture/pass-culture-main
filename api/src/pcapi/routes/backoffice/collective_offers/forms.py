@@ -287,6 +287,15 @@ class GetCollectiveOfferAdvancedSearchForm(forms.GetOffersBaseFields):
                         errors.append(f"Le filtre « {CollectiveOffersSearchAttributes[search_field].value} » est vide.")
                     except KeyError:
                         errors.append(f"Le filtre {search_field} est invalide.")
+                else:
+                    operator = sub_search.get("operator")
+                    if operator not in form_field_configuration.get(search_field, {}).get("operator", []):
+                        try:
+                            errors.append(
+                                f"L'opérateur « {utils.AdvancedSearchOperators[operator].value} » n'est pas supporté par le filtre {CollectiveOffersSearchAttributes[search_field].value}."
+                            )
+                        except KeyError:
+                            errors.append(f"L'opérateur {operator} n'est pas supporté par le filtre {search_field}.")
 
         if errors:
             flash("\n".join(errors), "warning")
