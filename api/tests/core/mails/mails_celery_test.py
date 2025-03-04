@@ -1,3 +1,4 @@
+import decimal
 import logging
 from unittest.mock import patch
 
@@ -257,6 +258,24 @@ class SendTest:
             "'send_to_ehp': False, 'enable_unsubscribe': False}, "
             "'reply_to': {'email': 'reply_to@example.com', 'name': 'Tom S.'}, 'params': {}}"
         )
+
+    @pytest.mark.settings(IS_TESTING=True, EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
+    @patch("pcapi.celery_tasks.sendinblue.send_transactional_email")
+    def test_payload_json_serializable(self, mock_send_transactional_email_secondary_task_celery, caplog):
+        mock_template_send_ehp_false = models.Template(
+            id_prod=179, id_not_prod=179, tags=["some", "stuff"], send_to_ehp=True
+        )
+        mock_reply_to = models.EmailInfo(email="reply_to@example.com", name="Tom S.")
+        data = models.TransactionalEmailData(
+            template=mock_template_send_ehp_false,
+            params={"CREDIT": decimal.Decimal("139.90"), "DEPOSITS_COUNT": 1},
+            reply_to=mock_reply_to,
+        )
+        recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
+        send(recipients=recipients, data=data)
+
+        assert mock_send_transactional_email_secondary_task_celery.call_count == 1
+        assert mock_send_transactional_email_secondary_task_celery.call_args.args[0].params["CREDIT"] == 139.9
 
     @pytest.mark.settings(IS_TESTING=True, EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
     @patch("pcapi.celery_tasks.sendinblue.send_transactional_email")
