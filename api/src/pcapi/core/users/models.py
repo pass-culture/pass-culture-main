@@ -739,28 +739,6 @@ class User(PcObject, Base, Model, DeactivableMixin):
         return self.impersonator or self
 
     @property
-    def has_partner_page(self) -> bool:
-        from pcapi.core.offerers.models import Offerer
-        from pcapi.core.offerers.models import UserOfferer
-        from pcapi.core.offerers.models import Venue
-
-        has_partner_page = db.session.query(
-            sa.select(1)
-            .select_from(UserOfferer)
-            .join(Venue, UserOfferer.offererId == Venue.managingOffererId)
-            .join(Offerer, UserOfferer.offererId == Offerer.id)
-            .where(
-                UserOfferer.userId == self.id,
-                Offerer.isActive.is_(True),
-                Venue.isPermanent.is_(True),
-                Venue.isVirtual.is_(False),
-                Venue.hasOffers == True,
-            )
-            .exists()
-        ).scalar()
-        return has_partner_page
-
-    @property
     def is_impersonated(self) -> bool:
         return bool(self.impersonator)
 

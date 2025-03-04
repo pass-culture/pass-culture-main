@@ -33,6 +33,8 @@ class GetOffererVenueResponseModelGetterDict(GetterDict):
                 DMSApplicationForEAC.from_orm(collective_ds_application, self._obj.id)
                 for collective_ds_application in self._obj.collectiveDmsApplications
             ]
+        if key == "hasPartnerPage":
+            return self._obj._has_partner_page
         return super().get(key, default)
 
 
@@ -55,6 +57,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     venueTypeCode: offerers_models.VenueTypeCode
     withdrawalDetails: str | None
     collectiveDmsApplications: list[DMSApplicationForEAC]
+    hasPartnerPage: bool
     hasVenueProviders: bool
     isPermanent: bool
     bannerUrl: str | None
@@ -119,6 +122,7 @@ class GetOffererResponseModel(BaseModel):
     hasBankAccountWithPendingCorrections: bool
     isOnboarded: bool
     hasHeadlineOffer: bool
+    hasPartnerPage: bool
 
     @classmethod
     def from_orm(cls, row: Row) -> "GetOffererResponseModel":
@@ -151,7 +155,7 @@ class GetOffererResponseModel(BaseModel):
         offerer.hasBankAccountWithPendingCorrections = row.hasBankAccountWithPendingCorrections
         offerer.isOnboarded = row.isOnboarded
         offerer.hasHeadlineOffer = row.hasHeadlineOffer
-
+        offerer.hasPartnerPage = row.hasPartnerPage
         # We would like the response attribute to be called
         # `managedVenues` but we don't want to use the
         # `Offerer.managedVenues` relationship which does not
