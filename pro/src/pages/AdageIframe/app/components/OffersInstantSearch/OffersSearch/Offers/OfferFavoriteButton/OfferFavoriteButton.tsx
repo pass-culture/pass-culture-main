@@ -116,8 +116,7 @@ export const OfferFavoriteButton = ({
       dataTestid={`favorite-${isFavorite ? 'active' : 'inactive'}`}
       onClick={handleFavoriteClick}
       variant={ListIconButtonVariant.PRIMARY}
-    >
-      {buttonText}
-    </ListIconButton>
+      tooltipContent={<>{buttonText}</>}
+    />
   )
 }

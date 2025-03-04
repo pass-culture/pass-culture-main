@@ -19,6 +19,16 @@ export default {
 export const Default: StoryObj<typeof ListIconButton> = {
   args: {
     icon: fullTrashIcon,
-    children: 'Duplicate',
+    tooltipContent: <>Duplicate</>,
+  },
+}
+
+export const Link: StoryObj<typeof ListIconButton> = {
+  args: {
+    icon: fullTrashIcon,
+    tooltipContent: <>Lire la FAQ</>,
+    url: 'http://wwww.test.com',
+    onClick: () => {},
+    isExternal: true,
   },
 }

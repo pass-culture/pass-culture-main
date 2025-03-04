@@ -70,22 +70,18 @@ describe('RecurrenceForm', () => {
   it('should add and remove a beginning time', async () => {
     renderRecurrenceForm()
 
-    expect(
-      screen.getByRole('button', { name: 'Supprimer le créneau' })
-    ).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Supprimer' })).toBeDisabled()
 
     await userEvent.click(screen.getByText('Ajouter un créneau'))
 
     const deleteButton = screen.getAllByRole('button', {
-      name: 'Supprimer le créneau',
+      name: 'Supprimer',
     })[0]
     expect(deleteButton).toBeEnabled()
 
     await userEvent.click(deleteButton)
 
-    expect(
-      screen.getByRole('button', { name: 'Supprimer le créneau' })
-    ).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Supprimer' })).toBeDisabled()
   })
 
   it('should show an add button until we have less or an equal number of fields than different price_categories', async () => {
