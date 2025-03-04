@@ -21,7 +21,6 @@ def install_routes(app: Flask) -> None:
     from . import statistics
     from . import stocks
     from . import users
-    from . import validate
     from . import venue_labels
     from . import venue_providers
     from . import venue_types
