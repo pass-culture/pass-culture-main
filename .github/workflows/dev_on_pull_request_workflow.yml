@@ -250,26 +250,6 @@ jobs:
     if: github.actor == 'dependabot[bot]'
     uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
 
-  deploy-pro-on-firebase-preview-env:
-    name: "[PRO] Deploy PR version for validation pr preview backend"
-    needs: [pcapi-init-job, test-pro]
-    if: |
-      always() && 
-      (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped') &&
-      needs.pcapi-init-job.outputs.api-changed == 'true' &&
-      needs.pcapi-init-job.outputs.pro-changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-    with:
-      ENV: "testing"
-      CHANNEL: ""
-      REF: "${{ github.ref }}"
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-      # 2025/01/20 : Deactivate deploy backend env preview for PR
-      is_pull_request: false
-
   deploy-pro-on-firebase-testing:
     name: "[PRO] Deploy PR version for validation with testing backend"
     needs: [pcapi-init-job, test-pro]
@@ -285,7 +265,6 @@ jobs:
       CHANNEL: ""
       REF: "${{ github.ref }}"
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-      is_pull_request: false
 
   # Push docker images to registry
   push-pcapi:
@@ -312,28 +291,3 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  # Temporary suspend pull request deployment for backend
-  # deploy:
-  #   name: "Deploy PullRequest to testing environment"
-  #   needs:
-  #     [
-  #       pcapi-init-job,
-  #       push-pcapi,
-  #       push-pcapi-console,
-  #       deploy-pro-on-firebase-preview-env,
-  #     ]
-  #   if: |
-  #     always() &&
-  #     !cancelled() &&
-  #     github.actor != 'dependabot[bot]' &&
-  #     needs.pcapi-init-job.outputs.api-changed == 'true' &&
-  #     ((needs.push-pcapi.result == 'success' && needs.push-pcapi-console.result == 'success') ||
-  #     (needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' && needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true'))
-  #   uses: ./.github/workflows/dev_on_workflow_deploy_pullrequests.yml
-  #   with:
-  #     environment: pullrequest
-  #     app_version: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-  #     pro_url: ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }}
-  #   secrets:
-  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
