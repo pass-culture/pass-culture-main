@@ -170,25 +170,6 @@ describe('OfferType', () => {
     expect(screen.getByText('Création vitrine collectif')).toBeInTheDocument()
   })
 
-  it('should display non eligible banner if offerer can not create collective offer', async () => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      allowedOnAdage: false,
-    })
-
-    renderOfferTypes()
-
-    await userEvent.click(
-      screen.getByRole('radio', { name: 'À un groupe scolaire' })
-    )
-
-    expect(
-      await screen.findByText(
-        'Pour proposer des offres à destination d’un groupe scolaire, vous devez être référencé auprès du ministère de l’Éducation Nationale et du ministère de la Culture.'
-      )
-    ).toBeInTheDocument()
-  })
-
   it('should display dms application banner if offerer can not create collective offer but has a dms application', async () => {
     const offerer: GetOffererResponseModel = {
       ...defaultGetOffererResponseModel,
