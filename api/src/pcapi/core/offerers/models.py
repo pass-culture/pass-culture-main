@@ -735,6 +735,44 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def has_headline_offer(self) -> bool:
         return any(headline_offer.isActive for headline_offer in self.headlineOffers)
 
+    _has_partner_page: sa_orm.Mapped["bool|None"] = sa_orm.query_expression()
+
+    @hybrid_property
+    def has_partner_page(self) -> bool:
+        from pcapi.core.offers.models import Offer
+
+        return db.session.query(
+            sa.select(1)
+            .select_from(Offer)
+            .join(Venue, Offer.venueId == Venue.id)
+            .join(Offerer, Offerer.id == Venue.managingOffererId)
+            .where(
+                Offerer.isActive.is_(True),
+                Venue.isPermanent.is_(True),
+                Venue.isVirtual.is_(False),
+                Venue.id == self.id,
+            )
+            .exists()
+        ).scalar()
+
+    @has_partner_page.expression  # type: ignore[no-redef]
+    def has_partner_page(cls):  # pylint: disable=no-self-argument
+        from pcapi.core.offers.models import Offer
+
+        return (
+            sa.select(1)
+            .select_from(Offer)
+            .join(Venue, Offer.venueId == Venue.id)
+            .join(Offerer, Offerer.id == Venue.managingOffererId)
+            .where(
+                Offerer.isActive.is_(True),
+                Venue.isPermanent.is_(True),
+                Venue.isVirtual.is_(False),
+                Venue.id == cls.id,
+            )
+            .exists()
+        )
+
 
 class GooglePlacesInfo(PcObject, Base, Model):
     __tablename__ = "google_places_info"

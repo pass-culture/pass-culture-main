@@ -577,3 +577,37 @@ class VenueIsCaledonianTest:
     def test_offerer_is_not_caledonian(self):
         venue = factories.VenueFactory()
         assert not venue.is_caledonian
+
+
+class VenueHasPartnerPageTest:
+    @pytest.mark.parametrize(
+        "active_offerer,permanent_venue,virtual_venue,at_least_one_offer,has_partner_page",
+        [
+            (False, True, False, True, False),
+            (True, False, False, True, False),
+            (True, True, True, True, False),
+            (True, True, False, False, False),
+            (True, True, False, True, True),
+        ],
+    )
+    def test_has_partner_page(
+        self, active_offerer, permanent_venue, virtual_venue, at_least_one_offer, has_partner_page
+    ):
+        offerer = factories.OffererFactory(isActive=active_offerer)
+        if virtual_venue:
+            venue = factories.VirtualVenueFactory(managingOfferer=offerer, isPermanent=permanent_venue)
+        else:
+            venue = factories.VenueFactory(managingOfferer=offerer, isPermanent=permanent_venue)
+        if at_least_one_offer:
+            offers_factories.OfferFactory(venue=venue)
+        assert venue.has_partner_page is has_partner_page
+
+    def test_chelou(self):
+        offerer_1 = factories.OffererFactory(isActive=True)
+        offerer_2 = factories.OffererFactory(isActive=True)
+        partner_page = factories.VenueFactory(managingOfferer=offerer_2, isPermanent=True)
+        venue = factories.VenueFactory(managingOfferer=offerer_1, isPermanent=False)
+        offers_factories.OfferFactory(venue=partner_page)
+
+        assert venue.has_partner_page is False
+        assert partner_page.has_partner_page is True

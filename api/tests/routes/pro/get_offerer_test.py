@@ -28,6 +28,7 @@ class GetOffererTest:
     num_queries += 1  # select venue_id
     num_queries += 1  # select offerer_address
     num_queries += 1  # select venues_id with active offers
+    num_queries += 1  # select offer to check if offerer has a partner page
 
     def test_basics(self, client):
         pro = users_factories.ProFactory()
@@ -56,19 +57,22 @@ class GetOffererTest:
                 assert response.status_code == 200
 
         expected_serialized_offerer = {
+            "allowedOnAdage": offerer.allowedOnAdage,
             "apiKey": {"maxAllowed": 5, "prefixes": ["testenv_prefix", "testenv_prefix2"]},
             "city": offerer.city,
             "dateCreated": format_into_utc_date(offerer.dateCreated),
+            "hasActiveOffer": False,
             "hasAvailablePricingPoints": True,
+            "hasBankAccountWithPendingCorrections": False,
             "hasDigitalVenueAtLeastOneOffer": False,
             "hasHeadlineOffer": False,
-            "hasValidBankAccount": False,
-            "hasPendingBankAccount": False,
-            "hasActiveOffer": False,
-            "hasBankAccountWithPendingCorrections": False,
-            "venuesWithNonFreeOffersWithoutBankAccounts": [],
             "hasNonFreeOffer": False,
+            "hasPartnerPage": False,
+            "hasPendingBankAccount": False,
+            "hasValidBankAccount": False,
+            "id": offerer.id,
             "isActive": offerer.isActive,
+            "isOnboarded": True,
             "isValidated": offerer.isValidated,
             "managedVenues": [
                 {
@@ -101,32 +105,31 @@ class GetOffererTest:
                     ],
                     "comment": venue.comment,
                     "departementCode": venue.departementCode,
-                    "hasAdageId": bool(venue.adageId),
-                    "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
+                    "id": venue.id,
+                    "isPermanent": venue.isPermanent,
                     "isVirtual": venue.isVirtual,
                     "isVisibleInApp": venue.isVisibleInApp,
+                    "hasAdageId": bool(venue.adageId),
+                    "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
+                    "hasPartnerPage": False,
+                    "hasVenueProviders": False,
                     "mentalDisabilityCompliant": False,
                     "motorDisabilityCompliant": False,
                     "name": venue.name,
-                    "id": venue.id,
-                    "isPermanent": venue.isPermanent,
                     "postalCode": venue.postalCode,
                     "publicName": venue.publicName,
                     "siret": venue.siret,
                     "venueTypeCode": venue.venueTypeCode.name,
                     "visualDisabilityCompliant": False,
                     "withdrawalDetails": venue.withdrawalDetails,
-                    "hasVenueProviders": False,
                 }
                 for venue in sorted(offerer.managedVenues, key=lambda v: v.publicName)
             ],
             "name": offerer.name,
-            "id": offerer.id,
             "postalCode": offerer.postalCode,
             "siren": offerer.siren,
             "street": offerer.street,
-            "allowedOnAdage": offerer.allowedOnAdage,
-            "isOnboarded": True,
+            "venuesWithNonFreeOffersWithoutBankAccounts": [],
         }
         assert response.json == expected_serialized_offerer
 
@@ -642,8 +645,7 @@ class GetOffererTest:
 
         # We now have plenty of VenueBankAccountLink
         # But the user should still receive distinct `venuesWithNonFreeOffersWithoutBankAccounts`, not a cartesian product between Venues and VenueBankAccountLink
-        num_queries = self.num_queries + 1  # select missing managedVenues
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = http_client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
@@ -688,3 +690,34 @@ class GetOffererTest:
         # closed => similar to validated then suspended
         assert response.json["isActive"] is False
         assert response.json["isValidated"] is True
+
+    @pytest.mark.parametrize(
+        "active_offerer,permanent_venue,virtual_venue,at_least_one_offer,has_partner_page",
+        [
+            (False, True, False, True, False),
+            (True, False, False, True, False),
+            (True, True, True, True, False),
+            (True, True, False, False, False),
+            (True, True, False, True, True),
+        ],
+    )
+    def test_offerer_has_partner_page(
+        self, client, active_offerer, permanent_venue, virtual_venue, at_least_one_offer, has_partner_page
+    ):
+        offerer = offerers_factories.OffererFactory(isActive=active_offerer)
+        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
+
+        if virtual_venue:
+            venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer, isPermanent=permanent_venue)
+        else:
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=permanent_venue)
+        if at_least_one_offer:
+            offers_factories.OfferFactory(venue=venue)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        with testing.assert_num_queries(self.num_queries):
+            # with testing.assert_no_duplicated_queries():
+            response = client.get(f"/offerers/{offerer.id}")
+            assert response.status_code == 200
+
+        assert response.json["hasPartnerPage"] is has_partner_page

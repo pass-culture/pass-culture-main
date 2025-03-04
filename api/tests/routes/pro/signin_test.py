@@ -50,7 +50,6 @@ class Returns200Test:
             "departementCode": None,
             "email": "user@example.com",
             "firstName": "Jean",
-            "hasPartnerPage": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
             "hasUserOfferer": False,
@@ -139,9 +138,8 @@ class Returns200Test:
         # 4. fetch user offerer
         # 5. fetch user offerer for discard_session
         # 6 fetch user_session for discard_session
-        # 7 fetch user has partner page
 
-        with assert_num_queries(7):
+        with assert_num_queries(6):
             response = client.post("/users/signin", json=data)
 
         assert response.status_code == 200
@@ -155,7 +153,6 @@ class Returns200Test:
             "departementCode": "31",
             "email": user_offerer.user.email,
             "firstName": "René",
-            "hasPartnerPage": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
             "hasUserOfferer": True,
