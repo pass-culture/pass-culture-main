@@ -1976,18 +1976,19 @@ def get_eligibility_history(user: users_models.User) -> dict[str, serialization.
         fraud_eligibility_types = _get_user_fraud_check_eligibility_types(user)
 
         if (users_models.EligibilityType.UNDERAGE in fraud_eligibility_types) or (
-            age_at_creation < users_constants.ELIGIBILITY_AGE_18
-            or age_at_decree_start < users_constants.ELIGIBILITY_AGE_18
+            user.dateCreated < settings.CREDIT_V3_DECREE_DATETIME
+            and age_at_creation < users_constants.ELIGIBILITY_AGE_18
         ):
             eligibility_types.append(users_models.EligibilityType.UNDERAGE)
 
         if (users_models.EligibilityType.AGE17_18 in fraud_eligibility_types) or (
-            age_now >= users_constants.ELIGIBILITY_AGE_17 and age_at_decree_start >= users_constants.ELIGIBILITY_AGE_17
+            age_at_creation >= users_constants.ELIGIBILITY_AGE_17
+            and user.dateCreated >= settings.CREDIT_V3_DECREE_DATETIME
         ):
             eligibility_types.append(users_models.EligibilityType.AGE17_18)
 
         if (users_models.EligibilityType.AGE18 in fraud_eligibility_types) or (
-            age_now >= users_constants.ELIGIBILITY_AGE_18 and age_at_decree_start >= users_constants.ELIGIBILITY_AGE_18
+            age_at_decree_start >= users_constants.ELIGIBILITY_AGE_18 and age_now >= users_constants.ELIGIBILITY_AGE_18
         ):
             eligibility_types.append(users_models.EligibilityType.AGE18)
 
