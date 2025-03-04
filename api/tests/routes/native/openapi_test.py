@@ -1903,6 +1903,12 @@ def test_public_api(client):
                     "title": "PostReactionRequest",
                     "type": "object",
                 },
+                "PostReminderRequest": {
+                    "properties": {"offerId": {"title": "Offerid", "type": "integer"}},
+                    "required": ["offerId"],
+                    "title": "PostReminderRequest",
+                    "type": "object",
+                },
                 "ProfileUpdateRequest": {
                     "properties": {
                         "activityId": {"$ref": "#/components/schemas/ActivityIdEnum"},
@@ -4450,6 +4456,31 @@ def test_public_api(client):
                         },
                     },
                     "summary": "refresh <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/reminder": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_reminder",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/PostReminderRequest"}}
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "post_reminder <POST>",
                     "tags": [],
                 }
             },

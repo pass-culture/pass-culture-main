@@ -17,6 +17,7 @@ def install_routes(app: Flask) -> None:
     from . import offers
     from . import reaction
     from . import recommendation
+    from . import reminder
     from . import settings
     from . import subscription
     from . import universal_links
