@@ -1,11 +1,11 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { beforeEach, expect } from 'vitest'
 
 import * as utils from 'commons/utils/recaptcha'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { LostPassword } from '../LostPassword'
-import { beforeEach, expect } from 'vitest'
 
 vi.mock('apiClient/api', () => ({
   api: {

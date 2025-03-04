@@ -78,13 +78,12 @@ export const LostPassword = (): JSX.Element => {
         Vous allez recevoir un email !
       </h1>
       <p className={styles['change-password-request-success-body']}>
-        Cliquez sur le lien que nous vous avons envoyé par email à{' '}
-        <b>{email}</b>
+        Cliquez sur le lien envoyé par email à <b>{email}</b>
       </p>
       <Callout variant={CalloutVariant.DEFAULT}>
         <p className={styles['change-password-request-success-info']}>
-          Vous n’avez pas reçu notre email ? <br /> Vérifiez vos spams ou
-          cliquez ici pour le recevoir à nouveau.
+          Vous n’avez pas reçu d’email ? <br /> Vérifiez vos spams ou cliquez
+          ici pour le recevoir à nouveau.
         </p>
       </Callout>
     </section>
