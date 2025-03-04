@@ -107,7 +107,7 @@
         {% endcall %}
         {% call tabs.build_details_tab_content("categories", active_tab == 'categories') %}
           {% if create_category_form %}
-            {{ build_modal_form("create-tag-category", url_for("backoffice_web.tags.create_tag_category") , create_category_form, "Créer une catégorie", "Enregistrer") }}
+            {{ build_modal_form("create-tag-category", url_for("backoffice_web.tags.create_tag_category") , create_category_form, "Créer une catégorie", "Enregistrer", "Enregistrer") }}
           {% endif %}
           <div>
             <table class="table mb-4">
