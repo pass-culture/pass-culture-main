@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: pullrequest-db-init-05-${DATE}
+  name: pullrequest-db-init-sandbox-${DATE}
 spec:
   backoffLimit: 0
   ttlSecondsAfterFinished: 3600
