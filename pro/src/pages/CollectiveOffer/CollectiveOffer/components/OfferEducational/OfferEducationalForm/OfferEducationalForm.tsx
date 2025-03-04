@@ -74,7 +74,7 @@ export const OfferEducationalForm = ({
   const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
   const [isEligible, setIsEligible] = useState<boolean>()
 
-  const { values, setFieldValue, initialValues, dirty } =
+  const { setFieldValue, initialValues, dirty } =
     useFormikContext<OfferEducationalFormValues>()
 
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
@@ -154,7 +154,7 @@ export const OfferEducationalForm = ({
           venuesOptions={venuesOptions}
           offer={offer}
         />
-        {isEligible && values.offererId && values.venueId ? (
+        {isEligible ? (
           <>
             <FormOfferType
               domainsOptions={domainsOptions}
