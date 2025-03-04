@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { OfferImage } from './OfferImage';
-export type OffererHeadLineOfferResponseModel = {
+export type HeadLineOfferResponseModel = {
   id: number;
   image?: OfferImage | null;
   name: string;
