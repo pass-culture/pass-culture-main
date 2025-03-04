@@ -17,6 +17,7 @@ from pcapi.utils.human_ids import humanize
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=True)
 class Returns200Test:
     num_queries = 1  # select user
     num_queries += 1  # select booking
@@ -108,6 +109,7 @@ class Returns200Test:
             assert response.status_code == 200
 
 
+@pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=True)
 class NonStandardGetTest:
     num_queries = 1  # select user
     num_queries += 1  # select booking
@@ -174,7 +176,6 @@ class Returns403Test:
         auth = "Bearer development_prefix_clearSecret"
         url = f"/v2/bookings/token/{booking.token}"
         num_queries = 1  # select api_key
-        num_queries += 1  # select feature
         num_queries += 1  # select booking
         with testing.assert_num_queries(num_queries):
             response = client.get(url, headers={"Authorization": auth})
@@ -265,7 +266,6 @@ class Returns404Test:
     def test_authenticated_with_api_key_but_token_not_found(self, client):
         offerers_factories.ApiKeyFactory(prefix="test_prefix")
         num_queries = 1  # select api_key
-        num_queries += 1  # select feature
         num_queries += 1  # select booking
         with testing.assert_num_queries(num_queries):
             response = client.get(
