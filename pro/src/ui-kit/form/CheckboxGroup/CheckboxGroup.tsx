@@ -19,6 +19,8 @@ type CheckboxGroupProps = RequireAtLeastOne<
       icon?: string
       onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
       childrenOnChecked?: JSX.Element
+      labelId?: string
+      shouldShowChildren?: boolean
     }[]
     disabled?: boolean
     isOptional?: boolean
@@ -61,6 +63,7 @@ export const CheckboxGroup = ({
               icon={item.icon}
               hasError={hasError}
               label={item.label}
+              labelId={item.labelId}
               name={item.name}
               setGroupTouched={() =>
                 !meta.touched ? helpers.setTouched(true) : null
@@ -70,6 +73,7 @@ export const CheckboxGroup = ({
               {...(hasError ? { ariaDescribedBy: `error-${groupName}` } : {})}
               variant={variant}
               childrenOnChecked={item.childrenOnChecked}
+              shouldShowChildren={item.shouldShowChildren}
             />
           </div>
         ))}
