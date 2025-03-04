@@ -1,27 +1,22 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from flask import url_for
 import pytest
 import time_machine
 
 from pcapi.core.categories import subcategories
-import pcapi.core.educational.factories as educational_factories
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveLocationType
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import OfferAddressType
-from pcapi.core.educational.models import StudentLevels
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models
+from pcapi.core.educational import testing as educational_testing
 from pcapi.core.educational.schemas import EducationalBookingEdition
-import pcapi.core.educational.testing as educational_testing
-import pcapi.core.finance.factories as finance_factories
-import pcapi.core.finance.models as finance_models
-import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
-import pcapi.core.providers.factories as providers_factories
-import pcapi.core.users.factories as users_factories
+from pcapi.core.providers import factories as providers_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.models import db
-from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
+from pcapi.routes.adage.v1.serialization import prebooking
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -51,8 +46,6 @@ def auth_client_fixture(client, user_offerer):
 
 
 class Returns200Test:
-    endpoint = "Private API.edit_collective_offer"
-
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @time_machine.travel("2019-01-01 12:00:00")
     @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
@@ -64,13 +57,13 @@ class Returns200Test:
             contactPhone="0600000000",
             subcategoryId="CINE_PLEIN_AIR",
             educational_domains=None,
-            students=[StudentLevels.CAP1],
+            students=[models.StudentLevels.CAP1],
             interventionArea=["01", "07", "08"],
         )
         booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer=offer,
             collectiveStock__startDatetime=datetime(2020, 1, 1),
-            status=CollectiveBookingStatus.PENDING,
+            status=models.CollectiveBookingStatus.PENDING,
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         domain = educational_factories.EducationalDomainFactory(name="Architecture")
@@ -107,21 +100,21 @@ class Returns200Test:
         assert response.json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
         assert not response.json["isTemplate"]
 
-        updated_offer = CollectiveOffer.query.get(offer.id)
+        updated_offer = models.CollectiveOffer.query.get(offer.id)
         assert updated_offer.name == "New name"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.contactEmail == "toto@example.com"
         assert updated_offer.bookingEmails == ["pifpouf@testmail.com", "bimbam@testmail.com"]
         assert updated_offer.contactPhone == "0600000000"
         assert updated_offer.subcategoryId == "CONCERT"
-        assert updated_offer.students == [StudentLevels.COLLEGE4]
+        assert updated_offer.students == [models.StudentLevels.COLLEGE4]
         assert updated_offer.domains == [domain]
         assert updated_offer.interventionArea == ["01", "2A"]
         assert updated_offer.description == "Ma super description"
         assert updated_offer.formats == [subcategories.EacFormat.CONCERT]
 
         expected_payload = EducationalBookingEdition(
-            **serialize_collective_booking(booking).dict(),
+            **prebooking.serialize_collective_booking(booking).dict(),
             updatedFields=sorted(
                 [
                     "name",
@@ -220,7 +213,7 @@ class Returns200Test:
         )
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = auth_client.patch(url_for(self.endpoint, offer_id=offer.id), json={"venueId": venue.id})
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json={"venueId": venue.id})
             assert response.status_code == 200
 
         db.session.refresh(offer)
@@ -241,7 +234,7 @@ class Returns200Test:
         )
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = auth_client.patch(url_for(self.endpoint, offer_id=offer.id), json={"venueId": venue.id})
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json={"venueId": venue.id})
             assert response.status_code == 200
 
         db.session.refresh(offer)
@@ -270,7 +263,7 @@ class Returns200Test:
 
         auth_client = client.with_session_auth("user@example.com")
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = auth_client.patch(url_for(self.endpoint, offer_id=offer.id), json=data)
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
             assert response.status_code == 200
 
         db.session.refresh(offer)
@@ -280,7 +273,7 @@ class Returns200Test:
         assert offer.contactEmail == "toto@example.com"
         assert offer.bookingEmails == ["pifpouf@testmail.com", "bimbam@testmail.com"]
         assert offer.subcategoryId == "CONCERT"
-        assert offer.students == [StudentLevels.COLLEGE4]
+        assert offer.students == [models.StudentLevels.COLLEGE4]
         assert offer.interventionArea == ["01", "2A"]
         assert offer.formats == [subcategories.EacFormat.CONCERT]
 
@@ -295,7 +288,7 @@ class Returns200Test:
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.offerVenue == data["offerVenue"]
         assert offer.interventionArea == []
 
@@ -315,7 +308,7 @@ class Returns200Test:
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.offerVenue == data["offerVenue"]
         assert offer.interventionArea == initial_intervention_area
 
@@ -335,7 +328,7 @@ class Returns200Test:
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.offerVenue == data["offerVenue"]
         assert offer.interventionArea == initial_intervention_area
 
@@ -351,7 +344,7 @@ class Returns200Test:
         oa = offer.venue.offererAddress
         data = {
             "location": {
-                "locationType": CollectiveLocationType.VENUE.value,
+                "locationType": models.CollectiveLocationType.VENUE.value,
                 "locationComment": None,
                 "address": {
                     "isVenueAddress": True,
@@ -368,10 +361,10 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
 
         assert offer.offererAddressId == oa.id
-        assert offer.locationType == CollectiveLocationType.VENUE
+        assert offer.locationType == models.CollectiveLocationType.VENUE
         assert offer.locationComment is None
 
         assert offer.offerVenue == {"addressType": "offererVenue", "otherAddress": "", "venueId": offer.venue.id}
@@ -382,16 +375,20 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         data = {
-            "location": {"locationType": CollectiveLocationType.SCHOOL.value, "locationComment": None, "address": None},
+            "location": {
+                "locationType": models.CollectiveLocationType.SCHOOL.value,
+                "locationComment": None,
+                "address": None,
+            },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
 
         assert offer.offererAddressId is None
-        assert offer.locationType == CollectiveLocationType.SCHOOL
+        assert offer.locationType == models.CollectiveLocationType.SCHOOL
         assert offer.locationComment is None
 
         assert offer.offerVenue == {"addressType": "school", "otherAddress": "", "venueId": None}
@@ -403,7 +400,7 @@ class Returns200Test:
 
         data = {
             "location": {
-                "locationType": CollectiveLocationType.ADDRESS.value,
+                "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
                 "address": {
                     "isVenueAddress": False,
@@ -421,14 +418,14 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
 
         assert offer.offererAddress.label == "My address"
         assert offer.offererAddress.address.city == "Paris"
         assert offer.offererAddress.address.postalCode == "75001"
         assert offer.offererAddress.address.street == "3 Rue de Valois"
         assert offer.offererAddress.address.isManualEdition == False
-        assert offer.locationType == CollectiveLocationType.ADDRESS
+        assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
         assert offer.offerVenue == {
@@ -444,7 +441,7 @@ class Returns200Test:
 
         data = {
             "location": {
-                "locationType": CollectiveLocationType.TO_BE_DEFINED.value,
+                "locationType": models.CollectiveLocationType.TO_BE_DEFINED.value,
                 "locationComment": "Right here",
                 "address": None,
             },
@@ -453,10 +450,10 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
 
         assert offer.offererAddressId is None
-        assert offer.locationType == CollectiveLocationType.TO_BE_DEFINED
+        assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == "Right here"
 
         assert offer.offerVenue == {"addressType": "other", "otherAddress": "Right here", "venueId": None}
@@ -639,7 +636,7 @@ class Returns400Test:
             contactPhone="0600000000",
             subcategoryId="CINE_PLEIN_AIR",
             educational_domains=None,
-            students=[StudentLevels.CAP1],
+            students=[models.StudentLevels.CAP1],
             interventionArea=["01", "07", "08"],
         )
         offerers_factories.UserOffererFactory(
@@ -690,18 +687,16 @@ class Returns400Test:
 
         other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
 
-        endpoint = "Private API.edit_collective_offer"
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = auth_client.patch(url_for(endpoint, offer_id=offer.id), json={"venueId": other_venue.id})
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json={"venueId": other_venue.id})
             assert response.status_code == 400
             assert response.json == {"venueId": ["No venue with a pricing point found for the destination venue."]}
 
     def test_patch_collective_offer_description_invalid(self, auth_client, venue):
         offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
 
-        endpoint = "Private API.edit_collective_offer"
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = auth_client.patch(url_for(endpoint, offer_id=offer.id), json={"description": "too_long" * 200})
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json={"description": "too_long" * 200})
 
         assert response.status_code == 400
         assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
@@ -711,7 +706,7 @@ class Returns400Test:
         offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
 
         payload = {
-            "offerVenue": {"addressType": OfferAddressType.SCHOOL.value, "venueId": None, "otherAddress": ""},
+            "offerVenue": {"addressType": models.OfferAddressType.SCHOOL.value, "venueId": None, "otherAddress": ""},
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = auth_client.patch(f"/collective/offers/{offer.id}", json=payload)
@@ -724,7 +719,11 @@ class Returns400Test:
         offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
 
         payload = {
-            "location": {"locationType": CollectiveLocationType.SCHOOL.value, "locationComment": None, "address": None},
+            "location": {
+                "locationType": models.CollectiveLocationType.SCHOOL.value,
+                "locationComment": None,
+                "address": None,
+            },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = auth_client.patch(f"/collective/offers/{offer.id}", json=payload)
@@ -751,7 +750,7 @@ class Returns403Test:
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         ]
-        assert CollectiveOffer.query.get(offer.id).name == "Old name"
+        assert models.CollectiveOffer.query.get(offer.id).name == "Old name"
 
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
     def test_cannot_update_offer_with_used_booking(self, client):
@@ -844,9 +843,8 @@ class Returns403Test:
             valueDate=datetime(2024, 1, 1),
         )
 
-        endpoint = "Private API.edit_collective_offer"
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = auth_client.patch(url_for(endpoint, offer_id=offer.id), json={"venueId": venue.id})
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json={"venueId": venue.id})
             assert response.status_code == 403
 
         db.session.refresh(offer)
@@ -917,9 +915,7 @@ class Returns403Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, startDatetime=datetime(2024, 1, 1))
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = auth_client.patch(
-                url_for("Private API.edit_collective_offer", offer_id=offer.id), json={"venueId": venue.id}
-            )
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json={"venueId": venue.id})
             assert response.status_code == 403
             assert response.json == {
                 "offer": "This collective offer that has already started does not allow editing details"
@@ -931,9 +927,7 @@ class Returns403Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, startDatetime=datetime(2024, 1, 1))
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = auth_client.patch(
-                url_for("Private API.edit_collective_offer", offer_id=offer.id), json={"venueId": venue.id}
-            )
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json={"venueId": venue.id})
             assert response.status_code == 403
             assert response.json == {"offer": "This collective offer status does not allow editing details"}
 

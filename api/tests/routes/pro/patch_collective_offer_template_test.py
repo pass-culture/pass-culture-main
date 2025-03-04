@@ -3,13 +3,12 @@ from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
-from flask import url_for
 import pytest
 
 from pcapi.core.categories import subcategories
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
-import pcapi.core.educational.factories as educational_factories
-import pcapi.core.educational.models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import OfferValidationStatus
@@ -24,7 +23,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class OfferContext:
     user_offerer: offerers_models.UserOfferer
     venue: offerers_models.Venue
-    offer: educational_models.CollectiveOfferTemplate
+    offer: models.CollectiveOfferTemplate
 
     @property
     def user(self):
@@ -47,10 +46,10 @@ def build_pro_client(client, user):
 
 @dataclass
 class PayloadContext:
-    national_program: educational_models.NationalProgram
+    national_program: models.NationalProgram
     template_start: datetime
     template_end: datetime
-    domain: educational_models.EducationalDomain
+    domain: models.EducationalDomain
     payload: dict
 
 
@@ -111,7 +110,7 @@ class Returns200Test:
             "name": payload_ctx.national_program.name,
         }
 
-        updated_offer = educational_models.CollectiveOfferTemplate.query.get(offer_id)
+        updated_offer = models.CollectiveOfferTemplate.query.get(offer_id)
         assert updated_offer.name == "New name"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.subcategoryId == "CONCERT"
@@ -123,7 +122,7 @@ class Returns200Test:
         assert updated_offer.formats == [subcategories.EacFormat.CONCERT]
         assert updated_offer.contactEmail == "toto@example.com"
         assert updated_offer.contactPhone == offer_ctx.offer.contactPhone
-        assert updated_offer.contactForm == educational_models.OfferContactFormEnum.FORM
+        assert updated_offer.contactForm == models.OfferContactFormEnum.FORM
 
     def test_with_tz_aware_dates(self, client):
         offer_ctx = build_offer_context()
@@ -154,13 +153,10 @@ class Returns200Test:
         assert offer.dateRange.upper
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer.id)
-            response = pro_client.patch(endpoint, json={})
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json={})
             assert response.status_code == 200
 
-        updated_offer = educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer.id
-        ).one()
+        updated_offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer.id).one()
 
         assert updated_offer.dateRange.lower
         assert updated_offer.dateRange.upper
@@ -175,13 +171,10 @@ class Returns200Test:
         assert offer.dateRange.upper
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer.id)
-            response = pro_client.patch(endpoint, json={"dates": None})
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json={"dates": None})
             assert response.status_code == 200
 
-        updated_offer = educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer.id
-        ).one()
+        updated_offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer.id).one()
         assert updated_offer.dateRange is None
 
     def test_with_almost_empty_data_updates_offer(self, client):
@@ -194,33 +187,32 @@ class Returns200Test:
         assert offer.dateRange.upper
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer.id)
-            response = pro_client.patch(endpoint, json={"contactPhone": None, "dates": None})
+            response = pro_client.patch(
+                f"/collective/offers-template/{offer.id}", json={"contactPhone": None, "dates": None}
+            )
             assert response.status_code == 200
 
-        updated_offer = educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer.id
-        ).one()
+        updated_offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer.id).one()
         assert updated_offer.dateRange is None
 
     def test_with_null_phone_data(self, client):
         offer_ctx = build_offer_context()
         pro_client = build_pro_client(client, offer_ctx.user)
-        endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer_ctx.offer.id)
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(endpoint, json={"contactPhone": None})
+            response = pro_client.patch(
+                f"/collective/offers-template/{offer_ctx.offer.id}", json={"contactPhone": None}
+            )
             assert response.status_code == 200
 
     def test_with_email_phone_and_url_contact(self, client):
         offer_ctx = build_offer_context()
         pro_client = build_pro_client(client, offer_ctx.user)
         offer = offer_ctx.offer
-        endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer.id)
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.patch(
-                endpoint,
+                f"/collective/offers-template/{offer.id}",
                 json={
                     "contactEmail": "a@b.com",
                     "contactPhone": "0101",
@@ -230,9 +222,7 @@ class Returns200Test:
             )
             assert response.status_code == 200
 
-        updated_offer = educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer.id
-        ).one()
+        updated_offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer.id).one()
         assert updated_offer.contactEmail == "a@b.com"
         assert updated_offer.contactPhone == "0101"
         assert updated_offer.contactUrl == "http://localhost/"
@@ -242,16 +232,16 @@ class Returns200Test:
         offer_ctx = build_offer_context()
         pro_client = build_pro_client(client, offer_ctx.user)
         offer = offer_ctx.offer
-        endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer.id)
         now = datetime.utcnow()
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(endpoint, json={"dates": {"start": now.isoformat(), "end": now.isoformat()}})
+            response = pro_client.patch(
+                f"/collective/offers-template/{offer.id}",
+                json={"dates": {"start": now.isoformat(), "end": now.isoformat()}},
+            )
             assert response.status_code == 200
 
-        updated_offer = educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer.id
-        ).one()
+        updated_offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer.id).one()
         assert updated_offer.dateRange.lower == now
         assert updated_offer.dateRange.upper == now + timedelta(seconds=1)
 
@@ -303,9 +293,7 @@ class Returns200Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
-        offer = educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer_id
-        ).one()
+        offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer_id).one()
         assert offer.offerVenue == payload["offerVenue"]
         assert offer.interventionArea == []
 
@@ -325,9 +313,7 @@ class Returns200Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
-        offer = educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer_id
-        ).one()
+        offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer_id).one()
         assert offer.offerVenue == payload["offerVenue"]
         assert offer.interventionArea == initial_intervention_area
 
@@ -347,9 +333,7 @@ class Returns200Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
-        offer = educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer_id
-        ).one()
+        offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer_id).one()
         assert offer.offerVenue == payload["offerVenue"]
         assert offer.interventionArea == initial_intervention_area
 
@@ -366,7 +350,7 @@ class Returns200Test:
         oa = offer_ctx.venue.offererAddress
         payload = {
             "location": {
-                "locationType": educational_models.CollectiveLocationType.VENUE.value,
+                "locationType": models.CollectiveLocationType.VENUE.value,
                 "locationComment": None,
                 "address": {
                     "isVenueAddress": True,
@@ -383,12 +367,10 @@ class Returns200Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
-        offer = educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer_id
-        ).one()
+        offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer_id).one()
 
         assert offer.offererAddressId == oa.id
-        assert offer.locationType == educational_models.CollectiveLocationType.VENUE
+        assert offer.locationType == models.CollectiveLocationType.VENUE
         assert offer.locationComment is None
 
         assert offer.offerVenue == {"addressType": "offererVenue", "otherAddress": "", "venueId": offer_ctx.venue.id}
@@ -401,7 +383,7 @@ class Returns200Test:
 
         payload = {
             "location": {
-                "locationType": educational_models.CollectiveLocationType.SCHOOL.value,
+                "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
                 "address": None,
             },
@@ -410,12 +392,10 @@ class Returns200Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
-        offer = educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer_id
-        ).one()
+        offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer_id).one()
 
         assert offer.offererAddressId is None
-        assert offer.locationType == educational_models.CollectiveLocationType.SCHOOL
+        assert offer.locationType == models.CollectiveLocationType.SCHOOL
         assert offer.locationComment is None
 
         assert offer.offerVenue == {"addressType": "school", "otherAddress": "", "venueId": None}
@@ -428,7 +408,7 @@ class Returns200Test:
 
         payload = {
             "location": {
-                "locationType": educational_models.CollectiveLocationType.ADDRESS.value,
+                "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
                 "address": {
                     "isVenueAddress": False,
@@ -446,16 +426,14 @@ class Returns200Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
-        offer = educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer_id
-        ).one()
+        offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer_id).one()
 
         assert offer.offererAddress.label == "My address"
         assert offer.offererAddress.address.city == "Paris"
         assert offer.offererAddress.address.postalCode == "75001"
         assert offer.offererAddress.address.street == "3 Rue de Valois"
         assert offer.offererAddress.address.isManualEdition == False
-        assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
+        assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
         assert offer.offerVenue == {
@@ -472,7 +450,7 @@ class Returns200Test:
 
         payload = {
             "location": {
-                "locationType": educational_models.CollectiveLocationType.TO_BE_DEFINED.value,
+                "locationType": models.CollectiveLocationType.TO_BE_DEFINED.value,
                 "locationComment": "Right here",
                 "address": None,
             },
@@ -481,12 +459,10 @@ class Returns200Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
-        offer = educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer_id
-        ).one()
+        offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer_id).one()
 
         assert offer.offererAddressId is None
-        assert offer.locationType == educational_models.CollectiveLocationType.TO_BE_DEFINED
+        assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == "Right here"
 
         assert offer.offerVenue == {"addressType": "other", "otherAddress": "Right here", "venueId": None}
@@ -593,7 +569,7 @@ class Returns400Test:
         payload = payload_ctx.payload
 
         payload["contactUrl"] = "https://example.com/contact"
-        payload["contactForm"] = educational_models.OfferContactFormEnum.FORM.value
+        payload["contactForm"] = models.OfferContactFormEnum.FORM.value
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
@@ -663,7 +639,7 @@ class Returns400Test:
 
         payload = {
             "offerVenue": {
-                "addressType": educational_models.OfferAddressType.SCHOOL.value,
+                "addressType": models.OfferAddressType.SCHOOL.value,
                 "venueId": None,
                 "otherAddress": "",
             },
@@ -682,7 +658,7 @@ class Returns400Test:
 
         payload = {
             "location": {
-                "locationType": educational_models.CollectiveLocationType.SCHOOL.value,
+                "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
                 "address": None,
             },
@@ -772,8 +748,7 @@ class InvalidDatesTest:
 
     def send_request(self, pro_client, offer_id, dates):
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer_id)
-            return pro_client.patch(endpoint, json={"dates": dates})
+            return pro_client.patch(f"/collective/offers-template/{offer_id}", json={"dates": dates})
 
 
 class Returns403Test:
@@ -809,7 +784,7 @@ class Returns403Test:
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         ]
-        assert educational_models.CollectiveOfferTemplate.query.get(offer.id).name == "Old name"
+        assert models.CollectiveOfferTemplate.query.get(offer.id).name == "Old name"
 
     def test_replacing_venue_with_different_offerer(self, client):
         offer_ctx = build_offer_context()
