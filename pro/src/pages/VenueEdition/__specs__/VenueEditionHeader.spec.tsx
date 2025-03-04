@@ -44,7 +44,7 @@ const renderPartnerPages = (
   )
 }
 
-describe('PartnerPages', () => {
+describe('VenueEditionHeader', () => {
   it('should display image upload if no image', async () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -92,6 +92,20 @@ describe('PartnerPages', () => {
       'src',
       'https://www.example.com/image.png'
     )
+  })
+
+  it('should display a preview link when venue is permanent and is open to public feature enabled', () => {
+    renderPartnerPages({
+      venue: {
+        ...defaultGetVenue,
+        venueTypeCode: VenueTypeCode.FESTIVAL,
+        isPermanent: true,
+      },
+    }, {
+      features: ['WIP_IS_OPEN_TO_PUBLIC'],
+    })
+
+    expect(screen.getByText('Visualiser votre page')).toBeInTheDocument()
   })
 
   it('should not display new offer button in new nav', () => {
