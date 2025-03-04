@@ -57,7 +57,7 @@ class Returns204Test:
 
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0]["To"] == user.email
-        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.EMAIL_VALIDATION_TO_PRO.value)
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.SIGNUP_EMAIL_CONFIRMATION_TO_PRO.value)
 
     def when_successful_and_mark_pro_user_as_no_cultural_survey_needed(self, client):
         data = BASE_DATA_PRO.copy()
