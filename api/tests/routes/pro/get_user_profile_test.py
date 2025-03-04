@@ -15,7 +15,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class Returns200Test:
     num_queries = testing.AUTHENTICATION_QUERIES
-    num_queries += 1
 
     def test_is_impersonated(self, client):
         user = users_factories.BaseUserFactory(
@@ -67,7 +66,6 @@ class Returns200Test:
             "email": "toto@example.com",
             "externalIds": {},
             "firstName": "Jean",
-            "hasPartnerPage": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
             "hasUserOfferer": False,

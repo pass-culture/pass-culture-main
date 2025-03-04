@@ -337,31 +337,6 @@ class UserTest:
         offerers_factories.UserOffererFactory(user=user, validationStatus=ValidationStatus.PENDING)
         assert user.proValidationStatus == ValidationStatus.VALIDATED
 
-    @pytest.mark.parametrize(
-        "active_offerer,permanent_venue,virtual_venue,at_least_one_offer,has_partner_page",
-        [
-            (False, True, False, True, False),
-            (True, False, False, True, False),
-            (True, True, True, True, False),
-            (True, True, False, False, False),
-            (True, True, False, True, True),
-        ],
-    )
-    def test_has_partner_page(
-        self, active_offerer, permanent_venue, virtual_venue, at_least_one_offer, has_partner_page
-    ):
-        user = users_factories.UserFactory()
-        offerer = offerers_factories.OffererFactory(isActive=active_offerer)
-        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
-
-        if virtual_venue:
-            venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer, isPermanent=permanent_venue)
-        else:
-            venue = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=permanent_venue)
-        if at_least_one_offer:
-            offers_factories.OfferFactory(venue=venue)
-        assert user.has_partner_page is has_partner_page
-
 
 @pytest.mark.usefixtures("db_session")
 class HasAccessTest:

@@ -566,6 +566,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         .correlate(models.Offerer)
         .exists()
     )
+
     has_headline_offer = (
         sqla.select(1)
         .select_from(offers_models.Offer)
@@ -582,6 +583,20 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         .exists()
     )
 
+    has_partner_page = (
+        sqla.select(1)
+        .select_from(offers_models.Offer)
+        .join(models.Venue, offers_models.Offer.venueId == models.Venue.id)
+        .where(
+            models.Offerer.isActive.is_(True),
+            models.Venue.isPermanent.is_(True),
+            models.Venue.isVirtual.is_(False),
+            models.Offerer.id == models.Venue.managingOffererId,
+        )
+        .correlate(models.Offerer)
+        .exists()
+    )
+
     return (
         db.session.query(
             models.Offerer,
@@ -592,9 +607,15 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
             has_bank_account_with_pending_corrections_subquery.label("hasBankAccountWithPendingCorrections"),
             sqla.or_(has_adage_id, has_collective_application, has_non_draft_offers).label("isOnboarded"),
             has_headline_offer.label("hasHeadlineOffer"),
+            has_partner_page.label("hasPartnerPage"),
         )
         .filter(models.Offerer.id == offerer_id)
-        .options(sqla_orm.load_only(models.Offerer.id, models.Offerer.name))
+        .options(
+            sqla_orm.load_only(models.Offerer.id, models.Offerer.name),
+            sqla_orm.selectinload(models.Offerer.managedVenues).with_expression(
+                models.Venue._has_partner_page, models.Venue.has_partner_page
+            ),
+        )
         .one_or_none()
     )
 
