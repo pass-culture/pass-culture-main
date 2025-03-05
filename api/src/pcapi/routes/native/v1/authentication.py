@@ -213,7 +213,7 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
                 "identifier": email,
                 "sso_provider": "google",
                 "sso_user_id": sso_user_id,
-                "user": "not found",
+                "user": None,
                 "avoid_current_user": True,
                 "success": True,
             },
