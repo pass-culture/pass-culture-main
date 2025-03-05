@@ -7,7 +7,7 @@ import { Row } from './FormLayoutRow'
 import { RowWithInfo } from './FormLayoutRowWithInfo'
 import { Section } from './FormLayoutSection'
 import { SubSection } from './FormLayoutSubSection'
-
+import { SubSubSection } from './FormLayoutSubSubSection'
 export interface FormLayoutProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
@@ -35,6 +35,7 @@ export const FormLayout = ({
 
 FormLayout.RowWithInfo = RowWithInfo
 FormLayout.Row = Row
+FormLayout.SubSubSection = SubSubSection
 FormLayout.SubSection = SubSection
 FormLayout.Section = Section
 FormLayout.Actions = Actions

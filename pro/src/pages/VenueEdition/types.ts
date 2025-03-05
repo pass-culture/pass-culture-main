@@ -15,6 +15,7 @@ export interface VenueEditionFormValues {
   isAccessibilityAppliedOnAllOffers: boolean
   phoneNumber: string | null
   webSite: string | null
+  isOpenToPublic: string | null
   days: Day[]
   monday?: DayValues
   tuesday?: DayValues

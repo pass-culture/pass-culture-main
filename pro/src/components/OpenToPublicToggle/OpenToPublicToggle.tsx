@@ -5,8 +5,28 @@ import { RadioVariant } from "ui-kit/form/shared/BaseRadio/BaseRadio"
 
 import styles from "./OpenToPublicToggle.module.scss"
 
-export const OpenToPublicToggle = (): JSX.Element => {
+export interface OpenToPublicToggleProps {
+  radioDescriptions?: {
+    yes?: string
+    no?: string
+  },
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+}
+
+const DEFAULT_RADIO_DESCRIPTIONS: OpenToPublicToggleProps["radioDescriptions"] = {
+  yes: "Votre adresse postale sera visible.",
+  no: "Votre adresse postale ne sera pas visible.",
+}
+
+export const OpenToPublicToggle = ({
+  radioDescriptions = {},
+  onChange,
+}: OpenToPublicToggleProps): JSX.Element => {
   const [isOpenToPublic] = useField('isOpenToPublic')
+  const finalRadioDescriptions = {
+    ...DEFAULT_RADIO_DESCRIPTIONS,
+    ...radioDescriptions,
+  }
 
   return (
     <>
@@ -28,16 +48,17 @@ export const OpenToPublicToggle = (): JSX.Element => {
           },
         ]}
         isOptional={false}
+        onChange={onChange}
       />
       <span
         id="description"
-        className={styles ['open-to-public-toggle-description']}
+        className={styles['open-to-public-toggle-description']}
         aria-live="polite"
       >
         {isOpenToPublic.value === 'true'
-          ? 'Votre adresse postale sera visible'
+          ? finalRadioDescriptions.yes
           : isOpenToPublic.value === 'false'
-          ? 'Votre adresse postale ne sera pas visible'
+          ? finalRadioDescriptions.no
           : ''
         }
       </span>

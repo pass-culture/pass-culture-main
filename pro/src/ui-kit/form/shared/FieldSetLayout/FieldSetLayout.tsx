@@ -41,12 +41,13 @@ export const FieldSetLayout = ({
   childrenClassName,
 }: FieldSetLayoutProps): JSX.Element => {
   const showError = Boolean(error) || !hideFooter
+
   return (
     <fieldset
       className={cn(styles['fieldset-layout'], className)}
       data-testid={dataTestId}
       aria-labelledby="fieldsetlayout-legend"
-      aria-describedby={`fieldsetlayout-error ${ariaDescribedBy}`}
+      aria-describedby={`fieldsetlayout-error ${ariaDescribedBy ?? ''}`.trim()}
     >
       {legend && (
         <legend
