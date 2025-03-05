@@ -32,6 +32,7 @@ fragment DossierFragment on Dossier {
   state
   dateDepot
   dateDerniereModification
+  dateDerniereModificationChamps
   datePassageEnConstruction
   datePassageEnInstruction
   dateTraitement

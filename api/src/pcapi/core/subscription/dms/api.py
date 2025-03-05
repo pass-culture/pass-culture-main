@@ -633,10 +633,23 @@ def _process_instructor_annotation(application_content: fraud_models.DMSContent,
     if not FeatureToggle.ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION.is_active():
         return False
 
-    match application_content.instructor_annotation:
-        case fraud_models.DmsInstructorAnnotation.NEL:
+    if not application_content.instructor_annotation:
+        return False
+
+    if (
+        application_content.instructor_annotation.updated_datetime is not None
+        and application_content.latest_user_fields_modification_datetime is not None
+        and application_content.latest_user_fields_modification_datetime
+        > application_content.instructor_annotation.updated_datetime
+    ):
+        # Application was still draft and has been updated by user, so instructor annotation may not be up-to-date
+        # Ignore to avoid unconsistency between user fields and the reason to refuse.
+        return False
+
+    match application_content.instructor_annotation.value:
+        case fraud_models.DmsInstructorAnnotationEnum.NEL:
             motivation = dms_internal_mailing.DMS_MESSAGE_REFUSED_USER_NOT_ELIGIBLE
-        case fraud_models.DmsInstructorAnnotation.IDP:
+        case fraud_models.DmsInstructorAnnotationEnum.IDP:
             motivation = dms_internal_mailing.DMS_MESSAGE_REFUSED_ID_EXPIRED
         case _:
             return False

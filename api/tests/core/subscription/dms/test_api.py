@@ -519,9 +519,10 @@ class HandleDmsApplicationTest:
             email=user.email,
             annotations=[
                 {
-                    "id": "Q2hhbXAtNDk2MTgyMw==",
-                    "label": dms_serializer.DMS_INSTRUCTOR_ANNOTATION_LABEL,
-                    "stringValue": fraud_models.DmsInstructorAnnotation.NEL.value,
+                    "id": "Q2hhbXAtNTAxNTA2Mw==",
+                    "label": f"{dms_serializer.DMS_INSTRUCTOR_ANNOTATION_SLUG}: Code de l'annotation instructeur",
+                    "stringValue": fraud_models.DmsInstructorAnnotationEnum.NEL.value,
+                    "updatedAt": "2025-03-04T15:30:03+01:00",
                 }
             ],
         )
@@ -538,15 +539,29 @@ class HandleDmsApplicationTest:
     def test_process_instructor_annotation_NEL(self, mock_make_refused):
         user = users_factories.UserFactory()
         dms_response = make_parsed_graphql_application(
+            procedure_number=settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email=user.email,
             annotations=[
                 {
-                    "id": "Q2hhbXAtNDk2MTgyMw==",
-                    "label": dms_serializer.DMS_INSTRUCTOR_ANNOTATION_LABEL,
-                    "stringValue": fraud_models.DmsInstructorAnnotation.NEL.value,
-                }
+                    "id": "Q2hhbXAtNTAxNTA2Mw==",
+                    "label": f"{dms_serializer.DMS_INSTRUCTOR_ANNOTATION_SLUG}: Code de l'annotation instructeur",
+                    "stringValue": fraud_models.DmsInstructorAnnotationEnum.NEL.value,
+                    "updatedAt": "2025-03-04T15:30:03+01:00",
+                },
+                {
+                    "id": "Q2hhbXAtNDk2MTgyNg==",
+                    "label": "Nouvelle annotation ID",
+                    "stringValue": "",
+                    "updatedAt": "2025-03-04T15:28:00+01:00",
+                },
+                {
+                    "id": "Q2hhbXAtMjY4NDQ3Nw==",
+                    "label": f"{dms_serializer.DMS_BACKEND_ANNOTATION_SLUG}: Statut du dossier côté passCulture",
+                    "stringValue": "Aucune erreur détectée. Le dossier peut être passé en instruction.",
+                    "updatedAt": "2025-03-04T15:28:00+01:00",
+                },
             ],
         )
 
@@ -572,9 +587,10 @@ class HandleDmsApplicationTest:
             email=user.email,
             annotations=[
                 {
-                    "id": "Q2hhbXAtNDk2MTgyMw==",
-                    "label": dms_serializer.DMS_INSTRUCTOR_ANNOTATION_LABEL,
-                    "stringValue": fraud_models.DmsInstructorAnnotation.IDP.value,
+                    "id": "Q2hhbXAtNTAxNTA2Mw==",
+                    "label": f"{dms_serializer.DMS_INSTRUCTOR_ANNOTATION_SLUG}: Code de l'annotation instructeur",
+                    "stringValue": fraud_models.DmsInstructorAnnotationEnum.IDP.value,
+                    "updatedAt": "2025-03-04T15:30:03+01:00",
                 }
             ],
         )
@@ -593,6 +609,29 @@ class HandleDmsApplicationTest:
 
     @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
+    def test_process_instructor_annotation_IDP_when_fields_updated_later(self, mock_make_refused):
+        user = users_factories.UserFactory()
+        dms_response = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.on_going,
+            email=user.email,
+            last_user_fields_modification_date="2025-03-05T12:34:56+01:00",
+            annotations=[
+                {
+                    "id": "Q2hhbXAtNTAxNTA2Mw==",
+                    "label": f"{dms_serializer.DMS_INSTRUCTOR_ANNOTATION_SLUG}: Code de l'annotation instructeur",
+                    "stringValue": fraud_models.DmsInstructorAnnotationEnum.IDP.value,
+                    "updatedAt": "2025-03-04T15:30:03+01:00",
+                }
+            ],
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        mock_make_refused.assert_not_called()
+
+    @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
     def test_process_instructor_annotation_IDM(self, mock_make_refused):
         user = users_factories.UserFactory()
         dms_response = make_parsed_graphql_application(
@@ -601,9 +640,10 @@ class HandleDmsApplicationTest:
             email=user.email,
             annotations=[
                 {
-                    "id": "Q2hhbXAtNDk2MTgyMw==",
-                    "label": dms_serializer.DMS_INSTRUCTOR_ANNOTATION_LABEL,
-                    "stringValue": fraud_models.DmsInstructorAnnotation.IDM.value,
+                    "id": "Q2hhbXAtNTAxNTA2Mw==",
+                    "label": f"{dms_serializer.DMS_INSTRUCTOR_ANNOTATION_SLUG}: Code de l'annotation instructeur",
+                    "stringValue": fraud_models.DmsInstructorAnnotationEnum.IDM.value,
+                    "updatedAt": "2025-03-04T15:30:03+01:00",
                 }
             ],
         )

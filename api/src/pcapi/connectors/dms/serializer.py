@@ -42,7 +42,7 @@ DMS_ACTIVITY_ENUM_MAPPING = {
 }
 
 DMS_BACKEND_ANNOTATION_SLUG = "AN_001"
-DMS_INSTRUCTOR_ANNOTATION_LABEL = "Nouvelle annotation ID"
+DMS_INSTRUCTOR_ANNOTATION_SLUG = "AN_002"
 
 
 def _sanitize_id_piece_number(id_piece_number: str) -> str:
@@ -144,11 +144,21 @@ def parse_beneficiary_information_graphql(
             annotation = fraud_models.DmsAnnotation(
                 id=remote_annotation.id, label=remote_annotation.label, text=remote_annotation.value
             )
-        if remote_annotation.label == DMS_INSTRUCTOR_ANNOTATION_LABEL:
-            try:
-                instructor_annotation = fraud_models.DmsInstructorAnnotation(remote_annotation.value)
-            except ValueError:
-                pass  # Field is filled manually, do not raise an error when it does not match any known value
+        elif remote_annotation.label.startswith(DMS_INSTRUCTOR_ANNOTATION_SLUG):
+            if remote_annotation_value := remote_annotation.value.strip() if remote_annotation.value else None:
+                try:
+                    instructor_annotation = fraud_models.DmsInstructorAnnotation(
+                        value=fraud_models.DmsInstructorAnnotationEnum(remote_annotation_value),
+                        updated_datetime=remote_annotation.updated_datetime,
+                    )
+                except ValueError:
+                    # A new value has probably been added in the dropdown list, but not in the code
+                    logger.error(
+                        "Unknown value for instructor annotation %s: %s",
+                        remote_annotation.label,
+                        remote_annotation_value,
+                        extra={"procedure_id": application_detail.procedure.number},
+                    )
 
     return fraud_models.DMSContent(  # type: ignore[call-arg]
         activity=activity,
@@ -166,6 +176,7 @@ def parse_beneficiary_information_graphql(
         instructor_annotation=instructor_annotation,
         last_name=last_name,
         latest_modification_datetime=application_detail.latest_modification_datetime,
+        latest_user_fields_modification_datetime=application_detail.latest_user_fields_modification_datetime,
         phone=phone,
         postal_code=postal_code,
         procedure_number=application_detail.procedure.number,

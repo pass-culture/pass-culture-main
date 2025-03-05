@@ -73,6 +73,9 @@ class DmsField(pydantic_v1.BaseModel):
     id: str
     label: str
     value: str | None = pydantic_v1.Field(None, alias="stringValue")
+    updated_datetime: datetime.datetime | None = pydantic_v1.Field(None, alias="updatedAt")
+
+    _format_updated_datetime = pydantic_v1.validator("updated_datetime", allow_reuse=True)(parse_dms_datetime)
 
 
 class FieldLabelKeyword(enum.Enum):
@@ -134,6 +137,9 @@ class DmsApplicationResponse(pydantic_v1.BaseModel):
     id: str
     labels: list[DMSLabel]
     latest_modification_datetime: datetime.datetime = pydantic_v1.Field(alias="dateDerniereModification")
+    latest_user_fields_modification_datetime: datetime.datetime = pydantic_v1.Field(
+        alias="dateDerniereModificationChamps"
+    )
     messages: list[DMSMessage]
     number: int
     on_going_date: datetime.datetime | None = pydantic_v1.Field(None, alias="datePassageEnInstruction")
@@ -147,6 +153,9 @@ class DmsApplicationResponse(pydantic_v1.BaseModel):
     _format_latest_modification_datetime = pydantic_v1.validator("latest_modification_datetime", allow_reuse=True)(
         parse_dms_datetime
     )
+    _format_latest_user_fields_modification_datetime = pydantic_v1.validator(
+        "latest_user_fields_modification_datetime", allow_reuse=True
+    )(parse_dms_datetime)
     _format_on_going_date = pydantic_v1.validator("on_going_date", allow_reuse=True)(parse_dms_datetime)
 
 
