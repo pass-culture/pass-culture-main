@@ -8,9 +8,15 @@ import { Day } from './types'
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
-export const getValidationSchema = (validateAccessibility: boolean) =>
+export const getValidationSchema = ({
+  isOpenToPublicEnabled,
+  shouldValidateAccessibility,
+}: {
+  isOpenToPublicEnabled: boolean
+  shouldValidateAccessibility: boolean
+}) =>
   yup.object().shape({
-    accessibility: validateAccessibility
+    accessibility: shouldValidateAccessibility
       ? yup
           .object()
           .test({
@@ -40,6 +46,9 @@ export const getValidationSchema = (validateAccessibility: boolean) =>
           return phone ? isPhoneValid(phone) : true
         },
       }),
+    isOpenToPublic: isOpenToPublicEnabled ?
+      yup.string().nullable().required('Veuillez renseigner ce champ') :
+      yup.string().nullable(),
     webSite: yup
       .string()
       .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')

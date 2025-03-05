@@ -1,0 +1,13 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.opening-hours-subsubsection {
+  margin-top: rem.torem(32px);
+
+  &-address-input {
+    margin-bottom: rem.torem(16px);
+  }
+
+  &-callout {
+    margin-bottom: rem.torem(24px);
+  }
+}

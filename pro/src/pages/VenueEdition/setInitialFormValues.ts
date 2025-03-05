@@ -25,6 +25,7 @@ export const setInitialFormValues = (
     isAccessibilityAppliedOnAllOffers: false,
     phoneNumber: venue.contact?.phoneNumber || '',
     webSite: venue.contact?.website || '',
+    isOpenToPublic: venue.isOpenToPublic?.toString() || '',
     ...buildOpeningHoursValues(venue.openingHours),
   }
 }

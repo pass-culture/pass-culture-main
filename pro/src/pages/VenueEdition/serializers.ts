@@ -23,6 +23,7 @@ export const serializeEditVenueBodyModel = (
     isAccessibilityAppliedOnAllOffers:
       formValues.isAccessibilityAppliedOnAllOffers,
     openingHours: serializeOpeningHours(formValues, alreadyHasOpeningHours),
+    isOpenToPublic: formValues.isOpenToPublic === 'true',
   }
 
   if (hideSiret) {
