@@ -38,7 +38,13 @@ def fix_pre_decree_deposit_amount() -> None:
 
     for user in users:
         deposit = user.deposit
-        if deposit.type != DepositType.GRANT_17_18:
+        if not deposit or deposit.type != DepositType.GRANT_17_18:
+            continue
+
+        has_been_recredited_for_eighteen = any(
+            recredit.recreditType == RecreditType.RECREDIT_18 for recredit in deposit.recredits
+        )
+        if not has_been_recredited_for_eighteen:
             continue
 
         amount_to_recredit = Decimal("300") - deposit.amount
