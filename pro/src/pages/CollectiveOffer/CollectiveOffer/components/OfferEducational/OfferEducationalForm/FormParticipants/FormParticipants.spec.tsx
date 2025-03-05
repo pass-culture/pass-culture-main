@@ -13,12 +13,11 @@ import { FormParticipants } from './FormParticipants'
 
 const renderFormParticipants = (
   participants: Record<string, boolean>,
-  isTemplate: boolean = true,
   options?: RenderWithProvidersOptions
 ) => {
   return renderWithProviders(
     <Formik initialValues={{ participants }} onSubmit={() => {}}>
-      <FormParticipants disableForm={false} isTemplate={isTemplate} />
+      <FormParticipants disableForm={false} />
     </Formik>,
     options
   )
@@ -45,7 +44,7 @@ describe('FormParticipants', () => {
   })
 
   it('display a new text in the "à savoir" section when marseille ff is active', async () => {
-    renderFormParticipants(participants, false, featureOverrides)
+    renderFormParticipants(participants, featureOverrides)
 
     expect(
       await screen.findByText(
@@ -58,7 +57,7 @@ describe('FormParticipants', () => {
     const participants: Record<string, boolean> =
       buildStudentLevelsMapWithDefaultValue(true, true)
 
-    renderFormParticipants(participants, false, featureOverrides)
+    renderFormParticipants(participants, featureOverrides)
 
     expect(
       await screen.findByRole('checkbox', {
@@ -83,7 +82,7 @@ describe('FormParticipants', () => {
   })
 
   it('should not display new student level for MeG when ff is not active', async () => {
-    renderFormParticipants(participants, false)
+    renderFormParticipants(participants)
 
     await waitFor(() => {
       expect(
