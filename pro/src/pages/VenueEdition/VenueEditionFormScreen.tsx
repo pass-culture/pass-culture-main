@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { PartnerPageIndividualSection } from 'pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageIndividualSection'
 import { Callout } from 'ui-kit/Callout/Callout'
 
@@ -15,6 +16,9 @@ interface VenueEditionProps {
 export const VenueEditionFormScreen = ({
   venue,
 }: VenueEditionProps): JSX.Element => {
+  const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
+  const shouldDisplayPartnerPageSection = !isOpenToPublicEnabled
+
   const location = useLocation()
 
   if (venue.isVirtual) {
@@ -36,15 +40,14 @@ export const VenueEditionFormScreen = ({
               Les informations que vous renseignez ci-dessous sont affichées
               dans votre page partenaire, visible sur l’application pass Culture
             </Callout>
-            <PartnerPageIndividualSection
+            {shouldDisplayPartnerPageSection && <PartnerPageIndividualSection
               venueId={venue.id}
               venueName={venue.name}
               offererId={venue.managingOfferer.id}
               isVisibleInApp={Boolean(venue.isVisibleInApp)}
-            />
+            />}
           </div>
-
-          <hr className={styles['separator']} />
+          {shouldDisplayPartnerPageSection && <hr className={styles['separator']} />}
         </>
       )}
 

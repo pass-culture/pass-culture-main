@@ -12,13 +12,16 @@ import {
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { WEBAPP_URL } from 'commons/utils/config'
 import { ButtonImageEdit } from 'components/ImageUploader/components/ButtonImageEdit/ButtonImageEdit'
 import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploadImageValues } from 'components/ImageUploader/components/ButtonImageEdit/types'
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
+import fullLinkIcon from 'icons/full-link.svg'
 import fullParametersIcon from 'icons/full-parameters.svg'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -63,6 +66,7 @@ export const VenueEditionHeader = ({
   const { mutate } = useSWRConfig()
   const notify = useNotification()
   const selectedOffererId = useSelector(selectCurrentOffererId)
+  const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
 
   const venueType = venueTypes.find(
     (venueType) => venueType.id === venue.venueTypeCode
@@ -137,8 +141,7 @@ export const VenueEditionHeader = ({
               ? `${offerer.name} (Offre numérique)`
               : venue.publicName || venue.name}
           </h2>
-
-          {venue.street && (
+          {!isOpenToPublicEnabled && venue.street && (
             <address className={styles['venue-address']}>
               {venue.street}, {venue.postalCode} {venue.city}
             </address>
@@ -153,7 +156,15 @@ export const VenueEditionHeader = ({
           >
             Paramètres généraux
           </ButtonLink>
-
+          {isOpenToPublicEnabled && venue.isPermanent && <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            icon={fullLinkIcon}
+            to={`${WEBAPP_URL}/lieu/${venue.id}`}
+            isExternal
+            opensInNewTab
+          >
+            Visualiser votre page
+          </ButtonLink>}
           {imageValues.originalImageUrl && (
             <ButtonImageEdit
               mode={UploaderModeEnum.VENUE}

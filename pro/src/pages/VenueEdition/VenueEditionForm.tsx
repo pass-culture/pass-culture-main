@@ -8,6 +8,7 @@ import { GetVenueResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
@@ -35,6 +36,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
+  const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
 
   const onSubmit: FormikConfig<VenueEditionFormValues>['onSubmit'] = async (
     values,
@@ -126,7 +128,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               </FormLayout.Row>
             </FormLayout.SubSection>
             {venue.isPermanent && (
-              <FormLayout.SubSection title="Horaires d'ouverture">
+              <FormLayout.SubSection title={isOpenToPublicEnabled ? "Accès et horaires" : "Horaires d'ouverture"}>
                 <OpeningHoursForm />
               </FormLayout.SubSection>
             )}
