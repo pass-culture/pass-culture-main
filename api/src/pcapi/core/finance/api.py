@@ -92,7 +92,7 @@ from . import validation
 
 logger = logging.getLogger(__name__)
 
-RECREDIT_UNDERAGE_USERS_BATCH_SIZE = 1000
+RECREDIT_UNDERAGE_USERS_BATCH_SIZE = 500
 # When used through the cron, only price bookings that were used in 2022.
 # Prior bookings have been priced manually.
 MIN_DATE_TO_PRICE = datetime.datetime(2021, 12, 31, 23, 0)  # UTC
@@ -3320,7 +3320,7 @@ def expire_current_deposit_for_user(user: users_models.User) -> None:
         models.Deposit.expirationDate > datetime.datetime.utcnow(),
     ).update(
         {
-            models.Deposit.expirationDate: datetime.datetime.utcnow() - datetime.timedelta(seconds=5),
+            models.Deposit.expirationDate: datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
             models.Deposit.dateUpdated: datetime.datetime.utcnow(),
         },
     )

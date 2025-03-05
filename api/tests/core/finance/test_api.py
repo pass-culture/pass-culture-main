@@ -5200,6 +5200,19 @@ class UserRecreditAfterDecreeTest:
         assert user_2.deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_18
         assert user_2.deposit.amount == 30 + 150  #  30 (credit 17 before decree) + 150 (for 18 year old after decree)
 
+    @pytest.mark.skip(
+        reason="This test is very long and must be executed in a flask shell, outside of db_session fixture"
+    )
+    def test_recredit_users_does_not_crash_on_big_pages(self):
+        one_year_before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
+        next_week = datetime.datetime.utcnow() + relativedelta(weeks=1)
+        with time_machine.travel(one_year_before_decree):
+            users_factories.BeneficiaryFactory.create_batch(
+                1000, age=16, phoneNumber="+33600000000", deposit__amount=12, deposit__expirationDate=next_week
+            )
+
+        assert api.recredit_users() is None
+
     def test_recredit_email_is_sent_to_18_years_old_users(self):
         with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1, months=1)):
             user = users_factories.BeneficiaryFactory(age=17, deposit__type=models.DepositType.GRANT_17_18)
