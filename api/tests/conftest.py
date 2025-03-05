@@ -708,14 +708,17 @@ def run_command(app, clean_database):
 
 @pytest.hookimpl()
 def pytest_collection_finish(session):
-    backoffice_dirs = (Path("tests/routes/backoffice"),)
-    matches = [
-        session.config.rootdir / dir in Path(item.fspath).parents for dir in backoffice_dirs for item in session.items
+    backoffice_routes_dir = Path("tests/routes/backoffice")
+    routes_dir = Path("tests/routes")
+    BO_matches = [
+        session.config.rootdir / backoffice_routes_dir in Path(item.fspath).parents
+        for item in session.items
+        if session.config.rootdir / routes_dir in Path(item.fspath).parents
     ]
-    if any(matches) and not all(matches):
+    if any(BO_matches) and not all(BO_matches):
         if not session.config.option.collectonly:
             pytest.exit("You can not run backoffice tests with non backoffice tests")
-    if all(matches):
+    if any(BO_matches):
         session.config.option.markexpr = "backoffice"
 
 
