@@ -62,6 +62,16 @@ $info-box-margin-left: rem.torem(24px);
     &-title {
       margin-bottom: rem.torem(16px);
 
+      @include fonts.title3;
+    }
+  }
+
+  &-sub-sub-section {
+    margin-bottom: rem.torem(32px);
+
+    &-title {
+      margin-bottom: rem.torem(16px);
+
       @include fonts.title4;
     }
   }

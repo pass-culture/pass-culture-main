@@ -139,7 +139,7 @@ const baseVenue: GetVenueResponseModel = {
   isPermanent: true,
 }
 
-describe('VenueFormScreen', () => {
+describe('VenueEditionFormScreen', () => {
   it('should display the partner info', async () => {
     renderForm(baseVenue)
 
@@ -179,7 +179,7 @@ describe('VenueFormScreen', () => {
     })
   })
 
-  describe('on readonly', () => {
+  describe('on readonly (VenueEditionReadOnly)', () => {
     it('should display readonly info', async () => {
       renderForm(
         {
@@ -193,7 +193,6 @@ describe('VenueFormScreen', () => {
         },
         { initialRouterEntries: ['/'] }
       )
-
       expect(
         await screen.findByText('Vos informations pour le grand public')
       ).toBeInTheDocument()
@@ -210,7 +209,25 @@ describe('VenueFormScreen', () => {
       expect(screen.getByText('site.web')).toBeInTheDocument()
     })
 
-    it('should display the acceslibre section when accessibility is externally defined (via acceslibre)', () => {
+    it('should display a "Horaires d’ouverture" section', () => {
+      renderForm(
+        baseVenue,
+        { initialRouterEntries: ['/'] }
+      )
+
+      expect(screen.getByText(/Horaires d'ouverture/)).toBeInTheDocument()
+    })
+
+    it('should dispaly an accessibility section', () => {
+      renderForm(
+        baseVenue,
+        { initialRouterEntries: ['/'] }
+      )
+
+      expect(screen.getByText('Modalités d’accessibilité')).toBeInTheDocument()
+    })
+
+    it('should display the acceslibre section as an accessibility section when accessibility is externally defined', () => {
       renderForm(
         {
           ...baseVenue,
@@ -225,7 +242,6 @@ describe('VenueFormScreen', () => {
           initialRouterEntries: ['/'],
         }
       )
-
       expect(
         screen.queryByText(
           /Votre établissement est accessible aux publics en situation de handicap/
@@ -237,12 +253,11 @@ describe('VenueFormScreen', () => {
     })
 
     describe('when open to public feature is enabled', () => {
-      it('should display a "Accès et horaires" section',() => {
+      it('should display a "Accès et horaires" section instead of a "Horaires d’ouverture" section',() => {
         renderForm(baseVenue, {
           initialRouterEntries: ['/'],
           features: ['WIP_IS_OPEN_TO_PUBLIC'],
         })
-
         expect(screen.getByText('Accès et horaires')).toBeInTheDocument()
       })
 
@@ -258,22 +273,49 @@ describe('VenueFormScreen', () => {
       })
 
       describe('when the venue is open to public', () => {
-        it('should display the accessibility section', () => {
+        it('should display an accessibility section', () => {
           renderForm({ ...baseVenue, isOpenToPublic: true }, {
             initialRouterEntries: ['/'],
             features: ['WIP_IS_OPEN_TO_PUBLIC'],
           })
-
           expect(screen.queryByText(/Modalités d’accessibilité/)).toBeInTheDocument()
+        })
+
+        it('should display the acceslibre section as an accessibility section when accessibility is externally defined', () => {
+          renderForm(
+            {
+              ...baseVenue,
+              isOpenToPublic: true,
+              externalAccessibilityData: {
+                isAccessibleAudioDisability: true,
+                isAccessibleMentalDisability: false,
+                isAccessibleMotorDisability: true,
+                isAccessibleVisualDisability: true,
+              },
+            },
+            {
+              initialRouterEntries: ['/'],
+              features: ['WIP_IS_OPEN_TO_PUBLIC'],
+            }
+          )
+
+          expect(
+            screen.queryByText(
+              /Votre établissement est accessible aux publics en situation de handicap/
+            )
+          ).not.toBeInTheDocument()
+          expect(
+            screen.getByText('Modalités d’accessibilité via acceslibre')
+          ).toBeInTheDocument()
         })
       })
     })
   })
 
-  describe('on edition', () => {
+  // See VenueEdition.spec.tsx for additional tests.
+  describe('on edition (VenueEditionForm)', () => {
     it('should display an error when the venue could not be updated', async () => {
       renderForm(baseVenue)
-
       vi.spyOn(api, 'editVenue').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
@@ -326,7 +368,6 @@ describe('VenueFormScreen', () => {
 
     it('should send opening hours if the field was not filled, but the openingHours already existed', async () => {
       const editVenueSpy = vi.spyOn(api, 'editVenue')
-
       renderForm({
         ...baseVenue,
         openingHours: {
@@ -358,10 +399,15 @@ describe('VenueFormScreen', () => {
       )
     })
 
+    it('should display an accessibility section', () => {
+      renderForm(baseVenue)
+
+      expect(screen.getByText('Modalités d’accessibilité')).toBeInTheDocument()
+    })
+
     describe('when the venue is virtual', () => {
       it('should display a specific message', () => {
         renderForm({ ...baseVenue, isVirtual: true })
-
         expect(
           screen.getByText(
             /Cette structure vous permet uniquement de créer des offres numériques/
@@ -390,6 +436,140 @@ describe('VenueFormScreen', () => {
             'Cette adresse s’appliquera par défaut à toutes vos offres, vous pourrez la modifier à l’échelle de chaque offre.'
           )
         ).not.toBeInTheDocument()
+      })
+    })
+
+    describe('when the venue is permanent', () => {
+      it('should display a "Horaires d\'ouverture" section', () => {
+        renderForm(baseVenue)
+
+        expect(screen.getByText(/Horaires d'ouverture/)).toBeInTheDocument()
+      })
+    })
+
+    describe('when the venue is not permanent', () => {
+      it('should not display any "Horaires d\'ouverture" section', () => {
+        renderForm({ ...baseVenue, isPermanent: false })
+
+        expect(screen.queryByText(/Horaires d'ouverture/)).not.toBeInTheDocument()
+      })
+    })
+
+    describe('when open to public feature is enabled', () => {
+      it('should display an "Accueil du public section"', () => {
+        renderForm(baseVenue, {
+          features: ['WIP_IS_OPEN_TO_PUBLIC'],
+        })
+
+        expect(screen.getByText('Accueil du public')).toBeInTheDocument
+      })
+
+      it('should display a mandatory toggle to define isOpenToPublic', () => {
+        renderForm(baseVenue, {
+          features: ['WIP_IS_OPEN_TO_PUBLIC'],
+        })
+
+        const toggle = screen.getByRole('group', { name: 'Accueillez-vous du public dans votre structure ? *' })
+        expect(toggle).toBeInTheDocument()
+      })
+
+      it('should pass the isOpenToPublic value to the API', async () => {
+        const editVenueSpy = vi.spyOn(api, 'editVenue')
+
+        renderForm({
+          ...baseVenue,
+          isOpenToPublic: false,
+        }, {
+          features: ['WIP_IS_OPEN_TO_PUBLIC'],
+        })
+
+        await userEvent.click(screen.getByRole('radio', { name: 'Oui' }))
+        await userEvent.click(screen.getByText(/Enregistrer/))
+
+        expect(editVenueSpy).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({ isOpenToPublic: true })
+        )
+      })
+
+      describe('when the venue is not open to public', () => {
+        it('should not display any "Addresse et horaires" subsection', () => {
+          renderForm({ ...baseVenue, isOpenToPublic: false }, {
+            features: ['WIP_IS_OPEN_TO_PUBLIC'],
+          })
+
+          expect(screen.queryByText('Adresse et horaires')).not.toBeInTheDocument()
+        })
+
+        it('should not display any accessibility subsection', () => {
+          renderForm({ ...baseVenue, isOpenToPublic: false }, {
+            features: ['WIP_IS_OPEN_TO_PUBLIC'],
+          })
+
+          expect(screen.queryByText('Modalités d’accessibilité')).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when the venue is open to public', () => {
+        it('should display an "Addresse et horaires" subsection', () => {
+          renderForm({ ...baseVenue, isOpenToPublic: true }, {
+            features: ['WIP_IS_OPEN_TO_PUBLIC'],
+          })
+
+          expect(screen.getByText('Adresse et horaires')).toBeInTheDocument()
+        })
+
+        it('should display a mandatory accessibility subsection when internally defined', () => {
+          renderForm({ ...baseVenue, isOpenToPublic: true }, {
+            features: ['WIP_IS_OPEN_TO_PUBLIC'],
+          })
+
+          expect(screen.getByText('Modalités d’accessibilité')).toBeInTheDocument()
+          expect(screen.getByText('Votre établissement est accessible au public en situation de handicap : *')).toBeInTheDocument()
+        })
+
+        it('should display an acceslibre accessibility subsection when externally defined', () => {
+          renderForm(
+            {
+              ...baseVenue,
+              isOpenToPublic: true,
+              externalAccessibilityData: {
+                isAccessibleAudioDisability: true,
+                isAccessibleMentalDisability: false,
+                isAccessibleMotorDisability: true,
+                isAccessibleVisualDisability: true,
+              },
+            },
+            {
+              features: ['WIP_IS_OPEN_TO_PUBLIC'],
+            }
+          )
+
+          expect(screen.queryByText('Modalités d’accessibilité')).not.toBeInTheDocument()
+          expect(screen.getByText('Modalités d’accessibilité via acceslibre')).toBeInTheDocument()
+        })
+      })
+
+      describe('when days/hours or accessibility have been updated', () => {
+        it('should be reset to initial values if user set isOpenToPublic to false', async () => {
+          renderForm({ ...baseVenue, isOpenToPublic: true }, {
+            features: ['WIP_IS_OPEN_TO_PUBLIC'],
+          })
+
+          expect(baseVenue.motorDisabilityCompliant).toBe(false)
+          let visualAccessibilityCheckbox = screen.getByRole('checkbox', { name: 'Moteur' })
+          await userEvent.click(visualAccessibilityCheckbox)
+          expect(visualAccessibilityCheckbox).toBeChecked()
+
+          const noRadio = await screen.findByRole('radio', { name: 'Non' })
+          await userEvent.click(noRadio)
+
+          const yesRadio = await screen.findByRole('radio', { name: 'Oui' })
+          await userEvent.click(yesRadio)
+
+          visualAccessibilityCheckbox = screen.getByRole('checkbox', { name: 'Moteur' })
+          expect(visualAccessibilityCheckbox).not.toBeChecked()
+        })
       })
     })
   })
