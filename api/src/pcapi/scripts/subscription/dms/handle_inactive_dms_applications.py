@@ -19,6 +19,15 @@ logger = logging.getLogger(__name__)
 
 PRE_GENERALISATION_DEPARTMENTS = ["08", "22", "25", "29", "34", "35", "56", "58", "67", "71", "84", "93", "94", "973"]
 
+INACTIVITY_MESSAGE = """Aucune activité n’a eu lieu sur votre dossier depuis plus de {delay} jours.
+
+Conformément à nos CGUs, en cas d’absence de réponse ou de justification insuffisante, nous nous réservons le droit de refuser votre création de compte. Aussi nous avons classé sans suite votre dossier n°{application_number}.
+
+Sous réserve d’être encore éligible, vous pouvez si vous le souhaitez refaire une demande d’inscription. Nous vous invitons à soumettre un nouveau dossier en suivant ce lien : https://www.demarches-simplifiees.fr/dossiers/new?procedure_id={procedure_id}
+
+Vous trouverez toutes les informations dans notre FAQ pour vous accompagner dans cette démarche : https://aide.passculture.app/hc/fr/sections/4411991878545-Inscription-et-modification-d-information-sur-Démarches-Simplifiées
+"""
+
 
 def handle_inactive_dms_applications(procedure_number: int, with_never_eligible_applicant_rule: bool = False) -> None:
     logger.info("[DMS] Handling inactive application for procedure %d", procedure_number)
@@ -81,7 +90,11 @@ def _mark_without_continuation_a_draft_application(dms_application: dms_models.D
     dms_api.DMSGraphQLClient().mark_without_continuation(
         dms_application.id,
         settings.DMS_ENROLLMENT_INSTRUCTOR,
-        motivation=f"Aucune activité n'a eu lieu sur votre dossier depuis plus de {settings.DMS_INACTIVITY_TOLERANCE_DELAY} jours. Si vous souhaitez le soumettre à nouveau, vous pouvez contacter le support à l'adresse {settings.SUPPORT_EMAIL_ADDRESS}",
+        motivation=INACTIVITY_MESSAGE.format(
+            delay=settings.DMS_INACTIVITY_TOLERANCE_DELAY,
+            procedure_id=dms_application.procedure.number,
+            application_number=dms_application.number,
+        ),
         from_draft=True,
     )
 
