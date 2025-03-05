@@ -42,10 +42,6 @@ logger = logging.getLogger(__name__)
 blueprint = Blueprint("import_test_users", __name__)
 
 
-def _get_birth_date(row: dict) -> datetime.date:
-    return datetime.datetime.strptime(row["Date de naissance"], "%Y-%m-%d").date()
-
-
 def _get_password(row: dict) -> str:
     if row.get("Mot de passe"):  # Keep compatibility with CSV without this column
         return row["Mot de passe"]
@@ -63,24 +59,28 @@ def _get_siret(siren: str) -> str:
 
 
 def _create_beneficiary(row: dict, role: UserRole | None) -> User:
+    match role:
+        case UserRole.UNDERAGE_BENEFICIARY:
+            age = 17
+        case UserRole.BENEFICIARY:
+            age = 18
+        case _:
+            age = 19
+    birth_date = datetime.date(datetime.date.today().year - age, 1, 1)
+
     user = users_api.create_account(
         email=sanitize_email(row["Mail"]),
         password=_get_password(row),
-        birthdate=_get_birth_date(row),
+        birthdate=birth_date,
         is_email_validated=True,
         send_activation_mail=False,
         remote_updates=False,
     )
-    user.validatedBirthDate = _get_birth_date(row)
+    user.validatedBirthDate = birth_date
+    finance_api.create_deposit(user, "import_test_users (csv)", eligibility=EligibilityType.AGE17_18)
     if role == UserRole.BENEFICIARY:
-        deposit = finance_api.create_deposit(user, "import_test_users (csv)", eligibility=EligibilityType.AGE18)
-        db.session.add(deposit)
         user.add_beneficiary_role()
     elif role == UserRole.UNDERAGE_BENEFICIARY:
-        deposit = finance_api.create_deposit(
-            user, "import_test_users (csv)", eligibility=EligibilityType.UNDERAGE, age_at_registration=16
-        )
-        db.session.add(deposit)
         user.add_underage_beneficiary_role()
     return user
 
@@ -219,7 +219,6 @@ def _add_or_update_user_from_row(row: dict, update_if_exists: bool) -> User | No
         return None
 
     if user:
-        user.dateOfBirth = _get_birth_date(row)
         user.setPassword(_get_password(row))
     else:
         role = UserRole(row["Role"]) if row["Role"] else None
