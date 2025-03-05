@@ -28,6 +28,9 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT,
         perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST,
     ],
+    "support_n3": [
+        perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
+    ],
     "support_pro": [
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.READ_PRO_ENTREPRISE_INFO,
