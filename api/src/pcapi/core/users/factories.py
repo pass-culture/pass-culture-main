@@ -1019,8 +1019,6 @@ class DepositGrantFactory(BaseFactory):
 
         if not create:
             return []
-        if not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() or self.dateCreated < settings.CREDIT_V3_DECREE_DATETIME:
-            return []
         if getattr(self, "recredits", None):
             # do not create new recredits if they already exist
             return getattr(self, "recredits", [])

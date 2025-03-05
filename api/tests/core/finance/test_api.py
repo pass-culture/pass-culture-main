@@ -5092,12 +5092,11 @@ class LegacyUserRecreditTest:
 
 
 @pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
-@pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime(2020, 1, 1))
 class UserRecreditAfterDecreeTest:
     @pytest.mark.parametrize("age", [15, 16, 17, 18])
     def test_user_already_recredited(self, age):
-        one_year_ago = datetime.datetime.utcnow() - relativedelta(years=1)
-        users_factories.BeneficiaryFactory(age=age, dateCreated=one_year_ago)
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        users_factories.BeneficiaryFactory(age=age, dateCreated=before_decree)
 
         before_recredit_number = db.session.query(models.Recredit.id).count()
         api.recredit_users()
@@ -5151,40 +5150,43 @@ class UserRecreditAfterDecreeTest:
             assert len(user.deposit.recredits) == 2
 
     def test_user_with_missing_steps_is_not_recredited(self):
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1, months=1)):
-            user = users_factories.BeneficiaryFactory(age=17, deposit__type=models.DepositType.GRANT_17_18)
+        user = users_factories.BeneficiaryFactory(age=17, deposit__type=models.DepositType.GRANT_17_18)
 
-        # User cannot be recredited because of missing steps
-        api.recredit_users()
-        assert len(user.deposits) == 1
-        assert len(user.deposit.recredits) == 1
+        next_year = datetime.datetime.utcnow() + relativedelta(years=1)
+        with time_machine.travel(next_year):
+            # User cannot be recredited because of missing steps
+            api.recredit_users()
+            assert len(user.deposits) == 1
+            assert len(user.deposit.recredits) == 1
 
-        # Finish missing steps
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.PhoneValidationFraudCheckFactory(user=user)
-        user.phoneNumber = "+33600000000"
-        fraud_factories.HonorStatementFraudCheckFactory(user=user)
+            # Finish missing steps
+            fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+            fraud_factories.PhoneValidationFraudCheckFactory(user=user)
+            user.phoneNumber = "+33600000000"
+            fraud_factories.HonorStatementFraudCheckFactory(user=user)
 
-        # User can be recredited
-        api.recredit_users()
+            # User can be recredited
+            api.recredit_users()
+
         assert len(user.deposits) == 1
         assert len(user.deposit.recredits) == 2
 
     def test_create_new_deposit_when_recrediting_underage_deposit(self):
         one_year_before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
-        one_day_after_decree = settings.CREDIT_V3_DECREE_DATETIME + relativedelta(days=1)
+        next_week = datetime.datetime.utcnow() + relativedelta(weeks=1)
         with time_machine.travel(one_year_before_decree):
-            user_1 = users_factories.BeneficiaryFactory(age=16, deposit__amount=12, phoneNumber="+33600000000")
-            user_2 = users_factories.BeneficiaryFactory(age=17)
+            user_1 = users_factories.BeneficiaryFactory(
+                age=16, phoneNumber="+33600000000", deposit__amount=12, deposit__expirationDate=next_week
+            )
+            user_2 = users_factories.BeneficiaryFactory(age=17, deposit__expirationDate=next_week)
 
-        with time_machine.travel(one_day_after_decree):
-            # finish steps for user 2
-            fraud_factories.ProfileCompletionFraudCheckFactory(user=user_2)
-            fraud_factories.PhoneValidationFraudCheckFactory(user=user_2)
-            user_2.phoneNumber = "+33610000000"
-            fraud_factories.HonorStatementFraudCheckFactory(user=user_2)
+        # finish steps for user 2
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user_2)
+        fraud_factories.PhoneValidationFraudCheckFactory(user=user_2)
+        user_2.phoneNumber = "+33610000000"
+        fraud_factories.HonorStatementFraudCheckFactory(user=user_2)
 
-            api.recredit_users()
+        api.recredit_users()
 
         # User 1 is 17, and was recredited with RECREDIT_17 on its new deposit
         assert len(user_1.deposits) == 2
@@ -5201,7 +5203,8 @@ class UserRecreditAfterDecreeTest:
         assert user_2.deposit.amount == 30 + 150  #  30 (credit 17 before decree) + 150 (for 18 year old after decree)
 
     def test_recredit_email_is_sent_to_18_years_old_users(self):
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1, months=1)):
+        last_year = datetime.datetime.utcnow() - relativedelta(years=1)
+        with time_machine.travel(last_year):
             user = users_factories.BeneficiaryFactory(age=17, deposit__type=models.DepositType.GRANT_17_18)
 
         # Finish missing steps
