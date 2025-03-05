@@ -25,6 +25,9 @@ class DMSGraphQLTest:
             dateDerniereModification=datetime.datetime(
                 2020, 3, 25, 12, 35, 51, tzinfo=datetime.timezone(datetime.timedelta(seconds=3600))
             ),
+            dateDerniereModificationChamps=datetime.datetime(
+                2020, 3, 25, 12, 35, 51, tzinfo=datetime.timezone(datetime.timedelta(seconds=3600))
+            ),
             datePassageEnConstruction=datetime.datetime(
                 2020, 3, 24, 12, 35, 51, tzinfo=datetime.timezone(datetime.timedelta(seconds=3600))
             ),

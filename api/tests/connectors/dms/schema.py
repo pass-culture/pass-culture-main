@@ -318,6 +318,7 @@ champ_type = gql.GraphQLInterfaceType(
         "id": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLID)),
         "label": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLString)),
         "stringValue": gql.GraphQLField(gql.GraphQLString),
+        "updatedAt": gql.GraphQLField(gql.GraphQLString),
     },
     resolve_type=lambda champ, _info, _type: {
         "RepetitionChamp": repetition_champ_type.name,
@@ -338,6 +339,7 @@ repetition_champ_type = gql.GraphQLObjectType(
         "id": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLID)),
         "label": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLString)),
         "stringValue": gql.GraphQLField(gql.GraphQLString),
+        "updatedAt": gql.GraphQLField(gql.GraphQLString),
     },
 )
 
@@ -484,6 +486,7 @@ dossier_type = gql.GraphQLObjectType(
         "champs": gql.GraphQLField(gql.GraphQLList(gql.GraphQLNonNull(champ_type))),
         "dateDepot": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLString)),
         "dateDerniereModification": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLString)),
+        "dateDerniereModificationChamps": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLString)),
         "dateExpiration": gql.GraphQLField(gql.GraphQLString),
         "datePassageEnConstruction": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLString)),
         "datePassageEnInstruction": gql.GraphQLField(gql.GraphQLString),
@@ -570,6 +573,7 @@ dossier_link_champ = gql.GraphQLObjectType(
         "id": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLID)),
         "label": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLString)),
         "stringValue": gql.GraphQLField(gql.GraphQLString),
+        "updatedAt": gql.GraphQLField(gql.GraphQLString),
     },
 )
 
@@ -583,6 +587,7 @@ linked_drop_down_list_champ_type = gql.GraphQLObjectType(
         "primaryValue": gql.GraphQLField(gql.GraphQLString),
         "secondaryValue": gql.GraphQLField(gql.GraphQLString),
         "stringValue": gql.GraphQLField(gql.GraphQLString),
+        "updatedAt": gql.GraphQLField(gql.GraphQLString),
     },
 )
 
@@ -595,6 +600,7 @@ multiple_drop_down_list_champ_type = gql.GraphQLObjectType(
         "label": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLString)),
         "stringValue": gql.GraphQLField(gql.GraphQLString),
         "values": gql.GraphQLField(gql.GraphQLList(gql.GraphQLNonNull(gql.GraphQLString))),
+        "updatedAt": gql.GraphQLField(gql.GraphQLString),
     },
 )
 
@@ -607,6 +613,7 @@ piece_justificative_champ_type = gql.GraphQLObjectType(
         "id": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLID)),
         "label": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLString)),
         "stringValue": gql.GraphQLField(gql.GraphQLString),
+        "updatedAt": gql.GraphQLField(gql.GraphQLString),
     },
 )
 
@@ -618,6 +625,7 @@ address_champ_type = gql.GraphQLObjectType(
         "id": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLID)),
         "label": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLString)),
         "stringValue": gql.GraphQLField(gql.GraphQLString),
+        "updatedAt": gql.GraphQLField(gql.GraphQLString),
     },
 )
 

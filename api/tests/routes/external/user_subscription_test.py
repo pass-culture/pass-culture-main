@@ -174,6 +174,7 @@ class DmsWebhookApplicationTest:
                 "state": "accepte",
                 "dateDepot": "2022-03-17T12:19:37+01:00",
                 "dateDerniereModification": "2022-03-23T10:22:01+01:00",
+                "dateDerniereModificationChamps": "2022-03-17T12:19:37+01:00",
                 "datePassageEnConstruction": "2022-03-17T12:19:37+01:00",
                 "datePassageEnInstruction": "2022-03-22T16:58:25+01:00",
                 "dateTraitement": "2022-03-22T16:58:28+01:00",

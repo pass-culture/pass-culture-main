@@ -107,6 +107,17 @@ class ParseBeneficiaryInformationTest:
         assert content.address == "32 rue des sapins gris 21350 l'îsle à dent"
         assert content.id_piece_number == "K682T8YLO"
 
+    def test_modification_datetime(self):
+        raw_data = fixture.make_graphql_application(
+            1,
+            "en_construction",
+            last_modification_date="2025-03-01T12:00:00+01:00",
+            last_user_fields_modification_date="2025-03-02T15:00:00+01:00",
+        )
+        content = dms_serializer.parse_beneficiary_information_graphql(dms_models.DmsApplicationResponse(**raw_data))
+        assert content.latest_modification_datetime == datetime(2025, 3, 1, 11)
+        assert content.latest_user_fields_modification_datetime == datetime(2025, 3, 2, 14)
+
     def test_processed_datetime_none(self):
         raw_data = fixture.make_graphql_application(1, "en_construction", processed_datetime=None)
         content = dms_serializer.parse_beneficiary_information_graphql(dms_models.DmsApplicationResponse(**raw_data))

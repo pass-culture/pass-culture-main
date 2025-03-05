@@ -150,6 +150,7 @@ class Dossier(pydantic_v1.BaseModel):
     ]
     dateDepot: str = dossier_default_date_depot
     dateDerniereModification: str = dossier_default_date_depot
+    dateDerniereModificationChamps: str = dossier_default_date_depot
     dateExpiration: str | None = None
     datePassageEnConstruction: str = dossier_default_passage_en_construction
     datePassageEnInstruction: str | None = None
