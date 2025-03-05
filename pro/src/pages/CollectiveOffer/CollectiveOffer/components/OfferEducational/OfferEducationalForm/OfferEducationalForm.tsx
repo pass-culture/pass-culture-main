@@ -178,10 +178,7 @@ export const OfferEducationalForm = ({
               venuesOptions={venuesOptions}
               disableForm={!canEditDetails}
             />
-            <FormParticipants
-              disableForm={!canEditDetails}
-              isTemplate={isTemplate}
-            />
+            <FormParticipants disableForm={!canEditDetails} />
             <FormAccessibility disableForm={!canEditDetails} />
             {isTemplate ? (
               <FormContactTemplate disableForm={!canEditDetails} />

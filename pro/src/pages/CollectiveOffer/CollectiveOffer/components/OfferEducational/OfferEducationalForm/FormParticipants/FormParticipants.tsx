@@ -39,7 +39,6 @@ export const FormParticipants = ({
   disableForm,
 }: {
   disableForm: boolean
-  isTemplate: boolean
 }): JSX.Element => {
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
   const { setFieldValue, values } =
