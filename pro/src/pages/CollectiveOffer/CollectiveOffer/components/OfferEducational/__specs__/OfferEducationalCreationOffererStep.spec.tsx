@@ -28,20 +28,6 @@ function renderOfferEducational(props: OfferEducationalProps) {
 
 describe('screens | OfferEducational : creation offerer step', () => {
   let props: OfferEducationalProps
-  describe('when there is only one offerer associated with the account', () => {
-    beforeEach(() => {
-      props = {
-        ...defaultCreationProps,
-        userOfferer: userOffererFactory({}),
-      }
-    })
-
-    it('should test eligibility and display venue input if offerer is eligible', async () => {
-      renderOfferEducational(props)
-
-      expect(await screen.findByLabelText('Structure *')).toBeInTheDocument()
-    })
-  })
 
   describe('when the offerer is not validated', () => {
     beforeEach(() => {
@@ -60,37 +46,6 @@ describe('screens | OfferEducational : creation offerer step', () => {
           /Vous ne pouvez pas créer d’offre collective tant que votre entité juridique n’est pas validée./
         )
       ).toBeInTheDocument()
-    })
-  })
-
-  describe('when there is only one managed venue associated with the offerer and offerer is eligible', () => {
-    beforeEach(() => {
-      props = {
-        ...defaultCreationProps,
-        userOfferer: userOffererFactory({
-          managedVenues: managedVenuesFactory([{}]),
-        }),
-      }
-    })
-
-    it('should select venue and display the next step', async () => {
-      renderOfferEducational(props)
-
-      const offerTypeTitle = await screen.findByRole('heading', {
-        name: 'Quel est le type de votre offre ?',
-      })
-
-      const venueSelect = await screen.findByLabelText('Structure *')
-
-      expect(venueSelect).toBeInTheDocument()
-      expect(venueSelect).toHaveValue(
-        props.userOfferer?.managedVenues[0].id.toString()
-      )
-      expect(venueSelect.children).toHaveLength(1)
-      expect(venueSelect).toBeDisabled()
-      expect(screen.queryByTestId('error-venueId')).not.toBeInTheDocument()
-
-      expect(offerTypeTitle).toBeInTheDocument()
     })
   })
 

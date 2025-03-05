@@ -5,6 +5,7 @@ import { useLocation, useParams } from 'react-router-dom'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
+  GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
 import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { HelpLink } from 'components/HelpLink/HelpLink'
@@ -25,6 +26,7 @@ export interface CollectiveOfferLayoutProps {
   offer?:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
+  userOfferer?: GetEducationalOffererResponseModel | null
 }
 
 export const CollectiveOfferLayout = ({
@@ -35,6 +37,7 @@ export const CollectiveOfferLayout = ({
   isTemplate = false,
   requestId = null,
   offer,
+  userOfferer,
 }: CollectiveOfferLayoutProps): JSX.Element => {
   const location = useLocation()
   const isSummaryPage = location.pathname.includes('recapitulatif')
@@ -80,7 +83,7 @@ export const CollectiveOfferLayout = ({
         )}
       </div>
 
-      {navigationProps.isCreatingOffer ? (
+      {userOfferer === null ? <></> : navigationProps.isCreatingOffer ? (
         <CollectiveCreationOfferNavigation
           activeStep={navigationProps.activeStep}
           className={cn(styles['eac-layout-navigation'], {

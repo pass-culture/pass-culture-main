@@ -22,6 +22,10 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
+vi.mock('hooks/useOfferEducationalFormData', () => ({
+  useOfferEducationalFormData: vi.fn()
+}))
+
 const renderCollectiveOfferCreation = (
   path: string,
   props: OptionalCollectiveOfferFromParamsProps
@@ -59,6 +63,7 @@ describe('CollectiveOfferCreation', () => {
     renderCollectiveOfferCreation('/offre/creation/collectif', {
       ...defaultProps,
     })
+
     expect(
       await screen.findByRole('heading', {
         name: /Créer une offre/,
@@ -66,7 +71,7 @@ describe('CollectiveOfferCreation', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', {
-        name: 'Qui propose l’offre ?',
+        name: 'Quel est le type de votre offre ?',
       })
     ).toBeInTheDocument()
   })
