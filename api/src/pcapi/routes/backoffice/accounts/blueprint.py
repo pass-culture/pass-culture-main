@@ -547,6 +547,21 @@ class RegistrationStepStatus(enum.Enum):
     ERROR = "error"
 
 
+def _get_id_check_age_at_decree_start(user: users_models.User) -> int | None:
+    id_checks_at_decree_start = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.status == fraud_models.FraudCheckStatus.OK
+        and fraud_check.get_identity_check_birth_date() is not None
+        and fraud_check.dateCreated < settings.CREDIT_V3_DECREE_DATETIME
+    ]
+    if not id_checks_at_decree_start:
+        return None
+
+    id_check_birth_date = max(f.get_identity_check_birth_date() for f in id_checks_at_decree_start)
+    return users_utils.get_age_at_date(id_check_birth_date, settings.CREDIT_V3_DECREE_DATETIME, user.departementCode)
+
+
 def _get_tunnel_type(user: users_models.User) -> TunnelType:
     """
     Tunnel generation schema:
@@ -562,8 +577,8 @@ def _get_tunnel_type(user: users_models.User) -> TunnelType:
     Signup age: 15 or 16 | Age at decree start: 15 or 16 | Current age: 17 → Tunnel: Pass 15-17 / Pass 17
     Signup age: 15 or 16 | Age at decree start: 15 or 16 | Current age: 18 → Tunnel: Pass 15-17 / Pass 17 / Pass 18
 
-    Signup age: 15 or 16 | Age at decree start: 17 | Current age: 17 → Tunnel: Pass 15-17
-    Signup age: 15 or 16 | Age at decree start: 17 | Current age: 18 → Tunnel: Pass 15-17 / Pass 18
+    Signup age: 15 or 16 | Age at decree start: 17 | Current age: 17 → Tunnel: Pass 15-17 / Pass 17
+    Signup age: 15 or 16 | Age at decree start: 17 | Current age: 18 → Tunnel: Pass 15-17 / Pass 17 / Pass 18
 
     Signup age: 15 or 16 | Age at decree start: 18 | Current age: 18 → Tunnel: Pass 15-17 / Pass 18 (old)
 
@@ -594,6 +609,7 @@ def _get_tunnel_type(user: users_models.User) -> TunnelType:
         specified_datetime=settings.CREDIT_V3_DECREE_DATETIME,
         department_code=user.departementCode,
     )
+    id_check_age_at_decree_start = _get_id_check_age_at_decree_start(user)
     signup_age = None
     if user_creation_date:
         signup_age = users_utils.get_age_at_date(
@@ -629,8 +645,10 @@ def _get_tunnel_type(user: users_models.User) -> TunnelType:
 
     # Decree at age 17
     if signup_age < users_constants.ELIGIBILITY_AGE_17 and age_at_decree_start == users_constants.ELIGIBILITY_AGE_17:
-        if age_now == users_constants.ELIGIBILITY_AGE_17:
+        if age_now == users_constants.ELIGIBILITY_AGE_17 and id_check_age_at_decree_start is not None:
             return TunnelType.UNDERAGE
+        if age_now == users_constants.ELIGIBILITY_AGE_17 and id_check_age_at_decree_start is None:
+            return TunnelType.UNDERAGE_AGE17
         if age_now == users_constants.ELIGIBILITY_AGE_18:
             return TunnelType.UNDERAGE_AGE18
 
@@ -771,7 +789,9 @@ def _get_steps_for_tunnel(
         case TunnelType.UNDERAGE:
             steps = _get_steps_tunnel_underage(user, id_check_histories, item_status_15_17, fraud_reviews_desc)
         case TunnelType.UNDERAGE_AGE17:
-            steps = _get_steps_tunnel_underage_age17(user, id_check_histories, item_status_15_17, fraud_reviews_desc)
+            steps = _get_steps_tunnel_underage_age17(
+                user, id_check_histories, item_status_15_17, item_status_17_18, fraud_reviews_desc
+            )
         case TunnelType.UNDERAGE_AGE18_OLD:
             steps = _get_steps_tunnel_underage_age18_old(
                 user, id_check_histories, item_status_15_17, item_status_18, fraud_reviews_desc
@@ -840,6 +860,7 @@ def _get_steps_tunnel_underage_age17(
     user: users_models.User,
     id_check_histories: list,
     item_status_15_17: dict,
+    item_status_17_18: dict,
     fraud_reviews_desc: list[fraud_models.BeneficiaryFraudReview],
 ) -> list[RegistrationStep]:
     steps = [
@@ -894,6 +915,24 @@ def _get_steps_tunnel_underage_age17(
         ),
         RegistrationStep(
             step_id=6,
+            description=SubscriptionStep.IDENTITY_CHECK.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.IDENTITY_CHECK.value],
+            icon="bi-fingerprint",
+            fraud_actions_history=[
+                _convert_check_item_to_fraud_action_dict(id_check_history)
+                for id_check_history in id_check_histories
+                if id_check_history.type in {f.value for f in fraud_models.IDENTITY_CHECK_TYPES}
+                and users_models.EligibilityType.AGE17_18.value in id_check_history.applicable_eligibilities
+            ],
+        ),
+        RegistrationStep(
+            step_id=7,
+            description=SubscriptionStep.HONOR_STATEMENT.value,
+            subscription_item_status=item_status_17_18[SubscriptionStep.HONOR_STATEMENT.value],
+            icon="bi-card-checklist",
+        ),
+        RegistrationStep(
+            step_id=8,
             description="Pass 17",
             subscription_item_status=(
                 SubscriptionItemStatus.OK.value if user.received_pass_17_18 else SubscriptionItemStatus.VOID.value
@@ -1981,9 +2020,13 @@ def get_eligibility_history(user: users_models.User) -> dict[str, serialization.
         ):
             eligibility_types.append(users_models.EligibilityType.UNDERAGE)
 
-        if (users_models.EligibilityType.AGE17_18 in fraud_eligibility_types) or (
-            age_at_creation >= users_constants.ELIGIBILITY_AGE_17
-            and user.dateCreated >= settings.CREDIT_V3_DECREE_DATETIME
+        if (
+            (users_models.EligibilityType.AGE17_18 in fraud_eligibility_types)
+            or (age_at_decree_start <= users_constants.ELIGIBILITY_AGE_17)
+            or (
+                age_at_creation >= users_constants.ELIGIBILITY_AGE_17
+                and user.dateCreated >= settings.CREDIT_V3_DECREE_DATETIME
+            )
         ):
             eligibility_types.append(users_models.EligibilityType.AGE17_18)
 

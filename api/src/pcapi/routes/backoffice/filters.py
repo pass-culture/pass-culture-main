@@ -841,6 +841,8 @@ def format_eligibility_value(tunnel_type: str) -> str:
             return "Pass 17"
         case "age-18":
             return "Pass 18"
+        case "age-17-18":
+            return "Pass 17+Pass 18"
         case "not-eligible":
             return "Non éligible"
         case _:
