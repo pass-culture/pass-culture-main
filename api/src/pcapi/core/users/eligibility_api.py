@@ -272,12 +272,12 @@ def is_18_or_above_eligibility(eligibility: users_models.EligibilityType | None,
     return False
 
 
-def get_known_birthday_at_date(user: users_models.User, at_date: datetime.date) -> datetime.date | None:
+def get_known_birthday_at_date(user: users_models.User, at_date: datetime.datetime) -> datetime.date | None:
     """Finds the birth date of the user at the given date, as the app would have known it at that time.
 
     Args:
         user (users_models.User): user
-        at_date (datetime.date): date at which to find the presumed birth date
+        at_date (datetime.datetime): date at which to find the presumed birth date
 
     Returns:
         datetime.date | None: the birth date of the user at the given date, or None if no birth date is found
