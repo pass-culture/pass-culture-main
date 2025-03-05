@@ -6,6 +6,8 @@ import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import styles from './OpeningHoursReadOnly.module.scss'
 
 type OpeningHours = {
+  isOpenToPublicEnabled: boolean
+  isOpenToPublic: boolean
   openingHours: GetVenueResponseModel['openingHours']
 }
 
@@ -21,7 +23,7 @@ type HoursProps = {
 type Entries<T> = T extends Record<infer W, infer U> ? [W, U][] : never;
 type OpeningHoursEntries = Entries<GetVenueResponseModel['openingHours']>;
 
-export function OpeningHoursReadOnly({ openingHours }: OpeningHours) {
+export function OpeningHoursReadOnly({ isOpenToPublicEnabled, isOpenToPublic, openingHours }: OpeningHours) {
   const filledDays = Object.entries(openingHours ?? {})
     .filter((dateAndHour) =>
       Boolean(dateAndHour[1])
@@ -32,30 +34,31 @@ export function OpeningHoursReadOnly({ openingHours }: OpeningHours) {
     return index === -1 ? null : filledDays[index]
   }).filter(Boolean) as OpeningHoursEntries
 
-  if (!openingHours || orderedFilledDays.length === 0) {
-    return (
-      <SummarySubSection
-        title={'Horaires d’ouverture'}
-        shouldShowDivider={false}
-      >
+  return (
+    <SummarySubSection
+      title={isOpenToPublicEnabled ? "Accès et horaires" : "Horaires d'ouverture"}
+      shouldShowDivider={false}
+    >
+      {isOpenToPublicEnabled && !isOpenToPublic ? (
+        <p>
+          Accueil du public dans la structure : Non
+        </p>
+      ) : (!openingHours || orderedFilledDays.length === 0) ? (
         <p>
           {openingHours === null
             ? 'Non renseigné'
             : `Vous n’avez pas renseigné d’horaire d’ouverture. Votre établissement est indiqué comme fermé sur l’application.`}
         </p>
-      </SummarySubSection>
-    )
-  }
-  return (
-    <SummarySubSection title={'Horaires d’ouverture'} shouldShowDivider={false}>
-      <SummaryDescriptionList
-        descriptions={orderedFilledDays.map((dateAndHour) => {
-          return {
-            title: mapDayToFrench(dateAndHour[0]),
-            text: <Hours hours={dateAndHour[1]} />,
-          }
-        })}
-      />
+      ) : (
+        <SummaryDescriptionList
+          descriptions={orderedFilledDays.map((dateAndHour) => {
+            return {
+              title: mapDayToFrench(dateAndHour[0]),
+              text: <Hours hours={dateAndHour[1]} />,
+            }
+          })}
+        />
+      )}
     </SummarySubSection>
   )
 }

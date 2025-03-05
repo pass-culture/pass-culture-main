@@ -110,10 +110,9 @@ export const VenueEdition = (): JSX.Element | null => {
         : 'Page sur l’application'
 
   return (
-    <Layout>
+    <Layout mainHeading={titleText}>
       <div>
         <FormLayout>
-          <h1 className={styles['header']}>{titleText}</h1>
           {venuesOptions.length > 1 && venue.isPermanent && (
             <>
               <FormLayout.Row>
