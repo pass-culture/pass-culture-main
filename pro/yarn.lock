@@ -1166,14 +1166,14 @@
     "@firebase/util" "1.10.3"
     tslib "^2.1.0"
 
-"@firebase/app@^0.11.1":
-  version "0.11.1"
-  resolved "https://registry.yarnpkg.com/@firebase/app/-/app-0.11.1.tgz#20663522be71307c8e5c74828bb621cdcdd3f5b4"
-  integrity sha512-Vz4DrNLPfDx3RwQf+4klXtu7OUYDO6xz2hlRyFawWskS7YqdtNzkDDxrqH20KDfjCF1lib46/NgchIj1+8h4wQ==
+"@firebase/app@^0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@firebase/app/-/app-0.11.2.tgz#11c122e1b41195310e2ab96e043cb0d938780283"
+  integrity sha512-bFee0hPJZBzNtiizRxdgsu8C9DW3mn1y0OJJ4zHQsccjDYzGOfvN0G3CMGyBIiwNctsFpQa8orbp2IKywoUeqA==
   dependencies:
-    "@firebase/component" "0.6.12"
+    "@firebase/component" "0.6.13"
     "@firebase/logger" "0.4.4"
-    "@firebase/util" "1.10.3"
+    "@firebase/util" "1.11.0"
     idb "7.1.1"
     tslib "^2.1.0"
 
@@ -1183,6 +1183,14 @@
   integrity sha512-YnxqjtohLbnb7raXt2YuA44cC1wA9GiehM/cmxrsoxKlFxBLy2V0OkRSj9gpngAE0UoJ421Wlav9ycO7lTPAUw==
   dependencies:
     "@firebase/util" "1.10.3"
+    tslib "^2.1.0"
+
+"@firebase/component@0.6.13":
+  version "0.6.13"
+  resolved "https://registry.yarnpkg.com/@firebase/component/-/component-0.6.13.tgz#6513379f1c09264133969d87282ce0d5bbbb2cd9"
+  integrity sha512-I/Eg1NpAtZ8AAfq8mpdfXnuUpcLxIDdCDtTzWSh+FXnp/9eCKJ3SNbOCKrUCyhLzNa2SiPJYruei0sxVjaOTeg==
+  dependencies:
+    "@firebase/util" "1.11.0"
     tslib "^2.1.0"
 
 "@firebase/installations@0.6.12":
@@ -1217,6 +1225,13 @@
   version "1.10.3"
   resolved "https://registry.yarnpkg.com/@firebase/util/-/util-1.10.3.tgz#63fc5fea7b36236219c4875731597494416678d1"
   integrity sha512-wfoF5LTy0m2ufUapV0ZnpcGQvuavTbJ5Qr1Ze9OJGL70cSMvhDyjS4w2121XdA3lGZSTOsDOyGhpoDtYwck85A==
+  dependencies:
+    tslib "^2.1.0"
+
+"@firebase/util@1.11.0":
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@firebase/util/-/util-1.11.0.tgz#e74ee2dc260ec4f9e75fe5d52bc4b0254d9872a9"
+  integrity sha512-PzSrhIr++KI6y4P6C/IdgBNMkEx0Ex6554/cYd0Hm+ovyFSJtJXqb/3OSIdnBoa2cpwZT1/GW56EmRc5qEc5fQ==
   dependencies:
     tslib "^2.1.0"
 
