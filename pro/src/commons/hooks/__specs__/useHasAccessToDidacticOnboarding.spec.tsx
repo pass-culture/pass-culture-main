@@ -1,15 +1,18 @@
 import { screen } from '@testing-library/react'
 
-import * as useAnalytics from 'app/App/analytics/firebase'
 import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 const TestComponent = () => {
   return <div>{useHasAccessToDidacticOnboarding() ? 'OUI' : 'NON'}</div>
 }
 
-const renderuseHasAccessToDidacticOnboarding = (features: string[] = []) => {
-  return renderWithProviders(<TestComponent />, { features })
+const renderuseHasAccessToDidacticOnboarding = (features: string[] = [], userId: number = 2) => {
+  return renderWithProviders(<TestComponent />, {
+    features,
+    user: sharedCurrentUserFactory({ id: userId })
+  })
 }
 
 describe('useHasAccessToDidacticOnboarding', () => {
@@ -38,23 +41,21 @@ describe('useHasAccessToDidacticOnboarding', () => {
     })
 
     describe('... and with WIP_ENABLE_PRO_DIDACTIC_ONBOARDING enabled', () => {
-      it('should return true if firebase config is true for user', () => {
-        vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-          PRO_DIDACTIC_ONBOARDING_AB_TEST: 'true',
-        })
+
+      it('should return true if user id is an even number', () => {
         renderuseHasAccessToDidacticOnboarding([
           'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
           'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST',
-        ])
+        ], 2)
 
         expect(screen.getByText('OUI')).toBeInTheDocument()
       })
 
-      it('should return false if firebase config is false for user', () => {
+      it('should return false if user id is an odd number', () => {
         renderuseHasAccessToDidacticOnboarding([
           'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
           'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST',
-        ])
+        ], 1)
         expect(screen.getByText('NON')).toBeInTheDocument()
       })
     })
