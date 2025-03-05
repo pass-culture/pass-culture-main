@@ -3483,6 +3483,8 @@ def recredit_users() -> None:
                 try:
                     recredit_user_if_no_missing_step(user)
                     total_users_recredited += 1
+                except exceptions.UserHasNotFinishedSubscription:
+                    continue
                 except Exception as e:  # pylint: disable=broad-except
                     failed_users.append(user.id)
                     logger.exception("Could not recredit user %s: %s", user.id, e)
@@ -3498,15 +3500,19 @@ def recredit_users() -> None:
 def recredit_user_if_no_missing_step(user: users_models.User) -> None:
     from pcapi.core.subscription.api import get_user_subscription_state
 
-    if not user.eligibility or not user.deposit:
-        raise exceptions.UserCannotBeRecredited()
+    if not user.eligibility:
+        raise exceptions.UserCannotBeRecredited("User is not eligible for deposit")
+
+    if not user.deposit:
+        raise exceptions.UserCannotBeRecredited("User deposit was not created")
+
     suscription_state = get_user_subscription_state(user)
     if suscription_state.next_step is not None:
-        raise exceptions.UserCannotBeRecredited()
+        raise exceptions.UserHasNotFinishedSubscription()
 
     recredit = _recredit_user(user)
     if not recredit:
-        raise exceptions.UserCannotBeRecredited()
+        raise exceptions.UserCannotBeRecredited("Failed to recredit user")
 
     user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
     db.session.add(user)
