@@ -29,6 +29,7 @@ def install_models() -> None:
     import pcapi.core.providers.models
     import pcapi.core.reactions.models
     import pcapi.core.reference.models
+    import pcapi.core.reminders.models
     import pcapi.core.subscription.models
     import pcapi.core.users.models
     import pcapi.models.beneficiary_import
