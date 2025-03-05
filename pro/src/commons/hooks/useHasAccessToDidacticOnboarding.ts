@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
-import { useRemoteConfigParams } from 'app/App/analytics/firebase'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { selectCurrentUser } from 'commons/store/user/selectors'
 
 export const useHasAccessToDidacticOnboarding = () => {
   const [hasAccess, setHasAccess] = useState<boolean | undefined>()
@@ -11,16 +12,17 @@ export const useHasAccessToDidacticOnboarding = () => {
   const isDidacticAbTestEnabled = useActiveFeature(
     'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST'
   )
-  const { PRO_DIDACTIC_ONBOARDING_AB_TEST: firebaseUserCanSeeOnboarding } =
-    useRemoteConfigParams()
+
+  const currentUser = useSelector(selectCurrentUser)
+  const isUserIncludedinDidacticOnboarding = Boolean(currentUser && (currentUser.id % 2 === 0))
 
   useEffect(() => {
     setHasAccess(
       isDidacticOnboardingEnabled &&
-        (!isDidacticAbTestEnabled || Boolean(firebaseUserCanSeeOnboarding))
+        (!isDidacticAbTestEnabled || isUserIncludedinDidacticOnboarding)
     )
   }, [
-    firebaseUserCanSeeOnboarding,
+    isUserIncludedinDidacticOnboarding,
     isDidacticOnboardingEnabled,
     isDidacticAbTestEnabled,
   ])
