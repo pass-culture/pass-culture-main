@@ -49,7 +49,7 @@ def get_user_with_credentials(identifier: str, password: str, allow_inactive: bo
     if not user:
         logger.info(
             "Failed authentication attempt",
-            extra={"identifier": identifier, "user": "not found", "avoid_current_user": True, "success": False},
+            extra={"identifier": identifier, "user": None, "avoid_current_user": True, "success": False},
             technical_message_id="users.login",
         )
     check_user_and_credentials(user, password, allow_inactive)

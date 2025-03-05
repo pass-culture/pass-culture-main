@@ -627,7 +627,7 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
         technical_message_id = "offers.activated" if update_fields["isActive"] else "offers.deactivated"
         logger.info(
             message,
-            extra={"offer_ids": offer_ids, "venue_id": venue_ids},
+            extra={"offer_ids": offer_ids, "venue_ids": venue_ids},
             technical_message_id=technical_message_id,
         )
 

@@ -88,7 +88,7 @@ def authorize() -> utils.BackofficeResponse:
         if not user and len(roles) == 0:
             logger.info(
                 "Failed authentication attempt",
-                extra={"identifier": google_email, "user": "not found", "avoid_current_user": True, "success": False},
+                extra={"identifier": google_email, "user": None, "avoid_current_user": True, "success": False},
                 technical_message_id="backoffice.authorize",
             )
             session["google_email"] = google_email
