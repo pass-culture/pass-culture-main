@@ -585,6 +585,7 @@ ACCESLIBRE_BACKEND = os.environ.get("ACCESLIBRE_BACKEND")
 ACCESLIBRE_API_KEY = secrets_utils.get("ACCESLIBRE_API_KEY")
 ACCESLIBRE_API_URL = "https://acceslibre.beta.gouv.fr/api/erps/"
 ACCESLIBRE_SHOULD_AVOID_TOO_MANY_REQUESTS = bool(int(os.environ.get("ACCESLIBRE_SHOULD_AVOID_TOO_MANY_REQUESTS", 1)))
+ACCESLIBRE_REQUEST_TIMEOUT = os.environ.get("ACCESLIBRE_REQUEST_TIMEOUT", 6)
 
 # Recommendation API
 RECOMMENDATION_BACKEND = os.environ.get("RECOMMENDATION_BACKEND", "pcapi.connectors.recommendation.TestingBackend")

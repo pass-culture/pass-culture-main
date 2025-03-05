@@ -24,7 +24,6 @@ from pcapi.utils import requests
 
 logger = logging.getLogger(__name__)
 
-ACCESLIBRE_REQUEST_TIMEOUT = 6
 REQUEST_PAGE_SIZE = 50
 ADDRESS_MATCHING_RATIO = 80
 NAME_MATCHING_RATIO = 45
@@ -527,7 +526,9 @@ class AcceslibreBackend(BaseBackend):
     def _fetch_request(
         url: str, headers: dict | None = None, params: dict[str, str | int] | None = None
     ) -> requests.Response:
-        return requests.get(url, headers=headers, params=params, timeout=ACCESLIBRE_REQUEST_TIMEOUT, log_info=False)
+        return requests.get(
+            url, headers=headers, params=params, timeout=settings.ACCESLIBRE_REQUEST_TIMEOUT, log_info=False
+        )
 
     def _send_request(
         self,
