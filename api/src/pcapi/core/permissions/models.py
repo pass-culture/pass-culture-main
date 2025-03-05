@@ -159,6 +159,7 @@ class Roles(enum.Enum):
     CODIR_ADMIN = "codir_admin"
     SUPPORT_N1 = "support_n1"
     SUPPORT_N2 = "support_n2"
+    SUPPORT_N3 = "support_n3"
     SUPPORT_PRO = "support_pro"
     SUPPORT_PRO_N2 = "support_pro_n2"
     FRAUDE_CONFORMITE = "fraude_conformite"
