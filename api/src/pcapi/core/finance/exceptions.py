@@ -49,6 +49,10 @@ class UserCannotBeRecredited(Exception):
     pass
 
 
+class UserHasNotFinishedSubscription(Exception):
+    pass
+
+
 class UserHasAlreadyActiveDeposit(UserNotGrantable):
     pass
 
