@@ -25,6 +25,8 @@ import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfte
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 import { FormAccessibility } from './FormAccessibility/FormAccessibility'
@@ -144,50 +146,64 @@ export const OfferEducationalForm = ({
           </BannerPublicApi>
         )}
         <FormLayout.MandatoryInfo />
-        <FormVenue
-          isEligible={isEligible}
-          disableForm={!canEditDetails}
-          isOfferCreated={isOfferCreated}
-          userOfferer={userOfferer}
-          venuesOptions={venuesOptions}
-          offer={offer}
-        />
-        {isEligible ? (
+        {userOfferer === null ? (
+          <Callout
+            variant={CalloutVariant.INFO}
+            className={styles['no-offerer-callout']}
+          >
+            Vous ne pouvez pas créer d’offre collective tant que votre entité
+            juridique n’est pas validée.
+          </Callout>
+        ) : (
           <>
-            <FormOfferType
-              domainsOptions={domainsOptions}
-              nationalPrograms={nationalPrograms}
-              disableForm={!canEditDetails}
-              isTemplate={isTemplate}
-            />
-            <FormImageUploader
-              onImageDelete={onImageDelete}
-              onImageUpload={onImageUpload}
-              imageOffer={imageOffer}
-              disableForm={!canEditDetails}
-              isTemplate={isTemplate}
-            />
-            {isTemplate && (
-              <FormDates
+            {venuesOptions.length > 1 && (
+              <FormVenue
+                isEligible={isEligible}
                 disableForm={!canEditDetails}
-                dateCreated={offer?.dateCreated}
+                isOfferCreated={isOfferCreated}
+                userOfferer={userOfferer}
+                venuesOptions={venuesOptions}
+                offer={offer}
               />
             )}
-            <FormPracticalInformation
-              currentOfferer={userOfferer}
-              venuesOptions={venuesOptions}
-              disableForm={!canEditDetails}
-            />
-            <FormParticipants disableForm={!canEditDetails} />
-            <FormAccessibility disableForm={!canEditDetails} />
-            {isTemplate ? (
-              <FormContactTemplate disableForm={!canEditDetails} />
-            ) : (
-              <FormContact disableForm={!canEditDetails} />
-            )}
-            <FormNotifications disableForm={!canEditDetails} />
+            {isEligible ? (
+              <>
+                <FormOfferType
+                  domainsOptions={domainsOptions}
+                  nationalPrograms={nationalPrograms}
+                  disableForm={!canEditDetails}
+                  isTemplate={isTemplate}
+                />
+                <FormImageUploader
+                  onImageDelete={onImageDelete}
+                  onImageUpload={onImageUpload}
+                  imageOffer={imageOffer}
+                  disableForm={!canEditDetails}
+                  isTemplate={isTemplate}
+                />
+                {isTemplate && (
+                  <FormDates
+                    disableForm={!canEditDetails}
+                    dateCreated={offer?.dateCreated}
+                  />
+                )}
+                <FormPracticalInformation
+                  currentOfferer={userOfferer}
+                  venuesOptions={venuesOptions}
+                  disableForm={!canEditDetails}
+                />
+                <FormParticipants disableForm={!canEditDetails} />
+                <FormAccessibility disableForm={!canEditDetails} />
+                {isTemplate ? (
+                  <FormContactTemplate disableForm={!canEditDetails} />
+                ) : (
+                  <FormContact disableForm={!canEditDetails} />
+                )}
+                <FormNotifications disableForm={!canEditDetails} />
+              </>
+            ) : null}
           </>
-        ) : null}
+        )}
       </FormLayout>
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
