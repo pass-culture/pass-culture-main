@@ -2,11 +2,11 @@ import datetime
 import io
 import logging
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import sqlalchemy as sa
 
 from pcapi import settings
+from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
@@ -16,23 +16,20 @@ from pcapi.utils import crypto
 from pcapi.utils.email import sanitize_email
 
 
-AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=18, months=4)
-AGE17_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=17, months=4)
-
-CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Date de naissance,Role,SIREN,Mot de passe,Type
-Doux,Jeanne,jeanne.doux@example.com,0102030405,86,86140,{AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},BENEFICIARY,,,interne:test
-Smisse,Jean,jean.smisse@example.com,0102030406,44,44000,{AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},BENEFICIARY,,,interne:test
-Vienne,Jeune17,jeune17.vienne@example.com,0102030407,44,44000,{AGE17_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},UNDERAGE_BENEFICIARY,,,interne:test
-Pro,Premier,premier.pro@example.com,0123456798,06,06000,2000-01-01,PRO,11223344,PremierPro$123,interne:test
-Pro,Pierre,pro@example.com,0123456789,06,06000,2000-01-01,PRO,11122233,PierrePro$123,interne:test
+CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Role,SIREN,Mot de passe,Type
+Doux,Jeanne,jeanne.doux@example.com,0102030405,86,86140,BENEFICIARY,,,interne:test
+Smisse,Jean,jean.smisse@example.com,0102030406,44,44000,BENEFICIARY,,,interne:test
+Vienne,Jeune17,jeune17.vienne@example.com,0102030407,44,44000,UNDERAGE_BENEFICIARY,,,interne:test
+Pro,Premier,premier.pro@example.com,0123456798,06,06000,PRO,11223344,PremierPro$123,interne:test
+Pro,Pierre,pro@example.com,0123456789,06,06000,PRO,11122233,PierrePro$123,interne:test
 """
 
 BOUNTY_EMAIL = "Unit_test-bùg-bounty-hunter_0123456789abcdef@bugbounty.ninja"
 BOUNTY_FIRST_NAME = "Hackèrman"
-BOUNTY_CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Date de naissance,Role,SIREN,Mot de passe,Type
-Doux,{BOUNTY_FIRST_NAME},{BOUNTY_EMAIL},0102030405,86,86140,2000-01-01,PRO,10000135,,externe:bug-bounty
-Dur,Hubert,touriste@mars.org,0102030405,86,86140,2000-01-01,PRO,10000115,,interne:test
-Dur,{BOUNTY_FIRST_NAME},another_hunter@bugbounty.ninja,0102030405,86,86140,2000-01-01,PRO,10000105,,externe:bug-bounty
+BOUNTY_CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Role,SIREN,Mot de passe,Type
+Doux,{BOUNTY_FIRST_NAME},{BOUNTY_EMAIL},0102030405,86,86140,PRO,10000135,,externe:bug-bounty
+Dur,Hubert,touriste@mars.org,0102030405,86,86140,PRO,10000115,,interne:test
+Dur,{BOUNTY_FIRST_NAME},another_hunter@bugbounty.ninja,0102030405,86,86140,PRO,10000105,,externe:bug-bounty
 """
 
 
@@ -63,7 +60,7 @@ class ReadFileTest:
 
         assert jeanne.firstName == "Jeanne"
         assert jeanne.lastName == "Doux"
-        assert jeanne.dateOfBirth.date() == AGE18_ELIGIBLE_BIRTH_DATE.date()
+        assert jeanne.dateOfBirth.date().year == datetime.date.today().year - 18
         assert jeanne.email == "jeanne.doux@example.com"
         assert jeanne.phoneNumber == "+33102030405"
         assert jeanne.departementCode == "86"
@@ -73,12 +70,14 @@ class ReadFileTest:
         assert jeanne.has_beneficiary_role
         assert jeanne.has_test_role
         assert len(jeanne.deposits) == 1
+        assert jeanne.deposit.amount == finance_conf.GRANTED_DEPOSIT_AMOUNT_18_v3
 
         assert jeanne.checkPassword(settings.TEST_DEFAULT_PASSWORD)
 
         if update_if_exists:
             assert jean.lastName == "Smisse"
             assert len(jean.deposits) == 1
+            assert jean.deposit.amount == finance_conf.GRANTED_DEPOSIT_AMOUNT_18_v3
 
         assert jeune17.firstName == "Jeune17"
         assert jeune17.has_underage_beneficiary_role
