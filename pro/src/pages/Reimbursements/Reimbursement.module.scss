@@ -1,13 +1,5 @@
-@use "styles/mixins/_fonts.scss" as fonts;
-
 .reimbursements-container {
   display: flex;
   flex-direction: column;
   gap: 2rem;
-}
-
-.title {
-  @include fonts.title1;
-
-  margin: 0;
 }

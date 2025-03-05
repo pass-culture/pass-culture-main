@@ -25,31 +25,31 @@ const CollectiveOfferEdition = ({
 
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
-  return (
-    <Layout layout="sticky-actions">
-      {!isReady ? (
-        <Spinner />
-      ) : (
-        <CollectiveOfferLayout
-          subTitle={offer.name}
-          isTemplate={isTemplate}
-          offer={offer}
-        >
-          <OfferEducational
-            userOfferer={offerEducationalFormData.offerer}
-            domainsOptions={offerEducationalFormData.domains}
-            nationalPrograms={offerEducationalFormData.nationalPrograms}
-            offer={offer}
-            isOfferActive={offer.isActive}
-            isOfferBooked={
-              isOfferTemplate ? false : offer.collectiveStock?.isBooked
-            }
-            mode={offer.isEditable ? Mode.EDITION : Mode.READ_ONLY}
-            isTemplate={isOfferTemplate}
-          />
-        </CollectiveOfferLayout>
-      )}
+  if (!isReady) {
+    return <Layout layout={'sticky-actions'}>
+      <Spinner />
     </Layout>
+  }
+
+  return (
+    <CollectiveOfferLayout
+      subTitle={offer.name}
+      isTemplate={isTemplate}
+      offer={offer}
+    >
+      <OfferEducational
+        userOfferer={offerEducationalFormData.offerer}
+        domainsOptions={offerEducationalFormData.domains}
+        nationalPrograms={offerEducationalFormData.nationalPrograms}
+        offer={offer}
+        isOfferActive={offer.isActive}
+        isOfferBooked={
+          isOfferTemplate ? false : offer.collectiveStock?.isBooked
+        }
+        mode={offer.isEditable ? Mode.EDITION : Mode.READ_ONLY}
+        isTemplate={isOfferTemplate}
+      />
+    </CollectiveOfferLayout>
   )
 }
 

@@ -133,7 +133,7 @@ export const IndividualOffers = (): JSX.Element => {
     <HeadlineOfferContextProvider>
       <Layout
         mainHeading="Offres individuelles"
-        mainBanner={<HeadlineOfferBanner />}
+        mainTopElement={<HeadlineOfferBanner />}
       >
         {isLoadingVenues || isValidatingVenues ? (
           <Spinner />
