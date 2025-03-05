@@ -13,13 +13,9 @@ import {
 import { applyVenueDefaultsToFormValues } from 'commons/core/OfferEducational/utils/applyVenueDefaultsToFormValues'
 import { SelectOption } from 'commons/custom_types/form'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Select } from 'ui-kit/form/Select/Select'
 
 import { STRUCTURE_LABEL } from '../../constants/labels'
-
-import styles from './FormVenue.module.scss'
 
 interface FormVenueProps {
   userOfferer: GetEducationalOffererResponseModel | null
@@ -60,15 +56,6 @@ export const FormVenue = ({
 
   return (
     <FormLayout.Section title="Qui propose l’offre ?">
-      {userOfferer === null && (
-        <Callout
-          variant={CalloutVariant.INFO}
-          className={styles['no-offerer-callout']}
-        >
-          Vous ne pouvez pas créer d’offre collective tant que votre entité
-          juridique n’est pas validée.
-        </Callout>
-      )}
       {isEligible && venuesOptions.length > 0 && (
         <FormLayout.Row>
           <Select

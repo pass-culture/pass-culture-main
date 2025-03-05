@@ -40,6 +40,7 @@ export const CollectiveOfferCreation = ({
           isFromTemplate={location.pathname.includes('vitrine')}
           requestId={requestId}
           offer={offer}
+          userOfferer={offerEducationalFormData.offerer}
         >
           <OfferEducational
             userOfferer={offerEducationalFormData.offerer}
