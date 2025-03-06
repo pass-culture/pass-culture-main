@@ -37,6 +37,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
 
   const onSubmit: FormikConfig<VenueEditionFormValues>['onSubmit'] = async (
     values,
@@ -132,7 +133,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               </FormLayout.Row>
             </FormLayout.SubSection>
             {venue.isPermanent && (
-              <FormLayout.SubSection title="Horaires d'ouverture">
+              <FormLayout.SubSection title={isOpenToPublicEnabled ? "Accès et horaires" : "Horaires d'ouverture"}>
                 <OpeningHoursForm />
               </FormLayout.SubSection>
             )}
