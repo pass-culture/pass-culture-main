@@ -15,6 +15,7 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import { Markdown } from 'components/Markdown/Markdown'
 import {
   Description,
   SummaryDescriptionList,
@@ -70,7 +71,7 @@ export const OfferSection = ({
 
   const aboutDescriptions: Description[] = [
     { title: 'Titre de l’offre', text: offerData.name },
-    { title: 'Description', text: offerData.description || '-' },
+    { title: 'Description', text: !offerData.description ? '-' : <Markdown markdownText={offerData.description} /> },
   ].concat(
     offer.isDigital
       ? {

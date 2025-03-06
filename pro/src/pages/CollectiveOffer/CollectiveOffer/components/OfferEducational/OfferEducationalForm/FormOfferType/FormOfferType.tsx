@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 
+
 import { EacFormat } from 'apiClient/adage'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
@@ -12,6 +13,7 @@ import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { SelectOption } from 'commons/custom_types/form'
 import { useFunctionOnce } from 'commons/hooks/useFunctionOnce'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { MarkdownInfoBox } from 'components/MarkdownInfoBox/MarkdownInfoBox'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -192,15 +194,7 @@ export const FormOfferType = ({
                   </ButtonLink>
                 </InfoBox>
               )}
-              <InfoBox>
-                Vous pouvez modifier la mise en forme de votre texte.
-                <br />
-                Utilisez des doubles astérisques pour mettre en{' '}
-                <strong>gras</strong> : **exemple** et des tirets bas pour l’
-                <em>italique</em> : _exemple_
-                <br />
-                Vous pourrez vérifier l’affichage à l’étape "Aperçu".
-              </InfoBox>
+              <MarkdownInfoBox />
             </div>
           }
         >

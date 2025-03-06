@@ -1,6 +1,7 @@
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getIndividualOfferImage'
+import { Markdown } from 'components/Markdown/Markdown'
 
 import style from './OfferAppPreview.module.scss'
 import { OptionsIcons } from './OptionsIcons/OptionsIcons'
@@ -54,7 +55,7 @@ export const OfferAppPreview = ({
 
         {offer.description && (
           <div className={style['offer-description']}>
-            {cropPreviewText(offer.description)}
+            <Markdown markdownText={offer.description} />
           </div>
         )}
 
