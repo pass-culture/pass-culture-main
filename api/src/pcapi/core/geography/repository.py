@@ -20,7 +20,10 @@ def get_iris_from_address(
         if len(address) < 3 or not re.match(r"^\d|\w", address[0]):
             result_address = api_adresse.get_municipality_centroid(postcode=postcode, city=city or "")
         else:
-            result_address = api_adresse.get_address(address=address, postcode=postcode, city=city)
+            try:
+                result_address = api_adresse.get_address(address=address, postcode=postcode, city=city)
+            except api_adresse.AdresseException:  # No result, unexpected input, server error...
+                result_address = api_adresse.get_municipality_centroid(postcode=postcode, city=city or "")
     except api_adresse.NoResultException:
         return None
 
