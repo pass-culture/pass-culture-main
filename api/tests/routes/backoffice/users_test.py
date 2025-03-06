@@ -193,8 +193,17 @@ class SuspendUserTest(PostEndpointHelper):
         assert user.action_history[0].extraData["reason"] == users_constants.SuspensionReason.FRAUD_USURPATION_PRO.value
         assert user.action_history[0].comment is None
 
-    def test_suspend_beneficiary_user_as_beneficiary_fraud(self, client, fraude_jeunes_admin):
-        user = users_factories.BeneficiaryGrant18Factory()
+    @pytest.mark.parametrize(
+        "roles",
+        [
+            [users_models.UserRole.UNDERAGE_BENEFICIARY],
+            [users_models.UserRole.BENEFICIARY],
+            [users_models.UserRole.NON_ATTACHED_PRO, users_models.UserRole.BENEFICIARY],
+            [users_models.UserRole.PRO, users_models.UserRole.BENEFICIARY],
+        ],
+    )
+    def test_suspend_beneficiary_user_as_beneficiary_fraud(self, client, fraude_jeunes_admin, roles):
+        user = users_factories.UserFactory(roles=roles)
 
         response = self.post_to_endpoint(
             client.with_bo_session_auth(fraude_jeunes_admin),
@@ -431,8 +440,17 @@ class UnsuspendUserTest(PostEndpointHelper):
         assert user.action_history[0].venueId is None
         assert user.action_history[0].comment == "Réactivé suite à contact avec l'AC"
 
-    def test_unsuspend_beneficiary_user_as_beneficiary_fraud(self, client, fraude_jeunes_admin):
-        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+    @pytest.mark.parametrize(
+        "roles",
+        [
+            [users_models.UserRole.UNDERAGE_BENEFICIARY],
+            [users_models.UserRole.BENEFICIARY],
+            [users_models.UserRole.NON_ATTACHED_PRO, users_models.UserRole.BENEFICIARY],
+            [users_models.UserRole.PRO, users_models.UserRole.BENEFICIARY],
+        ],
+    )
+    def test_unsuspend_beneficiary_user_as_beneficiary_fraud(self, client, fraude_jeunes_admin, roles):
+        user = users_factories.UserFactory(isActive=False, roles=roles)
 
         response = self.post_to_endpoint(
             client.with_bo_session_auth(fraude_jeunes_admin),
