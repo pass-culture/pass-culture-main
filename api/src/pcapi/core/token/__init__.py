@@ -3,6 +3,7 @@ import dataclasses
 from datetime import datetime
 from datetime import timedelta
 import enum
+import hashlib
 import json
 import logging
 import random
@@ -34,6 +35,14 @@ class TokenType(enum.Enum):
     ACCOUNT_CREATION = "account_creation"
     OAUTH_STATE = "oauth_state"
     DISCORD_OAUTH = "discord_oauth"
+    PASSWORDLESS_LOGIN = "passwordless_login"
+
+
+class TokenAction(enum.Enum):
+    CHECK_OK = "check_ok"
+    CHECK_KO = "check_ko"
+    EXPIRE = "expire"
+    CREATE = "create"
 
 
 T = typing.TypeVar("T", bound="AbstractToken")
@@ -45,12 +54,6 @@ class AbstractToken(abc.ABC):
     key_suffix: int | str | None
     encoded_token: str
     data: dict
-
-    class _TokenAction(enum.Enum):
-        CHECK_OK = "check_ok"
-        CHECK_KO = "check_ko"
-        EXPIRE = "expire"
-        CREATE = "create"
 
     @classmethod
     def load_and_check(cls: typing.Type[T], encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> T:
@@ -106,15 +109,15 @@ class AbstractToken(abc.ABC):
             or (key_suffix is not None and self.key_suffix != key_suffix)
             or app.redis_client.get(redis_key) != self.encoded_token
         ):
-            self._log(self._TokenAction.CHECK_KO)
+            self._log(TokenAction.CHECK_KO)
             raise users_exceptions.InvalidToken()
-        self._log(self._TokenAction.CHECK_OK)
+        self._log(TokenAction.CHECK_OK)
 
     def expire(self) -> None:
         app.redis_client.delete(AbstractToken.get_redis_key(self.type_, self.key_suffix))
-        self._log(self._TokenAction.EXPIRE)
+        self._log(TokenAction.EXPIRE)
 
-    def _log(self, action: _TokenAction) -> None:
+    def _log(self, action: TokenAction) -> None:
         logger.info("[TOKEN](%s)%s, %s, %s", action.value, self.key_suffix, self.type_.value, self.encoded_token)
 
 
@@ -169,7 +172,7 @@ class Token(AbstractToken):
         if ttl is None or ttl > timedelta(0):
             app.redis_client.set(cls.get_redis_key(type_, user_id), encoded_token, ex=ttl)
         token = Token.load_without_checking(encoded_token)
-        token._log(cls._TokenAction.CREATE)
+        token._log(TokenAction.CREATE)
         return token
 
 
@@ -217,7 +220,7 @@ class SixDigitsToken(AbstractToken):
         json_data = json.dumps(data or {})
         app.redis_client.set(cls._get_redis_extra_data_key(type_, user_id), json_data, ex=ttl)
         token = cls.load_without_checking(encoded_token, type_, user_id)
-        token._log(cls._TokenAction.CREATE)
+        token._log(TokenAction.CREATE)
         return token
 
     @classmethod
@@ -281,7 +284,7 @@ class UUIDToken(AbstractToken):
             app.redis_client.set(redis_key, encoded_token, ex=ttl)
 
         token = UUIDToken.load_without_checking(encoded_token)
-        token._log(cls._TokenAction.CREATE)
+        token._log(TokenAction.CREATE)
         return token
 
 
@@ -383,5 +386,46 @@ class AsymetricToken(AbstractToken):
         if ttl is None or ttl > timedelta(0):
             app.redis_client.set(cls.get_redis_key(type_, random_uuid), encoded_token, ex=ttl)
         token = cls(type_, random_uuid, encoded_token, payload["data"])
-        token._log(cls._TokenAction.CREATE)
+        token._log(TokenAction.CREATE)
         return token
+
+
+PASSWORDLESS_REDIS_KEY_TEMPLATE = "pcapi:token:%(type_)s:%(key_suffix)s"
+
+
+def create_passwordless_login_token(user_id: int, ttl: timedelta) -> str:
+    """
+    Single use token that allow an user to login without entering any credentials.
+    This token is signed using an RSA private key and verified using the corresponding
+    public key.
+    In exchange of this token, a user should be returned a valid session.
+
+    The payload of this token expects several claims:
+
+        jti: Token unique identifier preventing replay attacks. Ensure each is used only once.
+        sub: The subject of the token. Contains the user id.
+        iat: Issued at.
+        exp: Expiration date.
+
+    Returns:
+        A JWT token (str)
+    """
+    issued_at = datetime.utcnow()
+    expiration_date = issued_at + ttl
+
+    jti = str(uuid.uuid4())
+    exp = int(expiration_date.timestamp())
+    iat = int(issued_at.timestamp())
+    sub = str(user_id)
+
+    value = json.dumps({"user_id": user_id, "jti": jti})
+    key_suffix = hashlib.sha256(value.encode()).hexdigest()
+    key = PASSWORDLESS_REDIS_KEY_TEMPLATE % {"type_": TokenType.PASSWORDLESS_LOGIN.value, "key_suffix": key_suffix}
+    app.redis_client.set(key, value, ex=ttl)
+
+    token = utils.encode_jwt_payload_rs256(
+        {"sub": sub, "iat": iat, "exp": exp, "jti": jti},
+        private_key=settings.PASSWORDLESS_LOGIN_PRIVATE_KEY,
+        expiration_date=expiration_date,
+    )
+    return token
