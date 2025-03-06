@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.api_adresse import AddressInfo
+from pcapi.connectors import api_adresse
 from pcapi.core.geography import api
 from pcapi.core.geography import factories
 from pcapi.core.geography import repository
@@ -40,7 +40,7 @@ class GetIrisFromAddressTest:
     @patch("pcapi.core.geography.repository.get_iris_from_coordinates")
     @patch(
         "pcapi.connectors.api_adresse.get_municipality_centroid",
-        return_value=AddressInfo(
+        return_value=api_adresse.AddressInfo(
             id="unused",
             label="unused",
             postcode="unused",
@@ -56,6 +56,39 @@ class GetIrisFromAddressTest:
         self, mock_get_municipality_centroid, mock_get_iris_from_coordinates
     ):
         repository.get_iris_from_address(".", "97133", city="Gustavia")
+        mock_get_municipality_centroid.assert_called_once_with(postcode="97133", city="Gustavia")
+        mock_get_iris_from_coordinates.assert_called_once_with(lat=17.900710, lon=-62.834786)
+
+    @pytest.mark.parametrize(
+        "exception",
+        [
+            api_adresse.AdresseApiServerErrorException,
+            api_adresse.NoResultException,
+            api_adresse.InvalidFormatException,
+        ],
+    )
+    @patch("pcapi.core.geography.repository.get_iris_from_coordinates")
+    @patch(
+        "pcapi.connectors.api_adresse.get_municipality_centroid",
+        return_value=api_adresse.AddressInfo(
+            id="unused",
+            label="unused",
+            postcode="unused",
+            citycode="unused",
+            score=1,
+            latitude=17.900710,
+            longitude=-62.834786,
+            city="unused",
+            street=None,
+        ),
+    )
+    @patch("pcapi.connectors.api_adresse.get_address")
+    def test_get_iris_from_after_address_causes_error(
+        self, mock_get_address, mock_get_municipality_centroid, mock_get_iris_from_coordinates, exception
+    ):
+        mock_get_address.side_effect = exception()
+        repository.get_iris_from_address("Il y a un problème ici", "97133", city="Gustavia")
+        mock_get_address.assert_called_once()
         mock_get_municipality_centroid.assert_called_once_with(postcode="97133", city="Gustavia")
         mock_get_iris_from_coordinates.assert_called_once_with(lat=17.900710, lon=-62.834786)
 
