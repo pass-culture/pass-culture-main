@@ -617,9 +617,8 @@ def _get_tunnel_type(user: users_models.User) -> TunnelType:
             specified_datetime=user_creation_date,
             department_code=user.departementCode,
         )
-    assert age_now  # helps mypy
 
-    if not signup_age:
+    if not signup_age or not age_now:
         return TunnelType.NOT_ELIGIBLE
 
     ################################
