@@ -14,6 +14,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
+from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils import date as date_utils
@@ -1223,7 +1224,7 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
         dst = self.offer_venue_offerer_venue(venue_provider.venueId)
         expected = {**dst, "otherAddress": ""}
 
-        self.assert_offer_venue_has_been_updated(
+        offer = self.assert_offer_venue_has_been_updated(
             client=client,
             api_key=plain_api_key,
             venue_provider=venue_provider,
@@ -1232,6 +1233,34 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
             expected=expected,
         )
 
+        assert offer.offererAddressId == venue_provider.venue.offererAddressId
+        assert offer.locationType == educational_models.CollectiveLocationType.VENUE
+        assert offer.locationComment is None
+
+    def test_change_to_offerer_venue_other_venue(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        other_venue = offerers_factories.VenueFactory(managingOfferer=venue_provider.venue.managingOfferer)
+        other_venue.venueProviders.append(
+            providers_models.VenueProvider(venue=other_venue, provider=venue_provider.provider)
+        )
+
+        # we accept None for otherAddress but we store "" as our GET schemas expect a string
+        dst = self.offer_venue_offerer_venue(other_venue.id)
+        expected = {**dst, "otherAddress": ""}
+
+        offer = self.assert_offer_venue_has_been_updated(
+            client=client,
+            api_key=plain_api_key,
+            venue_provider=venue_provider,
+            src=self.offer_venue_school(),
+            dst=dst,
+            expected=expected,
+        )
+
+        assert offer.offererAddressId == other_venue.offererAddressId
+        assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
+        assert offer.locationComment is None
+
     def test_change_to_school(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -1239,7 +1268,7 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
         dst = self.offer_venue_school()
         expected = {**dst, "otherAddress": ""}
 
-        self.assert_offer_venue_has_been_updated(
+        offer = self.assert_offer_venue_has_been_updated(
             client=client,
             api_key=plain_api_key,
             venue_provider=venue_provider,
@@ -1248,15 +1277,24 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
             expected=expected,
         )
 
+        assert offer.offererAddressId is None
+        assert offer.locationType == educational_models.CollectiveLocationType.SCHOOL
+        assert offer.locationComment is None
+
     def test_change_to_other_address(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        self.assert_offer_venue_has_been_updated(
+
+        offer = self.assert_offer_venue_has_been_updated(
             client=client,
             api_key=plain_api_key,
             venue_provider=venue_provider,
             src=self.offer_venue_offerer_venue(venue_provider.venueId),
             dst=self.offer_venue_other(),
         )
+
+        assert offer.offererAddressId is None
+        assert offer.locationType == educational_models.CollectiveLocationType.TO_BE_DEFINED
+        assert offer.locationComment == "something, Somewhereshire"
 
     def test_offer_venue_is_updated_when_type_is_the_same_and_data_different(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -1294,6 +1332,33 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
             payload=self.offer_venue_offerer_venue("unknown and invalid id"),
             status_code=400,
             json_error={"offerVenue.venueId": ["invalid literal for int() with base 10: 'unknown and invalid id'"]},
+        )
+
+    def test_offer_venue_is_not_updated_when_venue_id_is_unknown(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        self.assert_offer_venue_is_not_updated(
+            client=client,
+            api_key=plain_api_key,
+            venue_provider=venue_provider,
+            src=self.offer_venue_offerer_venue(venue_provider.venueId),
+            payload=self.offer_venue_offerer_venue(-1),
+            status_code=404,
+            json_error={"venueId": ["Ce lieu n'a pas été trouvé."]},
+        )
+
+    def test_offer_venue_is_not_updated_when_venue_id_is_not_allowed(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        other_venue = offerers_factories.VenueFactory()
+
+        self.assert_offer_venue_is_not_updated(
+            client=client,
+            api_key=plain_api_key,
+            venue_provider=venue_provider,
+            src=self.offer_venue_offerer_venue(venue_provider.venueId),
+            payload=self.offer_venue_offerer_venue(other_venue.id),
+            status_code=404,
+            json_error={"venueId": ["Ce lieu n'a pas été trouvé."]},
         )
 
     def test_offer_venue_is_not_updated_when_updating_with_current_values(self, client):
@@ -1381,6 +1446,8 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
         assert dst.keys() <= offer.offerVenue.keys()
         assert all(offer.offerVenue[key] == value for key, value in expected_result.items())
         assert all(not value for key, value in offer.offerVenue.items() if key not in dst)
+
+        return offer
 
     def assert_offer_venue_is_not_updated(
         self, client, api_key, venue_provider, src, status_code, payload, json_error=None

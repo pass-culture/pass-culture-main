@@ -101,6 +101,12 @@ class OfferAddressType(enum.Enum):
     OTHER = "other"
 
 
+class OfferVenueDict(typing.TypedDict):
+    addressType: OfferAddressType
+    venueId: int | None
+    otherAddress: str
+
+
 class CollectiveBookingCancellationReasons(enum.Enum):
     OFFERER = "OFFERER"
     BENEFICIARY = "BENEFICIARY"
@@ -557,7 +563,7 @@ class CollectiveOffer(
     # Each object should have the same three keys: one for the venue
     # type, one for the venueId (filled when 1.) and one for the random
     # place (filled when 3.)
-    offerVenue: dict = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
+    offerVenue: sa_orm.Mapped[OfferVenueDict] = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
     interventionArea: list[str] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
@@ -1075,7 +1081,7 @@ class CollectiveOfferTemplate(
         server_default="{}",
     )
 
-    offerVenue: dict = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
+    offerVenue: sa_orm.Mapped[OfferVenueDict] = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
     interventionArea: list[str] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"

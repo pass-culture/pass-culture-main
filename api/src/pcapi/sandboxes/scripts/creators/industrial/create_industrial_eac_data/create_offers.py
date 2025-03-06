@@ -27,15 +27,9 @@ from pcapi.utils.image_conversion import DO_NOT_CROP
 from .create_collective_api_provider import create_collective_api_provider
 
 
-class OfferVenue(typing.TypedDict):
-    addressType: educational_models.OfferAddressType
-    venueId: int | None
-    otherAddress: str
-
-
 class LocationOption(typing.TypedDict):
     name: str
-    offerVenue: OfferVenue
+    offerVenue: educational_models.OfferVenueDict
     interventionArea: typing.NotRequired[list[str]]
     locationType: educational_models.CollectiveLocationType
     locationComment: typing.NotRequired[str]

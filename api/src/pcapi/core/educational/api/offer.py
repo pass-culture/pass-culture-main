@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 from decimal import Decimal
 from functools import partial
@@ -185,6 +186,46 @@ def get_educational_domains_from_ids(
     return educational_domains
 
 
+@dataclasses.dataclass
+class CollectiveOfferLocation:
+    location_type: educational_models.CollectiveLocationType
+    location_comment: str | None
+    offerer_address: offerers_models.OffererAddress | None
+
+
+def get_location_from_offer_venue(
+    offer_venue: educational_models.OfferVenueDict, venue: offerers_models.Venue | None, is_offer_venue: bool
+) -> CollectiveOfferLocation:
+    match offer_venue["addressType"]:
+        case educational_models.OfferAddressType.OFFERER_VENUE:
+            return CollectiveOfferLocation(
+                location_type=(
+                    educational_models.CollectiveLocationType.VENUE
+                    if is_offer_venue
+                    else educational_models.CollectiveLocationType.ADDRESS
+                ),
+                location_comment=None,
+                offerer_address=venue.offererAddress if venue else None,
+            )
+
+        case educational_models.OfferAddressType.SCHOOL:
+            return CollectiveOfferLocation(
+                location_type=educational_models.CollectiveLocationType.SCHOOL,
+                location_comment=None,
+                offerer_address=None,
+            )
+
+        case educational_models.OfferAddressType.OTHER:
+            return CollectiveOfferLocation(
+                location_type=educational_models.CollectiveLocationType.TO_BE_DEFINED,
+                location_comment=offer_venue["otherAddress"],
+                offerer_address=None,
+            )
+
+        case _:
+            raise ValueError("Unexpected addressType received")
+
+
 def check_venue_user_access(venue_id: int, user: User) -> None:
     location_venue = offerers_repository.get_venue_by_id(venue_id)
     if not location_venue:
@@ -197,19 +238,17 @@ def get_offer_venue_from_location(
     location_comment: str | None,
     offerer_address: offerers_models.OffererAddress | None,
     venue_id: int,
-) -> dict:
-    offer_venue: dict
-
+) -> educational_models.OfferVenueDict:
     match location_type:
         case educational_models.CollectiveLocationType.VENUE:
-            offer_venue = {
+            return {
                 "addressType": educational_models.OfferAddressType.OFFERER_VENUE,
                 "otherAddress": "",
                 "venueId": venue_id,
             }
 
         case educational_models.CollectiveLocationType.SCHOOL:
-            offer_venue = {
+            return {
                 "addressType": educational_models.OfferAddressType.SCHOOL,
                 "otherAddress": "",
                 "venueId": None,
@@ -221,30 +260,28 @@ def get_offer_venue_from_location(
             else:
                 other_address = ""
 
-            offer_venue = {
+            return {
                 "addressType": educational_models.OfferAddressType.OTHER,
                 "otherAddress": other_address,
                 "venueId": None,
             }
 
         case educational_models.CollectiveLocationType.TO_BE_DEFINED:
-            offer_venue = {
+            return {
                 "addressType": educational_models.OfferAddressType.OTHER,
-                "otherAddress": location_comment,
+                "otherAddress": location_comment or "",
                 "venueId": None,
             }
 
         case _:
             raise ValueError("Invalid location_type received")
 
-    return offer_venue
-
 
 def get_location_values(
     offer_data: collective_offers_serialize.PostCollectiveOfferBodyModel,
     user: User,
     venue: offerers_models.Venue,
-) -> tuple[offerers_models.OffererAddress | None, list[str], dict]:
+) -> tuple[offerers_models.OffererAddress | None, list[str], educational_models.OfferVenueDict]:
     """
     We can either receive offerVenue or location in offer_data
     When we receive the offerVenue field, in the "offererVenue" case we check venueId and force intervention_area to be empty
@@ -259,10 +296,15 @@ def get_location_values(
     offerer_address = _get_offerer_address_from_address_body(address_body=address_body, venue=venue)
     intervention_area = offer_data.intervention_area or []
 
+    offer_venue: educational_models.OfferVenueDict
     if offer_data.offer_venue is not None:
-        offer_venue = offer_data.offer_venue.dict()
-        if offer_venue and offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
-            check_venue_user_access(venue_id=offer_venue["venueId"], user=user)
+        offer_venue = typing.cast(educational_models.OfferVenueDict, offer_data.offer_venue.dict())
+        if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
+            venue_id = offer_venue["venueId"]
+            if venue_id is None:
+                raise exceptions.VenueIdDontExist()
+
+            check_venue_user_access(venue_id=venue_id, user=user)
             intervention_area = []
 
     elif offer_data.location is not None:
@@ -562,11 +604,25 @@ def create_collective_offer_public(
     end_datetime = body.end_datetime or body.start_datetime
     validation.check_start_and_end_dates_in_same_educational_year(body.start_datetime, end_datetime)
 
-    offer_venue = {
+    offer_venue: educational_models.OfferVenueDict = {
         "venueId": body.offer_venue.venueId,
         "addressType": body.offer_venue.addressType,
         "otherAddress": body.offer_venue.otherAddress or "",
     }
+
+    # when we receive offerVenue, we also write to OA fields
+    location_venue = None
+    if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
+        venue_id = offer_venue["venueId"]
+        if venue_id is None:
+            raise exceptions.VenueIdDontExist()
+
+        location_venue = educational_repository.fetch_venue_for_new_offer(venue_id, requested_id)
+
+    location = get_location_from_offer_venue(
+        offer_venue=offer_venue, venue=location_venue, is_offer_venue=venue.id == offer_venue["venueId"]
+    )
+
     collective_offer = educational_models.CollectiveOffer(
         venue=venue,
         name=body.name,
@@ -589,6 +645,9 @@ def create_collective_offer_public(
         nationalProgramId=body.nationalProgramId,
         formats=body.formats,
         bookingEmails=body.booking_emails,
+        locationType=location.location_type,
+        locationComment=location.location_comment,
+        offererAddressId=location.offerer_address.id if location.offerer_address else None,
     )
 
     collective_stock = educational_models.CollectiveStock(
@@ -602,13 +661,13 @@ def create_collective_offer_public(
     )
 
     update_offer_fraud_information(offer=collective_offer, user=None)
+
     db.session.add(collective_offer)
     db.session.add(collective_stock)
     db.session.commit()
-    logger.info(
-        "Collective offer has been created",
-        extra={"offerId": collective_offer.id},
-    )
+
+    logger.info("Collective offer has been created", extra={"offerId": collective_offer.id})
+
     return collective_offer
 
 
@@ -667,6 +726,31 @@ def edit_collective_offer_public(
             beginning=after_update_start_datetime,
             booking_limit_datetime=after_update_booking_limit_datetime,
         )
+
+    # when we receive offerVenue, we also write to OA fields
+    offer_venue = new_values.get("offerVenue")
+    if offer_venue is not None:
+        location_venue = None
+        if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
+            venue_id = offer_venue["venueId"]
+            if venue_id is None:
+                raise exceptions.VenueIdDontExist()
+
+            location_venue = educational_repository.fetch_venue_for_new_offer(venue_id, provider_id)
+            new_values["interventionArea"] = []
+
+        # we might receive None for otherAddress but we store str
+        if "otherAddress" in offer_venue:
+            offer_venue["otherAddress"] = offer_venue["otherAddress"] or ""
+
+        venue_id = new_values.get("venueId", offer.venueId)  # current offer.venueId or the new received value if given
+        location = get_location_from_offer_venue(
+            offer_venue=offer_venue, venue=location_venue, is_offer_venue=venue_id == offer_venue["venueId"]
+        )
+
+        new_values["locationType"] = location.location_type
+        new_values["locationComment"] = location.location_comment
+        new_values["offererAddressId"] = location.offerer_address.id if location.offerer_address else None
 
     # This variable is meant for Adage mailing
     updated_fields = []
