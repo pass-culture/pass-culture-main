@@ -1,6 +1,9 @@
 from datetime import datetime
 from datetime import timedelta
+import hashlib
+import json
 from unittest import mock
+import uuid
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -297,3 +300,51 @@ class AsymetricTokenTest:
                 old_token.encoded_token,
                 self.wrong_public_key,
             )
+
+
+class PasswordLessLoginTokenTest:
+    token_type = token_tools.TokenType.PASSWORDLESS_LOGIN
+    private_key = rsa.generate_private_key(public_exponent=3, key_size=1024)
+    public_key = private_key.public_key()
+
+    private_key = rsa.generate_private_key(
+        public_exponent=3,
+        key_size=1024,
+    )
+    public_key = private_key.public_key()
+
+    private_pem_file = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+    public_pem_file = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+
+    @pytest.mark.settings(PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file)
+    @mock.patch("flask.current_app.redis_client.set")
+    @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
+    def test_can_create_password_less_login_token(self, mocked_uuid, mocked_redis_set):
+        expected_jti = str(mocked_uuid())
+        expected_ttl = timedelta(hours=8)
+        expected_user_id = 1
+        key_suffix = hashlib.sha256(
+            json.dumps({"user_id": str(expected_user_id), "jti": expected_jti}).encode()
+        ).hexdigest()
+        redis_key = token_tools.PASSWORDLESS_REDIS_KEY_TEMPLATE % {
+            "type_": token_tools.TokenType.PASSWORDLESS_LOGIN.value,
+            "key_suffix": key_suffix,
+        }
+        token = token_tools.create_passwordless_login_token(expected_user_id, expected_ttl)
+
+        mocked_redis_set.assert_called_once_with(
+            redis_key, json.dumps({"user_id": str(expected_user_id), "jti": expected_jti}), ex=expected_ttl
+        )
+
+        payload = jwt.decode(token, self.public_pem_file, algorithms=["RS256"])
+
+        assert payload["jti"] == expected_jti
+        assert payload["exp"] - payload["iat"] == 8 * 3600
+        assert payload["sub"] == str(expected_user_id)
