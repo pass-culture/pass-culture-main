@@ -3,6 +3,7 @@ import dataclasses
 from datetime import datetime
 from datetime import timedelta
 import enum
+import hashlib
 import json
 import logging
 import random
@@ -34,6 +35,8 @@ class TokenType(enum.Enum):
     ACCOUNT_CREATION = "account_creation"
     OAUTH_STATE = "oauth_state"
     DISCORD_OAUTH = "discord_oauth"
+    PASSWORDLESS_LOGIN = "passwordless_login"
+
 
 
 T = typing.TypeVar("T", bound="AbstractToken")
@@ -385,3 +388,51 @@ class AsymetricToken(AbstractToken):
         token = cls(type_, random_uuid, encoded_token, payload["data"])
         token._log(cls._TokenAction.CREATE)
         return token
+
+
+PASSWORDLESS_REDIS_KEY_TEMPLATE = "pcapi:token:%(type_)s:%(key_suffix)s"
+
+
+def create_passwordless_login_token(user_id: int, ttl: timedelta) -> str:
+    """
+    Single use token that allow a user to login without entering any credentials.
+    This token is signed using a RSA private key and verified using the corresponding
+    public key.
+    In exchange of this token, a user should be returned a valid session.
+
+    The payload of this token expects several claims:
+
+        jti: Token unique identifier preventing replay attacks. Ensure each JWT is used only once.
+        sub: The subject of the token. Contains the user id.
+        iat: Issued at.
+        exp: Expiration date.
+
+    Returns:
+        A JWT token (str)
+    """
+    issued_at = datetime.utcnow()
+    expiration_date = issued_at + ttl
+
+    jti = str(uuid.uuid4())
+    exp = int(expiration_date.timestamp())
+    iat = int(issued_at.timestamp())
+    sub = str(user_id)
+
+    # There's virtually none chance two users can have the same
+    # jti within the lifetime of their respective token.
+    # However let's be defensive, hashing together the user_id and the corresponding jti
+    # we ensure this case is covered.
+    value = json.dumps({"user_id": sub, "jti": jti})
+    key_suffix = hashlib.sha256(value.encode()).hexdigest()
+    redis_key = PASSWORDLESS_REDIS_KEY_TEMPLATE % {
+        "type_": TokenType.PASSWORDLESS_LOGIN.value,
+        "key_suffix": key_suffix,
+    }
+    app.redis_client.set(redis_key, value, ex=ttl)
+
+    token = utils.encode_jwt_payload_rs256(
+        {"sub": sub, "iat": iat, "exp": exp, "jti": jti},
+        private_key=settings.PASSWORDLESS_LOGIN_PRIVATE_KEY,
+        expiration_date=expiration_date,
+    )
+    return token
