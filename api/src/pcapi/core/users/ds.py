@@ -25,6 +25,9 @@ logger = logging.getLogger(__name__)
 # Avoid connection timeout when DS takes time to respond in daily or hourly cloud tasks (not in synchronous requests)
 LONG_TIMEOUT = 60
 
+# Sometimes BO users have timeout when accepting, which causes unconsistent data between DS and the backend
+UPDATE_STATE_TIMEOUT = 30
+
 
 class DsUserAccountUpdateProcredureField(enum.Enum):
     CHOICES = "Q2hhbXAtMzM0NjEyMA=="
@@ -359,7 +362,7 @@ def update_state(
     motivation: str | None = None,
     disable_notification: bool = False,
 ) -> None:
-    ds_client = ds_api.DMSGraphQLClient()
+    ds_client = ds_api.DMSGraphQLClient(timeout=UPDATE_STATE_TIMEOUT)
     if instructor is not None:
         instructor_id = instructor.backoffice_profile.dsInstructorId
     else:

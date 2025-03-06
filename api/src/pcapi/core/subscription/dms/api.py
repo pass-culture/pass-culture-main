@@ -43,6 +43,8 @@ FIELD_ERROR_LABELS = {
     fraud_models.DmsFieldErrorKeyEnum.postal_code: "Le code postal",
 }
 
+UPDATE_STATE_TIMEOUT = 30
+
 
 class ApplicationLabel(enum.Enum):
     URGENT = "Urgent"
@@ -655,7 +657,7 @@ def _process_instructor_annotation(application_content: fraud_models.DMSContent,
             return False
 
     # Can be rejected automatically since an instructor has checked details before manually setting an annotation
-    client = dms_connector_api.DMSGraphQLClient()
+    client = dms_connector_api.DMSGraphQLClient(timeout=UPDATE_STATE_TIMEOUT)
     client.make_refused(
         application_scalar_id,
         settings.DMS_ENROLLMENT_INSTRUCTOR,
