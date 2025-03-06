@@ -51,19 +51,25 @@ def _redirect_to_user_page(user: users_models.User) -> utils.BackofficeResponse:
 
 
 def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend: bool = False) -> None:
-    if user.has_admin_role or user.backoffice_profile:
-        if not utils.has_current_user_permission(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS):
-            raise Forbidden()
-    elif user.has_any_pro_role:
-        if not utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
-            raise Forbidden()
-    else:  # not pro, not admin
+    def _check_public_account_role() -> None:
         if unsuspend:
             if not utils.has_current_user_permission(perm_models.Permissions.UNSUSPEND_USER):
                 raise Forbidden()
         else:
             if not utils.has_current_user_permission(perm_models.Permissions.SUSPEND_USER):
                 raise Forbidden()
+
+    if user.has_admin_role or user.backoffice_profile:
+        if not utils.has_current_user_permission(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS):
+            raise Forbidden()
+    elif user.has_any_pro_role:
+        if not utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+            if not user.is_beneficiary:
+                raise Forbidden()
+            # user has pro or non attached pro role but is also beneficiary
+            _check_public_account_role()
+    else:  # not pro, not admin
+        _check_public_account_role()
 
 
 @users_blueprint.route("/<int:user_id>/suspend", methods=["POST"])
