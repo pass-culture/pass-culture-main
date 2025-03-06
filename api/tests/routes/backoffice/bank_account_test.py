@@ -6,6 +6,7 @@ from unittest import mock
 from flask import url_for
 import pytest
 
+from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
@@ -109,6 +110,33 @@ class GetBankAccountTest(GetEndpointHelper):
         assert "Date de validation du dossier DMS CB : 24/09/2022" in response_text
         assert "Date de dépôt du dossier DMS CB" not in response_text
         assert "ACCÉDER AU DOSSIER DMS CB" in response_text
+
+    def test_get_venue_dms_stats_error(self, authenticated_client):
+        with mock.patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_bank_info_status") as bank_info_mock:
+            bank_info_mock.side_effect = dms_exceptions.DmsGraphQLApiError(
+                [
+                    {
+                        "message": "Dossier not found",
+                        "locations": [{"line": 2, "column": 3}],
+                        "path": ["dossier"],
+                        "extensions": {"code": "not_found"},
+                    }
+                ]
+            )
+            bank_account = finance_factories.BankAccountFactory()
+
+            url = url_for(self.endpoint, bank_account_id=bank_account.id)
+
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(url)
+                assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert f"Erreur DMS CB : Le dossier {bank_account.dsApplicationId} n'existe pas" in response_text
+        assert "Statut DMS CB :" not in response_text
+        assert "Date de dépôt du dossier DMS CB :" not in response_text
+        assert "Date de validation du dossier DMS CB" not in response_text
+        assert "ACCÉDER AU DOSSIER DMS CB" not in response_text
 
 
 class GetBankAccountVenuesTest(GetEndpointHelper):

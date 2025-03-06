@@ -983,7 +983,7 @@ class AcceptTest(PostEndpointHelper):
         mock_make_accepted.side_effect = dms_exceptions.DmsGraphQLApiError(
             [
                 {
-                    "message": "DossierAccepterPayload not found",
+                    "message": "Dossier not found",
                     "locations": [{"line": 2, "column": 3}],
                     "path": ["dossierAccepter"],
                     "extensions": {"code": "not_found"},
