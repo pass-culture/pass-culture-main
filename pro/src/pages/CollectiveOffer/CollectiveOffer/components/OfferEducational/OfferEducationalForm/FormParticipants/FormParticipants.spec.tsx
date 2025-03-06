@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 
 import { StudentLevels } from 'apiClient/v1'
@@ -106,5 +107,69 @@ describe('FormParticipants', () => {
         })
       ).not.toBeInTheDocument()
     })
+  })
+
+  it('should uncheck Collège parent checkbox on check children checkbox', async () => {
+    const participants: Record<string, boolean> = {
+      ...buildStudentLevelsMapWithDefaultValue(false),
+    }
+
+    renderFormParticipants(participants)
+
+    const collegeCheckbox = screen.getByLabelText('Collège')
+
+    await userEvent.click(collegeCheckbox)
+    expect(collegeCheckbox).toBeChecked()
+
+    const sixiemeCheckbox = screen.getByLabelText(
+      studentLevelsLabels[StudentLevels.COLL_GE_6E]
+    )
+    await userEvent.click(sixiemeCheckbox)
+
+    expect(collegeCheckbox).not.toBeChecked()
+    expect(sixiemeCheckbox).not.toBeChecked()
+  })
+
+  it('should uncheck Lycée parent checkbox on check children checkbox', async () => {
+    const participants: Record<string, boolean> = {
+      ...buildStudentLevelsMapWithDefaultValue(false),
+    }
+
+    renderFormParticipants(participants)
+
+    const lyceeCheckbox = screen.getByLabelText('Lycée')
+
+    await userEvent.click(lyceeCheckbox)
+    expect(lyceeCheckbox).toBeChecked()
+
+    const secondeCheckbox = screen.getByLabelText(
+      studentLevelsLabels[StudentLevels.LYC_E_SECONDE]
+    )
+    await userEvent.click(secondeCheckbox)
+
+    expect(lyceeCheckbox).not.toBeChecked()
+    expect(secondeCheckbox).not.toBeChecked()
+  })
+
+  it('should uncheck Marseille parent checkbox on check children checkbox', async () => {
+    const participants: Record<string, boolean> =
+      buildStudentLevelsMapWithDefaultValue(false, true)
+
+    renderFormParticipants(participants, featureOverrides)
+
+    const marseilleCheckbox = screen.getByLabelText(
+      'Projet Marseille en Grand - École innovante'
+    )
+
+    await userEvent.click(marseilleCheckbox)
+    expect(marseilleCheckbox).toBeChecked()
+
+    const maternelleCheckbox = screen.getByLabelText(
+      studentLevelsLabels[StudentLevels._COLES_MARSEILLE_MATERNELLE]
+    )
+    await userEvent.click(maternelleCheckbox)
+
+    expect(marseilleCheckbox).not.toBeChecked()
+    expect(maternelleCheckbox).not.toBeChecked()
   })
 })

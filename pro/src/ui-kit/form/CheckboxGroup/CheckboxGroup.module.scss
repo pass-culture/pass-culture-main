@@ -9,4 +9,5 @@
 .inline {
   flex-flow: row wrap;
   gap: rem.torem(16px);
+  row-gap: rem.torem(8px);
 }

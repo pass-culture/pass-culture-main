@@ -33,4 +33,17 @@ describe('BaseCHeckbox', () => {
 
     expect(screen.queryByText('My child')).not.toBeInTheDocument()
   })
+
+  it('should show the checkbox children when shouldShowChildren is true', () => {
+    render(
+      <BaseCheckbox
+        label="My label"
+        onChange={() => {}}
+        childrenOnChecked={<span>My child</span>}
+        shouldShowChildren
+      />
+    )
+
+    expect(screen.queryByText('My child')).toBeInTheDocument()
+  })
 })
