@@ -78,6 +78,11 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
         ),
     )
 
+    is_collective = fields.PCSelectMultipleField(
+        "Type de réservation",
+        choices=(("true", "Collective"), ("false", "Individuelle")),
+    )
+
     offerer = fields.PCTomSelectField(
         "Entités juridiques",
         multiple=True,
@@ -102,6 +107,7 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
             (
                 self.q.data,
                 self.status.data,
+                self.is_collective.data,
                 self.offerer.data,
                 self.venue.data,
                 self.from_date.data,

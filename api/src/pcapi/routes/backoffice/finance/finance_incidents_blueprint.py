@@ -63,6 +63,12 @@ def _get_incidents(
         .outerjoin(educational_models.CollectiveBooking.collectiveStock)
     )
 
+    if form.is_collective.data and len(form.is_collective.data) == 1:
+        if form.is_collective.data[0] == "true":
+            query = query.filter(finance_models.FinanceIncident.relates_to_collective_bookings)
+        else:
+            query = query.filter(sa.not_(finance_models.FinanceIncident.relates_to_collective_bookings))
+
     if form.status.data:
         # When filtering on status, always exclude closed incidents
         query = query.filter(

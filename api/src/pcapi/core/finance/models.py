@@ -983,9 +983,17 @@ class FinanceIncident(PcObject, Base, Model):
     def is_partial(self) -> bool:
         return any(booking_incident.is_partial for booking_incident in self.booking_finance_incidents)
 
-    @property
+    @hybrid_property
     def relates_to_collective_bookings(self) -> bool:
         return any(booking_incident.collectiveBooking for booking_incident in self.booking_finance_incidents)
+
+    @relates_to_collective_bookings.expression  # type: ignore[no-redef]
+    def relates_to_collective_bookings(cls) -> sqla.sql.elements.UnaryExpression:  # pylint: disable=no-self-argument
+        aliased_booking_finance_incident = sqla.orm.aliased(BookingFinanceIncident)
+        return sqla.exists().where(
+            aliased_booking_finance_incident.incidentId == cls.id,
+            aliased_booking_finance_incident.collectiveBookingId.is_not(None),
+        )
 
     @property
     def due_amount_by_offerer(self) -> int:

@@ -269,6 +269,22 @@ class ListIncidentsTest(GetEndpointHelper):
         assert len(rows) == 1  # closed incident is excluded
         assert rows[0]["ID"] == str(incidents[1].id)
 
+    @pytest.mark.parametrize(
+        "is_collective, expected_results",
+        [
+            ("true", {"37"}),
+            ("false", {"36", "38"}),
+        ],
+    )
+    def test_list_incident_by_booking_type(self, authenticated_client, incidents, is_collective, expected_results):
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, is_collective=is_collective))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == len(expected_results)
+        assert {row["ID"] for row in rows} == expected_results
+
     def test_list_incident_by_offerer(self, authenticated_client, incidents):
         offerer_id = incidents[0].venue.managingOffererId
 
