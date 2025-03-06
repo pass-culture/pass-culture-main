@@ -455,13 +455,10 @@ def get_dms_stats(dms_application_id: int | None, api_v4: bool = False) -> DmsSt
 
     try:
         dms_stats = DMSGraphQLClient(retries=1).get_bank_info_status(dms_application_id)
-    except (
-        gql_exceptions.TransportError,
-        gql_exceptions.TransportQueryError,
-        urllib3.exceptions.HTTPError,
-        requests.exceptions.RequestException,
-    ):
-        return None
+    except gql_exceptions.TransportQueryError as exc:
+        raise exceptions.DmsGraphQLApiError(exc.errors)
+    except (gql_exceptions.TransportError, urllib3.exceptions.HTTPError, requests_exception.RequestException) as exc:
+        raise exceptions.DmsGraphQLAPIConnectError(str(exc))
 
     dossier = dms_stats["dossier"]
     state = dossier["state"]

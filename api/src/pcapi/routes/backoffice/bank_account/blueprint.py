@@ -13,6 +13,7 @@ import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
 from pcapi.connectors.dms import api as dms_api
+from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.history import api as history_api
@@ -45,6 +46,16 @@ def render_bank_account_details(
     if not edit_form and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY):
         edit_form = forms.EditBankAccountForm(label=bank_account.label)
 
+    try:
+        dms_stats = dms_api.get_dms_stats(bank_account.dsApplicationId)
+        dms_error = None
+    except dms_exceptions.DmsGraphQLApiError as e:
+        dms_stats = None
+        if e.is_not_found:
+            dms_error = f"Le dossier {bank_account.dsApplicationId} n'existe pas"
+        else:
+            dms_error = e.message
+
     return render_template(
         "bank_account/get.html",
         search_form=pro_forms.CompactProSearchForm(
@@ -53,7 +64,8 @@ def render_bank_account_details(
         search_dst=url_for("backoffice_web.pro.search_pro"),
         bank_account=bank_account,
         humanized_bank_account_id=humanize(bank_account.id),
-        dms_stats=dms_api.get_dms_stats(bank_account.dsApplicationId),
+        dms_stats=dms_stats,
+        dms_error=dms_error,
         active_tab=request.args.get("active_tab", "linked_venues"),
         edit_form=edit_form,
     )

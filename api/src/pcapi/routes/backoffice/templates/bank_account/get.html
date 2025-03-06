@@ -80,7 +80,11 @@
                   {% endif %}
                 {% else %}
                   <p class="mb-4">
-                    <span class="fw-bold">Pas de dossier DMS CB</span>
+                    {% if dms_error %}
+                      <span class="fw-bold">Erreur DMS CB :</span> {{ dms_error }}
+                    {% else %}
+                      <span class="fw-bold">Pas de dossier DMS CB</span>
+                    {% endif %}
                   </p>
                 {% endif %}
               </div>
