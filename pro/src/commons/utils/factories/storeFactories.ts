@@ -21,5 +21,6 @@ export const currentOffererFactory = (
   selectedOffererId: 1,
   offererNames: [],
   isOnboarded: true,
+  hasPartnerPage: true,
   ...customOfferer,
 })

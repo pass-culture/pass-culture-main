@@ -23,7 +23,7 @@ import { SideNavLinks } from '../SideNavLinks'
 const renderSideNavLinks = (options: RenderWithProvidersOptions = {}) => {
   return renderWithProviders(<SideNavLinks isLateralPanelOpen={true} />, {
     initialRouterEntries: ['/'],
-    user: sharedCurrentUserFactory({ hasPartnerPage: true }),
+    offerer: currentOffererFactory({ hasPartnerPage: true }),
     ...options,
   })
 }
@@ -85,7 +85,7 @@ describe('SideNavLinks', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display partner link if user as partner page', async () => {
+  it('should display partner link if offerer has partner page', async () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       managedVenues: [
@@ -94,10 +94,7 @@ describe('SideNavLinks', () => {
     })
     renderSideNavLinks({
       storeOverrides: {
-        user: {
-          currentUser: sharedCurrentUserFactory({ hasPartnerPage: true }),
-        },
-        offerer: currentOffererFactory(),
+        offerer: currentOffererFactory({ hasPartnerPage: true }),
       },
     })
 
@@ -106,9 +103,9 @@ describe('SideNavLinks', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not display partner link if user as no partner page', () => {
+  it('should not display partner link if offerer has no partner page', () => {
     renderSideNavLinks({
-      user: sharedCurrentUserFactory({ hasPartnerPage: false }),
+      offerer: currentOffererFactory({ hasPartnerPage: true }),
     })
 
     expect(screen.queryByText('Page sur l’application')).not.toBeInTheDocument()
@@ -120,11 +117,12 @@ describe('SideNavLinks', () => {
     renderSideNavLinks({
       storeOverrides: {
         user: {
-          currentUser: sharedCurrentUserFactory({ hasPartnerPage: false }),
+          currentUser: sharedCurrentUserFactory(),
         },
-        offerer: currentOffererFactory(),
+        offerer: currentOffererFactory({ hasPartnerPage: false }),
       },
-      user: sharedCurrentUserFactory({ hasPartnerPage: false }),
+      user: sharedCurrentUserFactory(),
+      offerer: currentOffererFactory({ hasPartnerPage: false }),
     })
 
     await waitFor(() => {

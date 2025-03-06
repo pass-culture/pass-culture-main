@@ -195,6 +195,7 @@ describe('App', () => {
             selectedOffererId: 1,
             offererNames: [],
             isOnboarded: true,
+            hasPartnerPage: false,
           },
         },
         features: ['WIP_ENABLE_PRO_DIDACTIC_ONBOARDING'],
