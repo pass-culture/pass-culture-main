@@ -370,8 +370,8 @@ def _create_library_with_writers() -> None:
                 name=f"Livre - {artist.name} - {num + 1}", subcategoryId=subcategories.LIVRE_PAPIER.id
             )
             image_path = next(image_paths)
-            offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.RECTO)
-            thumb_storage.create_thumb(product, image_path.read_bytes(), keep_ratio=True)
+            mediation = offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.RECTO)
+            thumb_storage.create_thumb(product, image_path.read_bytes(), keep_ratio=True, object_id=mediation.uuid)
             offers_factories.ArtistProductLinkFactory(
                 artist_id=artist.id, product_id=product.id, artist_type=ArtistType.AUTHOR
             )
