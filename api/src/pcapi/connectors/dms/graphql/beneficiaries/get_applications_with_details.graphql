@@ -121,6 +121,7 @@ fragment ChampFragment on Champ {
   id
   label
   stringValue
+  updatedAt
   ... on LinkedDropDownListChamp {
     primaryValue
     secondaryValue
