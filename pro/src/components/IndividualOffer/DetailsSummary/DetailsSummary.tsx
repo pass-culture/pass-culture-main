@@ -8,6 +8,7 @@ import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import { Markdown } from 'components/Markdown/Markdown'
 import { OfferAppPreview } from 'components/OfferAppPreview/OfferAppPreview'
 import { SummaryAside } from 'components/SummaryLayout/SummaryAside'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
@@ -60,7 +61,7 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
       text: offerData.venuePublicName || offerData.venueName,
     },
     { title: 'Titre de l’offre', text: offerData.name },
-    { title: 'Description', text: offerData.description },
+    { title: 'Description', text: !offerData.description ? '' : <Markdown markdownText={offerData.description} /> },
   ].concat(
     offer.isDigital
       ? {

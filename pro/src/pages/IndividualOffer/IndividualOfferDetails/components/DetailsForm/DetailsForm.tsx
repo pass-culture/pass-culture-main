@@ -6,6 +6,7 @@ import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { MarkdownInfoBox } from 'components/MarkdownInfoBox/MarkdownInfoBox'
 import fullMoreIcon from 'icons/full-more.svg'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
@@ -112,7 +113,7 @@ export const DetailsForm = ({
                 disabled={readOnlyFields.includes('name')}
               />
             </FormLayout.Row>
-            <FormLayout.Row>
+            <FormLayout.Row sideComponent={<MarkdownInfoBox />} >
               <TextArea
                 isOptional
                 label="Description"
