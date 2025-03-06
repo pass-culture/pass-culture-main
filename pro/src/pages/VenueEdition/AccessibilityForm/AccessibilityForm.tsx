@@ -17,12 +17,14 @@ export interface AccessiblityFormProps {
   isVenuePermanent?: boolean
   externalAccessibilityId: GetVenueResponseModel['externalAccessibilityId']
   externalAccessibilityData: GetVenueResponseModel['externalAccessibilityData']
+  isSubSubSection?: boolean
 }
 
 export const AccessibilityForm = ({
   isVenuePermanent,
   externalAccessibilityId,
   externalAccessibilityData,
+  isSubSubSection,
 }: AccessiblityFormProps) => {
   const { values, setFieldValue, initialValues } = useFormikContext<VenueEditionFormValues>()
   const checkboxGroup = useAccessibilityOptions(setFieldValue)
@@ -37,8 +39,10 @@ export const AccessibilityForm = ({
     'Modalités d’accessibilité via acceslibre' :
     'Modalités d’accessibilité'
 
+  const FormLayoutSection = isSubSubSection ? FormLayout.SubSubSection : FormLayout.SubSection
+
   return (
-    <FormLayout.SubSection title={title}>
+    <FormLayoutSection title={title}>
       {
         isAccessibilityDefinedViaAccesLibre
           ? <ExternalAccessibility
@@ -65,6 +69,6 @@ export const AccessibilityForm = ({
               {isVenuePermanent && <AccessibilityCallout className={styles['callout']} />}
             </>
       }
-    </FormLayout.SubSection>
+    </FormLayoutSection>
   )
 }
