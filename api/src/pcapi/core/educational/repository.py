@@ -1320,10 +1320,11 @@ def fetch_venue_for_new_offer(venue_id: int, requested_provider_id: int) -> offe
         .join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
         .filter(providers_models.VenueProvider.providerId == requested_provider_id)
         .options(
+            sa_orm.joinedload(offerers_models.Venue.offererAddress),
             sa_orm.joinedload(offerers_models.Venue.managingOfferer)
             .joinedload(offerers_models.Offerer.confidenceRule)
             .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
-            sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+            sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
                 offerers_models.OffererConfidenceRule.confidenceLevel
             ),
         )

@@ -220,7 +220,10 @@ def _get_all_offer_venues(
     venue_ids = {venue_id for venue_id in offers_venues.values() if venue_id}
     venues = {venue.id: venue for venue in offerers_repository.get_venues_by_ids(venue_ids)}
 
-    return {offer_id: venues.get(venue_id) for offer_id, venue_id in offers_venues.items()}
+    return {
+        offer_id: (venues.get(venue_id) if venue_id is not None else None)
+        for offer_id, venue_id in offers_venues.items()
+    }
 
 
 @blueprint.adage_iframe.route("/collective/offers/my_institution", methods=["GET"])

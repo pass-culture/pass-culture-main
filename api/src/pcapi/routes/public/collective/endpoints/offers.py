@@ -241,11 +241,13 @@ def post_collective_offer_public(
     except offers_validation.OfferValidationError as err:
         raise ApiErrors(errors={err.field: err.msg}, status_code=400)
 
+    offer_id = offer.id  # store id here to avoid re-querying it after commit from attach_image
     if image_as_bytes and body.image_credit is not None:
         educational_api_offer.attach_image(
             obj=offer, image=image_as_bytes, crop_params=DO_NOT_CROP, credit=body.image_credit
         )
 
+    offer = educational_repository.get_collective_offer_by_id(offer_id)
     return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
 
