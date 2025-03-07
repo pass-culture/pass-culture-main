@@ -5,6 +5,9 @@ import typing
 from pydantic.v1.utils import GetterDict
 
 from pcapi import settings
+from pcapi.core.finance import models as finance_models
+from pcapi.core.finance.utils import fr_currency_filter
+from pcapi.core.finance.utils import to_cents
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import models as history_models
 from pcapi.core.subscription import models as subscription_models
@@ -227,6 +230,53 @@ class ImportStatusAction(AccountAction):
     @property
     def comment(self) -> str | None:
         return f"{self._status.status.value} ({self._status.detail})"
+
+
+class RecreditAction(AccountAction):
+    def __init__(self, recredit: finance_models.Recredit):
+        self._recredit = recredit
+
+    @property
+    def actionType(self) -> history_models.ActionType | str:
+        return "Recrédit du compte"
+
+    @property
+    def actionDate(self) -> datetime.datetime | None:
+        return self._recredit.dateCreated
+
+    @property
+    def comment(self) -> str | None:
+        match self._recredit.recreditType:
+            case finance_models.RecreditType.RECREDIT_15:
+                recredit_type = "Recrédit à 15 ans"
+            case finance_models.RecreditType.RECREDIT_16:
+                recredit_type = "Recrédit à 16 ans"
+            case finance_models.RecreditType.RECREDIT_17:
+                recredit_type = "Recrédit à 17 ans"
+            case finance_models.RecreditType.RECREDIT_18:
+                recredit_type = "Recrédit à 18 ans"
+            case finance_models.RecreditType.MANUAL_MODIFICATION:
+                recredit_type = "Recrédit par une action manuelle"
+            case finance_models.RecreditType.PREVIOUS_DEPOSIT:
+                recredit_type = "Recrédit de l'argent restant du crédit précédent"
+            case finance_models.RecreditType.FINANCE_INCIDENT_RECREDIT:
+                recredit_type = "Recrédit suite à un incident finance sur l'ancien crédit expiré"
+            case _:
+                recredit_type = "Recrédit d'origine inconnue"
+
+        match self._recredit.deposit.type:
+            case finance_models.DepositType.GRANT_15_17:
+                deposit_type = "ancien crédit 15-17"
+            case finance_models.DepositType.GRANT_18:
+                deposit_type = "ancienc crédit 18"
+            case finance_models.DepositType.GRANT_17_18:
+                deposit_type = "crédit 17-18"
+            case _:
+                deposit_type = "crédit inconnu"
+
+        return f"{recredit_type} de {fr_currency_filter(to_cents(self._recredit.amount))} € sur un {deposit_type}" + (
+            f" ({self._recredit.comment})" if self._recredit.comment else ""
+        )
 
 
 class AccountCreatedAction(AccountAction):
