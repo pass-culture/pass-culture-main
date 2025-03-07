@@ -176,8 +176,11 @@ app.config.from_mapping(
         task_serializer="json",
         result_serializer="json",
         accept_content=["json"],
+        # We must prefix celery queues with "celery." to easily monitor
+        # their length using the redis prometheus exporter
         task_routes={
-            "mails.tasks.*": {"queue": "mails"},
+            "tasks.mails.default.*": {"queue": "celery.external_calls.default"},
+            "tasks.mails.priority.*": {"queue": "celery.external_calls.priority"},
         },
         task_ignore_result=True,
     ),
