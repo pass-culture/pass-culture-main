@@ -118,7 +118,7 @@ jobs:
           echo "channel-name=pr${{ github.event.pull_request.number }}-$shortname" >> $GITHUB_OUTPUT
 
       # Delete pro firebase deployment
-      - uses: w9jds/firebase-action@v13.32.0
+      - uses: w9jds/firebase-action@v13.33.0
         with:
           args: hosting:channel:delete ${{ steps.pro-channel-name.outputs.channel-name }} --force
         env:
