@@ -53,14 +53,9 @@ class AbstractToken(abc.ABC):
         CREATE = "create"
 
     @classmethod
-    def load_and_check(
-        cls: typing.Type[T],
-        encoded_token: str,
-        type_: TokenType,
-        user_id: int | None = None,
-    ) -> T:
-        token = cls.load_without_checking(encoded_token, type_=type_, user_id=user_id)
-        token.check(type_, user_id)
+    def load_and_check(cls: typing.Type[T], encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> T:
+        token = cls.load_without_checking(encoded_token, *args, **kwargs)
+        token.check(*args, **kwargs)
         return token
 
     @classmethod
@@ -130,6 +125,17 @@ class Token(AbstractToken):
         return int(self.key_suffix)
 
     @classmethod
+    def load_and_check(
+        cls: typing.Type[T],
+        encoded_token: str,
+        type_: TokenType,
+        user_id: int | None = None,
+    ) -> T:
+        token = cls.load_without_checking(encoded_token, type_=type_, user_id=user_id)
+        token.check(type_, user_id)
+        return token
+
+    @classmethod
     def load_without_checking(cls, encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> "Token":
         try:
             payload = utils.decode_jwt_token(encoded_token)
@@ -172,6 +178,17 @@ class SixDigitsToken(AbstractToken):
     @classmethod
     def _get_redis_extra_data_key(cls, type_: TokenType, user_id: int) -> str:
         return f"pcapi:token:data:{type_.value}_{user_id}"
+
+    @classmethod
+    def load_and_check(
+        cls: typing.Type[T],
+        encoded_token: str,
+        type_: TokenType,
+        user_id: int | None = None,
+    ) -> T:
+        token = cls.load_without_checking(encoded_token, type_=type_, user_id=user_id)
+        token.check(type_, user_id)
+        return token
 
     @classmethod
     def load_without_checking(
@@ -315,7 +332,7 @@ class AsymetricToken(AbstractToken):
     """
 
     @classmethod
-    def load_without_checking(
+    def load_and_check(
         cls, encoded_token: str, public_key: bytes, *args: typing.Any, **kwargs: typing.Any
     ) -> "AsymetricToken":
         try:
@@ -333,11 +350,22 @@ class AsymetricToken(AbstractToken):
         return cls(type_, uuid4, encoded_token, data)
 
     @classmethod
+    def load_without_checking(cls, encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> "AsymetricToken":
+        """Decode the JWT token without verifying signature. If you want to be able to trust
+        the data within the payload, you must use `load_and_check`
+        """
+        payload = utils.decode_jwt_token_rs256(encoded_token, verify_signature=False)
+        type_ = TokenType(payload["token_type"])
+        uuid4 = payload["uuid"]
+
+        data = payload.get("data", {})
+        return cls(type_, uuid4, encoded_token, data)
+
+    @classmethod
     def create(
         cls,
         type_: TokenType,
         private_key: bytes,
-        public_key: bytes,
         ttl: timedelta | None,
         *,
         data: dict | None = None,
@@ -354,6 +382,6 @@ class AsymetricToken(AbstractToken):
         encoded_token = utils.encode_jwt_payload_rs256(payload, private_key=private_key)
         if ttl is None or ttl > timedelta(0):
             app.redis_client.set(cls.get_redis_key(type_, random_uuid), encoded_token, ex=ttl)
-        token = cls.load_without_checking(encoded_token, public_key=public_key)
+        token = cls(type_, random_uuid, encoded_token, payload["data"])
         token._log(cls._TokenAction.CREATE)
         return token
