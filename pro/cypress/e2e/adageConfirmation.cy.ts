@@ -42,8 +42,8 @@ describe('Adage confirmation', () => {
         cy.request({
           method: 'GET',
           url: 'http://localhost:5001/sandboxes/clear_email_list',
-        }).then((response) => {
-          expect(response.status).to.eq(200)
+        }).then((res) => {
+          expect(res.status).to.eq(200)
         })
       }
     )
@@ -76,9 +76,9 @@ describe('Adage confirmation', () => {
         'Content-Type': 'application/json',
       },
       body: {},
-    }).then((response) => {
-      expect(response.status).to.eq(200)
-      const { bookingId } = response.body
+    }).then((res) => {
+      expect(res.status).to.eq(200)
+      const { bookingId } = res.body
 
       cy.stepLog({
         message: `The offer is now prebooked with a booking ID ${bookingId}`,

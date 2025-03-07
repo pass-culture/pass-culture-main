@@ -783,9 +783,7 @@ describe('IndividualOfferRow', () => {
       renderOfferItem({ props })
       await userEvent.click(screen.getAllByRole('button')[0])
 
-      const numberOfStocks = screen.getByText('1 date épuisée', {
-        selector: 'span',
-      })
+      const numberOfStocks = screen.getByText('1 date épuisée')
       expect(numberOfStocks).toBeInTheDocument()
     })
 
@@ -799,9 +797,7 @@ describe('IndividualOfferRow', () => {
       renderOfferItem({ props })
       await userEvent.click(screen.getAllByRole('button')[0])
 
-      expect(
-        screen.queryByText('2 dates épuisées', { selector: 'span' })
-      ).toBeInTheDocument()
+      expect(screen.queryByText('2 dates épuisées')).toBeInTheDocument()
     })
 
     describe('when offer is headline', () => {
@@ -818,9 +814,7 @@ describe('IndividualOfferRow', () => {
         })
 
         await waitFor(() => {
-          expect(
-            screen.getByRole('tooltip', { name: 'Offre à la une' })
-          ).toBeInTheDocument()
+          expect(screen.getByText('Offre à la une')).toBeInTheDocument()
         })
       })
     })

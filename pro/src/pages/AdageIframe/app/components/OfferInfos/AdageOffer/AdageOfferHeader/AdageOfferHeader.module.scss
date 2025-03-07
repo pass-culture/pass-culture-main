@@ -100,10 +100,6 @@
     justify-content: unset;
     gap: rem.torem(8px);
   }
-
-  .offer-header-share-button-tooltip-content {
-    width: auto;
-  }
 }
 
 @container (min-width: #{size.$tablet}) {
