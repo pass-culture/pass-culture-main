@@ -557,6 +557,7 @@ class UpdateVenueProviderExternalUrlsTest:
         previous_notification_url = venue_provider_external_urls.notificationExternalUrl
 
         api.update_venue_provider_external_urls(venue_provider, booking_external_url=None, cancel_external_url=None)
+        db.session.commit()
 
         # Should have unset ticketing urls
         assert venue_provider_external_urls.bookingExternalUrl == None
@@ -577,6 +578,7 @@ class UpdateVenueProviderExternalUrlsTest:
         api.update_venue_provider_external_urls(
             venue_provider, booking_external_url=None, cancel_external_url=None, notification_external_url=None
         )
+        db.session.commit()
 
         # Should have deleted `venue_provider_external_urls`
         assert venue_provider.externalUrls == None
@@ -598,6 +600,7 @@ class UpdateVenueProviderExternalUrlsTest:
             booking_external_url=None,
             cancel_external_url=None,
         )
+        db.session.commit()
 
         # Should have deleted `venue_provider_external_urls`
         assert venue_provider.externalUrls == None
@@ -619,6 +622,7 @@ class UpdateVenueProviderExternalUrlsTest:
             venue_provider,
             notification_external_url=None,
         )
+        db.session.commit()
 
         # Should have deleted `venue_provider_external_urls`
         assert venue_provider.externalUrls == None
