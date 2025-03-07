@@ -48,7 +48,7 @@ $connect-as-header-height: rem.torem(52px);
   flex-grow: 1;
   width: 100%;
   overflow-y: auto;
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
 
   &-left-side {
     @media screen and (min-width: size.$tablet) {
@@ -177,7 +177,6 @@ $connect-as-header-height: rem.torem(52px);
   width: 100%;
   flex-grow: 1;
   padding: size.$main-content-padding-xs size.$main-content-padding-xs 0;
-  background-color: var(--color-white);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -188,7 +187,6 @@ $connect-as-header-height: rem.torem(52px);
 
   &-funnel,
   &-onboarding {
-    background-color: var(--color-white);
     padding: 0;
   }
 
@@ -234,7 +232,6 @@ $connect-as-header-height: rem.torem(52px);
 }
 
 .content {
-  background-color: var(--color-white);
   max-width: 100%;
   border: none;
   margin: 0;

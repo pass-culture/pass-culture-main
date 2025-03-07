@@ -30,7 +30,7 @@
     width: rem.torem(20px);
     border: rem.torem(2px) solid var(--color-grey-dark);
     border-radius: 50%;
-    background-color: var(--color-white);
+    background-color: var(--color-background-default);
     margin-right: rem.torem(8px);
     appearance: none;
     outline: none;
@@ -85,7 +85,7 @@
 }
 
 .radio.box-variant {
-  border: rem.torem(1px) solid var(--color-grey-dark);
+  border: rem.torem(1px) solid var(--color-border-default);
   border-radius: rem.torem(8px);
   padding: 0 0 0 rem.torem(16px);
 
