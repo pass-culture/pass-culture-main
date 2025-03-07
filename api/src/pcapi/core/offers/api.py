@@ -2011,22 +2011,15 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
     if count_reimbursed_bookings > 0:
         raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
 
-    return get_venues_with_same_pricing_point(offer)
+    venues_choices = offerers_repository.get_offerers_venues_with_pricing_point(
+        offer.venue.managingOfferer, offer.venue
+    )
+    if not venues_choices:
+        raise exceptions.NoDestinationVenue()
+    return venues_choices
 
 
 def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
-    count_past_stocks = (
-        models.Stock.query.with_entities(models.Stock.id)
-        .filter(
-            models.Stock.offerId == offer.id,
-            models.Stock.beginningDatetime < datetime.datetime.utcnow(),
-            models.Stock.isSoftDeleted.is_(False),
-        )
-        .count()
-    )
-    if count_past_stocks > 0:
-        raise exceptions.OfferEventInThePast(count_past_stocks)
-
     count_reimbursed_bookings = (
         bookings_models.Booking.query.with_entities(bookings_models.Booking.id)
         .join(bookings_models.Booking.stock)
@@ -2036,7 +2029,15 @@ def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
     if count_reimbursed_bookings > 0:
         raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
 
-    return get_venues_with_same_pricing_point(offer)
+    venues_choices = offerers_repository.get_offerers_venues_with_pricing_point(
+        offer.venue.managingOfferer,
+        offer.venue,
+        include_without_pricing_points=True,
+        check_pricing_points=True,
+    )
+    if not venues_choices:
+        raise exceptions.NoDestinationVenue()
+    return venues_choices
 
 
 def check_can_move_collective_offer_venue(
@@ -2065,41 +2066,11 @@ def check_can_move_collective_offer_venue(
     if count_reimbursed_bookings > 0:
         raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
 
-    return get_venues_with_same_pricing_point(collective_offer)
-
-
-def get_venues_with_same_pricing_point(
-    offer: models.Offer | educational_models.CollectiveOffer,
-) -> list[offerers_models.Venue]:
-    venues_choices = (
-        offerers_models.Venue.query.filter(
-            offerers_models.Venue.managingOffererId == offer.venue.managingOffererId,
-            offerers_models.Venue.id != offer.venueId,
-        )
-        .join(
-            offerers_models.VenuePricingPointLink,
-            sa.and_(
-                offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
-                offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
-            ),
-        )
-        .options(
-            sa.orm.load_only(
-                offerers_models.Venue.id,
-                offerers_models.Venue.name,
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.siret,
-            ),
-            sa.orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
-                offerers_models.VenuePricingPointLink.pricingPointId, offerers_models.VenuePricingPointLink.timespan
-            ),
-        )
-        .order_by(offerers_models.Venue.common_name)
-        .all()
+    venues_choices = offerers_repository.get_offerers_venues_with_pricing_point(
+        collective_offer.venue.managingOfferer, collective_offer.venue
     )
     if not venues_choices:
         raise exceptions.NoDestinationVenue()
-
     return venues_choices
 
 
@@ -2134,8 +2105,9 @@ def move_offer(
         raise exceptions.ForbiddenDestinationVenue()
 
     destination_pricing_point_link = destination_venue.current_pricing_point_link
-    assert destination_pricing_point_link  # for mypy - it would not be in venue_choices without link
-    destination_pricing_point_id = destination_pricing_point_link.pricingPointId
+    destination_pricing_point_id = None
+    if destination_pricing_point_link:
+        destination_pricing_point_id = destination_pricing_point_link.pricingPointId
 
     bookings = (
         bookings_models.Booking.query.join(bookings_models.Booking.stock)
@@ -2201,9 +2173,8 @@ def move_offer(
                 if finance_event.status == finance_models.FinanceEventStatus.PENDING:
                     finance_event.status = finance_models.FinanceEventStatus.READY
                     finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(booking)
-                db.session.add(finance_event)
-
-            db.session.add(booking)
+                db.session.add(finance_event)  # TODO(xordoquy): is that really usefull ?
+            db.session.add(booking)  # TODO(xordoquy): is that really usefull ?
 
     on_commit(
         partial(
