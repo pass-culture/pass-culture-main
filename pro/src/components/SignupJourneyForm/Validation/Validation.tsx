@@ -7,7 +7,7 @@ import { api } from 'apiClient/api'
 import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
+import { defaultActivityValues } from 'commons/context/SignupJourneyContext/constants'
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
@@ -40,12 +40,15 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { ActionBar } from '../ActionBar/ActionBar'
 
 import styles from './Validation.module.scss'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 
 export const Validation = (): JSX.Element => {
   const [loading, setLoading] = useState(false)
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
+  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
+
   const { activity, offerer } = useSignupJourneyContext()
   useInitReCaptcha()
 
@@ -71,7 +74,10 @@ export const Validation = (): JSX.Element => {
       navigate('/parcours-inscription/identification')
       return
     }
-    if (activity === null || activity === DEFAULT_ACTIVITY_VALUES) {
+    if (
+      activity === null ||
+      activity === defaultActivityValues(isNewSignupEnabled)
+    ) {
       navigate('/parcours-inscription/activite')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -107,6 +113,7 @@ export const Validation = (): JSX.Element => {
           /* istanbul ignore next: the form validation already handles this */
           activity.targetCustomer ?? Target.EDUCATIONAL,
         createVenueWithoutSiret: offerer.createVenueWithoutSiret ?? false,
+        phoneNumber: activity.phoneNumber,
         address: {
           banId: offerer.banId,
           longitude: offerer.longitude ?? 0,
