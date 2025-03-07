@@ -1362,7 +1362,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
 
         assert (
             html_parser.content_as_text(response.data)
-            == """Seules les réservations ayant le statut "remboursée" peuvent faire l'objet d'un incident."""
+            == """Seules les réservations ayant le statut "remboursée" peuvent faire l'objet d'un trop perçu."""
         )
 
     def test_display_error_if_bookings_from_different_venues_selected(self, authenticated_client):
@@ -1627,7 +1627,7 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
 
         assert (
             html_parser.content_as_text(response.data)
-            == """Seules les réservations ayant le statut "annulée" peuvent faire l'objet d'un incident."""
+            == """Seules les réservations ayant le statut "annulée" peuvent faire l'objet d'un geste comercial."""
         )
 
     def test_display_error_if_bookings_from_different_venues_selected(self, authenticated_client):
