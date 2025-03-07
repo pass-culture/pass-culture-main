@@ -5,6 +5,7 @@ from unittest import mock
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 import fakeredis
+import jwt
 import pytest
 import time_machine
 
@@ -232,7 +233,7 @@ class AsymetricTokenTest:
     def test_create_token_then_get_data(self):
         """testing the creation of a token and getting the data"""
         token = token_tools.AsymetricToken.create(
-            self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, settings.DISCORD_JWT_PUBLIC_KEY, self.ttl, data=self.data
+            self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, self.ttl, data=self.data
         )
         assert token.data == self.data
         assert token.type_ == self.token_type
@@ -244,14 +245,16 @@ class AsymetricTokenTest:
             timespec="hours"
         ) == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
 
-    @pytest.mark.settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
-    def test_create_token_with_non_corresponding_keys(self):
-        """if the keys do not correspond, an exception should be raised"""
+    @pytest.mark.settings(DISCORD_JWT_PRIVATE_KEY=wrong_private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
+    def test_creating_and_verifying_signature_with_mismatch_private_and_public_keys(self):
+        token = token_tools.AsymetricToken.create(
+            self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, self.ttl, data=self.data
+        )
+        with pytest.raises(InvalidToken) as exc_info:
+            token_tools.AsymetricToken.load_and_check(token.encoded_token, settings.DISCORD_JWT_PUBLIC_KEY)
 
-        with pytest.raises(InvalidToken):
-            token_tools.AsymetricToken.create(
-                self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, self.wrong_public_key, self.ttl, data=self.data
-            )
+        assert isinstance(exc_info.value.__cause__, jwt.PyJWTError)
+        assert "Signature verification failed" == str(exc_info.value.__cause__)
 
     @pytest.mark.settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
     def test_token_from_encoded_token_and_get_data(self):
@@ -259,12 +262,19 @@ class AsymetricTokenTest:
         old_token = token_tools.AsymetricToken.create(
             self.token_type,
             settings.DISCORD_JWT_PRIVATE_KEY,
-            settings.DISCORD_JWT_PUBLIC_KEY,
             self.ttl,
             data=self.data,
         )
+        token = token_tools.AsymetricToken.load_and_check(old_token.encoded_token, settings.DISCORD_JWT_PUBLIC_KEY)
+        assert token.data == old_token.data
+        assert token.type_ == old_token.type_
+        assert token.encoded_token == old_token.encoded_token
+        assert token_tools.AsymetricToken.get_expiration_date(self.token_type, token.key_suffix).isoformat(
+            timespec="hours"
+        ) == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
+
         token = token_tools.AsymetricToken.load_without_checking(
-            old_token.encoded_token, settings.DISCORD_JWT_PUBLIC_KEY
+            old_token.encoded_token,
         )
         assert token.data == old_token.data
         assert token.type_ == old_token.type_
@@ -279,12 +289,11 @@ class AsymetricTokenTest:
         old_token = token_tools.AsymetricToken.create(
             self.token_type,
             settings.DISCORD_JWT_PRIVATE_KEY,
-            settings.DISCORD_JWT_PUBLIC_KEY,
             self.ttl,
             data=self.data,
         )
         with pytest.raises(InvalidToken):
-            token_tools.AsymetricToken.load_without_checking(
+            token_tools.AsymetricToken.load_and_check(
                 old_token.encoded_token,
                 self.wrong_public_key,
             )
