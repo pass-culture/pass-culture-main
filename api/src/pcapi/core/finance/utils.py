@@ -72,6 +72,12 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["fr_currency_opposite"] = fr_currency_opposite_filter
 
 
+def format_currency_for_backoffice(amount: float | decimal.Decimal, use_xpf: bool = False) -> str:
+    if use_xpf:
+        return f"{euros_to_xpf(amount)} CFP".replace(",", "\u202f")
+    return f"{amount:,.2f} €".replace(",", "\u202f").replace(".", ",")
+
+
 def format_raw_iban_and_bic(raw_data: str) -> str:
     formatted_data = raw_data.upper()
     formatted_data = formatted_data.replace(" ", "").replace("\xa0", "")

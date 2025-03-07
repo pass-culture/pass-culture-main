@@ -1,10 +1,13 @@
 import abc
 import datetime
+import decimal
 import typing
 
 from pydantic.v1.utils import GetterDict
 
 from pcapi import settings
+from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import utils as finance_utils
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import models as history_models
 from pcapi.core.subscription import models as subscription_models
@@ -39,6 +42,15 @@ def get_fraud_check_eligibility_type(
         return users_models.EligibilityType.AGE18
 
     return users_models.EligibilityType.AGE17_18
+
+
+def _format_amount_for_recredit_action(amount: decimal.Decimal, user: users_models.User) -> str:
+    formatted_amount = finance_utils.format_currency_for_backoffice(amount)
+
+    if user is not None and user.is_caledonian:
+        formatted_amount += f" ({finance_utils.format_currency_for_backoffice(amount, use_xpf=True)})"
+
+    return formatted_amount
 
 
 class SubscriptionItemModel(BaseModel):
@@ -227,6 +239,81 @@ class ImportStatusAction(AccountAction):
     @property
     def comment(self) -> str | None:
         return f"{self._status.status.value} ({self._status.detail})"
+
+
+class DepositAction(AccountAction):
+    def __init__(self, deposit: finance_models.Deposit):
+        self._deposit = deposit
+
+    @property
+    def actionType(self) -> history_models.ActionType | str:
+        return "Attribution d'un crédit"
+
+    @property
+    def actionDate(self) -> datetime.datetime | None:
+        return self._deposit.dateCreated
+
+    @property
+    def comment(self) -> str | None:
+        match self._deposit.type:
+            case finance_models.DepositType.GRANT_15_17:
+                deposit_type = "ancien crédit 15-17"
+            case finance_models.DepositType.GRANT_18:
+                deposit_type = "ancien crédit 18"
+            case finance_models.DepositType.GRANT_17_18:
+                deposit_type = "crédit 17-18"
+            case _:
+                deposit_type = "crédit d'origine inconnue"
+
+        return f"Attribution d'un {deposit_type} de {_format_amount_for_recredit_action(self._deposit.amount, self._deposit.user)}"
+
+
+class RecreditAction(AccountAction):
+    def __init__(self, recredit: finance_models.Recredit):
+        self._recredit = recredit
+
+    @property
+    def actionType(self) -> history_models.ActionType | str:
+        return "Recrédit du compte"
+
+    @property
+    def actionDate(self) -> datetime.datetime | None:
+        return self._recredit.dateCreated
+
+    @property
+    def comment(self) -> str | None:
+        match self._recredit.recreditType:
+            case finance_models.RecreditType.RECREDIT_15:
+                recredit_type = "Recrédit à 15 ans"
+            case finance_models.RecreditType.RECREDIT_16:
+                recredit_type = "Recrédit à 16 ans"
+            case finance_models.RecreditType.RECREDIT_17:
+                recredit_type = "Recrédit à 17 ans"
+            case finance_models.RecreditType.RECREDIT_18:
+                recredit_type = "Recrédit à 18 ans"
+            case finance_models.RecreditType.MANUAL_MODIFICATION:
+                recredit_type = "Recrédit par une action manuelle"
+            case finance_models.RecreditType.PREVIOUS_DEPOSIT:
+                recredit_type = "Recrédit de l'argent restant du crédit précédent"
+            case finance_models.RecreditType.FINANCE_INCIDENT_RECREDIT:
+                recredit_type = "Recrédit suite à un incident finance sur l'ancien crédit expiré"
+            case _:
+                recredit_type = "Recrédit d'origine inconnue"
+
+        match self._recredit.deposit.type:
+            case finance_models.DepositType.GRANT_15_17:
+                deposit_type = "ancien crédit 15-17"
+            case finance_models.DepositType.GRANT_18:
+                deposit_type = "ancien crédit 18"
+            case finance_models.DepositType.GRANT_17_18:
+                deposit_type = "crédit 17-18"
+            case _:
+                deposit_type = "crédit inconnu"
+
+        return (
+            f"{recredit_type} de {_format_amount_for_recredit_action(self._recredit.amount, self._recredit.deposit.user)} sur un {deposit_type}"
+            + (f" ({self._recredit.comment})" if self._recredit.comment else "")
+        )
 
 
 class AccountCreatedAction(AccountAction):

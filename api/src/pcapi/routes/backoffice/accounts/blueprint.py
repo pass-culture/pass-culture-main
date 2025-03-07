@@ -332,7 +332,7 @@ def render_public_account_details(
     user = (
         users_models.User.query.filter_by(id=user_id)
         .options(
-            sa.orm.joinedload(users_models.User.deposits),
+            sa.orm.joinedload(users_models.User.deposits).joinedload(finance_models.Deposit.recredits),
             sa.orm.subqueryload(users_models.User.userBookings).options(
                 sa.orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer),
                 sa.orm.joinedload(bookings_models.Booking.incidents).joinedload(
@@ -2115,6 +2115,11 @@ def get_public_account_history(
     for import_ in user.beneficiaryImports:
         for status in import_.statuses:
             history.append(serialization.ImportStatusAction(import_, status))
+
+    for deposit in user.deposits:
+        history.append(serialization.DepositAction(deposit))
+        for recredit in deposit.recredits:
+            history.append(serialization.RecreditAction(recredit))
 
     history = sorted(history, key=lambda item: item.actionDate or datetime.datetime.min, reverse=True)
 
