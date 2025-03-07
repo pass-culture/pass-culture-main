@@ -14,6 +14,7 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
@@ -1898,7 +1899,7 @@ class GetPublicAccountHistoryTest:
         assert history[1].actionType == "Revue manuelle"
         assert history[1].actionDate == dms.dateReviewed
         assert history[1].comment == f"Revue {dms.review.value} : {dms.reason}"
-        assert history[0].authorUser == dms.author
+        assert history[1].authorUser == dms.author
 
     def test_history_contains_imports(self):
         now = datetime.datetime.utcnow()
@@ -1966,6 +1967,51 @@ class GetPublicAccountHistoryTest:
             assert history[2 - i].actionDate == status.date
             assert history[2 - i].comment == f"{status.status.value} ({status.detail})"
             assert history[2 - i].authorUser == status.author
+
+    def test_history_contains_recredits(self):
+        now = datetime.datetime.utcnow()
+        user = users_factories.UserFactory(dateCreated=now - datetime.timedelta(days=10))
+        recredit_17 = finance_factories.RecreditFactory(
+            recreditType=finance_models.RecreditType.RECREDIT_17,
+            amount=30,
+            dateCreated=now - datetime.timedelta(days=8),
+            deposit__user=user,
+            deposit__type=finance_models.DepositType.GRANT_15_17,
+        )
+        deposit_17_18 = users_factories.DepositGrantFactory(
+            user=user,
+            type=finance_models.DepositType.GRANT_17_18,
+            dateCreated=now - datetime.timedelta(days=5),
+            recredits=[
+                finance_factories.RecreditFactory(
+                    recreditType=finance_models.RecreditType.RECREDIT_18,
+                    amount=150,
+                )
+            ],
+        )
+        recredit_18 = deposit_17_18.recredits[0]
+        recredit_previous = finance_factories.RecreditFactory(
+            recreditType=finance_models.RecreditType.PREVIOUS_DEPOSIT,
+            amount=15,
+            dateCreated=now - datetime.timedelta(days=4),
+            deposit=deposit_17_18,
+        )
+
+        history = get_public_account_history(user)
+
+        assert len(history) >= 3
+
+        assert history[0].actionType == "Recrédit du compte"
+        assert history[0].actionDate == recredit_previous.dateCreated
+        assert history[0].comment == "Recrédit de l'argent restant du crédit précédent de 15,00 € sur un crédit 17-18"
+
+        assert history[1].actionType == "Recrédit du compte"
+        assert history[1].actionDate == recredit_18.dateCreated
+        assert history[1].comment == "Recrédit à 18 ans de 150,00 € sur un crédit 17-18"
+
+        assert history[2].actionType == "Recrédit du compte"
+        assert history[2].actionDate == recredit_17.dateCreated
+        assert history[2].comment == "Recrédit à 17 ans de 30,00 € sur un ancien crédit 15-17"
 
     def test_history_is_sorted_antichronologically(self):
         now = datetime.datetime.utcnow()

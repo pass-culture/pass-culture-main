@@ -1035,6 +1035,7 @@ class DepositGrantFactory(BaseFactory):
             deposit=self,
             amount=self.amount,
             recreditType=RECREDIT_TYPE_AGE_MAPPING.get(user.age, finance_models.RecreditType.RECREDIT_18),
+            dateCreated=self.dateCreated,
         )
 
         return [immediate_recredit]
