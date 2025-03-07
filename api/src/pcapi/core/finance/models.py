@@ -979,6 +979,8 @@ class FinanceIncident(PcObject, Base, Model):
 
     forceDebitNote: bool = sqla.Column(sqla.Boolean, nullable=False, server_default="false", default=False)
 
+    zendeskId: int | None = sqla.Column(sqla.BigInteger, nullable=True)
+
     @property
     def is_partial(self) -> bool:
         return any(booking_incident.is_partial for booking_incident in self.booking_finance_incidents)

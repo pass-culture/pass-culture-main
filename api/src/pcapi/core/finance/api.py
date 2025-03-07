@@ -3663,6 +3663,7 @@ def create_overpayment_finance_incident(
     bookings: list[bookings_models.Booking],
     author: users_models.User,
     origin: str,
+    zendesk_id: int | None = None,
     amount: decimal.Decimal | None = None,
 ) -> models.FinanceIncident:
     incident = models.FinanceIncident(
@@ -3674,6 +3675,7 @@ def create_overpayment_finance_incident(
             "authorId": author.id,
             "createdAt": datetime.datetime.utcnow().isoformat(),
         },
+        zendeskId=zendesk_id,
     )
     db.session.add(incident)
     db.session.flush()
@@ -3719,6 +3721,7 @@ def create_overpayment_finance_incident_collective_booking(
     booking: educational_models.CollectiveBooking,
     author: users_models.User,
     origin: str,
+    zendesk_id: int | None = None,
 ) -> models.FinanceIncident:
     incident = models.FinanceIncident(
         kind=models.IncidentType.OVERPAYMENT,
@@ -3729,6 +3732,7 @@ def create_overpayment_finance_incident_collective_booking(
             "authorId": author.id,
             "createdAt": datetime.datetime.utcnow().isoformat(),
         },
+        zendeskId=zendesk_id,
     )
     db.session.add(incident)
     db.session.flush()
@@ -3757,6 +3761,7 @@ def create_finance_commercial_gesture(
     amount: decimal.Decimal,
     author: users_models.User,
     origin: str,
+    zendesk_id: int | None = None,
 ) -> models.FinanceIncident:
     incident = models.FinanceIncident(
         kind=models.IncidentType.COMMERCIAL_GESTURE,
@@ -3767,6 +3772,7 @@ def create_finance_commercial_gesture(
             "authorId": author.id,
             "createdAt": datetime.datetime.utcnow().isoformat(),
         },
+        zendeskId=zendesk_id,
     )
     db.session.add(incident)
     db.session.flush()
@@ -3821,6 +3827,7 @@ def create_finance_commercial_gesture_collective_booking(
     booking: educational_models.CollectiveBooking,
     author: users_models.User,
     origin: str,
+    zendesk_id: int | None = None,
 ) -> models.FinanceIncident:
     incident = models.FinanceIncident(
         kind=models.IncidentType.COMMERCIAL_GESTURE,
@@ -3831,6 +3838,7 @@ def create_finance_commercial_gesture_collective_booking(
             "authorId": author.id,
             "createdAt": datetime.datetime.utcnow().isoformat(),
         },
+        zendeskId=zendesk_id,
     )
     db.session.add(incident)
     db.session.flush()
