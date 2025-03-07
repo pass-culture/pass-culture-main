@@ -200,8 +200,8 @@ class AsymetricTokenTest:
     ttl = timedelta(days=1)
     data = {"key1": "value1", "key2": "value2"}
     private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=4096,
+        public_exponent=3,
+        key_size=1024,
     )
     private_key_pem = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
@@ -214,8 +214,8 @@ class AsymetricTokenTest:
         format=serialization.PublicFormat.SubjectPublicKeyInfo,
     )
     wrong_private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=4096,
+        public_exponent=3,
+        key_size=1024,
     )
     wrong_private_key_pem = wrong_private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
