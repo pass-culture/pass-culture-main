@@ -107,6 +107,9 @@ describe('Create collective offers', () => {
 
     cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
 
+    cy.stepLog({ message: 'I open the filters' })
+    cy.findByText('Filtrer').click()
+
     cy.get('#search-status').click()
     cy.get('#list-status').find('#option-display-DRAFT').click()
     // We click outside the filter to close it
@@ -165,6 +168,7 @@ describe('Create collective offers', () => {
 
     cy.url().should('contain', '/offres/collectives')
 
+    cy.findByText('Réinitialiser les filtres').click()
     cy.findByRole('searchbox', { name: /Nom de l’offre/ }).type(newOfferName)
     cy.findByText('Rechercher').click()
 
