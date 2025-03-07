@@ -75,10 +75,6 @@
         color: var(--color-grey-semi-dark);
       }
     }
-
-    .button-icon {
-      color: var(--color-white);
-    }
   }
 
   &-secondary {
@@ -119,7 +115,7 @@
   &-quaternary,
   &-ternary-pink,
   &-quaternary-pink {
-    color: var(--color-black);
+    color: var(--color-text-default);
     align-items: flex-start;
     justify-content: flex-start;
     background-color: transparent;
@@ -166,7 +162,7 @@
 
     margin-top: rem.torem(6px);
     margin-bottom: rem.torem(6px);
-    color: var(--color-black);
+    color: var(--color-text-default);
 
     .button-icon:not(.has-tooltip) {
       height: var(--typography-body-xs-line-height);
@@ -192,11 +188,11 @@
   }
 
   &-box {
-    background-color: var(--color-white);
+    background-color: var(--color-background-default);
     justify-content: flex-start;
     width: 100%;
     padding: rem.torem(12px) rem.torem(8px);
-    border: rem.torem(1px) solid var(--color-grey-dark);
+    border: rem.torem(1px) solid var(--color-border-default);
     border-radius: rem.torem(6px);
     max-width: rem.torem(400px);
 

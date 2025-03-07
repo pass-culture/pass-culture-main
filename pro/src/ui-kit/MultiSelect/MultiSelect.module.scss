@@ -28,11 +28,10 @@
   }
 }
 
-
 .legend {
   @include fonts.body;
 
-  color: var(--color-black);
+  color: var(--color-text-default);
   margin-bottom: rem.torem(8px);
 }
 
@@ -43,7 +42,7 @@
   align-items: center;
   justify-content: space-between;
   padding: rem.torem(8px) rem.torem(12px);
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
   border: 1px solid var(--color-grey-semi-dark);
   border-radius: rem.torem(8px);
   width: 100%;
@@ -144,7 +143,7 @@
 .panel {
   position: absolute;
   z-index: 1;
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
   left: 0;
   right: 0;
   top: rem.torem(42px);

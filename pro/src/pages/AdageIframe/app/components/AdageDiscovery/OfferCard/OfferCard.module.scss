@@ -68,7 +68,7 @@ $offer-image-width: rem.torem(216px);
 }
 
 .offer-favorite-button {
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
   padding: rem.torem(10px);
   position: absolute;
   top: rem.torem(12px);
@@ -76,7 +76,7 @@ $offer-image-width: rem.torem(216px);
 
   &:hover:not(:disabled),
   &:focus-visible {
-    background-color: var(--color-white);
+    background-color: var(--color-background-default);
   }
 }
 

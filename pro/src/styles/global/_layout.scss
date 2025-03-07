@@ -3,8 +3,8 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 body {
-  color: var(--color-black);
-  background-color: var(--color-white);
+  color: var(--color-text-default);
+  background-color: var(--color-background-default);
 }
 
 body,

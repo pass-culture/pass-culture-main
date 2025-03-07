@@ -15,9 +15,10 @@
     border: none;
     background-color: transparent;
     cursor: pointer;
+    color: var(--color-text-default);
 
     &:hover {
-      background-color: var(--color-grey-light);
+      background-color: var(--color-background-subtle);
     }
 
     &:focus-visible {
@@ -85,7 +86,7 @@
   }
 
   .separator-line {
-    background-color: var(--color-grey-medium);
+    background-color: var(--color-border-default);
     margin: 0 rem.torem(16px);
     height: rem.torem(1px);
     margin-bottom: rem.torem(16px);
@@ -100,7 +101,7 @@
     align-items: center;
 
     &:hover {
-      background-color: var(--color-grey-light);
+      background-color: var(--color-background-subtle);
     }
 
     &:focus-visible {
@@ -110,7 +111,7 @@
     }
 
     &-active {
-      background-color: var(--color-grey-light);
+      background-color: var(--color-background-subtle);
       position: relative;
 
       &::after {

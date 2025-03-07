@@ -22,7 +22,7 @@
   &-description {
     @include fonts.body-accent-xs;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-default);
     margin-top: rem.torem(4px);
   }
 
@@ -34,13 +34,13 @@
 
     &-svg {
       width: rem.torem(20px);
-      fill: var(--color-input-text-color);
+      fill: var(--color-black);
     }
   }
 
   &-input {
     appearance: none;
-    border: rem.torem(2px) solid var(--color-grey-dark);
+    border: rem.torem(2px) solid var(--color-border-default);
     border-radius: rem.torem(3px);
     transition:
       border 150ms ease,

@@ -7,7 +7,7 @@
 }
 
 .image-preview-blur-venue-preview {
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
   filter: blur(2px);
   left: rem.torem(1px);
   position: absolute;
@@ -16,7 +16,7 @@
 }
 
 .image-preview-venue-preview {
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
   border-radius: rem.torem(5px);
   left: rem.torem(12px);
   position: absolute;

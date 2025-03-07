@@ -98,7 +98,7 @@
 
   &-headline-offer-button {
     border: none;
-    background: var(--color-white);
+    background: var(--color-background-default);
   }
 }
 
@@ -130,11 +130,11 @@
 
 .sold-out-button {
   border: none;
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
 }
 
 .sold-out-dates {
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
   border-radius: rem.torem(4px);
   box-shadow: 0 rem.torem(2px) rem.torem(10px) 0
     rgb(from var(--color-black) r g b / 30%);
@@ -202,7 +202,7 @@
 }
 
 .pop-in {
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
   border: rem.torem(1px) solid var(--color-grey-light);
   border-radius: rem.torem(6px);
   z-index: zIndex.$profil-pop-in-z-index;
@@ -223,8 +223,8 @@
   cursor: pointer;
   outline: none;
   border: none;
-  background-color: var(--color-white);
-  color: var(--color-black);
+  background-color: var(--color-background-default);
+  color: var(--color-text-default);
   height: rem.torem(32px);
 
   &[data-state="open"] {
