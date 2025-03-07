@@ -68,7 +68,7 @@ def check_incident_bookings(bookings: list[bookings_models.Booking]) -> Valid:
     if not bookings:
         return Valid(
             is_valid=False,
-            message="""Seules les réservations ayant le statut "remboursée" peuvent faire l'objet d'un incident.""",
+            message="""Seules les réservations ayant le statut "remboursée" peuvent faire l'objet d'un trop perçu.""",
         )
 
     if len({booking.venueId for booking in bookings}) > 1:
@@ -96,7 +96,7 @@ def check_commercial_gesture_bookings(bookings: list[bookings_models.Booking]) -
     if not bookings:
         return Valid(
             is_valid=False,
-            message="""Seules les réservations ayant le statut "annulée" peuvent faire l'objet d'un incident.""",
+            message="""Seules les réservations ayant le statut "annulée" peuvent faire l'objet d'un geste comercial.""",
         )
 
     if _bookings_have_pending_incident(bookings):
