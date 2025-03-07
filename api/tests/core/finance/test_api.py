@@ -5202,6 +5202,24 @@ class UserRecreditAfterDecreeTest:
         assert user_2.deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_18
         assert user_2.deposit.amount == 30 + 150  #  30 (credit 17 before decree) + 150 (for 18 year old after decree)
 
+    def test_recredit_only_if_identity_fraud_check_is_ok(self):
+        last_year = datetime.datetime.utcnow() - relativedelta(years=1)
+        with time_machine.travel(last_year):
+            user = users_factories.BeneficiaryFactory(
+                age=17,
+                beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT,
+            )
+        user.phoneNumber = "+33610000000"
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.KO
+        )
+        fraud_factories.HonorStatementFraudCheckFactory(user=user)
+
+        api.recredit_users()
+
+        assert models.RecreditType.RECREDIT_18 not in [recredit.recreditType for recredit in user.deposit.recredits]
+
     @pytest.mark.skip(
         reason="This test is very long and must be executed in a flask shell, outside of db_session fixture"
     )
