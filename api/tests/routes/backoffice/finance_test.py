@@ -1074,8 +1074,9 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
         "venue_factory,expected_xpf_text",
         [(offerers_factories.VenueFactory, ""), (offerers_factories.CaledonianVenueFactory, "(1205 CFP)")],
     )
-    def test_get_incident(self, authenticated_client, venue_factory, expected_xpf_text):
-        finance_incident = finance_factories.FinanceIncidentFactory(venue=venue_factory())
+    @pytest.mark.parametrize("zendesk_id", [None, "1"])
+    def test_get_incident(self, authenticated_client, venue_factory, expected_xpf_text, zendesk_id):
+        finance_incident = finance_factories.FinanceIncidentFactory(venue=venue_factory(), zendeskId=zendesk_id)
         finance_factories.IndividualBookingFinanceIncidentFactory(newTotalAmount=0, incident=finance_incident)
         bank_account = finance_factories.BankAccountFactory(offerer=finance_incident.venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory(venue=finance_incident.venue, bankAccount=bank_account)
@@ -1093,13 +1094,19 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
         assert f"ID : {finance_incident.id}" in content
         assert f"Partenaire culturel porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Compte bancaire : {bank_account.label}" in content
+        if zendesk_id:
+            assert f"Ticket Zendesk : {zendesk_id}" in content
+        else:
+            assert "Ticket Zendesk" not in content
         assert f"Montant trop perçu par l'acteur culturel à récupérer : 10,10 € {expected_xpf_text}" in content
         assert "Batch :" not in content
         assert "Justificatif de remboursement :" not in content
 
-    def test_get_collective_booking_incident(self, authenticated_client):
+    @pytest.mark.parametrize("zendesk_id", [None, "1"])
+    def test_get_collective_booking_incident(self, authenticated_client, zendesk_id):
         finance_incident = finance_factories.FinanceIncidentFactory(
-            booking_finance_incidents=[finance_factories.CollectiveBookingFinanceIncidentFactory()]
+            booking_finance_incidents=[finance_factories.CollectiveBookingFinanceIncidentFactory()],
+            zendeskId=zendesk_id,
         )
         finance_factories.CollectiveBookingFinanceIncidentFactory(incident=finance_incident)
         url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
@@ -1109,9 +1116,12 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
             assert response.status_code == 200
 
         content = html_parser.content_as_text(response.data)
-
         assert f"ID : {finance_incident.id}" in content
         assert f"Partenaire culturel porteur de l'offre : {finance_incident.venue.name}" in content
+        if zendesk_id:
+            assert f"Ticket Zendesk : {zendesk_id}" in content
+        else:
+            assert "Ticket Zendesk" not in content
         assert f"Incident créé par : {finance_incident.details['author']}" in content
         assert "Batch :" not in content
         assert "Justificatif de remboursement :" not in content
@@ -1182,9 +1192,10 @@ class GetCommercialGestureTest(GetEndpointHelper):
             (offerers_factories.CaledonianVenueFactory, "(1205 CFP)"),
         ],
     )
-    def test_get_incident(self, authenticated_client, venue_factory, expected_xpf_text):
+    @pytest.mark.parametrize("zendesk_id", [None, "1"])
+    def test_get_incident(self, authenticated_client, venue_factory, expected_xpf_text, zendesk_id):
         finance_incident = finance_factories.FinanceIncidentFactory(
-            kind=finance_models.IncidentType.COMMERCIAL_GESTURE, venue=venue_factory()
+            kind=finance_models.IncidentType.COMMERCIAL_GESTURE, venue=venue_factory(), zendeskId=zendesk_id
         )
         bank_account = finance_factories.BankAccountFactory(offerer=finance_incident.venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory(venue=finance_incident.venue, bankAccount=bank_account)
@@ -1206,16 +1217,22 @@ class GetCommercialGestureTest(GetEndpointHelper):
         assert f"ID : {finance_incident.id}" in content
         assert f"Partenaire culturel porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Compte bancaire : {bank_account.label}" in content
+        if zendesk_id:
+            assert f"Ticket Zendesk : {zendesk_id}" in content
+        else:
+            assert "Ticket Zendesk" not in content
         assert f"Montant d'origine de la réservation : 10,10 € {expected_xpf_text}" in content
         assert f"Montant du geste commercial à verser à l'acteur : 10,10 € {expected_xpf_text}" in content
         assert f"Geste commercial créé par : {finance_incident.details['author']}" in content
         assert "Batch :" not in content
         assert "Justificatif de remboursement :" not in content
 
-    def test_get_collective_booking_incident(self, authenticated_client):
+    @pytest.mark.parametrize("zendesk_id", [None, "1"])
+    def test_get_collective_booking_incident(self, authenticated_client, zendesk_id):
         finance_incident = finance_factories.FinanceIncidentFactory(
             kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
             booking_finance_incidents=[finance_factories.CollectiveBookingFinanceIncidentFactory()],
+            zendeskId=zendesk_id,
         )
         finance_factories.CollectiveBookingFinanceIncidentFactory(incident=finance_incident)
         url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
@@ -1228,6 +1245,10 @@ class GetCommercialGestureTest(GetEndpointHelper):
 
         assert f"ID : {finance_incident.id}" in content
         assert f"Partenaire culturel porteur de l'offre : {finance_incident.venue.name}" in content
+        if zendesk_id:
+            assert f"Ticket Zendesk : {zendesk_id}" in content
+        else:
+            assert "Ticket Zendesk" not in content
         assert f"Geste commercial créé par : {finance_incident.details['author']}" in content
         assert "Batch :" not in content
         assert "Justificatif de remboursement :" not in content
@@ -1419,7 +1440,8 @@ class CreateOverpaymentTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.create_individual_booking_overpayment"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    def test_create_incident_from_one_booking(self, legit_user, authenticated_client, invoiced_pricing):
+    @pytest.mark.parametrize("zendesk_id", [None, 1])
+    def test_create_incident_from_one_booking(self, legit_user, authenticated_client, invoiced_pricing, zendesk_id):
         booking = bookings_factories.ReimbursedBookingFactory(pricings=[invoiced_pricing])
 
         object_ids = str(booking.id)
@@ -1429,6 +1451,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
             form={
                 "total_amount": booking.amount,
                 "origin": "Origine de la demande",
+                "zendesk_id": zendesk_id,
                 "kind": finance_models.IncidentType.OVERPAYMENT.name,
                 "object_ids": object_ids,
             },
@@ -1442,6 +1465,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
         assert finance_models.BookingFinanceIncident.query.count() == 1
         booking_finance_incident = finance_models.BookingFinanceIncident.query.first()
         assert booking_finance_incident.newTotalAmount == 0
+        assert booking_finance_incident.incident.zendeskId == zendesk_id
 
         action_history = history_models.ActionHistory.query.one()
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
@@ -1648,8 +1672,9 @@ class CreateCommercialGestureTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.create_individual_booking_commercial_gesture"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
+    @pytest.mark.parametrize("zendesk_id", [None, 1])
     def test_create_commercial_gesture_incident_from_one_booking_without_deposit_balance(
-        self, legit_user, authenticated_client
+        self, legit_user, authenticated_client, zendesk_id
     ):
         booking = bookings_factories.CancelledBookingFactory(
             quantity=1,
@@ -1664,6 +1689,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
             form={
                 "total_amount": total_amount,
                 "origin": "Origine de la demande",
+                "zendesk_id": zendesk_id,
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
             },
@@ -1675,6 +1701,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         assert finance_models.BookingFinanceIncident.query.count() == 1
         booking_finance_incident = finance_models.BookingFinanceIncident.query.first()
         assert booking_finance_incident.newTotalAmount == 0
+        assert booking_finance_incident.incident.zendeskId == zendesk_id
 
         action_history = history_models.ActionHistory.query.one()
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
@@ -1796,14 +1823,19 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    def test_create_incident(self, authenticated_client, invoiced_collective_pricing):
+    @pytest.mark.parametrize("zendesk_id", [None, 1])
+    def test_create_incident(self, authenticated_client, invoiced_collective_pricing, zendesk_id):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
             pricings=[invoiced_collective_pricing]
         )
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"origin": "Demande E-mail", "kind": finance_models.IncidentType.OVERPAYMENT.name},
+            form={
+                "origin": "Demande E-mail",
+                "kind": finance_models.IncidentType.OVERPAYMENT.name,
+                "zendesk_id": zendesk_id,
+            },
             collective_booking_id=collective_booking.id,
         )
 
@@ -1812,6 +1844,7 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
         finance_incidents = finance_models.FinanceIncident.query.all()
         assert len(finance_incidents) == 1
         assert finance_incidents[0].details["origin"] == "Demande E-mail"
+        assert finance_incidents[0].zendeskId == zendesk_id
         assert finance_incidents[0].kind == finance_models.IncidentType.OVERPAYMENT
 
         booking_incidents = finance_incidents[0].booking_finance_incidents

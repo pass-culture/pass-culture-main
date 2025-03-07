@@ -49,6 +49,11 @@
                 <span class="fw-bold">Origine de la demande :</span> {{ incident.details.origin }}
               </p>
             {% endif %}
+            {% if incident.zendeskId %}
+              <p class="mb-1">
+                <span class="fw-bold">Ticket Zendesk :</span> {{ links.build_zendesk_ticket_external_link(incident.zendeskId) }}
+              </p>
+            {% endif %}
             <p class="mb-1">
               <span class="fw-bold">Montant d'origine {{ incident.booking_finance_incidents | length | pluralize('de la réservation', 'des réservations') }} :</span> {{ bookings_total_amount | format_amount(target=incident.venue) }}
             </p>

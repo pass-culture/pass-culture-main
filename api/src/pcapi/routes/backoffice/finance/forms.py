@@ -1,6 +1,7 @@
 import enum
 
 from flask_wtf import FlaskForm
+from wtforms.validators import NumberRange
 from wtforms.validators import Optional
 
 from pcapi.core.finance import models as finance_models
@@ -26,6 +27,14 @@ class BaseIncidentCreationForm(FlaskForm):
         locales = ["fr_FR", "fr"]
 
     origin = fields.PCStringField("Origine de la demande")
+
+    zendesk_id = fields.PCOptIntegerField(
+        "N° de ticket Zendesk",
+        validators=[
+            Optional(),
+            NumberRange(min=0, message="Doit contenir un nombre positif"),
+        ],
+    )
 
 
 class CommercialGestureCreationForm(empty_forms.BatchForm, BaseIncidentCreationForm):
