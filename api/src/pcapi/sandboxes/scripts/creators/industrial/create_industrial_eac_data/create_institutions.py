@@ -64,6 +64,30 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
             city="MARSEILLE",
             postalCode="13013",
         ),
+        # ministry = AGRICULTURE
+        educational_factories.EducationalInstitutionFactory(
+            institutionId="0771436T",
+            institutionType="LYCEE ENS GENERAL TECHNO PROF AGRICOLE",
+            name="CAMPUS BOUGAINVILLE DE BRIE-COMTE-ROBERT",
+            city="BRIE-COMTE-ROBERT",
+            postalCode="77170",
+        ),
+        # ministry = MER
+        educational_factories.EducationalInstitutionFactory(
+            institutionId="0221624W",
+            institutionType="LYCEE PROFESSIONNEL",
+            name="LYCEE PROFESSIONNEL MARITIME PIERRE LOTI",
+            city="PAIMPOL",
+            postalCode="22501",
+        ),
+        # ministry = ARMEES
+        educational_factories.EducationalInstitutionFactory(
+            institutionId="0290063L",
+            institutionType="LYCEE D ENSEIGNEMENT GENERAL",
+            name="LYCEE NAVAL DE BREST",
+            city="BREST",
+            postalCode="29240",
+        ),
     ]
     if settings.CREATE_ADAGE_TESTING_DATA:
         # Those are used by Adage for testing purposes

@@ -1,8 +1,12 @@
-from .create_institutions import create_institutions
-from .create_offers import create_offers
-from .create_users_and_offerers import create_users_offerers
-from .create_venues import create_venues
-from .fill import fill_adage_playlists
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data.create_institutions import (
+    create_institutions,
+)
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data.create_offers import create_offers
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data.create_users_and_offerers import (
+    create_users_offerers,
+)
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data.create_venues import create_venues
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data.fill import fill_adage_playlists
 
 
 def create_eac_data() -> None:
