@@ -748,6 +748,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
             sa.select(1)
             .select_from(UserOfferer)
             .join(Venue, UserOfferer.offererId == Venue.managingOffererId)
+            .join(Offerer, UserOfferer.offererId == Offerer.id)
             .where(
                 UserOfferer.userId == self.id,
                 Offerer.isActive.is_(True),
