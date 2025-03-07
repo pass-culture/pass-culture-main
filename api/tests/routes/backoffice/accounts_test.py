@@ -14,6 +14,7 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
@@ -1075,7 +1076,7 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         assert response.status_code == 200
         history_rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
-        assert len(history_rows) == 6
+        assert len(history_rows) == 7
 
         assert history_rows[0]["Type"] == "Étape de vérification"
         assert history_rows[0]["Date/Heure"].startswith(datetime.date.today().strftime("Le %d/%m/%Y à"))
@@ -1111,10 +1112,16 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert not history_rows[4]["Commentaire"]
         assert history_rows[4]["Auteur"] == user.full_name
 
-        assert history_rows[5]["Type"] == history_models.ActionType.USER_SUSPENDED.value
-        assert not history_rows[5]["Date/Heure"]  # Empty date, at the end of the list
-        assert history_rows[5]["Commentaire"].startswith("Fraude suspicion")
-        assert history_rows[5]["Auteur"] == legit_user.full_name
+        assert history_rows[5]["Type"] == "Attribution d'un crédit"
+        assert history_rows[5]["Date/Heure"].startswith(
+            (datetime.date.today() - relativedelta(days=40)).strftime("Le %d/%m/%Y à ")
+        )
+        assert history_rows[5]["Commentaire"] == "Attribution d'un ancien crédit 18 de 300,00 €"
+
+        assert history_rows[6]["Type"] == history_models.ActionType.USER_SUSPENDED.value
+        assert not history_rows[6]["Date/Heure"]  # Empty date, at the end of the list
+        assert history_rows[6]["Commentaire"].startswith("Fraude suspicion")
+        assert history_rows[6]["Auteur"] == legit_user.full_name
 
     def test_get_public_account_anonymized_user(self, authenticated_client):
         user = users_factories.UserFactory(roles=[users_models.UserRole.ANONYMIZED])
@@ -1898,7 +1905,7 @@ class GetPublicAccountHistoryTest:
         assert history[1].actionType == "Revue manuelle"
         assert history[1].actionDate == dms.dateReviewed
         assert history[1].comment == f"Revue {dms.review.value} : {dms.reason}"
-        assert history[0].authorUser == dms.author
+        assert history[1].authorUser == dms.author
 
     def test_history_contains_imports(self):
         now = datetime.datetime.utcnow()
@@ -1966,6 +1973,57 @@ class GetPublicAccountHistoryTest:
             assert history[2 - i].actionDate == status.date
             assert history[2 - i].comment == f"{status.status.value} ({status.detail})"
             assert history[2 - i].authorUser == status.author
+
+    def test_history_contains_deposits_and_recredits(self):
+        now = datetime.datetime.utcnow()
+        user = users_factories.UserFactory(dateCreated=now - datetime.timedelta(days=10))
+        recredit_17 = finance_factories.RecreditFactory(
+            recreditType=finance_models.RecreditType.RECREDIT_17,
+            amount=30,
+            dateCreated=now - datetime.timedelta(days=8),
+            deposit__user=user,
+            deposit__type=finance_models.DepositType.GRANT_15_17,
+            deposit__amount=30,
+        )
+        deposit_15_17 = user.deposit
+        # a grant 17_18 deposit is created empty, then a recredit is added to fill it
+        deposit_17_18 = users_factories.DepositGrantFactory(
+            user=user,
+            type=finance_models.DepositType.GRANT_17_18,
+            dateCreated=now - datetime.timedelta(days=5),
+            amount=150,
+        )
+        recredit_18 = deposit_17_18.recredits[0]
+        recredit_previous = finance_factories.RecreditFactory(
+            recreditType=finance_models.RecreditType.PREVIOUS_DEPOSIT,
+            amount=15,
+            dateCreated=now - datetime.timedelta(days=4),
+            deposit=deposit_17_18,
+        )
+
+        history = get_public_account_history(user)
+
+        assert len(history) >= 5
+
+        assert history[0].actionType == "Attribution d'un crédit"
+        assert history[0].actionDate == deposit_15_17.dateCreated
+        assert history[0].comment == "Attribution d'un ancien crédit 15-17 de 30,00 €"
+
+        assert history[1].actionType == "Recrédit du compte"
+        assert history[1].actionDate == recredit_previous.dateCreated
+        assert history[1].comment == "Recrédit de l'argent restant du crédit précédent de 15,00 € sur un crédit 17-18"
+
+        assert history[2].actionType == "Attribution d'un crédit"
+        assert history[2].actionDate == deposit_17_18.dateCreated
+        assert history[2].comment == "Attribution d'un crédit 17-18 de 150,00 €"
+
+        assert history[3].actionType == "Recrédit du compte"
+        assert history[3].actionDate == recredit_18.dateCreated
+        assert history[3].comment == "Recrédit à 18 ans de 150,00 € sur un crédit 17-18"
+
+        assert history[4].actionType == "Recrédit du compte"
+        assert history[4].actionDate == recredit_17.dateCreated
+        assert history[4].comment == "Recrédit à 17 ans de 30,00 € sur un ancien crédit 15-17"
 
     def test_history_is_sorted_antichronologically(self):
         now = datetime.datetime.utcnow()
