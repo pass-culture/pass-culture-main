@@ -38,7 +38,6 @@ class TokenType(enum.Enum):
     PASSWORDLESS_LOGIN = "passwordless_login"
 
 
-
 T = typing.TypeVar("T", bound="AbstractToken")
 
 
@@ -436,3 +435,54 @@ def create_passwordless_login_token(user_id: int, ttl: timedelta) -> str:
         expiration_date=expiration_date,
     )
     return token
+
+
+def validate_passwordless_token(token: str) -> dict:
+    """Validate and consume the passwordless login token.
+    If valid, return the content of the payload.
+
+    Returns:
+        payload (dict): The payload of the token containing the JTI, the subject (user_id), the expiration and issued_at dates.
+
+    Raises:
+        InvalidToken (exception): If anything goes wrong while decoding or validating the token, we don’t want to give any additional hints, we raise `InvalidToken` in any cases.
+    """
+    try:
+        payload = utils.decode_jwt_token_rs256(
+            token, public_key=settings.PASSWORDLESS_LOGIN_PUBLIC_KEY, require=["exp", "iat", "sub", "jti"]
+        )
+    except jwt.ExpiredSignatureError as exc:
+        # Authentic but expired token
+        raise exc
+    except jwt.PyJWTError as exc:
+        # Base exception for all others case we might be interested on
+        logger.warning(
+            "%s (reason: %s) raised while decoding passwordless login token: %s", exc.__class__.__name__, exc, token
+        )
+        raise users_exceptions.InvalidToken from exc
+
+    value = json.dumps({"user_id": payload["sub"], "jti": payload["jti"]})
+    key_suffix = hashlib.sha256(value.encode()).hexdigest()
+    redis_key = PASSWORDLESS_REDIS_KEY_TEMPLATE % {
+        "type_": TokenType.PASSWORDLESS_LOGIN.value,
+        "key_suffix": key_suffix,
+    }
+
+    with app.redis_client.pipeline() as pipeline:
+        pipeline.get(redis_key)
+        pipeline.delete(redis_key)
+        results = pipeline.execute()
+    redis_value = json.loads(results[0])
+
+    # The below statement are purely defensive code.
+    # We should ALWAYS have a perfect match between
+    # the payload of the token and what has been stored in the redis queue
+    if redis_value["user_id"] != payload["sub"] or redis_value["jti"] != payload["jti"]:
+        # Aborting
+        logger.error(
+            "Mismatch between the payload of an authentic passwordless login token and the corresponding redis value. Token: %s",
+            token,
+        )
+        raise users_exceptions.InvalidToken
+
+    return payload
