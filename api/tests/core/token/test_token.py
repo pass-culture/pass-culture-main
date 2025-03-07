@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 import hashlib
 import json
+import logging
 from unittest import mock
 import uuid
 
@@ -348,3 +349,123 @@ class PasswordLessLoginTokenTest:
         assert payload["jti"] == expected_jti
         assert payload["exp"] - payload["iat"] == 8 * 3600
         assert payload["sub"] == str(expected_user_id)
+
+    @pytest.mark.settings(
+        PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file, PASSWORDLESS_LOGIN_PUBLIC_KEY=public_pem_file
+    )
+    @pytest.mark.parametrize("missing_claim", ["exp", "iat", "sub", "jti"])
+    @mock.patch("pcapi.core.users.utils.encode_jwt_payload_rs256")
+    @mock.patch("flask.current_app.redis_client.set")
+    @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
+    def test_token_with_missing_mandatory_claim_raise_decode_error_accordingly(
+        self, mocked_uuid, mocked_redis_set, mocked_encode_jwt_rs256, missing_claim
+    ):
+        jti = str(mocked_uuid())
+        ttl = timedelta(hours=8)
+        sub = 1
+        issued_at = datetime.utcnow() - timedelta(hours=5)
+        expiration_date = issued_at + ttl
+        exp = int(expiration_date.timestamp())
+        iat = int(issued_at.timestamp())
+
+        payload = {}
+        if missing_claim != "jti":
+            payload["jti"] = jti
+        if missing_claim != "exp":
+            payload["exp"] = exp
+        if missing_claim != "iat":
+            payload["iat"] = iat
+        if missing_claim != "sub":
+            payload["sub"] = str(sub)
+
+        mocked_encode_jwt_rs256.return_value = jwt.encode(
+            payload, settings.PASSWORDLESS_LOGIN_PRIVATE_KEY, algorithm="RS256"
+        )
+
+        token = token_tools.create_passwordless_login_token(sub, ttl)
+        with pytest.raises(InvalidToken) as exc_info:
+            token_tools.validate_passwordless_token(token)
+
+        assert isinstance(exc_info.value.__cause__, jwt.exceptions.MissingRequiredClaimError)
+        assert str(exc_info.value.__cause__) == f'Token is missing the "{missing_claim}" claim'
+
+    @pytest.mark.settings(
+        PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file, PASSWORDLESS_LOGIN_PUBLIC_KEY=public_pem_file
+    )
+    @mock.patch("pcapi.flask_app.redis.client.Pipeline.execute")
+    @mock.patch("pcapi.flask_app.redis.client.Pipeline.delete")
+    @mock.patch("pcapi.flask_app.redis.client.Pipeline.get")
+    @mock.patch("pcapi.flask_app.redis.client.Redis.set")
+    @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
+    def test_can_successfully_consume_passwordless_login_token(
+        self, mocked_uuid, mocked_redis_set, mocked_pipeline_get, mocked_pipeline_del, mocked_pipeline_execute
+    ):
+        expected_jti = str(mocked_uuid())
+        expected_ttl = timedelta(hours=8)
+        expected_user_id = 1
+        key_suffix = hashlib.sha256(
+            json.dumps({"user_id": str(expected_user_id), "jti": expected_jti}).encode()
+        ).hexdigest()
+        redis_key = token_tools.PASSWORDLESS_REDIS_KEY_TEMPLATE % {
+            "type_": token_tools.TokenType.PASSWORDLESS_LOGIN.value,
+            "key_suffix": key_suffix,
+        }
+        token = token_tools.create_passwordless_login_token(expected_user_id, expected_ttl)
+
+        mocked_redis_set.assert_called_once_with(
+            redis_key, json.dumps({"user_id": str(expected_user_id), "jti": expected_jti}), ex=expected_ttl
+        )
+
+        mocked_pipeline_execute.return_value = [f'{{"user_id": "{expected_user_id}", "jti": "{expected_jti}"}}', 1]
+
+        payload = token_tools.validate_passwordless_token(token)
+
+        mocked_pipeline_get.assert_called_once_with(redis_key)
+        mocked_pipeline_del.assert_called_once_with(redis_key)
+        mocked_pipeline_execute.assert_called_once()
+
+        assert payload["jti"] == expected_jti
+        assert payload["exp"] - payload["iat"] == 8 * 3600
+        assert payload["sub"] == str(expected_user_id)
+
+    @pytest.mark.settings(
+        PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file, PASSWORDLESS_LOGIN_PUBLIC_KEY=public_pem_file
+    )
+    @mock.patch("pcapi.flask_app.redis.client.Pipeline.execute")
+    @mock.patch("pcapi.flask_app.redis.client.Pipeline.delete")
+    @mock.patch("pcapi.flask_app.redis.client.Pipeline.get")
+    @mock.patch("pcapi.flask_app.redis.client.Redis.set")
+    @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
+    def test_aborting_auto_login_when_token_payload_and_redis_queue_mismatch(
+        self, mocked_uuid, mocked_redis_set, mocked_pipeline_get, mocked_pipeline_del, mocked_pipeline_execute, caplog
+    ):
+        expected_jti = str(mocked_uuid())
+        expected_ttl = timedelta(hours=8)
+        expected_user_id = 1
+        wrong_user_id = 2
+        key_suffix = hashlib.sha256(
+            json.dumps({"user_id": str(expected_user_id), "jti": expected_jti}).encode()
+        ).hexdigest()
+        redis_key = token_tools.PASSWORDLESS_REDIS_KEY_TEMPLATE % {
+            "type_": token_tools.TokenType.PASSWORDLESS_LOGIN.value,
+            "key_suffix": key_suffix,
+        }
+        token = token_tools.create_passwordless_login_token(expected_user_id, expected_ttl)
+
+        mocked_redis_set.assert_called_once_with(
+            redis_key, json.dumps({"user_id": str(expected_user_id), "jti": expected_jti}), ex=expected_ttl
+        )
+
+        mocked_pipeline_execute.return_value = [f'{{"user_id": "{wrong_user_id}", "jti": "{expected_jti}"}}', 1]
+
+        with pytest.raises(InvalidToken), caplog.at_level(logging.ERROR):
+            payload = token_tools.validate_passwordless_token(token)
+
+        mocked_pipeline_get.assert_called_once_with(redis_key)
+        mocked_pipeline_del.assert_called_once_with(redis_key)
+        mocked_pipeline_execute.assert_called_once()
+
+        assert (
+            caplog.records[0].message
+            == f"Mismatch between the payload of an authentic passwordless login token and the corresponding redis value. Token: {token}"
+        )
