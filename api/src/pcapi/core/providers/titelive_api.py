@@ -193,7 +193,7 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
         products: list[offers_models.Product],
         titelive_page: list[TiteliveWorkType],
     ) -> list[offers_models.Product]:
-        thumbnail_url_by_ean: dict[str, dict[offers_models.TiteliveImageType, str]] = {}
+        thumbnail_url_by_ean: dict[str, dict[offers_models.ImageType, str]] = {}
 
         for work in titelive_page:
             for article in work.article:
@@ -201,13 +201,9 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
                 if not article.imagesUrl:
                     continue
                 if article.has_image:
-                    thumbnail_url_by_ean[article.gencod][
-                        offers_models.TiteliveImageType.RECTO
-                    ] = article.imagesUrl.recto
+                    thumbnail_url_by_ean[article.gencod][offers_models.ImageType.RECTO] = article.imagesUrl.recto
                 if article.has_verso_image:
-                    thumbnail_url_by_ean[article.gencod][
-                        offers_models.TiteliveImageType.VERSO
-                    ] = article.imagesUrl.verso
+                    thumbnail_url_by_ean[article.gencod][offers_models.ImageType.VERSO] = article.imagesUrl.verso
 
         for product in products:
             assert product.extraData, "product %s initialized without extra data" % product.id
@@ -221,7 +217,7 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
                 continue
             try:
                 self.remove_product_mediation(product)
-                for image_type in offers_models.TiteliveImageType:
+                for image_type in offers_models.ImageType:
                     new_thumbnail_url = new_thumbnail_urls.get(image_type)
                     if new_thumbnail_url is not None:
                         image_id = str(uuid.uuid4())
@@ -248,8 +244,8 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
                     "Error while downloading Titelive image",
                     extra={
                         "exception": e,
-                        "url_recto": new_thumbnail_urls.get(offers_models.TiteliveImageType.RECTO),
-                        "url_verso": new_thumbnail_urls.get(offers_models.TiteliveImageType.VERSO),
+                        "url_recto": new_thumbnail_urls.get(offers_models.ImageType.RECTO),
+                        "url_verso": new_thumbnail_urls.get(offers_models.ImageType.VERSO),
                         "request_type": "image",
                     },
                 )
