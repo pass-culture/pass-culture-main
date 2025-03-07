@@ -394,11 +394,22 @@ def create_collective_offer(
     db.session.add(collective_offer)
     db.session.flush()
 
-    if offer_data.nationalProgramId:
-        offer_validation.validate_national_program(
-            national_program_id=offer_data.nationalProgramId, domains=educational_domains
-        )
-        national_program_api.link_or_unlink_offer_to_program(offer_data.nationalProgramId, collective_offer)
+    national_program_id = offer_data.nationalProgramId
+    if national_program_id is not None:
+        try:
+            offer_validation.validate_national_program(
+                national_program_id=national_program_id, domains=educational_domains
+            )
+        except (offer_validation.InactiveNationalProgram, offer_validation.IllegalNationalProgram):
+            if offer_data.template_id is not None:
+                # original offer template may have invalid national_program, in this case we set program to None
+                national_program_id = None
+            else:
+                # if we are not creating from an offer template, we do not allow an invalid program
+                raise
+
+        if national_program_id is not None:
+            national_program_api.link_or_unlink_offer_to_program(national_program_id, collective_offer)
 
     logger.info(
         "Collective offer has been created",
@@ -815,6 +826,19 @@ def duplicate_offer_and_stock(
     if offerer.validationStatus != validation_status_mixin.ValidationStatus.VALIDATED:
         raise exceptions.OffererNotAllowedToDuplicate()
 
+    # original offer may have invalid national_program or domains, in this case we do not copy it
+    national_program_id = original_offer.nationalProgramId
+    try:
+        offer_validation.validate_national_program(
+            national_program_id=national_program_id, domains=original_offer.domains
+        )
+    except (
+        offer_validation.MissingDomains,
+        offer_validation.InactiveNationalProgram,
+        offer_validation.IllegalNationalProgram,
+    ):
+        national_program_id = None
+
     offer = educational_models.CollectiveOffer(
         isActive=False,  # a DRAFT offer cannot be active
         venue=original_offer.venue,
@@ -841,7 +865,7 @@ def duplicate_offer_and_stock(
         imageCredit=original_offer.imageCredit,
         imageHasOriginal=original_offer.imageHasOriginal,
         institutionId=original_offer.institutionId,
-        nationalProgramId=original_offer.nationalProgramId,
+        nationalProgramId=national_program_id,
         formats=original_offer.formats,
         locationType=original_offer.locationType,
         locationComment=original_offer.locationComment,

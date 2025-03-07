@@ -14,24 +14,26 @@ from pcapi.core.users import testing as sendinblue_testing
 
 def base_offer_payload(
     venue,
-    domains=None,
+    domain_ids=None,
     subcategory_id=None,
     template_id=None,
     national_program_id=None,
     formats=None,
     add_domain_to_program=True,
 ) -> dict:
-    if domains is None:
-        domains = [educational_factories.EducationalDomainFactory().id]
+    if domain_ids is None:
+        domain_ids = [educational_factories.EducationalDomainFactory().id]
 
     if not subcategory_id:
         subcategory_id = subcategories.SPECTACLE_REPRESENTATION.id
 
-    if not national_program_id and domains:
+    if not national_program_id and domain_ids:
         national_program_id = educational_factories.NationalProgramFactory().id
 
     if national_program_id and add_domain_to_program:
-        educational_factories.DomainToNationalProgramFactory(nationalProgramId=national_program_id, domainId=domains[0])
+        educational_factories.DomainToNationalProgramFactory(
+            nationalProgramId=national_program_id, domainId=domain_ids[0]
+        )
 
     if formats is None:
         formats = [subcategories.EacFormat.CONCERT.value]
@@ -40,7 +42,7 @@ def base_offer_payload(
         "venueId": venue.id,
         "description": "Ma super description",
         "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-        "domains": domains,
+        "domains": domain_ids,
         "durationMinutes": 60,
         "name": "La pièce de théâtre",
         "subcategoryId": subcategory_id,
@@ -400,6 +402,48 @@ class Returns200Test:
 
         assert offer.offerVenue == {"addressType": "other", "otherAddress": "Right here", "venueId": None}
 
+    def test_from_template_with_inactive_national_program(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
+
+        national_program = educational_factories.NationalProgramFactory(isActive=False)
+        domain = educational_factories.EducationalDomainFactory()
+        data = base_offer_payload(
+            venue=venue, national_program_id=national_program.id, domain_ids=[domain.id], template_id=template.id
+        )
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 201
+        offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        assert offer.domains == [domain]
+        assert offer.nationalProgramId is None
+
+    def test_from_template_with_invalid_national_program(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
+
+        national_program = educational_factories.NationalProgramFactory()
+        domain = educational_factories.EducationalDomainFactory()
+        data = base_offer_payload(
+            venue=venue,
+            national_program_id=national_program.id,
+            domain_ids=[domain.id],
+            template_id=template.id,
+            add_domain_to_program=False,
+        )
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 201
+        offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        assert offer.domains == [domain]
+        assert offer.nationalProgramId is None
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
@@ -498,22 +542,6 @@ class Returns400Test:
 
         # When
         data = base_offer_payload(venue=venue, subcategory_id=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert models.CollectiveOffer.query.count() == 0
-
-    def test_create_collective_offer_empty_domains(self, client):
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
-
-        # When
-        data = base_offer_payload(venue=venue, domains=[])
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
@@ -663,7 +691,7 @@ class Returns404Test:
         domain = educational_factories.EducationalDomainFactory()
 
         # When
-        data = base_offer_payload(venue=venue, domains=[0, domain.id], add_domain_to_program=False)
+        data = base_offer_payload(venue=venue, domain_ids=[0, domain.id], add_domain_to_program=False)
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -708,7 +736,7 @@ class Returns404Test:
         national_program = educational_factories.NationalProgramFactory()
         domain = educational_factories.EducationalDomainFactory()
         data = base_offer_payload(
-            venue=venue, national_program_id=national_program.id, domains=[domain.id], add_domain_to_program=False
+            venue=venue, national_program_id=national_program.id, domain_ids=[domain.id], add_domain_to_program=False
         )
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):

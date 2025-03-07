@@ -74,11 +74,13 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         institution = educational_factories.EducationalInstitutionFactory()
         national_program = educational_factories.NationalProgramFactory()
+        domain = educational_factories.EducationalDomainFactory(nationalPrograms=[national_program])
         offer = educational_factories.CollectiveOfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             venue=venue,
             institution=institution,
             nationalProgram=national_program,
+            domains=[domain],
         )
         offer_id = offer.id
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
@@ -127,7 +129,7 @@ class Returns200Test:
             },
             "status": "DRAFT",
             "displayedStatus": "DRAFT",
-            "domains": [],
+            "domains": [{"id": domain.id, "name": domain.name}],
             "interventionArea": ["93", "94", "95"],
             "isCancellable": False,
             "imageCredit": None,
@@ -322,3 +324,51 @@ class Returns200Test:
         assert duplicate.lastValidationDate is None
         assert duplicate.lastValidationType is None
         assert duplicate.lastValidationAuthorUserId is None
+
+    def test_duplicate_collective_offer_inactive_program(self, client):
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        national_program = educational_factories.NationalProgramFactory(isActive=False)
+        domain = educational_factories.EducationalDomainFactory(nationalPrograms=[national_program])
+        offer = educational_factories.ActiveCollectiveOfferFactory(
+            venue=venue, nationalProgram=national_program, domains=[domain]
+        )
+
+        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
+
+        assert response.status_code == 201
+        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        assert duplicate.domains == [domain]
+        assert duplicate.nationalProgramId is None
+
+    def test_duplicate_collective_offer_invalid_program(self, client):
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        national_program = educational_factories.NationalProgramFactory()
+        domain = educational_factories.EducationalDomainFactory()
+        offer = educational_factories.ActiveCollectiveOfferFactory(
+            venue=venue, nationalProgram=national_program, domains=[domain]
+        )
+
+        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
+
+        assert response.status_code == 201
+        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        assert duplicate.domains == [domain]
+        assert duplicate.nationalProgramId is None
+
+    def test_duplicate_collective_offer_missing_domains(self, client):
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        national_program = educational_factories.NationalProgramFactory()
+        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue, nationalProgram=national_program)
+
+        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
+
+        assert response.status_code == 201
+        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        assert duplicate.domains == []
+        assert duplicate.nationalProgramId is None
