@@ -578,6 +578,7 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
         bookings=bookings,
         author=current_user,
         origin=form.origin.data,
+        zendesk_id=form.zendesk_id.data,
         amount=amount,
     )
     incident_url = url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=incident.id)
@@ -640,6 +641,7 @@ def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
         amount=amount,
         author=current_user,
         origin=form.origin.data,
+        zendesk_id=form.zendesk_id.data,
     )
     incident_url = url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=commercial_gesture.id)
 
@@ -681,6 +683,7 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> utils.B
         collective_booking,
         author=current_user,
         origin=form.origin.data,
+        zendesk_id=form.zendesk_id.data,
     )
     incident_url = url_for(
         "backoffice_web.finance_incidents.get_incident",
@@ -719,6 +722,7 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
         collective_booking,
         author=current_user,
         origin=form.origin.data,
+        zendesk_id=form.zendesk_id.data,
     )
     incident_url = url_for(
         "backoffice_web.finance_incidents.get_incident",

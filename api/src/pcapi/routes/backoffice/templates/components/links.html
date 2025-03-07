@@ -221,3 +221,9 @@
      title="Ouvrir le site web externe"
      class="link-primary">{{ url }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
+{% macro build_zendesk_ticket_external_link(zendesk_id) %}
+  <a href=" https://passculture.zendesk.com/agent/tickets/{{ zendesk_id }}"
+     target="_blank"
+     title="Visualiser le ticket Zendesk de la demande"
+     class="link-primary">{{ zendesk_id }} <i class="bi bi-box-arrow-up-right"></i></a>
+{% endmacro %}

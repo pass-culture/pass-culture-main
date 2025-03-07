@@ -27,6 +27,10 @@ class BaseIncidentCreationForm(FlaskForm):
 
     origin = fields.PCStringField("Origine de la demande")
 
+    zendesk_id = fields.PCOptIntegerField(
+        "N° de ticket Zendesk",
+    )
+
 
 class CommercialGestureCreationForm(empty_forms.BatchForm, BaseIncidentCreationForm):
     class Meta:
