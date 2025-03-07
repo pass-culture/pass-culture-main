@@ -1,5 +1,6 @@
 import datetime
 import enum
+from functools import partial
 import logging
 
 from dateutil.relativedelta import relativedelta
@@ -16,6 +17,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import db
+from pcapi.repository import on_commit
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number as phone_number_utils
 
@@ -305,13 +307,19 @@ def _sync_ds_application(
             if user_request:
                 db.session.delete(user_request)
         else:
+
             if user_request:
+                user_request_ref_email = user_request.oldEmail if user_request.has_email_update else user_request.email
                 for key, value in data.items():
                     setattr(user_request, key, value)
             else:
+                user_request_ref_email = None
                 user_request = users_models.UserAccountUpdateRequest(dsApplicationId=ds_application_id, **data)
             db.session.add(user_request)
             db.session.flush()
+
+            if (user_request_ref_email != ref_email) and data["user"] is None:
+                on_commit(partial(transactional_mails.send_update_request_user_account_not_found, ref_email))
 
             if set_without_continuation:
                 check_set_without_continuation(user_request, node, data)
