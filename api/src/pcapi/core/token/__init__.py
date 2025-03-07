@@ -429,3 +429,28 @@ def create_passwordless_login_token(user_id: int, ttl: timedelta) -> str:
         expiration_date=expiration_date,
     )
     return token
+
+
+def validate_passwordless_token(token: str) -> dict:
+    """Validate and consume the passwordless login token.
+    If valid, return the content of the payload.
+
+    Returns:
+        payload (dict): The payload of the token containing the JTI, the subject (user_id), and the expiration and issued_at dates.
+
+    Raises:
+        InvalidToken (exception): If anything goes wrong while decoding or validating the token, we don’t want to give any additional hints, we raise `InvalidToken` in any cases.
+    """
+    try:
+        payload = utils.decode_jwt_token_rs256(
+            token, public_key=settings.PASSWORDLESS_LOGIN_PUBLIC_KEY, require=["exp", "iat", "sub", "jti"]
+        )
+    except jwt.ExpiredSignatureError:
+        # Authentic but expired token
+        raise users_exceptions.InvalidToken
+    except jwt.PyJWTError as e:
+        # Base exception for all others case we might be interested on
+        logger.warning("%s raised while decoding passwordless login token: %s", e, token)
+        raise users_exceptions.InvalidToken
+
+    return payload
