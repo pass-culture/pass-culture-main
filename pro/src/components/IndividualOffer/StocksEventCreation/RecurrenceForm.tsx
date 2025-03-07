@@ -385,10 +385,8 @@ export const RecurrenceForm = ({
                               values.quantityPerPriceCategories.length <= 1
                             }
                             onClick={() => arrayHelpers.remove(index)}
-                            hasTooltip
-                          >
-                            Supprimer les places
-                          </Button>
+                            tooltipContent="Supprimer les places"
+                          />
                         </div>
                       </FormLayout.Row>
                     ))}

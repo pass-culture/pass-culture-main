@@ -46,13 +46,19 @@ describe('OpeningHoursForm', () => {
     expect(screen.getByText('Lundi')).toBeInTheDocument()
 
     // Reset the afternoon fields
-    await userEvent.click(screen.getByText('Ajouter une plage horaire'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ajouter une plage horaire' })
+    )
     await userEvent.type(
       screen.getByLabelText(/Horaire d’ouverture 2/),
       '13:37'
     )
-    await userEvent.click(screen.getByText('Supprimer la plage horaire'))
-    await userEvent.click(screen.getByText('Ajouter une plage horaire'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Supprimer la plage horaire' })
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ajouter une plage horaire' })
+    )
     expect(screen.getByLabelText(/Horaire d’ouverture 2/)).toHaveValue('')
 
     // submit the form with the right values
@@ -128,7 +134,9 @@ describe('OpeningHoursForm', () => {
     renderOpeningHoursForm({})
 
     await userEvent.click(screen.getByLabelText('Lundi'))
-    await userEvent.click(screen.getByText('Ajouter une plage horaire'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ajouter une plage horaire' })
+    )
 
     await userEvent.click(screen.getByText('Submit'))
 
@@ -167,7 +175,9 @@ describe('OpeningHoursForm', () => {
     renderOpeningHoursForm({})
 
     await userEvent.click(screen.getByLabelText('Lundi'))
-    await userEvent.click(screen.getByText('Ajouter une plage horaire'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ajouter une plage horaire' })
+    )
 
     await userEvent.type(
       screen.getByLabelText(/Horaire d’ouverture 1/),

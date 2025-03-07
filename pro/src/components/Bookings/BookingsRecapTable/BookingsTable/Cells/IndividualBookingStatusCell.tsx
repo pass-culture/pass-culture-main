@@ -19,7 +19,7 @@ export const IndividualBookingStatusCell = ({
   booking,
   className,
 }: IndividualBookingStatusCellProps) => {
-  const { isTooltipHidden, ...tooltipProps } = useTooltipProps({})
+  const { isTooltipHidden, ...tooltipProps } = useTooltipProps()
   const bookingDisplayInfo = getBookingStatusDisplayInformations(
     booking.bookingStatus
   )

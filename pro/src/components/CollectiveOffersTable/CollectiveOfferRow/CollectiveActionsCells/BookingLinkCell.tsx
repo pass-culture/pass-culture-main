@@ -51,11 +51,14 @@ export const BookingLinkCell = ({
           offererId: selectedOffererId?.toString(),
         })
       }
-    >
-      Voir la{' '}
-      {bookingStatus === CollectiveBookingStatus.PENDING
-        ? 'préréservation'
-        : 'réservation'}
-    </ListIconButton>
+      tooltipContent={
+        <>
+          Voir la{' '}
+          {bookingStatus === CollectiveBookingStatus.PENDING
+            ? 'préréservation'
+            : 'réservation'}
+        </>
+      }
+    />
   )
 }
