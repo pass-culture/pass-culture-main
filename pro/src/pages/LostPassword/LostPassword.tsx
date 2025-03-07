@@ -11,6 +11,7 @@ import {
 } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
+import { useMediaQuery } from 'commons/hooks/useMediaQuery'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
@@ -39,6 +40,7 @@ export const LostPassword = (): JSX.Element => {
   useRedirectLoggedUser()
   useInitReCaptcha()
   const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
+  const isLaptopScreenAtLeast = useMediaQuery('(min-width: 64rem)')
 
   const notification = useNotification()
 
@@ -123,6 +125,7 @@ export const LostPassword = (): JSX.Element => {
                   error={errors.email?.message}
                   required={true}
                   asterisk={false}
+                  className={styles['change-password-request-form-input']}
                   {...register('email')}
                 />
               </FormLayout.Row>
@@ -141,7 +144,11 @@ export const LostPassword = (): JSX.Element => {
                   <ButtonLink
                     to="/connexion"
                     className={styles['back-button']}
-                    variant={ButtonVariant.TERNARY}
+                    variant={
+                      isLaptopScreenAtLeast
+                        ? ButtonVariant.TERNARY
+                        : ButtonVariant.QUATERNARY
+                    }
                     icon={fullNextIcon}
                   >
                     Retour à la connexion
