@@ -1,10 +1,14 @@
 from datetime import datetime
 from datetime import timedelta
+import hashlib
+import json
 from unittest import mock
+import uuid
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 import fakeredis
+import jwt
 import pytest
 import time_machine
 
@@ -200,8 +204,8 @@ class AsymetricTokenTest:
     ttl = timedelta(days=1)
     data = {"key1": "value1", "key2": "value2"}
     private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=4096,
+        public_exponent=3,
+        key_size=1024,
     )
     private_key_pem = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
@@ -214,8 +218,8 @@ class AsymetricTokenTest:
         format=serialization.PublicFormat.SubjectPublicKeyInfo,
     )
     wrong_private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=4096,
+        public_exponent=3,
+        key_size=1024,
     )
     wrong_private_key_pem = wrong_private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
@@ -232,7 +236,7 @@ class AsymetricTokenTest:
     def test_create_token_then_get_data(self):
         """testing the creation of a token and getting the data"""
         token = token_tools.AsymetricToken.create(
-            self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, settings.DISCORD_JWT_PUBLIC_KEY, self.ttl, data=self.data
+            self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, self.ttl, data=self.data
         )
         assert token.data == self.data
         assert token.type_ == self.token_type
@@ -244,14 +248,16 @@ class AsymetricTokenTest:
             timespec="hours"
         ) == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
 
-    @pytest.mark.settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
-    def test_create_token_with_non_corresponding_keys(self):
-        """if the keys do not correspond, an exception should be raised"""
+    @pytest.mark.settings(DISCORD_JWT_PRIVATE_KEY=wrong_private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
+    def test_creating_and_verifying_signature_with_mismatch_private_and_public_keys(self):
+        token = token_tools.AsymetricToken.create(
+            self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, self.ttl, data=self.data
+        )
+        with pytest.raises(InvalidToken) as exc_info:
+            token_tools.AsymetricToken.load_and_check(token.encoded_token, settings.DISCORD_JWT_PUBLIC_KEY)
 
-        with pytest.raises(InvalidToken):
-            token_tools.AsymetricToken.create(
-                self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, self.wrong_public_key, self.ttl, data=self.data
-            )
+        assert isinstance(exc_info.value.__cause__, jwt.PyJWTError)
+        assert "Signature verification failed" == str(exc_info.value.__cause__)
 
     @pytest.mark.settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
     def test_token_from_encoded_token_and_get_data(self):
@@ -259,12 +265,19 @@ class AsymetricTokenTest:
         old_token = token_tools.AsymetricToken.create(
             self.token_type,
             settings.DISCORD_JWT_PRIVATE_KEY,
-            settings.DISCORD_JWT_PUBLIC_KEY,
             self.ttl,
             data=self.data,
         )
+        token = token_tools.AsymetricToken.load_and_check(old_token.encoded_token, settings.DISCORD_JWT_PUBLIC_KEY)
+        assert token.data == old_token.data
+        assert token.type_ == old_token.type_
+        assert token.encoded_token == old_token.encoded_token
+        assert token_tools.AsymetricToken.get_expiration_date(self.token_type, token.key_suffix).isoformat(
+            timespec="hours"
+        ) == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
+
         token = token_tools.AsymetricToken.load_without_checking(
-            old_token.encoded_token, settings.DISCORD_JWT_PUBLIC_KEY
+            old_token.encoded_token,
         )
         assert token.data == old_token.data
         assert token.type_ == old_token.type_
@@ -279,12 +292,57 @@ class AsymetricTokenTest:
         old_token = token_tools.AsymetricToken.create(
             self.token_type,
             settings.DISCORD_JWT_PRIVATE_KEY,
-            settings.DISCORD_JWT_PUBLIC_KEY,
             self.ttl,
             data=self.data,
         )
         with pytest.raises(InvalidToken):
-            token_tools.AsymetricToken.load_without_checking(
+            token_tools.AsymetricToken.load_and_check(
                 old_token.encoded_token,
                 self.wrong_public_key,
             )
+
+
+class PasswordLessLoginTokenTest:
+    token_type = token_tools.TokenType.PASSWORDLESS_LOGIN
+    private_key = rsa.generate_private_key(public_exponent=3, key_size=1024)
+    public_key = private_key.public_key()
+
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=4096,
+    )
+    public_key = private_key.public_key()
+
+    private_pem_file = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+    public_pem_file = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+
+    @pytest.mark.settings(PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file)
+    @mock.patch("flask.current_app.redis_client.set")
+    @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
+    def test_can_create_password_less_login_token(self, mocked_uuid, mocked_redis_set):
+        expected_jti = str(mocked_uuid())
+        expected_ttl = timedelta(hours=8)
+        expected_user_id = 1
+        key_suffix = hashlib.sha256(json.dumps({"user_id": expected_user_id, "jti": expected_jti}).encode()).hexdigest()
+        redis_key = token_tools.PASSWORDLESS_REDIS_KEY_TEMPLATE % {
+            "type_": token_tools.TokenType.PASSWORDLESS_LOGIN.value,
+            "key_suffix": key_suffix,
+        }
+        token = token_tools.create_passwordless_login_token(expected_user_id, expected_ttl)
+
+        mocked_redis_set.assert_called_once_with(
+            redis_key, json.dumps({"user_id": expected_user_id, "jti": expected_jti}), ex=expected_ttl
+        )
+
+        payload = jwt.decode(token, self.public_pem_file, algorithms=["RS256"])
+
+        assert payload["jti"] == expected_jti
+        assert payload["exp"] - payload["iat"] == 8 * 3600
+        assert payload["sub"] == str(expected_user_id)
