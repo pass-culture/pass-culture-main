@@ -110,14 +110,10 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.wait('@createOfferer')
 
     cy.stepLog({ message: 'the offerer is created' })
-    cy.findAllByTestId('global-notification-success')
-      .contains('Votre structure a bien été créée')
-      .should('not.be.visible')
-    cy.url({ timeout: 10000 }).should('contain', '/accueil')
-    cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
 
-    // TODO: Find a better way to wait for the offerer to be created
-    cy.reload()
+    fromOnBoardingPublishMyFirstOffer()
+
+    cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
 
     cy.contains(
       'Votre structure est en cours de traitement par les équipes du pass Culture'
@@ -222,14 +218,8 @@ describe('Signup journey with known offerer...', () => {
       cy.wait('@createOfferer')
 
       cy.stepLog({ message: 'the offerer is created' })
-      cy.findAllByTestId('global-notification-success')
-        .contains('Votre structure a bien été créée')
-        .should('not.be.visible')
-      cy.url({ timeout: 10000 }).should('contain', '/accueil')
+      cy.visit('/accueil')
       cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
-
-      // TODO: Find a better way to wait for the offerer to be created
-      cy.reload()
 
       cy.contains(
         'Votre rattachement est en cours de traitement par les équipes du pass Culture'
@@ -332,14 +322,8 @@ describe('Signup journey with known offerer...', () => {
       cy.wait('@createOfferer')
 
       cy.stepLog({ message: 'the offerer is created' })
-      cy.findAllByTestId('global-notification-success')
-        .contains('Votre structure a bien été créée')
-        .should('not.be.visible')
-      cy.url({ timeout: 10000 }).should('contain', '/accueil')
+      cy.visit('/accueil')
       cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
-
-      // TODO: Find a better way to wait for the offerer to be created
-      cy.reload()
 
       cy.stepLog({ message: 'the attachment is in progress' })
       cy.contains(
@@ -443,4 +427,93 @@ const addressInterceptionPayload = {
   licence: 'ETALAB-2.0',
   query: MOCKED_BACK_ADDRESS_LABEL,
   limit: 1,
+}
+
+function fromOnBoardingPublishMyFirstOffer() {
+  cy.stepLog({
+    message: 'I start my first offer for the beneficiaries on the mobile app',
+  })
+  cy.findByLabelText(
+    'Commencer la création d’offre sur l’application mobile'
+  ).click()
+  cy.findByRole('heading', {
+    level: 1,
+    name: 'Offre à destination des jeunes',
+  })
+  cy.findByRole('heading', {
+    level: 2,
+    name: 'Comment souhaitez-vous créer votre 1ère offre ?',
+  })
+
+  // Choose to create the first offer manually
+  cy.findByRole('link', { name: 'Manuellement' }).click()
+
+  // --------------
+  // Offer creation
+  // --------------
+
+  cy.stepLog({
+    message: `Starts offer creation`,
+  })
+
+  // Starts offer creation by choosing offer type
+  cy.findByRole('group', { name: 'Votre offre est :' })
+    .findByText('Un bien physique')
+    .click()
+  cy.findByRole('button', { name: 'Étape suivante' }).click()
+
+  // ---------------------
+  // Step 1: Offer details
+  // ---------------------
+
+  cy.findByRole('textbox', { name: /Titre de l’offre/ }).type(
+    'Mon offre en brouillon'
+  )
+
+  cy.findByRole('combobox', { name: /Catégorie/ }).select('Beaux-arts')
+
+  // Saving a draft
+  cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
+
+  // ---------------------------
+  // Step 2: Useful informations
+  // ---------------------------
+
+  cy.findByText('Non accessible').click()
+
+  // Minimal required fields are already filled by default in this step, so we can directly go to the next step
+  cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
+
+  // ----------------------
+  // Step 3: Stock & Prices
+  // ----------------------
+
+  // Set price
+  cy.findByTestId('input-price').type('42')
+
+  cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
+
+  // -----------------------
+  // Step 4: Details summary
+  // -----------------------
+
+  cy.findByRole('heading', { level: 2, name: 'Détails de l’offre' })
+  cy.findByText('Vous y êtes presque !')
+  cy.findAllByText('Mon offre en brouillon').should('have.length', 3) // Title is present in the header, in the summary and in the card preview
+  cy.findByText('42,00 €')
+
+  cy.stepLog({
+    message: `Publishing first offer to get onboarded`,
+  })
+
+  // Publish offer
+  cy.findByRole('button', { name: 'Publier l’offre' }).click()
+
+  // Expect congratulations dialog
+  cy.findByRole('dialog', {
+    name: 'Félicitations, vous avez créé votre offre !',
+  })
+
+  // Navigate to banking information page
+  cy.findByRole('button', { name: 'Plus tard' }).click()
 }

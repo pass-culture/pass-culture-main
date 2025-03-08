@@ -8,7 +8,7 @@ describe('Collaborator list feature', () => {
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',
-      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user_already_onboarded',
       (response) => {
         login = response.body.user.email
       }
