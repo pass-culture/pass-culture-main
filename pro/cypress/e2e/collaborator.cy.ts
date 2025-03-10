@@ -57,16 +57,16 @@ describe('Collaborator list feature', () => {
     cy.contains(login).next().should('have.text', 'Validé')
 
     cy.stepLog({ message: 'check email received' })
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/get_unique_email',
-      timeout: 60000,
-    }).then((response) => {
-      expect(response.status).to.eq(200)
-      expect(response.body.To).to.eq(randomEmail)
-      expect(response.body.params.OFFERER_NAME).to.contain(
-        'Le Petit Rintintin Management'
-      )
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/get_unique_email',
+      (response) => {
+        expect(response.status).to.eq(200)
+        expect(response.body.To).to.eq(randomEmail)
+        expect(response.body.params.OFFERER_NAME).to.contain(
+          'Le Petit Rintintin Management'
+        )
+      }
+    )
   })
 })
