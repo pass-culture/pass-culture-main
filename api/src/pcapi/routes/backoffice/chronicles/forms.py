@@ -36,9 +36,15 @@ class GetChronicleSearchForm(forms_utils.PCForm):
         default="100",
         validators=(Optional(),),
     )
+
+    is_active = fields.PCSelectMultipleField(
+        "Chronique publiée",
+        choices=(("true", "Oui"), ("false", "Non")),
+    )
+
     social_media_diffusible = fields.PCSelectMultipleField(
         "Diffusible réseaux sociaux",
-        choices=[("yes", "Oui"), ("no", "Non")],
+        choices=[("true", "Oui"), ("false", "Non")],
     )
 
 

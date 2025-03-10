@@ -92,10 +92,15 @@ def list_chronicles() -> utils.BackofficeResponse:
         if form.date_range.to_date is not None:
             to_date = datetime.datetime.combine(form.date_range.to_date, datetime.time.max)
             query = query.filter(chronicles_models.Chronicle.dateCreated < to_date)
+
+    if form.is_active.data and len(form.is_active.data) == 1:
+        query = query.filter(chronicles_models.Chronicle.isActive.is_(form.is_active.data[0] == "true"))
+
     if form.social_media_diffusible.data and len(form.social_media_diffusible.data) == 1:
         query = query.filter(
-            chronicles_models.Chronicle.isSocialMediaDiffusible.is_(form.social_media_diffusible.data[0] == "yes"),
+            chronicles_models.Chronicle.isSocialMediaDiffusible.is_(form.social_media_diffusible.data[0] == "true"),
         )
+
     query = query.order_by(chronicles_models.Chronicle.id.desc())
 
     paginated_chronicles = query.paginate(
