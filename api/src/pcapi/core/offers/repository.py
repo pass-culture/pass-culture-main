@@ -1160,17 +1160,6 @@ def get_offer_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
     )
 
 
-def get_active_headline_offer(offer_id: int) -> models.HeadlineOffer | None:
-    return (
-        models.HeadlineOffer.query.join(models.Offer)
-        .filter(
-            models.HeadlineOffer.offerId == offer_id,
-            models.HeadlineOffer.isActive == True,
-        )
-        .one_or_none()
-    )
-
-
 def get_offerer_active_headline_offer_even_not_yet_disabled_by_cron(offerer_id: int) -> models.HeadlineOffer | None:
     return (
         models.HeadlineOffer.query.join(offerers_models.Venue)

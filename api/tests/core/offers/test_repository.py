@@ -2147,47 +2147,6 @@ class GetOfferPriceCategoriesFiltersTest:
 
 @pytest.mark.usefixtures("db_session")
 class GetHeadlineOfferFiltersTest:
-    def test_get_headline_offer_basic(self):
-        offer = factories.OfferFactory(isActive=True)
-        factories.StockFactory(offer=offer)
-        headline_offer = factories.HeadlineOfferFactory(offer=offer)
-
-        headline_offer_query_result = repository.get_active_headline_offer(offer.id)
-        assert headline_offer_query_result == headline_offer
-
-    def test_get_only_active_headline_offer(self):
-        offer = factories.OfferFactory(isActive=True)
-        factories.StockFactory(offer=offer)
-        creation_time = datetime.datetime.utcnow() - datetime.timedelta(days=20)
-        finished_timespan = (creation_time, creation_time + datetime.timedelta(days=10))
-        headline_offer = factories.HeadlineOfferFactory(offer=offer)
-        factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
-
-        headline_offer_query_result = repository.get_active_headline_offer(offer.id)
-        assert headline_offer_query_result == headline_offer
-
-    def test_get_specific_offer_active_headline_offer(self):
-        offer = factories.OfferFactory(isActive=True)
-        offer_on_another_venue = factories.OfferFactory(isActive=True)
-        factories.StockFactory(offer=offer)
-        factories.StockFactory(offer=offer_on_another_venue)
-        factories.HeadlineOfferFactory(offer=offer)
-        factories.HeadlineOfferFactory(offer=offer_on_another_venue)
-
-        headline_offer_query_result = repository.get_active_headline_offer(offer.id)
-        assert headline_offer_query_result.offer == offer
-
-    def test_should_return_no_inactive_headline_offer(self):
-        offer = factories.OfferFactory(isActive=False)
-        factories.StockFactory(offer=offer)
-        factories.HeadlineOfferFactory(offer=offer)
-        creation_time = datetime.datetime.utcnow() - datetime.timedelta(days=20)
-        finished_timespan = (creation_time, creation_time + datetime.timedelta(days=10))
-        factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
-
-        headline_offer_query_result = repository.get_active_headline_offer(offer.id)
-        assert headline_offer_query_result == None
-
     def test_get_inactive_headline_offers_basic(self):
         inactive_offer = factories.OfferFactory(isActive=False)
         inactive_offer_headline_offer = factories.HeadlineOfferFactory(offer=inactive_offer, create_mediation=True)
