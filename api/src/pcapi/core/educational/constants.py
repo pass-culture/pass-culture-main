@@ -1,3 +1,6 @@
+from itertools import chain
+
+
 INSTITUTION_TYPES = {
     "EC AGRIC PR": "ECOLE AGRICOLE PRIVEE",
     "LGTA PR": "LYCEE GENERAL TECHNOLOGIQUE AGRICOLE PRIVE",
@@ -177,3 +180,16 @@ INSTITUTION_TYPES = {
     "LEA": "LYCEE D’ENSEIGNEMENT ADAPTE",
     "IAP": "INSTITUT AGRICOLE PRIVE",
 }
+
+
+MAINLAND_INTERVENTION_AREA = [str(i).zfill(2) for i in chain(range(1, 95), ["2A", "2B", "mainland"]) if i != 20]
+ALL_INTERVENTION_AREA = [
+    *MAINLAND_INTERVENTION_AREA,
+    "971",
+    "972",
+    "973",
+    "974",
+    "975",
+    "976",
+    "all",
+]
