@@ -108,6 +108,8 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
         endpoint="backoffice_web.autocomplete_venues",
     )
 
+    zendesk_id = fields.PCOptIntegerField("N° de ticket Zendesk")
+
     from_date = fields.PCDateField("Créées à partir du", validators=(Optional(),))
     to_date = fields.PCDateField("Jusqu'au", validators=(Optional(),))
 
@@ -119,6 +121,7 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
                 self.is_collective.data,
                 self.offerer.data,
                 self.venue.data,
+                self.zendesk_id.data,
                 self.from_date.data,
                 self.to_date.data,
             )

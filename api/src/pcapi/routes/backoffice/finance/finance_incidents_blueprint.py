@@ -82,6 +82,9 @@ def _get_incidents(
     if form.venue.data:
         query = query.filter(offerers_models.Venue.id.in_(form.venue.data))
 
+    if form.zendesk_id.data:
+        query = query.filter(finance_models.FinanceIncident.zendeskId == form.zendesk_id.data)
+
     if form.from_date.data or form.to_date.data:
         query = query.join(
             history_models.ActionHistory,
