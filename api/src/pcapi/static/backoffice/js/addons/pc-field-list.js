@@ -263,6 +263,11 @@ class PcFieldList extends PcAddOn {
       while($ul.children.length > minEntries){
         $ul.lastElementChild.remove()
       }
+      for(let i = 0; i < $ul.children.length; i++) {
+        const $li = $ul.children[i]
+        const fieldNumber = $li.dataset.fieldNumber
+        this.#resetAndRenameElement($li, fieldNumber)
+      }
     }
     this.#filterMinEntries($ul, false)
   }
