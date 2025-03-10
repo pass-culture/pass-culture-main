@@ -221,7 +221,7 @@ export const FormPracticalInformation = ({
 
   return (
     <FormLayout.Section title="Où se déroule votre offre ?">
-      <FormLayout.Row className={styles['address-radio-group']}>
+      <FormLayout.Row>
         <RadioGroup
           group={adressTypeRadios}
           legend="Adresse où se déroulera l’évènement : *"
