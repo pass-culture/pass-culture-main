@@ -5,9 +5,9 @@ import { GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY } from 'commons/config/
 import strokeMyInstitution from 'icons/stroke-my-institution.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Callout } from 'ui-kit/Callout/Callout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { DisabledPrebookCallout } from '../DisabledPrebookCallout/DisabledPrebookCallout'
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
 import { AdageSkeleton } from '../Skeleton/AdageSkeleton'
 
@@ -36,7 +36,7 @@ export const OffersForMyInstitution = () => {
   return (
     <>
       <h1 className={styles['title']}>Pour mon établissement</h1>
-      {/* <Callout
+      <Callout
         className={styles['my-institution-callout']}
         links={[
           {
@@ -63,8 +63,7 @@ export const OffersForMyInstitution = () => {
           votre chef d’établissement confirmera la réservation de l’offre dans
           “Suivi pass Culture”.
         </p>
-      </Callout> */}
-      <DisabledPrebookCallout className={styles['my-institution-callout']} />
+      </Callout>
       {offers.collectiveOffers.length === 0 ? (
         <div className={styles['no-results']}>
           <SvgIcon
