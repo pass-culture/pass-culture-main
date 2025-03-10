@@ -546,18 +546,19 @@ class HeadlineOffer(PcObject, Base, Model):
         now = datetime.datetime.utcnow()
         return (
             (self.timespan.upper is None or self.timespan.upper > now)
-            and self.timespan.lower <= now
             and self.offer.status == OfferStatus.ACTIVE
+            and self.offer.mediations
         )
 
     @isActive.expression  # type: ignore[no-redef]
     def isActive(cls) -> bool:  # pylint: disable=no-self-argument
         offer_alias = sa_orm.aliased(Offer)  # avoids cartesian product
+        now = sa.func.now()
         return sa.and_(
-            sa.or_(sa.func.upper(cls.timespan) == None, (sa.func.upper(cls.timespan) > sa.func.now())),
-            sa.func.lower(cls.timespan) <= sa.func.now(),
+            (cls.timespan.op('@>')(now)),
             offer_alias.id == cls.offerId,
             offer_alias.status == OfferStatus.ACTIVE,
+            offer_alias.mediations != None,
         )
 
     @hybrid_property

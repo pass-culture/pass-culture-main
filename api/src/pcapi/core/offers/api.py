@@ -867,9 +867,7 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
 
 
 def remove_headline_offer(offerer_id: int) -> None:
-    if active_headline_offer := offers_repository.get_offerer_active_headline_offer_even_not_yet_disabled_by_cron(
-        offerer_id
-    ):
+    if active_headline_offer := offers_repository.get_active_headline_offer(offerer_id):
         try:
             active_headline_offer.timespan = db_utils.make_timerange(
                 active_headline_offer.timespan.lower, datetime.datetime.utcnow()

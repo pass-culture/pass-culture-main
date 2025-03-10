@@ -711,17 +711,25 @@ class HeadlineOfferTest:
     next_month = today + datetime.timedelta(days=30)
 
     def test_headline_offer_is_active(self):
-        headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, None))
+        headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, None), create_mediation=True)
         assert headline_offer.isActive
 
     def test_headline_offer_with_ending_time_in_the_future_is_active(self):
-        headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, self.day_after_tomorrow))
+        headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, self.day_after_tomorrow), create_mediation=True)
         assert headline_offer.isActive
 
     def test_headline_offer_is_not_active(self):
-        headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, self.day_after_tomorrow))
+        headline_offer = factories.HeadlineOfferFactory(
+            timespan=(self.today, self.day_after_tomorrow), create_mediation=True
+        )
         with time_machine.travel(self.next_month):
             assert not headline_offer.isActive
+
+    def test_headline_offer_without_mediation_is_not_active(self):
+        headline_offer = factories.HeadlineOfferFactory(
+            timespan=(self.today, self.day_after_tomorrow), create_mediation=False
+        )
+        assert not headline_offer.isActive
 
     @pytest.mark.parametrize(
         "timespan,overlaping_timespan",
@@ -736,7 +744,7 @@ class HeadlineOfferTest:
         offer = factories.OfferFactory(isActive=True)
         factories.HeadlineOfferFactory(offer=offer, timespan=timespan)
         with pytest.raises(exc.IntegrityError):
-            factories.HeadlineOfferFactory(offer=offer, timespan=overlaping_timespan)
+            factories.HeadlineOfferFactory(offer=offer, timespan=overlaping_timespan, create_mediation=True)
 
     def test_unicity_headline_offer_by_venue(self):
         venue = offerers_factories.VenueFactory()
@@ -744,7 +752,7 @@ class HeadlineOfferTest:
         another_offer_on_the_same_venue = factories.OfferFactory(isActive=True, venue=venue)
         factories.StockFactory(offer=offer)
         factories.StockFactory(offer=another_offer_on_the_same_venue)
-        factories.HeadlineOfferFactory(offer=offer)
+        factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
         with pytest.raises(exc.IntegrityError):
             factories.HeadlineOfferFactory(offer=another_offer_on_the_same_venue)
 
