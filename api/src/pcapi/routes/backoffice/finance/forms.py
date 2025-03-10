@@ -77,7 +77,7 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("ID de l'incident, de l'offre ou de la réservation, contremarque")
+    q = fields.PCOptSearchField("ID de l'incident, de l'offre ou de la réservation, contremarque, N° de ticket Zendesk")
 
     status = fields.PCSelectMultipleField(
         "États",

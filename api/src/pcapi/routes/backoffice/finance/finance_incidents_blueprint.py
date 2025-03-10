@@ -112,6 +112,7 @@ def _get_incidents(
                     offers_models.Stock.offerId == integer_query,
                     educational_models.CollectiveBooking.id == integer_query,
                     educational_models.CollectiveStock.collectiveOfferId == integer_query,
+                    finance_models.FinanceIncident.zendeskId == integer_query,
                 ]
             )
 

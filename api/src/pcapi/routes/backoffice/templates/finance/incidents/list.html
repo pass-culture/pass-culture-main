@@ -32,6 +32,7 @@
                 <th scope="col">Entité juridique</th>
                 <th scope="col">Partenaire culturel</th>
                 <th scope="col">Origine de la demande</th>
+                <th scope="col">Ticket Zendesk</th>
               </tr>
             </thead>
             <tbody>
@@ -61,13 +62,17 @@
                   <td>{{ links.build_venue_name_to_details_link(venue) }}</td>
                   <td>
                     {% if incident.details.origin %}{{ incident.details.origin }}{% endif %}
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+                  </td>
+                  <td>
+                    {% if incident.zendeskId %}{{ links.build_zendesk_ticket_external_link(incident.zendeskId) }}{% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-      {% else %}
-        <div class="lead">Aucun incident en cours n'est enregistré.</div>
-      {% endif %}
-    {% endblock page %}
+      </div>
+    {% else %}
+      <div class="lead">Aucun incident en cours n'est enregistré.</div>
+    {% endif %}
+  {% endblock page %}
