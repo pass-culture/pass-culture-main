@@ -6,5 +6,5 @@ export const selectOffererNames = (state: RootState) =>
 export const selectCurrentOffererId = (state: RootState) =>
   state.offerer.selectedOffererId
 
-export const selecteOffererIsOnboarded = (state: RootState) =>
+export const selectedOffererIsOnboarded = (state: RootState) =>
   state.offerer.isOnboarded
