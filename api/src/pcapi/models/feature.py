@@ -154,6 +154,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION = (
         "Activer la personnalisation tu tableau des offres individuelles dans le BO"
     )
+    WIP_ENABLE_EVENT_WITH_OPENING_HOUR = "Activer la nouvelle création d'un événement sur horaires d'ouverture"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -223,6 +224,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_EAN_CREATION,
     FeatureToggle.WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION,
     FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO,
+    FeatureToggle.WIP_ENABLE_EVENT_WITH_OPENING_HOUR,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
