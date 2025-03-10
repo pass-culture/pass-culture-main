@@ -23,7 +23,7 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
 import {
   selectCurrentOffererId,
-  selecteOffererIsOnboarded,
+  selectedOffererIsOnboarded,
 } from 'commons/store/offerer/selectors'
 import { updateUser } from 'commons/store/user/reducer'
 import { selectCurrentUser } from 'commons/store/user/selectors'
@@ -46,7 +46,7 @@ export const App = (): JSX.Element | null => {
   const location = useLocation()
   const navigate = useNavigate()
   const currentUser = useSelector(selectCurrentUser)
-  const isOffererOnboarded = useSelector(selecteOffererIsOnboarded)
+  const isOffererOnboarded = useSelector(selectedOffererIsOnboarded)
   const dispatch = useDispatch()
   const notify = useNotification()
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
