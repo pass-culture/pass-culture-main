@@ -148,7 +148,20 @@ class ListChroniclesTest(GetEndpointHelper):
         chronicles_factories.ChronicleFactory()
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
-                url_for(self.endpoint, social_media_diffusible="yes"),
+                url_for(self.endpoint, social_media_diffusible="true"),
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(chronicle_to_find.id)
+
+    def test_search_by_is_active(self, authenticated_client):
+        chronicle_to_find = chronicles_factories.ChronicleFactory(isActive=True)
+        chronicles_factories.ChronicleFactory(isActive=False)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, is_active="true"),
             )
             assert response.status_code == 200
 
