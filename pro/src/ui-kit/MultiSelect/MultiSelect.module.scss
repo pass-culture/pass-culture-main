@@ -5,7 +5,7 @@
 @use "styles/mixins/_outline.scss" as outline;
 
 .container {
-  margin-bottom: rem.torem(8px);
+  margin-bottom: rem.torem(16px);
 
   &-input {
     display: flex;
@@ -27,7 +27,6 @@
     }
   }
 }
-
 
 .legend {
   @include fonts.body;
