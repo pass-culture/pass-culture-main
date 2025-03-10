@@ -340,7 +340,7 @@ describe('Signup', () => {
           expect(submitButton).toBeEnabled()
           await userEvent.click(submitButton)
 
-          expect(api.signupProV2).toHaveBeenCalledWith({
+          expect(api.signupPro).toHaveBeenCalledWith({
             contactOk: false,
             email: 'test@example.com',
             firstName: 'Prénom',
