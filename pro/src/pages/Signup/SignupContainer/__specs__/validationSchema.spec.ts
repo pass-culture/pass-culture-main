@@ -37,29 +37,14 @@ describe('validationSchema', () => {
       description: 'not valid form without phone',
       formValues: { ...signupFormDefault, phoneNumber: '' },
       expectedErrors: [
-        'Veuillez renseigner au moins 10 chiffres',
         'Veuillez renseigner un numéro de téléphone',
-        'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
+        'Veuillez renseigner un numéro de téléphone valide',
       ],
     },
     {
-      description: 'not valid form with too short phone',
-      formValues: { ...signupFormDefault, phoneNumber: '0102' },
-      expectedErrors: [
-        'Veuillez renseigner au moins 10 chiffres',
-        'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
-      ],
-    },
-    {
-      description: 'not valid form with invalid and too long phone',
-      formValues: {
-        ...signupFormDefault,
-        phoneNumber: '1234567891011121314151617',
-      },
-      expectedErrors: [
-        'Veuillez renseigner moins de 20 chiffres',
-        'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
-      ],
+      description: 'not valid form with invalid phone',
+      formValues: { ...signupFormDefault, phoneNumber: 'invalid entry' },
+      expectedErrors: ['Veuillez renseigner un numéro de téléphone valide'],
     },
     {
       description: 'not valid form without password',

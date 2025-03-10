@@ -16,7 +16,8 @@ export interface PasswordInputProps {
   description?: string
   autoComplete?: string
   error?: string
-  hideAsterisk?: boolean
+  asterisk?: boolean
+  required?: boolean
 }
 
 export const PasswordInput = React.forwardRef(
@@ -27,7 +28,8 @@ export const PasswordInput = React.forwardRef(
       description,
       autoComplete,
       error,
-      hideAsterisk = false,
+      asterisk = true,
+      required,
       ...props
     }: PasswordInputProps,
     ref: ForwardedRef<HTMLInputElement>
@@ -55,7 +57,8 @@ export const PasswordInput = React.forwardRef(
           type={isPasswordHidden ? 'password' : 'text'}
           autoComplete={autoComplete}
           error={error}
-          asterisk={!hideAsterisk}
+          asterisk={asterisk}
+          required={required}
           rightButton={() => (
             <Button
               icon={isPasswordHidden ? strokeHideIcon : strokeShowIcon}

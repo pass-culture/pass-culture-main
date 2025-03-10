@@ -15,6 +15,7 @@ import {
   RECAPTCHA_ERROR_MESSAGE,
   SAVED_OFFERER_ID_KEY,
 } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
@@ -40,7 +41,6 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { ActionBar } from '../ActionBar/ActionBar'
 
 import styles from './Validation.module.scss'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 
 export const Validation = (): JSX.Element => {
   const [loading, setLoading] = useState(false)

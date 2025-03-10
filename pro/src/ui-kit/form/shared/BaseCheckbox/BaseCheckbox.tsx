@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useId, useRef, useEffect, ForwardedRef, forwardRef } from 'react'
+import { ForwardedRef, forwardRef, useEffect, useId, useRef } from 'react'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -77,7 +77,6 @@ export const BaseCheckbox = forwardRef(
           <span className={styles['base-checkbox-label-row']}>
             <label className={labelClasses}>
               <input
-                ref={forwardedRef ?? innerRef}
                 aria-invalid={hasError}
                 {...(ariaDescribedBy && {
                   'aria-describedby': ariaDescribedBy,
@@ -86,6 +85,7 @@ export const BaseCheckbox = forwardRef(
                 {...props}
                 className={cn(styles['base-checkbox-input'], inputClassName)}
                 id={id}
+                ref={forwardedRef ?? innerRef}
               />
               {icon && (
                 <span className={styles['base-checkbox-icon']}>

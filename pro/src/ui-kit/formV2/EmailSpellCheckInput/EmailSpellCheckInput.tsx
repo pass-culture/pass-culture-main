@@ -19,6 +19,7 @@ type EmailSpellCheckInputProps = {
   asterisk?: boolean
   error?: string
   className?: string
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
 }
 
 export const EmailSpellCheckInput = forwardRef(
@@ -33,6 +34,7 @@ export const EmailSpellCheckInput = forwardRef(
       required,
       asterisk = true,
       error,
+      ...props
     }: EmailSpellCheckInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
@@ -40,16 +42,20 @@ export const EmailSpellCheckInput = forwardRef(
       string | null
     >()
 
-    const handleEmailValidation = (
-      event: React.ChangeEvent<HTMLInputElement>
+    const handleEmailValidationOnBlur = (
+      event: React.FocusEvent<HTMLInputElement>
     ) => {
       const fieldValue = event.target.value
       if (fieldValue.length > 0) {
         const suggestion = suggestEmail(fieldValue.toString(), !!error)
         if (suggestion) {
           setEmailValidationTip(suggestion)
+        } else {
+          resetEmailValidation()
         }
       }
+
+      props.onBlur?.(event) // Don't forget to invoke props.onBlur() if it's defined to not break external uses of onBlur()
     }
     const resetEmailValidation = () => {
       setEmailValidationTip(null)
@@ -62,8 +68,6 @@ export const EmailSpellCheckInput = forwardRef(
           label={label}
           name={name}
           description={description}
-          onBlur={handleEmailValidation}
-          onFocus={resetEmailValidation}
           autoComplete="email"
           autoFocus={true}
           className={className}
@@ -71,6 +75,8 @@ export const EmailSpellCheckInput = forwardRef(
           required={required}
           asterisk={asterisk}
           error={error}
+          {...props}
+          onBlur={handleEmailValidationOnBlur} // Override props.onBlur() to handle internal behavior that shows the tip
         />
         {emailValidationTip && (
           <div className={styles['email-validation-error']}>

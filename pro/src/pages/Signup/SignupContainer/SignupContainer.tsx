@@ -1,5 +1,6 @@
-import { Form, FormikProvider, useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useRef } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -34,11 +35,26 @@ export const SignupContainer = (): JSX.Element => {
   useRedirectLoggedUser()
   useInitReCaptcha()
 
+  const hookForm = useForm<ProUserCreationBodyV2Model>({
+    defaultValues: SIGNUP_FORM_DEFAULT_VALUES,
+    resolver: yupResolver(validationSchema(isNewSignupEnabled)),
+    mode: 'onTouched',
+  })
+
+  const {
+    handleSubmit,
+    formState: { errors, touchedFields },
+    setError,
+  } = hookForm
+
   const onSubmit = async (values: ProUserCreationBodyV2Model) => {
     try {
       /* istanbul ignore next : ENV dependant */
-      values.token = await getReCaptchaToken('signup')
-      await api.signupPro({ ...values })
+      const token = await getReCaptchaToken('signup')
+      await api.signupPro({
+        ...values,
+        token, // set token at form submission
+      })
       onHandleSuccess()
     } catch (response) {
       if (response === RECAPTCHA_ERROR) {
@@ -56,39 +72,33 @@ export const SignupContainer = (): JSX.Element => {
   }
 
   const onHandleFail = (errors: Partial<ProUserCreationBodyV2Model>) => {
-    for (const field in errors) {
-      formik.setFieldError(field, (errors as any)[field])
+    for (const [field, message] of Object.entries(errors)) {
+      setError(field as keyof ProUserCreationBodyV2Model, {
+        type: 'manual',
+        message: message as string,
+      })
     }
 
     notification.error(
       'Une ou plusieurs erreurs sont présentes dans le formulaire.'
     )
-    formik.setSubmitting(false)
   }
 
-  const formik = useFormik({
-    initialValues: SIGNUP_FORM_DEFAULT_VALUES,
-    onSubmit: onSubmit,
-    validationSchema: validationSchema(isNewSignupEnabled),
-    validateOnChange: true,
-  })
-
   // Track the state of the form when the user gives up
-  const touchedRef = useRef(formik.touched)
-  const errorsRef = useRef(formik.errors)
+  const touchedRef = useRef(touchedFields)
+  const errorsRef = useRef(errors)
 
   useEffect(() => {
-    touchedRef.current = formik.touched
-    errorsRef.current = formik.errors
-  }, [formik.touched, formik.errors])
+    touchedRef.current = touchedFields
+    errorsRef.current = errors
+  }, [touchedFields, errors])
 
   const logFormAbort = (): void | undefined => {
     const filledFields = Object.keys(touchedRef.current)
     if (filledFields.length === 0) {
       return
     }
-    // formik.errors contains every fields with errors even if they have not been touched.
-    // We filter theses errors by touched fields to only have fields filled by the user with errors
+
     const filledWithErrors = Object.keys(
       Object.fromEntries(
         Object.entries(errorsRef.current).filter(([errorKey]) =>
@@ -108,7 +118,7 @@ export const SignupContainer = (): JSX.Element => {
   // Track the form state on component unmount
   useEffect(() => {
     return () => {
-      if (Object.entries(errorsRef.current).length === 0) {
+      if (Object.keys(errorsRef.current).length === 0) {
         return
       }
       logFormAbort()
@@ -123,11 +133,11 @@ export const SignupContainer = (): JSX.Element => {
       <div className={styles['mandatory']}>
         <MandatoryInfo />
       </div>
-      <FormikProvider value={formik}>
-        <Form onSubmit={formik.handleSubmit}>
+      <FormProvider {...hookForm}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <SignupForm />
-        </Form>
-      </FormikProvider>
+        </form>
+      </FormProvider>
     </section>
   )
 }
