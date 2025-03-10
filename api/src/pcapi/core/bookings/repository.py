@@ -374,7 +374,6 @@ def get_export(
     booking_period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = BookingStatusFilter.BOOKED,
     event_date: date | None = None,
-    offerer_id: int | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
@@ -385,7 +384,6 @@ def get_export(
         period=booking_period,
         status_filter=status_filter,
         event_date=event_date,
-        offerer_id=offerer_id,
         venue_id=venue_id,
         offer_id=offer_id,
         offerer_address_id=offerer_address_id,
@@ -436,7 +434,6 @@ def _get_filtered_bookings_query(
     period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
-    offerer_id: int | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
@@ -446,6 +443,7 @@ def _get_filtered_bookings_query(
     VenueAddress = aliased(Address)
     bookings_query = (
         Booking.query.join(Booking.offerer)
+        .join(Offerer.UserOfferers)
         .join(Booking.stock)
         .join(Stock.offer)
         .join(Booking.externalBookings, isouter=True)
@@ -455,10 +453,6 @@ def _get_filtered_bookings_query(
         .outerjoin(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
         .outerjoin(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
     )
-    if not pro_user.has_admin_role:
-        bookings_query = bookings_query.join(
-            UserOfferer, sa.and_(Offerer.id == UserOfferer.offererId, UserOfferer.userId == pro_user.id)
-        )
     # NB: unfortunatly, we still have to use Venue.timezone for digital offers
     # as they are still on virtual venues that don't have assocaited OA.
     # Venue.timezone removal here requires that all venues have their OA
@@ -468,6 +462,9 @@ def _get_filtered_bookings_query(
             bookings_query = bookings_query.join(join_key, *join_conditions, isouter=True)
         else:
             bookings_query = bookings_query.join(join_key, isouter=True)
+
+    if not pro_user.has_admin_role:
+        bookings_query = bookings_query.filter(UserOfferer.user == pro_user)
 
     bookings_query = bookings_query.filter(UserOfferer.isValidated)
 
@@ -496,8 +493,6 @@ def _get_filtered_bookings_query(
                     ]
                 )
             )
-    if offerer_id is not None:
-        bookings_query = bookings_query.filter(Booking.offererId == offerer_id)
 
     if venue_id is not None:
         bookings_query = bookings_query.filter(Booking.venueId == venue_id)
@@ -634,7 +629,6 @@ def _get_filtered_booking_report(
     period: tuple[date, date] | None,
     status_filter: BookingStatusFilter | None,
     event_date: date | None = None,
-    offerer_id: int | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
@@ -684,7 +678,6 @@ def _get_filtered_booking_report(
             period=period,
             status_filter=status_filter,
             event_date=event_date,
-            offerer_id=offerer_id,
             venue_id=venue_id,
             offer_id=offer_id,
             offerer_address_id=offerer_address_id,
