@@ -401,7 +401,7 @@ class OfferChronicles(ConfiguredBaseModel):
 
 class OfferArtist(ConfiguredBaseModel):
     id: str
-    image: str
+    image: str | None
     name: str
 
 
