@@ -95,6 +95,9 @@ describe('Adage confirmation', () => {
         expect(response.body.params.BOOKING_ID).to.eq(bookingId)
       })
 
+      cy.stepLog({ message: 'I open the filters' })
+      cy.findByText('Filtrer').click()
+
       cy.stepLog({ message: 'I search with status "PREBOOKED"' })
       cy.get('#search-status').click()
       cy.get('#list-status').find('#option-display-PREBOOKED').click()

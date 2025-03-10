@@ -93,6 +93,9 @@ describe('Search individual offers', () => {
   })
 
   it('I should be able to search with "Catégorie" filter and see expected results', () => {
+    cy.stepLog({ message: 'I open the filters' })
+    cy.findByText('Filtrer').click()
+
     cy.stepLog({ message: 'I select "Instrument de musique" in "Catégorie"' })
 
     cy.findByTestId('wrapper-categorie').within(() => {
@@ -120,6 +123,9 @@ describe('Search individual offers', () => {
   })
 
   it('I should be able to search by offer status and see expected results', () => {
+    cy.stepLog({ message: 'I open the filters' })
+    cy.findByText('Filtrer').click()
+
     cy.stepLog({ message: 'I select "Publiée" in offer status' })
 
     cy.findByTestId('wrapper-status').within(() => {
@@ -182,6 +188,9 @@ describe('Search individual offers', () => {
   })
 
   it('I should be able to search by date and see expected results', () => {
+    cy.stepLog({ message: 'I open the filters' })
+    cy.findByText('Filtrer').click()
+
     cy.stepLog({ message: 'I select a date in one month' })
     const dateSearch = format(addDays(new Date(), 30), 'yyyy-MM-dd')
     cy.findByLabelText('Début de la période').type(dateSearch)
@@ -213,6 +222,9 @@ describe('Search individual offers', () => {
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
+
+    cy.stepLog({ message: 'I open the filters' })
+    cy.findByText('Filtrer').click()
 
     cy.stepLog({ message: 'I select "Livre" in "Catégorie"' })
     cy.findByLabelText('Catégorie').select('Livre')
@@ -271,6 +283,13 @@ describe('Search individual offers', () => {
     })
     cy.findByLabelText('Début de la période').invoke('val').should('be.empty')
     cy.findByLabelText('Fin de la période').invoke('val').should('be.empty')
+
+    cy.stepLog({ message: 'I reset the name search' })
+    cy.findByLabelText(/Nom de l’offre/).clear()
+
+    cy.stepLog({ message: 'I make a new search' })
+    cy.findByText('Rechercher').click()
+    cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: 'These 7 results should be displayed' })
     const expectedResults2 = [

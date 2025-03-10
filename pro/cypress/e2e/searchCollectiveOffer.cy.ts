@@ -83,6 +83,9 @@ describe('Search collective offers', () => {
   })
 
   it(`I should be able to search with a lieu and see expected results`, () => {
+    cy.stepLog({ message: 'I open the filters' })
+    cy.findByText('Filtrer').click()
+
     cy.stepLog({
       message: 'I search with the place "' + offerArchived.venueName + '"',
     })
@@ -131,6 +134,9 @@ describe('Search collective offers', () => {
   })
 
   it(`I should be able to search with a format "${formatName}" and see expected results`, () => {
+    cy.stepLog({ message: 'I open the filters' })
+    cy.findByText('Filtrer').click()
+
     cy.stepLog({ message: 'I search with the Format "' + formatName + '"' })
     cy.findByLabelText('Format').select(formatName)
 
@@ -167,6 +173,9 @@ describe('Search collective offers', () => {
   })
 
   it(`I should be able to search with a Type "Offre réservable" and see expected results`, () => {
+    cy.stepLog({ message: 'I open the filters' })
+    cy.findByText('Filtrer').click()
+
     cy.stepLog({ message: 'I search with the Type "Offre réservable"' })
     cy.findByLabelText('Type de l’offre').select('Offre réservable')
 
@@ -224,6 +233,9 @@ describe('Search collective offers', () => {
   })
 
   it(`I should be able to search with a Date and see expected results`, () => {
+    cy.stepLog({ message: 'I open the filters' })
+    cy.findByText('Filtrer').click()
+
     cy.stepLog({ message: 'I select a date in 2 weeks' })
     const dateSearch = format(addWeeks(new Date(), 2), 'yyyy-MM-dd')
     cy.findByLabelText('Début de la période').type(dateSearch)
@@ -252,6 +264,9 @@ describe('Search collective offers', () => {
   })
 
   it('I should be able to search with a status "En instruction" and see expected results', () => {
+    cy.stepLog({ message: 'I open the filters' })
+    cy.findByText('Filtrer').click()
+
     cy.stepLog({ message: 'I search with status "En instruction"' })
     cy.get('#search-status').click()
     cy.get('#list-status').find('#option-display-PENDING').click()
@@ -281,6 +296,9 @@ describe('Search collective offers', () => {
   })
 
   it('I should be able to search with several filters and see expected results, then reinit filters', () => {
+    cy.stepLog({ message: 'I open the filters' })
+    cy.findByText('Filtrer').click()
+
     cy.stepLog({
       message: 'I select ' + offerDraft.venueName + ' in "Structure"',
     })
@@ -314,7 +332,6 @@ describe('Search collective offers', () => {
     cy.findByText('Réinitialiser les filtres').click()
 
     cy.stepLog({ message: 'All filters are empty' })
-    cy.findByRole('searchbox', { name: /Nom de l’offre/ }).should('be.empty')
     cy.get('#search-status').should('be.empty')
     cy.findByTestId('wrapper-lieu').within(() => {
       cy.get('select').invoke('val').should('eq', 'all')
@@ -328,6 +345,13 @@ describe('Search collective offers', () => {
     cy.findByTestId('wrapper-search-status').within(() => {
       cy.get('select').invoke('val').should('be.empty')
     })
+
+    cy.stepLog({ message: 'I reset the name search' })
+    cy.findByLabelText(/Nom de l’offre/).clear()
+
+    cy.stepLog({ message: 'I make a new search' })
+    cy.findByText('Rechercher').click()
+    cy.wait('@collectiveOffers')
 
     cy.stepLog({ message: '6 results should be displayed' })
     const expectedResults2 = [
