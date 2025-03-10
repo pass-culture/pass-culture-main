@@ -67,3 +67,14 @@ STATUSES_NOT_ALLOWING_ARCHIVE_OFFER = (
     models.CollectiveOfferDisplayedStatus.PENDING,
     models.CollectiveOfferDisplayedStatus.ARCHIVED,
 )
+
+ADDRESS_DICT = {
+    "isVenueAddress": False,
+    "isManualEdition": False,
+    "city": "Paris",
+    "label": "My address",
+    "latitude": "48.87171",
+    "longitude": "2.308289",
+    "postalCode": "75001",
+    "street": "3 Rue de Valois",
+}
