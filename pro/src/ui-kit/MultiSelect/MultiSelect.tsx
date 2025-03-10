@@ -242,12 +242,12 @@ export const MultiSelect = forwardRef(
               />
             )}
           </div>
-          <div
-            role="alert"
-            className={styles['container-error']}
-            id={`error-details-${name}`}
-          >
-            {error && <FieldError name={name}>{error}</FieldError>}
+          <div role="alert" id={`error-details-${name}`}>
+            {error && (
+              <FieldError name={name} className={styles['field-error']}>
+                {error}
+              </FieldError>
+            )}
           </div>
         </div>
 

@@ -1,14 +1,18 @@
-import { mainlandOptions } from "commons/core/shared/interventionOptions"
-import { MAINLAND_OPTION_VALUE } from "pages/AdageIframe/app/constants/departmentOptions"
-import { Option } from "ui-kit/MultiSelect/MultiSelect"
+import { mainlandOptions } from 'commons/core/shared/interventionOptions'
+import { MAINLAND_OPTION_VALUE } from 'pages/AdageIframe/app/constants/departmentOptions'
+import { Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 type InterventionAreaMultiSelectProps = {
-        selectedOption: Option[],
-        addedOptions: Option[],
-        removedOptions: Option[]
+  selectedOption: Option[]
+  addedOptions: Option[]
+  removedOptions: Option[]
 }
 
-export const interventionAreaMultiSelect = ({selectedOption, addedOptions, removedOptions}: InterventionAreaMultiSelectProps) => {
+export const interventionAreaMultiSelect = ({
+  selectedOption,
+  addedOptions,
+  removedOptions,
+}: InterventionAreaMultiSelectProps) => {
   const newSelectedOptions = new Set(selectedOption.map((op) => op.id))
 
   if (addedOptions.map((op) => op.id).includes('mainland')) {
@@ -17,6 +21,7 @@ export const interventionAreaMultiSelect = ({selectedOption, addedOptions, remov
       newSelectedOptions.add(String(mainlandOp.id))
     }
   }
+
   if (removedOptions.map((op) => op.id).includes('mainland')) {
     //  If mainland is removed, uncheck all mainland departments
     for (const mainlandOp of mainlandOptions) {

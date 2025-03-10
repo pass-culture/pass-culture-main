@@ -109,24 +109,12 @@ export const domtomOptions: Option[] = [
 ]
 
 const MAINLAND_OPTION_VALUE = 'mainland'
-const CULTURAL_PARTNER_OPTION_VALUE = 'culturalPartner'
 const MAINLAND_OPTION_LABEL = 'France métropolitaine'
-const CULTURAL_PARTNER_OPTION_LABEL = 'Dans mon lieu'
 
 export const mainlandInterventionOption = {
   id: MAINLAND_OPTION_VALUE,
   label: MAINLAND_OPTION_LABEL,
 }
-
-export const venueInterventionOptions: Option[] = [
-  {
-    id: CULTURAL_PARTNER_OPTION_VALUE,
-    label: CULTURAL_PARTNER_OPTION_LABEL,
-  },
-  mainlandInterventionOption,
-  ...mainlandOptions,
-  ...domtomOptions,
-]
 
 export const offerInterventionOptions: Option[] = [
   mainlandInterventionOption,

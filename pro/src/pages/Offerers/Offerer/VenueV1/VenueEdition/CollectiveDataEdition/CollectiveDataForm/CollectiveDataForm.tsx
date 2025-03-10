@@ -9,10 +9,7 @@ import {
   DEFAULT_MARSEILLE_STUDENTS,
   SENT_DATA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
-import {
-  offerInterventionOptions,
-  venueInterventionOptions,
-} from 'commons/core/shared/interventionOptions'
+import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -191,7 +188,7 @@ export const CollectiveDataForm = ({
                     selectedOptions={offerInterventionOptions.filter((op) =>
                       formik.values.collectiveInterventionArea.includes(op.id)
                     )}
-                    defaultOptions={venueInterventionOptions.filter((option) =>
+                    defaultOptions={offerInterventionOptions.filter((option) =>
                       formik.values.collectiveInterventionArea.includes(
                         option.label
                       )

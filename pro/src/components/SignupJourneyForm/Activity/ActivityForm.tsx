@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { FieldArray, useFormikContext } from 'formik'
 import { useRef } from 'react'
 
@@ -44,7 +43,7 @@ export const ActivityForm = ({
   return (
     <FormLayout.Section>
       <h1 className={styles['activity-form-wrapper']}>Activité</h1>
-      <FormLayout.Row className={styles['input-gap']}>
+      <FormLayout.Row>
         <Select
           options={[
             {
@@ -72,8 +71,8 @@ export const ActivityForm = ({
         name="socialUrls"
         render={(arrayHelpers) => (
           <FormLayout.Row>
-            {values.socialUrls.map((url, index) => (
-              <FormLayout.Row key={index} className={styles['input-gap']}>
+            {values.socialUrls.map((_url, index) => (
+              <FormLayout.Row key={index}>
                 <TextInput
                   name={`socialUrls[${index}]`}
                   label="Site internet, réseau social"
@@ -84,29 +83,27 @@ export const ActivityForm = ({
                   isLabelHidden={index !== 0}
                   isOptional
                   focusRef={(el) => {
-                    inputRefs.current[index] = el;
+                    inputRefs.current[index] = el
                   }}
+                  InputExtension={
+                    <div
+                      data-error={errors.socialUrls?.[index] ? 'true' : 'false'}
+                    >
+                      <ListIconButton
+                        icon={fullTrashIcon}
+                        onClick={() => {
+                          const newIndex = index - 1
+                          inputRefs.current[newIndex]?.focus()
+
+                          arrayHelpers.remove(index)
+                        }}
+                        disabled={values.socialUrls.length <= 1}
+                        className={styles['delete-button']}
+                        tooltipContent={<>Supprimer l’url</>}
+                      />
+                    </div>
+                  }
                 />
-
-                <div
-                  data-error={errors.socialUrls?.[index] ? 'true' : 'false'}
-                  className={cn(styles['form-row-actions'], {
-                    [styles['first-row']]: index === 0,
-                  })}
-                >
-                  <ListIconButton
-                    icon={fullTrashIcon}
-                    onClick={() => {
-                      const newIndex = index - 1
-                      inputRefs.current[newIndex]?.focus();
-
-                      arrayHelpers.remove(index)
-                    }}
-                    disabled={values.socialUrls.length <= 1}
-                    className={styles['delete-button']}
-                    tooltipContent={<>Supprimer l’url</>}
-                  />
-                </div>
               </FormLayout.Row>
             ))}
 

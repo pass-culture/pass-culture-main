@@ -9,45 +9,9 @@
   margin-bottom: rem.torem(24px);
 }
 
-.url-input input {
-  max-width: size.$signup-content-width;
-}
-
-.form-row-actions {
-  margin-bottom: rem.torem(36px);
-
-  @media (width <= 432px) {
-    &[data-error="true"] {
-      margin-bottom: rem.torem(50px);
-    }
-  }
-}
-
-.input-gap {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: rem.torem(8px);
-  align-items: end;
-}
-
-.first-row {
-  margin-bottom: rem.torem(36px);
-
-  @media (width <= 432px) {
-    &[data-error="true"] {
-      margin-bottom: rem.torem(52px);
-    }
-  }
-}
-
 .delete-button {
   display: flex;
   align-content: center;
-
-  & svg {
-    width: rem.torem(24px);
-    height: rem.torem(24px);
-  }
 }
 
 .target-customer-row {
