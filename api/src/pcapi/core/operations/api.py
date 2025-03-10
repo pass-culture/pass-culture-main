@@ -2,6 +2,7 @@ from contextlib import suppress
 import datetime
 from functools import partial
 import logging
+from traceback import format_exc
 
 import sqlalchemy as sa
 
@@ -92,15 +93,12 @@ def retrieve_special_event_from_typeform(event: models.SpecialEvent) -> None:
         update_form_title_from_typeform(event_id=event_id, event_title=event.title, form=form)
         questions = update_form_questions_from_typeform(event_id=event_id, form=form)
         download_responses_from_typeform(event_id=event_id, event_external_id=event_external_id, questions=questions)
-    except Exception as exc:  # pylint: disable=broad-except
-        from traceback import print_exc
-
-        print_exc()
+    except Exception:  # pylint: disable=broad-except
         logger.error(
             "An error happened while retrieving special event",
             extra={
                 "event_id": event.id,
-                "exc": str(exc),
+                "exc": format_exc(),
                 "external_id": event.externalId,
             },
         )
