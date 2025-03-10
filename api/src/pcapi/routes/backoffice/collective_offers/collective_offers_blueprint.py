@@ -25,10 +25,13 @@ from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import api as offers_api
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
@@ -711,11 +714,21 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
         flash("Cette offre collective n'existe pas", "warning")
         return redirect(url_for("backoffice_web.collective_offer.list_collective_offers"), code=303)
 
+    move_offer_form = None
+    if feature.FeatureToggle.MOVE_OFFER_TEST.is_active():
+        try:
+            venue_choices = offers_api.get_venues_with_same_pricing_point(collective_offer)
+            move_offer_form = forms.MoveCollectiveOfferForm()
+            move_offer_form.set_venue_choices(venue_choices)
+        except offers_exceptions.NoDestinationVenue:
+            pass
+
     is_collective_offer_price_editable = _is_collective_offer_price_editable(collective_offer)
     return render_template(
         "collective_offer/details.html",
         collective_offer=collective_offer,
         is_collective_offer_price_editable=is_collective_offer_price_editable,
+        move_offer_form=move_offer_form,
     )
 
 
@@ -824,3 +837,62 @@ def get_collective_offer_price_form(collective_offer_id: int) -> utils.Backoffic
         title=f"Ajuster le prix de l'offre collective {collective_offer_id}",
         button_text="Ajuster le prix",
     )
+
+
+@blueprint.route("/<int:collective_offer_id>/move", methods=["GET"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def get_move_collective_offer_form(collective_offer_id: int) -> utils.BackofficeResponse:
+    if not feature.FeatureToggle.MOVE_OFFER_TEST.is_active():
+        raise feature.DisabledFeatureError("MOVE_OFFER_TEST is inactive")
+
+    collective_offer = educational_models.CollectiveOffer.query.filter_by(id=collective_offer_id).one_or_none()
+    if not collective_offer:
+        raise NotFound()
+
+    venue_choices = offers_api.get_venues_with_same_pricing_point(collective_offer)
+    move_offer_form = forms.MoveCollectiveOfferForm()
+    move_offer_form.set_venue_choices(venue_choices)
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=move_offer_form,
+        dst=url_for("backoffice_web.collective_offer.move_collective_offer", collective_offer_id=collective_offer_id),
+        div_id=f"move-collective-offer-modal-{collective_offer.id}",
+        title=f"Changer le partenaire culturel de l'offre collective {collective_offer_id}",
+        button_text="Changer le partenaire",
+    )
+
+
+@blueprint.route("/<int:collective_offer_id>/move", methods=["POST"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def move_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
+    collective_offer = educational_models.CollectiveOffer.query.filter_by(id=collective_offer_id).one_or_none()
+    if not collective_offer:
+        raise NotFound()
+
+    form = forms.MoveCollectiveOfferForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
+
+    destination_venue = (
+        offerers_models.Venue.query.filter_by(id=int(form.venue.data))
+        .outerjoin(
+            offerers_models.VenuePricingPointLink,
+            sa.and_(
+                offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
+                offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
+            ),
+        )
+        .options(
+            sa.orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
+                offerers_models.VenuePricingPointLink.pricingPointId, offerers_models.VenuePricingPointLink.timespan
+            ),
+        )
+        .options(sa.orm.joinedload(offerers_models.Venue.offererAddress))
+    ).one()
+
+    offers_api.move_collective_offer_venue_no_restriction(collective_offer, destination_venue)
+    return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
