@@ -4,6 +4,7 @@ API Documentation: https://www.typeform.com/developers/
 """
 
 from datetime import datetime
+import hashlib
 import json
 import logging
 import typing
@@ -270,6 +271,16 @@ class TypeformBackend(BaseBackend):
                                 field_id=answer["field"]["id"],
                                 text=answer["choice"].get("label"),
                                 choice_id=answer["choice"]["id"],
+                            )
+                        )
+                    case "choices":
+                        choice_id = hashlib.sha1(b" ".join(i.encode() for i in answer["choices"]["ids"])).hexdigest()
+                        text = "\n".join(answer["choices"]["labels"])
+                        answers.append(
+                            TypeformAnswer(
+                                field_id=answer["field"]["id"],
+                                text=text,
+                                choice_id=choice_id,
                             )
                         )
                     case "date":
