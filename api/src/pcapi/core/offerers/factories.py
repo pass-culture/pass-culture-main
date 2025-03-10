@@ -7,7 +7,6 @@ from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core.factories import BaseFactory
 import pcapi.core.geography.factories as geography_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import feature
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
 from pcapi.utils import siren as siren_utils
@@ -370,11 +369,7 @@ class ApiKeyFactory(BaseFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.ApiKey:
-        if feature.FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM.is_active():
-            kwargs["secret"] = crypto.hash_public_api_key(kwargs.get("secret", DEFAULT_SECRET))
-        else:
-            kwargs["secret"] = crypto.hash_password(kwargs.get("secret", DEFAULT_SECRET))
-
+        kwargs["secret"] = crypto.hash_public_api_key(kwargs.get("secret", DEFAULT_SECRET))
         return super()._create(model_class, *args, **kwargs)
 
 

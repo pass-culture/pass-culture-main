@@ -17,7 +17,6 @@ class CollectiveOffersGetCategoriesTest(PublicAPIEndpointBaseHelper):
         offerers_factories.ApiKeyFactory(offerer=offerer)
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select features
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
             assert response.status_code == 200
