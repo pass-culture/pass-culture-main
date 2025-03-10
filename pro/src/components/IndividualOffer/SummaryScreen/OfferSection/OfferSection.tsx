@@ -14,6 +14,7 @@ import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOf
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import { Markdown } from 'components/Markdown/Markdown'
 import {
   Description,
   SummaryDescriptionList,
@@ -71,7 +72,7 @@ export const OfferSection = ({
       text: offerData.venuePublicName || offerData.venueName,
     },
     { title: 'Titre de l’offre', text: offerData.name },
-    { title: 'Description', text: offerData.description || '-' },
+    { title: 'Description', text: !offerData.description ? '-' : <Markdown markdownText={offerData.description} /> },
   ].concat(
     offer.isDigital
       ? {
