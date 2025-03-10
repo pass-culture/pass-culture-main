@@ -26,10 +26,8 @@ from pcapi.core.categories import subcategories
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.finance import api as finance_api
-from pcapi.core.finance import enum as finance_enum
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
-import pcapi.core.finance.conf as finance_conf
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.geography import api as geography_api
@@ -643,7 +641,7 @@ class CreateBeneficiaryTest:
             validatedBirthDate=a_year_go - relativedelta(years=17),
             roles=[users_models.UserRole.UNDERAGE_BENEFICIARY],
             dateCreated=a_year_go,
-            deposit__type=finance_enum.DepositType.GRANT_15_17,
+            deposit__type=finance_models.DepositType.GRANT_15_17,
             deposit__amount=30,
             deposit__dateCreated=a_year_go,
         )
@@ -663,7 +661,7 @@ class CreateBeneficiaryTest:
             user, id_fraud_check, users_models.EligibilityType.AGE17_18
         )
 
-        assert user.deposit.type == finance_enum.DepositType.GRANT_17_18
+        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
         assert user.deposit.amount == 150 + 10  # remaining amount after single 20€ booking
 
 
@@ -3109,7 +3107,7 @@ def generate_beneficiary():
         expirationDate=now + datetime.timedelta(days=15000),
         amount=Decimal("300.0"),
         source="source",
-        type=finance_enum.DepositType.GRANT_18,
+        type=finance_models.DepositType.GRANT_18,
     )
     bookings_factories.BookingFactory(
         user=user,
@@ -3254,7 +3252,7 @@ def generate_minimal_beneficiary():
         source="démarches simplifiées dossier [1234567]",
         dateCreated=now,
         version=1,
-        type=finance_enum.DepositType.GRANT_18,
+        type=finance_models.DepositType.GRANT_18,
     )
     db.session.add(deposit)
     stock = offers_factories.StockFactory(

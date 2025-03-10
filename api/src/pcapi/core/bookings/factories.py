@@ -5,7 +5,7 @@ import uuid
 import factory
 
 from pcapi.core.factories import BaseFactory
-from pcapi.core.finance.enum import DepositType
+from pcapi.core.finance.models import DepositType
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.factories as users_factories

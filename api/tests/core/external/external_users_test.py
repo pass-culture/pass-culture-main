@@ -19,7 +19,6 @@ from pcapi.core.external.attributes.models import BookingsAttributes
 from pcapi.core.external.attributes.models import UserAttributes
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import models as finance_models
-from pcapi.core.finance.enum import DepositType
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers.factories import EventOfferFactory
@@ -115,7 +114,7 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
     user = BeneficiaryFactory(
         deposit__version=1,
         deposit__amount=500,
-        deposit__type=DepositType.GRANT_18,
+        deposit__type=finance_models.DepositType.GRANT_18,
         departementCode="75",
         phoneNumber="0746050403",
     )

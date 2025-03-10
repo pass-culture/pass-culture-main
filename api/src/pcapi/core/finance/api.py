@@ -54,7 +54,6 @@ from pcapi.core.educational.api import booking as educational_api_booking
 import pcapi.core.educational.models as educational_models
 from pcapi.core.external import batch as push_notifications
 import pcapi.core.external.attributes.api as external_attributes_api
-from pcapi.core.finance.enum import DepositType
 from pcapi.core.history import api as history_api
 import pcapi.core.history.models as history_models
 from pcapi.core.logging import log_elapsed
@@ -2969,8 +2968,10 @@ def edit_reimbursement_rule(
     return rule
 
 
-def compute_deposit_expiration_date(beneficiary: users_models.User, deposit_type: DepositType) -> datetime.datetime:
-    if deposit_type == DepositType.GRANT_15_17:
+def compute_deposit_expiration_date(
+    beneficiary: users_models.User, deposit_type: models.DepositType
+) -> datetime.datetime:
+    if deposit_type == models.DepositType.GRANT_15_17:
         return compute_underage_deposit_expiration_datetime(beneficiary.birth_date)
 
     if feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
@@ -3007,7 +3008,7 @@ def get_granted_deposit(
 
         return models.GrantedDeposit(
             amount=conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[age_at_registration],
-            expiration_date=compute_deposit_expiration_date(beneficiary, deposit_type=DepositType.GRANT_15_17),
+            expiration_date=compute_deposit_expiration_date(beneficiary, deposit_type=models.DepositType.GRANT_15_17),
             type=models.DepositType.GRANT_15_17,
             version=1,
         )
@@ -3015,7 +3016,7 @@ def get_granted_deposit(
     if eligibility == users_models.EligibilityType.AGE18:
         return models.GrantedDeposit(
             amount=conf.GRANTED_DEPOSIT_AMOUNT_18_v2,
-            expiration_date=compute_deposit_expiration_date(beneficiary, deposit_type=DepositType.GRANT_18),
+            expiration_date=compute_deposit_expiration_date(beneficiary, deposit_type=models.DepositType.GRANT_18),
             type=models.DepositType.GRANT_18,
             version=2,
         )
@@ -3040,7 +3041,7 @@ def _recredit_user_v3(user: users_models.User) -> models.Recredit | None:
     if not (user_eligibility := user.eligibility):
         return None
 
-    if user.deposit.type == DepositType.GRANT_17_18:
+    if user.deposit.type == models.DepositType.GRANT_17_18:
         return _recredit_grant_17_18_deposit_using_age(user)
 
     domains_credit = get_domains_credit(user)
@@ -3191,7 +3192,7 @@ def upsert_deposit(
     if eligibility == users_models.EligibilityType.AGE18:
         has_active_underage_deposit = (
             user.deposit
-            and user.deposit.type == DepositType.GRANT_15_17
+            and user.deposit.type == models.DepositType.GRANT_15_17
             and (user.deposit.expirationDate is None or user.deposit.expirationDate >= datetime.datetime.utcnow())
         )
         if has_active_underage_deposit:
@@ -3203,7 +3204,7 @@ def upsert_deposit(
     if (
         eligibility == users_models.EligibilityType.AGE17_18
         and user.deposit
-        and user.deposit.type == DepositType.GRANT_15_17
+        and user.deposit.type == models.DepositType.GRANT_15_17
         and not user.has_active_deposit
     ):
         user.deposit.expirationDate = datetime.datetime.utcnow() + relativedelta(hours=1)
@@ -3246,19 +3247,19 @@ def create_deposit_v3(
     if eligibility in [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE18]:
         return create_deposit_v2(beneficiary, deposit_source, eligibility, age_at_registration)
 
-    if repository.deposit_exists_for_beneficiary_and_type(beneficiary, DepositType.GRANT_17_18):
-        raise exceptions.DepositTypeAlreadyGrantedException(DepositType.GRANT_17_18)
+    if repository.deposit_exists_for_beneficiary_and_type(beneficiary, models.DepositType.GRANT_17_18):
+        raise exceptions.DepositTypeAlreadyGrantedException(models.DepositType.GRANT_17_18)
 
     if beneficiary.has_active_deposit:
         raise exceptions.UserHasAlreadyActiveDeposit()
 
     deposit = models.Deposit(
         version=1,
-        type=DepositType.GRANT_17_18,
+        type=models.DepositType.GRANT_17_18,
         amount=decimal.Decimal(0),
         source=deposit_source,
         user=beneficiary,
-        expirationDate=compute_deposit_expiration_date(beneficiary, DepositType.GRANT_17_18),
+        expirationDate=compute_deposit_expiration_date(beneficiary, models.DepositType.GRANT_17_18),
     )
     db.session.add(deposit)
     db.session.flush()

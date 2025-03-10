@@ -15,7 +15,6 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_accounts
 from pcapi.core.finance.backend.dummy import invoices as dummy_invoices
-from pcapi.core.finance.enum import DepositType
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users.factories import BeneficiaryFactory
 
@@ -98,84 +97,84 @@ class BaseBackendTest:
         [
             (
                 None,
-                DepositType.GRANT_18,
+                finance_models.DepositType.GRANT_18,
                 finance_models.PricingLineCategory.OFFERER_REVENUE,
                 "ORINDGRANT_18",
                 "Réservations",
             ),
             (
                 None,
-                DepositType.GRANT_18,
+                finance_models.DepositType.GRANT_18,
                 finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
                 "OCINDGRANT_18",
                 "Réservations",
             ),
             (
                 None,
-                DepositType.GRANT_18,
+                finance_models.DepositType.GRANT_18,
                 finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
                 "CGINDGRANT_18",
                 "Gestes commerciaux",
             ),
             (
                 None,
-                DepositType.GRANT_15_17,
+                finance_models.DepositType.GRANT_15_17,
                 finance_models.PricingLineCategory.OFFERER_REVENUE,
                 "ORINDGRANT_15_17",
                 "Réservations",
             ),
             (
                 None,
-                DepositType.GRANT_15_17,
+                finance_models.DepositType.GRANT_15_17,
                 finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
                 "OCINDGRANT_15_17",
                 "Réservations",
             ),
             (
                 None,
-                DepositType.GRANT_15_17,
+                finance_models.DepositType.GRANT_15_17,
                 finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
                 "CGINDGRANT_15_17",
                 "Gestes commerciaux",
             ),
             (
                 BookingRecreditType.RECREDIT_18,
-                DepositType.GRANT_17_18,
+                finance_models.DepositType.GRANT_17_18,
                 finance_models.PricingLineCategory.OFFERER_REVENUE,
                 "ORINDGRANT_18_V3",
                 "Réservations",
             ),
             (
                 BookingRecreditType.RECREDIT_18,
-                DepositType.GRANT_17_18,
+                finance_models.DepositType.GRANT_17_18,
                 finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
                 "OCINDGRANT_18_V3",
                 "Réservations",
             ),
             (
                 BookingRecreditType.RECREDIT_18,
-                DepositType.GRANT_17_18,
+                finance_models.DepositType.GRANT_17_18,
                 finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
                 "CGINDGRANT_18_V3",
                 "Gestes commerciaux",
             ),
             (
                 BookingRecreditType.RECREDIT_17,
-                DepositType.GRANT_17_18,
+                finance_models.DepositType.GRANT_17_18,
                 finance_models.PricingLineCategory.OFFERER_REVENUE,
                 "ORINDGRANT_17_V3",
                 "Réservations",
             ),
             (
                 BookingRecreditType.RECREDIT_17,
-                DepositType.GRANT_17_18,
+                finance_models.DepositType.GRANT_17_18,
                 finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
                 "OCINDGRANT_17_V3",
                 "Réservations",
             ),
             (
                 BookingRecreditType.RECREDIT_17,
-                DepositType.GRANT_17_18,
+                finance_models.DepositType.GRANT_17_18,
                 finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
                 "CGINDGRANT_17_V3",
                 "Gestes commerciaux",
@@ -223,7 +222,7 @@ class BaseBackendTest:
         )
         booking1, booking2 = bookings_factories.UsedBookingFactory.create_batch(
             size=2,
-            user__deposit__type=DepositType.GRANT_18,
+            user__deposit__type=finance_models.DepositType.GRANT_18,
             stock__offer__venue=venue,
         )
         pricing1 = finance_factories.PricingFactory(
@@ -473,7 +472,7 @@ class BaseBackendTest:
             bank_account=bank_account,
         )
         booking = bookings_factories.UsedBookingFactory(
-            user__deposit__type=DepositType.GRANT_18, stock__offer__venue=venue
+            user__deposit__type=finance_models.DepositType.GRANT_18, stock__offer__venue=venue
         )
         pricing = finance_factories.PricingFactory(
             booking=booking, pricingPoint=venue, status=finance_models.PricingStatus.PROCESSED, amount=55_66
@@ -521,7 +520,7 @@ class CegidFinanceBackendTest:
             bank_account=bank_account,
         )
         booking1 = bookings_factories.UsedBookingFactory(
-            user__deposit__type=DepositType.GRANT_18,
+            user__deposit__type=finance_models.DepositType.GRANT_18,
             stock__offer__venue=venue,
         )
         pricing1 = finance_factories.PricingFactory(
@@ -536,7 +535,7 @@ class CegidFinanceBackendTest:
         )
         booking_finance_incident = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
             newTotalAmount=-23_20,
-            booking__user=BeneficiaryFactory(deposit__type=DepositType.GRANT_18),
+            booking__user=BeneficiaryFactory(deposit__type=finance_models.DepositType.GRANT_18),
             booking__stock__offer__venue=venue,
         )
         finance_event = finance_factories.FinanceEventFactory(
@@ -788,7 +787,7 @@ class CegidFinanceBackendTest:
             bank_account=bank_account,
         )
         booking = bookings_factories.UsedBookingFactory(
-            user__deposit__type=DepositType.GRANT_18,
+            user__deposit__type=finance_models.DepositType.GRANT_18,
             stock__offer__venue=venue,
         )
         pricing = finance_factories.PricingFactory(

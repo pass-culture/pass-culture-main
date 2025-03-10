@@ -12,7 +12,6 @@ import time_machine
 
 from pcapi import settings
 from pcapi.core.finance import models as finance_models
-from pcapi.core.finance.enum import DepositType
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud import repository as fraud_repository
@@ -261,7 +260,7 @@ class NextSubscriptionStepTest:
 
         # Assert factory does what we expect
         assert user.deposit.amount == 50
-        assert user.deposit.type == DepositType.GRANT_17_18
+        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
         next_step = subscription_api.get_user_subscription_state(user).next_step
         assert next_step is None
         assert user.is_beneficiary
@@ -302,7 +301,7 @@ class NextSubscriptionStepTest:
 
         # Assert factory does what we expect
         assert user.deposit.amount == 50
-        assert user.deposit.type == DepositType.GRANT_17_18
+        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
         next_step = subscription_api.get_user_subscription_state(user).next_step
         assert next_step is None
         assert user.is_beneficiary

@@ -16,8 +16,8 @@ from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import factories as criteria_factories
-from pcapi.core.finance.enum import DepositType
 from pcapi.core.finance.factories import RecreditFactory
+from pcapi.core.finance.models import DepositType
 from pcapi.core.finance.models import RecreditType
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud.models import FraudCheckType
