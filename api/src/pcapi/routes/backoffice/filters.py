@@ -171,12 +171,12 @@ def format_amount(
         amount = 0.0
 
     display = Markup('<span class="text-nowrap">{formatted_amount} €</span>').format(
-        formatted_amount=f"{amount:,.2f}".replace(",", "\u202f").replace(".", ",")
+        formatted_amount=finance_utils.format_currency_for_backoffice(amount)
     )
 
     if target is not None and target.is_caledonian:
         display += Markup(' <span class="text-nowrap text-muted">({formatted_amount} CFP)</span>').format(
-            formatted_amount=f"{finance_utils.euros_to_xpf(amount)}".replace(",", "\u202f")
+            formatted_amount=finance_utils.format_currency_for_backoffice(amount, True)
         )
 
     return display
