@@ -272,7 +272,7 @@ describe('Signup', () => {
           )
           await userEvent.type(
             screen.getByLabelText('Numéro de téléphone'),
-            '+33722332233'
+            '0722332233'
           )
           expect(submitButton).toBeEnabled()
 
@@ -280,6 +280,7 @@ describe('Signup', () => {
           await userEvent.tab()
 
           expect(submitButton).toBeEnabled()
+
           await userEvent.click(submitButton)
 
           expect(api.signupPro).toHaveBeenCalledWith({
