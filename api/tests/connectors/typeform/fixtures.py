@@ -1273,6 +1273,23 @@ RESPONSE_FORM_RESPONSE_WITH_ALL_TYPES = {
                         "label": "First choice",
                     },
                 },
+                {
+                    "field": {
+                        "id": "L89x83bmiIzF",
+                        "type": "multiple_choice",
+                        "ref": "2aa27f04-5c30-4503-ab94-fc0e37aa34c8",
+                    },
+                    "type": "choices",
+                    "choices": {
+                        "ids": ["qUe33PcIaIo8", "cFRtsTxvAoqD", "DTx86VXdIO6A"],
+                        "refs": [
+                            "66b6183c-f0f1-4b0c-b845-10608af06210",
+                            "ffeff665-3aca-489a-a783-b970fec839db",
+                            "d8fd5c75-8dcf-41c4-9eae-7982a6a03c56",
+                        ],
+                        "labels": ["choice D", "choice C", "choice B"],
+                    },
+                },
             ],
         }
     ],

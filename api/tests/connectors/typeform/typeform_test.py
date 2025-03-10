@@ -166,7 +166,7 @@ class GetResponsesTest:
 
         assert response.phone_number == "+33123456789"
         assert response.email == "user@example.com"
-        assert len(response.answers) == 14
+        assert len(response.answers) == 15
         assert response.answers[0].text == "pass"
         assert response.answers[1].text == "pass Culture"
         assert response.answers[2].text == "choice 1"
@@ -184,6 +184,12 @@ class GetResponsesTest:
         assert response.answers[11].text == "Oui"
         assert response.answers[12].text == "Oui"
         assert response.answers[13].text == "First choice"
+        assert (
+            response.answers[14].text
+            == """choice D
+choice C
+choice B"""
+        )
 
     def test_get_responses_not_found(self):
         form_id = "AaAaAa"
