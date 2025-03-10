@@ -21,7 +21,10 @@ const renderOpeningHoursForm = ({
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
-      validationSchema={getValidationSchema(false)}
+      validationSchema={getValidationSchema({
+        isOpenToPublicEnabled: false,
+        shouldValidateAccessibility: false,
+      })}
     >
       <Form>
         <OpeningHoursForm />
