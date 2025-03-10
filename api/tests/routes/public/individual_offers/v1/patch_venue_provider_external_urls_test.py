@@ -15,6 +15,7 @@ class PatchVenueProviderExternalUrlsTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/providers/v1/venues/{venue_id}"
     endpoint_method = "patch"
     default_path_params = {"venue_id": 1}
+    expected_401_queries_count = 3
 
     def test_should_raise_401_because_api_key_is_not_linked_to_provider(self, client: TestClient):
         old_api_key = self.setup_old_api_key()
