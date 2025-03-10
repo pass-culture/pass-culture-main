@@ -1,6 +1,7 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_outline.scss" as outline;
 
 .income-results-block {
   min-width: rem.torem(150px);
@@ -21,6 +22,28 @@
     @include fonts.title2;
 
     text-align: left;
+  }
+
+  &-tooltip {
+    margin-left: rem.torem(10px);
+    display: inline-flex;
+
+    &-button {
+      border: none;
+      background: none;
+      display: flex;
+      align-items: center;
+
+      &:focus-visible {
+        @include outline.focus-outline;
+      }
+
+      &-icon {
+        color: var(--color-primary);
+        width: rem.torem(22px);
+        height: rem.torem(22px);
+      }
+    }
   }
 }
 
