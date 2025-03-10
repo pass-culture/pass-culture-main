@@ -1,9 +1,10 @@
+#!/usr/bin/env python
 """
 Generate a python (and sql) file in a folder of pcapi/scripts to be ran with a GitHub Action "console job"
 
 Usage:
 
-    $ python bin/generate_script_file.py --namespace my_script_namespace --with-sql
+    $ bin/generate_script_file.py <my_script_namespace> [--with-sql]
 
 Create the pcapi/scripts/<my_script_namespace> folder and add a main.py file with some base script code
 Add an empty main.sql file if --with-sql is passed
@@ -28,11 +29,12 @@ import logging
 from pcapi.app import app
 from pcapi.models import db
 
+
 logger = logging.getLogger(__name__)
 
-app.app_context().push()
-
 if __name__ == "__main__":
+    app.app_context().push()
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--not-dry", action="store_true")
     args = parser.parse_args()
@@ -62,7 +64,7 @@ def main(namespace: str, with_sql: bool) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--namespace", type=str)
+    parser.add_argument("namespace", type=str)
     parser.add_argument("--with-sql", action="store_true")
     args = parser.parse_args()
 
