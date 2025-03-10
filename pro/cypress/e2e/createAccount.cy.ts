@@ -24,9 +24,7 @@ describe('Account creation', () => {
     cy.findByLabelText('Numéro de téléphone').type('612345678')
 
     cy.stepLog({ message: 'I submit' })
-    cy.intercept({ method: 'POST', url: '/users/signup' }).as(
-      'signupUser'
-    )
+    cy.intercept({ method: 'POST', url: '/users/signup' }).as('signupUser')
     cy.findByText('Créer mon compte').click()
 
     cy.stepLog({ message: 'my account should be created' })
@@ -35,16 +33,16 @@ describe('Account creation', () => {
     cy.contains('Votre compte est en cours de création')
 
     cy.stepLog({ message: 'retrieve last email received' })
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:5001/sandboxes/get_unique_email',
-      timeout: 60000,
-    }).then((response) => {
-      expect(response.status).to.eq(200)
-      expect(response.body.To).to.eq(randomEmail)
-      cy.stepLog({ message: 'use the link in email to valide account' })
-      cy.visit(response.body.params.EMAIL_VALIDATION_LINK)
-    })
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/get_unique_email',
+      (response) => {
+        expect(response.status).to.eq(200)
+        expect(response.body.To).to.eq(randomEmail)
+        cy.stepLog({ message: 'use the link in email to valide account' })
+        cy.visit(response.body.params.EMAIL_VALIDATION_LINK)
+      }
+    )
 
     cy.stepLog({
       message:

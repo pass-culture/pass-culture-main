@@ -16,13 +16,14 @@ describe('Financial Management - messages, links to external help page, reimburs
     let login1: string
     before(() => {
       cy.visit('/connexion')
-      cy.request({
-        method: 'GET',
-        url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_financial_data',
-      }).then((response) => {
-        login1 = response.body.user.email
-        cy.log('login1: ' + login1)
-      })
+      cy.sandboxCall(
+        'GET',
+        'http://localhost:5001/sandboxes/pro/create_pro_user_with_financial_data',
+        (response) => {
+          login1 = response.body.user.email
+          cy.log('login1: ' + login1)
+        }
+      )
       cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferers')
       cy.intercept({ method: 'PATCH', url: 'offerers/*/bank-accounts/*' }).as(
         'patchBankAccount'
@@ -150,13 +151,14 @@ describe('Financial Management - messages, links to external help page, reimburs
       cy.intercept({ method: 'PATCH', url: 'offerers/*/bank-accounts/*' }).as(
         'patchBankAccount'
       )
-      cy.request({
-        method: 'GET',
-        url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_financial_data_and_3_venues',
-      }).then((response) => {
-        login2 = response.body.user.email
-        logInAndGoToPage(login2, 'remboursements/informations-bancaires')
-      })
+      cy.sandboxCall(
+        'GET',
+        'http://localhost:5001/sandboxes/pro/create_pro_user_with_financial_data_and_3_venues',
+        (response) => {
+          login2 = response.body.user.email
+          logInAndGoToPage(login2, 'remboursements/informations-bancaires')
+        }
+      )
     })
 
     it('I should be able to attach and unattach a few venues', () => {

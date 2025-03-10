@@ -157,20 +157,21 @@ describe('Signup journey with known offerer...', () => {
     const endSiret = '12345'
     beforeEach(() => {
       cy.visit('/connexion')
-      cy.request({
-        method: 'GET',
-        url: 'http://localhost:5001/sandboxes/pro/create_new_pro_user_and_offerer',
-      }).then((response) => {
-        login = response.body.user.email
-        siren = response.body.siren
-        mySiret = siren + endSiret
-        cy.intercept('GET', `/sirene/siret/**`, (req) =>
-          req.reply({
-            statusCode: 200,
-            body: siretInterceptionPayload(mySiret, venueName),
-          })
-        ).as('getSiret')
-      })
+      cy.sandboxCall(
+        'GET',
+        'http://localhost:5001/sandboxes/pro/create_new_pro_user_and_offerer',
+        (response) => {
+          login = response.body.user.email
+          siren = response.body.siren
+          mySiret = siren + endSiret
+          cy.intercept('GET', `/sirene/siret/**`, (req) =>
+            req.reply({
+              statusCode: 200,
+              body: siretInterceptionPayload(mySiret, venueName),
+            })
+          ).as('getSiret')
+        }
+      )
       cy.setFeatureFlags([{ name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true }])
     })
 
@@ -231,19 +232,20 @@ describe('Signup journey with known offerer...', () => {
   describe('...and known venue', () => {
     beforeEach(() => {
       cy.visit('/connexion')
-      cy.request({
-        method: 'GET',
-        url: 'http://localhost:5001/sandboxes/pro/create_new_pro_user_and_offerer_with_venue',
-      }).then((response) => {
-        login = response.body.user.email
-        mySiret = response.body.siret
-        cy.intercept('GET', `/sirene/siret/**`, (req) =>
-          req.reply({
-            statusCode: 200,
-            body: siretInterceptionPayload(mySiret, venueName),
-          })
-        ).as('getSiret')
-      })
+      cy.sandboxCall(
+        'GET',
+        'http://localhost:5001/sandboxes/pro/create_new_pro_user_and_offerer_with_venue',
+        (response) => {
+          login = response.body.user.email
+          mySiret = response.body.siret
+          cy.intercept('GET', `/sirene/siret/**`, (req) =>
+            req.reply({
+              statusCode: 200,
+              body: siretInterceptionPayload(mySiret, venueName),
+            })
+          ).as('getSiret')
+        }
+      )
       interceptSearch5Adresses()
       cy.intercept({ method: 'POST', url: '/offerers' }).as('postOfferers')
       cy.setFeatureFlags([{ name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true }])
