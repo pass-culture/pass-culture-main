@@ -1258,10 +1258,10 @@ def test_public_api(client):
                 "OfferArtist": {
                     "properties": {
                         "id": {"title": "Id", "type": "string"},
-                        "image": {"title": "Image", "type": "string"},
+                        "image": {"nullable": True, "title": "Image", "type": "string"},
                         "name": {"title": "Name", "type": "string"},
                     },
-                    "required": ["id", "image", "name"],
+                    "required": ["id", "name"],
                     "title": "OfferArtist",
                     "type": "object",
                 },
