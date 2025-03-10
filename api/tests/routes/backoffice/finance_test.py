@@ -57,6 +57,7 @@ def incidents_fixture() -> tuple:
         incident__id=36,
         booking=bookings_factories.BookingFactory(id=20, stock__offer__id=40),
         incident__status=finance_models.IncidentStatus.CREATED,
+        incident__zendeskId=1,
     ).incident
     history_factories.ActionHistoryFactory(
         actionType=history_models.ActionType.FINANCE_INCIDENT_CREATED,
@@ -135,9 +136,14 @@ class ListIncidentsTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_list_incidents_without_filter(self, authenticated_client):
-        partial_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(newTotalAmount=8.10)
+        partial_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            newTotalAmount=8.10,
+            incident__zendeskId=1,
+        )
         total_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
-            newTotalAmount=0, incident__venue=offerers_factories.CaledonianVenueFactory()
+            newTotalAmount=0,
+            incident__venue=offerers_factories.CaledonianVenueFactory(),
+            incident__zendeskId=2,
         )
 
         url = url_for(self.endpoint)
@@ -153,11 +159,13 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Montant total"] == "10,10 € (1205 CFP)"
+        assert rows[0]["Ticket Zendesk"] == "2"
         assert rows[1]["ID"] == str(partial_booking_incident.incident.id)
         assert rows[1]["Statut de l'incident"] == "Créé"
         assert rows[1]["Type d'incident"] == "Trop Perçu"
         assert rows[1]["Nature"] == "Partiel"
         assert rows[1]["Montant total"] == "10,02 €"
+        assert rows[1]["Ticket Zendesk"] == "1"
 
     def test_list_incident_by_incident_id(self, authenticated_client, incidents):
         searched_id = str(incidents[0].id)
@@ -283,6 +291,22 @@ class ListIncidentsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == len(expected_results)
         assert {row["ID"] for row in rows} == expected_results
+
+    @pytest.mark.parametrize(
+        "zendesk_id,expected_incident",
+        [
+            (1, {"36"}),
+            (2, set()),
+        ],
+    )
+    def test_list_incident_by_zendesk_id(self, authenticated_client, incidents, zendesk_id, expected_incident):
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=zendesk_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == len(expected_incident)
+        assert {row["ID"] for row in rows} == expected_incident
 
     def test_list_incident_by_offerer(self, authenticated_client, incidents):
         offerer_id = incidents[0].venue.managingOffererId
