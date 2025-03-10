@@ -34,19 +34,4 @@ describe('Tooltip', () => {
       'visually-hidden'
     )
   })
-
-  it.skip('should prevent creation a tooltip on a non-interactive trigger', () => {
-    try {
-      render(
-        <Tooltip content="Tooltip content">
-          <span>Tooltip content</span>
-        </Tooltip>
-      )
-      expect(true).toBe(false)
-    } catch (e: unknown) {
-      expect(e).toContain(
-        'The tooltip immediate child must be an interactive element of one of the following types'
-      )
-    }
-  })
 })
