@@ -13,7 +13,7 @@ from pcapi.core.bookings import validation
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
-from pcapi.core.finance.enum import DepositType
+from pcapi.core.finance.models import DepositType
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db

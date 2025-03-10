@@ -8,16 +8,27 @@ import sqlalchemy.sql.functions as sqla_func
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
-from pcapi.core.finance.enum import DepositType
 
 
 INVOICE_LINE_INDIV_DICT = {
-    (finance_models.PricingLineCategory.OFFERER_REVENUE, DepositType.GRANT_18.name): "ORINDGRANT_18",
-    (finance_models.PricingLineCategory.OFFERER_CONTRIBUTION, DepositType.GRANT_18.name): "OCINDGRANT_18",
-    (finance_models.PricingLineCategory.COMMERCIAL_GESTURE, DepositType.GRANT_18.name): "CGINDGRANT_18",
-    (finance_models.PricingLineCategory.OFFERER_REVENUE, DepositType.GRANT_15_17.name): "ORINDGRANT_15_17",
-    (finance_models.PricingLineCategory.OFFERER_CONTRIBUTION, DepositType.GRANT_15_17.name): "OCINDGRANT_15_17",
-    (finance_models.PricingLineCategory.COMMERCIAL_GESTURE, DepositType.GRANT_15_17.name): "CGINDGRANT_15_17",
+    (finance_models.PricingLineCategory.OFFERER_REVENUE, finance_models.DepositType.GRANT_18.name): "ORINDGRANT_18",
+    (
+        finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        finance_models.DepositType.GRANT_18.name,
+    ): "OCINDGRANT_18",
+    (finance_models.PricingLineCategory.COMMERCIAL_GESTURE, finance_models.DepositType.GRANT_18.name): "CGINDGRANT_18",
+    (
+        finance_models.PricingLineCategory.OFFERER_REVENUE,
+        finance_models.DepositType.GRANT_15_17.name,
+    ): "ORINDGRANT_15_17",
+    (
+        finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        finance_models.DepositType.GRANT_15_17.name,
+    ): "OCINDGRANT_15_17",
+    (
+        finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
+        finance_models.DepositType.GRANT_15_17.name,
+    ): "CGINDGRANT_15_17",
     (
         finance_models.PricingLineCategory.OFFERER_REVENUE,
         bookings_models.BookingRecreditType.RECREDIT_18.name,

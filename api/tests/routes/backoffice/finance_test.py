@@ -16,7 +16,6 @@ from pcapi.core.finance import api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
-from pcapi.core.finance.enum import DepositType
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
@@ -1202,7 +1201,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
         finance_factories.IndividualBookingFinanceCommercialGestureFactory(
             incident=finance_incident,
             newTotalAmount=0,
-            booking__user__deposit__type=DepositType.GRANT_18,
+            booking__user__deposit__type=finance_models.DepositType.GRANT_18,
         )
         url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
 

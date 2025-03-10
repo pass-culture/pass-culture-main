@@ -4,7 +4,7 @@ from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 import pytest
 
-from pcapi.core.finance.enum import DepositType
+from pcapi.core.finance.models import DepositType
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.factories import BeneficiaryFraudReviewFactory
 from pcapi.core.users import models as users_models

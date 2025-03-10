@@ -24,7 +24,7 @@ from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
 
 from pcapi.connectors.dms import models as dms_models
-from pcapi.core.finance.enum import DepositType
+from pcapi.core.finance.models import DepositType
 from pcapi.core.geography.models import IrisFrance
 from pcapi.core.users import constants
 from pcapi.core.users import utils as users_utils
