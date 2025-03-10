@@ -85,9 +85,6 @@ export function AdageOfferHeader({
               )}
               <OfferShareLink
                 className={styles['offer-header-action']}
-                tooltipContentClassName={
-                  styles['offer-header-share-button-tooltip-content']
-                }
                 offer={offer}
               />
             </div>

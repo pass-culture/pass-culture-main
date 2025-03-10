@@ -90,9 +90,8 @@ export const ActivityForm = ({
                     }}
                     disabled={values.socialUrls.length <= 1}
                     className={styles['delete-button']}
-                  >
-                    Supprimer l’url
-                  </ListIconButton>
+                    tooltipContent={<>Supprimer l’url</>}
+                  />
                 </div>
               </FormLayout.Row>
             ))}

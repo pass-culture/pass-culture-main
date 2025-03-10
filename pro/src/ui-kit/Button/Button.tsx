@@ -5,8 +5,7 @@ import React, { ForwardedRef, forwardRef } from 'react'
 
 import strokePassIcon from 'icons/stroke-pass.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
-import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
+import { Tooltip, TooltipProps } from 'ui-kit/Tooltip/Tooltip'
 
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
@@ -14,9 +13,8 @@ import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 export interface ButtonProps
   extends SharedButtonProps,
     Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'title'> {
-  hasTooltip?: boolean
   isLoading?: boolean
-  tooltipContentClassName?: string
+  tooltipContent?: TooltipProps['content']
   iconClassName?: string
 }
 
@@ -54,16 +52,14 @@ export const Button = forwardRef(
       iconPosition = IconPositionEnum.LEFT,
       variant = ButtonVariant.PRIMARY,
       type = 'button',
-      hasTooltip,
       testId,
       isLoading = false,
       disabled,
-      tooltipContentClassName,
+      tooltipContent,
       ...buttonAttrs
     }: ButtonProps,
     buttonRef: ForwardedRef<HTMLButtonElement>
   ): JSX.Element => {
-    const { isTooltipHidden, ...tooltipProps } = useTooltipProps(buttonAttrs)
     const loadingDiv = (
       <div className={styles['spinner-icon']} data-testid="spinner">
         <SvgIcon src={strokePassIcon} alt="" />
@@ -76,14 +72,14 @@ export const Button = forwardRef(
             src={icon}
             alt={iconAlt}
             className={cn(styles['button-icon'], iconClassName, {
-              [styles['has-tooltip']]: hasTooltip,
+              [styles['has-tooltip']]: Boolean(tooltipContent),
             })}
             width="20"
           />
         )}
         <>
           {isLoading && loadingDiv}
-          {!isLoading && !hasTooltip && children}
+          {!isLoading && children}
         </>
         {icon && !isLoading && iconPosition === IconPositionEnum.RIGHT && (
           <SvgIcon
@@ -96,7 +92,7 @@ export const Button = forwardRef(
       </>
     )
 
-    return (
+    const button = (
       <button
         className={cn(
           styles['button'],
@@ -109,21 +105,16 @@ export const Button = forwardRef(
         data-testid={testId}
         disabled={disabled || isLoading}
         {...buttonAttrs}
-        {...(hasTooltip && tooltipProps)}
         ref={buttonRef}
       >
-        {hasTooltip ? (
-          <Tooltip
-            content={children}
-            visuallyHidden={isTooltipHidden}
-            tooltipContentClassName={tooltipContentClassName}
-          >
-            {content}
-          </Tooltip>
-        ) : (
-          content
-        )}
+        {content}
       </button>
+    )
+
+    return !tooltipContent ? (
+      button
+    ) : (
+      <Tooltip content={tooltipContent}>{button}</Tooltip>
     )
   }
 )

@@ -442,7 +442,9 @@ describe('StocksEventList', () => {
       stockCount: 2,
       hasStocks: true,
     })
-    await userEvent.click(screen.getAllByText('Supprimer')[0])
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer' })[0]
+    )
     expect(api.deleteStock).toHaveBeenCalledWith(stock1.id)
     expect(api.getStocks).toHaveBeenCalledTimes(1)
   })
@@ -455,7 +457,9 @@ describe('StocksEventList', () => {
       stockCount: 0,
       hasStocks: false,
     })
-    await userEvent.click(screen.getAllByText('Supprimer')[0])
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer' })[0]
+    )
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
     expect(mockMutate).toHaveBeenCalledTimes(1)
   })
