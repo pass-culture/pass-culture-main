@@ -67,11 +67,8 @@
     }
   }
 
-  &-footer {
-    @include formsM.field-layout-footer;
-  }
-
   &-error {
+    margin-top: rem.torem(8px);
     flex: 1;
 
     svg {
