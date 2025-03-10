@@ -1,27 +1,14 @@
 from datetime import datetime
 from datetime import timedelta
-from itertools import chain
 from itertools import count
 from itertools import cycle
 import typing
 
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
-
-
-MAINLAND_INTERVENTION_AREA = [str(i).zfill(2) for i in chain(range(1, 95), ["2A", "2B", "mainland"]) if i != 20]
-ALL_INTERVENTION_AREA = [
-    *MAINLAND_INTERVENTION_AREA,
-    "971",
-    "972",
-    "973",
-    "974",
-    "975",
-    "976",
-    "all",
-]
 
 
 VENUE_EDUCATIONAL_STATUS = {

@@ -669,6 +669,119 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"location": ["Cannot receive location, use offerVenue instead"]}
 
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_patch_collective_offer_template_with_location_type_school_must_not_receive_location_comment(self, client):
+        offer_ctx = build_offer_context()
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        payload = {
+            "location": {
+                "locationType": models.CollectiveLocationType.SCHOOL.value,
+                "locationComment": "FORBIDDEN COMMENT",
+                "address": None,
+            },
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "location.locationComment": ["locationComment is not allowed for the location type provided"]
+        }
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_patch_collective_offer_template_with_location_type_address_must_not_receive_location_comment(self, client):
+        offer_ctx = build_offer_context()
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        payload = {
+            "location": {
+                "locationType": models.CollectiveLocationType.ADDRESS.value,
+                "locationComment": "FORBIDDEN COMMENT",
+                "address": {
+                    "isVenueAddress": False,
+                    "isManualEdition": False,
+                    "city": "Paris",
+                    "label": "My address",
+                    "latitude": "48.87171",
+                    "longitude": "2.308289",
+                    "postalCode": "75001",
+                    "street": "3 Rue de Valois",
+                },
+            },
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "location.locationComment": ["locationComment is not allowed for the location type provided"]
+        }
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_patch_collective_offer_template_with_location_type_venue_must_not_receive_intervention_area(self, client):
+        offer_ctx = build_offer_context()
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        payload = {
+            "interventionArea": ["971"],
+            "location": {
+                "locationType": models.CollectiveLocationType.VENUE.value,
+                "locationComment": None,
+                "address": None,
+            },
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"interventionArea": ["intervention_area must not be provided"]}
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_patch_collective_offer_template_with_location_type_school_must_provide_intervention_area(self, client):
+        offer_ctx = build_offer_context()
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        payload = {
+            "interventionArea": None,
+            "location": {
+                "locationType": models.CollectiveLocationType.SCHOOL.value,
+                "locationComment": None,
+                "address": None,
+            },
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"interventionArea": ["intervention_area is required"]}
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_patch_collective_offer_template_with_location_type_school_must_provide_correct_intervention_area(
+        self, client
+    ):
+        offer_ctx = build_offer_context()
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        payload = {
+            "interventionArea": ["75", "1234"],
+            "location": {
+                "locationType": models.CollectiveLocationType.SCHOOL.value,
+                "locationComment": None,
+                "address": None,
+            },
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"interventionArea": ["intervention_area must be a valid area"]}
+
 
 class InvalidDatesTest:
     def test_missing_start(self, client):
