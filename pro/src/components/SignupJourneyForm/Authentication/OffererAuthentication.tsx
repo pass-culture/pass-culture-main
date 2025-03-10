@@ -42,7 +42,7 @@ export const OffererAuthentication = (): JSX.Element => {
     setOfferer({
       ...formValues,
       city: removeQuotes(formValues.city),
-      street: removeQuotes(formValues.street),
+      street: removeQuotes(formValues.street ?? ''),
       hasVenueWithSiret: false,
       legalCategoryCode: offerer?.legalCategoryCode,
     })

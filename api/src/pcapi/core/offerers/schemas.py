@@ -125,7 +125,7 @@ class AddressBodyModel(BaseModel):
     latitude: float | str
     longitude: float | str
     postalCode: VenuePostalCode
-    street: VenueAddress
+    street: str | None
 
     @validator("city")
     def title_city_when_manually_edited(cls, city: str, values: dict) -> str:

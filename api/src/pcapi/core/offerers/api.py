@@ -2037,8 +2037,6 @@ def create_from_onboarding_data(
     venue = offerers_repository.find_venue_by_siret(onboarding_data.siret)
     if not venue or onboarding_data.createVenueWithoutSiret:
         address = onboarding_data.address
-        if not address.street:
-            address = address.copy(update={"street": "n/d"})
         common_kwargs = dict(
             address=address,
             bookingEmail=user.email,
