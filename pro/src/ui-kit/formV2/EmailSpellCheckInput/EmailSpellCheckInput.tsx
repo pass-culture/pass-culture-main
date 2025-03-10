@@ -19,6 +19,7 @@ type EmailSpellCheckInputProps = {
   asterisk?: boolean
   error?: string
   className?: string
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
 }
 
 export const EmailSpellCheckInput = forwardRef(
@@ -33,6 +34,7 @@ export const EmailSpellCheckInput = forwardRef(
       required,
       asterisk = true,
       error,
+      ...props
     }: EmailSpellCheckInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
@@ -41,7 +43,7 @@ export const EmailSpellCheckInput = forwardRef(
     >()
 
     const handleEmailValidation = (
-      event: React.ChangeEvent<HTMLInputElement>
+      event: React.FocusEvent<HTMLInputElement>
     ) => {
       const fieldValue = event.target.value
       if (fieldValue.length > 0) {
@@ -50,6 +52,8 @@ export const EmailSpellCheckInput = forwardRef(
           setEmailValidationTip(suggestion)
         }
       }
+
+      props.onBlur?.(event)
     }
     const resetEmailValidation = () => {
       setEmailValidationTip(null)
@@ -71,6 +75,7 @@ export const EmailSpellCheckInput = forwardRef(
           required={required}
           asterisk={asterisk}
           error={error}
+          {...props}
         />
         {emailValidationTip && (
           <div className={styles['email-validation-error']}>
