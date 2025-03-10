@@ -6,6 +6,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: rem.torem(8px);
+  padding-top: rem.torem(8px);
 }
 
 .tag-extra-count {
