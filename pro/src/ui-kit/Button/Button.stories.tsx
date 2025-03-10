@@ -31,10 +31,6 @@ export default {
       options: [true, false],
       control: 'radio',
     },
-    hasTooltip: {
-      options: [true, false],
-      control: 'radio',
-    },
   },
   component: Button,
 }
@@ -66,11 +62,13 @@ export const DefaultSecondaryButton: StoryObj<typeof Button> = {
 export const WithTooltip: StoryObj<typeof Button> = {
   args: {
     ...DefaultButton.args,
-    children: 'Créer une offre réservable pour un établissement scolaire',
+    tooltipContent: (
+      <>Créer une offre réservable pour un établissement scolaire</>
+    ),
     icon: fullEditIcon,
     iconPosition: IconPositionEnum.CENTER,
     variant: ButtonVariant.SECONDARY,
-    hasTooltip: true,
+    children: null,
   },
 }
 
