@@ -15,6 +15,7 @@ from pydantic.v1 import validator
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import validation as educational_validation
+from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import validation as offers_validation
@@ -311,6 +312,29 @@ class CollectiveOfferLocationModel(BaseModel):
     locationComment: str | None
     address: offerers_schemas.AddressBodyModel | None
 
+    @validator("locationComment", pre=True)
+    def validate_location_comment(cls, location_comment: str | None, values: dict) -> str | None:
+        location_type = values.get("locationType")
+        if location_type != educational_models.CollectiveLocationType.TO_BE_DEFINED and location_comment is not None:
+            raise ValueError("locationComment is not allowed for the location type provided")
+        return location_comment
+
+    @validator("address", pre=True)
+    def validate_address(
+        cls, address: offerers_schemas.AddressBodyModel | None, values: dict
+    ) -> offerers_schemas.AddressBodyModel | None:
+        location_type = values.get("locationType")
+        if (
+            location_type
+            in (
+                educational_models.CollectiveLocationType.SCHOOL,
+                educational_models.CollectiveLocationType.TO_BE_DEFINED,
+            )
+            and address is not None
+        ):
+            raise ValueError("address is not allowed for the location type provided")
+        return address
+
 
 class PriceDetail(ConstrainedStr):
     max_length: int = 1_000
@@ -510,6 +534,28 @@ def is_intervention_area_valid(
     return True
 
 
+def validate_intervention_area_with_location(
+    intervention_area: list[str] | None,
+    location: CollectiveOfferLocationModel,
+) -> None:
+    # handle the case where it is None and []
+    if intervention_area:
+        if location.locationType in (
+            educational_models.CollectiveLocationType.ADDRESS,
+            educational_models.CollectiveLocationType.VENUE,
+        ):
+            raise ValueError("intervention_area must be empty")
+
+        if any(area for area in intervention_area if area not in ALL_INTERVENTION_AREA):
+            raise ValueError("intervention_area must be a valid area")
+    else:
+        if location.locationType in (
+            educational_models.CollectiveLocationType.TO_BE_DEFINED,
+            educational_models.CollectiveLocationType.SCHOOL,
+        ):
+            raise ValueError("intervention_area is required and must not be empty")
+
+
 class DateRangeModel(BaseModel):
     start: datetime
     end: datetime
@@ -632,8 +678,16 @@ class PostCollectiveOfferBodyModel(BaseModel):
         values: dict,
     ) -> list[str] | None:
         offer_venue = values.get("offer_venue", None)
-        if not is_intervention_area_valid(intervention_area, offer_venue):
-            raise ValueError("intervention_area must have at least one value")
+
+        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active():
+            location = values.get("location", None)
+            if location is not None:
+                validate_intervention_area_with_location(intervention_area, location)
+
+        else:
+            if not is_intervention_area_valid(intervention_area, offer_venue):
+                raise ValueError("intervention_area must have at least one value")
+
         return intervention_area
 
     @validator("booking_emails")
@@ -746,13 +800,21 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         return domains
 
     @validator("interventionArea")
-    def validate_intervention_area_not_empty_when_specified(
+    def validate_intervention_area(
         cls,
         intervention_area: list[str] | None,
         values: dict,
     ) -> list[str] | None:
-        if not is_intervention_area_valid(intervention_area, values.get("offerVenue", None)):
-            raise ValueError("interventionArea must have at least one value")
+        offer_venue = values.get("offerVenue", None)
+
+        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active():
+            location = values.get("location", None)
+            if location is not None:
+                validate_intervention_area_with_location(intervention_area, location)
+
+        else:
+            if not is_intervention_area_valid(intervention_area, offer_venue):
+                raise ValueError("must have at least one value")
 
         return intervention_area
 
