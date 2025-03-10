@@ -210,7 +210,9 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
                 postalCode=offerVenue.postalCode if offerVenue else None,
                 city=offerVenue.city if offerVenue else None,
                 distance=None,
-                **offer.offerVenue,
+                addressType=offer.offerVenue["addressType"],  # type: ignore[arg-type]
+                venueId=offer.offerVenue["venueId"],
+                otherAddress=offer.offerVenue["otherAddress"],
             ),
             contactEmail=offer.contactEmail,
             contactPhone=offer.contactPhone,
@@ -300,7 +302,9 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
                 postalCode=offerVenue.postalCode if offerVenue else None,
                 city=offerVenue.city if offerVenue else None,
                 distance=None,
-                **offer.offerVenue,
+                addressType=offer.offerVenue["addressType"],  # type: ignore[arg-type]
+                venueId=offer.offerVenue["venueId"],
+                otherAddress=offer.offerVenue["otherAddress"],
             ),
             durationMinutes=offer.durationMinutes,
             offerId=offer.offerId,
