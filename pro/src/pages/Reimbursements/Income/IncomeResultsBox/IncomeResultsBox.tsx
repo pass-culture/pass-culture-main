@@ -6,8 +6,8 @@ import type {
 } from 'apiClient/v1'
 import fullHelpIcon from 'icons/full-help.svg'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 
 import { isCollectiveAndIndividualRevenue, isCollectiveRevenue } from '../utils'
 
@@ -30,14 +30,20 @@ const IncomeResultsSubBox = ({ title, number, help }: IncomeSubBoxProps) => {
       <div className={styles['income-results-block-title']}>
         {title}
         {help && (
-          <Button
-            className={styles['income-results-block-tooltip']}
-            icon={fullHelpIcon}
-            iconAlt="À propos"
-            type="button"
-            tooltipContent={help}
-            variant={ButtonVariant.SECONDARY}
-          />
+          <div className={styles['income-results-block-tooltip']}>
+            <Tooltip content={help}>
+              <button
+                type="button"
+                className={styles['income-results-block-tooltip-button']}
+              >
+                <SvgIcon
+                  src={fullHelpIcon}
+                  alt="À propos"
+                  className={styles['income-results-block-tooltip-button-icon']}
+                />
+              </button>
+            </Tooltip>
+          </div>
         )}
       </div>
       <div className={styles['income-results-block-number']}>{numberStr}</div>
