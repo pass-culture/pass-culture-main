@@ -51,6 +51,7 @@ export const SignupForm = (): JSX.Element => {
             {...register('lastName')}
             error={errors.lastName?.message}
             autoComplete="family-name"
+            required
           />
         </FormLayout.Row>
         <FormLayout.Row>
@@ -59,6 +60,7 @@ export const SignupForm = (): JSX.Element => {
             {...register('firstName')}
             error={errors.firstName?.message}
             autoComplete="given-name"
+            required
           />
         </FormLayout.Row>
         <FormLayout.Row>
@@ -70,6 +72,7 @@ export const SignupForm = (): JSX.Element => {
             }}
             description="Format : email@exemple.com"
             label="Adresse email"
+            required
           />
         </FormLayout.Row>
         <FormLayout.Row>
@@ -78,6 +81,7 @@ export const SignupForm = (): JSX.Element => {
             error={errors.password?.message}
             label="Mot de passe"
             autoComplete="new-password"
+            required
           />
           <ValidationMessageList passwordValue={newPassword} />
         </FormLayout.Row>
@@ -105,6 +109,7 @@ export const SignupForm = (): JSX.Element => {
               label={
                 'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
               }
+              required
             />
           </FormLayout.Row>
         )}

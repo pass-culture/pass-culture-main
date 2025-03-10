@@ -43,12 +43,10 @@ export const validationSchema = (isNewSignupEnabled: boolean) => {
       // Adds "phoneNumber" validation
       phoneNumber: yup
         .string()
-        .min(10, 'Veuillez renseigner au moins 10 chiffres')
-        .max(20, 'Veuillez renseigner moins de 20 chiffres')
         .required('Veuillez renseigner un numéro de téléphone')
         .test(
           'isPhoneValid',
-          'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
+          'Veuillez renseigner un numéro de téléphone valide',
           isPhoneValid
         ),
     })
