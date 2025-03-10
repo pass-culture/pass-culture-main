@@ -39,12 +39,13 @@ describe('Adage confirmation', () => {
           method: 'GET',
           url: `/collective/offers/${offer.id}`,
         }).as('collectiveOfferDetails')
-        cy.request({
-          method: 'GET',
-          url: 'http://localhost:5001/sandboxes/clear_email_list',
-        }).then((res) => {
-          expect(res.status).to.eq(200)
-        })
+        cy.sandboxCall(
+          'GET',
+          'http://localhost:5001/sandboxes/clear_email_list',
+          (res) => {
+            expect(res.status).to.eq(200)
+          }
+        )
       }
     )
     cy.setFeatureFlags([
@@ -85,15 +86,15 @@ describe('Adage confirmation', () => {
       })
 
       cy.stepLog({ message: 'Check email received with booking ID' })
-      cy.request({
-        method: 'GET',
-        url: 'http://localhost:5001/sandboxes/get_unique_email',
-        timeout: 60000,
-      }).then((response) => {
-        expect(response.status).to.eq(200)
-        expect(response.body.To).to.eq(email1 + ', ' + email2)
-        expect(response.body.params.BOOKING_ID).to.eq(bookingId)
-      })
+      cy.sandboxCall(
+        'GET',
+        'http://localhost:5001/sandboxes/get_unique_email',
+        (response) => {
+          expect(response.status).to.eq(200)
+          expect(response.body.To).to.eq(email1 + ', ' + email2)
+          expect(response.body.params.BOOKING_ID).to.eq(bookingId)
+        }
+      )
 
       cy.stepLog({ message: 'I open the filters' })
       cy.findByText('Filtrer').click()
@@ -136,12 +137,13 @@ describe('Adage confirmation', () => {
 
       expectOffersOrBookingsAreFound(expectedResults)
 
-      cy.request({
-        method: 'GET',
-        url: 'http://localhost:5001/sandboxes/clear_email_list',
-      }).then((response) => {
-        expect(response.status).to.eq(200)
-      })
+      cy.sandboxCall(
+        'GET',
+        'http://localhost:5001/sandboxes/clear_email_list',
+        (response) => {
+          expect(response.status).to.eq(200)
+        }
+      )
 
       cy.stepLog({ message: 'Mock the Adage confirmation from the headmaster' })
       cy.request({
@@ -161,16 +163,16 @@ describe('Adage confirmation', () => {
       cy.stepLog({
         message: 'Check email received with a To, a Bcc and booking ID',
       })
-      cy.request({
-        method: 'GET',
-        url: 'http://localhost:5001/sandboxes/get_unique_email',
-        timeout: 60000,
-      }).then((response) => {
-        expect(response.status).to.eq(200)
-        expect(response.body.To).to.eq(email1)
-        expect(response.body.Bcc).to.eq(email2)
-        expect(response.body.params.BOOKING_ID).to.eq(bookingId)
-      })
+      cy.sandboxCall(
+        'GET',
+        'http://localhost:5001/sandboxes/get_unique_email',
+        (response) => {
+          expect(response.status).to.eq(200)
+          expect(response.body.To).to.eq(email1)
+          expect(response.body.Bcc).to.eq(email2)
+          expect(response.body.params.BOOKING_ID).to.eq(bookingId)
+        }
+      )
 
       cy.stepLog({ message: 'I reset all filters' })
       cy.findByText('Réinitialiser les filtres').click()
@@ -227,12 +229,13 @@ describe('Adage confirmation', () => {
         cy.get('select').invoke('val').should('be.empty')
       })
 
-      cy.request({
-        method: 'GET',
-        url: 'http://localhost:5001/sandboxes/clear_email_list',
-      }).then((response) => {
-        expect(response.status).to.eq(200)
-      })
+      cy.sandboxCall(
+        'GET',
+        'http://localhost:5001/sandboxes/clear_email_list',
+        (response) => {
+          expect(response.status).to.eq(200)
+        }
+      )
 
       cy.stepLog({ message: 'I cancel the booking' })
       cy.findByRole('button', { name: 'Voir les actions' }).click()
@@ -247,15 +250,15 @@ describe('Adage confirmation', () => {
       )
 
       cy.stepLog({ message: 'Check email received with a To and Bcc' })
-      cy.request({
-        method: 'GET',
-        url: 'http://localhost:5001/sandboxes/get_unique_email',
-        timeout: 60000,
-      }).then((response) => {
-        expect(response.status).to.eq(200)
-        expect(response.body.To).to.eq(email1)
-        expect(response.body.Bcc).to.eq(email2)
-      })
+      cy.sandboxCall(
+        'GET',
+        'http://localhost:5001/sandboxes/get_unique_email',
+        (response) => {
+          expect(response.status).to.eq(200)
+          expect(response.body.To).to.eq(email1)
+          expect(response.body.Bcc).to.eq(email2)
+        }
+      )
 
       cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
       cy.stepLog({ message: 'Offer is now canceled' })

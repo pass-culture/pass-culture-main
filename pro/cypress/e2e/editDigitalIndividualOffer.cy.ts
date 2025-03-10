@@ -11,12 +11,13 @@ describe('Edit digital individual offers', () => {
     before(() => {
       cy.wrap(Cypress.session.clearAllSavedSessions())
       cy.visit('/connexion')
-      cy.request({
-        method: 'GET',
-        url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user_with_virtual_offer',
-      }).then((response) => {
-        login1 = response.body.user.email
-      })
+      cy.sandboxCall(
+        'GET',
+        'http://localhost:5001/sandboxes/pro/create_regular_pro_user_with_virtual_offer',
+        (response) => {
+          login1 = response.body.user.email
+        }
+      )
     })
 
     it('An edited offer is displayed with 4 tabs', function () {
@@ -98,12 +99,14 @@ describe('Edit digital individual offers', () => {
     let login2: string
     before(() => {
       cy.visit('/connexion')
-      cy.request({
-        method: 'GET',
-        url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_bookings',
-      }).then((response) => {
-        login2 = response.body.user.email
-      })
+      cy.sandboxCall(
+        'GET',
+        'http://localhost:5001/sandboxes/pro/create_pro_user_with_bookings',
+        (response) => {
+          login2 = response.body.user.email
+        }
+      )
+      cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
     })
 
     it('I should be able to change offer date and it should change date in bookings', function () {
@@ -143,6 +146,7 @@ describe('Edit digital individual offers', () => {
 
       cy.stepLog({ message: 'Confirm modifications' })
       cy.findByText('Confirmer les modifications').click()
+      cy.wait('@postStocks')
       cy.stepLog({ message: 'Check that booking date has been modified' })
       cy.visit('/offre/individuelle/2/reservations')
       cy.findAllByTestId('spinner').should('not.exist')
