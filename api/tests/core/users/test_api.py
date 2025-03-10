@@ -635,6 +635,37 @@ class CreateBeneficiaryTest:
         assert fifteen_year_old.is_beneficiary
         assert fifteen_year_old.deposit.amount == 20
 
+    def test_user_ex_underage_gets_remaining_amount_transferred_even_if_expired(self):
+        # No time_travel for user creation here, because there is a call to get_wallet_ballance (which is a database function) in activate_beneficiary_for_eligibility.
+        # The database has its own time, ignoring all time_travel shenanigans.
+        a_year_go = datetime.datetime.utcnow() - relativedelta(years=1)
+        user = users_factories.BeneficiaryFactory(
+            validatedBirthDate=a_year_go - relativedelta(years=17),
+            roles=[users_models.UserRole.UNDERAGE_BENEFICIARY],
+            dateCreated=a_year_go,
+            deposit__type=finance_enum.DepositType.GRANT_15_17,
+            deposit__amount=30,
+            deposit__dateCreated=a_year_go,
+        )
+        bookings_factories.BookingFactory(user=user, amount=20)
+
+        # Mock an expired deposit
+        user.deposit.expirationDate = datetime.datetime.utcnow() - relativedelta(days=1)
+
+        # Finish steps for 18yo user
+        id_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, status=fraud_models.FraudCheckStatus.OK, type=fraud_models.FraudCheckType.UBBLE
+        )
+        user.phoneNumber = "+33612345678"
+        fraud_factories.HonorStatementFraudCheckFactory(user=user)
+
+        subscription_api.activate_beneficiary_for_eligibility(
+            user, id_fraud_check, users_models.EligibilityType.AGE17_18
+        )
+
+        assert user.deposit.type == finance_enum.DepositType.GRANT_17_18
+        assert user.deposit.amount == 150 + 10  # remaining amount after single 20€ booking
+
 
 @pytest.mark.usefixtures("db_session")
 class SetProTutoAsSeenTest:

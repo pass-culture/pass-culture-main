@@ -3204,6 +3204,17 @@ def upsert_deposit(
         if has_active_underage_deposit:
             expire_current_deposit_for_user(user)
 
+    # If the user has an underage deposit, and is eligibile for a 17-18 deposit, they sometimes will have an expired underage deposit. (This should not usually be the case.)
+    # To compensate, we extend the expiration date of the underage deposit to the future.
+    # The deposit will be expired by the following code anyway (cf. _recredit_user).
+    if (
+        eligibility == users_models.EligibilityType.AGE17_18
+        and user.deposit
+        and user.deposit.type == DepositType.GRANT_15_17
+        and not user.has_active_deposit
+    ):
+        user.deposit.expirationDate = datetime.datetime.utcnow() + relativedelta(hours=1)
+
     if not user.has_active_deposit:
         deposit = create_deposit(user, deposit_source, eligibility, age_at_registration)
         user.recreditAmountToShow = deposit.amount

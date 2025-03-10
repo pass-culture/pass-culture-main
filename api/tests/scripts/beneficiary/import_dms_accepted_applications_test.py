@@ -208,7 +208,7 @@ class RunIntegrationTest:
         deposits = finance_models.Deposit.query.filter_by(user=user).all()
         age_18_deposit = next(deposit for deposit in deposits if deposit.type == finance_models.DepositType.GRANT_17_18)
         assert len(deposits) == 2
-        assert age_18_deposit.amount == 150
+        assert age_18_deposit.amount == 150 + 20  # remaining amount
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS
