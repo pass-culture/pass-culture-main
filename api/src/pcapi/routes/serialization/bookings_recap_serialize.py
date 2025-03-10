@@ -183,7 +183,6 @@ class BookingsExportQueryModel(BaseModel):
 
 class ListBookingsQueryModel(BaseModel):
     page: int = 1
-    offerer_id: int | None
     venue_id: int | None
     offer_id: int | None
     event_date: date | None
