@@ -20,12 +20,14 @@
   }
 
   &-error {
-    margin-top: rem.torem(8px);
-
     svg {
       flex: 0 0 rem.torem(15px);
     }
   }
+}
+
+.field-error {
+  margin-top: rem.torem(8px);
 }
 
 .legend {
