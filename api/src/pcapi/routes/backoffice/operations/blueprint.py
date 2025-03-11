@@ -164,6 +164,14 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
             full_answers_subquery.label("full_answers"),
         )
         .filter(*response_rows_filters)
+        .outerjoin(operations_models.SpecialEventResponse.user)
+        .outerjoin(
+            finance_models.Deposit,
+            sa.and_(
+                users_models.User.id == finance_models.Deposit.userId,
+                finance_models.Deposit.expirationDate > sa.func.now(),
+            ),
+        )
         .options(
             sa.orm.joinedload(operations_models.SpecialEventResponse.user)
             .load_only(
@@ -174,7 +182,7 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
                 users_models.User.email,
                 users_models.User.roles,
             )
-            .joinedload(users_models.User.deposits)
+            .contains_eager(users_models.User.deposits)
             .load_only(
                 finance_models.Deposit.expirationDate,
                 finance_models.Deposit.type,
