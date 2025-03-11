@@ -18,7 +18,6 @@ import {
   selectIsIndividualSectionOpen,
 } from 'commons/store/nav/selector'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { selectCurrentUser } from 'commons/store/user/selectors'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import strokeCollaboratorIcon from 'icons/stroke-collaborator.svg'
@@ -46,7 +45,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const isNewCollectiveOffersStructureEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
-  const currentUser = useSelector(selectCurrentUser)
 
   const location = useLocation()
   const dispatch = useDispatch()
@@ -188,7 +186,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   </span>
                 </NavLink>
               </li>
-              {currentUser?.hasPartnerPage && venueId && (
+              {selectedOfferer?.hasPartnerPage && venueId && (
                 <li>
                   <NavLink
                     to={`/structures/${offererId}/lieux/${venueId}`}

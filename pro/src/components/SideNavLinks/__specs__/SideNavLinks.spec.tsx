@@ -23,7 +23,7 @@ import { SideNavLinks } from '../SideNavLinks'
 const renderSideNavLinks = (options: RenderWithProvidersOptions = {}) => {
   return renderWithProviders(<SideNavLinks isLateralPanelOpen={true} />, {
     initialRouterEntries: ['/'],
-    user: sharedCurrentUserFactory({ hasPartnerPage: true }),
+    user: sharedCurrentUserFactory(),
     ...options,
   })
 }
@@ -88,14 +88,16 @@ describe('SideNavLinks', () => {
   it('should display partner link if user as partner page', async () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
+      hasPartnerPage: true,
       managedVenues: [
         { ...defaultGetOffererVenueResponseModel, isPermanent: true, id: 17 },
       ],
     })
+
     renderSideNavLinks({
       storeOverrides: {
         user: {
-          currentUser: sharedCurrentUserFactory({ hasPartnerPage: true }),
+          currentUser: sharedCurrentUserFactory(),
         },
         offerer: currentOffererFactory(),
       },
@@ -107,8 +109,13 @@ describe('SideNavLinks', () => {
   })
 
   it('should not display partner link if user as no partner page', () => {
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      hasPartnerPage: false,
+    })
+
     renderSideNavLinks({
-      user: sharedCurrentUserFactory({ hasPartnerPage: false }),
+      user: sharedCurrentUserFactory(),
     })
 
     expect(screen.queryByText('Page sur l’application')).not.toBeInTheDocument()
@@ -120,11 +127,11 @@ describe('SideNavLinks', () => {
     renderSideNavLinks({
       storeOverrides: {
         user: {
-          currentUser: sharedCurrentUserFactory({ hasPartnerPage: false }),
+          currentUser: sharedCurrentUserFactory(),
         },
         offerer: currentOffererFactory(),
       },
-      user: sharedCurrentUserFactory({ hasPartnerPage: false }),
+      user: sharedCurrentUserFactory(),
     })
 
     await waitFor(() => {
