@@ -24,11 +24,12 @@ export const OffererAuthentication = (): JSX.Element => {
 
   const { offerer, setOfferer } = useSignupJourneyContext()
 
+  const maybeStreet = offerer?.street && `${offerer.street} `
   const initialValues: OffererAuthenticationFormValues = {
     ...DEFAULT_OFFERER_FORM_VALUES,
     ...offerer,
-    addressAutocomplete: `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`,
-    'search-addressAutocomplete': `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`,
+    addressAutocomplete: `${maybeStreet}${offerer?.postalCode} ${offerer?.city}`,
+    'search-addressAutocomplete': `${maybeStreet}${offerer?.postalCode} ${offerer?.city}`,
   }
 
   const handlePreviousStep = () => {
@@ -42,7 +43,7 @@ export const OffererAuthentication = (): JSX.Element => {
     setOfferer({
       ...formValues,
       city: removeQuotes(formValues.city),
-      street: formValues.street ? removeQuotes(formValues.street) : null,
+      street: formValues.street ? removeQuotes(formValues.street) : '',
       hasVenueWithSiret: false,
       legalCategoryCode: offerer?.legalCategoryCode,
     })

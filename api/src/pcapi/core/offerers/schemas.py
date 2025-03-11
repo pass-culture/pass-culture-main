@@ -81,7 +81,9 @@ class VenueBookingEmail(pydantic_v1.ConstrainedStr):
     max_length = 120
 
 
-class VenueAddress(RequiredStrippedString):
+class VenueAddress(pydantic_v1.ConstrainedStr):
+    strip_whitespace = True
+    # optional, hence no `min_length`
     max_length = 200
 
 
@@ -125,7 +127,7 @@ class AddressBodyModel(BaseModel):
     latitude: float | str
     longitude: float | str
     postalCode: VenuePostalCode
-    street: VenueAddress
+    street: VenueAddress | None
 
     @validator("city")
     def title_city_when_manually_edited(cls, city: str, values: dict) -> str:

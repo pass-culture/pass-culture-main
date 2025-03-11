@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
+import { beforeEach } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
@@ -14,7 +15,6 @@ import { Notification } from 'components/Notification/Notification'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
 
 import { OffererAuthentication } from '../OffererAuthentication'
-import { beforeEach } from 'vitest'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
@@ -237,7 +237,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
         publicName: '',
         'search-addressAutocomplete': '',
         siret: '123 456 789 33333',
-        street: null,
+        street: '',
       })
     })
 
