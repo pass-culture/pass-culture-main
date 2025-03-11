@@ -602,7 +602,7 @@ def handle_ok_manual_review(
 
     except finance_exceptions.UserHasAlreadyActiveDeposit as err:
         raise EligibilityError(
-            f"L'utilisateur bénéficie déjà d'un déposit non expiré du type '{eligibility.value}'"
+            f"L'utilisateur bénéficie déjà d'un crédit non expiré du type '{eligibility.value}'"
         ) from err
 
     except finance_exceptions.DepositTypeAlreadyGrantedException as err:
