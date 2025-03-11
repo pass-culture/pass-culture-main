@@ -4,6 +4,7 @@ import { api } from 'apiClient/api'
 import * as hooks from 'commons/hooks/swr/useOfferer'
 import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+import { currentOffererFactory, sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -30,6 +31,12 @@ const renderCollectiveOfferCreation = (
 ) => {
   renderWithProviders(<CollectiveOfferCreation {...props} />, {
     initialRouterEntries: [path],
+    storeOverrides: {
+      user: { currentUser: sharedCurrentUserFactory() },
+      offerer: currentOffererFactory({
+        selectedOffererId: 10
+      }),
+    },
   })
 }
 

@@ -77,7 +77,7 @@ export const OfferEducationalForm = ({
   const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
   const [isEligible, setIsEligible] = useState<boolean>()
 
-  const { setFieldValue, initialValues, dirty } =
+  const { setFieldValue, initialValues, dirty, values } =
     useFormikContext<OfferEducationalFormValues>()
 
   const { data: selectedOfferer } = useOfferer(userOfferer?.id)
@@ -148,7 +148,7 @@ export const OfferEducationalForm = ({
             Offre importée automatiquement
           </BannerPublicApi>
         )}
-        {!selectedOfferer?.isValidated ? (
+        {!selectedOfferer?.allowedOnAdage ? (
           <Callout
             variant={CalloutVariant.INFO}
             className={styles['no-offerer-callout']}
@@ -169,7 +169,7 @@ export const OfferEducationalForm = ({
                 offer={offer}
               />
             )}
-            {isEligible ? (
+            {values.offererId && values.venueId  && isEligible ? (
               <>
                 <FormOfferType
                   domainsOptions={domainsOptions}
