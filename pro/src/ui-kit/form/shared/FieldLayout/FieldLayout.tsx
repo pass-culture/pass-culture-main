@@ -181,14 +181,17 @@ export const FieldLayout = ({
         </div>
 
         <div className={classNameFooter}>
-          <div
-            role="alert"
-            className={styles['field-layout-error']}
-            id={`error-details-${name}`}
-          >
+          <div role="alert" id={`error-details-${name}`}>
             {showFooter && (hasError || Boolean(ErrorDetails)) && (
               <>
-                {hasError && <FieldError name={name}>{error}</FieldError>}
+                {hasError && (
+                  <FieldError
+                    className={styles['field-layout-error']}
+                    name={name}
+                  >
+                    {error}
+                  </FieldError>
+                )}
                 {ErrorDetails}
               </>
             )}
