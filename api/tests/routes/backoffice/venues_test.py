@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 from flask import url_for
 import pytest
+import sqlalchemy as sa
 
 from pcapi.connectors import api_adresse
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
@@ -2232,6 +2233,19 @@ class UpdateVenueTest(PostEndpointHelper):
         assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(response.data)
         db.session.refresh(venue)
         assert venue.accessibilityProvider.externalAccessibilityId == "mon-slug"
+
+    def test_update_venue_with_integrity_error(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        data = self._get_current_data(venue)
+
+        with patch("pcapi.core.offerers.api.update_venue", side_effect=sa.exc.IntegrityError("test", "test", "test")):
+            response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 400
+        assert (
+            "Une erreur s'est produite : (builtins.str) test [SQL: test] [parameters: 'test']"
+            in html_parser.extract_alert(response.data)
+        )
 
 
 class UpdateForFraudTest(PostEndpointHelper):
