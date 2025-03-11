@@ -1,6 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { format } from 'date-fns'
-import { FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
@@ -21,8 +20,8 @@ import { daysOfWeek } from 'pages/VenueEdition/OpeningHoursForm/OpeningHoursForm
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { BaseRadio, RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
+import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import style from './DownloadBookingsModal.module.scss'
 
@@ -37,6 +36,8 @@ export const DownloadBookingsModal = ({
   priceCategoryAndScheduleCountByDate,
   onCloseDialog,
 }: DownloadBookingsModalProps) => {
+  const [selectedBookingType, setSelectedBookingType] =
+    useState<BookingsExportStatusFilter>(BookingsExportStatusFilter.VALIDATED)
   const [selectedDate, setSelectedDate] = useState<string | undefined>(
     priceCategoryAndScheduleCountByDate.length === 1
       ? priceCategoryAndScheduleCountByDate[0].eventDate
@@ -45,14 +46,6 @@ export const DownloadBookingsModal = ({
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const { logEvent } = useAnalytics()
-
-  //  Form manager that is not the one used for the submit function, since there are two submit buttons inside this form
-  const formik = useFormik<{ selectBookingsType: BookingsExportStatusFilter }>({
-    initialValues: { selectBookingsType: BookingsExportStatusFilter.VALIDATED },
-    onSubmit: () => {},
-  })
-
-  const bookingsType = formik.values.selectBookingsType
 
   async function handleSubmit(
     event: React.SyntheticEvent<HTMLFormElement, SubmitEvent>
@@ -63,24 +56,24 @@ export const DownloadBookingsModal = ({
       downloadFile(
         await api.exportBookingsForOfferAsCsv(
           offerId,
-          bookingsType!,
+          selectedBookingType!,
           selectedDate!
         ),
-        `reservations-${bookingsType}-${selectedDate}.csv`
+        `reservations-${selectedBookingType}-${selectedDate}.csv`
       )
     } else if (fileFormat === BookingExportType.EXCEL) {
       downloadFile(
         await api.exportBookingsForOfferAsExcel(
           offerId,
-          bookingsType!,
+          selectedBookingType!,
           selectedDate!
         ),
-        `reservations-${bookingsType}-${selectedDate}.xlsx`
+        `reservations-${selectedBookingType}-${selectedDate}.xlsx`
       )
     }
     logEvent(Events.CLICKED_DOWNLOAD_OFFER_BOOKINGS, {
       format: fileFormat,
-      bookingStatus: bookingsType,
+      bookingStatus: selectedBookingType,
       offerId,
       offerType: 'individual',
       offererId: selectedOffererId?.toString(),
@@ -131,98 +124,100 @@ export const DownloadBookingsModal = ({
   }
 
   return (
-    <FormikProvider value={formik}>
-      <form onSubmit={handleSubmit} className={style['container']}>
-        <fieldset className={style['date-select-section']}>
-          {priceCategoryAndScheduleCountByDate.length === 1 ? (
-            <h2 className={style['one-booking-date-section']}>
-              Date de votre évènement :{' '}
-              {format(
-                new Date(priceCategoryAndScheduleCountByDate[0].eventDate),
-                FORMAT_DD_MM_YYYY
-              )}
-            </h2>
-          ) : (
-            <>
-              <legend>
-                <div>Sélectionnez la date :</div>
-              </legend>
-              <div className={style['bookings-date-count']}>
-                {pluralize(priceCategoryAndScheduleCountByDate.length, 'date')}
-              </div>
-              <hr className={style['horizontal-line']} />
-              <table className={style['date-select-table']}>
-                <thead className={style['date-select-table-header']}>
-                  <tr>
-                    <th scope="col" className={style['table-header']}>
-                      Date
-                    </th>
-                    <th className={style['table-header']} scope="col">
-                      Horaires
-                    </th>
-                    <th className={style['table-header']} scope="col">
-                      Tarifs
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {priceCategoryAndScheduleCountByDate.map((date) =>
-                    createDateRow(
-                      date.eventDate,
-                      date.scheduleCount,
-                      date.priceCategoriesCount
-                    )
-                  )}
-                </tbody>
-              </table>
-              <hr className={style['horizontal-line']} />
-            </>
-          )}
-        </fieldset>
-        <RadioGroup
-          legend="Sélectionnez le type de réservations :"
-          name="selectBookingsType"
-          group={[
-            {
-              label: 'Réservations confirmées et validées uniquement',
-              value: BookingsExportStatusFilter.VALIDATED,
-              description:
-                'Les réservations au statut confirmées et validées ne sont plus annulables par les bénéficiaires."',
-              icon: strokeDeskIcon,
-            },
-            {
-              label: 'Toutes les réservations',
-              value: BookingsExportStatusFilter.ALL,
-              description:
-                'Les réservations dont le statut n’est pas “confirmée” ou “validée” pourront encore être annulées par les bénéficiaires."',
-              icon: strokeDeskIcon,
-            },
-          ]}
-          variant={RadioVariant.BOX}
-        />
+    <form onSubmit={handleSubmit} className={style['container']}>
+      <fieldset className={style['date-select-section']}>
+        {priceCategoryAndScheduleCountByDate.length === 1 ? (
+          <h2 className={style['one-booking-date-section']}>
+            Date de votre évènement :{' '}
+            {format(
+              new Date(priceCategoryAndScheduleCountByDate[0].eventDate),
+              FORMAT_DD_MM_YYYY
+            )}
+          </h2>
+        ) : (
+          <>
+            <legend>
+              <div>Sélectionnez la date :</div>
+            </legend>
+            <div className={style['bookings-date-count']}>
+              {pluralize(priceCategoryAndScheduleCountByDate.length, 'date')}
+            </div>
+            <hr className={style['horizontal-line']} />
+            <table className={style['date-select-table']}>
+              <thead className={style['date-select-table-header']}>
+                <tr>
+                  <th scope="col" className={style['table-header']}>
+                    Date
+                  </th>
+                  <th className={style['table-header']} scope="col">
+                    Horaires
+                  </th>
+                  <th className={style['table-header']} scope="col">
+                    Tarifs
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {priceCategoryAndScheduleCountByDate.map((date) =>
+                  createDateRow(
+                    date.eventDate,
+                    date.scheduleCount,
+                    date.priceCategoriesCount
+                  )
+                )}
+              </tbody>
+            </table>
+            <hr className={style['horizontal-line']} />
+          </>
+        )}
+      </fieldset>
+      <RadioGroup
+        legend="Sélectionnez le type de réservations :"
+        name="selectedBookingType"
+        onChange={(e) => {
+          setSelectedBookingType(e.target.value as BookingsExportStatusFilter)
+        }}
+        checkedOption={selectedBookingType}
+        group={[
+          {
+            label: 'Réservations confirmées et validées uniquement',
+            value: BookingsExportStatusFilter.VALIDATED,
+            description:
+              'Les réservations au statut confirmées et validées ne sont plus annulables par les bénéficiaires."',
+            icon: strokeDeskIcon,
+          },
+          {
+            label: 'Toutes les réservations',
+            value: BookingsExportStatusFilter.ALL,
+            description:
+              'Les réservations dont le statut n’est pas “confirmée” ou “validée” pourront encore être annulées par les bénéficiaires."',
+            icon: strokeDeskIcon,
+          },
+        ]}
+        variant={RadioVariant.BOX}
+      />
 
-        <DialogBuilder.Footer>
-          <div className={style['actions']}>
-            <Dialog.Close asChild>
-              <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
-            </Dialog.Close>
-            <Button
-              variant={ButtonVariant.PRIMARY}
-              type="submit"
-              data-export={BookingExportType.CSV}
-            >
-              Télécharger format CSV
-            </Button>
-            <Button
-              variant={ButtonVariant.PRIMARY}
-              type="submit"
-              data-export={BookingExportType.EXCEL}
-            >
-              Télécharger format Excel
-            </Button>
-          </div>
-        </DialogBuilder.Footer>
-      </form>
-    </FormikProvider>
+      <DialogBuilder.Footer>
+        <div className={style['actions']}>
+          <Dialog.Close asChild>
+            <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+          </Dialog.Close>
+          <Button
+            variant={ButtonVariant.PRIMARY}
+            type="submit"
+            data-export={BookingExportType.CSV}
+          >
+            Télécharger format CSV
+          </Button>
+          <Button
+            variant={ButtonVariant.PRIMARY}
+            type="submit"
+            data-export={BookingExportType.EXCEL}
+          >
+            Télécharger format Excel
+          </Button>
+        </div>
+      </DialogBuilder.Footer>
+    </form>
   )
 }
