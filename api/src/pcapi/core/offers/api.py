@@ -1720,7 +1720,10 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
     if count_reimbursed_bookings > 0:
         raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
 
-    return offerers_repository.get_venues_with_same_pricing_point(offer)
+    venues_choices = offerers_repository.get_offerers_venues_with_pricing_point(offer.venue)
+    if not venues_choices:
+        raise exceptions.NoDestinationVenue()
+    return venues_choices
 
 
 def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
@@ -1745,7 +1748,10 @@ def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
     if count_reimbursed_bookings > 0:
         raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
 
-    return offerers_repository.get_venues_with_same_pricing_point(offer)
+    venues_choices = offerers_repository.get_offerers_venues_with_pricing_point(offer.venue)
+    if not venues_choices:
+        raise exceptions.NoDestinationVenue()
+    return venues_choices
 
 
 def _get_or_create_same_price_category_label(
