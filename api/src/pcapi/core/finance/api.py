@@ -3366,6 +3366,9 @@ def _can_be_recredited_v3(user: users_models.User, age: int | None = None) -> bo
         return False
     assert user.deposit is not None  # always True after the check above. Helps mypy.
 
+    if user.deposit.type == models.DepositType.GRANT_18:
+        return False
+
     # Handle old-new deposits transition
     if user.deposit.type == models.DepositType.GRANT_15_17:
         # In this very case, it is OK to aggressively cut the recredit at the exact time of the decree
@@ -3484,13 +3487,15 @@ def recredit_users() -> None:
 def recredit_users_by_id(user_ids: list[int]) -> None:
     failed_users = []
 
-    users = (
-        users_models.User.query.filter(users_models.User.id.in_(user_ids))
-        .options(sqla_orm.selectinload(users_models.User.deposits).selectinload(models.Deposit.recredits))
-        .all()
-    )
-    users_to_recredit = [user for user in users if user.deposit and _can_be_recredited(user)]
     with transaction():
+        users = (
+            users_models.User.query.filter(users_models.User.id.in_(user_ids))
+            .options(sqla_orm.selectinload(users_models.User.deposits).selectinload(models.Deposit.recredits))
+            .populate_existing()
+            .with_for_update()
+            .all()
+        )
+        users_to_recredit = [user for user in users if user.deposit and _can_be_recredited(user)]
         for user in users_to_recredit:
             try:
                 recredit_user_if_no_missing_step(user)
