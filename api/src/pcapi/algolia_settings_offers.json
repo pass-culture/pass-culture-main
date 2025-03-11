@@ -127,5 +127,12 @@
             "offer.searchGroupNamev2:CONCERTS_FESTIVALS",
             "offer.searchGroupNamev2:MUSEES_VISITES_CULTURELLES"
         ]
+    ],
+    "numericAttributesForFiltering": [
+            "offer.prices",
+            "offer.releaseDate",
+            "offer.dates",
+            "offer.times",
+            "offer.last30DaysBookings"
     ]
 }
