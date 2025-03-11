@@ -374,6 +374,7 @@ def get_export(
     booking_period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = BookingStatusFilter.BOOKED,
     event_date: date | None = None,
+    offerer_id: int | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
@@ -384,6 +385,7 @@ def get_export(
         period=booking_period,
         status_filter=status_filter,
         event_date=event_date,
+        offerer_id=offerer_id,
         venue_id=venue_id,
         offer_id=offer_id,
         offerer_address_id=offerer_address_id,
@@ -434,6 +436,7 @@ def _get_filtered_bookings_query(
     period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
+    offerer_id: int | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
@@ -493,6 +496,8 @@ def _get_filtered_bookings_query(
                     ]
                 )
             )
+    if offerer_id is not None:
+        bookings_query = bookings_query.filter(Booking.offererId == offerer_id)
 
     if venue_id is not None:
         bookings_query = bookings_query.filter(Booking.venueId == venue_id)
@@ -629,6 +634,7 @@ def _get_filtered_booking_report(
     period: tuple[date, date] | None,
     status_filter: BookingStatusFilter | None,
     event_date: date | None = None,
+    offerer_id: int | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
@@ -678,6 +684,7 @@ def _get_filtered_booking_report(
             period=period,
             status_filter=status_filter,
             event_date=event_date,
+            offerer_id=offerer_id,
             venue_id=venue_id,
             offer_id=offer_id,
             offerer_address_id=offerer_address_id,
