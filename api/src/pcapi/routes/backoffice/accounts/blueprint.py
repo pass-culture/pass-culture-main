@@ -625,7 +625,7 @@ def _get_tunnel_type(user: users_models.User) -> TunnelType:
     # Signup at 15 or 16 years old #
     ################################
     # After decree start
-    if age_at_decree_start < signup_age < users_constants.ELIGIBILITY_AGE_17:
+    if signup_age < users_constants.ELIGIBILITY_AGE_17 and user_creation_date >= settings.CREDIT_V3_DECREE_DATETIME:
         if age_now < users_constants.ELIGIBILITY_AGE_17:
             return TunnelType.NOT_ELIGIBLE
         if age_now == users_constants.ELIGIBILITY_AGE_17:
@@ -634,10 +634,10 @@ def _get_tunnel_type(user: users_models.User) -> TunnelType:
             return TunnelType.AGE17_18
 
     # Decree starts at age 15 or 16
-    if signup_age <= age_at_decree_start < users_constants.ELIGIBILITY_AGE_17:
+    if signup_age < users_constants.ELIGIBILITY_AGE_17 and age_at_decree_start < users_constants.ELIGIBILITY_AGE_17:
         if age_now < users_constants.ELIGIBILITY_AGE_17:
             return TunnelType.UNDERAGE
-        if age_now < users_constants.ELIGIBILITY_AGE_18:
+        if age_now == users_constants.ELIGIBILITY_AGE_17:
             return TunnelType.UNDERAGE_AGE17
         if age_now == users_constants.ELIGIBILITY_AGE_18:
             return TunnelType.UNDERAGE_AGE17_18
@@ -648,8 +648,10 @@ def _get_tunnel_type(user: users_models.User) -> TunnelType:
             return TunnelType.UNDERAGE
         if age_now == users_constants.ELIGIBILITY_AGE_17 and id_check_age_at_decree_start is None:
             return TunnelType.UNDERAGE_AGE17
-        if age_now == users_constants.ELIGIBILITY_AGE_18:
+        if age_now == users_constants.ELIGIBILITY_AGE_18 and id_check_age_at_decree_start is None:
             return TunnelType.UNDERAGE_AGE18
+        if age_now == users_constants.ELIGIBILITY_AGE_18 and id_check_age_at_decree_start is not None:
+            return TunnelType.UNDERAGE_AGE18_OLD
 
     # Decree start at age 18
     if signup_age < users_constants.ELIGIBILITY_AGE_17 and age_at_decree_start >= users_constants.ELIGIBILITY_AGE_18:
