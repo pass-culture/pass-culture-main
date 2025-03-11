@@ -4,10 +4,12 @@
 {% block page %}
   <div class="pt-3 px-5">
     <h1>Opérations spéciales</h1>
-    <div class="mt-4">
-      {{ build_modal_form("create-special-event", url_for("backoffice_web.operations.create_event") ,
-      create_form, "Importer une opération spéciale", "Importer une opération spéciale", "Importer") }}
-    </div>
+    {% if has_permission("MANAGE_SPECIAL_EVENTS") %}
+      <div class="mt-4">
+        {{ build_modal_form("create-special-event", url_for("backoffice_web.operations.create_event") ,
+        create_form, "Importer une opération spéciale", "Importer une opération spéciale", "Importer") }}
+      </div>
+    {% endif %}
     <div class="mt-4">
       <form name="filter-special-event"
             action="{{ dst }}"

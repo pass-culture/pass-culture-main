@@ -31,7 +31,7 @@ operations_blueprint = utils.child_backoffice_blueprint(
     "operations",
     __name__,
     url_prefix="/operations/",
-    permission=perm_models.Permissions.MANAGE_SPECIAL_EVENTS,
+    permission=perm_models.Permissions.READ_SPECIAL_EVENTS,
 )
 
 
@@ -82,6 +82,7 @@ def list_events() -> utils.BackofficeResponse:
 
 @operations_blueprint.route("", methods=["POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def create_event() -> utils.BackofficeResponse:
     form = operations_forms.CreateSpecialEventForm()
 
@@ -203,6 +204,7 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
 
 @operations_blueprint.route("/<int:special_event_id>/responses/<int:response_id>/validate", methods=["POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def validate_response(special_event_id: int, response_id: int) -> utils.BackofficeResponse:
     response = operations_models.SpecialEventResponse.query.filter_by(id=response_id).one_or_none()
     if not response:
@@ -219,6 +221,7 @@ def validate_response(special_event_id: int, response_id: int) -> utils.Backoffi
 
 @operations_blueprint.route("/<int:special_event_id>/responses/<int:response_id>/preselect", methods=["POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def preselect_response(special_event_id: int, response_id: int) -> utils.BackofficeResponse:
     response = operations_models.SpecialEventResponse.query.filter_by(id=response_id).one_or_none()
     if not response:
@@ -235,6 +238,7 @@ def preselect_response(special_event_id: int, response_id: int) -> utils.Backoff
 
 @operations_blueprint.route("/<int:special_event_id>/responses/<int:response_id>/reject", methods=["POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def reject_response(special_event_id: int, response_id: int) -> utils.BackofficeResponse:
     response = operations_models.SpecialEventResponse.query.filter_by(id=response_id).one_or_none()
     if not response:
@@ -251,6 +255,7 @@ def reject_response(special_event_id: int, response_id: int) -> utils.Backoffice
 
 @operations_blueprint.route("/<int:special_event_id>/responses/batch/validate", methods=["GET", "POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def get_batch_validate_responses_form(special_event_id: int) -> utils.BackofficeResponse:
     event = (
         operations_models.SpecialEvent.query.filter_by(id=special_event_id)
@@ -290,6 +295,7 @@ def get_batch_validate_responses_form(special_event_id: int) -> utils.Backoffice
 
 @operations_blueprint.route("/<int:special_event_id>/responses/batch-validate", methods=["POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def batch_validate_responses(special_event_id: int) -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
@@ -312,6 +318,7 @@ def batch_validate_responses(special_event_id: int) -> utils.BackofficeResponse:
 
 @operations_blueprint.route("/<int:special_event_id>/responses/batch/preselect", methods=["GET", "POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def get_batch_preselect_responses_form(special_event_id: int) -> utils.BackofficeResponse:
     event = operations_models.SpecialEvent.query.filter_by(id=special_event_id).one_or_none()
     if not event:
@@ -346,6 +353,7 @@ def get_batch_preselect_responses_form(special_event_id: int) -> utils.Backoffic
 
 @operations_blueprint.route("/<int:special_event_id>/responses/batch-preselect", methods=["POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def batch_preselect_responses(special_event_id: int) -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
@@ -369,6 +377,7 @@ def batch_preselect_responses(special_event_id: int) -> utils.BackofficeResponse
 
 @operations_blueprint.route("/<int:special_event_id>/responses/batch/reject", methods=["GET", "POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def get_batch_reject_responses_form(special_event_id: int) -> utils.BackofficeResponse:
     event = operations_models.SpecialEvent.query.filter_by(id=special_event_id).one_or_none()
     if not event:
@@ -400,6 +409,7 @@ def get_batch_reject_responses_form(special_event_id: int) -> utils.BackofficeRe
 
 @operations_blueprint.route("/<int:special_event_id>/responses/batch-reject", methods=["POST"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def batch_reject_responses(special_event_id: int) -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():

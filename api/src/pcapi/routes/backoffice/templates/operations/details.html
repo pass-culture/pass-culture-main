@@ -50,45 +50,50 @@
             <div class="px-3">
               <div class="filters">{{ build_filters_form(response_form, dst_response) }}</div>
             </div>
-            <div class="d-flex flex-row-reverse">
-              <div class="align-self-center flex-row-reverse"
-                   data-toggle="pc-batch-confirm-btn-group"
-                   data-toggle-id="table-container-operation-responses-btn-group"
-                   data-pc-table-multi-select-id="table-operation-responses-multiselect"
-                   data-input-ids-name="object_ids">
-                <button disabled
-                        type="button"
-                        class="btn btn-outline-primary"
-                        data-modal-selector="#batch-validate-response-modal"
-                        data-mode="fetch"
-                        data-fetch-url="{{ url_for('backoffice_web.operations.get_batch_validate_responses_form', special_event_id=special_event.id) }}"
-                        data-use-confirmation-modal="true">Retenir</button>
-                <button disabled
-                        type="button"
-                        class="btn btn-outline-primary"
-                        data-modal-selector="#batch-preselect-response-modal"
-                        data-mode="fetch"
-                        data-fetch-url="{{ url_for('backoffice_web.operations.get_batch_preselect_responses_form', special_event_id=special_event.id) }}"
-                        data-use-confirmation-modal="true">Présélectionner</button>
-                <button disabled
-                        type="button"
-                        class="btn btn-outline-primary"
-                        data-modal-selector="#batch-reject-response-modal"
-                        data-mode="fetch"
-                        data-fetch-url="{{ url_for('backoffice_web.operations.get_batch_reject_responses_form', special_event_id=special_event.id) }}"
-                        data-use-confirmation-modal="true">Rejeter</button>
+            {% set can_manage_event = has_permission("MANAGE_SPECIAL_EVENTS") %}
+            {% if can_manage_event %}
+              <div class="d-flex flex-row-reverse">
+                <div class="align-self-center flex-row-reverse"
+                     data-toggle="pc-batch-confirm-btn-group"
+                     data-toggle-id="table-container-operation-responses-btn-group"
+                     data-pc-table-multi-select-id="table-operation-responses-multiselect"
+                     data-input-ids-name="object_ids">
+                  <button disabled
+                          type="button"
+                          class="btn btn-outline-primary"
+                          data-modal-selector="#batch-validate-response-modal"
+                          data-mode="fetch"
+                          data-fetch-url="{{ url_for('backoffice_web.operations.get_batch_validate_responses_form', special_event_id=special_event.id) }}"
+                          data-use-confirmation-modal="true">Retenir</button>
+                  <button disabled
+                          type="button"
+                          class="btn btn-outline-primary"
+                          data-modal-selector="#batch-preselect-response-modal"
+                          data-mode="fetch"
+                          data-fetch-url="{{ url_for('backoffice_web.operations.get_batch_preselect_responses_form', special_event_id=special_event.id) }}"
+                          data-use-confirmation-modal="true">Présélectionner</button>
+                  <button disabled
+                          type="button"
+                          class="btn btn-outline-primary"
+                          data-modal-selector="#batch-reject-response-modal"
+                          data-mode="fetch"
+                          data-fetch-url="{{ url_for('backoffice_web.operations.get_batch_reject_responses_form', special_event_id=special_event.id) }}"
+                          data-use-confirmation-modal="true">Rejeter</button>
+                </div>
               </div>
-            </div>
+            {% endif %}
             <table class="table mb-4 my-4"
                    data-table-multi-select-id="table-operation-responses-multiselect">
               <thead>
                 <tr>
-                  <th scope="col">
-                    <input type="checkbox"
-                           class="form-check-input"
-                           name="pc-table-multi-select-check-all" />
-                  </th>
-                  <th scope="col"></th>
+                  {% if can_manage_event %}
+                    <th scope="col">
+                      <input type="checkbox"
+                             class="form-check-input"
+                             name="pc-table-multi-select-check-all" />
+                    </th>
+                    <th scope="col"></th>
+                  {% endif %}
                   <th scope="col">Candidat</th>
                   <th scope="col">Email</th>
                   <th scope="col">Téléphone</th>
@@ -102,57 +107,59 @@
                 {% for row in response_rows %}
                   {% set response = row.SpecialEventResponse %}
                   <tr>
-                    <td>
-                      <input type="checkbox"
-                             class="form-check-input"
-                             name="pc-table-multi-select-check-{{ response.id }}"
-                             data-id="{{ response.id }}" />
-                    </td>
-                    <td>
-                      <div class="dropdown">
-                        <button type="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                                class="btn p-0">
-                          <i class="bi bi-three-dots-vertical"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                          {% if response.status != response.status.VALIDATED %}
-                            <li class="dropdown-item p-0">
-                              <form action="{{ url_for('backoffice_web.operations.validate_response', special_event_id=special_event.id, response_id=response.id) }}"
-                                    name="{{ url_for('backoffice_web.operations.validate_response', special_event_id=special_event.id, response_id=response.id) | action_to_name }}"
-                                    method="post">
-                                {{ csrf_token }}
-                                <button type="submit"
-                                        class="btn btn-sm d-block w-100 text-start px-3">Retenir la candidature</button>
-                              </form>
-                            </li>
-                          {% endif %}
-                          {% if response.status != response.status.PRESELECTED %}
-                            <li class="dropdown-item p-0">
-                              <form action="{{ url_for('backoffice_web.operations.preselect_response', special_event_id=special_event.id, response_id=response.id) }}"
-                                    name="{{ url_for('backoffice_web.operations.preselect_response', special_event_id=special_event.id, response_id=response.id) | action_to_name }}"
-                                    method="post">
-                                {{ csrf_token }}
-                                <button type="submit"
-                                        class="btn btn-sm d-block w-100 text-start px-3">Présélectionner la candidature</button>
-                              </form>
-                            </li>
-                          {% endif %}
-                          {% if response.status != response.status.REJECTED %}
-                            <li class="dropdown-item p-0">
-                              <form action="{{ url_for('backoffice_web.operations.reject_response', special_event_id=special_event.id, response_id=response.id) }}"
-                                    name="{{ url_for('backoffice_web.operations.reject_response', special_event_id=special_event.id, response_id=response.id) | action_to_name }}"
-                                    method="post">
-                                {{ csrf_token }}
-                                <button type="submit"
-                                        class="btn btn-sm d-block w-100 text-start px-3">Rejeter la candidature</button>
-                              </form>
-                            </li>
-                          {% endif %}
-                        </ul>
-                      </div>
-                    </td>
+                    {% if can_manage_event %}
+                      <td>
+                        <input type="checkbox"
+                               class="form-check-input"
+                               name="pc-table-multi-select-check-{{ response.id }}"
+                               data-id="{{ response.id }}" />
+                      </td>
+                      <td>
+                        <div class="dropdown">
+                          <button type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  class="btn p-0">
+                            <i class="bi bi-three-dots-vertical"></i>
+                          </button>
+                          <ul class="dropdown-menu">
+                            {% if response.status != response.status.VALIDATED %}
+                              <li class="dropdown-item p-0">
+                                <form action="{{ url_for('backoffice_web.operations.validate_response', special_event_id=special_event.id, response_id=response.id) }}"
+                                      name="{{ url_for('backoffice_web.operations.validate_response', special_event_id=special_event.id, response_id=response.id) | action_to_name }}"
+                                      method="post">
+                                  {{ csrf_token }}
+                                  <button type="submit"
+                                          class="btn btn-sm d-block w-100 text-start px-3">Retenir la candidature</button>
+                                </form>
+                              </li>
+                            {% endif %}
+                            {% if response.status != response.status.PRESELECTED %}
+                              <li class="dropdown-item p-0">
+                                <form action="{{ url_for('backoffice_web.operations.preselect_response', special_event_id=special_event.id, response_id=response.id) }}"
+                                      name="{{ url_for('backoffice_web.operations.preselect_response', special_event_id=special_event.id, response_id=response.id) | action_to_name }}"
+                                      method="post">
+                                  {{ csrf_token }}
+                                  <button type="submit"
+                                          class="btn btn-sm d-block w-100 text-start px-3">Présélectionner la candidature</button>
+                                </form>
+                              </li>
+                            {% endif %}
+                            {% if response.status != response.status.REJECTED %}
+                              <li class="dropdown-item p-0">
+                                <form action="{{ url_for('backoffice_web.operations.reject_response', special_event_id=special_event.id, response_id=response.id) }}"
+                                      name="{{ url_for('backoffice_web.operations.reject_response', special_event_id=special_event.id, response_id=response.id) | action_to_name }}"
+                                      method="post">
+                                  {{ csrf_token }}
+                                  <button type="submit"
+                                          class="btn btn-sm d-block w-100 text-start px-3">Rejeter la candidature</button>
+                                </form>
+                              </li>
+                            {% endif %}
+                          </ul>
+                        </div>
+                      </td>
+                    {% endif %}
                     {% if response.user %}
                       <td>{{ links.build_public_user_name_to_details_link(response.user) }}</td>
                       <td>{{ response.user.email }}</td>
