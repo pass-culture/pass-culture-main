@@ -44,9 +44,9 @@
                 {{ links.build_bank_account_name_to_details_link(bank_account_link.bankAccount) }} ({{ bank_account_link.timespan.lower | format_date }})
               {% endif %}
             </p>
-            {% if incident.details.origin %}
+            {% if incident.origin %}
               <p class="mb-1">
-                <span class="fw-bold">Origine de la demande :</span> {{ incident.details.origin }}
+                <span class="fw-bold">Origine de la demande :</span> {{ incident.origin.value }}
               </p>
             {% endif %}
             {% if incident.zendeskId %}

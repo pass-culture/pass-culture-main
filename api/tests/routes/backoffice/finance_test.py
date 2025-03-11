@@ -185,7 +185,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Entité juridique"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == incidents[0].venue.name
-        assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
+        assert rows[0]["Origine de la demande"] == incidents[0].origin.value
 
     def test_list_incident_by_booking_id(self, authenticated_client, incidents):
         searched_id = str(incidents[0].booking_finance_incidents[0].bookingId)
@@ -205,7 +205,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Entité juridique"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == incidents[0].venue.name
-        assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
+        assert rows[0]["Origine de la demande"] == incidents[0].origin.value
 
     def test_list_incident_by_offer_id(self, authenticated_client, incidents):
         with testing.assert_num_queries(self.expected_num_queries):
@@ -234,7 +234,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Montant total"] == "100,00 €"
         assert rows[0]["Entité juridique"] == incidents[1].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == incidents[1].venue.name
-        assert rows[0]["Origine de la demande"] == incidents[1].details["origin"]
+        assert rows[0]["Origine de la demande"] == incidents[1].origin.value
 
     def test_list_incident_by_collective_offer_id(self, authenticated_client, incidents):
         with testing.assert_num_queries(self.expected_num_queries):
@@ -263,7 +263,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Entité juridique"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == incidents[0].venue.name
-        assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
+        assert rows[0]["Origine de la demande"] == incidents[0].origin.value
 
     def test_list_incident_by_status(self, authenticated_client, incidents, closed_incident):
         with testing.assert_num_queries(self.expected_num_queries):
@@ -326,7 +326,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Entité juridique"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == incidents[0].venue.name
-        assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
+        assert rows[0]["Origine de la demande"] == incidents[0].origin.value
 
     def test_list_incident_by_venue(self, authenticated_client, incidents):
         venue_id = incidents[1].venueId
@@ -1464,7 +1464,10 @@ class CreateOverpaymentTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
     @pytest.mark.parametrize("zendesk_id", [None, 1])
-    def test_create_incident_from_one_booking(self, legit_user, authenticated_client, invoiced_pricing, zendesk_id):
+    @pytest.mark.parametrize("comment", [None, "Commentaire facultatif"])
+    def test_create_incident_from_one_booking(
+        self, legit_user, authenticated_client, invoiced_pricing, zendesk_id, comment
+    ):
         booking = bookings_factories.ReimbursedBookingFactory(pricings=[invoiced_pricing])
 
         object_ids = str(booking.id)
@@ -1473,7 +1476,8 @@ class CreateOverpaymentTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "total_amount": booking.amount,
-                "origin": "Origine de la demande",
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": comment,
                 "zendesk_id": zendesk_id,
                 "kind": finance_models.IncidentType.OVERPAYMENT.name,
                 "object_ids": object_ids,
@@ -1488,12 +1492,14 @@ class CreateOverpaymentTest(PostEndpointHelper):
         assert finance_models.BookingFinanceIncident.query.count() == 1
         booking_finance_incident = finance_models.BookingFinanceIncident.query.first()
         assert booking_finance_incident.newTotalAmount == 0
+        assert booking_finance_incident.incident.origin == finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE
+        assert booking_finance_incident.incident.comment == comment
         assert booking_finance_incident.incident.zendeskId == zendesk_id
 
         action_history = history_models.ActionHistory.query.one()
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
         assert action_history.authorUser == legit_user
-        assert action_history.comment == "Origine de la demande"
+        assert action_history.comment == comment
 
         soup = html_parser.get_soup(response.data)
         alerts = soup.find_all("div", class_="alert")
@@ -1514,7 +1520,8 @@ class CreateOverpaymentTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "total_amount": booking.amount,
-                "origin": "Origine de la demande",
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": "Commentaire facultatif",
                 "kind": finance_models.IncidentType.OVERPAYMENT.name,
                 "object_ids": object_ids,
             },
@@ -1525,7 +1532,11 @@ class CreateOverpaymentTest(PostEndpointHelper):
 
         assert history_models.ActionHistory.query.count() == 0
 
-    def test_create_incident_from_multiple_booking(self, legit_user, authenticated_client, invoiced_pricing):
+    @pytest.mark.parametrize("zendesk_id", [None, 1])
+    @pytest.mark.parametrize("comment", [None, "Commentaire facultatif"])
+    def test_create_incident_from_multiple_booking(
+        self, legit_user, authenticated_client, invoiced_pricing, zendesk_id, comment
+    ):
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.OfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
@@ -1544,7 +1555,9 @@ class CreateOverpaymentTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "total_amount": total_booking_amount,
-                "origin": "Origine de la demande",
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": comment,
+                "zendesk_id": zendesk_id,
                 "kind": finance_models.IncidentType.OVERPAYMENT.name,
                 "object_ids": object_ids,
             },
@@ -1553,13 +1566,15 @@ class CreateOverpaymentTest(PostEndpointHelper):
         assert response.status_code == 303
         assert finance_models.FinanceIncident.query.count() == 1
         finance_incident = finance_models.FinanceIncident.query.first()
-        assert finance_incident.details["origin"] == "Origine de la demande"
+        assert finance_incident.comment == comment
+        assert finance_incident.zendeskId == zendesk_id
+        assert finance_incident.origin == finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE
         assert finance_models.BookingFinanceIncident.query.count() == 2
 
         action_history = history_models.ActionHistory.query.one()
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
         assert action_history.authorUser == legit_user
-        assert action_history.comment == "Origine de la demande"
+        assert action_history.comment == comment
 
     def test_not_create_overpayment_incident_from_used_booking(self, authenticated_client):
         booking = bookings_factories.UsedBookingFactory()
@@ -1570,7 +1585,8 @@ class CreateOverpaymentTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "total_amount": booking.amount,
-                "origin": "Origine de la demande",
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": "Commentaire facultatif",
                 "kind": finance_models.IncidentType.OVERPAYMENT.name,
                 "object_ids": object_ids,
             },
@@ -1696,8 +1712,9 @@ class CreateCommercialGestureTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
     @pytest.mark.parametrize("zendesk_id", [None, 1])
+    @pytest.mark.parametrize("comment", [None, "Commentaire facultatif"])
     def test_create_commercial_gesture_incident_from_one_booking_without_deposit_balance(
-        self, legit_user, authenticated_client, zendesk_id
+        self, legit_user, authenticated_client, zendesk_id, comment
     ):
         booking = bookings_factories.CancelledBookingFactory(
             quantity=1,
@@ -1711,7 +1728,8 @@ class CreateCommercialGestureTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "total_amount": total_amount,
-                "origin": "Origine de la demande",
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": comment,
                 "zendesk_id": zendesk_id,
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
@@ -1724,12 +1742,14 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         assert finance_models.BookingFinanceIncident.query.count() == 1
         booking_finance_incident = finance_models.BookingFinanceIncident.query.first()
         assert booking_finance_incident.newTotalAmount == 0
+        assert booking_finance_incident.incident.origin == finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE
+        assert booking_finance_incident.incident.comment == comment
         assert booking_finance_incident.incident.zendeskId == zendesk_id
 
         action_history = history_models.ActionHistory.query.one()
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
         assert action_history.authorUser == legit_user
-        assert action_history.comment == "Origine de la demande"
+        assert action_history.comment == comment
 
     def test_create_commercial_gesture_incident_from_one_booking_with_deposit_balance(
         self, legit_user, authenticated_client
@@ -1742,7 +1762,8 @@ class CreateCommercialGestureTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "total_amount": total_amount,
-                "origin": "Origine de la demande",
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": "Commentaire facultatif",
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
             },
@@ -1767,7 +1788,8 @@ class CreateCommercialGestureTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "total_amount": total_amount,
-                "origin": "Origine de la demande",
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": "Commentaire facultatif",
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
             },
@@ -1792,7 +1814,8 @@ class CreateCommercialGestureTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "total_amount": booking.amount * decimal.Decimal(1.21),
-                "origin": "Origine de la demande",
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": "Commentaire facultatif",
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
             },
@@ -1830,7 +1853,8 @@ class CreateCommercialGestureTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "total_amount": total_booking_amount,
-                "origin": "Origine de la demande",
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": "Commentaire facultatif",
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
             },
@@ -1847,7 +1871,8 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
     @pytest.mark.parametrize("zendesk_id", [None, 1])
-    def test_create_incident(self, authenticated_client, invoiced_collective_pricing, zendesk_id):
+    @pytest.mark.parametrize("comment", [None, "Commentaire facultatif"])
+    def test_create_incident(self, authenticated_client, invoiced_collective_pricing, zendesk_id, comment):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
             pricings=[invoiced_collective_pricing]
         )
@@ -1855,7 +1880,8 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form={
-                "origin": "Demande E-mail",
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": comment,
                 "kind": finance_models.IncidentType.OVERPAYMENT.name,
                 "zendesk_id": zendesk_id,
             },
@@ -1866,7 +1892,8 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
 
         finance_incidents = finance_models.FinanceIncident.query.all()
         assert len(finance_incidents) == 1
-        assert finance_incidents[0].details["origin"] == "Demande E-mail"
+        assert finance_incidents[0].origin == finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE
+        assert finance_incidents[0].comment == comment
         assert finance_incidents[0].zendeskId == zendesk_id
         assert finance_incidents[0].kind == finance_models.IncidentType.OVERPAYMENT
 
@@ -1895,7 +1922,11 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"origin": "Demande E-mail", "kind": finance_models.IncidentType.OVERPAYMENT.name},
+            form={
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": "Demande E-mail",
+                "kind": finance_models.IncidentType.OVERPAYMENT.name,
+            },
             collective_booking_id=collective_booking.id,
             follow_redirects=True,
         )

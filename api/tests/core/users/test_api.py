@@ -913,7 +913,8 @@ class DomainsCreditTest:
         incident2 = finance_api.create_overpayment_finance_incident(
             bookings=[booking2],
             author=author_user,
-            origin="BO",
+            origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="BO",
             amount=Decimal("6.0"),
         )
         finance_api.validate_finance_overpayment_incident(
@@ -927,7 +928,8 @@ class DomainsCreditTest:
         incident3 = finance_api.create_overpayment_finance_incident(
             bookings=[booking3],
             author=author_user,
-            origin="BO",
+            origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="BO",
             amount=Decimal("5.0"),
         )
         finance_api.validate_finance_overpayment_incident(
@@ -1030,7 +1032,8 @@ class DomainsCreditTest:
         incident2 = finance_api.create_overpayment_finance_incident(
             bookings=[booking2],
             author=author_user,
-            origin="BO",
+            origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="BO",
             amount=Decimal("6.0"),
         )
         finance_api.validate_finance_overpayment_incident(
@@ -1044,7 +1047,8 @@ class DomainsCreditTest:
         incident3 = finance_api.create_overpayment_finance_incident(
             bookings=[booking3],
             author=author_user,
-            origin="BO",
+            origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="BO",
             amount=Decimal("5.0"),
         )
         finance_api.validate_finance_overpayment_incident(
@@ -1123,7 +1127,8 @@ class DomainsCreditTest:
         incident2 = finance_api.create_overpayment_finance_incident(
             bookings=[booking2],
             author=author_user,
-            origin="BO",
+            origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="BO",
             amount=Decimal("45.0"),
         )
         finance_api.validate_finance_overpayment_incident(
@@ -1137,7 +1142,8 @@ class DomainsCreditTest:
         incident3 = finance_api.create_overpayment_finance_incident(
             bookings=[booking3],
             author=author_user,
-            origin="BO",
+            origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="BO",
             amount=Decimal("9.0"),
         )
         finance_api.validate_finance_overpayment_incident(
@@ -1213,7 +1219,8 @@ class DomainsCreditTest:
         incident2 = finance_api.create_overpayment_finance_incident(
             bookings=[booking2],
             author=author_user,
-            origin="BO",
+            origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="BO",
             amount=Decimal("45.0"),
         )
         finance_api.validate_finance_overpayment_incident(
@@ -1227,7 +1234,8 @@ class DomainsCreditTest:
         incident3 = finance_api.create_overpayment_finance_incident(
             bookings=[booking3],
             author=author_user,
-            origin="BO",
+            origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="BO",
             amount=Decimal("12.0"),
         )
         finance_api.validate_finance_overpayment_incident(

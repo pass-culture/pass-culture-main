@@ -310,7 +310,8 @@ def test_generate_invoice_file_with_debit_note(run_command, tmp_path, monkeypatc
     incident = finance_api.create_overpayment_finance_incident(
         bookings=[booking1],
         author=author_user,
-        origin="BO",
+        origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+        comment="BO",
         amount=Decimal("30"),
     )
 

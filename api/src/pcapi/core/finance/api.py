@@ -3675,10 +3675,12 @@ def update_bank_account_venues_links(
 
 
 def create_overpayment_finance_incident(
+    *,
     bookings: list[bookings_models.Booking],
     author: users_models.User,
-    origin: str,
+    origin: models.FinanceIncidentRequestOrigin,
     zendesk_id: int | None = None,
+    comment: str | None = None,
     amount: decimal.Decimal | None = None,
 ) -> models.FinanceIncident:
     incident = models.FinanceIncident(
@@ -3686,11 +3688,12 @@ def create_overpayment_finance_incident(
         status=models.IncidentStatus.CREATED,
         venueId=bookings[0].venueId,
         details={
-            "origin": origin,
             "authorId": author.id,
             "createdAt": datetime.datetime.utcnow().isoformat(),
         },
         zendeskId=zendesk_id,
+        origin=origin,
+        comment=comment,
     )
     db.session.add(incident)
     db.session.flush()
@@ -3724,7 +3727,7 @@ def create_overpayment_finance_incident(
         history_models.ActionType.FINANCE_INCIDENT_CREATED,
         author=author,
         finance_incident=incident,
-        comment=origin,
+        comment=comment,
     )
 
     db.session.flush()
@@ -3735,19 +3738,21 @@ def create_overpayment_finance_incident(
 def create_overpayment_finance_incident_collective_booking(
     booking: educational_models.CollectiveBooking,
     author: users_models.User,
-    origin: str,
+    origin: models.FinanceIncidentRequestOrigin,
     zendesk_id: int | None = None,
+    comment: str | None = None,
 ) -> models.FinanceIncident:
     incident = models.FinanceIncident(
         kind=models.IncidentType.OVERPAYMENT,
         status=models.IncidentStatus.CREATED,
         venueId=booking.venueId,
         details={
-            "origin": origin,
             "authorId": author.id,
             "createdAt": datetime.datetime.utcnow().isoformat(),
         },
         zendeskId=zendesk_id,
+        origin=origin,
+        comment=comment,
     )
     db.session.add(incident)
     db.session.flush()
@@ -3763,7 +3768,7 @@ def create_overpayment_finance_incident_collective_booking(
         history_models.ActionType.FINANCE_INCIDENT_CREATED,
         author=author,
         finance_incident=incident,
-        comment=origin,
+        comment=comment,
     )
 
     db.session.flush()
@@ -3772,22 +3777,25 @@ def create_overpayment_finance_incident_collective_booking(
 
 
 def create_finance_commercial_gesture(
+    *,
     bookings: list[bookings_models.Booking],
     amount: decimal.Decimal,
     author: users_models.User,
-    origin: str,
+    origin: models.FinanceIncidentRequestOrigin,
     zendesk_id: int | None = None,
+    comment: str | None = None,
 ) -> models.FinanceIncident:
     incident = models.FinanceIncident(
         kind=models.IncidentType.COMMERCIAL_GESTURE,
         status=models.IncidentStatus.CREATED,
         venueId=bookings[0].venueId,
         details={
-            "origin": origin,
             "authorId": author.id,
             "createdAt": datetime.datetime.utcnow().isoformat(),
         },
         zendeskId=zendesk_id,
+        origin=origin,
+        comment=comment,
     )
     db.session.add(incident)
     db.session.flush()
@@ -3832,7 +3840,7 @@ def create_finance_commercial_gesture(
         history_models.ActionType.FINANCE_INCIDENT_CREATED,
         author=author,
         finance_incident=incident,
-        comment=origin,
+        comment=comment,
     )
     db.session.flush()
     return incident
@@ -3841,19 +3849,21 @@ def create_finance_commercial_gesture(
 def create_finance_commercial_gesture_collective_booking(
     booking: educational_models.CollectiveBooking,
     author: users_models.User,
-    origin: str,
+    origin: models.FinanceIncidentRequestOrigin,
     zendesk_id: int | None = None,
+    comment: str | None = None,
 ) -> models.FinanceIncident:
     incident = models.FinanceIncident(
         kind=models.IncidentType.COMMERCIAL_GESTURE,
         status=models.IncidentStatus.CREATED,
         venueId=booking.venueId,
         details={
-            "origin": origin,
             "authorId": author.id,
             "createdAt": datetime.datetime.utcnow().isoformat(),
         },
         zendeskId=zendesk_id,
+        origin=origin,
+        comment=comment,
     )
     db.session.add(incident)
     db.session.flush()
@@ -3867,7 +3877,7 @@ def create_finance_commercial_gesture_collective_booking(
         history_models.ActionType.FINANCE_INCIDENT_CREATED,
         author=author,
         finance_incident=incident,
-        comment=origin,
+        comment=comment,
     )
     db.session.flush()
     return incident
