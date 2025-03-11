@@ -1736,7 +1736,11 @@ def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
     if count_reimbursed_bookings > 0:
         raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
 
-    venues_choices = offerers_repository.get_offerers_venues_with_pricing_point(offer.venue)
+    venues_choices = offerers_repository.get_offerers_venues_with_pricing_point(
+        offer.venue,
+        include_without_pricing_points=True,
+        check_pricing_points=True,
+    )
     if not venues_choices:
         raise exceptions.NoDestinationVenue()
     return venues_choices
@@ -1773,8 +1777,9 @@ def move_offer(
         raise exceptions.ForbiddenDestinationVenue()
 
     destination_pricing_point_link = destination_venue.current_pricing_point_link
-    assert destination_pricing_point_link  # for mypy - it would not be in venue_choices without link
-    destination_pricing_point_id = destination_pricing_point_link.pricingPointId
+    destination_pricing_point_id = None
+    if destination_pricing_point_link:
+        destination_pricing_point_id = destination_pricing_point_link.pricingPointId
 
     bookings = (
         bookings_models.Booking.query.join(bookings_models.Booking.stock)
@@ -1841,7 +1846,6 @@ def move_offer(
                     finance_event.status = finance_models.FinanceEventStatus.READY
                     finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(booking)
                 db.session.add(finance_event)
-
             db.session.add(booking)
 
     on_commit(

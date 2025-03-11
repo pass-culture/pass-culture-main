@@ -48,6 +48,7 @@ import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.notifications.push import testing as push_testing
@@ -4586,3 +4587,148 @@ class EditPriceCategoryTest:
         assert error.value.errors["idAtProvider"] == [
             "`aHÇaVaBugguer` is already taken by another offer price category"
         ]
+
+
+@pytest.mark.usefixtures("db_session")
+@pytest.mark.features(MOVE_OFFER_TEST=True)
+class MoveOfferTest:
+    def test_move_physical_offer_without_pricing_point(self):
+        """Moving an offer from a venue without pricing point to another venue
+        without pricing point should work"""
+        offer = factories.OfferFactory()
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        assert offer.venue.current_pricing_point is None
+        assert new_venue.current_pricing_point is None
+
+        api.move_offer(offer, new_venue)
+
+        db.session.refresh(offer)
+        assert offer.venue == new_venue
+
+    def test_move_physical_offer_with_different_pricing_point(self):
+        """Moving a physical offer from a venue to another venue without
+        a pricing point should raise an exception"""
+        offer = factories.OfferFactory()
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        offerers_factories.VenuePricingPointLinkFactory(
+            venue=offer.venue,
+            pricingPoint=offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer),
+            timespan=[datetime.utcnow() - timedelta(days=7), None],
+        )
+        offerers_factories.VenuePricingPointLinkFactory(
+            venue=new_venue,
+            pricingPoint=offerers_factories.VenueFactory(managingOfferer=new_venue.managingOfferer),
+            timespan=[datetime.utcnow() - timedelta(days=7), None],
+        )
+        assert offer.venue.current_pricing_point != new_venue.current_pricing_point
+
+        with pytest.raises(exceptions.NoDestinationVenue):
+            api.move_offer(offer, new_venue)
+
+        db.session.refresh(offer)
+        assert offer.venue != new_venue
+
+    def test_move_event_offer_with_past_stocks(self):
+        """Moving an event offer with past stocks should be possible"""
+        today = date.today()
+        yesterday = today - timedelta(days=1)
+        tomorow = today + timedelta(days=1)
+
+        offer = factories.EventOfferFactory()
+        factories.EventStockFactory(
+            offer=offer,
+            quantity=10,
+            beginningDatetime=yesterday,
+        )
+        factories.EventStockFactory(
+            offer=offer,
+            quantity=10,
+            beginningDatetime=today,
+        )
+        factories.EventStockFactory(
+            offer=offer,
+            quantity=10,
+            beginningDatetime=tomorow,
+        )
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        api.move_offer(offer, new_venue)
+
+        db.session.refresh(offer)
+        assert offer.venue == new_venue
+
+    def create_offer_by_state(self, venue, state):
+        offer = None
+        if state == OfferValidationStatus.DRAFT:
+            offer = factories.OfferFactory(venue=venue, validation=OfferValidationStatus.DRAFT)
+        if state == OfferStatus.ACTIVE:
+            offer = factories.OfferFactory(venue=venue)
+        if state == "planned":
+            offer = factories.OfferFactory(venue=venue)
+            factories.FutureOfferFactory(offer=offer)
+        if state == OfferValidationStatus.PENDING:
+            offer = factories.OfferFactory(venue=venue, validation=OfferValidationStatus.PENDING)
+        if state == OfferValidationStatus.REJECTED:
+            offer = factories.OfferFactory(venue=venue, validation=OfferValidationStatus.REJECTED)
+        if state == OfferStatus.INACTIVE:
+            offer = factories.OfferFactory(venue=venue, isActive=False)
+        if state == OfferStatus.SOLD_OUT:
+            offer = factories.OfferFactory(venue=venue)
+            stock = factories.StockFactory(offer=offer, quantity=1)
+            bookings_factories.UsedBookingFactory(stock=stock)
+        if state == OfferStatus.EXPIRED:
+            offer = factories.EventOfferFactory(venue=venue)
+            factories.EventStockFactory(
+                offer=offer, quantity=10, beginningDatetime=datetime.utcnow() - timedelta(days=30)
+            )
+        if state == bookings_models.BookingStatus.CONFIRMED:
+            offer = factories.OfferFactory(venue=venue)
+            stock = factories.StockFactory(offer=offer, quantity=2)
+            bookings_factories.BookingFactory(stock=stock)
+        if state == bookings_models.BookingStatus.CANCELLED:
+            offer = factories.OfferFactory(venue=venue)
+            stock = factories.StockFactory(offer=offer, quantity=2)
+            bookings_factories.CancelledBookingFactory(stock=stock)
+        if state == bookings_models.BookingStatus.REIMBURSED:
+            offer = factories.OfferFactory(venue=venue)
+            stock = factories.StockFactory(offer=offer, quantity=2)
+            bookings_factories.ReimbursedBookingFactory(stock=stock)
+            # TODO(xordoquy): might add finance stuffs too
+        if state == bookings_models.BookingStatus.USED:
+            offer = factories.OfferFactory(venue=venue)
+            stock = factories.StockFactory(offer=offer, quantity=2)
+            bookings_factories.UsedBookingFactory(stock=stock)
+        return offer
+
+    @pytest.mark.parametrize(
+        "state",
+        [
+            OfferValidationStatus.DRAFT,
+            OfferStatus.ACTIVE,
+            "planned",
+            OfferValidationStatus.PENDING,
+            OfferValidationStatus.REJECTED,
+            OfferStatus.INACTIVE,
+            OfferStatus.SOLD_OUT,
+            OfferStatus.EXPIRED,
+            bookings_models.BookingStatus.CONFIRMED,
+            bookings_models.BookingStatus.CANCELLED,
+            bookings_models.BookingStatus.USED,
+        ],
+    )
+    def test_move_offer_with_different_statuses(self, state):
+        venue = offerers_factories.VenueFactory()
+        new_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        offer = self.create_offer_by_state(venue, state)
+
+        api.move_offer(offer, new_venue)
+
+        db.session.refresh(offer)
+        assert offer.venue == new_venue
+        if state in (
+            OfferStatus.SOLD_OUT,
+            bookings_models.BookingStatus.CONFIRMED,
+            bookings_models.BookingStatus.CANCELLED,
+            bookings_models.BookingStatus.USED,
+        ):
+            assert bookings_models.Booking.query.count() == 1
+            assert bookings_models.Booking.query.all()[0].venue == new_venue
