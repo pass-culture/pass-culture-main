@@ -1191,7 +1191,7 @@ def check_can_move_collective_offer_venue(
     if count_reimbursed_bookings > 0:
         raise offers_exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
 
-    return offers_api.get_venues_with_same_pricing_point(collective_offer)
+    return offerers_repository.get_venues_with_same_pricing_point(collective_offer)
 
 
 def move_collective_offer_venue(

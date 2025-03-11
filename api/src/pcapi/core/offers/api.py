@@ -45,6 +45,7 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import schemas as offerers_schemas
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.validation as offers_validation
 from pcapi.core.providers.allocine import get_allocine_products_provider
@@ -1719,7 +1720,7 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
     if count_reimbursed_bookings > 0:
         raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
 
-    return get_venues_with_same_pricing_point(offer)
+    return offerers_repository.get_venues_with_same_pricing_point(offer)
 
 
 def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
@@ -1744,42 +1745,7 @@ def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
     if count_reimbursed_bookings > 0:
         raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
 
-    return get_venues_with_same_pricing_point(offer)
-
-
-def get_venues_with_same_pricing_point(
-    offer: models.Offer | educational_models.CollectiveOffer,
-) -> list[offerers_models.Venue]:
-    venues_choices = (
-        offerers_models.Venue.query.filter(
-            offerers_models.Venue.managingOffererId == offer.venue.managingOffererId,
-            offerers_models.Venue.id != offer.venueId,
-        )
-        .join(
-            offerers_models.VenuePricingPointLink,
-            sa.and_(
-                offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
-                offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
-            ),
-        )
-        .options(
-            sa.orm.load_only(
-                offerers_models.Venue.id,
-                offerers_models.Venue.name,
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.siret,
-            ),
-            sa.orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
-                offerers_models.VenuePricingPointLink.pricingPointId, offerers_models.VenuePricingPointLink.timespan
-            ),
-        )
-        .order_by(offerers_models.Venue.common_name)
-        .all()
-    )
-    if not venues_choices:
-        raise exceptions.NoDestinationVenue()
-
-    return venues_choices
+    return offerers_repository.get_venues_with_same_pricing_point(offer)
 
 
 def _get_or_create_same_price_category_label(
