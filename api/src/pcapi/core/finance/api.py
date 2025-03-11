@@ -3476,34 +3476,32 @@ def recredit_users() -> None:
     ]
 
     start_index = 0
-    total_users_recredited = 0
+    while start_index < len(user_ids):
+        recredit_users_by_id(user_ids[start_index : start_index + RECREDIT_UNDERAGE_USERS_BATCH_SIZE])
+        start_index += RECREDIT_UNDERAGE_USERS_BATCH_SIZE
+
+
+def recredit_users_by_id(user_ids: list[int]) -> None:
     failed_users = []
 
-    while start_index < len(user_ids):
-        users = (
-            users_models.User.query.filter(
-                users_models.User.id.in_(user_ids[start_index : start_index + RECREDIT_UNDERAGE_USERS_BATCH_SIZE])
-            )
-            .options(sqla_orm.selectinload(users_models.User.deposits).selectinload(models.Deposit.recredits))
-            .all()
-        )
+    users = (
+        users_models.User.query.filter(users_models.User.id.in_(user_ids))
+        .options(sqla_orm.selectinload(users_models.User.deposits).selectinload(models.Deposit.recredits))
+        .all()
+    )
+    users_to_recredit = [user for user in users if user.deposit and _can_be_recredited(user)]
+    with transaction():
+        for user in users_to_recredit:
+            try:
+                recredit_user_if_no_missing_step(user)
+            except exceptions.UserHasNotFinishedSubscription:
+                continue
+            except Exception as e:  # pylint: disable=broad-except
+                failed_users.append(user.id)
+                logger.exception("Could not recredit user %s: %s", user.id, e)
+                continue
 
-        users_to_recredit = [user for user in users if user.deposit and _can_be_recredited(user)]
-        with transaction():
-            for user in users_to_recredit:
-                try:
-                    recredit_user_if_no_missing_step(user)
-                    total_users_recredited += 1
-                except exceptions.UserHasNotFinishedSubscription:
-                    continue
-                except Exception as e:  # pylint: disable=broad-except
-                    failed_users.append(user.id)
-                    logger.exception("Could not recredit user %s: %s", user.id, e)
-                    continue
-
-        logger.info("Recredited %s underage users deposits", len(users_to_recredit))
-        start_index += RECREDIT_UNDERAGE_USERS_BATCH_SIZE
-    logger.info("Recredited %s users successfully", total_users_recredited)
+    logger.info("Recredited %s underage users deposits", len(users_to_recredit))
     if failed_users:
         logger.error("Failed to recredit %s users: %s", len(failed_users), failed_users)
 
