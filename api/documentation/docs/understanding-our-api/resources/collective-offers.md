@@ -12,7 +12,7 @@ This public API offers some (basic) functionality in order to handle collective 
 There are two objects to manage collective offers: offer templates and bookable offers. The first are meant to explain what could be done, the latter when and how. Teachers will search for templates and open a discussion with the cultural partner, which will make a proposal in return: the bookable offer.
 
 :::info
-Please note that templates and book offers are two distinct objects: a template offer's data will be copied into a bookable one's. This means that they will have distinct database IDs.
+Please note that templates and bookable offers are two distinct objects: a template offer's data will be copied into a bookable one's. This means that they will have distinct database IDs.
 :::
 
 A bookable offer is linked to (at least) one collective booking. Most of the time, there is only one booking for one offer. However, if a booking is cancelled, a new one can be created. In that case, the offer has two bookings: an ongoing one and a cancelled one.
@@ -23,7 +23,7 @@ There can only be one active booking per bookable offer.
 
 ### Who can view and book collective offers?
 
-A collective offer is visible :
+A collective offer is visible:
 
 - to a cultural partner once it has been created on the pass Culture application
 - to a teaching staff member on the Adage platform
@@ -34,9 +34,24 @@ Collective offers are not visible on the pass Culture application for beneficiar
 
 A collective offer is always linked to an administrative venue: its the `venueId` field.
 
-### Status
+### Concurrent access rules: Pro interface users vs. API users
 
-A bookable offer can have five states:
+It can happen that the **`venue`** is managed both **via API** and **by a human user using the pro interface**. In this case, according to whom has created the collective offer, the API user or the Pro interface user might be limited to a certain set of actions on the collective offer.
+
+#### Case #1: the collective offer has been created via API
+
+If a collective offer has been created using the API, it is visible on the Pro interface, however, the human user is only allowed to perform a limited set of actions on the collective offer:
+
+- Archive the offer
+- Duplicate the offer
+
+#### Case #2: the collective offer has been created on the pro interface
+
+If a collective offer has been created by a user on the pro interface, then it is not possible to modify it by API.
+
+### Booking Status
+
+A collective booking can have five states:
 
 * `PENDING`
 * `CONFIRMED`
@@ -44,7 +59,15 @@ A bookable offer can have five states:
 * `CANCELLED`
 * `REIMBURSED`
 
-`PENDING` means it has been proposed to the teacher. Once both sides are ok with the price, details, etc. it becomes `CONFIRMED`. It becomes `USED` when the event is passed and, finally, it becomes `REIMBURSED` after a short period of time (check the official documentation to get more detailed financial information). If the offer is cancelled... it becomes `CANCELLED`, obviously.
+`PENDING` means it has been proposed to the teacher.
+
+Once both sides are ok with the price, details, etc. the school headmaster confirms the booking and it becomes `CONFIRMED`.
+
+It becomes `USED` two days after the event is passed.
+
+Finally, it becomes `REIMBURSED` after a short period of time (check the official documentation to get more detailed financial information).
+
+If the offer is cancelled either by the school or using the [Cancel Collective Booking endpoint](/rest-api#tag/Collective-Bookings/operation/CancelCollectiveBooking), it becomes `CANCELLED`.
 
 ### Offer location
 
@@ -84,7 +107,10 @@ They cannot be updated using the API.
 
 ### Bookable offers
 
-Only `PENDING` offers can be updated.
+A bookable offer can only be updated if there is no related collective booking, or if the booking is in the `PENDING` state.
+
+Additionally, if the booking is `CONFIRMED`, the price can still be updated but only with a lower value. The number of students and the price details can also be updated.
+
 An offer created using the public API cannot be edited using the PRO web portal.
 
 ## Collective bookings
