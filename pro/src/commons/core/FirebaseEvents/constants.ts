@@ -72,7 +72,8 @@ export enum Events {
   UPDATED_BOOKING_LIMIT_DATE = 'hasUpdatedBookingLimitDate',
   CLICKED_GENERATE_TEMPLATE_DESCRIPTION = 'hasClickedGenerateTemplateDescription',
   UPDATED_EVENT_STOCK_FILTERS = 'hasUpdatedEventStockFilters',
-  FAKE_DOOR_VIDEO_INTERESTED = 'fakeDoorVideoInterested'
+  CLICKED_VALIDATE_ADD_RECURRENCE_DATES = 'hasClickedValidateAddRecurrenceDates',
+  FAKE_DOOR_VIDEO_INTERESTED = 'fakeDoorVideoInterested',
 }
 
 export enum VenueEvents {
