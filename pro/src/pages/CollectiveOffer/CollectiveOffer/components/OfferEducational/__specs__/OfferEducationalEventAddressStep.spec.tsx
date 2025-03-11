@@ -1,6 +1,8 @@
 import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import * as hooks from 'commons/hooks/swr/useOfferer'
+import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
   sharedCurrentUserFactory,
   currentOffererFactory,
@@ -30,12 +32,21 @@ function renderOfferEducational(props: OfferEducationalProps) {
 
 describe('screens | OfferEducational : event address step', () => {
   let props: OfferEducationalProps
+  const mockOffererData = {
+    data: { ...defaultGetOffererResponseModel, isValidated: true },
+    isLoading: false,
+    error: undefined,
+    mutate: vi.fn(),
+    isValidating: false,
+  }
 
   describe('when there is only one venue managed by the offerer', () => {
     beforeEach(() => {
       props = {
         ...defaultCreationProps,
       }
+
+      vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
     })
 
     it('should display venue radio buttons with pre-selected offerer venue and a disabled select', async () => {
@@ -77,9 +88,7 @@ describe('screens | OfferEducational : event address step', () => {
         screen.getByLabelText('Adresse de l’évènement *')
       ).toBeInTheDocument()
 
-      expect(
-        screen.queryByLabelText('Département(s)')
-      ).toBeInTheDocument()
+      expect(screen.queryByLabelText('Département(s)')).toBeInTheDocument()
     })
 
     it('should not display neither event venue address nor text area if user selects "school"', async () => {
@@ -100,9 +109,7 @@ describe('screens | OfferEducational : event address step', () => {
         screen.queryByLabelText('Adresse de l’évènement *')
       ).not.toBeInTheDocument()
 
-      expect(
-        screen.queryByLabelText('Département(s)')
-      ).toBeInTheDocument()
+      expect(screen.queryByLabelText('Département(s)')).toBeInTheDocument()
     })
   })
   // TODO: move this test, it does not belong to Address step
@@ -110,6 +117,8 @@ describe('screens | OfferEducational : event address step', () => {
     const firstVenueId = '12'
     const secondVenueId = '23'
     beforeEach(() => {
+      vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
+
       props = {
         ...defaultCreationProps,
         userOfferer: userOffererFactory({
@@ -204,9 +213,7 @@ describe('screens | OfferEducational : event address step', () => {
       const interventionArea = await screen.findByLabelText('Département(s)')
       await userEvent.click(interventionArea)
 
-      const interventionAreaContainer = screen.getByTestId(
-        'panel-scrollable'
-      )
+      const interventionAreaContainer = screen.getByTestId('panel-scrollable')
 
       const checkedItems = within(interventionAreaContainer).getAllByRole(
         'checkbox',

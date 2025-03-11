@@ -2,11 +2,13 @@ import { screen } from '@testing-library/react'
 
 import { CollectiveBookingStatus } from 'apiClient/v1'
 import { Mode } from 'commons/core/OfferEducational/types'
+import * as hooks from 'commons/hooks/swr/useOfferer'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferManagingOffererFactory,
   getCollectiveOfferVenueFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
   sharedCurrentUserFactory,
   currentOffererFactory,
@@ -38,8 +40,16 @@ describe('screens | OfferEducational : edition offerer step', () => {
   const thirdVenueId = 67
   const fourthVenueId = 92
   const secondOffererId = 92
+  const mockOffererData = {
+    data: { ...defaultGetOffererResponseModel, isValidated: true },
+    isLoading: false,
+    error: undefined,
+    mutate: vi.fn(),
+    isValidating: false,
+  }
 
   beforeEach(() => {
+    vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
     props = defaultEditionProps
   })
 

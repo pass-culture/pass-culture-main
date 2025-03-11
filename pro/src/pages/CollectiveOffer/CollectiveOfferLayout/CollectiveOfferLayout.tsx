@@ -7,6 +7,7 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { HelpLink } from 'components/HelpLink/HelpLink'
 import { CollectiveCreationOfferNavigation } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
@@ -41,6 +42,8 @@ export const CollectiveOfferLayout = ({
 }: CollectiveOfferLayoutProps): JSX.Element => {
   const location = useLocation()
   const isSummaryPage = location.pathname.includes('recapitulatif')
+
+  const { data: selectedOfferer } = useOfferer(userOfferer?.id)
   const { offerId: offerIdFromParams } = useParams<{
     offerId: string
   }>()
@@ -83,7 +86,9 @@ export const CollectiveOfferLayout = ({
         )}
       </div>
 
-      {userOfferer === null ? <></> : navigationProps.isCreatingOffer ? (
+      {!selectedOfferer?.isValidated ? (
+        <></>
+      ) : navigationProps.isCreatingOffer ? (
         <CollectiveCreationOfferNavigation
           activeStep={navigationProps.activeStep}
           className={cn(styles['eac-layout-navigation'], {

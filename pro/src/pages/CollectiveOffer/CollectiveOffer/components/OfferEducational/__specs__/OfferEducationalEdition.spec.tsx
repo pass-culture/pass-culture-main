@@ -1,10 +1,12 @@
 import { screen, waitFor } from '@testing-library/react'
 
 import { Mode } from 'commons/core/OfferEducational/types'
+import * as hooks from 'commons/hooks/swr/useOfferer'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferVenueFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -23,6 +25,16 @@ describe('screens | OfferEducational', () => {
   let props: OfferEducationalProps
 
   beforeEach(() => {
+    const mockOffererData = {
+      data: { ...defaultGetOffererResponseModel, isValidated: true },
+      isLoading: false,
+      error: undefined,
+      mutate: vi.fn(),
+      isValidating: false,
+    }
+
+    vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
+
     props = defaultEditionProps
   })
 

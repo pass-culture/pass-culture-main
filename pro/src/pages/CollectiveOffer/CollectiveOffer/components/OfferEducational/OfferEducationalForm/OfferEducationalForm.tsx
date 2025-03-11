@@ -15,6 +15,7 @@ import {
 } from 'commons/core/OfferEducational/types'
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { SelectOption } from 'commons/custom_types/form'
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { sortByLabel } from 'commons/utils/strings'
@@ -78,6 +79,8 @@ export const OfferEducationalForm = ({
 
   const { setFieldValue, initialValues, dirty } =
     useFormikContext<OfferEducationalFormValues>()
+
+  const { data: selectedOfferer } = useOfferer(userOfferer?.id)
 
   const areCollectiveNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
@@ -145,8 +148,7 @@ export const OfferEducationalForm = ({
             Offre importée automatiquement
           </BannerPublicApi>
         )}
-        <FormLayout.MandatoryInfo />
-        {userOfferer === null ? (
+        {!selectedOfferer?.isValidated ? (
           <Callout
             variant={CalloutVariant.INFO}
             className={styles['no-offerer-callout']}
@@ -156,6 +158,7 @@ export const OfferEducationalForm = ({
           </Callout>
         ) : (
           <>
+            <FormLayout.MandatoryInfo />
             {venuesOptions.length > 1 && (
               <FormVenue
                 isEligible={isEligible}
