@@ -9,8 +9,10 @@ export const Signup = () => {
   const isProAccountCreationEnabled = useActiveFeature(
     'ENABLE_PRO_ACCOUNT_CREATION'
   )
+  const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
+
   return (
-    <Layout layout="logged-out">
+    <Layout layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}>
       {isProAccountCreationEnabled ? <Outlet /> : <SignupUnavailable />}
     </Layout>
   )

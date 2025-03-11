@@ -22,3 +22,29 @@
     white-space: nowrap;
   }
 }
+
+.legal-infos-callout {
+  .legal-infos-paragraph {
+    @include fonts.body-s;
+
+    margin-bottom: rem.torem(8px);
+    color: var(--color-grey-dark);
+  }
+
+  &-link {
+    color: var(--color-primary);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &-maillink {
+    color: var(--color-grey-dark);
+    text-decoration: underline;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}

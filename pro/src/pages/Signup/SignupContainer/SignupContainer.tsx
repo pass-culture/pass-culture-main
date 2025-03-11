@@ -127,11 +127,17 @@ export const SignupContainer = (): JSX.Element => {
 
   return (
     <section className={styles['content']}>
-      <h1 className={styles['title']}>Créer votre compte</h1>
-      <OperatingProcedures />
+      {isNewSignupEnabled ? (
+        <h1 className={styles['title']}>Inscription</h1>
+      ) : (
+        <>
+          <h1 className={styles['title']}>Créer votre compte</h1>
+          <OperatingProcedures />
+        </>
+      )}
 
       <div className={styles['mandatory']}>
-        <MandatoryInfo />
+        <MandatoryInfo areAllFieldsMandatory={true} />
       </div>
       <FormProvider {...hookForm}>
         <form onSubmit={handleSubmit(onSubmit)}>

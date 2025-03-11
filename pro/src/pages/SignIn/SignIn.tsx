@@ -24,6 +24,7 @@ import {
 import { updateUser } from 'commons/store/user/reducer'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
 import { storageAvailable } from 'commons/utils/storageAvailable'
+import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
 import styles from './Signin.module.scss'
@@ -169,9 +170,7 @@ export const SignIn = (): JSX.Element => {
           : 'Bienvenue sur l’espace partenaires culturels'}
       </h1>
 
-      <div className={styles['mandatory']}>
-        Tous les champs sont obligatoires.
-      </div>
+      <MandatoryInfo areAllFieldsMandatory={true} />
       <FormProvider {...hookForm}>
         <SigninForm onSubmit={hookForm.handleSubmit(onSubmit)} />
       </FormProvider>
