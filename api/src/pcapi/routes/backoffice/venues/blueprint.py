@@ -1,6 +1,7 @@
 from datetime import datetime
 import decimal
 from functools import partial
+import logging
 import typing
 
 from flask import flash
@@ -56,6 +57,8 @@ from pcapi.utils.string import to_camelcase
 
 from . import forms
 
+
+logger = logging.getLogger(__name__)
 
 venue_blueprint = utils.child_backoffice_blueprint(
     "venue",
@@ -775,6 +778,14 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             external_accessibility_url=form.acceslibre_url.data if hasattr(form, "acceslibre_url") else "",
             is_manual_edition=((not venue.isVirtual) and form.is_manual_address.data == "on"),
         )
+    except sa.exc.IntegrityError as err:
+        # mostly errors about address / offerer_address tables
+        logger.exception(
+            "IntegrityError when updating venue: %s", str(err), extra={"venue_id": venue_id, "exc": str(err)}
+        )
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(err)), "warning")
+        mark_transaction_as_invalid()
+        return render_venue_details(venue, form), 400
     except ApiErrors as api_errors:
         for error_key, error_details in api_errors.errors.items():
             for error_detail in error_details:
