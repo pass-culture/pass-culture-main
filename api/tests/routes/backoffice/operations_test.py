@@ -5,10 +5,13 @@ from flask import url_for
 import pytest
 
 from pcapi.connectors import typeform
+from pcapi.core.finance import models as finance_models
 from pcapi.core.operations import factories as operations_factories
 from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_date
 
@@ -305,6 +308,44 @@ class GetEventDetailsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 6
         assert {"Préselectionnée", "Nouvelle"} == {e["État de la candidature"] for e in rows}
+
+    def test_only_one_line_for_multiple_deposits(self, authenticated_client):
+        user = users_factories.UserFactory(roles=[users_models.UserRole.BENEFICIARY])
+        users_factories.DepositGrantFactory(
+            user=user,
+            type=finance_models.DepositType.GRANT_15_17,
+            expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+        )
+        users_factories.DepositGrantFactory(
+            user=user,
+            type=finance_models.DepositType.GRANT_18,
+            expirationDate=datetime.datetime.utcnow() + datetime.timedelta(days=300),
+        )
+        event = operations_factories.SpecialEventFactory(
+            externalId="fake00001",
+            title="Énigme des enchanteurs",
+            eventDate=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+        )
+        special_event_id = event.id
+        name_question = operations_factories.SpecialEventQuestionFactory(
+            event=event,
+            externalId="00001-abcde-00001",
+            title="Comment t'appelles-tu ?",
+        )
+
+        full_response = operations_factories.SpecialEventResponseFactory(
+            event=event, status=operations_models.SpecialEventResponseStatus.PRESELECTED, user=user
+        )
+        full_name_answer = operations_factories.SpecialEventAnswerFactory(
+            responseId=full_response.id, questionId=name_question.id, text="Elias de Kelliwic'h"
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, special_event_id=special_event_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
 
 
 class ValidateResponseTest(PostEndpointHelper):
