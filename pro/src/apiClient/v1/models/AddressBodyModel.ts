@@ -11,6 +11,6 @@ export type AddressBodyModel = {
   latitude: (number | string);
   longitude: (number | string);
   postalCode: string;
-  street: string;
+  street?: string | null;
 };
 

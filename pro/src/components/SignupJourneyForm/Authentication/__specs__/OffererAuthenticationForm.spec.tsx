@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
+import { expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
@@ -22,7 +23,6 @@ import {
   OffererAuthenticationFormValues,
 } from '../OffererAuthenticationForm'
 import { validationSchema } from '../validationSchema'
-import { expect } from 'vitest'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()

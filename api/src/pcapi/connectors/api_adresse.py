@@ -159,7 +159,7 @@ def get_municipality_centroid(city: str, postcode: str | None = None, citycode: 
 
 
 def get_address(
-    address: str,
+    address: str | None,
     *,
     postcode: str | None = None,
     city: str | None = None,
@@ -194,7 +194,7 @@ class BaseBackend:
 
     def get_single_address_result(
         self,
-        address: str,
+        address: str | None,
         *,
         postcode: str | None,
         city: str | None = None,
@@ -234,7 +234,7 @@ class TestingBackend(BaseBackend):
 
     def get_single_address_result(
         self,
-        address: str,
+        address: str | None,
         *,
         postcode: str | None,
         city: str | None = None,
@@ -358,7 +358,7 @@ class ApiAdresseBackend(BaseBackend):
 
     def get_single_address_result(
         self,
-        address: str,
+        address: str | None,
         *,
         postcode: str | None,
         city: str | None = None,

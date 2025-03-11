@@ -2418,7 +2418,7 @@ class CreateFromOnboardingDataTest:
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
-        onboarding_data.address.street = ""
+        onboarding_data.address.street = None
 
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 
@@ -2432,7 +2432,7 @@ class CreateFromOnboardingDataTest:
         # 1 Venue with siret have been created
         assert len(created_user_offerer.offerer.managedVenues) == 1
         created_venue = created_user_offerer.offerer.managedVenues[0]
-        assert created_venue.street == "n/d"
+        assert created_venue.street is None
         assert created_venue.city == "Paris"
         assert created_venue.latitude == decimal.Decimal("2.30829")
         assert created_venue.longitude == decimal.Decimal("48.87171")

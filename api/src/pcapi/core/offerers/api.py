@@ -436,7 +436,7 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
     venue = models.Venue()
     address = venue_data.address
 
-    if utils_regions.NON_DIFFUSIBLE_TAG in address.street:
+    if address.street is not None and utils_regions.NON_DIFFUSIBLE_TAG in address.street:
         address_info = api_adresse.get_municipality_centroid(address.city, address.postalCode)
         address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
         address = get_or_create_address(
@@ -2073,8 +2073,6 @@ def create_from_onboarding_data(
     venue = offerers_repository.find_venue_by_siret(onboarding_data.siret)
     if not venue or onboarding_data.createVenueWithoutSiret:
         address = onboarding_data.address
-        if not address.street:
-            address = address.copy(update={"street": "n/d"})
         common_kwargs = dict(
             address=address,
             bookingEmail=user.email,
