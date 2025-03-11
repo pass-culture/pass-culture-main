@@ -100,7 +100,6 @@ class GetFavoriteOfferTest:
                     "contactForm": collective_offer_template.contactForm.value,
                     "durationMinutes": None,
                     "educationalPriceDetail": collective_offer_template.priceDetail,
-                    "offerId": None,
                     "domains": [
                         {
                             "id": collective_offer_template.domains[0].id,

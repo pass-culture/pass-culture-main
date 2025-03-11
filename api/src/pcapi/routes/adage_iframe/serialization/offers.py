@@ -176,7 +176,6 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     contactEmail: str | None
     contactPhone: str | None
     durationMinutes: int | None
-    offerId: int | None
     educationalPriceDetail: str | None
     domains: typing.Sequence[OfferDomain]
     institution: EducationalInstitutionResponseModel | None = Field(alias="educationalInstitution")
@@ -217,7 +216,6 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
             contactEmail=offer.contactEmail,
             contactPhone=offer.contactPhone,
             durationMinutes=offer.durationMinutes,
-            offerId=offer.offerId,
             educationalPriceDetail=offer.collectiveStock.priceDetail,
             domains=offer.domains,
             institution=offer.institution,
@@ -260,7 +258,6 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     offerVenue: CollectiveOfferOfferVenue
     durationMinutes: int | None
     educationalPriceDetail: str | None
-    offerId: int | None
     domains: typing.Sequence[OfferDomain]
     interventionArea: list[str]
     imageCredit: str | None
@@ -307,7 +304,6 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
                 otherAddress=offer.offerVenue["otherAddress"],
             ),
             durationMinutes=offer.durationMinutes,
-            offerId=offer.offerId,
             educationalPriceDetail=offer.priceDetail,
             domains=offer.domains,
             interventionArea=offer.interventionArea,

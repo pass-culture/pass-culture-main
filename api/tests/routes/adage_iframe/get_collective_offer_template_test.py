@@ -98,7 +98,6 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
             "publicName": offer_venue.publicName if offer_venue else None,
         },
         "students": [student.value for student in offer.students],
-        "offerId": offer.offerId,
         "educationalPriceDetail": offer.priceDetail,
         "domains": [{"id": domain.id, "name": domain.name} for domain in offer.domains],
         "imageUrl": offer.imageUrl,

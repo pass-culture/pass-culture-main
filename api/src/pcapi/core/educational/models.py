@@ -511,8 +511,6 @@ class CollectiveOffer(
 ):
     __tablename__ = "collective_offer"
 
-    offerId = sa.Column(sa.BigInteger, nullable=True)
-
     isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
@@ -1049,8 +1047,6 @@ class CollectiveOfferTemplate(
 ):
     __tablename__ = "collective_offer_template"
 
-    offerId = sa.Column(sa.BigInteger, nullable=True)
-
     isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
@@ -1455,7 +1451,6 @@ class CollectiveOfferTemplate(
         collective_offer_mapping = {x: getattr(collective_offer, x) for x in list_of_common_attributes}
         return cls(
             **collective_offer_mapping,
-            offerId=collective_offer.offerId,
             priceDetail=price_detail,
         )
 
@@ -1470,8 +1465,6 @@ class CollectiveOfferTemplate(
 
 class CollectiveStock(PcObject, Base, Model):
     __tablename__ = "collective_stock"
-
-    stockId = sa.Column(sa.BigInteger, nullable=True)
 
     dateCreated: datetime = sa.Column(
         sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()

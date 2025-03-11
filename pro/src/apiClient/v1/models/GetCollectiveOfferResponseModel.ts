@@ -54,7 +54,6 @@ export type GetCollectiveOfferResponseModel = {
   motorDisabilityCompliant?: boolean | null;
   name: string;
   nationalProgram?: NationalProgramModel | null;
-  offerId?: number | null;
   offerVenue: CollectiveOfferOfferVenueResponseModel;
   provider?: GetCollectiveOfferProviderResponseModel | null;
   status: CollectiveOfferStatus;

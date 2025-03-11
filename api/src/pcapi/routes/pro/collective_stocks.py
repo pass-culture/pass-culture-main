@@ -40,7 +40,7 @@ def create_collective_stock(
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        collective_stock = educational_api_stock.create_collective_stock(body, current_user)
+        collective_stock = educational_api_stock.create_collective_stock(body)
     except educational_exceptions.CollectiveStockAlreadyExists:
         raise ApiErrors({"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}, status_code=400)
     except educational_exceptions.StartAndEndEducationalYearDifferent:
