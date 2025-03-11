@@ -2,8 +2,11 @@ import cn from 'classnames'
 import { useField } from 'formik'
 
 import { RadioButton } from '../RadioButton/RadioButton'
-import { RadioVariant } from '../shared/BaseRadio/BaseRadio'
-import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
+import { BaseRadioProps, RadioVariant } from '../shared/BaseRadio/BaseRadio'
+import {
+  FieldSetLayout,
+  FieldSetLayoutProps,
+} from '../shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './RadioGroup.module.scss'
 
@@ -31,7 +34,7 @@ export type RadioGroupProps = RequireAtLeastOne<
     /**
      * The legend of the `fieldset`. If this prop is empty, the `describedBy` must be used.
      */
-    legend?: string
+    legend?: FieldSetLayoutProps['legend']
     /**
      * A reference to the text element that describes the radio group. If this prop is empty, the `legend` must be used.
      */
@@ -44,6 +47,9 @@ export type RadioGroupProps = RequireAtLeastOne<
     group: {
       label: string | JSX.Element
       value: string
+      icon?: BaseRadioProps['icon']
+      iconPosition?: BaseRadioProps['iconPosition']
+      description?: BaseRadioProps['description']
       childrenOnChecked?: JSX.Element
     }[]
     /**
@@ -63,9 +69,13 @@ export type RadioGroupProps = RequireAtLeastOne<
      */
     childrenClassName?: string
     /**
-     * Whether the group is optional.
+     * Whether or not the group is optional.
      */
     isOptional?: boolean
+    /**
+     * Whether or not the group items are displayed on the same line.
+     */
+    inline?: boolean
   },
   'legend' | 'describedBy'
 >
@@ -104,6 +114,7 @@ export const RadioGroup = ({
   onChange,
   childrenClassName,
   isOptional = true,
+  inline,
 }: RadioGroupProps): JSX.Element => {
   const [, meta] = useField({ name })
   const hasError = meta.touched && !!meta.error
@@ -120,21 +131,30 @@ export const RadioGroup = ({
       hideFooter
       childrenClassName={childrenClassName}
     >
-      {group.map((item) => (
-        <div className={styles['radio-group-item']} key={item.value}>
-          <RadioButton
-            disabled={disabled}
-            label={item.label}
-            name={name}
-            value={item.value}
-            variant={variant}
-            hasError={hasError}
-            onChange={onChange}
-            {...(hasError ? { ariaDescribedBy: `error-${name}` } : {})}
-            childrenOnChecked={item.childrenOnChecked}
-          />
-        </div>
-      ))}
+      <div
+        className={cn({
+          [styles['radio-group-inline']]: inline,
+        })}
+      >
+        {group.map((item) => (
+          <div className={styles['radio-group-item']} key={item.value}>
+            <RadioButton
+              disabled={disabled}
+              label={item.label}
+              name={name}
+              value={item.value}
+              variant={variant}
+              hasError={hasError}
+              onChange={onChange}
+              icon={item.icon}
+              iconPosition={item.iconPosition}
+              description={item.description}
+              {...(hasError ? { ariaDescribedBy: `error-${name}` } : {})}
+              childrenOnChecked={item.childrenOnChecked}
+            />
+          </div>
+        ))}
+      </div>
     </FieldSetLayout>
   )
 }

@@ -38,6 +38,10 @@ const defaultArgs: RadioGroupProps = {
       label: 'Option 2',
       value: `option2`,
     },
+    {
+      label: 'Option 3',
+      value: `option3`,
+    },
   ],
 }
 
@@ -54,6 +58,14 @@ export const WithBorder = {
     ...defaultArgs,
     variant: RadioVariant.BOX,
     name: 'name 2',
+  },
+}
+
+export const Inline = {
+  args: {
+    ...defaultArgs,
+    variant: RadioVariant.BOX,
+    inline: true,
   },
 }
 

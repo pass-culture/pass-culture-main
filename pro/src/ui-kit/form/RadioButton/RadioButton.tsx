@@ -2,7 +2,11 @@ import cn from 'classnames'
 import { useField } from 'formik'
 import React, { useCallback } from 'react'
 
-import { BaseRadio, RadioVariant } from '../shared/BaseRadio/BaseRadio'
+import {
+  BaseRadio,
+  BaseRadioProps,
+  RadioVariant,
+} from '../shared/BaseRadio/BaseRadio'
 
 /**
  * Props for the RadioButton component.
@@ -39,6 +43,15 @@ interface RadioButtonProps
    * Inner content that appears under the radio button when it is checked.
    */
   childrenOnChecked?: JSX.Element
+  /**
+   * SVG icon displayed next to the label.
+   */
+  icon?: BaseRadioProps['icon']
+  iconPosition?: BaseRadioProps['iconPosition']
+  /**
+   * Additional description of the label.
+   */
+  description?: BaseRadioProps['description']
 }
 
 /**
@@ -77,6 +90,9 @@ export const RadioButton = ({
   onChange,
   ariaDescribedBy,
   childrenOnChecked,
+  icon,
+  iconPosition,
+  description,
 }: RadioButtonProps): JSX.Element => {
   const [field] = useField({ name, value, type: 'radio' })
 
@@ -104,6 +120,9 @@ export const RadioButton = ({
       onChange={(e) => onCustomChange(e)}
       ariaDescribedBy={ariaDescribedBy}
       childrenOnChecked={childrenOnChecked}
+      icon={icon}
+      iconPosition={iconPosition}
+      description={description}
     />
   )
 }
