@@ -4267,7 +4267,7 @@ def test_public_api(client):
                         }
                     },
                     "responses": {
-                        "204": {"description": "No Content"},
+                        "201": {"description": "Created"},
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
