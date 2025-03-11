@@ -6,8 +6,10 @@ from pcapi.app import app
 from pcapi.core.bookings.repository import get_bookings_from_deposit
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.finance.api import _recredit_deposit
+from pcapi.core.finance.enum import DepositType  # for staging
+
+# from pcapi.core.finance.models import DepositType
 from pcapi.core.finance.models import Deposit
-from pcapi.core.finance.models import DepositType
 from pcapi.core.finance.models import RecreditType
 from pcapi.core.users.api import _get_booking_credit
 from pcapi.core.users.models import User
