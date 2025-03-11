@@ -13,6 +13,8 @@ There are two objects to manage collective offers: offer templates and bookable 
 
 :::info
 Please note that templates and bookable offers are two distinct objects: a template offer's data will be copied into a bookable one's. This means that they will have distinct database IDs.
+
+⚠️ The templates are only managed on the pro interface, not via API.
 :::
 
 A bookable offer is linked to (at least) one collective booking. Most of the time, there is only one booking for one offer. However, if a booking is cancelled, a new one can be created. In that case, the offer has two bookings: an ongoing one and a cancelled one.
@@ -34,7 +36,7 @@ Collective offers are not visible on the pass Culture application for beneficiar
 
 A collective offer is always linked to an administrative venue: its the `venueId` field.
 
-### Concurrent access rules: Pro interface users vs. API users
+### Offers created by Pro interface users vs. API users
 
 It can happen that the **`venue`** is managed both **via API** and **by a human user using the pro interface**. In this case, according to whom has created the collective offer, the API user or the Pro interface user might be limited to a certain set of actions on the collective offer.
 
@@ -51,7 +53,9 @@ If a collective offer has been created by a user on the pro interface, then it i
 
 ### Booking Status
 
-A collective booking can have five states:
+A collective offer, when created, does not have any related booking. Once the teacher has pre-booked the offer, a booking object is created.
+
+A collective booking can have five statuses:
 
 * `PENDING`
 * `CONFIRMED`
@@ -107,7 +111,7 @@ They cannot be updated using the API.
 
 ### Bookable offers
 
-A bookable offer can only be updated if there is no related collective booking, or if the booking is in the `PENDING` state.
+A bookable offer can only be updated if there is no related collective booking, or if the booking is in the `PENDING` status.
 
 Additionally, if the booking is `CONFIRMED`, the price can still be updated but only with a lower value. The number of students and the price details can also be updated.
 
@@ -122,3 +126,44 @@ Meaning: if a school project is booked for a 30 students class, there will be on
 :::
 
 Also, the validation process is not the same as individual offers since these offers are meant to be a part of a larger school/teaching project.
+
+## Collective offer status and allowed actions (⚠️ upcoming changes)
+
+A collective offer can have different statuses, depending on the event dates and the related booking status. You can check the current possible status values in the [Get Collective Offer endpoint response schema](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic).
+
+:::warning
+The collective offer status will be changed in the coming months. You can find below the new statuses list.
+
+To avoid confusion and to ease the migration, those statuses will be made available in a dedicated attribute.
+
+In addition, the offer status will determine the actions that are allowed on the offer (which fields can be updated, whether the booking can be cancelled...). You can find below a table showing which actions are allowed for each new status.
+:::
+
+- **DRAFT**: the offer is not yet published. Currently an offer created with the API cannot have this status
+- **UNDER_REVIEW**: the offer is waiting to be reviewed and validated
+- **PUBLISHED**: the offer is published and visible on the Adage platform
+- **REJECTED**: the offer was not validated
+- **PREBOOKED**: the offer has been pre-booked by the teacher
+- **BOOKED**: the school headmaster has confirmed the pre-booking
+- **EXPIRED**: the booking limit date has passed and the offer was not confirmed
+- **ENDED**: the offer was confirmed and the end date has passed
+- **REIMBURSED**: the offer has been reimbursed
+- **CANCELLED**: 1. the offer has been cancelled by the school or with the API, or 2. the offer has not been confirmed before the offer start date
+- **ARCHIVED**: the offer has been archived (this is currently only possible on the pro interface). It will not be visible on Adage
+
+Here are the allowed actions depending on the offer status:
+
+|Status           |Edit the details (title, description...) and increase the price|Edit the dates (start, end, booking limit) |Edit the institution |Edit the number of students, price details and lower the price |Duplicate the offer |Cancel the offer |Archive the offer|
+|-----------------|:-:|:--:|:--:|:-:|:--:|:--:|:--:|
+|**DRAFT**        | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ |
+|**UNDER_REVIEW** | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+|**PUBLISHED**    | ✅ | ✅ | ❌ | ✅ | ✅ | ❌ | ✅ |
+|**REJECTED**     | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
+|**PREBOOKED**    | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ |
+|**BOOKED**       | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ |
+|**EXPIRED**      | ❌ | ✅ | ❌ | ❌ | ✅ | ❌ | ✅ |
+|**ENDED** (\<48h)| ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ |
+|**ENDED** (\>48h)| ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+|**REIMBURSED**   | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
+|**CANCELLED**    | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
+|**ARCHIVED**     | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
