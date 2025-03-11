@@ -336,7 +336,6 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   dateCreated: '2022-01-01T00:00:00Z',
   hasAvailablePricingPoints: false,
   hasDigitalVenueAtLeastOneOffer: false,
-  hasPartnerPage: true,
   hasValidBankAccount: true,
   hasPendingBankAccount: false,
   hasNonFreeOffer: true,
@@ -353,6 +352,7 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   street: 'Fake Address',
   allowedOnAdage: true,
   isOnboarded: true,
+  hasPartnerPage: false,
 }
 
 export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
@@ -360,7 +360,6 @@ export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
     collectiveDmsApplications: [],
     hasAdageId: false,
     hasCreatedOffer: false,
-    hasPartnerPage: false,
     isVirtual: false,
     isVisibleInApp: true,
     name: 'Mon super lieu',
@@ -370,6 +369,7 @@ export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
     isPermanent: true,
     bannerUrl: null,
     bannerMeta: null,
+    hasPartnerPage: true,
   }
 
 export const defaultGetBookingResponse: GetBookingResponse = {
