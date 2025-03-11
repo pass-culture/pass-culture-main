@@ -10,17 +10,18 @@ import {
 } from 'commons/core/Offers/constants'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { getLastDmsApplicationForOfferer } from 'commons/utils/getLastCollectiveDmsApplication'
-import { FormLayout } from 'components/FormLayout/FormLayout'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import duplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
+import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
+import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 
-import styles from '../OfferType.module.scss'
 import { OfferTypeFormValues } from '../types'
+
+import styles from './CollectiveOfferType.module.scss'
 
 interface CollectiveOfferTypeProps {
   offerer: GetOffererResponseModel | null
@@ -28,7 +29,7 @@ interface CollectiveOfferTypeProps {
 
 export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
   const location = useLocation()
-  const { values, handleChange } = useFormikContext<OfferTypeFormValues>()
+  const { values } = useFormikContext<OfferTypeFormValues>()
 
   const queryParams = new URLSearchParams(location.search)
   const queryOffererId = useSelector(selectCurrentOffererId)
@@ -42,77 +43,60 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
   return (
     <>
       {offerer?.isValidated && offerer.allowedOnAdage && (
-        <FormLayout.Section
-          title="Quel est le type de l’offre ?"
-          className={styles['subtype-section']}
-        >
-          <FormLayout.Row inline mdSpaceAfter>
-            <RadioButtonWithImage
-              name="collectiveOfferSubtype"
-              icon={strokeBookedIcon}
-              isChecked={
-                values.collectiveOfferSubtype ===
-                COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE
-              }
-              label="Une offre réservable"
-              description="Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé."
-              onChange={handleChange}
-              value={COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE}
-            />
-          </FormLayout.Row>
-
-          <FormLayout.Row inline mdSpaceAfter>
-            <RadioButtonWithImage
-              name="collectiveOfferSubtype"
-              icon={strokeTemplateOfferIcon}
-              isChecked={
-                values.collectiveOfferSubtype ===
-                COLLECTIVE_OFFER_SUBTYPE.TEMPLATE
-              }
-              label="Une offre vitrine"
-              description={`Cette offre n’est pas réservable. Elle permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.`}
-              onChange={handleChange}
-              value={COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
-            />
-          </FormLayout.Row>
-        </FormLayout.Section>
+        <RadioGroup
+          name="collectiveOfferSubtype"
+          className={styles['container']}
+          legend={
+            <h2 className={styles['legend']}>Quel est le type de l’offre ?</h2>
+          }
+          group={[
+            {
+              label: 'Une offre réservable',
+              value: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
+              description:
+                'Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
+              icon: strokeBookedIcon,
+            },
+            {
+              label: 'Une offre vitrine',
+              value: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE,
+              description:
+                'Cette offre n’est pas réservable. Elle permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.',
+              icon: strokeTemplateOfferIcon,
+            },
+          ]}
+          variant={RadioVariant.BOX}
+        />
       )}
       {offerer?.allowedOnAdage &&
         values.collectiveOfferSubtype ===
           COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
-          <FormLayout.Section
-            title="Créer une nouvelle offre ou dupliquer une offre ?"
-            className={styles['subtype-section']}
-          >
-            <FormLayout.Row inline mdSpaceAfter>
-              <RadioButtonWithImage
-                name="collectiveOfferSubtypeDuplicate"
-                icon={strokeNewOfferIcon}
-                isChecked={
-                  values.collectiveOfferSubtypeDuplicate ===
-                  COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER
-                }
-                label="Créer une nouvelle offre"
-                description="Créer une nouvelle offre réservable en partant d’un formulaire vierge."
-                onChange={handleChange}
-                value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER}
-              />
-            </FormLayout.Row>
-            <FormLayout.Row inline mdSpaceAfter>
-              <RadioButtonWithImage
-                name="collectiveOfferSubtypeDuplicate"
-                icon={duplicateOfferIcon}
-                isChecked={
-                  values.collectiveOfferSubtypeDuplicate ===
-                  COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
-                }
-                label="Dupliquer les informations d’une offre vitrine"
-                description="Créer une offre réservable en dupliquant les informations d’une offre vitrine existante."
-                onChange={handleChange}
-                value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE}
-              />
-            </FormLayout.Row>
-          </FormLayout.Section>
+          <RadioGroup
+            name="collectiveOfferSubtypeDuplicate"
+            className={styles['container']}
+            legend={
+              <h2 className={styles['legend']}>
+                Créer une nouvelle offre ou dupliquer une offre ?
+              </h2>
+            }
+            group={[
+              {
+                label: 'Créer une nouvelle offre',
+                value: COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,
+                description:
+                  'Créer une nouvelle offre réservable en partant d’un formulaire vierge.',
+                icon: strokeNewOfferIcon,
+              },
+              {
+                label: 'Dupliquer les informations d’une offre vitrine',
+                value: COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE,
+                description:
+                  'Créer une offre réservable en dupliquant les informations d’une offre vitrine existante.',
+                icon: duplicateOfferIcon,
+              },
+            ]}
+            variant={RadioVariant.BOX}
+          />
         )}
       {values.offerType === OFFER_TYPES.EDUCATIONAL &&
         !offerer?.isValidated && (

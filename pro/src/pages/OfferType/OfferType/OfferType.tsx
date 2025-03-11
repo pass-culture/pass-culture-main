@@ -4,7 +4,10 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferType as CollectiveOfferApiType , GetOfferersNamesResponseModel } from 'apiClient/v1'
+import {
+  CollectiveOfferType as CollectiveOfferApiType,
+  GetOfferersNamesResponseModel,
+} from 'apiClient/v1'
 import { GET_OFFERER_NAMES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
@@ -24,7 +27,8 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import strokeProfIcon from 'icons/stroke-prof.svg'
-import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
+import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
+import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { ActionsBar } from './ActionsBar/ActionsBar'
@@ -49,10 +53,11 @@ export const OfferTypeScreen = (): JSX.Element => {
     individualOfferSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
   }
 
-  const { data } = useSWR<GetOfferersNamesResponseModel | null, string, [string]>(
-    [GET_OFFERER_NAMES_QUERY_KEY],
-    () => api.listOfferersNames()
-  )
+  const { data } = useSWR<
+    GetOfferersNamesResponseModel | null,
+    string,
+    [string]
+  >([GET_OFFERER_NAMES_QUERY_KEY], () => api.listOfferersNames())
   const offerersNames = data?.offerersNames
 
   //  If there is no offerer id in the url, consider the first offerer found in the user's offerers list
@@ -144,7 +149,7 @@ export const OfferTypeScreen = (): JSX.Element => {
     initialValues: initialValues,
     onSubmit,
   })
-  const { values, handleChange } = formik
+  const { values } = formik
 
   const isDisabledForEducationnal =
     values.offerType === OFFER_TYPES.EDUCATIONAL && !offerer?.allowedOnAdage
@@ -152,8 +157,7 @@ export const OfferTypeScreen = (): JSX.Element => {
   const hasNotChosenOfferType = values.individualOfferSubtype === ''
 
   const isDisableForIndividual =
-    values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO &&
-    hasNotChosenOfferType
+    values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && hasNotChosenOfferType
 
   return (
     <>
@@ -167,30 +171,30 @@ export const OfferTypeScreen = (): JSX.Element => {
             <FormLayout>
               {/* If we're on boarding process, we don't need to ask for offer type (we already chose individual at previous step) */}
               {!isOnboarding && (
-                <FormLayout.Section title="À qui destinez-vous cette offre ?">
-                  <FormLayout.Row inline>
-                    <RadioButtonWithImage
-                      name="offerType"
-                      icon={phoneStrokeIcon}
-                      isChecked={
-                        values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO
-                      }
-                      label="Au grand public"
-                      onChange={handleChange}
-                      value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
-                      className={styles['offer-type-button']}
-                    />
-                    <RadioButtonWithImage
-                      name="offerType"
-                      icon={strokeProfIcon}
-                      isChecked={values.offerType === OFFER_TYPES.EDUCATIONAL}
-                      label="À un groupe scolaire"
-                      onChange={handleChange}
-                      value={OFFER_TYPES.EDUCATIONAL}
-                      className={styles['offer-type-button']}
-                    />
-                  </FormLayout.Row>
-                </FormLayout.Section>
+                <RadioGroup
+                  name="offerType"
+                  legend={
+                    <h2 className={styles['legend']}>
+                      À qui destinez-vous cette offre ?
+                    </h2>
+                  }
+                  group={[
+                    {
+                      label: 'Au grand public',
+                      value: OFFER_TYPES.INDIVIDUAL_OR_DUO,
+                      icon: phoneStrokeIcon,
+                      iconPosition: 'center',
+                    },
+                    {
+                      label: 'À un groupe scolaire',
+                      value: OFFER_TYPES.EDUCATIONAL,
+                      icon: strokeProfIcon,
+                      iconPosition: 'center',
+                    },
+                  ]}
+                  variant={RadioVariant.BOX}
+                  inline
+                />
               )}
               {values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
                 <IndividualOfferType />
