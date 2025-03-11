@@ -16,7 +16,6 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
-import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
 import pcapi.core.users.models as users_models
@@ -728,13 +727,11 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
     return [venue.id for venue in venue_with_non_free_offers]
 
 
-def get_venues_with_same_pricing_point(
-    offer: offers_models.Offer | educational_models.CollectiveOffer,
-) -> list[models.Venue]:
+def get_offerers_venues_with_pricing_point(venue: models.Venue) -> list[models.Venue]:
     venues_choices = (
         models.Venue.query.filter(
-            models.Venue.managingOffererId == offer.venue.managingOffererId,
-            models.Venue.id != offer.venueId,
+            models.Venue.managingOffererId == venue.managingOffererId,
+            models.Venue.id != venue.id,
         )
         .join(
             models.VenuePricingPointLink,
@@ -757,9 +754,6 @@ def get_venues_with_same_pricing_point(
         .order_by(models.Venue.common_name)
         .all()
     )
-    if not venues_choices:
-        raise offers_exceptions.NoDestinationVenue()
-
     return venues_choices
 
 
