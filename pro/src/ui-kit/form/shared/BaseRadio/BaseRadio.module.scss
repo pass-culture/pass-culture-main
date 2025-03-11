@@ -11,14 +11,35 @@
     line-height: rem.torem(16px);
     flex-grow: 1;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: rem.torem(12px);
 
     :disabled + & {
       color: var(--color-input-text-color-disabled);
       cursor: default;
     }
+
+    &-left {
+      flex-grow: 1;
+    }
+
+    &-icon {
+      color: var(--color-secondary-light);
+      width: rem.torem(44px);
+      height: rem.torem(44px);
+      min-width: rem.torem(44px);
+    }
+
+    &-description {
+      @include fonts.body-xs;
+
+      color: var(--color-grey-dark);
+      margin-top: rem.torem(4px);
+    }
   }
 
-  &:hover:not(.is-disabled) {
+  &:hover:not(.is-disabled) .base-radio-label-text {
     text-decoration: underline;
   }
 
@@ -84,6 +105,10 @@
   }
 }
 
+.radio {
+  position: relative;
+}
+
 .radio.box-variant {
   border: rem.torem(1px) solid var(--color-grey-dark);
   border-radius: rem.torem(8px);
@@ -118,6 +143,10 @@
   }
 }
 
+.radio.is-disabled .base-radio-label-icon {
+  color: var(--color-grey-dark);
+}
+
 .radio.has-children {
   &.is-checked:not(.is-disabled) {
     background: none;
@@ -126,4 +155,25 @@
 
 .base-radio-children-on-checked {
   padding: 0 rem.torem(16px) rem.torem(8px) 0;
+}
+
+.radio.has-icon.icon-position-center {
+  padding-left: 0;
+}
+
+.radio.has-icon.icon-position-center .base-radio-input {
+  position: absolute;
+  top: rem.torem(16px);
+  left: rem.torem(16px);
+}
+
+.radio.has-icon.icon-position-center .base-radio-label {
+  padding: rem.torem(40px) rem.torem(16px) rem.torem(32px);
+
+  &-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: rem.torem(12px);
+  }
 }
