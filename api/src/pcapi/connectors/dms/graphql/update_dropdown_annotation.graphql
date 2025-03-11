@@ -1,0 +1,10 @@
+mutation dossierModifierAnnotationDropDownList($input: DossierModifierAnnotationDropDownListInput!) {
+    dossierModifierAnnotationDropDownList(input: $input) {
+        annotation {
+            id
+        }
+        errors {
+            message
+        }
+    }
+}
