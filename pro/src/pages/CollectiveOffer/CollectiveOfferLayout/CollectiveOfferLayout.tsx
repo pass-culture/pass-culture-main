@@ -86,7 +86,7 @@ export const CollectiveOfferLayout = ({
         )}
       </div>
 
-      {!selectedOfferer?.isValidated ? (
+      {!selectedOfferer?.allowedOnAdage ? (
         <></>
       ) : navigationProps.isCreatingOffer ? (
         <CollectiveCreationOfferNavigation
