@@ -122,7 +122,7 @@ class GraphqlResponseTest:
         assert result.state == dms_models.GraphQLApplicationStates.accepted
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
-    def test_update_annotations(self, execute_query):
+    def test_update_text_annotation(self, execute_query):
         execute_query.return_value = {
             "dossierModifierAnnotationText": {"annotation": {"id": "XXXXXXXXX"}, "errors": None}
         }
@@ -132,6 +132,39 @@ class GraphqlResponseTest:
         )
 
         assert client.execute_query.call_count == 1
+        assert client.execute_query.call_args.args == (dms_api.UPDATE_TEXT_ANNOTATION_QUERY_NAME,)
+        assert client.execute_query.call_args.kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": "dossier_id",
+                    "instructeurId": "instructeur_id",
+                    "annotationId": "error_annotation_id",
+                    "value": "Il y a une grosse erreur ici",
+                }
+            }
+        }
+        # ,
+
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_update_dropdown_annotation(self, execute_query):
+        execute_query.return_value = {
+            "dossierModifierAnnotationText": {"annotation": {"id": "XXXXXXXXX"}, "errors": None}
+        }
+        client = api_dms.DMSGraphQLClient()
+        client.update_dropdown_annotation("dossier_id", "instructeur_id", "annotation_id", "IDP")
+
+        assert client.execute_query.call_count == 1
+        assert client.execute_query.call_args.args == (dms_api.UPDATE_DROPDOWN_ANNOTATION_QUERY_NAME,)
+        assert client.execute_query.call_args.kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": "dossier_id",
+                    "instructeurId": "instructeur_id",
+                    "annotationId": "annotation_id",
+                    "value": "IDP",
+                }
+            }
+        }
 
     @patch.object(
         api_dms.DMSGraphQLClient,
