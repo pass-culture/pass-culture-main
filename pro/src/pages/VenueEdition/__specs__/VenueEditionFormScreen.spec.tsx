@@ -253,16 +253,25 @@ describe('VenueEditionFormScreen', () => {
     })
 
     describe('when open to public feature is enabled', () => {
-      it('should display a "Accès et horaires" section instead of a "Horaires d’ouverture" section',() => {
+      it('should always display an "Accueil du public"',() => {
         renderForm(baseVenue, {
           initialRouterEntries: ['/'],
           features: ['WIP_IS_OPEN_TO_PUBLIC'],
         })
-        expect(screen.getByText('Accès et horaires')).toBeInTheDocument()
+        expect(screen.getByText('Accueil du public')).toBeInTheDocument()
       })
 
       describe('when the venue is not open to public', () => {
-        it('should not display any accessibility section', () => {
+        it('should not display any address and hours subsection', () => {
+          renderForm({ ...baseVenue, isOpenToPublic: false }, {
+            initialRouterEntries: ['/'],
+            features: ['WIP_IS_OPEN_TO_PUBLIC'],
+          })
+
+          expect(screen.queryByText('Adresse et horaires')).not.toBeInTheDocument()
+        })
+
+        it('should not display any accessibility subsection', () => {
           renderForm({ ...baseVenue, isOpenToPublic: false }, {
             initialRouterEntries: ['/'],
             features: ['WIP_IS_OPEN_TO_PUBLIC'],
@@ -270,10 +279,28 @@ describe('VenueEditionFormScreen', () => {
 
           expect(screen.queryByText(/Modalités d’accessibilité/)).not.toBeInTheDocument()
         })
+
+        it('should display a message indicating the venue is not open to public', () => {
+          renderForm({ ...baseVenue, isOpenToPublic: false }, {
+            initialRouterEntries: ['/'],
+            features: ['WIP_IS_OPEN_TO_PUBLIC'],
+          })
+
+          expect(screen.getByText('Accueil du public dans la structure : Non')).toBeInTheDocument()
+        })
       })
 
       describe('when the venue is open to public', () => {
-        it('should display an accessibility section', () => {
+        it('should display an "Addresse et horaires" subsection', () => {
+          renderForm({ ...baseVenue, isOpenToPublic: true }, {
+            initialRouterEntries: ['/'],
+            features: ['WIP_IS_OPEN_TO_PUBLIC'],
+          })
+
+          expect(screen.getByText('Adresse et horaires')).toBeInTheDocument()
+        })
+
+        it('should display an accessibility subsection', () => {
           renderForm({ ...baseVenue, isOpenToPublic: true }, {
             initialRouterEntries: ['/'],
             features: ['WIP_IS_OPEN_TO_PUBLIC'],
@@ -281,7 +308,7 @@ describe('VenueEditionFormScreen', () => {
           expect(screen.queryByText(/Modalités d’accessibilité/)).toBeInTheDocument()
         })
 
-        it('should display the acceslibre section as an accessibility section when accessibility is externally defined', () => {
+        it('should display the acceslibre section as an accessibility sub section when accessibility is externally defined', () => {
           renderForm(
             {
               ...baseVenue,

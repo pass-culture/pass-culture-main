@@ -1,13 +1,11 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { AccessibilitySummarySection as InternalAccessibilitySummarySubSection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
-import { ExternalAccessibility } from 'components/ExternalAccessibility/ExternalAccessibility'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { OpeningHoursReadOnly } from 'pages/VenueEdition/OpeningHoursReadOnly/OpeningHoursReadOnly'
 
-import { AccessibilityCallout } from './AccessibilityCallout/AccessibilityCallout'
+import { AccessibilityReadOnly } from './AccessibilityReadOnly/AccessibilityReadOnly'
 
 interface VenueEditionReadOnlyProps {
   venue: GetVenueResponseModel
@@ -15,8 +13,16 @@ interface VenueEditionReadOnlyProps {
 
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
   const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
-  const isVenueOpenToPublic = !!venue.isOpenToPublic
-  const isAccessibilitySectionDisplayed = isOpenToPublicEnabled ? isVenueOpenToPublic : true
+
+  const PublicWelcomeSection = ({ children }: { children: React.ReactNode | React.ReactNode[] }): JSX.Element => {
+    return isOpenToPublicEnabled ?
+      <SummarySubSection
+        title="Accueil du public"
+        shouldShowDivider={false}
+      >
+        {children}
+      </SummarySubSection> : <>{children}</>
+  }
 
   return (
     <SummarySection
@@ -36,37 +42,22 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
           ]}
         />
       </SummarySubSection>
-      <OpeningHoursReadOnly
-        isOpenToPublicEnabled={isOpenToPublicEnabled}
-        isOpenToPublic={isVenueOpenToPublic}
-        openingHours={venue.openingHours}
-      />
-      {isAccessibilitySectionDisplayed && (
-        venue.externalAccessibilityData ? (
-          <>
-            <SummarySubSection
-              title="Modalités d’accessibilité via acceslibre"
-              shouldShowDivider={false}
-            >
-              <ExternalAccessibility
-                externalAccessibilityId={venue.externalAccessibilityId}
-                externalAccessibilityData={venue.externalAccessibilityData}
-              />
-            </SummarySubSection>
-          </>
-        ): (
-          <InternalAccessibilitySummarySubSection
-            callout={
-              venue.isPermanent ? (
-                <AccessibilityCallout />
-              ) : null
-            }
-            accessibleItem={venue}
-            accessibleWording="Votre établissement est accessible aux publics en situation de handicap :"
-            shouldShowDivider={false}
+      <PublicWelcomeSection>
+        {isOpenToPublicEnabled && !venue.isOpenToPublic && <span>
+          Accueil du public dans la structure : Non
+        </span>}
+        {(!isOpenToPublicEnabled || venue.isOpenToPublic) && <>
+          <OpeningHoursReadOnly
+            isOpenToPublicEnabled={isOpenToPublicEnabled}
+            openingHours={venue.openingHours}
+            address={venue.address}
           />
-        )
-      )}
+          <AccessibilityReadOnly
+            isOpenToPublicEnabled={isOpenToPublicEnabled}
+            venue={venue}
+          />
+        </>}
+      </PublicWelcomeSection>
       <SummarySubSection
         title="Informations de contact"
         shouldShowDivider={false}

@@ -1,11 +1,16 @@
 import { screen, render } from '@testing-library/react'
 
+import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
+import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
+
 import { Hours, OpeningHoursReadOnly } from '../OpeningHoursReadOnly'
 
-describe('OpeningHoursReadOnly', () => {
-  it('should display each necessary days', () => {
-    const openingHours = {
-      MONDAY: [{ open: '14:00', close: '19:30' }],
+const MOCK_DATA = {
+  venue: {
+    ...defaultGetVenue,
+    address: getAddressResponseIsLinkedToVenueModelFactory(),
+    openingHours: {
+      MONDAY: [{ open: '08:00', close: '20:00' }],
       TUESDAY: [
         { open: '10:00', close: '13:00' },
         { open: '14:00', close: '19:30' },
@@ -28,12 +33,15 @@ describe('OpeningHoursReadOnly', () => {
       ],
       SUNDAY: null,
     }
+  },
+}
 
+describe('OpeningHoursReadOnly', () => {
+  it('should display each necessary days', () => {
     render(
       <OpeningHoursReadOnly
         isOpenToPublicEnabled={false}
-        isOpenToPublic={false}
-        openingHours={openingHours}
+        openingHours={MOCK_DATA.venue.openingHours}
       />
     )
 
@@ -47,12 +55,10 @@ describe('OpeningHoursReadOnly', () => {
   })
 
   it('should display no opening hours !', () => {
-    const openingHours = undefined
     render(
       <OpeningHoursReadOnly
         isOpenToPublicEnabled={false}
-        isOpenToPublic={false}
-        openingHours={openingHours}
+        openingHours={undefined}
       />
     )
 
@@ -64,17 +70,66 @@ describe('OpeningHoursReadOnly', () => {
   })
 
   describe('when open to public feature is enabled', () => {
-    it('should display a specific message when the venue is not open to public', () => {
-      const openingHours = undefined
+    it('should display the address', () => {
       render(
         <OpeningHoursReadOnly
           isOpenToPublicEnabled
-          isOpenToPublic={false}
-          openingHours={openingHours}
+          openingHours={MOCK_DATA.venue.openingHours}
+          address={MOCK_DATA.venue.address}
         />
       )
 
-      expect(screen.getByText(/Accueil du public dans la structure : Non/)).toBeInTheDocument()
+      const expectedText = `Adresse : ${MOCK_DATA.venue.address.street}, ${MOCK_DATA.venue.address.postalCode} ${MOCK_DATA.venue.address.city}`
+      expect(
+        screen.getByText(expectedText)
+      ).toBeInTheDocument()
+    })
+
+    it('should display opening hours when there are some', () => {
+      render(
+        <OpeningHoursReadOnly
+          isOpenToPublicEnabled
+          openingHours={MOCK_DATA.venue.openingHours}
+          address={MOCK_DATA.venue.address}
+        />
+      )
+
+      const firstDay = MOCK_DATA.venue.openingHours.MONDAY
+      expect(screen.getByText(/Lundi/)).toBeInTheDocument()
+      expect(screen.getByText(firstDay[0].open)).toBeInTheDocument()
+      expect(screen.getByText(firstDay[0].close)).toBeInTheDocument()
+    })
+
+    it('should display an empty state message when opening hours are not set', () => {
+      render(
+        <OpeningHoursReadOnly
+          isOpenToPublicEnabled
+          openingHours={null}
+          address={MOCK_DATA.venue.address}
+        />
+      )
+
+      expect(
+        screen.getByText(
+          /Horaires : Non renseigné/
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should display a closed state message when opening hours are set but empty', () => {
+      render(
+        <OpeningHoursReadOnly
+          isOpenToPublicEnabled
+          openingHours={{}}
+          address={MOCK_DATA.venue.address}
+        />
+      )
+
+      expect(
+        screen.getByText(
+          /Horaires : Vous n’avez pas renseigné d’horaire d’ouverture. Votre établissement est indiqué comme fermé sur l’application./
+        )
+      ).toBeInTheDocument()
     })
   })
 })
