@@ -33,9 +33,9 @@ class Returns200Test:
         institution = educational_factories.EducationalInstitutionFactory()
         national_program = educational_factories.NationalProgramFactory()
         offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, offerId=1, institution=institution, nationalProgramId=national_program.id
+            venue=venue, institution=institution, nationalProgramId=national_program.id
         )
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries):
@@ -66,12 +66,12 @@ class Returns200Test:
         institution = educational_factories.EducationalInstitutionFactory()
         national_program = educational_factories.NationalProgramFactory()
         offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, offerId=1, institution=institution, nationalProgramId=national_program.id
+            venue=venue, institution=institution, nationalProgramId=national_program.id
         )
         next_week = datetime.datetime.utcnow() + datetime.timedelta(days=7)
         in_two_weeks = datetime.datetime.utcnow() + datetime.timedelta(days=14)
         educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer, stockId=1, startDatetime=next_week, endDatetime=in_two_weeks
+            collectiveOffer=offer, startDatetime=next_week, endDatetime=in_two_weeks
         )
 
         client = client.with_session_auth(user.email)
@@ -165,7 +165,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         institution = educational_factories.EducationalInstitutionFactory()
-        educational_factories.CollectiveOfferFactory(venue=venue, offerId=1, institution=institution, provider=provider)
+        educational_factories.CollectiveOfferFactory(venue=venue, institution=institution, provider=provider)
 
         # When
         client = client.with_session_auth(user.email)
@@ -179,7 +179,7 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = educational_factories.CollectiveOfferTemplateFactory(venue=venue, offerId=1)
+        offer = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
 
         # When
         client = client.with_session_auth(user.email)
@@ -207,7 +207,6 @@ class Returns200Test:
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue,
             dateCreated=datetime.datetime.utcnow(),
-            offerId=1,
             imageId="00000125999998",
             imageCredit="offer",
         )
@@ -215,12 +214,11 @@ class Returns200Test:
         template = educational_factories.CollectiveOfferTemplateFactory(
             venue=venue,
             dateCreated=datetime.datetime.utcnow(),
-            offerId=2,
             imageId="00000125999999",
             imageCredit="template",
         )
 
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         # When
         client = client.with_session_auth(user.email)
@@ -282,12 +280,12 @@ class Returns200Test:
         for i in range(510):
             if random.randrange(10) % 2:
                 offer = educational_factories.CollectiveOfferFactory(
-                    venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=i), offerId=1
+                    venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=i)
                 )
                 educational_factories.CollectiveStockFactory(collectiveOffer=offer)
             else:
                 offer = educational_factories.CollectiveOfferTemplateFactory(
-                    venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=i), offerId=2
+                    venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=i)
                 )
 
             offers.append(offer)
@@ -312,12 +310,11 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
+            venue=venue,
+            dateCreated=datetime.datetime.utcnow(),
         )
-        educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=2
-        )
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
+        educational_factories.CollectiveOfferTemplateFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         # When
         client = client.with_session_auth(user.email)
@@ -336,26 +333,17 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
-        )
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
 
-        other_offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=2
-        )
+        educational_factories.CollectiveOfferFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
         educational_factories.CollectiveStockFactory(
             collectiveOffer__venue=venue,
             collectiveOffer__dateCreated=datetime.datetime.utcnow(),
-            collectiveOffer__offerId=other_offer.id,
             startDatetime=datetime.datetime(2022, 8, 10),
         )
-        educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=other_offer.id
-        )
+        educational_factories.CollectiveOfferTemplateFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
         educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-            stockId=1,
-            startDatetime=datetime.datetime(2022, 10, 10),
+            collectiveOffer=offer, startDatetime=datetime.datetime(2022, 10, 10)
         )
 
         # When
@@ -484,9 +472,9 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = educational_factories.CollectiveOfferFactory(venue=venue, offerId=1)
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
-        educational_factories.CollectiveOfferTemplateFactory(venue=venue, offerId=1)
+        offer = educational_factories.CollectiveOfferFactory(venue=venue)
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+        educational_factories.CollectiveOfferTemplateFactory(venue=venue)
 
         # When
         client = client.with_session_auth(user.email)
@@ -509,13 +497,11 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
-        )
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
         template = educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=2
+            venue=venue, dateCreated=datetime.datetime.utcnow()
         )
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         # When
         client = client.with_session_auth(user.email)

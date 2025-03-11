@@ -116,7 +116,6 @@ class CollectiveOfferTest:
                 "venueId": venue.id,
             },
             "students": ["Lycée - Seconde"],
-            "offerId": None,
             "educationalPriceDetail": stock.priceDetail,
             "domains": [{"id": offer.domains[0].id, "name": offer.domains[0].name}],
             "educationalInstitution": {

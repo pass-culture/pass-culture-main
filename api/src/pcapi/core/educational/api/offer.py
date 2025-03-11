@@ -405,7 +405,6 @@ def create_collective_offer(
         isActive=False,  # a DRAFT offer cannot be active
         venueId=venue.id,
         name=offer_data.name,
-        offerId=offer_id,
         description=offer_data.description,
         domains=educational_domains,
         durationMinutes=offer_data.duration_minutes,

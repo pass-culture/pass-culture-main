@@ -373,7 +373,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     contactEmail: str | None
     contactPhone: str | None
     hasBookingLimitDatetimesPassed: bool
-    offerId: int | None
     isActive: bool
     isEditable: bool
     id: int

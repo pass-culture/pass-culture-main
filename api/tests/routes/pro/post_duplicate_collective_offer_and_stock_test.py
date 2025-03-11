@@ -106,7 +106,6 @@ class Returns200Test:
             "contactEmail": "collectiveofferfactory+contact@example.com",
             "contactPhone": "+33199006328",
             "hasBookingLimitDatetimesPassed": False,
-            "offerId": None,
             "isActive": False,
             "isEditable": True,
             "isPublicApi": False,

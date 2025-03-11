@@ -30,7 +30,6 @@ class CreateCollectiveOfferStocksTest:
             beginningDate=start_date - datetime.timedelta(days=100),
             expirationDate=start_date + datetime.timedelta(days=100),
         )
-        user_pro = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory()
         new_stock = collective_stock_serialize.CollectiveStockCreationBodyModel(
             offerId=offer.id,
@@ -42,14 +41,13 @@ class CreateCollectiveOfferStocksTest:
             educationalPriceDetail="hello",
         )
 
-        stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock, user=user_pro)
+        stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock)
 
         stock = educational_models.CollectiveStock.query.filter_by(id=stock_created.id).one()
         assert stock.startDatetime == datetime.datetime.fromisoformat("2021-12-15T20:00:00")
         assert stock.bookingLimitDatetime == datetime.datetime.fromisoformat("2021-12-05T00:00:00")
         assert stock.price == 1200
         assert stock.numberOfTickets == 35
-        assert stock.stockId is None
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_set_booking_limit_datetime_to_beginning_datetime_when_not_provided(self) -> None:
@@ -58,7 +56,6 @@ class CreateCollectiveOfferStocksTest:
             beginningDate=start_date - datetime.timedelta(days=100),
             expirationDate=start_date + datetime.timedelta(days=100),
         )
-        user_pro = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory()
         new_stock = collective_stock_serialize.CollectiveStockCreationBodyModel(
             offerId=offer.id,
@@ -69,7 +66,7 @@ class CreateCollectiveOfferStocksTest:
             educationalPriceDetail="hello",
         )
 
-        stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock, user=user_pro)
+        stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock)
 
         stock = educational_models.CollectiveStock.query.filter_by(id=stock_created.id).one()
         assert stock.bookingLimitDatetime == dateutil.parser.parse("2021-12-15T20:00:00")
@@ -81,7 +78,6 @@ class CreateCollectiveOfferStocksTest:
             beginningDate=start_date - datetime.timedelta(days=100),
             expirationDate=start_date + datetime.timedelta(days=100),
         )
-        user = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
         created_stock_data = collective_stock_serialize.CollectiveStockCreationBodyModel(
             offerId=offer.id,
@@ -94,7 +90,7 @@ class CreateCollectiveOfferStocksTest:
         )
 
         with pytest.raises(offers_exceptions.RejectedOrPendingOfferNotEditable) as error:
-            educational_api_stock.create_collective_stock(stock_data=created_stock_data, user=user)
+            educational_api_stock.create_collective_stock(stock_data=created_stock_data)
 
         assert error.value.errors == {
             "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]

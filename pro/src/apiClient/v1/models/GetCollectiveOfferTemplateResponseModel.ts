@@ -46,7 +46,6 @@ export type GetCollectiveOfferTemplateResponseModel = {
   motorDisabilityCompliant?: boolean | null;
   name: string;
   nationalProgram?: NationalProgramModel | null;
-  offerId?: number | null;
   offerVenue: CollectiveOfferOfferVenueResponseModel;
   status: CollectiveOfferStatus;
   students: Array<StudentLevels>;
