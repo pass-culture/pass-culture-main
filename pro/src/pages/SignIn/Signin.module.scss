@@ -3,13 +3,6 @@
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_size.scss" as size;
 
-.mandatory {
-  @include fonts.body-accent-xs;
-
-  color: var(--color-grey-dark);
-  margin-bottom: rem.torem(16px);
-}
-
 .title {
   @include fonts.title1;
 

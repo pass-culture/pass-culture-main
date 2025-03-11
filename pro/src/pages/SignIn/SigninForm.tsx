@@ -13,7 +13,7 @@ import fullKeyIcon from 'icons/full-key.svg'
 import iconFullNext from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { PasswordInput } from 'ui-kit/formV2/PasswordInput/PasswordInput'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
@@ -106,7 +106,6 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             <ButtonLink
               to={accountCreationUrl}
               icon={iconFullNext}
-              iconPosition={IconPositionEnum.RIGHT}
               variant={
                 isLaptopScreenAtLeast
                   ? ButtonVariant.TERNARY

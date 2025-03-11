@@ -4,10 +4,11 @@
 .password-footer {
   @include forms.field-layout-footer;
 
+  min-height: initial;
   margin-top: 0;
   flex-direction: column;
 
-  &:not(:empty):last-child {
+  &:not(:empty) {
     margin-bottom: rem.torem(16px);
   }
 }
