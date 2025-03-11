@@ -1,4 +1,5 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import strokeAccessibilityBrain from 'icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEar from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
@@ -18,11 +19,14 @@ export const ExternalAccessibility = ({
   externalAccessibilityId,
   externalAccessibilityData
 }: ExternalAccessibilityProps) => {
+  const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
+
   return (
     <>
       <div className={styles['sections-container']}>
         <ExternalAccessibilityCollapse
           title="Handicap moteur"
+          titleHeadingLevel={isOpenToPublicEnabled ? 'h5' : 'h4'}
           isAccessible={Boolean(
             externalAccessibilityData.isAccessibleMotorDisability
           )}
@@ -63,6 +67,7 @@ export const ExternalAccessibility = ({
         </ExternalAccessibilityCollapse>
         <ExternalAccessibilityCollapse
           title="Handicap cognitif"
+          titleHeadingLevel={isOpenToPublicEnabled ? 'h5' : 'h4'}
           isAccessible={Boolean(
             externalAccessibilityData.isAccessibleMentalDisability
           )}
@@ -80,6 +85,7 @@ export const ExternalAccessibility = ({
         </ExternalAccessibilityCollapse>
         <ExternalAccessibilityCollapse
           title="Handicap auditif"
+          titleHeadingLevel={isOpenToPublicEnabled ? 'h5' : 'h4'}
           isAccessible={Boolean(
             externalAccessibilityData.isAccessibleAudioDisability
           )}
@@ -109,6 +115,7 @@ export const ExternalAccessibility = ({
         </ExternalAccessibilityCollapse>
         <ExternalAccessibilityCollapse
           title="Handicap visuel"
+          titleHeadingLevel={isOpenToPublicEnabled ? 'h5' : 'h4'}
           isAccessible={Boolean(
             externalAccessibilityData.isAccessibleVisualDisability
           )}

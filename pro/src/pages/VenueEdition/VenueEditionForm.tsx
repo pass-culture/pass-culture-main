@@ -10,6 +10,7 @@ import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
+import { getFormattedAddress } from 'commons/utils/getFormattedAddress'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { OpenToPublicToggle } from 'components/OpenToPublicToggle/OpenToPublicToggle'
@@ -184,7 +185,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                             className={styles['opening-hours-subsubsection-address-input']}
                             disabled
                             isOptional
-                            value={`${venue.street}, ${venue.postalCode} ${venue.city}`}
+                            value={getFormattedAddress(venue.address)}
                           />
                           <Callout
                             testId='address-callout'

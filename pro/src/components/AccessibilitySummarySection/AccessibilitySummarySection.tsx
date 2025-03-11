@@ -3,6 +3,7 @@ import { ReactNode } from 'react'
 import { AccessibilityEnum } from 'commons/core/shared/types'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
+import { SummarySubSubSection } from 'components/SummaryLayout/SummarySubSubSection'
 import { AccessibilityLabel } from 'ui-kit/AccessibilityLabel/AccessibilityLabel'
 
 import styles from './AccessibilitySummarySection.module.scss'
@@ -20,6 +21,7 @@ interface AccessibilitySummarySectionProps {
   accessibleWording: string
   callout?: ReactNode
   shouldShowDivider?: boolean
+  isSubSubSection?: boolean
 }
 
 export const AccessibilitySummarySection = ({
@@ -27,6 +29,7 @@ export const AccessibilitySummarySection = ({
   accessibleWording,
   callout,
   shouldShowDivider = true,
+  isSubSubSection = false,
 }: AccessibilitySummarySectionProps) => {
   const {
     visualDisabilityCompliant,
@@ -39,8 +42,9 @@ export const AccessibilitySummarySection = ({
     motorDisabilityCompliant ||
     mentalDisabilityCompliant ||
     audioDisabilityCompliant
-  return (
-    <SummarySubSection title="Modalités d’accessibilité" shouldShowDivider={shouldShowDivider}>
+
+  const sectionContent = (
+    <>
       {callout && <div className={styles['callout']}>{callout}</div>}
       <SummaryDescriptionList
         descriptions={[
@@ -71,6 +75,18 @@ export const AccessibilitySummarySection = ({
           )}
         </ul>
       )}
+  </>)
+
+  return isSubSubSection ? (
+    <SummarySubSubSection title="Modalités d’accessibilité">
+      {sectionContent}
+    </SummarySubSubSection>
+  ) : (
+    <SummarySubSection
+      title="Modalités d’accessibilité"
+      shouldShowDivider={shouldShowDivider}
+    >
+      {sectionContent}
     </SummarySubSection>
   )
 }
