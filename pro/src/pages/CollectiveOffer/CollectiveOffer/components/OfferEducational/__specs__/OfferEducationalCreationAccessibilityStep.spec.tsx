@@ -1,6 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import * as hooks from 'commons/hooks/swr/useOfferer'
+import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
   sharedCurrentUserFactory,
   currentOffererFactory,
@@ -33,10 +35,20 @@ describe('screens | OfferEducational : event address step', () => {
   const firstVenueId = 12
   const secondVenueId = 13
   const offererId = 15
+
+  const mockOffererData = {
+    data: { ...defaultGetOffererResponseModel, isValidated: true },
+    isLoading: false,
+    error: undefined,
+    mutate: vi.fn(),
+    isValidating: false,
+  }
   beforeEach(() => {
     props = {
       ...defaultCreationProps,
     }
+
+    vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
   })
 
   it('should prefill intervention and accessibility fields with venue intervention field when selecting venue', async () => {

@@ -1,6 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import * as hooks from 'commons/hooks/swr/useOfferer'
+import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
   sharedCurrentUserFactory,
   currentOffererFactory,
@@ -25,17 +27,24 @@ function renderComponent(props: OfferEducationalProps) {
 
 describe('screens | OfferEducational : creation offer type step', () => {
   let props: OfferEducationalProps
+  const mockOffererData = {
+    data: { ...defaultGetOffererResponseModel, isValidated: true },
+    isLoading: false,
+    error: undefined,
+    mutate: vi.fn(),
+    isValidating: false,
+  }
 
   beforeEach(() => {
+    vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
+
     props = defaultCreationProps
   })
 
   it('should display the right fields and titles', async () => {
     renderComponent(props)
 
-    const formatSelect = await screen.findByLabelText(
-      'Formats'
-    )
+    const formatSelect = await screen.findByLabelText('Formats')
     expect(formatSelect).toBeInTheDocument()
     expect(formatSelect).toBeEnabled()
     expect(formatSelect).toHaveValue('')
@@ -69,6 +78,8 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
   describe('domains', () => {
     beforeEach(() => {
+      vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
+
       props = {
         ...props,
         domainsOptions: [
@@ -131,6 +142,10 @@ describe('screens | OfferEducational : creation offer type step', () => {
   })
 
   describe('formats', () => {
+    beforeEach(() => {
+      vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
+    })
+
     it('should be able to select a format', async () => {
       renderComponent(props)
       const selectFormat = await screen.findByLabelText('Formats')

@@ -1,5 +1,7 @@
 import { screen } from '@testing-library/react'
 
+import * as hooks from 'commons/hooks/swr/useOfferer'
+import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
   sharedCurrentUserFactory,
   currentOffererFactory,
@@ -28,6 +30,13 @@ function renderOfferEducational(props: OfferEducationalProps) {
 
 describe('screens | OfferEducational : creation offerer step', () => {
   let props: OfferEducationalProps
+  const mockOffererData = {
+    data: { ...defaultGetOffererResponseModel, isValidated: true },
+    isLoading: false,
+    error: undefined,
+    mutate: vi.fn(),
+    isValidating: false,
+  }
 
   describe('when the offerer is not validated', () => {
     beforeEach(() => {
@@ -54,6 +63,8 @@ describe('screens | OfferEducational : creation offerer step', () => {
     const venue2Id = 2
     const venue3Id = 3
     beforeEach(() => {
+      vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
+
       props = {
         ...defaultCreationProps,
         userOfferer: userOffererFactory({

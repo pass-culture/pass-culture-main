@@ -1,7 +1,9 @@
 import { screen } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
+import * as hooks from 'commons/hooks/swr/useOfferer'
 import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -20,10 +22,6 @@ vi.mock('apiClient/api', () => ({
     getCollectiveOfferTemplate: vi.fn(),
     getNationalPrograms: vi.fn(),
   },
-}))
-
-vi.mock('hooks/useOfferEducationalFormData', () => ({
-  useOfferEducationalFormData: vi.fn()
 }))
 
 const renderCollectiveOfferCreation = (
@@ -48,6 +46,15 @@ describe('CollectiveOfferCreation', () => {
     }),
     isTemplate: false,
   }
+
+  const mockOffererData = {
+    data: { ...defaultGetOffererResponseModel, isValidated: true },
+    isLoading: false,
+    error: undefined,
+    mutate: vi.fn(),
+    isValidating: false,
+  }
+
   beforeEach(() => {
     vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [offerer],
@@ -58,6 +65,7 @@ describe('CollectiveOfferCreation', () => {
     })
     vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
     vi.spyOn(api, 'getNationalPrograms').mockResolvedValue([])
+    vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
   })
   it('should render collective offer creation form', async () => {
     renderCollectiveOfferCreation('/offre/creation/collectif', {
