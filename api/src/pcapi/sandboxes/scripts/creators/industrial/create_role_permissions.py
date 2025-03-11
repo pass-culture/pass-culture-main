@@ -113,6 +113,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     ],
     "charge_developpement": [
         perm_models.Permissions.READ_PRO_ENTITY,
+        perm_models.Permissions.READ_SPECIAL_EVENTS,
         perm_models.Permissions.MANAGE_SPECIAL_EVENTS,
         perm_models.Permissions.READ_TECH_PARTNERS,
     ],
@@ -124,6 +125,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.READ_TAGS,
         perm_models.Permissions.READ_CHRONICLE,
+        perm_models.Permissions.READ_SPECIAL_EVENTS,
         perm_models.Permissions.READ_TECH_PARTNERS,
     ],
     "qa": [
