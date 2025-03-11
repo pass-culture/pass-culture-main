@@ -189,6 +189,14 @@ describe('VenueSettingsScreen', () => {
     expect(
       await screen.findByText(/Vous ne trouvez pas votre adresse/)
     ).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText(/Vous ne trouvez pas votre adresse/))
+    expect(
+      screen.getByRole('textbox', { name: 'Adresse postale' })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('textbox', { name: 'Adresse postale *' })
+    ).not.toBeInTheDocument()
   })
 
   it('should submit the form with valid payload', async () => {

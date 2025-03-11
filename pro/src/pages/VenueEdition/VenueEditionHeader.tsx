@@ -141,9 +141,10 @@ export const VenueEditionHeader = ({
               ? `${offerer.name} (Offre numérique)`
               : venue.publicName || venue.name}
           </h2>
-          {!isOpenToPublicEnabled && venue.street && (
+          {!isOpenToPublicEnabled && venue.address && (
             <address className={styles['venue-address']}>
-              {venue.street}, {venue.postalCode} {venue.city}
+              {venue.address.street && `${venue.address.street}, `}
+              {venue.address.postalCode} {venue.address.city}
             </address>
           )}
         </div>
@@ -156,15 +157,17 @@ export const VenueEditionHeader = ({
           >
             Paramètres généraux
           </ButtonLink>
-          {isOpenToPublicEnabled && venue.isPermanent && <ButtonLink
-            variant={ButtonVariant.TERNARY}
-            icon={fullLinkIcon}
-            to={`${WEBAPP_URL}/lieu/${venue.id}`}
-            isExternal
-            opensInNewTab
-          >
-            Visualiser votre page
-          </ButtonLink>}
+          {isOpenToPublicEnabled && venue.isPermanent && (
+            <ButtonLink
+              variant={ButtonVariant.TERNARY}
+              icon={fullLinkIcon}
+              to={`${WEBAPP_URL}/lieu/${venue.id}`}
+              isExternal
+              opensInNewTab
+            >
+              Visualiser votre page
+            </ButtonLink>
+          )}
           {imageValues.originalImageUrl && (
             <ButtonImageEdit
               mode={UploaderModeEnum.VENUE}

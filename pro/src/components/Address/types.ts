@@ -3,7 +3,7 @@ export interface Address {
   latitude: number | null
   longitude: number | null
   postalCode: string
-  street: string
+  street: string | null
   banId: string | null
   manuallySetAddress?: boolean
 }

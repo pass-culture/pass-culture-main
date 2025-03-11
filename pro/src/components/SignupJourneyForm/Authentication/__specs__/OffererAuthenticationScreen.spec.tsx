@@ -14,6 +14,7 @@ import { Notification } from 'components/Notification/Notification'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
 
 import { OffererAuthentication } from '../OffererAuthentication'
+import { beforeEach } from 'vitest'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
@@ -98,6 +99,7 @@ const renderOffererAuthenticationScreen = (
     }
   )
 }
+const mockSetOfferer = vi.fn()
 
 describe('screens:SignupJourney::OffererAuthentication', () => {
   let contextValue: SignupJourneyContextValues
@@ -117,7 +119,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
         isOpenToPublic: 'true',
       },
       setActivity: () => {},
-      setOfferer: () => {},
+      setOfferer: mockSetOfferer,
     }
   })
 
@@ -186,5 +188,87 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     renderOffererAuthenticationScreen(contextValue)
     expect(screen.queryByText('Identification')).not.toBeInTheDocument()
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
+  })
+
+  describe('street is optional', () => {
+    beforeEach(async () => {
+      renderOffererAuthenticationScreen(contextValue)
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: 'Vous ne trouvez pas votre adresse ?',
+        })
+      )
+
+      await userEvent.type(
+        screen.getByRole('textbox', { name: /Code postal/ }),
+        '75001'
+      )
+      await userEvent.type(
+        screen.getByRole('textbox', { name: /Ville/ }),
+        'Paris'
+      )
+      await userEvent.type(
+        screen.getByRole('textbox', { name: /Coordonnées GPS/ }),
+        '48.853320, 2.348979'
+      )
+
+      await userEvent.tab()
+    })
+
+    it('should be able to submit form without street', async () => {
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Étape suivante' })
+      )
+
+      expect(mockSetOfferer).toHaveBeenCalledWith({
+        addressAutocomplete: '',
+        banId: '',
+        city: 'Paris',
+        coords: '48.853320, 2.348979',
+        hasVenueWithSiret: false,
+        isOpenToPublic: 'true',
+        latitude: '48.853320',
+        legalCategoryCode: '',
+        longitude: '2.348979',
+        manuallySetAddress: true,
+        name: 'Test name',
+        postalCode: '75001',
+        publicName: '',
+        'search-addressAutocomplete': '',
+        siret: '123 456 789 33333',
+        street: null,
+      })
+    })
+
+    it('should be able to submit form with street', async () => {
+      await userEvent.type(
+        screen.getByRole('textbox', { name: /Adresse postale/ }),
+        'street'
+      )
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Étape suivante' })
+      )
+
+      expect(mockSetOfferer).toHaveBeenCalledWith({
+        addressAutocomplete: '',
+        banId: '',
+        city: 'Paris',
+        coords: '48.853320, 2.348979',
+        hasVenueWithSiret: false,
+        isOpenToPublic: 'true',
+        latitude: '48.853320',
+        legalCategoryCode: '',
+        longitude: '2.348979',
+        manuallySetAddress: true,
+        name: 'Test name',
+        postalCode: '75001',
+        publicName: '',
+        'search-addressAutocomplete': '',
+        siret: '123 456 789 33333',
+        street: 'street',
+      })
+    })
   })
 })
