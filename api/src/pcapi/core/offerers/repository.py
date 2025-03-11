@@ -727,18 +727,29 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
     return [venue.id for venue in venue_with_non_free_offers]
 
 
-def get_offerers_venues_with_pricing_point(venue: models.Venue) -> list[models.Venue]:
-    venues_choices = (
-        models.Venue.query.filter(
-            models.Venue.managingOffererId == venue.managingOffererId,
-            models.Venue.id != venue.id,
-        )
-        .join(
+def get_offerers_venues_with_pricing_point(
+    venue: models.Venue,
+    include_without_pricing_points: bool = False,
+    check_pricing_points: bool = False,
+) -> list[models.Venue]:
+    """
+    Returns the venues of an offerer - excluding provided venue - and their associated active pricing points.
+    By default, returns only the venues with pricing points.
+    `without_pricing_points` includes venues without active pricing points.
+    `only_similar_pricing_points` includes only venues with the same pricing points as the provided venue.
+    """
+    venues_choices_query = (
+        models.Venue.query.join(
             models.VenuePricingPointLink,
             sqla.and_(
                 models.VenuePricingPointLink.venueId == models.Venue.id,
                 models.VenuePricingPointLink.timespan.contains(datetime.utcnow()),
             ),
+            isouter=include_without_pricing_points,
+        )
+        .filter(
+            models.Venue.managingOffererId == venue.managingOffererId,
+            models.Venue.id != venue.id,
         )
         .options(
             sqla.orm.load_only(
@@ -752,8 +763,12 @@ def get_offerers_venues_with_pricing_point(venue: models.Venue) -> list[models.V
             ),
         )
         .order_by(models.Venue.common_name)
-        .all()
     )
+    if check_pricing_points and venue.current_pricing_point_link:
+        venues_choices_query = venues_choices_query.filter(
+            models.VenuePricingPointLink.pricingPointId == venue.current_pricing_point_link.pricingPointId
+        )
+    venues_choices = venues_choices_query.all()
     return venues_choices
 
 
