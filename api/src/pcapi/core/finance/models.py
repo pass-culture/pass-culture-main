@@ -962,6 +962,12 @@ class IncidentType(enum.Enum):
     FRAUD = "fraud"
 
 
+class FinanceIncidentRequestOrigin(enum.Enum):
+    FRAUDE = "Fraude"
+    SUPPORT_JEUNE = "Support Jeune"
+    SUPPORT_PRO = "Support Pro"
+
+
 class FinanceIncident(PcObject, Base, Model):
     kind: IncidentType = sqla.Column(
         sqla.Enum(IncidentType, native_enum=False, create_contraint=False),
@@ -986,6 +992,14 @@ class FinanceIncident(PcObject, Base, Model):
     forceDebitNote: bool = sqla.Column(sqla.Boolean, nullable=False, server_default="false", default=False)
 
     zendeskId: int | None = sqla.Column(sqla.BigInteger, nullable=True, index=True)
+
+    origin: FinanceIncidentRequestOrigin = sqla.Column(
+        db_utils.MagicEnum(FinanceIncidentRequestOrigin),
+        nullable=True,
+        index=True,
+    )
+
+    comment: str | None = sqla.Column(sqla.Text, nullable=True)
 
     @property
     def is_partial(self) -> bool:

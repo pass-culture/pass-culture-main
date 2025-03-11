@@ -584,8 +584,9 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
     incident = finance_api.create_overpayment_finance_incident(
         bookings=bookings,
         author=current_user,
-        origin=form.origin.data,
+        origin=finance_models.FinanceIncidentRequestOrigin[form.origin.data],
         zendesk_id=form.zendesk_id.data,
+        comment=form.comment.data,
         amount=amount,
     )
     incident_url = url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=incident.id)
@@ -647,8 +648,9 @@ def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
         bookings=bookings,
         amount=amount,
         author=current_user,
-        origin=form.origin.data,
+        origin=finance_models.FinanceIncidentRequestOrigin[form.origin.data],
         zendesk_id=form.zendesk_id.data,
+        comment=form.comment.data,
     )
     incident_url = url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=commercial_gesture.id)
 
@@ -689,8 +691,9 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> utils.B
     incident = finance_api.create_overpayment_finance_incident_collective_booking(
         collective_booking,
         author=current_user,
-        origin=form.origin.data,
+        origin=finance_models.FinanceIncidentRequestOrigin[form.origin.data],
         zendesk_id=form.zendesk_id.data,
+        comment=form.comment.data,
     )
     incident_url = url_for(
         "backoffice_web.finance_incidents.get_incident",
@@ -728,8 +731,9 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
     incident = finance_api.create_finance_commercial_gesture_collective_booking(
         collective_booking,
         author=current_user,
-        origin=form.origin.data,
+        origin=finance_models.FinanceIncidentRequestOrigin[form.origin.data],
         zendesk_id=form.zendesk_id.data,
+        comment=form.comment.data,
     )
     incident_url = url_for(
         "backoffice_web.finance_incidents.get_incident",

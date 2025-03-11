@@ -11,6 +11,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
@@ -190,7 +191,8 @@ def _create_one_individual_incident(
     finance_incident = finance_api.create_overpayment_finance_incident(
         bookings=incident_bookings,
         author=pro,
-        origin=comment,
+        origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE,
+        comment=comment,
         amount=amount,
     )
     finance_api.validate_finance_overpayment_incident(
@@ -300,7 +302,8 @@ def _create_one_collective_incident(
         finance_incident = finance_api.create_overpayment_finance_incident_collective_booking(
             booking=booking,
             author=pro,
-            origin=comment,
+            origin=finance_models.FinanceIncidentRequestOrigin.FRAUDE,
+            comment=comment,
         )
         with patch("pcapi.core.finance.api.educational_api_booking.notify_reimburse_collective_booking"):
             finance_api.validate_finance_overpayment_incident(

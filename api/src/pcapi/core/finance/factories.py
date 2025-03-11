@@ -352,12 +352,12 @@ class FinanceIncidentFactory(BaseFactory):
     kind = models.IncidentType.OVERPAYMENT
     status = models.IncidentStatus.CREATED
     details = {
-        "origin": "Demande e-mail",
         "createdAt": datetime.datetime.utcnow().isoformat(),
         "author": "Sandy Box",
         "validator": "",
         "validatedAt": "",
     }
+    origin = models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE
 
 
 class FinanceCommercialGestureFactory(BaseFactory):

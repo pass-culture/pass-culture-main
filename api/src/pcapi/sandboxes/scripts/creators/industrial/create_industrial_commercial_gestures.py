@@ -95,7 +95,8 @@ def _create_total_commercial_gesture_individual_offer(
             author=author_user,
             bookings=[booking],
             amount=amount,
-            origin="create_industrial_commercial_gestures in industrial sandbox",
+            origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE,
+            comment="create_industrial_commercial_gestures in industrial sandbox",
         )
 
         finance_api.validate_finance_commercial_gesture(
@@ -156,7 +157,8 @@ def _create_total_commercial_gesture_collective_offer(
         commercial_gesture = finance_api.create_finance_commercial_gesture_collective_booking(
             booking=booking,
             author=author_user,
-            origin="create_industrial_commercial_gestures in industrial sandbox",
+            origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE,
+            comment="create_industrial_commercial_gestures in industrial sandbox",
         )
         finance_api.validate_finance_commercial_gesture(
             finance_incident=commercial_gesture,
@@ -241,7 +243,8 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
             author=author_user,
             bookings=bookings,
             amount=amount,
-            origin="create_industrial_commercial_gestures in industrial sandbox (partial commercial gesture)",
+            origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE,
+            comment="create_industrial_commercial_gestures in industrial sandbox (partial commercial gesture)",
         )
 
         finance_api.validate_finance_commercial_gesture(

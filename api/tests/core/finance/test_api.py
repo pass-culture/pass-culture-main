@@ -376,14 +376,16 @@ class PriceEventTest:
         incident = api.create_overpayment_finance_incident(
             bookings=[booking],
             author=author_user,
-            origin="BO",
+            origin=models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="BO",
             amount=Decimal("60.40"),
         )
 
         assert incident.kind == models.IncidentType.OVERPAYMENT
         assert incident.status == models.IncidentStatus.CREATED
         assert incident.details["authorId"] == author_user.id
-        assert incident.details["origin"] == "BO"
+        assert incident.origin == models.FinanceIncidentRequestOrigin.SUPPORT_PRO
+        assert incident.comment == "BO"
         assert stock.dnBookedQuantity == 8
 
         assert len(booking.incidents) == 1
@@ -526,14 +528,16 @@ class PriceEventTest:
         incident = api.create_overpayment_finance_incident(
             bookings=[booking],
             author=author_user,
-            origin="BO",
+            origin=models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="BO",
             amount=Decimal("30"),
         )
 
         assert incident.kind == models.IncidentType.OVERPAYMENT
         assert incident.status == models.IncidentStatus.CREATED
         assert incident.details["authorId"] == author_user.id
-        assert incident.details["origin"] == "BO"
+        assert incident.origin == models.FinanceIncidentRequestOrigin.SUPPORT_PRO
+        assert incident.comment == "BO"
 
         booking_finance_incidents = models.BookingFinanceIncident.query.all()
         assert len(booking_finance_incidents) == 1
@@ -674,7 +678,8 @@ class PriceEventTest:
             bookings=bookings,
             amount=Decimal("15.1"),
             author=author_user,
-            origin="test",
+            origin=models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="test",
         )
         validation.check_commercial_gesture_bookings(bookings)
         validation.check_commercial_gesture_total_amount(commercial_gesture_amount, bookings)
@@ -682,7 +687,8 @@ class PriceEventTest:
             author=author_user,
             bookings=bookings,
             amount=commercial_gesture_amount,
-            origin="create_industrial_commercial_gestures in industrial sandbox (partial commercial gesture)",
+            origin=models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="create_industrial_commercial_gestures in industrial sandbox (partial commercial gesture)",
         )
         assert commercial_gesture.due_amount_by_offerer == 15_10
         booking_finance_incidents = commercial_gesture.booking_finance_incidents
@@ -852,13 +858,15 @@ class PriceEventTest:
             bookings=[booking],
             amount=Decimal("10.1"),
             author=author_user,
-            origin="test",
+            origin=models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+            comment="test",
         )
         assert commercial_gesture.kind == models.IncidentType.COMMERCIAL_GESTURE
         assert commercial_gesture.status == models.IncidentStatus.CREATED
         assert commercial_gesture.forceDebitNote is False
         assert commercial_gesture.details["authorId"] == author_user.id
-        assert commercial_gesture.details["origin"] == "test"
+        assert commercial_gesture.origin == models.FinanceIncidentRequestOrigin.SUPPORT_PRO
+        assert commercial_gesture.comment == "test"
         assert commercial_gesture.venueId == venue.id
         assert len(commercial_gesture.booking_finance_incidents) == 1
         booking_finance_incident = commercial_gesture.booking_finance_incidents[0]
@@ -2569,7 +2577,8 @@ def test_invoices_csv_commercial_gesture():
         bookings=[booking],
         amount=Decimal("10.1"),
         author=author_user,
-        origin="test",
+        origin=models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+        comment="test",
     )
     # Validate the commercial gesture
     api.validate_finance_commercial_gesture(commercial_gesture, author=author_user)
@@ -2685,7 +2694,8 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
         bookings=[booking],
         amount=Decimal("10.1"),
         author=author_user,
-        origin="test",
+        origin=models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+        comment="test",
     )
     # Validate the commercial gesture
     api.validate_finance_commercial_gesture(commercial_gesture, author=author_user)

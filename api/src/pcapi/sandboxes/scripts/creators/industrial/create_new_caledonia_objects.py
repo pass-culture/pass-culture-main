@@ -453,7 +453,8 @@ def _create_one_nc_individual_incident(beneficiary: users_models.User) -> None:
     finance_incident = finance_api.create_overpayment_finance_incident(
         bookings=[incident_booking],
         author=pro,
-        origin="Incident de Nouvelle-Calédonie",
+        origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+        comment="Incident de Nouvelle-Calédonie",
         amount=amount,
     )
     finance_api.validate_finance_overpayment_incident(
