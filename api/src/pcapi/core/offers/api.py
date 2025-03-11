@@ -1727,18 +1727,6 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
 
 
 def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
-    count_past_stocks = (
-        models.Stock.query.with_entities(models.Stock.id)
-        .filter(
-            models.Stock.offerId == offer.id,
-            models.Stock.beginningDatetime < datetime.datetime.utcnow(),
-            models.Stock.isSoftDeleted.is_(False),
-        )
-        .count()
-    )
-    if count_past_stocks > 0:
-        raise exceptions.OfferEventInThePast(count_past_stocks)
-
     count_reimbursed_bookings = (
         bookings_models.Booking.query.with_entities(bookings_models.Booking.id)
         .join(bookings_models.Booking.stock)
