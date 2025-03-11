@@ -69,7 +69,6 @@ export const EmailSpellCheckInput = forwardRef(
           name={name}
           description={description}
           autoComplete="email"
-          autoFocus={true}
           className={className}
           maxLength={maxLength}
           required={required}

@@ -1,11 +1,14 @@
 import cn from 'classnames'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import fullMailIcon from 'icons/full-mail.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './LegalInfos.module.scss'
@@ -21,7 +24,44 @@ export const LegalInfos = ({
 }: LegalInfoProps): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
-  return (
+  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
+
+  const DPOMail = 'dpo@passculture.app'
+
+  const componentData = isNewSignupEnabled ? (
+    <Callout
+      variant={CalloutVariant.DEFAULT}
+      className={cn(styles['legal-infos-callout'], className)}
+    >
+      <p className={styles['legal-infos-paragraph']}>
+        En cliquant sur S’inscrire, vous acceptez nos{' '}
+        <Link
+          className={styles['legal-infos-callout-link']}
+          rel="noreferrer"
+          target="_blank"
+          onClick={() =>
+            logEvent(Events.CLICKED_CONSULT_CGU, { from: location.pathname })
+          }
+          to="https://pass.culture.fr/cgu-professionnels/"
+        >
+          Conditions générales d’utilisation.
+        </Link>
+      </p>
+      <p className={styles['legal-infos-paragraph']}>
+        Pour la gestion de vos données personnelles par la SAS pass Culture,
+        vous pouvez consulter la charte des données personnelles ou contacter{' '}
+        <Link
+          className={styles['legal-infos-callout-maillink']}
+          to={`mailto:${DPOMail}`}
+          rel="noreferrer"
+          target="_blank"
+        >
+          {DPOMail}
+        </Link>
+        .
+      </p>
+    </Callout>
+  ) : (
     <div className={cn(styles['legal-infos'], className)}>
       <span>{`En cliquant sur ${title}, vous acceptez nos `}</span>
       <ButtonLink
@@ -79,4 +119,6 @@ export const LegalInfos = ({
       .
     </div>
   )
+
+  return componentData
 }

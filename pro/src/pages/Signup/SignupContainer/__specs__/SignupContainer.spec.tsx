@@ -312,7 +312,7 @@ describe('Signup', () => {
             features: ['ENABLE_PRO_ACCOUNT_CREATION', 'WIP_2025_SIGN_UP'],
           })
           const submitButton = screen.getByRole('button', {
-            name: /Créer mon compte/,
+            name: /S’inscrire/,
           })
           await userEvent.type(
             screen.getByRole('textbox', {
