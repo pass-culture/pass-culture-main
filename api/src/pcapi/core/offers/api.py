@@ -198,7 +198,7 @@ def _get_internal_accessibility_compliance(venue: offerers_models.Venue) -> dict
 
 
 def create_draft_offer(
-    body: offers_schemas.PostDraftOfferBodyModel,
+    body: offers_schemas.CreateDraftOffer,
     venue: offerers_models.Venue,
     product: offers_models.Product | None = None,
     is_from_private_api: bool = True,
@@ -237,7 +237,7 @@ def create_draft_offer(
     return offer
 
 
-def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
+def update_draft_offer(offer: models.Offer, body: offers_schemas.UpdateDraftOffer) -> models.Offer:
     fields = body.dict(by_alias=True, exclude_unset=True)
 
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}

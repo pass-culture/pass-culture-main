@@ -249,7 +249,7 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
 )
 @atomic()
 def post_draft_offer(
-    body: offers_schemas.PostDraftOfferBodyModel,
+    body: offers_serialize.PostDraftOfferBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     venue: offerers_models.Venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
@@ -267,7 +267,9 @@ def post_draft_offer(
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     try:
-        offer = offers_api.create_draft_offer(body, venue, product)
+        fields = body.dict(by_alias=True)
+        offer_body = offers_schemas.CreateDraftOffer(**fields)
+        offer = offers_api.create_draft_offer(offer_body, venue, product)
     except exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
@@ -281,7 +283,7 @@ def post_draft_offer(
 )
 @atomic()
 def patch_draft_offer(
-    offer_id: int, body: offers_schemas.PatchDraftOfferBodyModel
+    offer_id: int, body: offers_serialize.PatchDraftOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     offer = models.Offer.query.options(
         sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
@@ -295,7 +297,9 @@ def patch_draft_offer(
     try:
         if body_extra_data := offers_api.deserialize_extra_data(body.extra_data, offer.subcategoryId):
             body.extra_data = body_extra_data
-        offer = offers_api.update_draft_offer(offer, body)
+        fields = body.dict(by_alias=True, exclude_unset=True)
+        offer_body = offers_schemas.UpdateDraftOffer(**fields)
+        offer = offers_api.update_draft_offer(offer, offer_body)
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 

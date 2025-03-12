@@ -7,57 +7,14 @@ from pydantic.v1 import validator
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
-from pcapi.routes.serialization import BaseModel
+from pcapi.core.schemas import SchemasBaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
 from .validation import check_offer_subcategory_is_valid
 
 
-class PostDraftOfferBodyModel(BaseModel):
-    name: str
-    subcategory_id: str
-    venue_id: int
-    description: str | None = None
-    url: HttpUrl | None = None
-    extra_data: typing.Any = None
-    duration_minutes: int | None = None
-    product_id: int | None
-
-    @validator("name", pre=True)
-    def validate_name(cls, name: str, values: dict) -> str:
-        check_offer_name_length_is_valid(name)
-        return name
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class PatchDraftOfferBodyModel(BaseModel):
-    name: str | None = None
-    subcategory_id: str | None = None
-    url: HttpUrl | None = None
-    description: str | None = None
-    extra_data: dict[str, typing.Any] | None = None
-    duration_minutes: int | None = None
-
-    @validator("name", pre=True)
-    def validate_name(cls, name: str, values: dict) -> str:
-        check_offer_name_length_is_valid(name)
-        return name
-
-    @validator("subcategory_id", pre=True)
-    def validate_subcategory_id(cls, subcategory_id: str, values: dict) -> str:
-        check_offer_subcategory_is_valid(subcategory_id)
-        return subcategory_id
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class CreateOffer(BaseModel):
+class CreateOffer(SchemasBaseModel):
     name: str
     subcategory_id: str
     audio_disability_compliant: bool
@@ -98,7 +55,28 @@ class CreateOffer(BaseModel):
         extra = "forbid"
 
 
-class UpdateOffer(BaseModel):
+class CreateDraftOffer(SchemasBaseModel):
+    name: str
+    subcategory_id: str
+    venue_id: int
+    description: str | None = None
+    url: HttpUrl | None = None
+    extra_data: typing.Any = None
+    duration_minutes: int | None = None
+    product_id: int | None
+
+    @validator("name", pre=True)
+    def validate_name(cls, name: str, values: dict) -> str:
+        check_offer_name_length_is_valid(name)
+        return name
+
+    class Config:
+        arbitrary_types_allowed = True
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class UpdateOffer(SchemasBaseModel):
     name: str | None = None
     audio_disability_compliant: bool | None = None
     mental_disability_compliant: bool | None = None
@@ -141,5 +119,23 @@ class UpdateOffer(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class UpdateDraftOffer(SchemasBaseModel):
+    name: str | None = None
+    subcategory_id: str | None = None
+    url: HttpUrl | None = None
+    description: str | None = None
+    extra_data: dict[str, typing.Any] | None = None
+    duration_minutes: int | None = None
+
+    @validator("subcategory_id", pre=True)
+    def validate_subcategory_id(cls, subcategory_id: str, values: dict) -> str:
+        check_offer_subcategory_is_valid(subcategory_id)
+        return subcategory_id
+
+    class Config:
         alias_generator = to_camel
         extra = "forbid"

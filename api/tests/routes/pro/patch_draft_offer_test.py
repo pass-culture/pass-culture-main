@@ -47,6 +47,7 @@ class Returns200Test:
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
         assert updated_offer.description == "New description"
         assert not updated_offer.product
+        assert updated_offer.url == "http://example.com/offer"
 
     @pytest.mark.features(WIP_EAN_CREATION=True)
     def test_patch_draft_offer_without_product_with_new_ean_should_succeed(self, client):
