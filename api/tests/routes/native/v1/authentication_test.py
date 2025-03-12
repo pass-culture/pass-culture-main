@@ -21,7 +21,6 @@ from pcapi.core.fraud import repository as fraud_repository
 from pcapi.core.history import factories as history_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories

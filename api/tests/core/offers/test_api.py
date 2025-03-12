@@ -2,7 +2,6 @@ import copy
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 import decimal
 from decimal import Decimal
 import logging
@@ -40,7 +39,6 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.providers.allocine import get_allocine_products_provider
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
@@ -1292,36 +1290,8 @@ class UpdateDraftOfferTest:
 
 @pytest.mark.usefixtures("db_session")
 class CreateOfferTest:
-    def test_create_offer_from_scratch(self):
-        venue = offerers_factories.VenueFactory()
 
-        body = offers_schemas.CreateOffer(
-            name="A pretty good offer",
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-            externalTicketOfficeUrl="http://example.net",
-        )
-        offer = api.create_offer(body, venue=venue)
-
-        assert offer.name == "A pretty good offer"
-        assert offer.venue == venue
-        assert offer.subcategoryId == subcategories.SEANCE_CINE.id
-        assert not offer.product
-        assert offer.externalTicketOfficeUrl == "http://example.net"
-        assert offer.audioDisabilityCompliant
-        assert offer.mentalDisabilityCompliant
-        assert offer.motorDisabilityCompliant
-        assert offer.visualDisabilityCompliant
-        assert offer.validation == models.OfferValidationStatus.DRAFT
-        assert offer.extraData == {}
-        assert not offer.bookingEmail
-        assert models.Offer.query.count() == 1
-        assert offer.offererAddress == venue.offererAddress
-
-    def test_create_digital_offer_from_scratch_with(
+    def test_create_digital_offer_from_scratch(
         self,
     ):
         venue = offerers_factories.VenueFactory(isVirtual=True, offererAddress=None, siret=None)
@@ -4399,7 +4369,7 @@ class CreateMovieProductFromProviderTest:
         random_movie_with_visa = factories.ProductFactory(extraData={"visa": visa})
 
         movie = self._get_movie(allocine_id=str(allocine_id), visa=visa)
-        offer = offers_factories.OfferFactory(product=random_movie_with_visa)
+        offer = factories.OfferFactory(product=random_movie_with_visa)
 
         # When
         api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
@@ -4408,7 +4378,7 @@ class CreateMovieProductFromProviderTest:
         assert allocine_movie.lastProvider.id == self.allocine_provider.id
 
         db.session.refresh(offer)
-        offer.productId == allocine_movie.id
+        assert offer.productId == allocine_movie.id
 
     def test_does_not_update_allocine_product_from_non_allocine_synchro(self):
         # Given

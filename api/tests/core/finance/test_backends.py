@@ -1,5 +1,4 @@
 import datetime
-import json
 from typing import NamedTuple
 
 import pytest

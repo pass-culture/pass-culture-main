@@ -1,4 +1,3 @@
-from unittest.mock import patch
 import uuid
 
 import flask
@@ -7,8 +6,6 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.models import api_errors
-from pcapi.utils.crypto import check_public_api_key
-from pcapi.utils.crypto import hash_password
 from pcapi.validation.routes import users_authentifications
 
 from tests.conftest import TestClient

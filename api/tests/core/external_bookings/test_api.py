@@ -43,7 +43,7 @@ class GetCinemaVenueProviderTest:
         venue_id = 0
 
         # When
-        with pytest.raises(providers_exceptions.InactiveProvider) as exc:
+        with pytest.raises(providers_exceptions.InactiveProvider):
             get_active_cinema_venue_provider(venue_id)
 
     def test_should_raise_exception_if_inactive_cinema_venue_provider(self) -> None:
@@ -52,7 +52,7 @@ class GetCinemaVenueProviderTest:
         providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
 
         venue_id = venue_provider.venueId
-        with pytest.raises(providers_exceptions.InactiveProvider) as e:
+        with pytest.raises(providers_exceptions.InactiveProvider):
             get_active_cinema_venue_provider(venue_id)
 
 

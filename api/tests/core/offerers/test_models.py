@@ -168,7 +168,7 @@ class VenueBannerUrlTest:
 class VenueIsEligibleForSearchTest:
     @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=False)
     @pytest.mark.parametrize(
-        "permanent,active,type,is_eligible_for_search",
+        "permanent,active,venue_type_code,is_eligible_for_search",
         [
             (True, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True),
             (True, True, offerers_schemas.VenueTypeCode.ADMINISTRATIVE, False),
@@ -177,19 +177,19 @@ class VenueIsEligibleForSearchTest:
             (False, False, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
         ],
     )
-    def test_legacy_is_eligible_for_search(self, permanent, active, type, is_eligible_for_search):
+    def test_legacy_is_eligible_for_search(self, permanent, active, venue_type_code, is_eligible_for_search):
         venue = factories.VenueFactory(
             isVirtual=False,
             managingOfferer__isActive=active,
             isPermanent=permanent,
-            venueTypeCode=type,
+            venueTypeCode=venue_type_code,
         )
         offers_factories.OfferFactory(venue=venue)
         assert venue.is_eligible_for_search == is_eligible_for_search
 
     @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
     @pytest.mark.parametrize(
-        "open_to_public,permanent,validation_status,active,type,has_indiv_offer,is_eligible_for_search",
+        "open_to_public,permanent,validation_status,active,venue_type_code,has_indiv_offer,is_eligible_for_search",
         [
             (True, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, True),
             (True, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, False, False),
@@ -204,7 +204,14 @@ class VenueIsEligibleForSearchTest:
         ],
     )
     def test_is_eligible_for_search(
-        self, open_to_public, permanent, validation_status, active, type, has_indiv_offer, is_eligible_for_search
+        self,
+        open_to_public,
+        permanent,
+        validation_status,
+        active,
+        venue_type_code,
+        has_indiv_offer,
+        is_eligible_for_search,
     ):
         venue = factories.VenueFactory(
             isVirtual=False,
@@ -212,7 +219,7 @@ class VenueIsEligibleForSearchTest:
             managingOfferer__isActive=active,
             managingOfferer__validationStatus=validation_status,
             isPermanent=permanent,
-            venueTypeCode=type,
+            venueTypeCode=venue_type_code,
         )
         if has_indiv_offer:
             offers_factories.OfferFactory(venue=venue)

@@ -2210,7 +2210,6 @@ class CreateFromOnboardingDataTest:
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 
         # Offerer has been created
-        created_offerer = created_user_offerer.offerer
         created_venue = created_user_offerer.offerer.managedVenues[0]
         assert created_venue.isOpenToPublic is isOpenToPublic
 

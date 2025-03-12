@@ -11,7 +11,6 @@ import zipfile
 from dateutil.relativedelta import relativedelta
 import pytest
 import pytz
-from sqlalchemy import select
 import time_machine
 
 from pcapi import settings

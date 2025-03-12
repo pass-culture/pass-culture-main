@@ -14,7 +14,6 @@ from pcapi.core.offers.models import OfferStatus
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.core.users.factories as users_factories
-from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.date import format_into_utc_date
 
 
