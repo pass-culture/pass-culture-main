@@ -6,5 +6,5 @@ export enum MESSAGE_VARIANT {
 
 export interface ErrorMessage {
   message: string
-  variant: MESSAGE_VARIANT
+  variant?: MESSAGE_VARIANT
 }

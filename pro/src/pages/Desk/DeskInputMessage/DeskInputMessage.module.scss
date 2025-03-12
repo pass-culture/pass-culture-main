@@ -4,9 +4,16 @@
   @include fonts.body-accent-xs;
 
   white-space: pre-line;
-  color: var(--color-valid);
 
-  &.error {
+  &-default {
+    color: var(--color-valid);
+  }
+
+  &-error {
     color: var(--color-error-light);
+  }
+
+  &-success {
+    color: var(--color-valid);
   }
 }
