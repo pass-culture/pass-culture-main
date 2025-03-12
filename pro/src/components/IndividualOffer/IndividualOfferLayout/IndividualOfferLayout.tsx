@@ -10,9 +10,11 @@ import {
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
+import { useMediaQuery } from 'commons/hooks/useMediaQuery'
 import { useNotification } from 'commons/hooks/useNotification'
 import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
 import { storageAvailable } from 'commons/utils/storageAvailable'
+import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
 import { HeadlineOfferTag } from 'components/HeadlineOfferTag/HeadlineOfferTag'
 import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -50,6 +52,7 @@ export const IndividualOfferLayout = ({
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
+  const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
 
   const offerHeadlineEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
   const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
@@ -97,7 +100,13 @@ export const IndividualOfferLayout = ({
         })}
       >
         <div className={styles['title-container']}>
-          <h1 className={styles['title']}>{title}</h1>
+          <div className={styles['title-and-back-to-nav-link']}>
+            <h1 className={styles['title']}>{title}</h1>
+            <BackToNavLink
+              isMobileScreen={isMobileScreen}
+              className={styles['back-to-nav-link']}
+            />
+          </div>
           {shouldDisplayActionOnStatus && (
             <span className={styles['status']}>{<Status offer={offer} />}</span>
           )}
