@@ -61,7 +61,9 @@ class PublicAPIEndpointBaseHelper:
 
         assert response.json == {"auth": "API key required"}
 
-    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client: TestClient):
+    def test_should_raise_401_because_api_key_not_linked_to_provider(
+        self, client: TestClient, num_queries: int | None = None
+    ):
         """
         Default test ensuring the API call is authenticated and that the API key authenticates a provider
         """
@@ -71,7 +73,10 @@ class PublicAPIEndpointBaseHelper:
 
         if self.default_path_params:
             url = url.format(**self.default_path_params)
-        with testing.assert_num_queries(2):  # Select API key + select provider
+
+        if num_queries is None:
+            num_queries = 2  # Select API key + select provider
+        with testing.assert_num_queries(num_queries):
             response = client_method(url)
             assert response.status_code == 401
 

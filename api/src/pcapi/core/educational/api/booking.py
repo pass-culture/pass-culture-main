@@ -26,11 +26,8 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
-from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
-from pcapi.repository import repository
-from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_reimbursement_notification
@@ -49,33 +46,31 @@ def book_collective_offer(
     if not educational_institution:
         raise exceptions.EducationalInstitutionUnknown()
 
-    # The call to transaction here ensures we free the FOR UPDATE lock
-    # on the stock if validation issues an exception
-    with transaction():
-        stock = educational_repository.get_and_lock_collective_stock(stock_id=stock_id)
-        validation.check_collective_stock_is_bookable(stock)
+    stock = educational_repository.get_and_lock_collective_stock(stock_id=stock_id)
+    validation.check_collective_stock_is_bookable(stock)
 
-        educational_year = educational_repository.find_educational_year_by_date(stock.startDatetime)
-        if not educational_year:
-            raise exceptions.EducationalYearNotFound()
-        validation.check_user_can_prebook_collective_stock(redactor_informations.uai, stock)
+    educational_year = educational_repository.find_educational_year_by_date(stock.startDatetime)
+    if not educational_year:
+        raise exceptions.EducationalYearNotFound()
+    validation.check_user_can_prebook_collective_stock(redactor_informations.uai, stock)
 
-        utcnow = datetime.datetime.utcnow()
-        booking = educational_models.CollectiveBooking(
-            educationalInstitution=educational_institution,
-            educationalYear=educational_year,
-            educationalRedactor=redactor,
-            confirmationLimitDate=stock.bookingLimitDatetime,
-            collectiveStockId=stock.id,
-            venueId=stock.collectiveOffer.venueId,
-            offererId=stock.collectiveOffer.venue.managingOffererId,
-            status=educational_models.CollectiveBookingStatus.PENDING,
-            dateCreated=utcnow,
-            cancellationLimitDate=educational_utils.compute_educational_booking_cancellation_limit_date(
-                stock.startDatetime, utcnow
-            ),
-        )
-        repository.save(booking)
+    utcnow = datetime.datetime.utcnow()
+    booking = educational_models.CollectiveBooking(
+        educationalInstitution=educational_institution,
+        educationalYear=educational_year,
+        educationalRedactor=redactor,
+        confirmationLimitDate=stock.bookingLimitDatetime,
+        collectiveStockId=stock.id,
+        venueId=stock.collectiveOffer.venueId,
+        offererId=stock.collectiveOffer.venue.managingOffererId,
+        status=educational_models.CollectiveBookingStatus.PENDING,
+        dateCreated=utcnow,
+        cancellationLimitDate=educational_utils.compute_educational_booking_cancellation_limit_date(
+            stock.startDatetime, utcnow
+        ),
+    )
+    db.session.add(booking)
+    db.session.flush()
 
     logger.info(
         "Redactor booked a collective offer",
@@ -157,24 +152,11 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
     collective_booking.mark_as_confirmed()
 
     db.session.add(collective_booking)
-    if is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
-
-    # re-fetch collective booking with some joinedload that will
-    # very-likely be useful later
-    collective_booking = educational_repository.find_collective_booking_by_id(collective_booking.id)
-    if not collective_booking:
-        # this should not happen
-        logger.exception("Confirmed booking not found", extra={"booking": educational_booking_id})
-        raise exceptions.EducationalBookingNotFound()
+    db.session.flush()
 
     logger.info(
         "Head of institution confirmed an educational offer",
-        extra={
-            "collectiveBookingId": collective_booking.id,
-        },
+        extra={"collectiveBookingId": collective_booking.id},
     )
 
     transactional_mails.send_eac_new_booking_email_to_pro(collective_booking)
@@ -207,14 +189,6 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
 
     db.session.add(collective_booking)
     db.session.flush()
-
-    # re-fetch collective booking with some joinedload that will
-    # very-likely be useful later
-    collective_booking = educational_repository.find_collective_booking_by_id(educational_booking_id)
-    if collective_booking is None:
-        # this should not happen
-        logger.exception("Refused booking not found", extra={"booking": educational_booking_id})
-        raise exceptions.EducationalBookingNotFound()
 
     logger.info(
         "Collective Booking has been cancelled",
@@ -412,10 +386,15 @@ def cancel_collective_booking(
     with atomic():
         educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
         db.session.refresh(collective_booking)
+
         if finance_repository.has_reimbursement(collective_booking):
             raise exceptions.BookingIsAlreadyRefunded()
+
         cancelled_event = finance_api.cancel_latest_event(collective_booking)
+
         collective_booking.cancel_booking(reason=reason, cancel_even_if_used=force, author_id=author_id)
+        db.session.flush()
+
         if cancelled_event:
             finance_api.add_event(
                 finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,

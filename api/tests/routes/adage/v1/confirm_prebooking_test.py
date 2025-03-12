@@ -5,6 +5,7 @@ import logging
 import pytest
 import time_machine
 
+from pcapi.core import testing
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalDepositFactory
@@ -23,6 +24,13 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns200Test:
+    # 1. select booking
+    # 2. select deposit
+    # 3. select stock.price sum
+    # 4. select FF
+    # 5. update booking
+    expected_num_queries = 5
+
     @time_machine.travel("2021-10-15 09:00:00", tick=False)
     def test_confirm_collective_prebooking(self, client, caplog) -> None:
         redactor = EducationalRedactorFactory()
@@ -51,8 +59,9 @@ class Returns200Test:
         )
 
         client = client.with_eac_token()
-        with caplog.at_level(logging.INFO):
-            response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
+        booking_id = booking.id
+        with caplog.at_level(logging.INFO), testing.assert_num_queries(self.expected_num_queries):
+            response = client.post(f"/adage/v1/prebookings/{booking_id}/confirm")
 
         assert caplog.records[0].message == "BookingApproval"
         assert caplog.records[0].extra == {
@@ -111,7 +120,11 @@ class Returns200Test:
         )
 
         client = client.with_eac_token()
-        response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
+        booking_id = booking.id
+        expected_num_queries = self.expected_num_queries + 1  # select stock.price sum for ministry check
+        expected_num_queries += 1  # select ministry deposit
+        with testing.assert_num_queries(expected_num_queries):
+            response = client.post(f"/adage/v1/prebookings/{booking_id}/confirm")
         assert response.status_code == 200
 
     @time_machine.travel("2021-10-15 09:00:00")
@@ -165,7 +178,9 @@ class Returns200Test:
         )
 
         client = client.with_eac_token()
-        response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
+        booking_id = booking.id
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = client.post(f"/adage/v1/prebookings/{booking_id}/confirm")
         assert response.status_code == 200
 
     @time_machine.travel("2021-10-15 09:00:00")
@@ -204,18 +219,13 @@ class Returns200Test:
         )
 
         client = client.with_eac_token()
-        response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
+        booking_id = booking.id
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = client.post(f"/adage/v1/prebookings/{booking_id}/confirm")
         assert response.status_code == 200
 
 
 class ReturnsErrorTest:
-    def test_no_educational_booking(self, client) -> None:
-        client = client.with_eac_token()
-        response = client.post("/adage/v1/prebookings/404/confirm")
-
-        assert response.status_code == 404
-        assert response.json == {"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}
-
     def test_no_collective_booking(self, client) -> None:
         client = client.with_eac_token()
         response = client.post("/adage/v1/prebookings/404/confirm")

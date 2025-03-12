@@ -27,6 +27,10 @@ class ConfirmCollectiveBookingTest(AdageMockEndpointHelper):
     default_path_params = {"booking_id": 1}
     default_factory = factories.PendingCollectiveBookingFactory
 
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 3  # Select API key + select provider + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
+
     def test_confirm_pending_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         pending_booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
@@ -83,6 +87,7 @@ class ConfirmCollectiveBookingTest(AdageMockEndpointHelper):
 
         for deposit in pending_booking.educationalInstitution.deposits:
             deposit.amount = 0
+        db.session.flush()
 
         with assert_attribute_does_not_change(pending_booking, "status"):
             self.assert_request_has_expected_result(
@@ -116,6 +121,8 @@ class ConfirmCollectiveBookingTest(AdageMockEndpointHelper):
         deposit_amount = sum(deposit.amount for deposit in institution.deposits)
         used_booking.collectiveStock.price = deposit_amount / 3
 
+        db.session.flush()
+
         with assert_attribute_does_not_change(pending_booking, "status"):
             self.assert_request_has_expected_result(
                 auth_client,
@@ -132,6 +139,8 @@ class ConfirmCollectiveBookingTest(AdageMockEndpointHelper):
         for deposit in pending_booking.educationalInstitution.deposits:
             deposit.amount = 0
             deposit.isFinal = False
+
+        db.session.flush()
 
         with assert_attribute_does_not_change(pending_booking, "status"):
             self.assert_request_has_expected_result(
@@ -184,6 +193,10 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
     on_success_num_queries += 1  # 7. get finance events for booking
     on_success_num_queries += 1  # 8. update booking
 
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 3  # Select API key + select provider + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
+
     @pytest.mark.parametrize(
         "booking_factory",
         [
@@ -226,6 +239,7 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
             expected_queries_count += 1  # 6. does pricing exists for collective booking?
             expected_queries_count += 1  # 7. get finance events for booking
             expected_queries_count += 1  # 8. rollback
+            expected_queries_count += 1  # 9. rollback (second one because of with atomic in cancel_collective_booking)
 
             with assert_num_queries(expected_queries_count):
                 self.assert_request_has_expected_result(
@@ -253,6 +267,7 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
             expected_queries_count += 1  # 4. get collective stock (lock for update)
             expected_queries_count += 1  # 5. get collective booking (refresh)
             expected_queries_count += 1  # 6. rollback
+            expected_queries_count += 1  # 7. rollback (second one because of with atomic in cancel_collective_booking)
 
             with assert_num_queries(expected_queries_count):
                 self.assert_request_has_expected_result(
@@ -269,6 +284,7 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
         expected_queries_count = 1  # 1. get api key
         expected_queries_count += 1  # 2. get FF
         expected_queries_count += 1  # 3. get collective booking
+        expected_queries_count += 1  # 4. rollback
 
         with assert_num_queries(expected_queries_count):
             self.assert_request_has_expected_result(
@@ -296,6 +312,7 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
             expected_queries_count += 1  # 5. get collective booking (refresh)
             expected_queries_count += 1  # 6. does pricing exists for collective booking?
             expected_queries_count += 1  # 7. rollback
+            expected_queries_count += 1  # 8. rollback (second one because of with atomic in cancel_collective_booking)
 
             with assert_num_queries(expected_queries_count):
                 self.assert_request_has_expected_result(
@@ -311,6 +328,10 @@ class UseCollectiveBookingTest(AdageMockEndpointHelper):
     endpoint_method = "post"
     default_path_params = {"booking_id": 1}
     default_factory = factories.ConfirmedCollectiveBookingFactory
+
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 3  # Select API key + select provider + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
 
     def test_use_confirmed_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -382,6 +403,10 @@ class ResetCollectiveBookingTest(AdageMockEndpointHelper):
     default_path_params = {"booking_id": 1}
     default_factory = factories.PendingCollectiveBookingFactory
 
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 3  # Select API key + select provider + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
+
     def test_can_reset_pending_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
@@ -413,7 +438,9 @@ class ResetCollectiveBookingTest(AdageMockEndpointHelper):
             expected_num_queries = 1  # 1. get api key
             expected_num_queries += 1  # 2. get FF
             expected_num_queries += 1  # 3. get collective booking
-            expected_num_queries += 1  # 4. update booking
+            if booking_factory is factories.CancelledCollectiveBookingFactory:
+                expected_num_queries += 1  # update booking (uncancel_booking)
+            expected_num_queries += 1  # update booking (to PENDING)
 
             booking_id = booking.id
             with assert_num_queries(expected_num_queries):
@@ -441,6 +468,7 @@ class ResetCollectiveBookingTest(AdageMockEndpointHelper):
             expected_num_queries = 1  # 1. get api key
             expected_num_queries += 1  # 2. get FF
             expected_num_queries += 1  # 3. get collective booking
+            expected_num_queries += 1  # 4. rollback
 
             booking_id = booking.id
             with assert_num_queries(expected_num_queries):
@@ -457,6 +485,10 @@ class RepayCollectiveBookingTest(AdageMockEndpointHelper):
     endpoint_method = "post"
     default_path_params = {"booking_id": 1}
     default_factory = factories.UsedCollectiveBookingFactory
+
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 3  # Select API key + select provider + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
 
     def test_can_repay_used_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -499,6 +531,7 @@ class RepayCollectiveBookingTest(AdageMockEndpointHelper):
             expected_num_queries = 1  # 1. get api key
             expected_num_queries += 1  # 2. get FF
             expected_num_queries += 1  # 3. get collective booking
+            expected_num_queries += 1  # 4. rollback
 
             with assert_num_queries(expected_num_queries):
                 self.assert_request_has_expected_result(
@@ -515,6 +548,10 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
     default_path_params = {"offer_id": 1}
     default_factory = factories.CollectiveOfferFactory
 
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 3  # Select API key + select provider + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
+
     def test_can_book_collective_offer(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         auth_client = client.with_explicit_token(plain_api_key)
@@ -528,30 +565,19 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
 
         offer_id = offer.id
 
-        expected_num_queries = 1  # 1. get api key
-        expected_num_queries += 1  # 2. get FF
-        expected_num_queries += 1  # 3. get collective offer
-        expected_num_queries += 1  # 4. get stock (booking limit datetime)
-        expected_num_queries += 1  # 5. get venue
-        expected_num_queries += 1  # 6. search redactor
-        expected_num_queries += 1  # 7. save (new) redactor
-        expected_num_queries += 1  # 8. get institution (with program) based on UAI
-        expected_num_queries += 1  # 9. select (same) stock for update
-        expected_num_queries += 1  # 10. get (same) collective offer
-        expected_num_queries += 1  # 11. get (same) venue
-        expected_num_queries += 1  # 12. get (same) offerer
-        expected_num_queries += 1  # 13. search for offer's bookings
-        expected_num_queries += 1  # 14. get educational year (filtered)
-        expected_num_queries += 1  # 15. get redactor
-        expected_num_queries += 1  # 16. create new booking
-        expected_num_queries += 1  # 17. get (same) stock
-        expected_num_queries += 1  # 18. get (same) booking
-        expected_num_queries += 1  # 19. get (same) offer
-        expected_num_queries += 1  # 20. get (same) venue
-        expected_num_queries += 1  # 21. get (same) redactor
-        expected_num_queries += 1  # 22. get (same) institution
-        expected_num_queries += 1  # 23. get educational domain and collective domain
-        expected_num_queries += 1  # 24. get (same) offerer
+        expected_num_queries = 1  # get api key
+        expected_num_queries += 1  # get FF
+        expected_num_queries += 1  # get collective offer
+        expected_num_queries += 1  # get stock (booking limit datetime)
+        expected_num_queries += 1  # get venue
+        expected_num_queries += 1  # search redactor
+        expected_num_queries += 1  # save (new) redactor
+        expected_num_queries += 1  # get institution (with program) based on UAI
+        expected_num_queries += 1  # select (same) stock for update
+        expected_num_queries += 1  # search for offer's bookings
+        expected_num_queries += 1  # get educational year (filtered)
+        expected_num_queries += 1  # create new booking
+        expected_num_queries += 1  # get educational domain and collective domain
 
         with assert_num_queries(expected_num_queries):
             response = self.assert_request_has_expected_result(
