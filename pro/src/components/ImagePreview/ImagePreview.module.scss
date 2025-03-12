@@ -3,7 +3,7 @@
 @use "styles/mixins/_size.scss" as size;
 
 .image-preview-previews {
-  background: var(--color-grey-light);
+  background: var(--color-background-subtle);
   display: flex;
   justify-content: center;
   padding: rem.torem(16px) 0;

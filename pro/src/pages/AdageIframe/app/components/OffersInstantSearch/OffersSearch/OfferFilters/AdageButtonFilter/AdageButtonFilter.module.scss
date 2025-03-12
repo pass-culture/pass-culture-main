@@ -28,9 +28,8 @@
     border: rem.torem(2px) solid var(--color-primary);
   }
 
-  &:hover,
-  &:disabled {
-    background-color: var(--color-grey-light);
+  &:hover {
+    background-color: var(--color-background-subtle);
   }
 
   &:focus-visible {
@@ -41,6 +40,7 @@
     cursor: not-allowed;
     border: none;
     color: var(--color-grey-dark);
+    background-color: var(--color-background-disabled);
   }
 
   &-modal {

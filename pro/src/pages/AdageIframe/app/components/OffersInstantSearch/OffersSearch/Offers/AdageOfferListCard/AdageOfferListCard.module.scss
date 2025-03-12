@@ -90,7 +90,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: var(--color-grey-light);
+      background-color: var(--color-background-subtle);
       color: var(--color-grey-semi-dark);
       width: 100%;
       height: 100%;
@@ -131,7 +131,7 @@
   border-top-left-radius: rem.torem(14px);
 
   &-prebooked {
-    background-color: var(--color-grey-light);
+    background-color: var(--color-background-subtle);
   }
 
   &-text {
