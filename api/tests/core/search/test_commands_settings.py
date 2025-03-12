@@ -79,8 +79,7 @@ class AlgoliaSettingsTest:
         assert mock_open.call_once_with(commands_settings._get_index_default_file(index_type), "r")
         put_request = requests_mocker.request_history[1]
         assert put_request.text == json.dumps(config_file_content)
-        assert len(outputs) == 1
-        assert json.dumps(old_index_settings, indent=4) in outputs
+        assert len(outputs) == 1  # diff
 
     @pytest.mark.parametrize("index_type", list(commands_settings.IndexTypes))
     def test_dry_settings_retrieval_actually_does_nothing(self, index_type):
@@ -140,8 +139,6 @@ class AlgoliaSettingsTest:
         assert not requests_mocker.called
         assert not mock_open.called
         # dry sim messages: settings fetched + settings displayed + settings read + settings applied
-        assert len(outputs) == 4
-        assert index_type.value in outputs[0]
+        assert len(outputs) == 2
+        assert config_path in outputs[0]
         assert index_type.value in outputs[1]
-        assert config_path in outputs[2]
-        assert index_type.value in outputs[3]

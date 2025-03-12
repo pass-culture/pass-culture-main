@@ -1,3 +1,4 @@
+import difflib
 import enum
 import json
 import logging
@@ -47,6 +48,13 @@ def _display_dry_warning(dry: bool) -> None:
         click.echo(" ".join(["/!\\"] * 16))
 
 
+def _get_dict_diff(old: dict, new: dict) -> str:
+    old_lines = json.dumps(old, indent=2, sort_keys=True).splitlines()
+    new_lines = json.dumps(new, indent=2, sort_keys=True).splitlines()
+    diff = "\n".join(difflib.unified_diff(old_lines, new_lines))
+    return diff
+
+
 def _get_settings(index: SearchIndex, dry: bool = False) -> list[str]:
     outputs = []
 
@@ -64,17 +72,19 @@ def _get_settings(index: SearchIndex, dry: bool = False) -> list[str]:
 def _set_settings(index: SearchIndex, path: str, dry: bool = True) -> list[str]:
     outputs = []
 
-    outputs.extend(_get_settings(index, dry=dry))
-
     if dry:
         outputs.append(f"settings wil be read from {path}")
         outputs.append(f"settings will be applied to {index.name} Algolia index")
 
     else:
+        old_settings = index.get_settings()
         with open(path, "r", encoding="utf-8") as fp:
-            index_settings = json.load(fp)
-        index.set_settings(index_settings)
+            new_settings = json.load(fp)
 
+        diff = _get_dict_diff(old_settings, new_settings)
+        outputs.append(diff)
+
+        index.set_settings(new_settings)
     return outputs
 
 
