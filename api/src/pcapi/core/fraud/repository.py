@@ -173,7 +173,7 @@ def _is_identity_fraud_check_relevant_for_eligibility(
     if fraud_check.is_id_check_ok_across_eligibilities_or_age:
         return eligibility in fraud_check.applicable_eligibilities
 
-    if eligibility == users_models.EligibilityType.AGE17_18:
+    if users_models.EligibilityType.AGE17_18 in (eligibility, fraud_check.eligibilityType):
         return _is_fraud_check_relevant_for_age(fraud_check)
 
     return eligibility in fraud_check.applicable_eligibilities
@@ -206,7 +206,7 @@ def _is_fraud_check_relevant_for_eligibility(
     fraud_check: fraud_models.BeneficiaryFraudCheck,
     eligibility: users_models.EligibilityType | None,
 ) -> bool:
-    if eligibility == users_models.EligibilityType.AGE17_18:
+    if users_models.EligibilityType.AGE17_18 in (eligibility, fraud_check.eligibilityType):
         return _is_fraud_check_relevant_for_age(fraud_check)
 
     return fraud_check.eligibilityType == eligibility

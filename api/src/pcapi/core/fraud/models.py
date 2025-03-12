@@ -643,6 +643,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
                 users_models.EligibilityType.AGE18,
                 users_models.EligibilityType.AGE17_18,
             ]
+
         return [self.eligibilityType] if self.eligibilityType else []
 
     @property
