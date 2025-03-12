@@ -40,6 +40,7 @@ class BookedCollectiveOffer(ConfiguredBaseModel):
 
 
 @blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/confirm", methods=["POST"])
+@atomic()
 @utils.exclude_prod_environment
 @provider_api_key_required
 @spectree_serialize(
@@ -83,6 +84,7 @@ def confirm_collective_booking(booking_id: int) -> None:
 
 
 @blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/cancel", methods=["POST"])
+@atomic()
 @utils.exclude_prod_environment
 @provider_api_key_required
 @spectree_serialize(
@@ -110,10 +112,6 @@ def adage_mock_cancel_collective_booking(booking_id: int) -> None:
     """
     booking = _get_booking_or_raise_404(booking_id)
 
-    # avoid extra query in case of a rollback
-    # booking id can't be saved to avoid an extra query (TODO: why?)
-    api_key_id = current_api_key.id
-
     try:
         reason = models.CollectiveBookingCancellationReasons.PUBLIC_API
         booking_api.cancel_collective_booking(booking, reason=reason, _from="adage_mock_api")
@@ -122,12 +120,13 @@ def adage_mock_cancel_collective_booking(booking_id: int) -> None:
     except exceptions.BookingIsAlreadyRefunded:
         raise ForbiddenError({"code": "BOOKING_IS_REIMBURSED"})
     except Exception:
-        err_extras = {"booking": booking.id, "api_key_id": api_key_id}
+        err_extras = {"booking": booking.id, "api_key_id": current_api_key.id}
         logger.exception("Adage mock. Failed to cancel booking.", extra=err_extras)
         raise ApiErrors({"code": "FAILED_TO_CANCEL_BOOKING_TRY_AGAIN"}, status_code=500)
 
 
 @blueprints.public_api.route("/v2/collective/bookings/<int:booking_id>/use", methods=["POST"])
+@atomic()
 @utils.exclude_prod_environment
 @provider_api_key_required
 @spectree_serialize(
@@ -159,26 +158,22 @@ def use_collective_booking(booking_id: int) -> None:
     if booking.status != models.CollectiveBookingStatus.CONFIRMED:
         raise ForbiddenError({"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"})
 
-    # avoid extra two queries in case of a rollback
-    booking_id = booking.id
-    api_key_id = current_api_key.id
-
     try:
-        with atomic():
-            booking.dateUsed = datetime.now(timezone.utc)  # pylint: disable=datetime-now
-            booking.status = models.CollectiveBookingStatus.USED
+        booking.dateUsed = datetime.now(timezone.utc)  # pylint: disable=datetime-now
+        booking.status = models.CollectiveBookingStatus.USED
 
-            finance_api.add_event(
-                finance_models.FinanceEventMotive.BOOKING_USED,
-                booking=booking,
-            )
+        finance_api.add_event(
+            finance_models.FinanceEventMotive.BOOKING_USED,
+            booking=booking,
+        )
     except Exception:
-        err_extras = {"booking": booking.id, "api_key_id": api_key_id}
+        err_extras = {"booking": booking.id, "api_key_id": current_api_key.id}
         logger.exception("[adage mock] failed to use booking", extra=err_extras)
         raise ApiErrors({"code": "FAILED_TO_USE_BOOKING_TRY_AGAIN_LATER"}, status_code=500)
 
 
 @blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/pending", methods=["POST"])
+@atomic()
 @utils.exclude_prod_environment
 @provider_api_key_required
 @spectree_serialize(
@@ -214,14 +209,9 @@ def reset_collective_booking(booking_id: int) -> None:
     try:
         if booking.status == models.CollectiveBookingStatus.CANCELLED:
             booking.uncancel_booking()
+            db.session.flush()
     except Exception:
-        # avoid extra two queries because of the rollback
-        booking_id = booking.id
-        api_key_id = current_api_key.id
-
-        db.session.rollback()
-
-        err_extras = {"booking": booking.id, "api_key_id": api_key_id}
+        err_extras = {"booking": booking.id, "api_key_id": current_api_key.id}
         logger.exception("Adage mock. Failed to set cancelled booking back to pending state", extra=err_extras)
         raise ApiErrors({"code": "FAILED_TO_SET_BACK_CANCELLED_BOOKING_TO_PENDING"}, status_code=500)
 
@@ -230,20 +220,15 @@ def reset_collective_booking(booking_id: int) -> None:
         booking.confirmationDate = None
 
         db.session.add(booking)
-        db.session.commit()
+        db.session.flush()
     except Exception:
-        # avoid extra two queries because of the rollback
-        booking_id = booking.id
-        api_key_id = current_api_key.id
-
-        db.session.rollback()
-
-        err_extras = {"booking": booking.id, "api_key_id": api_key_id}
+        err_extras = {"booking": booking.id, "api_key_id": current_api_key.id}
         logger.exception("Adage mock. Failed to set booking back to pending state", extra=err_extras)
         raise ApiErrors({"code": "FAILED_TO_SET_BACK_BOOKING_TO_PENDING"}, status_code=500)
 
 
 @blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/reimburse", methods=["POST"])
+@atomic()
 @utils.exclude_prod_environment
 @provider_api_key_required
 @spectree_serialize(
@@ -279,21 +264,16 @@ def reimburse_collective_booking(booking_id: int) -> None:
         booking.reimbursementDate = datetime.now(timezone.utc)  # pylint: disable=datetime-now
 
         db.session.add(booking)
-        db.session.commit()
+        db.session.flush()
     except Exception:
-        # avoid extra two queries because of the rollback
-        booking_id = booking.id
-        api_key_id = current_api_key.id
-
-        db.session.rollback()
-
-        err_extras = {"booking": booking.id, "api_key_id": api_key_id}
+        err_extras = {"booking": booking.id, "api_key_id": current_api_key.id}
         logger.exception("Adage mock. Failed to repay booking.", extra=err_extras)
 
         raise ApiErrors({"code": "REPAYMENT_FAILED_TRY_AGAIN_LATER"}, status_code=500)
 
 
 @blueprints.public_api.route("/v2/collective/adage_mock/offer/<int:offer_id>/book", methods=["POST"])
+@atomic()
 @utils.exclude_prod_environment
 @provider_api_key_required
 @spectree_serialize(
