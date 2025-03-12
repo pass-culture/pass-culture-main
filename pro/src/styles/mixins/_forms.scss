@@ -13,7 +13,7 @@
   line-height: 1.3;
   border: solid size.$input-border-width var(--color-input-border-color);
   border-radius: rem.torem(forms.$input-border-radius);
-  background-color: var(--color-input-bg-color);
+  background-color: var(--color-background-default);
   padding: 0 rem.torem(16px);
   color: var(--color-input-text-color);
   box-shadow: 0 0 0 0 var(--color-black);
@@ -54,7 +54,7 @@
 
   &:-webkit-autofill,
   &:-internal-autofill-selected {
-    background-color: var(--color-input-bg-color) !important;
+    background-color: var(--color-background-default) !important;
     color: var(--color-input-text-color) !important;
   }
 }

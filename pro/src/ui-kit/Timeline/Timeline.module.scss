@@ -19,7 +19,7 @@ $vertical-offset-icon-from-step: calc(
   z-index: 1;
   width: $icon-size;
   height: $icon-size;
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
   top: $vertical-offset-icon-from-step;
 
   // Multiply by -1 at the end because calc() syntax doesn't accept - at the start

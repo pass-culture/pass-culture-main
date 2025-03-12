@@ -26,7 +26,7 @@
   }
 
   &-menu {
-    background: var(--color-white);
+    background: var(--color-background-default);
     z-index: zIndex.$lateral-menu-z-index-mobile;
     position: fixed;
     max-width: rem.torem(268px);
