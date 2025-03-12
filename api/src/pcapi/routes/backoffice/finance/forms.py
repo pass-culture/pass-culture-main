@@ -115,6 +115,11 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
         endpoint="backoffice_web.autocomplete_venues",
     )
 
+    origin = fields.PCSelectMultipleField(
+        "Origine de la demande",
+        choices=forms_utils.choices_from_enum(finance_models.FinanceIncidentRequestOrigin),
+    )
+
     from_date = fields.PCDateField("Créées à partir du", validators=(Optional(),))
     to_date = fields.PCDateField("Jusqu'au", validators=(Optional(),))
 
@@ -126,6 +131,7 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
                 self.is_collective.data,
                 self.offerer.data,
                 self.venue.data,
+                self.origin.data,
                 self.from_date.data,
                 self.to_date.data,
             )

@@ -57,6 +57,7 @@ def incidents_fixture() -> tuple:
         incident__id=36,
         booking=bookings_factories.BookingFactory(id=20, stock__offer__id=40),
         incident__status=finance_models.IncidentStatus.CREATED,
+        incident__origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE,
         incident__zendeskId=1,
     ).incident
     history_factories.ActionHistoryFactory(
@@ -71,12 +72,14 @@ def incidents_fixture() -> tuple:
             id=30, collectiveStock__collectiveOffer__id=50
         ),
         incident__status=finance_models.IncidentStatus.VALIDATED,
+        incident__origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
     ).incident
 
     incident3 = finance_factories.IndividualBookingFinanceIncidentFactory(
         incident__id=38,
         booking=bookings_factories.BookingFactory(id=40, stock__offer__id=60),
         incident__status=finance_models.IncidentStatus.CANCELLED,
+        incident__origin=finance_models.FinanceIncidentRequestOrigin.FRAUDE,
     ).incident
 
     # TODO: créer un FinanceEvent pour chaque incident
@@ -302,6 +305,30 @@ class ListIncidentsTest(GetEndpointHelper):
     def test_list_incident_by_zendesk_id(self, authenticated_client, incidents, zendesk_id, expected_incident):
         with testing.assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=zendesk_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == len(expected_incident)
+        assert {row["ID"] for row in rows} == expected_incident
+
+    @pytest.mark.parametrize(
+        "origin,expected_incident",
+        [
+            ([finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name], {"36"}),
+            ([finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO.name], {"37"}),
+            ([finance_models.FinanceIncidentRequestOrigin.FRAUDE.name], {"38"}),
+            (
+                [
+                    finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                    finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO.name,
+                ],
+                {"36", "37"},
+            ),
+        ],
+    )
+    def test_list_incident_by_origin(self, authenticated_client, incidents, origin, expected_incident):
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, origin=origin))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)

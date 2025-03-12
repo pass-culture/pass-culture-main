@@ -76,6 +76,13 @@ def _get_incidents(
             sa.not_(finance_models.FinanceIncident.isClosed),
         )
 
+    if form.origin.data:
+        query = query.filter(
+            finance_models.FinanceIncident.origin.in_(
+                [finance_models.FinanceIncidentRequestOrigin[origin] for origin in form.origin.data]
+            )
+        )
+
     if form.offerer.data:
         query = query.filter(offerers_models.Venue.managingOffererId.in_(form.offerer.data))
 
