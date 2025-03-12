@@ -222,9 +222,6 @@ RECAPTCHA_API_URL = "https://www.google.com/recaptcha/api/siteverify"
 RECAPTCHA_SECRET = secrets_utils.get("RECAPTCHA_SECRET")
 NATIVE_RECAPTCHA_SECRET = secrets_utils.get("NATIVE_RECAPTCHA_SECRET")
 RECAPTCHA_IGNORE_VALIDATION = bool(int(os.environ.get("RECAPTCHA_IGNORE_VALIDATION", 0)))
-# Fixme : (mageoffray, 2023-12-14)
-# Remove this secret - https://passculture.atlassian.net/browse/PC-26462
-RECAPTCHA_WHITELIST = secrets_utils.getlist("RECAPTCHA_WHITELIST")
 
 # JWT
 JWT_SECRET_KEY = secrets_utils.get("JWT_SECRET_KEY")
