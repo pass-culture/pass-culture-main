@@ -67,6 +67,16 @@ DS_MAKE_REFUSED_RESPONSE = {
 }
 
 
+DS_ALREADY_ONGOING_RESPONSE = {
+    "dossierPasserEnInstruction": {"dossier": None, "errors": [{"message": "Le dossier est déjà en instruction"}]}
+}
+
+
+DS_ALREADY_REFUSED_RESPONSE = {
+    "dossierRefuser": {"dossier": None, "errors": [{"message": "Le dossier est déjà refusé"}]}
+}
+
+
 class GraphqlResponseTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_get_applications_with_details(self, execute_query):
@@ -168,6 +178,22 @@ class GraphqlResponseTest:
         assert client.execute_query.call_count == 1
         assert deleted_application_count == 3
 
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query", return_value=DS_ALREADY_ONGOING_RESPONSE)
+    def test_make_ongoing_when_already_ongoing(self, execute_query):
+        client = api_dms.DMSGraphQLClient()
+        client.make_on_going("RG9zc2llci0yMjU3MDE4NQ==", "SW5zdHJ1Y3RldXItMTAyOTgz", disable_notification=True)
+
+        execute_query.assert_called_once_with(
+            dms_api.MAKE_ON_GOING_MUTATION_NAME,
+            variables={
+                "input": {
+                    "dossierId": "RG9zc2llci0yMjU3MDE4NQ==",
+                    "instructeurId": "SW5zdHJ1Y3RldXItMTAyOTgz",
+                    "disableNotification": True,
+                }
+            },
+        )
+
     @patch.object(api_dms.DMSGraphQLClient, "execute_query", return_value=DS_MAKE_ACCEPTED_RESPONSE)
     def test_make_accepted(self, execute_query):
         client = api_dms.DMSGraphQLClient()
@@ -257,3 +283,20 @@ class GraphqlResponseTest:
                 "disableNotification": False,
             }
         }
+
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query", return_value=DS_ALREADY_REFUSED_RESPONSE)
+    def test_make_refused_when_already_refused(self, execute_query):
+        client = api_dms.DMSGraphQLClient()
+        client.make_refused("RG9zc2llci0yMjU3MDE4NQ==", "SW5zdHJ1Y3RldXItMTAyOTgz", "Test")
+
+        execute_query.assert_called_once_with(
+            dms_api.MAKE_REFUSED_MUTATION_NAME,
+            variables={
+                "input": {
+                    "dossierId": "RG9zc2llci0yMjU3MDE4NQ==",
+                    "instructeurId": "SW5zdHJ1Y3RldXItMTAyOTgz",
+                    "motivation": "Test",
+                    "disableNotification": False,
+                }
+            },
+        )

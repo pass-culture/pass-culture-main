@@ -373,6 +373,7 @@ def update_state(
             application_techid=user_request.dsTechnicalId,
             instructeur_techid=instructor_id,
             disable_notification=disable_notification,
+            raise_if_already_ongoing=True,
         )
     elif new_state == dms_models.GraphQLApplicationStates.accepted:
         node = ds_client.make_accepted(
