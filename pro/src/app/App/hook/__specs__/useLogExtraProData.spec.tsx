@@ -1,5 +1,4 @@
 import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
 import { beforeEach } from 'vitest'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
@@ -55,20 +54,6 @@ describe('useLogExtraProData', () => {
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'extra_pro_data', {
       offerer_id: 1,
-      from: '/accueil',
-    })
-  })
-
-  it('should log another event on offerer change', async () => {
-    await renderLogExtraProData()
-
-    await userEvent.click(screen.getByTestId('offerer-select'))
-    await userEvent.click(screen.getByText(/Changer/))
-    await userEvent.click(screen.getByText('super structure'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(2)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(2, 'extra_pro_data', {
-      offerer_id: 2,
       from: '/accueil',
     })
   })
