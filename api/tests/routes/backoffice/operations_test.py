@@ -15,6 +15,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_date
 
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -36,7 +37,7 @@ def special_events_fixture() -> list[operations_models.SpecialEvent]:
 
 class ListEventsTest(GetEndpointHelper):
     endpoint = "backoffice_web.operations.list_events"
-    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
+    needed_permission = perm_models.Permissions.READ_SPECIAL_EVENTS
 
     # authenticated user + user session + list of special events + count
     expected_num_queries = 4
@@ -72,6 +73,15 @@ class ListEventsTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["Id. Typeform"] == "eFgh5678"
         assert rows[0]["Titre"] == "Jeu concours"
+
+
+class CreateEventButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
+    button_label = "Importer une opération spéciale"
+
+    @property
+    def path(self):
+        return url_for("backoffice_web.operations.list_events")
 
 
 class CreateEventTest(PostEndpointHelper):
@@ -170,7 +180,7 @@ class CreateEventTest(PostEndpointHelper):
 class GetEventDetailsTest(GetEndpointHelper):
     endpoint = "backoffice_web.operations.get_event_details"
     endpoint_kwargs = {"special_event_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
+    needed_permission = perm_models.Permissions.READ_SPECIAL_EVENTS
 
     # authenticated user + user session + special event + responses
     expected_num_queries = 4

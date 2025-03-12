@@ -79,6 +79,7 @@ class Permissions(enum.Enum):
 
     EXTRACT_PUBLIC_ACCOUNT = "extraire les données personnelles (RGPD) d'un compte"
 
+    READ_SPECIAL_EVENTS = "visualiser les opérations spéciales"
     MANAGE_SPECIAL_EVENTS = "gérer les opérations spéciales"
 
     MANAGE_ACCOUNT_UPDATE_REQUEST = "instruire les demandes de modification de compte (DS)"
