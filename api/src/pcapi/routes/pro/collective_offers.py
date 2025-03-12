@@ -168,9 +168,6 @@ def get_collective_offer_request(request_id: int) -> collective_offers_serialize
 def create_collective_offer(
     body: collective_offers_serialize.PostCollectiveOfferBodyModel,
 ) -> collective_offers_serialize.CollectiveOfferResponseIdModel:
-    # sometimes offerer_id is sent in body but it should not be there
-    if body.offerer_id is not None:
-        logger.error("offerer_id sent in body", extra={"offerer_id": body.offerer_id})
     try:
         offer = educational_api_offer.create_collective_offer(offer_data=body, user=current_user)
     except offerers_exceptions.CannotFindOffererSiren:
@@ -607,9 +604,6 @@ def patch_collective_offer_template_publication(
 def create_collective_offer_template(
     body: collective_offers_serialize.PostCollectiveOfferTemplateBodyModel,
 ) -> collective_offers_serialize.CollectiveOfferResponseIdModel:
-    # sometimes offerer_id is sent in body but it should not be there
-    if body.offerer_id is not None:
-        logger.error("offerer_id sent in body", extra={"offerer_id": body.offerer_id})
     try:
         offer = educational_api_offer.create_collective_offer_template(offer_data=body, user=current_user)
     except offerers_exceptions.CannotFindOffererSiren:
