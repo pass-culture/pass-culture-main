@@ -3,8 +3,8 @@ import sys
 import time
 
 from alembic import context
-from sqlalchemy import create_engine
-from sqlalchemy import schema
+
+import sqlalchemy as sa
 import sqlalchemy.exc
 
 from pcapi import settings
@@ -16,11 +16,11 @@ logger = logging.getLogger(__name__)
 target_metadata = Base.metadata
 
 
-def _is_enum_column(type_: str, object_: schema.SchemaItem) -> bool:
+def _is_enum_column(type_: str, object_: sa.schema.SchemaItem) -> bool:
     return type_ == "column" and isinstance(object_.type, sqlalchemy.types.Enum)  # type: ignore[attr-defined]
 
 
-def _is_an_array_of_enum_column(type_: str, object_: schema.SchemaItem) -> bool:
+def _is_an_array_of_enum_column(type_: str, object_: sa.schema.SchemaItem) -> bool:
     return (
         type_ == "column"
         and isinstance(object_.type, sqlalchemy.dialects.postgresql.ARRAY)  # type: ignore[attr-defined]
@@ -29,11 +29,11 @@ def _is_an_array_of_enum_column(type_: str, object_: schema.SchemaItem) -> bool:
 
 
 def include_object(
-    object: schema.SchemaItem,  # pylint: disable=redefined-builtin
+    object: sa.schema.SchemaItem,  # pylint: disable=redefined-builtin
     name: str,
     type_: str,
     reflected: bool,
-    compare_to: schema.SchemaItem | None,
+    compare_to: sa.schema.SchemaItem | None,
 ) -> bool:
     # Don't generate DROP tables with autogenerate
     # https://alembic.sqlalchemy.org/en/latest/cookbook.html#don-t-generate-any-drop-table-directives-with-autogenerate
@@ -55,7 +55,7 @@ def run_online_migrations() -> None:
     if settings.DB_MIGRATION_STATEMENT_TIMEOUT:
         db_options.append("-c statement_timeout=%i" % settings.DB_MIGRATION_STATEMENT_TIMEOUT)
 
-    connectable = create_engine(settings.DATABASE_URL, connect_args={"options": " ".join(db_options)})  # type: ignore[arg-type]
+    connectable = sa.create_engine(settings.DATABASE_URL, connect_args={"options": " ".join(db_options)})  # type: ignore[arg-type]
     logger.warning(
         "Alembic will use a DB connection with these settings: lock_timeout = %d ms, statement_timeout = %d ms",
         settings.DB_MIGRATION_LOCK_TIMEOUT,
