@@ -40,7 +40,7 @@
   &-disabled {
     @include fonts.button;
 
-    background: var(--color-grey-light);
+    background: var(--color-background-disabled);
     border-color: var(--color-grey-light);
     color: var(--color-grey-dark);
   }

@@ -68,7 +68,7 @@
 
     &:disabled,
     &.button-disabled {
-      background-color: var(--color-grey-light);
+      background-color: var(--color-background-disabled);
       color: var(--color-grey-dark);
       border-color: var(--color-grey-light);
 
@@ -101,7 +101,7 @@
 
     &:disabled,
     &.button-disabled {
-      background-color: var(--color-grey-light);
+      background-color: var(--color-background-disabled);
       color: var(--color-grey-dark);
       border-color: var(--color-grey-light);
     }
@@ -208,7 +208,7 @@
 
     &:disabled,
     &.button-disabled {
-      background: var(--color-grey-light);
+      background: var(--color-background-disabled);
       border-color: var(--color-grey-light);
       color: var(--color-grey-dark);
 

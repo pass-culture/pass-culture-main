@@ -144,7 +144,7 @@ $action-gap: rem.torem(10px);
     margin-bottom: 0.5rem;
 
     &[disabled] {
-      background: var(--color-grey-light);
+      background: var(--color-background-disabled);
       border-color: var(--color-grey-light);
       color: var(--color-grey-dark);
       border-radius: 30px;
