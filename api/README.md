@@ -440,10 +440,6 @@ Il faut supprimer les fichiers de cache de pré-compilation de Python, par exemp
 find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
 ```
 
-#### Problème de DeprecationWarning 
-
-En lançant les tests avec `python -m pytest`, si les tests échouent avec ce message `E   DeprecationWarning: 'cgi' is deprecated and slated for removal in Python 3.13` , il faut les relancer en ajoutant le flag suivant à la commande : `-W ignore::DeprecationWarning` (ou éventuellement ajouter un alias au terminal)
-
 ### Nettoyage des images docker
 
 Lors d'un changement dans le fichier `requirements.py`, une nouvelle image docker de l'api est générée. Il convient de régulièrement supprimer les images "dangling" pour ne pas qu'elles prennent trop de place sur le disque local. (cf [doc docker](https://docs.docker.com/config/pruning/#prune-images)).
