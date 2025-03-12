@@ -1,19 +1,22 @@
 import classNames from 'classnames'
 
+import { MESSAGE_VARIANT } from '../types'
+
 import styles from './DeskInputMessage.module.scss'
 
 export function DeskInputMessage({
   message,
-  isError = false,
+  variant = MESSAGE_VARIANT.DEFAULT,
 }: {
   message: string
-  isError?: boolean
+  variant?: MESSAGE_VARIANT
 }) {
   return (
     <div
-      className={classNames(styles['desk-message'], {
-        [styles['error']]: isError,
-      })}
+      className={classNames(
+        styles['desk-message'],
+        styles[`desk-message-${variant}`]
+      )}
       data-testid="desk-message"
     >
       {message}
