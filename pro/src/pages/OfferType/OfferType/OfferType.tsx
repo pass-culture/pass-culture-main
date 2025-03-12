@@ -193,7 +193,7 @@ export const OfferTypeScreen = (): JSX.Element => {
                     },
                   ]}
                   variant={RadioVariant.BOX}
-                  inline
+                  displayMode="inline-grow"
                 />
               )}
               {values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (

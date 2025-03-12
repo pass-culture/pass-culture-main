@@ -65,7 +65,15 @@ export const Inline = {
   args: {
     ...defaultArgs,
     variant: RadioVariant.BOX,
-    inline: true,
+    displayMode: 'inline',
+  },
+}
+
+export const InlineFullWidth = {
+  args: {
+    ...defaultArgs,
+    variant: RadioVariant.BOX,
+    displayMode: 'inline-grow',
   },
 }
 

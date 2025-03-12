@@ -6,7 +6,7 @@ import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { RadioGroup, RadioGroupProps } from './RadioGroup'
 
 export default {
-  title: 'ui-kit/forms/RadioGroup',
+  title: 'ui-kit/formsV2/RadioGroup',
   component: RadioGroup,
 }
 
@@ -87,7 +87,15 @@ export const Inline = {
   args: {
     ...defaultArgs,
     variant: RadioVariant.BOX,
-    inline: true,
+    displayMode: 'inline',
+  },
+}
+
+export const InlineGrow = {
+  args: {
+    ...defaultArgs,
+    variant: RadioVariant.BOX,
+    displayMode: 'inline-grow',
   },
 }
 

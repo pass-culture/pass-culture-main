@@ -73,17 +73,16 @@ export type RadioGroupProps = RequireAtLeastOne<
      */
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
     /**
-     * Custom CSS class applied to the children container.
-     */
-    childrenClassName?: string
-    /**
      * Whether or not the group is optional.
      */
     isOptional?: boolean
     /**
-     * Whether or not the group items are displayed on the same line.
+     * How the radio buttons are displayed within the group.
+     * If "default", buttons are displayed in column.
+     * If "inline", buttons are displayed in a row.
+     * If "inline-grow", buttons are displayed in a row, and they share the available width.
      */
-    inline?: boolean
+    displayMode?: 'default' | 'inline' | 'inline-grow'
     /**
      * Error message
      */
@@ -122,9 +121,8 @@ export const RadioGroup = ({
   className,
   variant,
   onChange,
-  childrenClassName,
   isOptional = true,
-  inline,
+  displayMode,
   error,
   checkedOption,
 }: RadioGroupProps): JSX.Element => {
@@ -138,13 +136,8 @@ export const RadioGroup = ({
       ariaDescribedBy={describedBy}
       isOptional={isOptional}
       hideFooter
-      childrenClassName={childrenClassName}
     >
-      <div
-        className={cn({
-          [styles['radio-group-inline']]: inline,
-        })}
-      >
+      <div className={styles[`radio-group-display-${displayMode}`]}>
         {group.map((item) => (
           <div className={styles['radio-group-item']} key={item.value}>
             <BaseRadio
