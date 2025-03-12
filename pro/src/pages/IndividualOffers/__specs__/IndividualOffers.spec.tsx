@@ -30,8 +30,8 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from 'commons/utils/factories/offererAddressFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
@@ -81,7 +81,7 @@ const renderOffers = async (
     audience?: Audience
   } = DEFAULT_SEARCH_FILTERS,
   features: string[] = [],
-  user = sharedCurrentUserFactory()
+  user = sharedCurrentUserFactory({ id: 2 })
 ) => {
   const route = computeIndividualOffersUrl(filters)
 

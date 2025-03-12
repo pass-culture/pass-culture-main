@@ -1,26 +1,20 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router-dom'
 
-import * as useAnalytics from 'app/App/analytics/firebase'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { HeadlineOfferBanner } from './HeadlineOfferBanner'
 
-const renderHeadlineOfferBaner = () => {
-  return renderWithProviders(
-    <Routes>
-      <Route
-        path="/"
-        element={<HeadlineOfferBanner />}
-      />
-    </Routes>
-  )
+const renderHeadlineOfferBanner = (userId: number = 2) => {
+  return renderWithProviders(<HeadlineOfferBanner />, {
+    user: sharedCurrentUserFactory({ id: userId }),
+  })
 }
 
 describe('HeadlineOfferBanner', () => {
   it('should open offer headline dialog when clicking on "Découvrir"', async () => {
-    renderHeadlineOfferBaner()
+    renderHeadlineOfferBanner(1)
 
     await userEvent.click(screen.getByText(/Découvrir/))
 
@@ -30,21 +24,13 @@ describe('HeadlineOfferBanner', () => {
   })
 
   it('should render awesome banner when user is in ab test', () => {
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      PRO_EXPERIMENT_GTM_HEADLINE_OFFER: 'true',
-    })
-
-    renderHeadlineOfferBaner()
+    renderHeadlineOfferBanner(2)
 
     expect(screen.getByTestId('awesome-banner')).toBeInTheDocument()
   })
 
   it('should render regular banner when user is not in ab test', () => {
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      PRO_EXPERIMENT_GTM_HEADLINE_OFFER: 'false',
-    })
-
-    renderHeadlineOfferBaner()
+    renderHeadlineOfferBanner(1)
 
     expect(screen.getByTestId('regular-banner')).toBeInTheDocument()
   })

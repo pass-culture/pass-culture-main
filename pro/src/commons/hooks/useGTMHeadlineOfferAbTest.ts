@@ -1,8 +1,9 @@
-import { useRemoteConfigParams } from 'app/App/analytics/firebase'
+import { useSelector } from 'react-redux'
+
+import { selectCurrentUser } from 'commons/store/user/selectors'
 
 export const useGTMHeadlineOfferAbTest = (): boolean => {
-  const { PRO_EXPERIMENT_GTM_HEADLINE_OFFER: isInAbTest } =
-    useRemoteConfigParams()
-
-  return isInAbTest === 'true'
+    const currentUser = useSelector(selectCurrentUser)
+  
+  return Boolean(currentUser && (currentUser.id % 2 === 0))
 }
