@@ -60,7 +60,7 @@ $cardlink-max-width: rem.torem(565px);
   // Other states
   &:hover {
     border-color: var(--color-secondary-lighter);
-    background-color: var(--color-background-secondary);
+    background-color: var(--color-background-info);
     cursor: pointer;
   }
 
@@ -72,7 +72,7 @@ $cardlink-max-width: rem.torem(565px);
   &:active {
     border-color: var(--color-secondary-lighter);
     outline: none;
-    background-color: var(--color-background-secondary);
+    background-color: var(--color-background-info);
 
     .cardlink-icon,
     .cardlink-link,

@@ -25,7 +25,7 @@
     @include fonts.body-accent;
 
     border: rem.torem(2px) solid var(--color-secondary-light);
-    background-color: var(--color-background-secondary);
+    background-color: var(--color-background-info);
   }
 
   &-icon {

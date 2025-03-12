@@ -44,7 +44,7 @@ $radio-size: rem.torem(16px);
     @include fonts.body-accent;
 
     border: $border-size-selected solid var(--color-secondary-light);
-    background-color: var(--color-background-secondary);
+    background-color: var(--color-background-info);
   }
 
   &.is-disabled {
