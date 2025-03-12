@@ -21,10 +21,6 @@ export interface FieldSetLayoutProps {
    * or when the legend itself handles the asterisk
    */
   hideAsterisk?: boolean
-  /**
-   * Class name for children container
-   */
-  childrenClassName?: string
 }
 
 export const FieldSetLayout = ({
@@ -38,7 +34,6 @@ export const FieldSetLayout = ({
   isOptional = false,
   ariaDescribedBy,
   hideAsterisk = false,
-  childrenClassName,
 }: FieldSetLayoutProps): JSX.Element => {
   const showError = Boolean(error) || !hideFooter
 
@@ -62,7 +57,7 @@ export const FieldSetLayout = ({
           {!isOptional && !hideAsterisk && ' *'}
         </legend>
       )}
-      <div className={childrenClassName}>{children}</div>
+      {children}
       {showError && (
         <div
           id="fieldsetlayout-error"

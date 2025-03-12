@@ -5,16 +5,20 @@
     margin-bottom: rem.torem(8px);
   }
 
-  &-inline {
+  &-display-inline,
+  &-display-inline-grow {
     display: flex;
     flex-wrap: wrap;
     gap: rem.torem(8px);
     row-gap: rem.torem(8px);
-  }
-}
 
-.radio-group-inline .radio-group-item {
-  flex-grow: 1;
-  flex-basis: 0;
-  margin-bottom: 0;
+    .radio-group-item {
+      margin-bottom: 0;
+    }
+  }
+
+  &-display-inline-grow .radio-group-item {
+    flex-grow: 1;
+    flex-basis: 0;
+  }
 }
