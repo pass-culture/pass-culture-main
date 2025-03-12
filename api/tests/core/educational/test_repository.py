@@ -762,3 +762,31 @@ class HasCollectiveOffersForProgramAndVenueIdsTest:
         assert (
             educational_repository.has_collective_offers_for_program_and_venue_ids("program", [other_venue.id]) == False
         )
+
+
+class OffererHasOngoingCollectiveBookingsTest:
+    @pytest.mark.parametrize(
+        "factory",
+        [
+            educational_factories.ConfirmedCollectiveBookingFactory,
+            educational_factories.PendingCollectiveBookingFactory,
+            educational_factories.UsedCollectiveBookingFactory,
+        ],
+    )
+    def test_has_bookings(self, app, factory):
+        offerer = offerers_factories.OffererFactory()
+        factory(offerer=offerer)
+        educational_factories.ReimbursedCollectiveBookingFactory(offerer=offerer)
+
+        offerer_id = offerer.id
+        with assert_num_queries(1):
+            assert educational_repository.offerer_has_ongoing_collective_bookings(offerer_id=offerer_id) is True
+
+    def test_has_no_booking(self, app):
+        offerer = offerers_factories.OffererFactory()
+        educational_factories.ReimbursedCollectiveBookingFactory(offerer=offerer)
+        educational_factories.CancelledCollectiveBookingFactory(offerer=offerer)
+
+        offerer_id = offerer.id
+        with assert_num_queries(1):
+            assert educational_repository.offerer_has_ongoing_collective_bookings(offerer_id=offerer_id) is False

@@ -40,6 +40,7 @@ class FeatureToggle(enum.Enum):
     DISABLE_SIRET_CHECK = "Désactiver la validation de SIRET"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
     EMS_CANCEL_PENDING_EXTERNAL_BOOKING = "Annuler les réservations externes EMS qui ont échouées"
+    ENABLE_AUTO_CLOSE_CLOSED_OFFERERS = "Fermer automatiquement les entités juridiques cessées à l'INSEE"
     ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING = (
         "Valide automatiquement après 48h les offres issues de l'api billeterie cinéma"
     )
@@ -188,6 +189,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.DISPLAY_DMS_REDIRECTION,
     FeatureToggle.EMS_CANCEL_PENDING_EXTERNAL_BOOKING,
+    FeatureToggle.ENABLE_AUTO_CLOSE_CLOSED_OFFERERS,
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,
     FeatureToggle.ENABLE_BANK_ACCOUNT_SYNC,
     FeatureToggle.ENABLE_BEAMER,

@@ -1355,3 +1355,18 @@ def has_collective_offers_for_program_and_venue_ids(program_name: str, venue_ids
 
 def field_to_venue_timezone(field: sa_orm.InstrumentedAttribute) -> sa.cast:
     return sa.cast(sa.func.timezone(Venue.timezone, sa.func.timezone("UTC", field)), sa.Date)
+
+
+def offerer_has_ongoing_collective_bookings(offerer_id: int) -> bool:
+    return db.session.query(
+        educational_models.CollectiveBooking.query.filter(
+            educational_models.CollectiveBooking.offererId == offerer_id,
+            educational_models.CollectiveBooking.status.in_(
+                [
+                    educational_models.CollectiveBookingStatus.CONFIRMED,
+                    educational_models.CollectiveBookingStatus.PENDING,
+                    educational_models.CollectiveBookingStatus.USED,
+                ]
+            ),
+        ).exists()
+    ).scalar()

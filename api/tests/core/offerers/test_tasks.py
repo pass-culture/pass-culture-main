@@ -7,6 +7,7 @@ import time_machine
 
 from pcapi import settings
 from pcapi.connectors.entreprise.models import SirenInfo
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -33,7 +34,7 @@ class CheckOffererTest:
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "tag_when_inactive": True, "fill_in_codir_report": False},
+            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": False},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
 
@@ -67,7 +68,7 @@ class CheckOffererTest:
         ):
             response = client.post(
                 f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-                json={"siren": offerer.siren, "tag_when_inactive": True, "fill_in_codir_report": False},
+                json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": False},
                 headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
             )
 
@@ -86,7 +87,7 @@ class CheckOffererTest:
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "tag_when_inactive": True, "fill_in_codir_report": True},
+            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": True},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
 
@@ -123,7 +124,7 @@ class CheckOffererTest:
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "tag_when_inactive": True, "fill_in_codir_report": True},
+            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": True},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
 
@@ -162,17 +163,21 @@ class CheckOffererTest:
             ],
         )
 
+    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=False)
+    @patch("pcapi.core.offerers.api.close_offerer")
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
     @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
     @time_machine.travel("2025-01-21 12:00:00")
-    def test_tag_inactive_offerer(self, mock_search_file, mock_append_to_spreadsheet, client, siren_caduc_tag):
+    def test_tag_inactive_offerer(
+        self, mock_search_file, mock_append_to_spreadsheet, mock_close_offerer, client, siren_caduc_tag
+    ):
         # Using TestingBackend:
         # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
         offerer = offerers_factories.OffererFactory(siren="109599001")
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "tag_when_inactive": True, "fill_in_codir_report": True},
+            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": True},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
 
@@ -205,11 +210,80 @@ class CheckOffererTest:
                 ]
             ],
         )
+        mock_close_offerer.assert_not_called()
 
+    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
+    @time_machine.travel("2025-01-21 12:00:00")
+    def test_close_inactive_offerer(self, client, siren_caduc_tag):
+        # Using TestingBackend:
+        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer = offerers_factories.OffererFactory(siren="109599001")
+
+        bookings_factories.CancelledBookingFactory(offerer=offerer, stock__offer__venue__managingOfferer=offerer)
+        bookings_factories.ReimbursedBookingFactory(offerer=offerer, stock__offer__venue__managingOfferer=offerer)
+
+        response = client.post(
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
+            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": False},
+            headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        )
+
+        assert response.status_code == 204
+
+        assert offerer.isClosed
+        assert offerer.tags == [siren_caduc_tag]
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.OFFERER_CLOSED
+        assert action.actionDate is not None
+        assert action.authorUserId is None
+        assert action.offererId == offerer.id
+        assert action.comment == "L'entité juridique est détectée comme fermée le 16/01/2025 via l'API Sirene (INSEE)"
+        assert action.extraData == {
+            "modified_info": {"tags": {"new_info": siren_caduc_tag.label}},
+            "closure_date": "2025-01-16",
+        }
+
+    @pytest.mark.parametrize(
+        "booking_factory", [bookings_factories.BookingFactory, bookings_factories.UsedBookingFactory]
+    )
+    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
+    @patch("pcapi.core.offerers.api.close_offerer")
+    @time_machine.travel("2025-01-21 12:00:00")
+    def test_do_not_close_inactive_offerer_with_ongoing_bookings(
+        self, mock_close_offerer, client, siren_caduc_tag, booking_factory
+    ):
+        # Using TestingBackend:
+        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer = offerers_factories.OffererFactory(siren="109599001")
+
+        booking_factory(offerer=offerer, stock__offer__venue__managingOfferer=offerer)
+
+        response = client.post(
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
+            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": False},
+            headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        )
+
+        assert response.status_code == 204
+        assert offerer.tags == [siren_caduc_tag]
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionDate is not None
+        assert action.authorUserId is None
+        assert action.offererId == offerer.id
+        assert action.comment == "L'entité juridique est détectée comme fermée le 16/01/2025 via l'API Sirene (INSEE)"
+        assert action.extraData == {"modified_info": {"tags": {"new_info": siren_caduc_tag.label}}}
+
+        mock_close_offerer.assert_not_called()
+
+    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=False)
+    @patch("pcapi.core.offerers.api.close_offerer")
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
     @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
     def test_inactive_offerer_already_tagged(
-        self, mock_search_file, mock_append_to_spreadsheet, client, siren_caduc_tag
+        self, mock_search_file, mock_append_to_spreadsheet, mock_close_offerer, client, siren_caduc_tag
     ):
         # Using TestingBackend:
         # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
@@ -217,7 +291,7 @@ class CheckOffererTest:
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "tag_when_inactive": True, "fill_in_codir_report": True},
+            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": True},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
 
@@ -227,6 +301,33 @@ class CheckOffererTest:
 
         mock_search_file.assert_called_once()
         mock_append_to_spreadsheet.assert_called_once()
+        mock_close_offerer.assert_not_called()
+
+    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
+    @time_machine.travel("2025-03-10 12:00:00")
+    def test_close_inactive_offerer_already_tagged(self, client, siren_caduc_tag):
+        # Using TestingBackend:
+        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer = offerers_factories.OffererFactory(siren="109599001", tags=[siren_caduc_tag])
+
+        response = client.post(
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
+            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": True},
+            headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        )
+
+        assert response.status_code == 204
+
+        assert offerer.isClosed
+        assert offerer.tags == [siren_caduc_tag]
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.OFFERER_CLOSED
+        assert action.actionDate is not None
+        assert action.authorUserId is None
+        assert action.offererId == offerer.id
+        assert action.comment == "L'entité juridique est détectée comme fermée le 05/03/2025 via l'API Sirene (INSEE)"
+        assert action.extraData == {"closure_date": "2025-03-05"}  # tag was already set
 
     @patch("time.sleep")
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
@@ -240,7 +341,7 @@ class CheckOffererTest:
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "tag_when_inactive": True, "fill_in_codir_report": True},
+            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": True},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
 
@@ -290,7 +391,7 @@ class CheckOffererTest:
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "tag_when_inactive": True, "fill_in_codir_report": True},
+            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": True},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
 
@@ -302,19 +403,22 @@ class CheckOffererTest:
         mock_search_file.assert_not_called()
         mock_append_to_spreadsheet.assert_not_called()
 
+    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
     @patch("time.sleep")
-    def test_do_not_tag_inactive_offerer(self, mock_sleep, client, siren_caduc_tag):
+    @patch("pcapi.core.offerers.api.close_offerer")
+    def test_do_not_close_or_tag_inactive_offerer(self, mock_close_offerer, mock_sleep, client, siren_caduc_tag):
         # Using TestingBackend: SIREN makes offerer inactive (because of 99), EI
         offerer = offerers_factories.OffererFactory(siren="100099001")
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "tag_when_inactive": False, "fill_in_codir_report": False},
+            json={"siren": offerer.siren, "close_or_tag_when_inactive": False, "fill_in_codir_report": False},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
 
         assert response.status_code == 204
         assert not offerer.tags
+        mock_close_offerer.assert_not_called()
 
     @patch("time.sleep")
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet")
@@ -324,7 +428,7 @@ class CheckOffererTest:
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "tag_when_inactive": True, "fill_in_codir_report": False},
+            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": False},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
 
@@ -339,7 +443,7 @@ class CheckOffererTest:
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "tag_when_inactive": False},
+            json={"siren": offerer.siren, "close_or_tag_when_inactive": False},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
 
