@@ -15,6 +15,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class PatchProviderTest(PublicAPIEndpointBaseHelper):
     endpoint_url = "/public/providers/v1/provider"
     endpoint_method = "patch"
+    expected_401_queries_count = 3
 
     def test_should_raise_401_because_api_key_is_not_linked_to_provider(self, client: TestClient):
         old_api_key = self.setup_old_api_key()
