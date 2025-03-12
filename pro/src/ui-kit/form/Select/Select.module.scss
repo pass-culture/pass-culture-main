@@ -27,7 +27,7 @@
     @include fonts.body;
 
     color: var(--color-black);
-    padding: rem.torem(8px) rem.torem(12px);
+    padding: rem.torem(8px) rem.torem(28px) rem.torem(8px) rem.torem(12px);
     height: rem.torem(42px);
     border-radius: rem.torem(8px);
     cursor: pointer;
