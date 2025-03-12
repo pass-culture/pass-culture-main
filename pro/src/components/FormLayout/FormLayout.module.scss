@@ -6,7 +6,7 @@ $info-box-width: clamp(rem.torem(240px), 29vw, rem.torem(316px));
 $info-box-margin-left: rem.torem(24px);
 
 .form-layout {
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
 
   &.full-width-actions {
     @media (min-width: size.$tablet) {
@@ -148,7 +148,6 @@ $info-box-margin-left: rem.torem(24px);
 
       &-inner {
         position: absolute;
-        background: var(--color-white);
       }
     }
   }

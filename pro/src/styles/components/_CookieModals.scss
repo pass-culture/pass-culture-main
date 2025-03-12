@@ -16,7 +16,7 @@ $action-gap: rem.torem(10px);
 
 .orejime-Notice,
 .orejime-Modal {
-  background: var(--color-white);
+  background: var(--color-background-default);
   box-shadow: 0 2px 16px var(--color-medium-shadow);
   color: var(--color-input-text-color);
 }
@@ -91,7 +91,7 @@ $action-gap: rem.torem(10px);
       width: 100%;
 
       button {
-        background: var(--color-white);
+        background: var(--color-background-default);
         color: var(--color-primary);
 
         &:hover {
@@ -138,7 +138,7 @@ $action-gap: rem.torem(10px);
   margin: rem.torem(32px) 0;
 
   button {
-    background: var(--color-white);
+    background: var(--color-background-default);
     color: var(--color-primary);
     cursor: pointer;
     margin-bottom: 0.5rem;

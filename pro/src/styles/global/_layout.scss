@@ -4,7 +4,7 @@
 
 body {
   color: var(--color-black);
-  background-color: var(--color-white);
+  background-color: var(--color-background-default);
 }
 
 body,
@@ -16,7 +16,8 @@ textarea {
   @include fonts.body;
 }
 
-strong, b {
+strong,
+b {
   font-family: var(--typography-body-accent-font-family);
 }
 

@@ -86,7 +86,7 @@
     min-height: rem.torem(40px);
     align-items: center;
     color: var(--color-primary);
-    background-color: var(--color-white);
+    background-color: var(--color-background-default);
     border-color: var(--color-primary);
 
     &:hover {
@@ -193,7 +193,7 @@
   }
 
   &-box {
-    background-color: var(--color-white);
+    background-color: var(--color-background-default);
     justify-content: flex-start;
     width: 100%;
     padding: rem.torem(12px) rem.torem(8px);
