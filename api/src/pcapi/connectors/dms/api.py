@@ -182,16 +182,25 @@ class DMSGraphQLClient:
         return data["dossier"]
 
     def make_on_going(
-        self, application_techid: str, instructeur_techid: str, disable_notification: bool = False
+        self,
+        application_techid: str,
+        instructeur_techid: str,
+        disable_notification: bool = False,
+        raise_if_already_ongoing: bool = False,
     ) -> dict:
-        return self._execute_mutation(
-            MAKE_ON_GOING_MUTATION_NAME,
-            key="dossierPasserEnInstruction",
-            log_state="on going",
-            application_techid=application_techid,
-            instructeur_techid=instructeur_techid,
-            disable_notification=disable_notification,
-        )
+        try:
+            return self._execute_mutation(
+                MAKE_ON_GOING_MUTATION_NAME,
+                key="dossierPasserEnInstruction",
+                log_state="on going",
+                application_techid=application_techid,
+                instructeur_techid=instructeur_techid,
+                disable_notification=disable_notification,
+            )
+        except exceptions.DmsGraphQLApiError as exc:
+            if raise_if_already_ongoing is False and exc.message == "Le dossier est déjà en instruction":
+                return {}
+            raise
 
     def make_accepted(
         self,
@@ -224,18 +233,23 @@ class DMSGraphQLClient:
         disable_notification: bool = False,
         from_draft: bool = False,
     ) -> dict:
-        if from_draft:
-            # Can be refused only when on_going ("en instruction")
-            self.make_on_going(application_techid, instructeur_techid, disable_notification=True)
-        return self._execute_mutation(
-            MAKE_REFUSED_MUTATION_NAME,
-            key="dossierRefuser",
-            log_state="rejected",
-            application_techid=application_techid,
-            instructeur_techid=instructeur_techid,
-            motivation=motivation,
-            disable_notification=disable_notification,
-        )
+        try:
+            if from_draft:
+                # Can be refused only when on_going ("en instruction")
+                self.make_on_going(application_techid, instructeur_techid, disable_notification=True)
+            return self._execute_mutation(
+                MAKE_REFUSED_MUTATION_NAME,
+                key="dossierRefuser",
+                log_state="rejected",
+                application_techid=application_techid,
+                instructeur_techid=instructeur_techid,
+                motivation=motivation,
+                disable_notification=disable_notification,
+            )
+        except exceptions.DmsGraphQLApiError as exc:
+            if exc.message == "Le dossier est déjà refusé":
+                return {}
+            raise
 
     def mark_without_continuation(
         self,
