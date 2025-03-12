@@ -10,7 +10,6 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places as banner_url_synchronizations
 from pcapi.core.offerers import tasks as offerers_tasks
-from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils import siren as siren_utils
@@ -35,32 +34,18 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
     if day is None:
         day = datetime.date.today().day
 
-    siren_caduc_tag_id_subquery = (
-        db.session.query(offerers_models.OffererTag.id)
-        .filter(offerers_models.OffererTag.name == "siren-caduc")
-        .limit(1)
-        .scalar_subquery()
+    offerers = (
+        offerers_models.Offerer.query.filter(
+            offerers_models.Offerer.id % 28 == day - 1,
+            offerers_models.Offerer.isActive,
+            sa.not_(offerers_models.Offerer.isRejected),
+            sa.not_(offerers_models.Offerer.isClosed),
+            offerers_models.Offerer.siren.is_not(None),
+            sa.not_(offerers_models.Offerer.siren.like(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}%")),
+        )
+        .options(sa.orm.load_only(offerers_models.Offerer.siren))
+        .all()
     )
-
-    offerers_query = offerers_models.Offerer.query.filter(
-        offerers_models.Offerer.id % 28 == day - 1,
-        offerers_models.Offerer.isActive,
-        sa.not_(offerers_models.Offerer.isRejected),
-        offerers_models.Offerer.siren.is_not(None),
-        sa.not_(offerers_models.Offerer.siren.like(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}%")),
-    ).options(sa.orm.load_only(offerers_models.Offerer.siren))
-
-    if not codir_report_is_enabled:
-        # When FF is disabled, we only have to check if siren-caduc tag has to be applied, skip already tagged
-        offerers_query = offerers_query.outerjoin(
-            offerers_models.OffererTagMapping,
-            sa.and_(
-                offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
-                offerers_models.OffererTagMapping.tagId == siren_caduc_tag_id_subquery,
-            ),
-        ).filter(offerers_models.OffererTagMapping.id.is_(None))
-
-    offerers = offerers_query.all()
 
     logger.info("check_active_offerers will check %s offerers in cloud tasks today", len(offerers))
 
@@ -69,7 +54,7 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
         offerers_tasks.check_offerer_siren_task.delay(
             offerers_tasks.CheckOffererSirenRequest(
                 siren=offerer.siren,
-                tag_when_inactive=not dry_run,
+                close_or_tag_when_inactive=not dry_run,
                 fill_in_codir_report=codir_report_is_enabled,
             )
         )
@@ -114,7 +99,7 @@ def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None)
         offerers_tasks.check_offerer_siren_task.delay(
             offerers_tasks.CheckOffererSirenRequest(
                 siren=siren,
-                tag_when_inactive=not dry_run,
+                close_or_tag_when_inactive=not dry_run,
             )
         )
 

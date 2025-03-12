@@ -23,7 +23,7 @@ class CheckActiveOfferersTest:
         offerer = offerers_factories.OffererFactory(id=23 + 28)
         offerers_factories.OffererFactory(id=23 + 29)  # not checked today
         offerers_factories.OffererFactory(id=23 + 28 * 2, isActive=False)  # not checked because inactive
-        offerers_factories.OffererFactory(id=23 + 28 * 3, tags=[tag])  # not checked because already tagged
+        offerers_factories.ClosedOffererFactory(id=23 + 28 * 3)  # not checked because closed
         offerers_factories.RejectedOffererFactory(id=23 + 28 * 4, isActive=True)  # not checked because rejected
         offerers_factories.OffererFactory(
             id=23 + 28 * 5, siren=siren_utils.rid7_to_siren("1234567")  # not checked because RID7 not in Sirene API

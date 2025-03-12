@@ -57,6 +57,14 @@ class OffererAlreadyRejectedException(Exception):
     pass
 
 
+class OffererAlreadyClosedException(Exception):
+    pass
+
+
+class FutureClosureDate(Exception):
+    pass
+
+
 class UserOffererAlreadyValidatedException(Exception):
     pass
 

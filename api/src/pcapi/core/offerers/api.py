@@ -1341,6 +1341,42 @@ def reject_offerer(
         _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_DEACTIVATION)
 
 
+def close_offerer(
+    offerer: offerers_models.Offerer,
+    closure_date: date | None,
+    author_user: users_models.User | None,
+    **action_args: typing.Any,
+) -> None:
+    if offerer.isClosed:
+        raise exceptions.OffererAlreadyClosedException()
+
+    if closure_date is not None and closure_date > date.today():
+        # Future closure currently not supported because transactional email tells "cessé depuis le XXX à l'INSEE"
+        raise exceptions.FutureClosureDate()
+
+    was_validated = offerer.isValidated
+    offerer.validationStatus = ValidationStatus.CLOSED
+    db.session.add(offerer)
+    history_api.add_action(
+        history_models.ActionType.OFFERER_CLOSED,
+        author=author_user,
+        offerer=offerer,
+        closure_date=closure_date.isoformat() if closure_date else None,  # may be used to check programmatically
+        **action_args,
+    )
+
+    applicants = users_repository.get_users_with_validated_attachment(offerer)
+    remove_pro_role_and_add_non_attached_pro_role(applicants)
+
+    if applicants:
+        transactional_mails.send_offerer_closed_email_to_pro(offerer, closure_date)  # on_commit inside
+
+    db.session.flush()
+
+    if was_validated:
+        _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_DEACTIVATION)
+
+
 def set_offerer_pending(
     offerer: offerers_models.Offerer,
     author_user: users_models.User,

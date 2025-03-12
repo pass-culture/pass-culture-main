@@ -1,6 +1,7 @@
 import datetime
 import logging
 import time
+import typing
 
 import sqlalchemy as sa
 
@@ -8,7 +9,10 @@ from pcapi import settings
 from pcapi.connectors import googledrive
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
+from pcapi.connectors.entreprise import models as entreprise_models
 from pcapi.connectors.entreprise import sirene
+from pcapi.core.bookings import models as bookings_models
+from pcapi.core.educational import repository as educational_repository
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
@@ -16,6 +20,7 @@ from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
@@ -30,7 +35,7 @@ CLOSED_OFFERER_TAG_NAME = "siren-caduc"
 
 class CheckOffererSirenRequest(BaseModel):
     siren: str
-    tag_when_inactive: bool
+    close_or_tag_when_inactive: bool
     fill_in_codir_report: bool = False
 
 
@@ -72,100 +77,50 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
         # This should not happen, unless offerer has been deleted between cron task and this task
         return
 
-    if not siren_info.active and not CLOSED_OFFERER_TAG_NAME in (tag.name for tag in offerer.tags):
+    if not siren_info.active:
         logger.info("SIREN is no longer active", extra={"offerer_id": offerer.id, "siren": offerer.siren})
 
-        if payload.tag_when_inactive:
-            # .one() raises an exception if the tag does not exist -- this will ensure that a potential issue is tracked
-            tag = offerers_models.OffererTag.query.filter(
-                offerers_models.OffererTag.name == CLOSED_OFFERER_TAG_NAME
-            ).one()
+        if payload.close_or_tag_when_inactive:
+            action_kwargs: dict[str, typing.Any] = {
+                "comment": "L'entité juridique est détectée comme fermée "
+                + (siren_info.closure_date.strftime("le %d/%m/%Y ") if siren_info.closure_date else "")
+                + "via l'API Sirene (INSEE)",
+            }
 
             with transaction():
-                db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
-                comment = (
-                    "L'entité juridique est détectée comme fermée "
-                    + (siren_info.closure_date.strftime("le %d/%m/%Y ") if siren_info.closure_date else "")
-                    + "via l'API Sirene (INSEE)"
-                )
+                # Offerer may have been tagged in the past, but not closed
+                if CLOSED_OFFERER_TAG_NAME not in (tag.name for tag in offerer.tags):
+                    # .one() raises an exception if the tag does not exist -- ensures that a potential issue is tracked
+                    tag = offerers_models.OffererTag.query.filter(
+                        offerers_models.OffererTag.name == CLOSED_OFFERER_TAG_NAME
+                    ).one()
+                    action_kwargs["modified_info"] = {"tags": {"new_info": tag.label}}
+                    db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
+
                 if offerer.isWaitingForValidation:
                     offerers_api.reject_offerer(
                         offerer=offerer,
                         author_user=None,
-                        comment=comment,
-                        modified_info={"tags": {"new_info": tag.label}},
                         rejection_reason=offerers_models.OffererRejectionReason.CLOSED_BUSINESS,
+                        **action_kwargs,
                     )
-                else:
+                elif _can_close_offerer(offerer):
+                    offerers_api.close_offerer(
+                        offerer,
+                        siren_info.closure_date,
+                        author_user=None,
+                        **action_kwargs,
+                    )
+                elif "modified_info" in action_kwargs:
                     history_api.add_action(
                         history_models.ActionType.INFO_MODIFIED,
                         author=None,
                         offerer=offerer,
-                        comment=comment,
-                        modified_info={"tags": {"new_info": tag.label}},
+                        **action_kwargs,
                     )
 
     if offerer.isValidated and payload.fill_in_codir_report:
-        # check attestations
-        try:
-            urssaf_status = "OK" if entreprise_api.get_urssaf(payload.siren).attestation_delivered else "REFUS"
-        except entreprise_exceptions.EntrepriseException as exc:
-            urssaf_status = f"Erreur : {str(exc)}"
-
-        if entreprise_api.siren_is_individual_or_public(siren_info):
-            dgfip_status = "N/A : Hors périmètre"
-        elif siren_info.creation_date and siren_info.creation_date.year >= datetime.date.today().year:
-            dgfip_status = "N/A : Entreprise créée dans l'année en cours"
-        else:
-            try:
-                dgfip_status = "OK" if entreprise_api.get_dgfip(payload.siren).attestation_delivered else "REFUS"
-            except entreprise_exceptions.EntrepriseException as exc:
-                dgfip_status = f"Erreur : {str(exc)}"
-
-        googledrive_backend = googledrive.get_backend()
-        today = datetime.date.today()
-        new_rows: list[list[str | int | float]] = []
-
-        file_name = f"Vérification des structures actives {today.strftime('%Y-%m')}"
-        file_id = googledrive_backend.search_file(settings.CODIR_OFFERERS_REPORT_ROOT_FOLDER_ID, file_name)
-        if not file_id:
-            file_id = googledrive_backend.create_spreadsheet(settings.CODIR_OFFERERS_REPORT_ROOT_FOLDER_ID, file_name)
-            new_rows.append(
-                [
-                    "Date de vérification",
-                    "SIREN",
-                    "Nom",
-                    "En activité",
-                    "Attestation Urssaf",
-                    "Attestation IS",
-                    "Forme juridique",
-                    "Offres réservables",
-                    f"CA {today.year}",
-                    "Lien Backoffice",
-                ]
-            )
-
-        new_rows.append(
-            [
-                datetime.date.today().strftime("%d/%m/%Y"),
-                siren_info.siren,
-                siren_info.name,
-                "Oui" if siren_info.active else "Non",
-                urssaf_status,
-                dgfip_status,
-                offerers_constants.CODE_TO_CATEGORY_MAPPING.get(int(siren_info.legal_category_code), "Inconnu"),
-                _get_total_offers_count(offerer.id),
-                float(offerers_api.get_offerer_total_revenue(offerer.id, only_current_year=True)),
-                build_backoffice_offerer_link(offerer.id),
-            ]
-        )
-
-        added_rows = googledrive_backend.append_to_spreadsheet(file_id, new_rows)
-        if added_rows != len(new_rows):
-            logger.error(
-                "Failed to add rows in CODIR offerers report",
-                extra={"expected_rows": len(new_rows), "added_rows": added_rows, "offerer_id": offerer.id},
-            )
+        fill_in_codir_report(offerer, siren_info)
     else:
         # FIXME (prouzet, 2025-01-24) remove this when cloud tasks are replaced:
         # First tasks in the queue every night cause HTTP error 429 on Sirene API because of rate limit (max 30 per minute).
@@ -177,6 +132,69 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
         time.sleep(2)
 
 
+def fill_in_codir_report(offerer: offerers_models.Offerer, siren_info: entreprise_models.SirenInfo) -> None:
+    # check attestations
+    try:
+        urssaf_status = "OK" if entreprise_api.get_urssaf(siren_info.siren).attestation_delivered else "REFUS"
+    except entreprise_exceptions.EntrepriseException as exc:
+        urssaf_status = f"Erreur : {str(exc)}"
+
+    if entreprise_api.siren_is_individual_or_public(siren_info):
+        dgfip_status = "N/A : Hors périmètre"
+    elif siren_info.creation_date and siren_info.creation_date.year >= datetime.date.today().year:
+        dgfip_status = "N/A : Entreprise créée dans l'année en cours"
+    else:
+        try:
+            dgfip_status = "OK" if entreprise_api.get_dgfip(siren_info.siren).attestation_delivered else "REFUS"
+        except entreprise_exceptions.EntrepriseException as exc:
+            dgfip_status = f"Erreur : {str(exc)}"
+
+    googledrive_backend = googledrive.get_backend()
+    today = datetime.date.today()
+    new_rows: list[list[str | int | float]] = []
+
+    file_name = f"Vérification des structures actives {today.strftime('%Y-%m')}"
+    file_id = googledrive_backend.search_file(settings.CODIR_OFFERERS_REPORT_ROOT_FOLDER_ID, file_name)
+    if not file_id:
+        file_id = googledrive_backend.create_spreadsheet(settings.CODIR_OFFERERS_REPORT_ROOT_FOLDER_ID, file_name)
+        new_rows.append(
+            [
+                "Date de vérification",
+                "SIREN",
+                "Nom",
+                "En activité",
+                "Attestation Urssaf",
+                "Attestation IS",
+                "Forme juridique",
+                "Offres réservables",
+                f"CA {today.year}",
+                "Lien Backoffice",
+            ]
+        )
+
+    new_rows.append(
+        [
+            datetime.date.today().strftime("%d/%m/%Y"),
+            siren_info.siren,
+            siren_info.name,
+            "Oui" if siren_info.active else "Non",
+            urssaf_status,
+            dgfip_status,
+            offerers_constants.CODE_TO_CATEGORY_MAPPING.get(int(siren_info.legal_category_code), "Inconnu"),
+            _get_total_offers_count(offerer.id),
+            float(offerers_api.get_offerer_total_revenue(offerer.id, only_current_year=True)),
+            build_backoffice_offerer_link(offerer.id),
+        ]
+    )
+
+    added_rows = googledrive_backend.append_to_spreadsheet(file_id, new_rows)
+    if added_rows != len(new_rows):
+        logger.error(
+            "Failed to add rows in CODIR offerers report",
+            extra={"expected_rows": len(new_rows), "added_rows": added_rows, "offerer_id": offerer.id},
+        )
+
+
 def _get_total_offers_count(offerer_id: int) -> int | str:
     offers_count = offerers_repository.get_number_of_bookable_offers_for_offerer(offerer_id)
     if offers_count < offerers_repository.MAX_OFFERS_PER_OFFERER_FOR_COUNT:
@@ -186,3 +204,28 @@ def _get_total_offers_count(offerer_id: int) -> int | str:
         return f"{offerers_repository.MAX_OFFERS_PER_OFFERER_FOR_COUNT}+"
 
     return offers_count
+
+
+def _can_close_offerer(offerer: offerers_models.Offerer) -> bool:
+    if not offerer.isValidated:
+        return False
+
+    if not FeatureToggle.ENABLE_AUTO_CLOSE_CLOSED_OFFERERS.is_active():
+        return False
+
+    # TODO (prouzet, 2025-03-12) use bookings_repository.offerer_has_ongoing_bookings(offerer.id) in PC-34645
+    if db.session.query(
+        bookings_models.Booking.query.filter(
+            bookings_models.Booking.offererId == offerer.id,
+            bookings_models.Booking.status.in_(
+                [bookings_models.BookingStatus.CONFIRMED, bookings_models.BookingStatus.USED]
+            ),
+        ).exists()
+    ).scalar():
+        return False
+
+    # TODO (prouzet, 2025-03-12) remove USED from offerer_has_ongoing_collective_bookings in PC-34645
+    if educational_repository.offerer_has_ongoing_collective_bookings(offerer.id):
+        return False
+
+    return True

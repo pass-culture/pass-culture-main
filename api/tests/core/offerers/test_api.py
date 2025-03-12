@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 import decimal
 import logging
@@ -1652,6 +1653,91 @@ class RejectOffererTest:
         assert action.offererId == offerer.id
         assert action.venueId is None
         assert action.comment == "Compte pro rejeté suite au rejet de l'entité juridique"
+
+
+class CloseOffererTest:
+    def test_offerer_was_not_validated(self):
+        admin = users_factories.AdminFactory()
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)
+
+        offerers_api.close_offerer(offerer, datetime.date(2025, 3, 7), admin)
+
+        assert offerer.isClosed
+
+    def test_offerer_was_validated(self):
+        admin = users_factories.AdminFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
+        offerer = user_offerer.offerer
+
+        offerers_api.close_offerer(offerer, datetime.date(2025, 3, 7), admin)
+
+        assert offerer.isClosed
+        assert offerer.UserOfferers == [user_offerer]
+        assert user_offerer.isValidated
+        assert not user_offerer.user.has_pro_role
+        assert user_offerer.user.has_non_attached_pro_role
+
+    def test_pro_role_is_not_removed_from_user(self):
+        admin = users_factories.AdminFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
+        offerer = user_offerer.offerer
+        other_user_offerer = offerers_factories.UserOffererFactory(user=user_offerer.user)
+
+        offerers_api.close_offerer(offerer, datetime.date(2025, 3, 7), admin)
+
+        assert offerer.isClosed
+        assert user_offerer.isValidated
+        assert other_user_offerer.user.has_pro_role
+        assert not other_user_offerer.user.has_non_attached_pro_role
+
+    @patch("pcapi.core.mails.transactional.send_offerer_closed_email_to_pro")
+    def test_send_offerer_closed_email(self, mock_send_offerer_closed_email_to_pro):
+        admin = users_factories.AdminFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)
+
+        offerers_api.close_offerer(offerer, datetime.date(2025, 3, 7), admin)
+
+        mock_send_offerer_closed_email_to_pro.assert_called_once_with(offerer, datetime.date(2025, 3, 7))
+
+    def test_action_is_logged(self):
+        admin = users_factories.AdminFactory()
+        user = users_factories.UserFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        offerers_factories.UserOffererFactory(offerer=offerer)  # another user
+
+        offerers_api.close_offerer(
+            offerer,
+            datetime.date(2025, 3, 7),
+            admin,
+            comment="Test",
+            modified_info={"tags": {"new_info": "SIREN caduc"}},
+        )
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.OFFERER_CLOSED
+        assert action.actionDate is not None
+        assert action.authorUserId == admin.id
+        assert action.userId is None
+        assert action.offererId == offerer.id
+        assert action.venueId is None
+        assert action.comment == "Test"
+        assert action.extraData == {
+            "modified_info": {"tags": {"new_info": "SIREN caduc"}},
+            "closure_date": "2025-03-07",
+        }
+
+    def test_future_closure_date(self):
+        admin = users_factories.AdminFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
+        offerer = user_offerer.offerer
+
+        with pytest.raises(offerers_exceptions.FutureClosureDate):
+            offerers_api.close_offerer(offerer, datetime.date.today() + datetime.timedelta(days=1), admin)
+
+        assert offerer.isValidated
 
 
 def test_grant_user_offerer_access():
