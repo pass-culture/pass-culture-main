@@ -31,7 +31,7 @@
   }
 
   &:hover {
-    background-color: var(--color-grey-light);
+    background-color: var(--color-background-subtle);
   }
 
   &:focus-visible {
@@ -45,6 +45,6 @@
   &:disabled {
     cursor: not-allowed;
     color: var(--color-grey-dark);
-    background-color: var(--color-grey-light);
+    background-color: var(--color-background-subtle);
   }
 }

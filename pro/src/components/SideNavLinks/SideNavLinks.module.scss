@@ -17,7 +17,7 @@
     cursor: pointer;
 
     &:hover {
-      background-color: var(--color-grey-light);
+      background-color: var(--color-background-subtle);
     }
 
     &:focus-visible {
@@ -100,7 +100,7 @@
     align-items: center;
 
     &:hover {
-      background-color: var(--color-grey-light);
+      background-color: var(--color-background-subtle);
     }
 
     &:focus-visible {
@@ -110,7 +110,7 @@
     }
 
     &-active {
-      background-color: var(--color-grey-light);
+      background-color: var(--color-background-subtle);
       position: relative;
 
       &::after {

@@ -113,7 +113,7 @@
         &:hover,
         &:focus-within,
         &[aria-selected="true"] {
-          background-color: var(--color-grey-light);
+          background-color: var(--color-background-subtle);
         }
 
         &-icon {

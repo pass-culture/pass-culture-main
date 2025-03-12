@@ -41,10 +41,6 @@
   padding-bottom: rem.torem(24px);
 }
 
-.form-layout-row-price-category:nth-child(odd) {
-  background-color: var(--color-grey-light);
-}
-
 .visually-hidden {
   @include a11y.visually-hidden;
 }
