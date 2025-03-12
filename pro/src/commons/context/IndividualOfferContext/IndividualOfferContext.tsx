@@ -92,6 +92,12 @@ export const IndividualOfferContextProvider = ({
     return <Spinner />
   }
 
+  //  Only consider a puslished offer that is different from the one we are editing or creating now
+  const publishedOfferWithSameEAN =
+    offer && publishedOfferWithSameEANQuery.data?.id !== offer.id
+      ? publishedOfferWithSameEANQuery.data
+      : undefined
+
   return (
     <IndividualOfferContext.Provider
       value={{
@@ -100,7 +106,7 @@ export const IndividualOfferContextProvider = ({
         categories: categoriesQuery.data.categories,
         subCategories: categoriesQuery.data.subcategories,
         setIsEvent,
-        publishedOfferWithSameEAN: publishedOfferWithSameEANQuery.data,
+        publishedOfferWithSameEAN,
       }}
     >
       {children}
