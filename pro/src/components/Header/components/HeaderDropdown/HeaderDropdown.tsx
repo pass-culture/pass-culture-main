@@ -14,6 +14,7 @@ import {
 } from 'commons/store/offerer/selectors'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { getSavedOffererId } from 'commons/utils/getSavedOffererId'
+import { hardRefresh } from 'commons/utils/hardRefresh'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { sortByLabel } from 'commons/utils/strings'
 import { resetAllStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
@@ -82,7 +83,7 @@ export const HeaderDropdown = () => {
     }
 
     // Hard refresh to homepage after offerer change
-    window.location.href = '/accueil'
+    hardRefresh('/accueil')
   }
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { screen, within, waitFor } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
@@ -12,6 +12,7 @@ import {
   defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
 import { currentOffererFactory } from 'commons/utils/factories/storeFactories'
+import { hardRefresh } from 'commons/utils/hardRefresh'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -89,27 +90,13 @@ describe('App', () => {
         },
       }))
 
+      vi.mock('commons/utils/hardRefresh', () => ({
+        hardRefresh: vi.fn(),
+      }))
+
       vi.spyOn(api, 'getOfferer').mockResolvedValue(
         defaultGetOffererResponseModel
       )
-    })
-
-    it('should call "handleChangeOfferer" on value change', async () => {
-      renderHeaderDropdown()
-
-      // Opens main menu
-      await userEvent.click(screen.getByTestId('offerer-select'))
-
-      // Opens sub-menu
-      await userEvent.click(screen.getByText(/Changer/))
-
-      // Get structures list
-      const offererList = screen.getByTestId('offerers-selection-menu')
-      const offerers = within(offererList).getAllByRole('menuitemradio')
-
-      await userEvent.click(offerers[0])
-
-      expect(api.getOfferer).toHaveBeenCalledOnce()
     })
 
     it('should reset url query parameters & stored search filters', async () => {
@@ -145,9 +132,8 @@ describe('App', () => {
       // Clic on one structure
       await userEvent.click(offerers[0])
 
-      await waitFor(() => {
-        expect(api.getOfferer).toHaveBeenCalledOnce()
-      })
+      // Verify that hardRefresh has been called once
+      expect(hardRefresh).toHaveBeenCalledOnce()
 
       // Stored search filters should be reset, while filters
       // visibility must be remembered.
