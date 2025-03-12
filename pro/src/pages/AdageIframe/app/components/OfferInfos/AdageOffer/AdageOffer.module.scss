@@ -10,7 +10,7 @@
     content: "";
     width: 100%;
     height: rem.torem(7px);
-    background-color: var(--color-background-secondary);
+    background-color: var(--color-background-info);
     position: absolute;
     top: rem.torem(132px);
     z-index: 0;
@@ -18,7 +18,7 @@
 
   &-header {
     padding: 0 rem.torem(24px) rem.torem(24px);
-    border-bottom: rem.torem(7px) solid var(--color-background-secondary);
+    border-bottom: rem.torem(7px) solid var(--color-background-info);
     display: flex;
     flex-direction: column;
     align-items: center;

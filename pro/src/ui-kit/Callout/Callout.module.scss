@@ -10,7 +10,7 @@
   padding: rem.torem(16px);
 
   &-default {
-    background-color: var(--color-background-secondary);
+    background-color: var(--color-background-info);
 
     .icon {
       color: var(--color-secondary-light);
@@ -26,7 +26,7 @@
   }
 
   &-success {
-    background-color: var(--color-background-valid);
+    background-color: var(--color-background-success);
 
     .icon {
       color: var(--color-valid);
@@ -34,7 +34,7 @@
   }
 
   &-warning {
-    background-color: var(--color-background-alert);
+    background-color: var(--color-background-warning);
 
     .icon {
       color: var(--color-alert-dark);

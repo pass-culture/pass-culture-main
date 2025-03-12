@@ -15,7 +15,7 @@ export function PortraitPreferredOrientationSVG() {
         />
         <path
           d="M229 23.5C229 33.7173 220.717 42 210.5 42C200.283 42 192 33.7173 192 23.5C192 13.2827 200.283 5 210.5 5C220.717 5 229 13.2827 229 23.5Z"
-          fill="var(--color-background-valid)"
+          fill="var(--color-background-success)"
         />
         <path
           fillRule="evenodd"
