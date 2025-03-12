@@ -109,7 +109,7 @@
 
   &.is-disabled {
     border-color: var(--color-input-border-color-disabled);
-    background-color: var(--color-grey-light);
+    background-color: var(--color-background-disabled);
     color: var(--color-grey-dark);
 
     &:hover {

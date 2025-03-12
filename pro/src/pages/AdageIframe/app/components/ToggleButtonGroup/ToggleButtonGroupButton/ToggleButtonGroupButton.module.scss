@@ -45,6 +45,6 @@
   &:disabled {
     cursor: not-allowed;
     color: var(--color-grey-dark);
-    background-color: var(--color-background-subtle);
+    background-color: var(--color-background-disabled);
   }
 }

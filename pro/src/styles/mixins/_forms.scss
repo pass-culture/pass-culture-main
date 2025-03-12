@@ -35,7 +35,7 @@
 
   &:disabled {
     cursor: unset;
-    background-color: var(--color-input-bg-color-disabled);
+    background-color: var(--color-background-disabled);
     color: var(--color-input-text-color-disabled);
     opacity: 1;
     border-color: var(--color-input-border-color-disabled);
