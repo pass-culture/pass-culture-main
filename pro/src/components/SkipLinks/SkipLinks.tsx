@@ -4,19 +4,23 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './SkipLinks.module.scss'
 
-export const SkipLinks = (): JSX.Element => {
+interface SkipLinksProps {
+  shouldDisplayTopPageLink?: boolean
+}
+
+export const SkipLinks = ({ shouldDisplayTopPageLink = true }: SkipLinksProps): JSX.Element => {
   const buttons: { anchor: string; label: string }[] = [
     { anchor: '#content', label: 'Aller au contenu' },
   ]
 
   return (
     <>
-      <a
+      {shouldDisplayTopPageLink && <a
         tabIndex={-1}
         href="#"
-        id="top-page"
+        id="unaccessible-top-page"
         className={styles['visually-hidden']}
-      />
+      />}
       <nav aria-label="Accès rapide" className={styles['skip-links']}>
         <div id="orejime" />
         {buttons.length > 1 ? (
