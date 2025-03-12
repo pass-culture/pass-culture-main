@@ -136,7 +136,6 @@ def _get_collective_offer_templates(
 
 
 @list_collective_offer_templates_blueprint.route("", methods=["GET"])
-@atomic()
 def list_collective_offer_templates() -> utils.BackofficeResponse:
     form = collective_offer_forms.GetCollectiveOfferTemplatesListForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -161,7 +160,6 @@ def list_collective_offer_templates() -> utils.BackofficeResponse:
 
 
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/validate", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_validate_collective_offer_template_form(collective_offer_template_id: int) -> utils.BackofficeResponse:
     collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(
@@ -186,7 +184,6 @@ def get_validate_collective_offer_template_form(collective_offer_template_id: in
 
 
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/validate", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def validate_collective_offer_template(collective_offer_template_id: int) -> utils.BackofficeResponse:
     _batch_validate_or_reject_collective_offer_templates(OfferValidationStatus.APPROVED, [collective_offer_template_id])
@@ -197,7 +194,6 @@ def validate_collective_offer_template(collective_offer_template_id: int) -> uti
 
 
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/reject", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_reject_collective_offer_template_form(collective_offer_template_id: int) -> utils.BackofficeResponse:
     collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(
@@ -222,7 +218,6 @@ def get_reject_collective_offer_template_form(collective_offer_template_id: int)
 
 
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/reject", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def reject_collective_offer_template(collective_offer_template_id: int) -> utils.BackofficeResponse:
     form = collective_offer_forms.RejectCollectiveOfferForm()
@@ -349,7 +344,6 @@ def _batch_validate_or_reject_collective_offer_templates(
 
 
 @list_collective_offer_templates_blueprint.route("/batch/validate", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_validate_collective_offer_templates_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -364,7 +358,6 @@ def get_batch_validate_collective_offer_templates_form() -> utils.BackofficeResp
 
 
 @list_collective_offer_templates_blueprint.route("/batch/reject", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_reject_collective_offer_templates_form() -> utils.BackofficeResponse:
     form = collective_offer_forms.BatchRejectCollectiveOfferForm()
@@ -379,7 +372,6 @@ def get_batch_reject_collective_offer_templates_form() -> utils.BackofficeRespon
 
 
 @list_collective_offer_templates_blueprint.route("/batch/validate", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_validate_collective_offer_templates() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -398,7 +390,6 @@ def batch_validate_collective_offer_templates() -> utils.BackofficeResponse:
 
 
 @list_collective_offer_templates_blueprint.route("/batch/reject", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_reject_collective_offer_templates() -> utils.BackofficeResponse:
     form = collective_offer_forms.BatchRejectCollectiveOfferForm()
@@ -421,7 +412,6 @@ def batch_reject_collective_offer_templates() -> utils.BackofficeResponse:
 
 
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/details", methods=["GET"])
-@atomic()
 def get_collective_offer_template_details(collective_offer_template_id: int) -> utils.BackofficeResponse:
     collective_offer_template_query = educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.id == collective_offer_template_id

@@ -14,7 +14,6 @@ import sqlalchemy as sa
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
-from pcapi import repository
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.connectors.entreprise import api as entreprise_api
@@ -36,6 +35,8 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository import on_commit
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.utils import regions as regions_utils
 from pcapi.utils.siren import is_valid_siren
@@ -233,7 +234,6 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
 
 
 @offerer_blueprint.route("", methods=["GET"])
-@repository.atomic()
 def get(offerer_id: int) -> utils.BackofficeResponse:
     if request.args.get("q") and request.args.get("search_rank"):
         utils.log_backoffice_tracking_data(
@@ -306,7 +306,6 @@ def get_stats_data(offerer: offerers_models.Offerer) -> dict:
 
 
 @offerer_blueprint.route("/stats", methods=["GET"])
-@repository.atomic()
 def get_stats(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -324,7 +323,6 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/revenue-details", methods=["GET"])
-@repository.atomic()
 def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -375,7 +373,6 @@ def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
 # TODO: (tcoudray-pass, 16/07/2024) Remove when all the providers have migrated to the new public API
 @offerer_blueprint.route("/api-keys", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-@repository.atomic()
 def generate_api_key(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
     if offerer.isRejected or offerer.isClosed:
@@ -391,10 +388,10 @@ def generate_api_key(offerer_id: int) -> utils.BackofficeResponse:
             "success",
         )
     except offerers_exceptions.ApiKeyCountMaxReached:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash("Le nombre maximal de clés a été atteint", "warning")
     except offerers_exceptions.ApiKeyPrefixGenerationError:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash("La clé n'a pu être générée", "warning")
 
     return _self_redirect(offerer.id)
@@ -402,7 +399,6 @@ def generate_api_key(offerer_id: int) -> utils.BackofficeResponse:
 
 @offerer_blueprint.route("/suspend", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-@repository.atomic()
 def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -415,13 +411,13 @@ def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.SuspendOffererForm()
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
     else:
         try:
             offerers_api.suspend_offerer(offerer, current_user, form.comment.data)
         except offerers_exceptions.CannotSuspendOffererWithBookingsException:
-            repository.mark_transaction_as_invalid()
+            mark_transaction_as_invalid()
             flash("Impossible de suspendre une entité juridique pour laquelle il existe des réservations", "warning")
         else:
             flash(
@@ -436,7 +432,6 @@ def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 @offerer_blueprint.route("/unsuspend", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-@repository.atomic()
 def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -449,7 +444,7 @@ def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.SuspendOffererForm()
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
     else:
         offerers_api.unsuspend_offerer(offerer, current_user, form.comment.data)
@@ -465,7 +460,6 @@ def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 @offerer_blueprint.route("/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
-@repository.atomic()
 def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.filter_by(id=offerer_id).populate_existing().with_for_update().one_or_none()
     if not offerer:
@@ -480,12 +474,12 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
     try:
         offerers_api.delete_offerer(offerer.id)
     except offerers_exceptions.CannotDeleteOffererWithBookingsException:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash("Impossible de supprimer une entité juridique pour laquelle il existe des réservations", "warning")
         return _self_redirect(offerer.id)
 
     for email in emails:
-        repository.on_commit(
+        on_commit(
             partial(
                 external_attributes_api.update_external_pro,
                 email,
@@ -503,7 +497,6 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 @offerer_blueprint.route("", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-@repository.atomic()
 def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -516,7 +509,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.EditOffererForm()
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         msg = Markup(
             """
             <button type="button"
@@ -546,7 +539,6 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 @offerer_blueprint.route("/fraud", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-@repository.atomic()
 def update_for_fraud(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -558,7 +550,7 @@ def update_for_fraud(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.FraudForm()
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
     elif offerers_api.update_fraud_info(
         offerer,
@@ -574,7 +566,6 @@ def update_for_fraud(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/history", methods=["GET"])
-@repository.atomic()
 def get_history(offerer_id: int) -> utils.BackofficeResponse:
     # this should not be necessary but in case there is a huge amount
     # of actions, it is safer to set a limit
@@ -610,7 +601,6 @@ def get_history(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/users", methods=["GET"])
-@repository.atomic()
 def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
     # All ids which appear in either offerer history or attached users
     # Double join takes 30 seconds on staging, union takes 0.03 s.
@@ -727,7 +717,6 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
 
 @offerer_blueprint.route("/users/<int:user_offerer_id>/delete", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-@repository.atomic()
 def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = (
         offerers_models.UserOfferer.query.options(
@@ -759,7 +748,6 @@ def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> utils
 
 @offerer_blueprint.route("/users/<int:user_offerer_id>/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-@repository.atomic()
 def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = (
         offerers_models.UserOfferer.query.join(offerers_models.UserOfferer.offerer)
@@ -784,7 +772,7 @@ def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.Backoffi
 
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return _self_redirect(offerer_id, active_tab="users", anchor="offerer_details_frame")
     user_email = user_offerer.user.email
@@ -801,7 +789,6 @@ def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.Backoffi
 
 @offerer_blueprint.route("/add-user", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.filter_by(id=offerer_id).one_or_none()
     if not offerer:
@@ -809,7 +796,7 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.AddProUserForm()
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return _self_redirect(offerer.id, active_tab="users", anchor="offerer_details_frame")
 
@@ -837,7 +824,7 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
     ).one_or_none()
 
     if not user:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash("L'ID ne correspond pas à un ancien rattachement à l'entité juridique", "warning")
         return _self_redirect(offerer.id, active_tab="users", anchor="offerer_details_frame")
 
@@ -854,7 +841,6 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/venues", methods=["GET"])
-@repository.atomic()
 def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
     venues = (
         offerers_models.Venue.query.filter_by(managingOffererId=offerer_id)
@@ -902,7 +888,6 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/addresses", methods=["GET"])
-@repository.atomic()
 def get_offerer_addresses(offerer_id: int) -> utils.BackofficeResponse:
     offerer_addresses = (
         db.session.query(
@@ -946,7 +931,6 @@ def get_offerer_addresses(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/collective-dms-applications", methods=["GET"])
-@repository.atomic()
 def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse:
     collective_dms_applications = (
         educational_models.CollectiveDmsApplication.query.filter(
@@ -982,7 +966,6 @@ def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse
 
 
 @offerer_blueprint.route("/bank-accounts", methods=["GET"])
-@repository.atomic()
 def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
     bank_accounts = (
         finance_models.BankAccount.query.filter_by(offererId=offerer_id)
@@ -1006,7 +989,6 @@ def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
 
 @offerer_blueprint.route("/comment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-@repository.atomic()
 def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -1019,7 +1001,7 @@ def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.CommentForm()
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
     else:
         offerers_api.add_comment_to_offerer(offerer, current_user, comment=form.comment.data)
@@ -1030,7 +1012,6 @@ def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 @offerer_blueprint.route("/individual-subscription", methods=["GET"])
 @utils.permission_required_in([perm_models.Permissions.VALIDATE_OFFERER, perm_models.Permissions.READ_PRO_AE_INFO])
-@repository.atomic()
 def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -1097,7 +1078,6 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
 
 @offerer_blueprint.route("/send-individual-subscription-email", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def create_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.options(
@@ -1127,14 +1107,13 @@ def create_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     callback = partial(
         transactional_mails.send_offerer_individual_subscription_reminder, offerer.UserOfferers[0].user.email
     )
-    repository.on_commit(callback)
+    on_commit(callback)
 
     return _self_redirect(offerer_id, active_tab="subscription")
 
 
 @offerer_blueprint.route("/individual-subscription", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -1151,7 +1130,7 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.IndividualOffererSubscriptionForm()
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return _self_redirect(offerer_id, active_tab="subscription")
 
@@ -1177,7 +1156,6 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
 
 @offerer_blueprint.route("/api-entreprise", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
-@repository.atomic()
 def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
@@ -1185,7 +1163,7 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
         raise NotFound()
 
     if not is_valid_siren(offerer.siren):
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         return render_template("offerer/get/details/entreprise_info.html", is_invalid_siren=True, offerer=offerer)
 
     data: dict[str, typing.Any] = {}
@@ -1195,10 +1173,10 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
         siren_info = entreprise_api.get_siren(offerer.siren, with_address=True, raise_if_non_public=False)
         data["siren_info"] = siren_info
     except entreprise_exceptions.UnknownEntityException:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         data["siren_error"] = "Ce SIREN est inconnu dans la base de données Sirene, y compris dans les non-diffusibles"
     except entreprise_exceptions.SireneException as error:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         data["siren_error"] = str(error) or "Une erreur s'est produite lors de l'appel à API Entreprise"
 
     # Only data from INSEE is retrieved in this endpoint.
@@ -1217,7 +1195,6 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
 
 @offerer_blueprint.route("/api-entreprise/rcs", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
-@repository.atomic()
 def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
@@ -1229,7 +1206,7 @@ def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
     try:
         data["rcs_info"] = entreprise_api.get_rcs(offerer.siren)
     except entreprise_exceptions.EntrepriseException as error:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         data["rcs_error"] = str(error) or "Une erreur s'est produite lors de l'appel à API Entreprise"
 
     return render_template("offerer/get/details/entreprise_info_rcs.html", **data)
@@ -1237,7 +1214,6 @@ def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
 
 @offerer_blueprint.route("/api-entreprise/urssaf", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
-@repository.atomic()
 def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
@@ -1249,7 +1225,7 @@ def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
     try:
         data["urssaf_info"] = entreprise_api.get_urssaf(offerer.siren)
     except entreprise_exceptions.EntrepriseException as error:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         data["urssaf_error"] = str(error) or "Une erreur s'est produite lors de l'appel à API Entreprise"
     else:
         history_api.add_action(
@@ -1265,7 +1241,6 @@ def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
 
 @offerer_blueprint.route("/api-entreprise/dgfip", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
-@repository.atomic()
 def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
@@ -1277,7 +1252,7 @@ def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
     try:
         data["dgfip_info"] = entreprise_api.get_dgfip(offerer.siren)
     except entreprise_exceptions.EntrepriseException as error:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         data["dgfip_error"] = str(error) or "Une erreur s'est produite lors de l'appel à API Entreprise"
     else:
         history_api.add_action(

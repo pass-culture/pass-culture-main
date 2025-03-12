@@ -14,7 +14,6 @@ import sqlalchemy as sa
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
-from pcapi import repository
 from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import exceptions as educational_exceptions
@@ -23,6 +22,7 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.bookings import forms as booking_forms
@@ -120,7 +120,6 @@ def _get_collective_bookings(
 
 
 @collective_bookings_blueprint.route("", methods=["GET"])
-@repository.atomic()
 def list_collective_bookings() -> utils.BackofficeResponse:
     form = booking_forms.GetCollectiveBookingListForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -164,7 +163,6 @@ def _redirect_after_collective_booking_action(code: int = 303) -> utils.Backoffi
 
 
 @collective_bookings_blueprint.route("/download-csv", methods=["GET"])
-@repository.atomic()
 def get_collective_booking_csv_download() -> utils.BackofficeResponse:
     form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -181,7 +179,6 @@ def get_collective_booking_csv_download() -> utils.BackofficeResponse:
 
 
 @collective_bookings_blueprint.route("/download-xlsx", methods=["GET"])
-@repository.atomic()
 def get_collective_booking_xlsx_download() -> utils.BackofficeResponse:
     form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -203,7 +200,6 @@ def get_collective_booking_xlsx_download() -> utils.BackofficeResponse:
 
 
 @collective_bookings_blueprint.route("/<int:collective_booking_id>/mark-as-used", methods=["POST"])
-@repository.atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
@@ -217,7 +213,7 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
     try:
         educational_api_booking.uncancel_collective_booking(collective_booking)
     except Exception as exc:  # pylint: disable=broad-except
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         flash(f"La réservation <b>{collective_booking.id}</b> a été validée", "success")
@@ -226,7 +222,6 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
 
 
 @collective_bookings_blueprint.route("/<int:collective_booking_id>/cancel", methods=["POST"])
-@repository.atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
@@ -246,13 +241,13 @@ def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeRes
             author_id=current_user.id,
         )
     except educational_exceptions.CollectiveBookingAlreadyCancelled:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash("Impossible d'annuler une réservation déjà annulée", "warning")
     except educational_exceptions.BookingIsAlreadyRefunded:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash("Cette réservation est en train d’être remboursée, il est impossible de l’invalider", "warning")
     except Exception as exc:  # pylint: disable=broad-except
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         flash(f"La réservation <b>{collective_booking.id}</b> a été annulée", "success")

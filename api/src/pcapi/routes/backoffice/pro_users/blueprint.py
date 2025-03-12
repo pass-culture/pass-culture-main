@@ -24,7 +24,6 @@ from pcapi.core.users.email import update as email_update
 from pcapi.models import beneficiary_import as beneficiary_import_models
 from pcapi.models import beneficiary_import_status as beneficiary_import_status_models
 from pcapi.models import db
-from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.routes.backoffice import utils
@@ -46,7 +45,6 @@ pro_user_blueprint = utils.child_backoffice_blueprint(
 
 
 @pro_user_blueprint.route("", methods=["GET"])
-@atomic()
 def get(user_id: int) -> utils.BackofficeResponse:
     # Make sure user is pro
     user = (
@@ -96,7 +94,6 @@ def get(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("/details", methods=["GET"])
-@atomic()
 def get_details(user_id: int) -> utils.BackofficeResponse:
     user = users_api.get_pro_account_base_query(user_id).one_or_none()
     if not user:
@@ -127,7 +124,6 @@ def get_details(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_pro_user(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -177,7 +173,6 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("/delete", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def delete(user_id: int) -> utils.BackofficeResponse:
     user = users_api.get_pro_account_base_query(user_id).populate_existing().with_for_update().one_or_none()
@@ -245,7 +240,6 @@ def delete(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("/comment", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -270,7 +264,6 @@ def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("/validate-email", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def validate_pro_user_email(user_id: int) -> utils.BackofficeResponse:
     user = (

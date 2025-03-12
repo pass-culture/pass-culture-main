@@ -14,7 +14,6 @@ from pcapi.core import object_storage
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
-from pcapi.repository import atomic
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 
@@ -51,7 +50,6 @@ def _get_gdpr_data() -> list[users_models.GdprUserDataExtract]:
 
 
 @gdpr_extract_blueprint.route("", methods=["GET"])
-@atomic()
 def list_gdpr_user_data_extract() -> utils.BackofficeResponse:
     list_gdpr_data = _get_gdpr_data()
     return render_template(
@@ -62,7 +60,6 @@ def list_gdpr_user_data_extract() -> utils.BackofficeResponse:
 
 
 @gdpr_extract_blueprint.route("/<int:extract_id>/download", methods=["POST"])
-@atomic()
 def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
     form = empty_forms.EmptyForm()
     if not form.validate():
@@ -116,7 +113,6 @@ def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
 
 
 @gdpr_extract_blueprint.route("<int:gdpr_id>/extract", methods=["POST"])
-@atomic()
 def delete_gdpr_user_data_extract(gdpr_id: int) -> utils.BackofficeResponse:
     extract = users_models.GdprUserDataExtract.query.filter_by(id=gdpr_id).one_or_none()
     if not extract:

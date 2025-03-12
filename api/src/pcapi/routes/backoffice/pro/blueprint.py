@@ -27,7 +27,6 @@ from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.routes.backoffice import search_utils
@@ -108,7 +107,6 @@ def render_search_template(form: pro_forms.ProSearchForm | None = None) -> str:
 
 
 @pro_blueprint.route("/search", methods=["GET"])
-@atomic()
 def search_pro() -> utils.BackofficeResponse:
     """
     Renders two search pages: first the one with the search form, then
@@ -187,7 +185,6 @@ def _render_get_create_offerer_form(form: pro_forms.CreateOffererForm) -> str:
 
 
 @pro_blueprint.route("/create", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.CREATE_PRO_ENTITY)
 def get_create_offerer_form() -> utils.BackofficeResponse:
     form = pro_forms.CreateOffererForm()
@@ -195,7 +192,6 @@ def get_create_offerer_form() -> utils.BackofficeResponse:
 
 
 @pro_blueprint.route("/create", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.CREATE_PRO_ENTITY)
 def create_offerer() -> utils.BackofficeResponse:
     form = pro_forms.CreateOffererForm()
@@ -428,7 +424,6 @@ def _get_user_id_from_bank_account_id(bank_account_id: int) -> int:
 
 @pro_blueprint.route("/connect-as", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.CONNECT_AS_PRO)
-@atomic()
 def connect_as() -> utils.BackofficeResponse:
     form = pro_forms.ConnectAsForm()
     if not form.validate():

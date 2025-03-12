@@ -25,7 +25,6 @@ from pcapi.core.providers.titelive_book_search import get_ineligibility_reason
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.utils import requests
@@ -43,7 +42,6 @@ titelive_blueprint = utils.child_backoffice_blueprint(
 
 
 @titelive_blueprint.route("/", methods=["GET"])
-@atomic()
 def search_titelive() -> utils.BackofficeResponse:
     if not request.args:
         return render_template(
@@ -103,7 +101,6 @@ def search_titelive() -> utils.BackofficeResponse:
 
 
 @titelive_blueprint.route("/<string:ean>/<string:title>/add-product-whitelist-confirmation-form", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_add_product_whitelist_confirmation_form(ean: str, title: str) -> utils.BackofficeResponse:
     form = forms.OptionalCommentForm()
@@ -118,7 +115,6 @@ def get_add_product_whitelist_confirmation_form(ean: str, title: str) -> utils.B
 
 
 @titelive_blueprint.route("/<string:ean>/<string:title>/add", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
     form = forms.OptionalCommentForm()
@@ -187,7 +183,6 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
 
 
 @titelive_blueprint.route("/<string:ean>/delete", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def delete_product_whitelist(ean: str) -> utils.BackofficeResponse:
     try:

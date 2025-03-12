@@ -169,13 +169,13 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     def test_malformed_query(self, authenticated_client, legit_user):
         url = url_for(self.endpoint, q=legit_user.email, per_page="unknown_field")
 
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
             response = authenticated_client.get(url)
             assert response.status_code == 400
 
     @pytest.mark.parametrize("query", ["", " ", "   ", " , ,,;"])
     def test_empty_query(self, authenticated_client, query):
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
             response = authenticated_client.get(url_for(self.endpoint, q=query))
             assert response.status_code == 400
 
@@ -217,7 +217,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
 
     @pytest.mark.parametrize("query", ["'", '""', "v", "xx"])
     def test_can_search_public_account_by_short_name(self, authenticated_client, query):
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
             response = authenticated_client.get(url_for(self.endpoint, q="v"))
             assert response.status_code == 400
 
@@ -409,7 +409,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     def test_can_search_public_account_empty_query(self, authenticated_client):
         create_bunch_of_accounts()
 
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
             response = authenticated_client.get(url_for(self.endpoint, q=""))
             assert response.status_code == 400
 
@@ -427,7 +427,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     def test_search_public_account_with_percent_is_forbidden(self, authenticated_client):
         create_bunch_of_accounts()
 
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
             response = authenticated_client.get(url_for(self.endpoint, q="%terms"))
             assert response.status_code == 400
 

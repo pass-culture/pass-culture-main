@@ -22,7 +22,6 @@ from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 
@@ -39,7 +38,6 @@ providers_blueprint = utils.child_backoffice_blueprint(
 
 
 @providers_blueprint.route("", methods=["GET"])
-@atomic()
 def list_providers() -> utils.BackofficeResponse:
     is_active_count = (
         sa.select(sa.func.jsonb_object_agg(sa.text("status_group"), sa.text("number")))
@@ -87,7 +85,6 @@ def list_providers() -> utils.BackofficeResponse:
 
 
 @providers_blueprint.route("/new", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def get_create_provider_form() -> utils.BackofficeResponse:
     form = forms.CreateProviderForm()
@@ -103,7 +100,6 @@ def get_create_provider_form() -> utils.BackofficeResponse:
 
 
 @providers_blueprint.route("/", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def create_provider() -> utils.BackofficeResponse:
     form = forms.CreateProviderForm()
@@ -202,7 +198,6 @@ def _render_provider_details(
 
 
 @providers_blueprint.route("/<int:provider_id>", methods=["GET"])
-@atomic()
 def get_provider(provider_id: int) -> utils.BackofficeResponse:
     provider = (
         providers_models.Provider.query.filter(providers_models.Provider.id == provider_id)
@@ -243,7 +238,6 @@ def _get_active_venue_providers_stats(provider_id: int) -> dict[str, int]:
 
 
 @providers_blueprint.route("/<int:provider_id>/stats", methods=["GET"])
-@atomic()
 def get_stats(provider_id: int) -> utils.BackofficeResponse:
     stats = _get_active_venue_providers_stats(provider_id)
     return render_template(
@@ -254,7 +248,6 @@ def get_stats(provider_id: int) -> utils.BackofficeResponse:
 
 
 @providers_blueprint.route("/<int:provider_id>/venues", methods=["GET"])
-@atomic()
 def get_venues(provider_id: int) -> utils.BackofficeResponse:
     venues = (
         offerers_models.Venue.query.join(
@@ -285,7 +278,6 @@ def get_venues(provider_id: int) -> utils.BackofficeResponse:
 
 
 @providers_blueprint.route("/<int:provider_id>/update", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def update_provider(provider_id: int) -> utils.BackofficeResponse:
     provider = providers_models.Provider.query.filter_by(id=provider_id).one_or_none()

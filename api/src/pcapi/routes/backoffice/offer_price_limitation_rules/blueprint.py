@@ -12,7 +12,6 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice.filters import format_offer_subcategory
 from pcapi.routes.backoffice.forms import empty as empty_forms
@@ -30,7 +29,6 @@ offer_price_limitation_rules_blueprint = utils.child_backoffice_blueprint(
 
 
 @offer_price_limitation_rules_blueprint.route("", methods=["GET"])
-@atomic()
 def list_rules() -> utils.BackofficeResponse:
     form = forms.SearchRuleForm(formdata=utils.get_query_params())
 
@@ -74,7 +72,6 @@ def list_rules() -> utils.BackofficeResponse:
 
 
 @offer_price_limitation_rules_blueprint.route("/create", methods=["GET"])
-@atomic()
 def get_create_offer_price_limitation_rule_form() -> utils.BackofficeResponse:
     form = forms.CreateOfferPriceLimitationRuleForm()
 
@@ -89,7 +86,6 @@ def get_create_offer_price_limitation_rule_form() -> utils.BackofficeResponse:
 
 
 @offer_price_limitation_rules_blueprint.route("/create", methods=["POST"])
-@atomic()
 def create_rule() -> utils.BackofficeResponse:
     form = forms.CreateOfferPriceLimitationRuleForm()
 
@@ -112,7 +108,6 @@ def create_rule() -> utils.BackofficeResponse:
 
 
 @offer_price_limitation_rules_blueprint.route("/<int:rule_id>/delete", methods=["GET"])
-@atomic()
 def get_delete_offer_price_limitation_rule_form(rule_id: int) -> utils.BackofficeResponse:
     rule_to_delete = offers_models.OfferPriceLimitationRule.query.filter_by(id=rule_id).one_or_none()
     if not rule_to_delete:
@@ -132,7 +127,6 @@ def get_delete_offer_price_limitation_rule_form(rule_id: int) -> utils.Backoffic
 
 
 @offer_price_limitation_rules_blueprint.route("/<int:rule_id>/delete", methods=["POST"])
-@atomic()
 def delete_rule(rule_id: int) -> utils.BackofficeResponse:
     rule_to_delete = offers_models.OfferPriceLimitationRule.query.filter_by(id=rule_id).one_or_none()
     if not rule_to_delete:
@@ -152,7 +146,6 @@ def delete_rule(rule_id: int) -> utils.BackofficeResponse:
 
 
 @offer_price_limitation_rules_blueprint.route("/<int:rule_id>/edit", methods=["GET"])
-@atomic()
 def get_edit_offer_price_limitation_rule_form(rule_id: int) -> utils.BackofficeResponse:
     rule_to_update = offers_models.OfferPriceLimitationRule.query.filter_by(id=rule_id).one_or_none()
     if not rule_to_update:
@@ -172,7 +165,6 @@ def get_edit_offer_price_limitation_rule_form(rule_id: int) -> utils.BackofficeR
 
 
 @offer_price_limitation_rules_blueprint.route("/<int:rule_id>/edit", methods=["POST"])
-@atomic()
 def edit_rule(rule_id: int) -> utils.BackofficeResponse:
     rule_to_update = offers_models.OfferPriceLimitationRule.query.filter_by(id=rule_id).one_or_none()
     if not rule_to_update:

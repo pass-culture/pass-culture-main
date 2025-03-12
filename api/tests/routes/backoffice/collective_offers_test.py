@@ -747,7 +747,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "INTERSECTS",
             "search-0-formats": [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE.name],
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -759,7 +759,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-region": "Bretagne",
         }
-        with assert_num_queries(2):  # only session + current user
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -783,7 +783,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": operator,
             f"search-0-{operand}": "",
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -799,7 +799,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-4-search_field": "BOOKING_LIMIT_DATE",
             "search-4-operator": "DATE_TO",
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -814,7 +814,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-string": "12, 34, A",
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
