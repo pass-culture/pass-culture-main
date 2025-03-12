@@ -1,6 +1,5 @@
 from datetime import date
 from datetime import datetime
-from datetime import time
 from zoneinfo import ZoneInfo
 
 from dateutil.relativedelta import relativedelta
@@ -16,7 +15,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")

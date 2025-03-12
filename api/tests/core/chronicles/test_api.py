@@ -344,7 +344,7 @@ class SaveBookClubChronicleTest:
         assert chronicle.userId == user.id
 
     def test_save_book_club_chronicle_refuse_publication(self):
-        user = users_factories.UserFactory(
+        users_factories.UserFactory(
             email="email@mail.test",
         )
         form = typeform.TypeformResponse(

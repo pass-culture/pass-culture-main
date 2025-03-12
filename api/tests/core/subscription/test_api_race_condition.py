@@ -1,12 +1,8 @@
-from datetime import datetime
 import threading
 
 from dateutil.relativedelta import relativedelta
 import flask
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session
-from sqlalchemy.orm import sessionmaker
 import time_machine
 
 from pcapi import settings
@@ -17,7 +13,6 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.repository import transaction
 
 
 def activate_beneficiary_thread_safely(
@@ -36,7 +31,7 @@ def activate_beneficiary_thread_safely(
         if event_to_wait:
             event_to_wait.wait(2)
 
-        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+        subscription_api.activate_beneficiary_if_no_missing_step(user)
 
         if event_to_set:
             event_to_set.set()

@@ -5,10 +5,10 @@ import time_machine
 
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
+from pcapi.core.offerers import update_offerer_stats
 from pcapi.core.offerers.factories import OffererFactory
 from pcapi.core.offerers.factories import OffererStatsFactory
 from pcapi.core.offerers.models import OffererStats
-import pcapi.core.offerers.update_offerer_stats as update_offerer_stats
 from pcapi.repository import db
 
 

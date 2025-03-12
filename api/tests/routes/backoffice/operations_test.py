@@ -336,7 +336,7 @@ class GetEventDetailsTest(GetEndpointHelper):
         full_response = operations_factories.SpecialEventResponseFactory(
             event=event, status=operations_models.SpecialEventResponseStatus.PRESELECTED, user=user
         )
-        full_name_answer = operations_factories.SpecialEventAnswerFactory(
+        operations_factories.SpecialEventAnswerFactory(
             responseId=full_response.id, questionId=name_question.id, text="Elias de Kelliwic'h"
         )
 

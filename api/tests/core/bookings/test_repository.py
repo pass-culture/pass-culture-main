@@ -3,11 +3,9 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
-from io import BytesIO
 from io import StringIO
 
 from dateutil import tz
-import openpyxl
 import pytest
 from pytest import fixture
 
@@ -29,7 +27,6 @@ from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.date import get_department_timezone
 
 

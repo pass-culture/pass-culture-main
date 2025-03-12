@@ -1105,7 +1105,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert new_offerer_address.addressId == new_address.id
         assert new_offerer_address.label is None
 
-        actions_history = sorted([action_history for action_history in venue.action_history], key=lambda ac: ac.id)
+        actions_history = sorted(venue.action_history, key=lambda ac: ac.id)
         # Patching to manually edited address
         assert actions_history[0].actionType == history_models.ActionType.INFO_MODIFIED
         assert actions_history[0].venueId == venue_id

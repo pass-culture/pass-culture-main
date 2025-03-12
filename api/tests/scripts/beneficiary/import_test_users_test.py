@@ -16,7 +16,7 @@ from pcapi.utils import crypto
 from pcapi.utils.email import sanitize_email
 
 
-CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Role,SIREN,Mot de passe,Type
+CSV = """Nom,Prénom,Mail,Téléphone,Département,Code postal,Role,SIREN,Mot de passe,Type
 Doux,Jeanne,jeanne.doux@example.com,0102030405,86,86140,BENEFICIARY,,,interne:test
 Smisse,Jean,jean.smisse@example.com,0102030406,44,44000,BENEFICIARY,,,interne:test
 Vienne,Jeune17,jeune17.vienne@example.com,0102030407,44,44000,UNDERAGE_BENEFICIARY,,,interne:test

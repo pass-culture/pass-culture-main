@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-import decimal
 
 import pytest
 import sqlalchemy.exc
