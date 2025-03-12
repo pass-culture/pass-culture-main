@@ -64,6 +64,7 @@ import pcapi.serialization.utils as serialization_utils
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils import queue
 from pcapi.utils.requests import exceptions as requests_exceptions
+from pcapi.workers import apps_flyer_job
 from pcapi.workers import push_notification_job
 from pcapi.workers import user_emails_job
 
@@ -372,6 +373,9 @@ def book_offer(
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
         raise
+
+    if "apps_flyer" in beneficiary.externalIds:
+        apps_flyer_job.log_user_booked_offer_event_job.delay(beneficiary.id, stock.offerId, booking.id)
 
     logger.info(
         "Beneficiary booked an offer",

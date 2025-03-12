@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 import logging
+from typing import Any
+from typing import Dict
 
 from pcapi import settings
+from pcapi.core.bookings.models import Booking
 from pcapi.core.users.models import User
 from pcapi.utils import requests
 
@@ -32,12 +35,11 @@ class AppsFlyerMissingError(Exception):
     pass
 
 
-def log_user_event(user: User, event_name: str) -> None:
+def _send_apps_flyer_event(user: User, event_name: str, event_value: Dict[str, Any], error_context: str) -> None:
     if "apps_flyer" not in user.externalIds:
         raise AppsFlyerMissingError("user has no apps flyer information")
 
     user_apps_flyer = user.externalIds["apps_flyer"]
-    user_firebase_pseudo_id = user.externalIds.get("firebase_pseudo_id", "")
     context = AppsFlyerContext(apps_flyer_user_id=user_apps_flyer["user"], platform=user_apps_flyer["platform"])
 
     base = APPS_FLYER_API_URL.strip("/")
@@ -48,11 +50,7 @@ def log_user_event(user: User, event_name: str) -> None:
     data = {
         "appsflyer_id": context.apps_flyer_user_id,
         "eventName": event_name,
-        "eventValue": {
-            "af_user_id": str(user.id),
-            "af_firebase_pseudo_id": user_firebase_pseudo_id,
-            "type": user.deposit.type.value if user.deposit else None,
-        },
+        "eventValue": event_value,
     }
 
     try:
@@ -64,7 +62,7 @@ def log_user_event(user: User, event_name: str) -> None:
             "event_name": event_name,
             "error": str(error),
         }
-        logger.error("[APPS FLYER][BECOMES BENEFICIARY] request failed", extra=extra_infos)
+        logger.error("[APPS FLYER][%s] request failed", error_context, extra=extra_infos)
         return
 
     if response.status_code != 200:
@@ -75,4 +73,25 @@ def log_user_event(user: User, event_name: str) -> None:
             "code": response.status_code,
             "text": response.text,
         }
-        logger.error("[APPS FLYER][BECOMES BENEFICIARY] request returned an error", extra=extra_infos)
+        logger.error("[APPS FLYER][%s] request returned an error", error_context, extra=extra_infos)
+
+
+def log_user_event(user: User, event_name: str) -> None:
+    user_firebase_pseudo_id = user.externalIds.get("firebase_pseudo_id", "")
+    event_value = {
+        "af_user_id": str(user.id),
+        "af_firebase_pseudo_id": user_firebase_pseudo_id,
+        "type": user.deposit.type.value if user.deposit else None,
+    }
+    _send_apps_flyer_event(user, event_name, event_value, "BECOMES BENEFICIARY")
+
+
+def log_offer_event(booking: Booking, event_name: str) -> None:
+    event_value = {
+        "af_user_id": str(booking.userId),
+        "af_offer_id": str(booking.stock.offerId),
+        "af_booking_id": str(booking.id),
+        "af_price": booking.amount,
+        "af_category": booking.stock.offer.subcategoryId,
+    }
+    _send_apps_flyer_event(booking.user, event_name, event_value, "OFFER BOOKED")

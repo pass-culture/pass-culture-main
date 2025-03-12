@@ -3840,3 +3840,47 @@ class BypassEmailConfirmationTest:
 
         assert len(mails_testing.outbox) == 0
         assert not user.isEmailValidated
+
+    @pytest.mark.parametrize(
+        "age,expected_event_name",
+        [
+            (15, "af_complete_registration_15"),
+            (16, "af_complete_registration_16"),
+            (17, "af_complete_registration_17"),
+            (18, "af_complete_registration_18"),
+            (19, "af_complete_registration_19+"),
+            (25, "af_complete_registration_19+"),
+        ],
+    )
+    def test_apps_flyer_called_when_validating_email(self, requests_mock, client, age, expected_event_name):
+        apps_flyer_data = {
+            "apps_flyer": {"user": "some-user-id", "platform": "ANDROID"},
+            "firebase_pseudo_id": "firebase_pseudo_id",
+        }
+        user = users_factories.UserFactory(
+            email="user@example.com",
+            isEmailValidated=False,
+            externalIds=apps_flyer_data,
+            dateOfBirth=datetime.date.today() - relativedelta(years=age),
+        )
+        token = token_utils.Token.create(
+            type_=token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
+            ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        )
+        posted = requests_mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
+
+        response = client.post("/native/v1/validate_email", json={"email_validation_token": token.encoded_token})
+
+        assert response.status_code == 200
+        assert posted.call_count == 1
+        assert posted.request_history[0].json() == {
+            "appsflyer_id": "some-user-id",
+            "eventName": expected_event_name,
+            "eventValue": {
+                "af_user_id": str(user.id),
+                "af_firebase_pseudo_id": "firebase_pseudo_id",
+                "type": None,
+            },
+        }
+        assert user.isEmailValidated
