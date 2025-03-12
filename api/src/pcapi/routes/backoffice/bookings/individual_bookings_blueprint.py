@@ -17,7 +17,6 @@ import sqlalchemy as sa
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
-from pcapi import repository
 from pcapi import settings
 from pcapi.connectors import ems
 from pcapi.core.bookings import api as bookings_api
@@ -32,6 +31,8 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
@@ -163,7 +164,6 @@ def _get_individual_bookings(
 
 
 @individual_bookings_blueprint.route("", methods=["GET"])
-@repository.atomic()
 def list_individual_bookings() -> utils.BackofficeResponse:
     form = booking_forms.GetIndividualBookingListForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -209,7 +209,6 @@ def _redirect_after_individual_booking_action() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/download-csv", methods=["GET"])
-@repository.atomic()
 def get_individual_booking_csv_download() -> utils.BackofficeResponse:
     form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -226,7 +225,6 @@ def get_individual_booking_csv_download() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/download-xlsx", methods=["GET"])
-@repository.atomic()
 def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
     form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -254,7 +252,6 @@ def _get_booking_query_for_validation() -> sa.orm.Query:
 
 
 @individual_bookings_blueprint.route("/<int:booking_id>/mark-as-used", methods=["POST"])
-@repository.atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
     booking = _get_booking_query_for_validation().filter_by(id=booking_id).one_or_none()
@@ -266,7 +263,6 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/<int:booking_id>/cancel", methods=["POST"])
-@repository.atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
     booking = (
@@ -299,7 +295,6 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/batch-validate", methods=["GET"])
-@repository.atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def get_batch_validate_individual_bookings_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -314,7 +309,6 @@ def get_batch_validate_individual_bookings_form() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/batch-validate", methods=["POST"])
-@repository.atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def batch_validate_individual_bookings() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -329,7 +323,6 @@ def batch_validate_individual_bookings() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/batch-cancel", methods=["GET"])
-@repository.atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def get_batch_cancel_individual_bookings_form() -> utils.BackofficeResponse:
     form = booking_forms.BatchCancelIndividualBookingsForm()
@@ -344,7 +337,6 @@ def get_batch_cancel_individual_bookings_form() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/batch-cancel", methods=["POST"])
-@repository.atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def batch_cancel_individual_bookings() -> utils.BackofficeResponse:
     form = booking_forms.BatchCancelIndividualBookingsForm()
@@ -363,7 +355,7 @@ def _batch_validate_bookings(bookings: list[bookings_models.Booking]) -> None:
     success_count = 0
 
     for booking in bookings:
-        with repository.atomic():
+        with atomic():
             token = booking.token
             try:
                 if booking.status == bookings_models.BookingStatus.CANCELLED:
@@ -379,7 +371,7 @@ def _batch_validate_bookings(bookings: list[bookings_models.Booking]) -> None:
                 bookings_exceptions.BookingDepositCreditExpired,
             ) as exc:
                 error_dict[exc.__class__.__name__].append(token)
-                repository.mark_transaction_as_invalid()
+                mark_transaction_as_invalid()
             except sa.exc.InternalError as exc:
                 if exc.orig and "tooManyBookings" in str(exc.orig):
                     error_dict["tooManyBookings"].append(token)
@@ -399,7 +391,7 @@ def _batch_validate_bookings(bookings: list[bookings_models.Booking]) -> None:
                         ),
                         "warning",
                     )
-                repository.mark_transaction_as_invalid()
+                mark_transaction_as_invalid()
             except Exception as exc:  # pylint: disable=broad-except
                 flash(
                     Markup(
@@ -414,7 +406,7 @@ def _batch_validate_bookings(bookings: list[bookings_models.Booking]) -> None:
                     ),
                     "warning",
                 )
-                repository.mark_transaction_as_invalid()
+                mark_transaction_as_invalid()
 
     _flash_success_and_error_messages(success_count, error_dict, True)
 
@@ -426,7 +418,7 @@ def _batch_cancel_bookings(
     success_count = 0
 
     for booking in bookings:
-        with repository.atomic():
+        with atomic():
             token = booking.token
             try:
                 bookings_api.mark_as_cancelled(
@@ -441,7 +433,7 @@ def _batch_cancel_bookings(
                 bookings_exceptions.BookingIsAlreadyCancelled,
             ) as exc:
                 error_dict[exc.__class__.__name__].append(token)
-                repository.mark_transaction_as_invalid()
+                mark_transaction_as_invalid()
             except (
                 cgr_exceptions.CGRAPIException,
                 cds_exceptions.CineDigitalServiceAPIException,
@@ -460,7 +452,7 @@ def _batch_cancel_bookings(
                     )
                     success_count += 1
                 except Exception as exception:  # pylint: disable=broad-except
-                    repository.mark_transaction_as_invalid()
+                    mark_transaction_as_invalid()
                     flash(
                         Markup(
                             "Une erreur s'est produite pour la réservation (<a class='link-primary' href='{url}'>{token}</a>) : {message}"
@@ -475,7 +467,7 @@ def _batch_cancel_bookings(
                         "warning",
                     )
             except Exception as exc:  # pylint: disable=broad-except
-                repository.mark_transaction_as_invalid()
+                mark_transaction_as_invalid()
                 flash(
                     Markup(
                         "Une erreur s'est produite pour la réservation (<a class='link-primary' href='{url}'>{token}</a>) : {message}"

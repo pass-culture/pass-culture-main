@@ -12,7 +12,6 @@ from werkzeug.exceptions import NotFound
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
@@ -35,7 +34,6 @@ def get_tags_categories() -> list[criteria_models.CriterionCategory]:
 
 
 @tags_blueprint.route("", methods=["GET"])
-@atomic()
 def list_tags() -> utils.BackofficeResponse:
     form = criteria_forms.SearchTagForm(formdata=utils.get_query_params())
     create_category_form = (
@@ -85,7 +83,6 @@ def list_tags() -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/create", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
 def create_tag() -> utils.BackofficeResponse:
     form = criteria_forms.EditCriterionForm()
@@ -116,7 +113,6 @@ def create_tag() -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/tags/new", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
 def get_create_tag_form() -> utils.BackofficeResponse:
     form = criteria_forms.EditCriterionForm()
@@ -133,7 +129,6 @@ def get_create_tag_form() -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/<int:tag_id>/update", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
 def update_tag(tag_id: int) -> utils.BackofficeResponse:
     tag = criteria_models.Criterion.query.filter_by(id=tag_id).one_or_none()
@@ -166,7 +161,6 @@ def update_tag(tag_id: int) -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/<int:tag_id>/edit", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
 def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
     tag = criteria_models.Criterion.query.filter_by(id=tag_id).one_or_none()
@@ -193,7 +187,6 @@ def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/<int:tag_id>/delete", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def delete_tag(tag_id: int) -> utils.BackofficeResponse:
     tag = criteria_models.Criterion.query.filter_by(id=tag_id).one_or_none()
@@ -212,7 +205,6 @@ def delete_tag(tag_id: int) -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/<int:tag_id>/delete", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def get_delete_tag_form(tag_id: int) -> utils.BackofficeResponse:
     tag = criteria_models.Criterion.query.filter_by(id=tag_id).one_or_none()
@@ -236,7 +228,6 @@ def get_delete_tag_form(tag_id: int) -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/tags/category", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def create_tag_category() -> utils.BackofficeResponse:
     form = criteria_forms.CreateCriterionCategoryForm()

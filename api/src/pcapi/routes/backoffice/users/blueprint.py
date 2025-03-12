@@ -20,7 +20,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
-from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.users import forms
@@ -73,7 +72,6 @@ def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend
 
 
 @users_blueprint.route("/<int:user_id>/suspend", methods=["POST"])
-@atomic()
 @utils.permission_required_in(
     [
         perm_models.Permissions.SUSPEND_USER,
@@ -116,7 +114,6 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
 
 
 @users_blueprint.route("/<int:user_id>/unsuspend", methods=["POST"])
-@atomic()
 @utils.permission_required_in(
     [
         perm_models.Permissions.UNSUSPEND_USER,
@@ -163,7 +160,6 @@ def _render_batch_suspend_users_form(form: forms.BatchSuspendUsersForm) -> str:
 
 
 @users_blueprint.route("/batch-suspend-form", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
 def get_batch_suspend_users_form() -> utils.BackofficeResponse:
     form = forms.BatchSuspendUsersForm(suspension_type=forms.SuspensionUserType.PUBLIC)
@@ -200,7 +196,6 @@ def _check_users_to_suspend(ids_list: set[int]) -> tuple[list[users_models.User]
 
 
 @users_blueprint.route("/batch-suspend", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
 def batch_suspend_users() -> utils.BackofficeResponse:
     form = forms.BatchSuspendUsersForm()
@@ -233,7 +228,6 @@ def batch_suspend_users() -> utils.BackofficeResponse:
 
 
 @users_blueprint.route("/batch-suspend/confirm", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
 def confirm_batch_suspend_users() -> utils.BackofficeResponse:
     form = forms.BatchSuspendUsersForm()
@@ -265,7 +259,6 @@ def confirm_batch_suspend_users() -> utils.BackofficeResponse:
 
 
 @users_blueprint.route("/<int:user_id>/redirect-to-brevo", methods=["GET"])
-@atomic()
 @utils.permission_required_in(
     [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,

@@ -449,7 +449,7 @@ class SearchBoUsersTest(GetEndpointHelper):
         assert_user_equals(cards_text[0], users[0])
 
     def test_search_invalid(self, authenticated_client):
-        with assert_num_queries(2):  # only session + current user
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, q="%"))
             assert response.status_code == 400
 

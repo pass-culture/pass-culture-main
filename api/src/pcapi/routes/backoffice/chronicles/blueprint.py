@@ -18,7 +18,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
@@ -38,7 +37,6 @@ chronicles_blueprint = utils.child_backoffice_blueprint(
 
 
 @chronicles_blueprint.route("", methods=["GET"])
-@atomic()
 def list_chronicles() -> utils.BackofficeResponse:
     form = forms.GetChronicleSearchForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -122,7 +120,6 @@ def list_chronicles() -> utils.BackofficeResponse:
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>", methods=["GET"])
-@atomic()
 def details(chronicle_id: int) -> utils.BackofficeResponse:
     chronicle = (
         chronicles_models.Chronicle.query.filter(
@@ -169,7 +166,6 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/update-content", methods=["POST"])
-@atomic()
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
     form = forms.UpdateContentForm()
@@ -192,7 +188,6 @@ def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/publish", methods=["POST"])
-@atomic()
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def publish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
     chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
@@ -209,7 +204,6 @@ def publish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/unpublish", methods=["POST"])
-@atomic()
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def unpublish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
     chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
@@ -226,7 +220,6 @@ def unpublish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/attach-product", methods=["POST"])
-@atomic()
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
     form = forms.AttachProductForm()
@@ -278,7 +271,6 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/detach-product/<int:product_id>", methods=["POST"])
-@atomic()
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def detach_product(chronicle_id: int, product_id: int) -> utils.BackofficeResponse:
     selected_chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
@@ -309,7 +301,6 @@ def detach_product(chronicle_id: int, product_id: int) -> utils.BackofficeRespon
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/comment", methods=["POST"])
-@atomic()
 def comment_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
     form = forms.CommentForm()
     if not form.validate():

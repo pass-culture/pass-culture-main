@@ -18,7 +18,6 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import generator as users_generator
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
 
@@ -36,7 +35,6 @@ dev_blueprint = utils.child_backoffice_blueprint(
 
 
 @dev_blueprint.route("/components", methods=["GET"])
-@atomic()
 @utils.custom_login_required(redirect_to="backoffice_web.home")
 def components() -> utils.BackofficeResponse:
     if not settings.ENABLE_BO_COMPONENT_PAGE:
@@ -51,7 +49,6 @@ def components() -> utils.BackofficeResponse:
 
 
 @dev_blueprint.route("/user-generator", methods=["GET"])
-@atomic()
 @utils.custom_login_required(redirect_to="backoffice_web.home")
 def get_generated_user() -> utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
@@ -86,7 +83,6 @@ def get_generated_user() -> utils.BackofficeResponse:
 
 
 @dev_blueprint.route("/user-generator", methods=["POST"])
-@atomic()
 @utils.custom_login_required(redirect_to="backoffice_web.home")
 def generate_user() -> utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
@@ -148,7 +144,6 @@ def _get_user_if_exists(user_id: str | None) -> users_models.User | None:
 
 
 @dev_blueprint.route("/delete", methods=["GET"])
-@atomic()
 @utils.custom_login_required(redirect_to="backoffice_web.home")
 def get_user_deletion_form() -> str:
     form = forms.UserDeletionForm()
@@ -156,7 +151,6 @@ def get_user_deletion_form() -> str:
 
 
 @dev_blueprint.route("/delete", methods=["POST"])
-@atomic()
 @utils.custom_login_required(redirect_to="backoffice_web.home")
 def delete_user() -> utils.BackofficeResponse:
     if not settings.ENABLE_TEST_USER_GENERATION:
@@ -198,7 +192,6 @@ def delete_user() -> utils.BackofficeResponse:
 
 
 @dev_blueprint.route("/<int:user_id>/ubble/configuration", methods=["POST"])
-@atomic()
 @utils.custom_login_required(redirect_to=".home")
 def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
     user = _get_user_if_exists(str(user_id))

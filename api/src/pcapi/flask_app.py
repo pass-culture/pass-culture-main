@@ -22,6 +22,7 @@ from sqlalchemy import orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+from pcapi import repository
 from pcapi import settings
 from pcapi.celery_tasks.celery import celery_init_app
 from pcapi.core import monkeypatches
@@ -57,7 +58,17 @@ def setup_metrics(app_: Flask) -> None:
     # An external export server is started by Gunicorn, see `gunicorn.conf.py`.
 
 
-# These `before_request()` and `after_request()` callbacks must be
+@app.before_request
+def setup_atomic() -> None:
+    """
+    Must be before `setup_sentry_before_request` as it use the user and therefore call the db
+    """
+    if app.config.get("USE_GLOBAL_ATOMIC", False):
+        repository._mark_session_management()
+        db.session.autoflush = False
+
+
+# These `setup_sentry_before_request()` and `after_request()` callbacks must be
 # registered first, so that:
 # - our "before request" is called first to record the start time of
 #   the request processing. If it was not the first callback, an
@@ -68,7 +79,7 @@ def setup_metrics(app_: Flask) -> None:
 # Reminder: functions registered for after request execution are
 # called in reverse order of registration.
 @app.before_request
-def before_request() -> None:
+def setup_sentry_before_request() -> None:
     if current_user and current_user.is_authenticated:
         sentry_sdk.set_user(
             {
@@ -226,6 +237,23 @@ def get_shell_extra_context() -> dict:
     # `flask shell` is run.
     _set_python_prompt()
     return {}
+
+
+@app.after_request
+def mark_4xx_as_invalid(response: flask.Response) -> flask.Response:
+    if app.config.get("USE_GLOBAL_ATOMIC", False):
+        if response.status_code >= 400:
+            repository.mark_transaction_as_invalid()
+    return response
+
+
+@app.teardown_request
+def teardown_atomic(exc: BaseException | None = None) -> None:
+    if app.config.get("USE_GLOBAL_ATOMIC", False):
+        if exc:
+            repository.mark_transaction_as_invalid()
+        repository._manage_session()
+        db.session.autoflush = True
 
 
 @app.teardown_request

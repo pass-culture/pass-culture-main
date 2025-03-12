@@ -14,7 +14,6 @@ from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
-from pcapi import repository
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -23,6 +22,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
@@ -53,13 +53,12 @@ def _redirect_after_offerer_validation_action(code: int = 303) -> utils.Backoffi
 
 
 @validation_blueprint.route("/offerer", methods=["GET"])
-@repository.atomic()
 def list_offerers_to_validate() -> utils.BackofficeResponse:
     stats = offerers_api.count_offerers_by_validation_status()
 
     form = offerer_forms.OffererValidationListForm(formdata=utils.get_query_params())
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         return render_template("offerer/validation.html", rows=[], form=form, stats=stats), 400
 
     # new and pending attachments by default
@@ -110,7 +109,6 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -124,7 +122,7 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
     try:
         offerers_api.validate_offerer(offerer, current_user)
     except offerers_exceptions.OffererAlreadyValidatedException:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(Markup("L'entité juridique <b>{name}</b> est déjà validée").format(name=offerer.name), "warning")
         return _redirect_after_offerer_validation_action()
 
@@ -134,7 +132,6 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -159,7 +156,6 @@ def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -172,7 +168,7 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.OffererRejectionForm()
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_offerer_validation_action()
 
@@ -184,7 +180,7 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
             rejection_reason=offerers_models.OffererRejectionReason(form.rejection_reason.data),
         )
     except offerers_exceptions.OffererAlreadyRejectedException:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(Markup("L'entité juridique <b>{name}</b> est déjà rejetée").format(name=offerer.name), "warning")
         return _redirect_after_offerer_validation_action()
 
@@ -194,7 +190,6 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/pending", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -222,7 +217,6 @@ def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/pending", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -235,7 +229,7 @@ def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.CommentAndTagOffererForm()
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_offerer_validation_action()
 
@@ -254,7 +248,6 @@ def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/top-actor", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -268,13 +261,13 @@ def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
     try:
         tag = offerers_models.OffererTag.query.filter(offerers_models.OffererTag.name == "top-acteur").one()
     except sa.exc.NoResultFound:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash("Le tag top-acteur n'existe pas", "warning")
         return _redirect_after_offerer_validation_action()
 
     form = offerer_forms.TopActorForm()
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_offerer_validation_action()
 
@@ -285,7 +278,7 @@ def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
             db.session.flush()
         except sa.exc.IntegrityError:
             # Already in database
-            repository.mark_transaction_as_invalid()
+            mark_transaction_as_invalid()
     else:
         # Remove the tag from offerer
         offerers_models.OffererTagMapping.query.filter(
@@ -340,7 +333,6 @@ def _offerer_batch_action(
 
 @validation_blueprint.route("/offerer/batch-validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def batch_validate_offerer() -> utils.BackofficeResponse:
     try:
         return _offerer_batch_action(
@@ -349,19 +341,18 @@ def batch_validate_offerer() -> utils.BackofficeResponse:
             BatchForm,
         )
     except offerers_exceptions.OffererAlreadyValidatedException:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash("Au moins une des entités juridiques a déjà été validée", "warning")
         return _redirect_after_offerer_validation_action()
 
 
 @validation_blueprint.route("/offerer/batch-pending-form", methods=["GET", "POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
     form = offerer_forms.BatchCommentAndTagOffererForm()
     if form.object_ids.data:
         if not form.validate():
-            repository.mark_transaction_as_invalid()
+            mark_transaction_as_invalid()
             flash(utils.build_form_error_msg(form), "warning")
             return _redirect_after_offerer_validation_action()
 
@@ -392,7 +383,6 @@ def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/offerer/batch-pending", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def batch_set_offerer_pending() -> utils.BackofficeResponse:
     return _offerer_batch_action(
         offerers_api.set_offerer_pending,
@@ -403,7 +393,6 @@ def batch_set_offerer_pending() -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/offerer/batch-reject-form", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def get_batch_reject_offerer_form() -> utils.BackofficeResponse:
     form = offerer_forms.BatchOffererRejectionForm()
     return render_template(
@@ -418,7 +407,6 @@ def get_batch_reject_offerer_form() -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/offerer/batch-reject", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def batch_reject_offerer() -> utils.BackofficeResponse:
     try:
         return _offerer_batch_action(
@@ -427,7 +415,7 @@ def batch_reject_offerer() -> utils.BackofficeResponse:
             offerer_forms.BatchOffererRejectionForm,
         )
     except offerers_exceptions.OffererAlreadyRejectedException:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash("Une des entités juridiques a déjà été rejetée", "warning")
         return _redirect_after_offerer_validation_action()
 
@@ -466,11 +454,10 @@ def _get_serialized_user_offerer_last_comment(
 
 
 @validation_blueprint.route("/user-offerer", methods=["GET"])
-@repository.atomic()
 def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
     form = offerer_forms.UserOffererValidationListForm(formdata=utils.get_query_params())
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         return render_template("offerer/user_offerer_validation.html", rows=[], form=form), 400
 
     # new and pending attachments by default
@@ -566,14 +553,13 @@ def _load_user_offerer(user_offerer_id: int) -> offerers_models.UserOfferer:
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
     try:
         offerers_api.validate_offerer_attachment(user_offerer, current_user)
     except offerers_exceptions.UserOffererAlreadyValidatedException:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(
             Markup(
                 "Le rattachement de <b>{email}</b> à l'entité juridique <b>{offerer_name}</b> est déjà validé"
@@ -593,7 +579,6 @@ def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/user-offerer/batch-reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def get_batch_reject_user_offerer_form() -> utils.BackofficeResponse:
     form = offerer_forms.BatchOptionalCommentForm()
     return render_template(
@@ -608,7 +593,6 @@ def get_batch_reject_user_offerer_form() -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/user-offerer/batch-pending", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def get_batch_user_offerer_pending_form() -> utils.BackofficeResponse:
     form = offerer_forms.BatchOptionalCommentForm()
     return render_template(
@@ -623,7 +607,6 @@ def get_batch_user_offerer_pending_form() -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def get_reject_user_offerer_form(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
@@ -641,13 +624,12 @@ def get_reject_user_offerer_form(user_offerer_id: int) -> utils.BackofficeRespon
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/reject", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
@@ -664,7 +646,6 @@ def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/pending", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def get_user_offerer_pending_form(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
@@ -682,13 +663,12 @@ def get_user_offerer_pending_form(user_offerer_id: int) -> utils.BackofficeRespo
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/pending", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def set_user_offerer_pending(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
@@ -725,7 +705,6 @@ def _user_offerer_batch_action(
 
 @validation_blueprint.route("/user-offerer/batch-pending", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def batch_set_user_offerer_pending() -> utils.BackofficeResponse:
     return _user_offerer_batch_action(
         offerers_api.set_offerer_attachment_pending, "Les rattachements ont été mis en attente"
@@ -734,27 +713,25 @@ def batch_set_user_offerer_pending() -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/user-offerer/batch-reject", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def batch_reject_user_offerer() -> utils.BackofficeResponse:
     try:
         return _user_offerer_batch_action(
             offerers_api.reject_offerer_attachment, "Les rattachements sélectionnés ont été rejetés"
         )
     except offerers_exceptions.UserOffererAlreadyValidatedException:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash("Au moins un des rattachements est déjà rejeté", "warning")
         return _redirect_after_user_offerer_validation_action_list()
 
 
 @validation_blueprint.route("/user-offerer/batch-validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-@repository.atomic()
 def batch_validate_user_offerer() -> utils.BackofficeResponse:
     try:
         return _user_offerer_batch_action(
             offerers_api.validate_offerer_attachment, "Les rattachements sélectionnés ont été validés"
         )
     except offerers_exceptions.UserOffererAlreadyValidatedException:
-        repository.mark_transaction_as_invalid()
+        mark_transaction_as_invalid()
         flash("Au moins un des rattachements est déjà validé", "warning")
         return _redirect_after_user_offerer_validation_action_list()

@@ -25,6 +25,7 @@ app.config["REMEMBER_COOKIE_SECURE"] = settings.SESSION_COOKIE_SECURE
 app.config["REMEMBER_COOKIE_DURATION"] = 120 * 60
 app.config["REMEMBER_COOKIE_NAME"] = "bo_remember_me"
 app.config["PERMANENT_SESSION_LIFETIME"] = 120 * 60
+app.config["USE_GLOBAL_ATOMIC"] = True
 
 csrf = CSRFProtect()
 csrf.init_app(app)

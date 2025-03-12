@@ -160,7 +160,6 @@ def _apply_search_filters(query: BaseQuery, search_filters: list[str]) -> BaseQu
 
 
 @public_accounts_blueprint.route("<int:user_id>/anonymize", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT)
 def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -230,7 +229,6 @@ def _has_user_pending_anonymization(user_id: int) -> bool:
 
 
 @public_accounts_blueprint.route("/search", methods=["GET"])
-@atomic()
 def search_public_accounts() -> utils.BackofficeResponse:
     """
     Renders two search pages: first the one with the search form, then
@@ -1709,14 +1707,12 @@ def _get_progress(steps: list[RegistrationStep]) -> float:
 
 
 @public_accounts_blueprint.route("/<int:user_id>", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 def get_public_account(user_id: int) -> utils.BackofficeResponse:
     return render_public_account_details(user_id)
 
 
 @public_accounts_blueprint.route("/<int:user_id>", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def update_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -1803,7 +1799,6 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/resend-validation-email", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.filter_by(id=user_id).one_or_none()
@@ -1822,7 +1817,6 @@ def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/validate-phone-number", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -1849,7 +1843,6 @@ def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/send-validation-code", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def send_validation_code(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -1894,7 +1887,6 @@ def send_validation_code(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/review", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW)
 def review_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -1951,7 +1943,6 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/comment", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def comment_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -2129,7 +2120,6 @@ def get_public_account_history(
 
 
 @public_accounts_blueprint.route("/<int:user_id>/gdpr-extract", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT)
 def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -2173,7 +2163,6 @@ def has_gdpr_extract(user: users_models.User) -> bool:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/invalidate-password", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def invalidate_public_account_password(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.filter(users_models.User.id == user_id).one_or_none()
@@ -2191,7 +2180,6 @@ def invalidate_public_account_password(user_id: int) -> utils.BackofficeResponse
 
 
 @public_accounts_blueprint.route("/<int:user_id>/send-reset-password-email", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def send_public_account_reset_password_email(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.filter(users_models.User.id == user_id).one_or_none()

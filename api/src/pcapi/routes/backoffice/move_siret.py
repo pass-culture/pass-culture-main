@@ -14,7 +14,6 @@ from pcapi.core.finance import siret_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 
 from . import utils
@@ -136,14 +135,12 @@ def _render_confirmation_page(
 
 
 @move_siret_blueprint.route("", methods=["GET"])
-@atomic()
 def move_siret() -> utils.BackofficeResponse:
     form = pro_support_forms.MoveSiretForm()
     return _render_form_page(form)
 
 
 @move_siret_blueprint.route("", methods=["POST"])
-@atomic()
 def post_move_siret() -> utils.BackofficeResponse:
     form, source_venue, target_venue = _validate_move_siret_form()
     if not source_venue or not target_venue:
@@ -166,7 +163,6 @@ def post_move_siret() -> utils.BackofficeResponse:
 
 
 @move_siret_blueprint.route("/apply", methods=["POST"])
-@atomic()
 def apply_move_siret() -> utils.BackofficeResponse:
     form, source_venue, target_venue = _validate_move_siret_form()
     if not source_venue or not target_venue:

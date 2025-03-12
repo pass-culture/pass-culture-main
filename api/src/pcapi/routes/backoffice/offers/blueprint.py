@@ -43,7 +43,6 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.repository import repository
@@ -532,7 +531,6 @@ def _render_offer_list(
 
 
 @list_offers_blueprint.route("", methods=["GET"])
-@atomic()
 def list_offers() -> utils.BackofficeResponse:
     form = forms.GetOfferAdvancedSearchForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -564,7 +562,6 @@ def list_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/algolia", methods=["GET"])
-@atomic()
 def list_algolia_offers() -> utils.BackofficeResponse:
     form = forms.GetOfferAlgoliaSearchForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -593,7 +590,6 @@ def list_algolia_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = (
@@ -624,7 +620,6 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/validate", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_validate_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -639,7 +634,6 @@ def get_batch_validate_offers_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-validate", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_validate_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -654,7 +648,6 @@ def batch_validate_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/reject", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_reject_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -669,7 +662,6 @@ def get_batch_reject_offers_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-reject", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_reject_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -684,7 +676,6 @@ def batch_reject_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/edit", methods=["GET", "POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_batch_edit_offer_form() -> utils.BackofficeResponse:
     form = forms.BatchEditOfferForm()
@@ -719,7 +710,6 @@ def get_batch_edit_offer_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-edit", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def batch_edit_offer() -> utils.BackofficeResponse:
     form = forms.BatchEditOfferForm()
@@ -766,7 +756,6 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
@@ -796,7 +785,6 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
@@ -817,7 +805,6 @@ def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def validate_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_validate_offers([offer_id])
@@ -826,7 +813,6 @@ def validate_offer(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
@@ -847,7 +833,6 @@ def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def reject_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_reject_offers([offer_id])
@@ -982,7 +967,6 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
 
 
 @list_offers_blueprint.route("/<int:offer_id>", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.READ_OFFERS)
 def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
     offer_query = offers_models.Offer.query.filter(offers_models.Offer.id == offer_id).options(
@@ -1141,7 +1125,6 @@ def _manage_price_category(stock: offers_models.Stock, new_price: float) -> bool
 
 
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/edit", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
     stock = (
@@ -1206,7 +1189,6 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/confirm", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
     stock = offers_models.Stock.query.filter_by(id=stock_id).one()
@@ -1263,7 +1245,6 @@ def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeRespons
 
 
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/edit", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_offer_stock_edit_form(
     offer_id: int,
@@ -1334,7 +1315,6 @@ def _get_count_booking_prices_for_stock(stock: offers_models.Stock) -> list[tupl
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reindex", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def reindex(offer_id: int) -> utils.BackofficeResponse:
     search.async_index_offer_ids(
@@ -1347,7 +1327,6 @@ def reindex(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit-venue", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
     offer_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id)
@@ -1404,7 +1383,6 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/move-offer", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def move_offer(offer_id: int) -> utils.BackofficeResponse:
     if not FeatureToggle.MOVE_OFFER_TEST.is_active():
@@ -1463,7 +1441,6 @@ def move_offer(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/bookings.csv", methods=["GET"])
-@atomic()
 def download_bookings_csv(offer_id: int) -> utils.BackofficeResponse:
     export_data = booking_repository.get_export(
         user=current_user,
@@ -1480,7 +1457,6 @@ def download_bookings_csv(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/bookings.xlsx", methods=["GET"])
-@atomic()
 def download_bookings_xlsx(offer_id: int) -> utils.BackofficeResponse:
     export_data = booking_repository.get_export(
         user=current_user,
@@ -1497,7 +1473,6 @@ def download_bookings_xlsx(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/activate", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_activate_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
@@ -1518,7 +1493,6 @@ def get_activate_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/deactivate", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_deactivate_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
@@ -1539,7 +1513,6 @@ def get_deactivate_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/activate", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_batch_activate_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -1554,7 +1527,6 @@ def get_batch_activate_offers_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/deactivate", methods=["GET"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_batch_deactivate_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -1574,7 +1546,6 @@ def _batch_update_activation_offers(offer_ids: list[int], *, is_active: bool) ->
 
 
 @list_offers_blueprint.route("/<int:offer_id>/activate", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def activate_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_update_activation_offers([offer_id], is_active=True)
@@ -1583,7 +1554,6 @@ def activate_offer(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-activate", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def batch_activate_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -1598,7 +1568,6 @@ def batch_activate_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/deactivate", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def deactivate_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_update_activation_offers([offer_id], is_active=False)
@@ -1607,7 +1576,6 @@ def deactivate_offer(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-deactivate", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def batch_deactivate_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()

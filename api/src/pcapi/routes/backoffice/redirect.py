@@ -8,7 +8,6 @@ from werkzeug.exceptions import BadRequest
 from wtforms import validators
 
 from pcapi.connectors import virustotal
-from pcapi.repository import atomic
 
 from . import blueprint
 from . import utils
@@ -38,7 +37,6 @@ class SafeRedirectForm(forms_utils.PCForm):
 
 
 @blueprint.backoffice_web.route("/redirect", methods=["GET"])
-@atomic()
 @utils.custom_login_required(redirect_to=".home")
 def safe_redirect() -> utils.BackofficeResponse:
     form = SafeRedirectForm(request.args)

@@ -33,7 +33,6 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
 from pcapi.models.pc_object import BaseQuery
-from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.routes.backoffice import autocomplete
@@ -215,7 +214,6 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
 
 
 @account_update_blueprint.route("", methods=["GET"])
-@atomic()
 def list_account_update_requests() -> utils.BackofficeResponse:
     form = account_forms.AccountUpdateRequestSearchForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -245,7 +243,6 @@ def _refresh_list() -> utils.BackofficeResponse:
 
 
 @account_update_blueprint.route("<int:ds_application_id>/instruct", methods=["POST"])
-@atomic()
 def instruct(ds_application_id: int) -> utils.BackofficeResponse:
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()
@@ -291,7 +288,6 @@ def _find_duplicate(update_request: users_models.UserAccountUpdateRequest) -> us
 
 
 @account_update_blueprint.route("<int:ds_application_id>/accept", methods=["GET"])
-@atomic()
 def get_accept_form(ds_application_id: int) -> utils.BackofficeResponse:
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()
@@ -342,7 +338,6 @@ def get_accept_form(ds_application_id: int) -> utils.BackofficeResponse:
 
 
 @account_update_blueprint.route("<int:ds_application_id>/accept", methods=["POST"])
-@atomic()
 def accept(ds_application_id: int) -> utils.BackofficeResponse:
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()
@@ -465,7 +460,6 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
 
 
 @account_update_blueprint.route("<int:ds_application_id>/ask-for-correction", methods=["GET"])
-@atomic()
 def get_ask_for_correction_form(ds_application_id: int) -> utils.BackofficeResponse:
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()
@@ -490,7 +484,6 @@ def get_ask_for_correction_form(ds_application_id: int) -> utils.BackofficeRespo
 
 
 @account_update_blueprint.route("<int:ds_application_id>/ask-for-correction", methods=["POST"])
-@atomic()
 def ask_for_correction(ds_application_id: int) -> utils.BackofficeResponse:
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()

@@ -20,6 +20,7 @@ app.config["FLASK_ADMIN_FLUID_LAYOUT"] = True
 app.config["JWT_SECRET_KEY"] = settings.JWT_SECRET_KEY
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = settings.JWT_ACCESS_TOKEN_EXPIRES
 app.config["WTF_CSRF_ENABLED"] = False
+app.config["USE_GLOBAL_ATOMIC"] = False
 
 jwt = JWTManager(app)
 csrf = CSRFProtect()
