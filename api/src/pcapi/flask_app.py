@@ -5,11 +5,12 @@ import time
 import typing
 
 from authlib.integrations.flask_client import OAuth
-from flask import Flask
-from flask import Response
-from flask import g
-from flask import jsonify
-from flask import request
+# from flask import Flask 
+# from flask import Response
+# from flask import g
+# from flask import jsonify
+# from flask import request
+import flask as flask
 from flask.logging import default_handler
 import flask.wrappers
 from flask_login import LoginManager
@@ -76,8 +77,8 @@ def before_request() -> None:
             }
         )
     sentry_sdk.set_tag("correlation-id", get_or_set_correlation_id())
-    g.request_start = time.perf_counter()
-    g.log_request_details_extra = {}
+    flask.g.request_start = time.perf_counter()
+    flask.g.log_request_details_extra = {}
 
 
 @app.after_request
@@ -98,7 +99,7 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
         "platform": request.headers.get("platform"),
     }
     try:
-        duration = round((time.perf_counter() - g.request_start) * 1000)  # milliseconds
+        duration = round((time.perf_counter() - flask.g.request_start) * 1000)  # milliseconds
     except AttributeError:
         # If an error occurs in any "before request" function before
         # our `before_request()` above is called, `g.request_start`
@@ -109,13 +110,13 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
         extra["duration"] = duration
 
     try:
-        extra.update(g.log_request_details_extra)
+        extra.update(flask.g.log_request_details_extra)
     except AttributeError:
         logger.warning("g.log_request_details_extra was not available in log_request_details", exc_info=True)
     except Exception:  # pylint: disable=broad-exception-caught
         logger.warning("g.log_request_details_extra does not seem to contain a valid dict", exc_info=True)
 
-    logger.info("HTTP request at %s", request.path, extra=extra)
+    logger.info("HTTP request at %s", flask.request.path, extra=extra)
 
     return response
 
@@ -208,8 +209,8 @@ app.url_map.strict_slashes = False
 
 # The argument `backoffice_template_name` is not used, but it is needed
 # to have the same signature as `backoffice_app.generate_error_response()`.
-def generate_error_response(errors: dict, backoffice_template_name: str = "not used") -> Response:
-    return jsonify(errors)
+def generate_error_response(errors: dict, backoffice_template_name: str = "not used") -> flask.Response:
+    return flask.jsonify(errors)
 
 
 with app.app_context():

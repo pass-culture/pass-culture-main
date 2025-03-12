@@ -3,7 +3,6 @@ import sys
 import time
 
 from alembic import context
-
 import sqlalchemy as sa
 import sqlalchemy.exc
 
