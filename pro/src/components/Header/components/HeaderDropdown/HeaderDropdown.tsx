@@ -1,19 +1,13 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom'
 
-import { api } from 'apiClient/api'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useNotification } from 'commons/hooks/useNotification'
-import {
-  updateOffererIsOnboarded,
-  updateSelectedOffererId,
-} from 'commons/store/offerer/reducer'
 import {
   selectCurrentOffererId,
   selectOffererNames,
@@ -48,7 +42,6 @@ export const HeaderDropdown = () => {
   const currentUser = useSelector(selectCurrentUser)
   const currentOffererId = useSelector(selectCurrentOffererId)
   const offererNames = useSelector(selectOffererNames)
-  const dispatch = useDispatch()
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [subOpen, setSubOpen] = useState(false)
   const sideOffset =
@@ -62,10 +55,8 @@ export const HeaderDropdown = () => {
       label: item['name'],
     })) ?? []
   )
-  const notify = useNotification()
 
   const { pathname } = useLocation()
-  const navigate = useNavigate()
   const IN_STRUCTURE_CREATION_FUNNEL = pathname.startsWith(
     '/parcours-inscription'
   )
@@ -81,28 +72,17 @@ export const HeaderDropdown = () => {
     (offererOption) => offererOption.id === Number(selectedOffererId)
   )
 
-  const handleChangeOfferer = async (newOffererId: string) => {
-    try {
-      const { isOnboarded } = await api.getOfferer(Number(newOffererId))
-      dispatch(updateOffererIsOnboarded(isOnboarded))
+  const handleChangeOfferer = (newOffererId: string): void => {
+    // Reset offers stored search filters before changing offerer
+    resetAllStoredFilterConfig()
 
-      if (Number(newOffererId) !== selectedOffererId) {
-        dispatch(updateSelectedOffererId(Number(newOffererId)))
-
-        // Reset offers stored search filters & clean url when changing offerer
-        // to avoid any side effects.
-        resetAllStoredFilterConfig()
-        if (pathname.startsWith('/offres')) {
-          navigate(pathname, { replace: true })
-        }
-
-        if (storageAvailable('localStorage')) {
-          localStorage.setItem(SAVED_OFFERER_ID_KEY, newOffererId)
-        }
-      }
-    } catch {
-      notify.error('Erreur lors de la récupération de la structure')
+    // Updates offerer id in storage
+    if (storageAvailable('localStorage')) {
+      localStorage.setItem(SAVED_OFFERER_ID_KEY, newOffererId)
     }
+
+    // Hard refresh to homepage after offerer change
+    window.location.href = '/accueil'
   }
 
   useEffect(() => {
