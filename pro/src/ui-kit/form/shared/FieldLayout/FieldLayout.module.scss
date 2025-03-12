@@ -67,6 +67,11 @@
     }
   }
 
+  &-footer {
+    display: flex;
+    justify-content: space-between;
+  }
+
   &-error {
     margin-top: rem.torem(8px);
     flex: 1;

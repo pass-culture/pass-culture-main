@@ -180,30 +180,32 @@ export const FieldLayout = ({
           )}
         </div>
 
-        <div className={classNameFooter}>
-          <div role="alert" id={`error-details-${name}`}>
-            {showFooter && (hasError || Boolean(ErrorDetails)) && (
-              <>
-                {hasError && (
-                  <FieldError
-                    className={styles['field-layout-error']}
-                    name={name}
-                  >
-                    {error}
-                  </FieldError>
-                )}
-                {ErrorDetails}
-              </>
+        {showFooter && (
+          <div className={cn(classNameFooter, styles['field-layout-footer'])}>
+            <div role="alert" id={`error-details-${name}`}>
+              {(hasError || Boolean(ErrorDetails)) && (
+                <>
+                  {hasError && (
+                    <FieldError
+                      className={styles['field-layout-error']}
+                      name={name}
+                    >
+                      {error}
+                    </FieldError>
+                  )}
+                  {ErrorDetails}
+                </>
+              )}
+            </div>
+            {hasCounter && (
+              <FieldLayoutCharacterCount
+                count={count}
+                maxLength={maxLength}
+                name={name}
+              />
             )}
           </div>
-          {hasCounter && (
-            <FieldLayoutCharacterCount
-              count={count}
-              maxLength={maxLength}
-              name={name}
-            />
-          )}
-        </div>
+        )}
       </div>
     </div>
   )
