@@ -27,10 +27,10 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Status } from '../Status/Status'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos/SynchronizedProviderInformation'
 
-import styles from './IndivualOfferLayout.module.scss'
+import styles from './IndividualOfferLayout.module.scss'
 import { OfferStatusBanner } from './OfferStatusBanner/OfferStatusBanner'
 
-export interface IndivualOfferLayoutProps {
+export interface IndividualOfferLayoutProps {
   title: string
   withStepper?: boolean
   children: JSX.Element | JSX.Element[]
@@ -39,14 +39,14 @@ export interface IndivualOfferLayoutProps {
   venueHasPublishedOfferWithSameEan?: boolean
 }
 
-export const IndivualOfferLayout = ({
+export const IndividualOfferLayout = ({
   title,
   children,
   withStepper = true,
   offer,
   mode,
   venueHasPublishedOfferWithSameEan,
-}: IndivualOfferLayoutProps) => {
+}: IndividualOfferLayoutProps) => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()

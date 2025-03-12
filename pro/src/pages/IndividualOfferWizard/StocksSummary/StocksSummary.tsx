@@ -2,7 +2,7 @@
 
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { IndivualOfferLayout } from 'components/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
+import { IndividualOfferLayout } from 'components/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
 import { StocksSummaryScreen } from 'components/IndividualOffer/StocksSummaryScreen/StocksSummaryScreen'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
@@ -17,10 +17,10 @@ const StocksSummary = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
+    <IndividualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
       <StocksSummaryScreen />
       <ActionBar step={OFFER_WIZARD_STEP_IDS.SUMMARY} isDisabled={false} />
-    </IndivualOfferLayout>
+    </IndividualOfferLayout>
   )
 }
 
