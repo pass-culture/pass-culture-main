@@ -19,7 +19,7 @@ describe('UserPhone', () => {
     )
 
     expect(
-      screen.getByRole('textbox', { name: 'Téléphone' })
+      screen.getByRole('textbox', { name: 'Numéro de téléphone' })
     ).toBeInTheDocument()
   })
 
@@ -36,7 +36,7 @@ describe('UserPhone', () => {
     )
 
     expect(
-      screen.queryByRole('textbox', { name: 'Téléphone *' })
+      screen.queryByRole('textbox', { name: 'Numéro de téléphone' })
     ).not.toBeInTheDocument()
   })
 })
