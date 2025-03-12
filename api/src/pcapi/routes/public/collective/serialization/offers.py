@@ -213,38 +213,6 @@ class CollectiveOffersListResponseModel(BaseModel):
     __root__: list[CollectiveOffersResponseModel]
 
 
-class CollectiveOffersSubCategoryResponseModel(BaseModel):
-    id: str
-    label: str
-    category: str
-    categoryId: str
-
-    class Config:
-        orm_mode = True
-
-    @classmethod
-    def from_orm(cls, subcategory: subcategories.Subcategory) -> "CollectiveOffersSubCategoryResponseModel":
-        return cls(
-            id=subcategory.id,
-            label=subcategory.pro_label,
-            category=subcategory.category.pro_label,
-            categoryId=subcategory.category.id,
-        )
-
-
-class CollectiveOffersListSubCategoriesResponseModel(BaseModel):
-    __root__: list[CollectiveOffersSubCategoryResponseModel]
-
-
-class CollectiveOffersCategoryResponseModel(BaseModel):
-    id: str
-    name: str
-
-
-class CollectiveOffersListCategoriesResponseModel(BaseModel):
-    __root__: list[CollectiveOffersCategoryResponseModel]
-
-
 class GetPublicCollectiveOfferResponseModel(BaseModel):
     id: int = fields.COLLECTIVE_OFFER_ID
     status: str = fields.COLLECTIVE_OFFER_STATUS
