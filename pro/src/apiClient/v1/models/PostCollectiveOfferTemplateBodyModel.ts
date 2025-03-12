@@ -27,7 +27,6 @@ export type PostCollectiveOfferTemplateBodyModel = {
   name: string;
   nationalProgramId?: number | null;
   offerVenue?: CollectiveOfferVenueBodyModel | null;
-  offererId?: string | null;
   priceDetail?: string | null;
   students: Array<StudentLevels>;
   subcategoryId?: string | null;

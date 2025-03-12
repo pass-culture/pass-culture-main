@@ -573,9 +573,6 @@ class PostCollectiveOfferBodyModel(BaseModel):
     contact_phone: str | None
     intervention_area: list[str] | None
     template_id: int | None
-    offerer_id: (
-        str | None
-    )  # FIXME (MathildeDuboille - 24/10/22) prevent bug in production where offererId is sent in params
     nationalProgramId: int | None
     # TODO(jeremieb): when subcategory_id is removed, formats becomes
     # mandatory
