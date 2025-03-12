@@ -3,12 +3,6 @@ import enum
 import typing
 
 import sqlalchemy as sa
-from sqlalchemy import Column
-from sqlalchemy import DateTime
-from sqlalchemy import ForeignKey
-from sqlalchemy import UniqueConstraint
-from sqlalchemy import func
-from sqlalchemy import orm
 
 from pcapi.models import Base
 from pcapi.models import Model
@@ -36,15 +30,15 @@ class AchievementEnum(enum.Enum):
 class Achievement(PcObject, Base, Model):
     __tablename__ = "achievement"
 
-    userId: int = Column(sa.BigInteger, ForeignKey("user.id"), index=True, nullable=False)
-    user: orm.Mapped["User"] = orm.relationship("User", foreign_keys=[userId], backref="achievements")
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    user: sa.orm.Mapped["User"] = sa.orm.relationship("User", foreign_keys=[userId], backref="achievements")
 
-    bookingId: int = Column(sa.BigInteger, ForeignKey("booking.id"), nullable=False)
-    booking: orm.Mapped["Booking"] = orm.relationship("Booking", foreign_keys=[bookingId], backref="achievements")
+    bookingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), nullable=False)
+    booking: sa.orm.Mapped["Booking"] = sa.orm.relationship("Booking", foreign_keys=[bookingId], backref="achievements")
 
-    name: AchievementEnum = Column(db_utils.MagicEnum(AchievementEnum), nullable=False)
-    unlockedDate: datetime = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+    name: AchievementEnum = sa.Column(db_utils.MagicEnum(AchievementEnum), nullable=False)
+    unlockedDate: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now())
     # For when the user has seen the achievement success modal in the native app:
-    seenDate: datetime = Column(DateTime, nullable=True)
+    seenDate: datetime = sa.Column(sa.DateTime, nullable=True)
 
-    __table_args__ = (UniqueConstraint("userId", "name", name="user_achievement_unique"),)
+    __table_args__ = (sa.UniqueConstraint("userId", "name", name="user_achievement_unique"),)

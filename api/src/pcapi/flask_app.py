@@ -5,12 +5,8 @@ import time
 import typing
 
 from authlib.integrations.flask_client import OAuth
-# from flask import Flask 
-# from flask import Response
-# from flask import g
-# from flask import jsonify
-# from flask import request
-import flask as flask
+
+import flask
 from flask.logging import default_handler
 import flask.wrappers
 from flask_login import LoginManager
@@ -85,18 +81,18 @@ def before_request() -> None:
 def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Response:
     extra = {
         "statusCode": response.status_code,
-        "method": request.method,
-        "route": str(request.url_rule),  # e.g "/offers/<offer_id>"
-        "path": request.path,
-        "queryParams": request.query_string.decode(request.url_charset, errors="backslashreplace"),
+        "method": flask.request.method,
+        "route": str(flask.request.url_rule),  # e.g "/offers/<offer_id>"
+        "path": flask.request.path,
+        "queryParams": flask.request.query_string.decode(flask.request.url_charset, errors="backslashreplace"),
         "size": response.headers.get("Content-Length", type=int),
-        "deviceId": request.headers.get("device-id"),
-        "sourceIp": request.remote_addr,
-        "requestId": request.headers.get("request-id"),
-        "appVersion": request.headers.get("app-version"),
-        "commitHash": request.headers.get("commit-hash"),
-        "codePushId": request.headers.get("code-push-id"),
-        "platform": request.headers.get("platform"),
+        "deviceId": flask.request.headers.get("device-id"),
+        "sourceIp": flask.request.remote_addr,
+        "requestId": flask.request.headers.get("request-id"),
+        "appVersion": flask.request.headers.get("app-version"),
+        "commitHash": flask.request.headers.get("commit-hash"),
+        "codePushId": flask.request.headers.get("code-push-id"),
+        "platform": flask.request.headers.get("platform"),
     }
     try:
         duration = round((time.perf_counter() - flask.g.request_start) * 1000)  # milliseconds
