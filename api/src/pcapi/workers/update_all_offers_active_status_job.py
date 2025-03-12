@@ -1,3 +1,4 @@
+from pcapi.core.educational.api import offer as educational_api_offer
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.workers import worker
@@ -49,8 +50,10 @@ def update_all_collective_offers_active_status_job(filters: dict, is_active: boo
         period_beginning_date=filters["period_beginning_date"],
         period_ending_date=filters["period_ending_date"],
     )
-    offers_api.batch_update_collective_offers(collective_offer_query, {"isActive": is_active})
-    offers_api.batch_update_collective_offers_template(collective_offer_template_query, {"isActive": is_active})
+    educational_api_offer.batch_update_collective_offers(collective_offer_query, {"isActive": is_active})
+    educational_api_offer.batch_update_collective_offers_template(
+        collective_offer_template_query, {"isActive": is_active}
+    )
 
 
 @job(worker.low_queue)

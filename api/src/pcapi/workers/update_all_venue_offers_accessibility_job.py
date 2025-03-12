@@ -1,3 +1,4 @@
+from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.offerers.models import Venue
@@ -14,5 +15,5 @@ def update_all_venue_offers_accessibility_job(venue: Venue, accessibility: dict[
     collective_offer_template_query = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.venueId == venue.id)
 
     offers_api.batch_update_offers(offer_query, accessibility)
-    offers_api.batch_update_collective_offers(collective_offer_query, accessibility)
-    offers_api.batch_update_collective_offers_template(collective_offer_template_query, accessibility)
+    educational_api_offer.batch_update_collective_offers(collective_offer_query, accessibility)
+    educational_api_offer.batch_update_collective_offers_template(collective_offer_template_query, accessibility)

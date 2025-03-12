@@ -14,7 +14,6 @@ from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
-from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models import db
@@ -284,7 +283,7 @@ def edit_collective_offer(
         raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
 
     try:
-        offers_api.update_collective_offer(offer_id=offer_id, body=body, user=current_user)
+        educational_api_offer.update_collective_offer(offer_id=offer_id, body=body, user=current_user)
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
     except offers_exceptions.OfferUsedOrReimbursedCantBeEdit:
@@ -366,7 +365,7 @@ def edit_collective_offer_template(
         raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
 
     try:
-        offers_api.update_collective_offer_template(offer_id=offer_id, body=body, user=current_user)
+        educational_api_offer.update_collective_offer_template(offer_id=offer_id, body=body, user=current_user)
     except educational_exceptions.CollectiveOfferTemplateForbiddenAction:
         raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, 403)
     except educational_exceptions.UpdateCollectiveOfferTemplateError as err:
@@ -414,7 +413,7 @@ def patch_collective_offers_active_status(
                 raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
 
     collective_query = educational_api_offer.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
-    offers_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
+    educational_api_offer.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
 
 
 @private_api.route("/collective/offers/archive", methods=["PATCH"])
@@ -431,14 +430,16 @@ def patch_collective_offers_archive(
 
     if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
         try:
-            offers_api.archive_collective_offers(offers=collective_query.all(), date_archived=datetime.utcnow())
+            educational_api_offer.archive_collective_offers(
+                offers=collective_query.all(), date_archived=datetime.utcnow()
+            )
         except educational_exceptions.CollectiveOfferForbiddenAction:
             raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
     else:
         if educational_api_offer.query_has_any_archived(collective_query):
             raise ApiErrors({"global": ["One of the offers is already archived"]}, status_code=422)
 
-        offers_api.batch_update_collective_offers(
+        educational_api_offer.batch_update_collective_offers(
             collective_query, {"isActive": False, "dateArchived": datetime.utcnow()}
         )
 
@@ -465,7 +466,7 @@ def patch_collective_offers_template_active_status(
 
     if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
         try:
-            offers_api.toggle_publish_collective_offers_template(
+            educational_api_offer.toggle_publish_collective_offers_template(
                 collective_offers_template=collective_template_query.all(),
                 is_active=body.is_active,
             )
@@ -473,7 +474,9 @@ def patch_collective_offers_template_active_status(
             raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
 
     else:
-        offers_api.batch_update_collective_offers_template(collective_template_query, {"isActive": body.is_active})
+        educational_api_offer.batch_update_collective_offers_template(
+            collective_template_query, {"isActive": body.is_active}
+        )
 
 
 @private_api.route("/collective/offers-template/archive", methods=["PATCH"])
@@ -492,14 +495,14 @@ def patch_collective_offers_template_archive(
 
     if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
         try:
-            offers_api.archive_collective_offers_template(
+            educational_api_offer.archive_collective_offers_template(
                 offers=collective_template_query, date_archived=datetime.utcnow()
             )
         except educational_exceptions.CollectiveOfferTemplateForbiddenAction:
             raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
 
     else:
-        offers_api.batch_update_collective_offers_template(
+        educational_api_offer.batch_update_collective_offers_template(
             collective_template_query, {"isActive": False, "dateArchived": datetime.utcnow()}
         )
 
