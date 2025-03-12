@@ -2241,8 +2241,8 @@ class GetUserRegistrationStepCreditV3Test(GetEndpointHelper):
         # Expected registration timeline:
         #  1. Email validation ✓
         #  2. Complete profile ✓
-        #  3. ID check ✗
-        #  4. Honor statement ✗
+        #  3. ID check ✓
+        #  4. Honor statement ✓
         #  5. Pass 15-17 ✓
         #  6. ID check ✓
         #  7. Honor statement ✓
@@ -2319,10 +2319,10 @@ class GetUserRegistrationStepCreditV3Test(GetEndpointHelper):
         assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Profil Complet"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.VOID.value
+        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
         assert text_views[2].text == "ID Check"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.VOID.value
+        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
 
         assert step_icon_titles[4] == SubscriptionItemStatus.OK.value
