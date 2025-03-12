@@ -6,6 +6,7 @@ import logging
 import typing
 
 from flask_sqlalchemy import BaseQuery
+import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.core import search
@@ -25,13 +26,18 @@ from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.schemas import EducationalBookingEdition
 from pcapi.core.educational.utils import get_image_from_url
 from pcapi.core.external.attributes.api import update_external_pro
+from pcapi.core.finance import api as finance_api
+from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
+from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offer_validation
+from pcapi.core.users import models as users_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import feature
@@ -1060,3 +1066,396 @@ def get_offer_coordinates(offer: AnyCollectiveOffer) -> tuple[float | Decimal, f
 
 def query_has_any_archived(collective_query: BaseQuery) -> bool:
     return collective_query.filter(educational_models.CollectiveOffer.isArchived).count() > 0
+
+
+def archive_collective_offers(
+    offers: list[educational_models.CollectiveOffer],
+    date_archived: datetime.datetime,
+) -> None:
+    for offer in offers:
+        validation.check_collective_offer_action_is_allowed(
+            offer, educational_models.CollectiveOfferAllowedAction.CAN_ARCHIVE
+        )
+
+        offer.isActive = False
+        offer.dateArchived = date_archived
+
+    db.session.flush()
+
+
+def archive_collective_offers_template(
+    offers: list[educational_models.CollectiveOfferTemplate],
+    date_archived: datetime.datetime,
+) -> None:
+    for offer in offers:
+        validation.check_collective_offer_template_action_is_allowed(
+            offer, educational_models.CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
+        )
+        offer.isActive = False
+        offer.dateArchived = date_archived
+
+    db.session.flush()
+
+    on_commit(
+        partial(
+            search.async_index_collective_offer_template_ids,
+            [offer.id for offer in offers],
+            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+            log_extra={"changes": {"isActive", "dateArchived"}},
+        )
+    )
+
+
+def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
+    allowed_validation_status = {offers_models.OfferValidationStatus.APPROVED}
+    if "dateArchived" in update_fields:
+        allowed_validation_status.update(
+            (offers_models.OfferValidationStatus.DRAFT, offers_models.OfferValidationStatus.REJECTED)
+        )
+
+    collective_offer_ids_tuples = query.filter(
+        educational_models.CollectiveOffer.validation.in_(allowed_validation_status)  # type: ignore[attr-defined]
+    ).with_entities(educational_models.CollectiveOffer.id)
+
+    collective_offer_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
+    number_of_collective_offers_to_update = len(collective_offer_ids)
+    batch_size = 1000
+
+    for current_start_index in range(0, number_of_collective_offers_to_update, batch_size):
+        collective_offer_ids_batch = collective_offer_ids[
+            current_start_index : min(current_start_index + batch_size, number_of_collective_offers_to_update)
+        ]
+
+        query_to_update = educational_models.CollectiveOffer.query.filter(
+            educational_models.CollectiveOffer.id.in_(collective_offer_ids_batch)
+        )
+        query_to_update.update(update_fields, synchronize_session=False)
+
+        if is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
+
+
+def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
+    allowed_validation_status = {offers_models.OfferValidationStatus.APPROVED}
+    if "dateArchived" in update_fields:
+        allowed_validation_status.update(
+            (offers_models.OfferValidationStatus.DRAFT, offers_models.OfferValidationStatus.REJECTED)
+        )
+
+    collective_offer_ids_tuples = query.filter(
+        educational_models.CollectiveOfferTemplate.validation.in_(allowed_validation_status)  # type: ignore[attr-defined]
+    ).with_entities(educational_models.CollectiveOfferTemplate.id)
+
+    collective_offer_template_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
+    number_of_collective_offers_template_to_update = len(collective_offer_template_ids)
+    batch_size = 1000
+
+    for current_start_index in range(0, number_of_collective_offers_template_to_update, batch_size):
+        collective_offer_template_ids_batch = collective_offer_template_ids[
+            current_start_index : min(current_start_index + batch_size, number_of_collective_offers_template_to_update)
+        ]
+
+        query_to_update = educational_models.CollectiveOfferTemplate.query.filter(
+            educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids_batch)
+        )
+        query_to_update.update(update_fields, synchronize_session=False)
+
+        if is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
+
+        on_commit(
+            partial(
+                search.async_index_collective_offer_template_ids,
+                collective_offer_template_ids_batch,
+                reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+                log_extra={"changes": set(update_fields.keys())},
+            )
+        )
+
+
+def check_can_move_collective_offer_venue(
+    collective_offer: educational_models.CollectiveOffer,
+) -> list[offerers_models.Venue]:
+    count_started_stocks = (
+        educational_models.CollectiveStock.query.with_entities(educational_models.CollectiveStock.id)
+        .filter(
+            educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
+            educational_models.CollectiveStock.startDatetime < datetime.datetime.utcnow(),
+        )
+        .count()
+    )
+    if count_started_stocks > 0:
+        raise offers_exceptions.OfferEventInThePast(count_started_stocks)
+
+    count_reimbursed_bookings = (
+        educational_models.CollectiveBooking.query.with_entities(educational_models.CollectiveBooking.id)
+        .join(educational_models.CollectiveBooking.collectiveStock)
+        .filter(
+            educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
+            educational_models.CollectiveBooking.isReimbursed,
+        )
+        .count()
+    )
+    if count_reimbursed_bookings > 0:
+        raise offers_exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
+
+    return offers_api.get_venues_with_same_pricing_point(collective_offer)
+
+
+def move_collective_offer_venue(
+    collective_offer: educational_models.CollectiveOffer, destination_venue: offerers_models.Venue
+) -> None:
+    venue_choices = check_can_move_collective_offer_venue(collective_offer)
+
+    if destination_venue not in venue_choices:
+        raise offers_exceptions.ForbiddenDestinationVenue()
+
+    destination_pricing_point_link = destination_venue.current_pricing_point_link
+    assert destination_pricing_point_link  # for mypy - it would not be in venue_choices without link
+    destination_pricing_point_id = destination_pricing_point_link.pricingPointId
+
+    collective_bookings = (
+        educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.collectiveStock)
+        .outerjoin(
+            # max 1 row joined thanks to idx_uniq_collective_booking_id
+            finance_models.FinanceEvent,
+            sa.and_(
+                finance_models.FinanceEvent.collectiveBookingId == educational_models.CollectiveBooking.id,
+                finance_models.FinanceEvent.status.in_(
+                    (finance_models.FinanceEventStatus.PENDING, finance_models.FinanceEventStatus.READY)
+                ),
+            ),
+        )
+        .outerjoin(
+            # max 1 row joined thanks to idx_uniq_booking_id
+            finance_models.Pricing,
+            sa.and_(
+                finance_models.Pricing.collectiveBookingId == educational_models.CollectiveBooking.id,
+                finance_models.Pricing.status != finance_models.PricingStatus.CANCELLED,
+            ),
+        )
+        .options(
+            sa.orm.load_only(educational_models.CollectiveBooking.status),
+            sa.orm.contains_eager(educational_models.CollectiveBooking.finance_events).load_only(
+                finance_models.FinanceEvent.status
+            ),
+            sa.orm.contains_eager(educational_models.CollectiveBooking.pricings).load_only(
+                finance_models.Pricing.pricingPointId, finance_models.Pricing.status
+            ),
+        )
+        .filter(educational_models.CollectiveStock.collectiveOfferId == collective_offer.id)
+        .all()
+    )
+
+    collective_offer.venue = destination_venue
+    db.session.add(collective_offer)
+
+    for collective_booking in collective_bookings:
+        assert not collective_booking.isReimbursed
+        collective_booking.venueId = destination_venue.id
+        db.session.add(collective_booking)
+
+        # when offer has priced bookings, pricing point for destination venue must be the same as pricing point
+        # used for pricing (same as venue pricing point at the time pricing was processed)
+        pricing = collective_booking.pricings[0] if collective_booking.pricings else None
+        if pricing and pricing.pricingPointId != destination_pricing_point_id:
+            raise offers_exceptions.BookingsHaveOtherPricingPoint()
+
+        finance_event = collective_booking.finance_events[0] if collective_booking.finance_events else None
+        if finance_event:
+            finance_event.venueId = destination_venue.id
+            finance_event.pricingPointId = destination_pricing_point_id
+            if finance_event.status == finance_models.FinanceEventStatus.PENDING:
+                finance_event.status = finance_models.FinanceEventStatus.READY
+                finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(collective_booking)
+            db.session.add(finance_event)
+
+    db.session.flush()
+
+
+def update_collective_offer(
+    offer_id: int, body: "collective_offers_serialize.PatchCollectiveOfferBodyModel", user: users_models.User
+) -> None:
+    new_values = body.dict(exclude_unset=True)
+
+    offer_to_update = educational_models.CollectiveOffer.query.filter(
+        educational_models.CollectiveOffer.id == offer_id
+    ).first()
+
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        validation.check_collective_offer_action_is_allowed(
+            offer_to_update, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+        )
+    else:
+        validation.check_if_offer_is_not_public_api(offer_to_update)
+        validation.check_if_offer_not_used_or_reimbursed(offer_to_update)
+
+    new_venue = None
+    if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
+        offerer = offerers_repository.get_by_collective_offer_id(offer_to_update.id)
+        new_venue = offerers_api.get_venue_by_id(new_values["venueId"])
+        if not new_venue:
+            raise exceptions.VenueIdDontExist()
+        if new_venue.managingOffererId != offerer.id:
+            raise exceptions.OffererOfVenueDontMatchOfferer()
+
+    nationalProgramId = new_values.pop("nationalProgramId", None)
+    national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update)
+
+    if new_venue:
+        move_collective_offer_venue(offer_to_update, new_venue)
+
+    updated_fields = _update_collective_offer(
+        offer=offer_to_update, new_values=new_values, location_body=body.location, user=user
+    )
+
+    on_commit(
+        partial(
+            notify_educational_redactor_on_collective_offer_or_stock_edit,
+            offer_to_update.id,
+            updated_fields,
+        )
+    )
+
+
+def update_collective_offer_template(
+    offer_id: int, body: "collective_offers_serialize.PatchCollectiveOfferTemplateBodyModel", user: users_models.User
+) -> None:
+    new_values = body.dict(exclude_unset=True)
+
+    offer_to_update: educational_models.CollectiveOfferTemplate = (
+        educational_models.CollectiveOfferTemplate.query.filter(
+            educational_models.CollectiveOfferTemplate.id == offer_id
+        ).one()
+    )
+
+    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+        validation.check_collective_offer_template_action_is_allowed(
+            offer_to_update, educational_models.CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
+        )
+
+    if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
+        new_venue = offerers_api.get_venue_by_id(new_values["venueId"])
+        if not new_venue:
+            raise exceptions.VenueIdDontExist()
+        offerer = offerers_repository.get_by_collective_offer_template_id(offer_to_update.id)
+        if new_venue.managingOffererId != offerer.id:
+            raise exceptions.OffererOfVenueDontMatchOfferer()
+
+    nationalProgramId = new_values.pop("nationalProgramId", None)
+    national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update)
+
+    if "dates" in new_values:
+        dates = new_values.pop("dates", None)
+        if dates:
+            start, end = dates["start"], dates["end"]
+            if start.date() < offer_to_update.dateCreated.date():
+                raise exceptions.StartsBeforeOfferCreation()
+
+            # this is necessary to pass constraint template_dates_non_empty_daterange
+            # currently this only happens when selecting time = 23h59
+            offer_to_update.dateRange = educational_utils.get_non_empty_date_time_range(start, end)
+        else:
+            offer_to_update.dateRange = None
+
+    _update_collective_offer(offer=offer_to_update, new_values=new_values, location_body=body.location, user=user)
+
+    on_commit(
+        partial(
+            search.async_index_collective_offer_template_ids,
+            [offer_to_update.id],
+            reason=search.IndexationReason.OFFER_UPDATE,
+        )
+    )
+
+
+def _update_collective_offer(
+    offer: AnyCollectiveOffer,
+    new_values: dict,
+    location_body: "collective_offers_serialize.CollectiveOfferLocationModel | None",
+    user: users_models.User,
+) -> list[str]:
+    from pcapi.core.offers.api import _get_offerer_address_from_address_body
+
+    offer_validation.check_validation_status(offer)
+    offer_validation.check_contact_request(offer, new_values)
+
+    edit_offer_venue = "offerVenue" in new_values
+    edit_location = "location" in new_values
+    if edit_offer_venue and edit_location:
+        raise ValueError("Cannot receive offerVenue and location at the same time")
+
+    if edit_offer_venue:
+        offer_venue = new_values["offerVenue"]
+        if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
+            check_venue_user_access(offer_venue["venueId"], user)
+            new_values["interventionArea"] = []
+
+    # receive location -> extract location field and write to offerVenue to keep the field up to date
+    if edit_location:
+        assert location_body is not None
+        offerer_address = _get_offerer_address_from_address_body(address_body=location_body.address, venue=offer.venue)
+        new_values["offererAddress"] = offerer_address
+
+        offer_venue = get_offer_venue_from_location(
+            location_type=location_body.locationType,
+            location_comment=location_body.locationComment,
+            offerer_address=offerer_address,
+            venue_id=offer.venueId,
+        )
+        new_values["offerVenue"] = offer_venue
+
+        new_values["locationType"] = location_body.locationType
+        new_values["locationComment"] = location_body.locationComment
+        new_values.pop("location", None)
+
+    # This variable is meant for Adage mailing
+    updated_fields = []
+    for key, value in new_values.items():
+        updated_fields.append(key)
+
+        if key == "subcategoryId":
+            offer_validation.check_offer_is_eligible_for_educational(value.name)
+            offer.subcategoryId = value.name
+            continue
+
+        if key == "domains":
+            domains = get_educational_domains_from_ids(value)
+            offer.domains = domains
+            continue
+
+        setattr(offer, key, value)
+
+    db.session.add(offer)
+    db.session.flush()
+
+    return updated_fields
+
+
+def toggle_publish_collective_offers_template(
+    collective_offers_template: list[educational_models.CollectiveOfferTemplate],
+    is_active: bool,
+) -> None:
+    action = (
+        educational_models.CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
+        if is_active
+        else educational_models.CollectiveOfferTemplateAllowedAction.CAN_HIDE
+    )
+    for offer_template in collective_offers_template:
+        validation.check_collective_offer_template_action_is_allowed(offer_template, action)
+        offer_template.isActive = is_active
+
+    db.session.flush()
+
+    on_commit(
+        partial(
+            search.async_index_collective_offer_template_ids,
+            [offer.id for offer in collective_offers_template],
+            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+            log_extra={"changes": {"isActive"}},
+        )
+    )
