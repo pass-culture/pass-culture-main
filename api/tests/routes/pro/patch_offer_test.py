@@ -56,6 +56,7 @@ class Returns200Test:
         assert updated_offer.externalTicketOfficeUrl == "http://example.net"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
+        assert updated_offer.url == "test@test.com"
         assert not updated_offer.product
 
     def test_we_handle_unique_address_among_manual_edition_while_patch_offer(self, client):

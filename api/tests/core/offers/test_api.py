@@ -1151,7 +1151,7 @@ class CreateMediationV2Test:
 class CreateDraftOfferTest:
     def test_create_draft_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.CreateDraftOffer(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -1169,7 +1169,7 @@ class CreateDraftOfferTest:
 
     def test_cannot_create_draft_offer_with_ean_in_name(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.CreateDraftOffer(
             name="A pretty good offer 4759217254634",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -1201,7 +1201,7 @@ class CreateDraftOfferTest:
             venue=venue,
         )
 
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.CreateDraftOffer(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -1215,7 +1215,7 @@ class CreateDraftOfferTest:
     def test_create_draft_offer_with_withrawal_details_from_venue(self):
         venue = offerers_factories.VenueFactory(withdrawalDetails="Details from my venue")
 
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.CreateDraftOffer(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -1226,7 +1226,7 @@ class CreateDraftOfferTest:
 
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.CreateDraftOffer(
             name="An offer he can't refuse",
             subcategoryId=subcategories.ACTIVATION_EVENT.id,
             venueId=venue.id,
@@ -1239,7 +1239,7 @@ class CreateDraftOfferTest:
 
     def test_cannot_create_offer_when_invalid_subcategory(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.CreateDraftOffer(
             name="An offer he can't refuse",
             subcategoryId="TOTO",
             venueId=venue.id,
@@ -1258,7 +1258,7 @@ class UpdateDraftOfferTest:
             subcategoryId=subcategories.ESCAPE_GAME.id,
             description="description",
         )
-        body = offers_schemas.PatchDraftOfferBodyModel(
+        body = offers_schemas.UpdateDraftOffer(
             name="New name",
             description="New description",
         )
@@ -1274,7 +1274,7 @@ class UpdateDraftOfferTest:
             subcategoryId=subcategories.ESCAPE_GAME.id,
             description="description",
         )
-        body = offers_schemas.PatchDraftOfferBodyModel(
+        body = offers_schemas.UpdateDraftOffer(
             name="New name 4759217254634",
             description="New description",
         )
