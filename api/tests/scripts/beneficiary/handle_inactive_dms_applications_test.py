@@ -51,20 +51,20 @@ class HandleInactiveApplicationTest:
             inactive_application.id,
             "SomeInstructorId",
             motivation=(
-                "Aucune activité n’a eu lieu sur votre dossier depuis plus de 30 jours.\n"
+                "Aucune activité n’a eu lieu sur ton dossier depuis plus de 30 jours.\n"
                 "\n"
                 "Conformément à nos CGUs, en cas d’absence de réponse ou de "
                 "justification insuffisante, nous nous réservons le droit de "
-                "refuser votre création de compte. Aussi nous avons classé sans "
-                f"suite votre dossier n°{inactive_application.number}.\n"
+                "refuser ta création de compte. Aussi nous avons classé sans "
+                f"suite ton dossier n°{inactive_application.number}.\n"
                 "\n"
-                "Sous réserve d’être encore éligible, vous pouvez si vous le "
-                "souhaitez refaire une demande d’inscription. Nous vous "
+                "Sous réserve d’être encore éligible, tu peux si tu le "
+                "souhaites refaire une demande d’inscription. Nous t'"
                 "invitons à soumettre un nouveau dossier en suivant ce lien : "
                 f"https://www.demarches-simplifiees.fr/dossiers/new?procedure_id={inactive_application.procedure.number}\n"
                 "\n"
-                "Vous trouverez toutes les informations dans notre FAQ pour "
-                "vous accompagner dans cette démarche : "
+                "Tu trouveras toutes les informations dans notre FAQ pour "
+                "t'accompagner dans cette démarche : "
                 "https://aide.passculture.app/hc/fr/sections/4411991878545-Inscription-et-modification-d-information-sur-Démarches-Simplifiées\n"
             ),
             from_draft=True,
@@ -139,20 +139,20 @@ class HandleInactiveApplicationTest:
             inactive_application.id,
             "SomeInstructorId",
             motivation=(
-                "Aucune activité n’a eu lieu sur votre dossier depuis plus de 30 jours.\n"
+                "Aucune activité n’a eu lieu sur ton dossier depuis plus de 30 jours.\n"
                 "\n"
                 "Conformément à nos CGUs, en cas d’absence de réponse ou de "
                 "justification insuffisante, nous nous réservons le droit de "
-                "refuser votre création de compte. Aussi nous avons classé sans "
-                f"suite votre dossier n°{inactive_application.number}.\n"
+                "refuser ta création de compte. Aussi nous avons classé sans "
+                f"suite ton dossier n°{inactive_application.number}.\n"
                 "\n"
-                "Sous réserve d’être encore éligible, vous pouvez si vous le "
-                "souhaitez refaire une demande d’inscription. Nous vous "
+                "Sous réserve d’être encore éligible, tu peux si tu le "
+                "souhaites refaire une demande d’inscription. Nous t'"
                 "invitons à soumettre un nouveau dossier en suivant ce lien : "
                 f"https://www.demarches-simplifiees.fr/dossiers/new?procedure_id={inactive_application.procedure.number}\n"
                 "\n"
-                "Vous trouverez toutes les informations dans notre FAQ pour "
-                "vous accompagner dans cette démarche : "
+                "Tu trouveras toutes les informations dans notre FAQ pour "
+                "t'accompagner dans cette démarche : "
                 "https://aide.passculture.app/hc/fr/sections/4411991878545-Inscription-et-modification-d-information-sur-Démarches-Simplifiées\n"
             ),
             from_draft=True,
