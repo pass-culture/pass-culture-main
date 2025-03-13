@@ -32,6 +32,7 @@ dependencies = [
 "flask-sqlalchemy==2.5.*",
 "flask-wtf==1.2.2",
 "flask==2.0.*",
+"flower==2.0.1",
 "geoalchemy2>=0.17.0",
 "google-api-python-client==2.160.0",
 "google-auth==2.38.0",
