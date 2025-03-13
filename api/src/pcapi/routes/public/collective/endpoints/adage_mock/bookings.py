@@ -1,6 +1,5 @@
 from contextlib import suppress
 from datetime import datetime
-from datetime import timezone
 import logging
 
 import sqlalchemy as sa
@@ -159,7 +158,7 @@ def use_collective_booking(booking_id: int) -> None:
         raise ForbiddenError({"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"})
 
     try:
-        booking.dateUsed = datetime.now(timezone.utc)  # pylint: disable=datetime-now
+        booking.dateUsed = datetime.utcnow()
         booking.status = models.CollectiveBookingStatus.USED
 
         finance_api.add_event(
@@ -261,7 +260,7 @@ def reimburse_collective_booking(booking_id: int) -> None:
 
     try:
         booking.status = models.CollectiveBookingStatus.REIMBURSED
-        booking.reimbursementDate = datetime.now(timezone.utc)  # pylint: disable=datetime-now
+        booking.reimbursementDate = datetime.utcnow()
 
         db.session.add(booking)
         db.session.flush()

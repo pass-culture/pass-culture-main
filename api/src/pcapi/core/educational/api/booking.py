@@ -405,10 +405,7 @@ def cancel_collective_booking(
         "CollectiveBooking has been cancelled by %s %s",
         reason.value.lower(),
         f"from {_from}" if _from else "",
-        extra={
-            "collective_booking": collective_booking_id,
-            "reason": str(educational_models.CollectiveBookingCancellationReasons.OFFERER),
-        },
+        extra={"collective_booking": collective_booking_id, "reason": reason.value},
     )
 
 
