@@ -16,6 +16,7 @@ import pcapi.core.finance.models as finance_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import profile_options
+from pcapi.core.users import account
 from pcapi.core.users import api as users_api
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import young_status
@@ -29,15 +30,6 @@ from pcapi.routes.shared.price import convert_to_cent
 from pcapi.utils.email import sanitize_email
 
 
-class TrustedDevice(ConfiguredBaseModel):
-    device_id: str
-    os: str | None
-    source: str | None
-
-    class Config:
-        anystr_strip_whitespace = True
-
-
 class BaseAccountRequest(ConfiguredBaseModel):
     birthdate: datetime.date
     marketing_email_subscription: bool | None = False
@@ -45,7 +37,7 @@ class BaseAccountRequest(ConfiguredBaseModel):
     apps_flyer_user_id: str | None = None
     apps_flyer_platform: str | None = None
     firebase_pseudo_id: str | None = None
-    trusted_device: TrustedDevice | None = None
+    trusted_device: account.TrustedDevice | None = None
 
 
 class AccountRequest(BaseAccountRequest):
@@ -55,12 +47,6 @@ class AccountRequest(BaseAccountRequest):
 
 class GoogleAccountRequest(BaseAccountRequest):
     account_creation_token: str
-
-
-class NotificationSubscriptions(ConfiguredBaseModel):
-    marketing_email: bool
-    marketing_push: bool
-    subscribed_themes: list[str] = []
 
 
 class Credit(ConfiguredBaseModel):
@@ -84,7 +70,7 @@ class DomainsCredit(ConfiguredBaseModel):
 
 class ChangeBeneficiaryEmailBody(ConfiguredBaseModel):
     token: str
-    device_info: TrustedDevice | None = None
+    device_info: account.TrustedDevice | None = None
 
 
 class ChangeBeneficiaryEmailResponse(ConfiguredBaseModel):
@@ -220,7 +206,9 @@ class UserProfileResponse(ConfiguredBaseModel):
     show_eligible_card: bool
     status: YoungStatusResponse
     subscription_message: subscription_serialization.SubscriptionMessage | None
-    subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
+    subscriptions: (
+        account.NotificationSubscriptions
+    )  # if we send user.notification_subscriptions, pydantic will take the column and not the property
 
     _convert_recredit_amount_to_show = validator("recredit_amount_to_show", pre=True, allow_reuse=True)(convert_to_cent)
 
@@ -239,7 +227,7 @@ class UserProfilePatchRequest(ConfiguredBaseModel):
     city: str | None
     postal_code: str | None
     phone_number: str | None
-    subscriptions: NotificationSubscriptions | None
+    subscriptions: account.NotificationSubscriptions | None
     origin: str | None
 
 
