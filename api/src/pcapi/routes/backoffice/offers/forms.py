@@ -50,6 +50,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     TAG = "Tag"
     VISA = "Visa d'exploitation"
     HEADLINE = "Offres à la une"
+    VALIDATED_OFFERER = "Entité juridique validée"
 
 
 class IndividualOffersAlgoliaSearchAttributes(enum.Enum):
@@ -98,6 +99,7 @@ form_field_configuration = {
     "SYNCHRONIZED": {"field": "boolean", "operator": ["NULLABLE"]},
     "PROVIDER": {"field": "provider", "operator": ["IN", "NOT_IN"]},
     "HEADLINE": {"field": "boolean", "operator": ["EQUALS"]},
+    "VALIDATED_OFFERER": {"field": "boolean", "operator": ["EQUALS"]},
 }
 
 algolia_form_field_configuration = {
@@ -540,14 +542,9 @@ class BaseOfferAdvancedSearchForm(GetOffersBaseFields):
 
 class GetOfferAdvancedSearchForm(BaseOfferAdvancedSearchForm):
     form_field_configuration = form_field_configuration
-    only_validated_offerers = fields.PCSwitchBooleanField(
-        "Uniquement les offres des entités juridiques validées", full_row=True
-    )
 
     def is_empty(self) -> bool:
-        empty = not self.only_validated_offerers.data
-        empty = empty and GetOfferAdvancedSearchForm.is_search_empty(self.search.data)
-        return empty and super().is_empty()
+        return GetOfferAdvancedSearchForm.is_search_empty(self.search.data) and super().is_empty()
 
 
 class GetOfferAlgoliaSearchForm(BaseOfferAdvancedSearchForm):
