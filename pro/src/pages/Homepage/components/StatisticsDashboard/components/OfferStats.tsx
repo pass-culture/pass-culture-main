@@ -15,6 +15,7 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import { LoadingSkeleton } from './LoadingSkeleton'
 import styles from './OfferStats.module.scss'
 
 export interface OfferStatsProps {
@@ -60,15 +61,13 @@ const StatBlock = ({ icon, count, label, link, linkLabel }: StatBlockProps) => (
 export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
   const { logEvent } = useAnalytics()
 
-  const getOffererV2StatsQuery = useSWR(
+  const { isLoading, data: stats } = useSWR(
     offerer.id ? [GET_OFFERER_V2_STATS_QUERY_KEY, offerer.id] : null,
     ([, offererId]) => api.getOffererV2Stats(offererId)
   )
 
   const pendingOfferWording = 'en instruction'
 
-  const isLoading = getOffererV2StatsQuery.isLoading
-  const stats = getOffererV2StatsQuery.data
   return (
     <Card className={className}>
       <h3 className={styles['title']}>Vos offres publiées</h3>
@@ -76,8 +75,8 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
       <div className={styles['container']}>
         {isLoading || !stats ? (
           <>
-            <div className={styles['skeleton']} />
-            <div className={styles['skeleton']} />
+            <LoadingSkeleton />
+            <LoadingSkeleton />
           </>
         ) : (
           <>
