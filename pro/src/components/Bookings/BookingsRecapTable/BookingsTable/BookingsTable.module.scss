@@ -20,14 +20,12 @@
   @include a11y.visually-hidden;
 
   text-align: left;
-  color: var(--color-black);
 }
 
 // <th>
 .table-header-cell {
   @include fonts.body-accent-xs;
 
-  color: var(--color-black);
   padding: rem.torem(8px);
   white-space: nowrap;
 }

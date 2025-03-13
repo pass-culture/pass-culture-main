@@ -33,13 +33,14 @@
 .legend {
   @include fonts.body;
 
-  color: var(--color-black);
+  color: var(--color-text-default);
   margin-bottom: rem.torem(8px);
 }
 
 .trigger {
   @include fonts.body;
 
+  color: var(--color-text-default);
   display: flex;
   align-items: center;
   justify-content: space-between;

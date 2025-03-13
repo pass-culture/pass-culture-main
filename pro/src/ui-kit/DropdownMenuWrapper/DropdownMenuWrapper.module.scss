@@ -35,14 +35,14 @@
   @include fonts.button;
 
   display: flex;
-  color: var(--color-black);
+  color: var(--color-text-default);
   padding: 0.5rem;
 
   &[data-highlighted] {
     outline: none;
     border-radius: rem.torem(2px);
     background: var(--color-background-subtle);
-    color: var(--color-black);
+    color: var(--color-text-default);
     cursor: pointer;
   }
 

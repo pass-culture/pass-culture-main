@@ -15,7 +15,7 @@
   border-radius: rem.torem(forms.$input-border-radius);
   background-color: var(--color-background-default);
   padding: 0 rem.torem(16px);
-  color: var(--color-input-text-color);
+  color: var(--color-text-default);
   box-shadow: 0 0 0 0 var(--color-black);
   transition:
     background 150ms ease,
@@ -55,7 +55,7 @@
   &:-webkit-autofill,
   &:-internal-autofill-selected {
     background-color: var(--color-background-default) !important;
-    color: var(--color-input-text-color) !important;
+    color: var(--color-text-default) !important;
   }
 }
 
