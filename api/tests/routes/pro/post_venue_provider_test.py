@@ -10,12 +10,15 @@ from pcapi.connectors.serialization.cine_digital_service_serializers import Show
 from pcapi.core.external_bookings.models import Movie
 from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
+import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.factories import CinemaProviderPivotFactory
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users import factories as user_factories
+from pcapi.models import db
 
 from tests.local_providers.cinema_providers.cds import fixtures as cds_fixtures
 
@@ -212,6 +215,60 @@ class Returns201Test:
         assert response.status_code == 400
         assert response.json == {"global": ["Votre lieu est déjà lié à cette source"]}
         assert venue_provider.venue.venueProviders == [venue_provider]
+
+    @pytest.mark.usefixtures("db_session")
+    def test_recreate_previous_venue_provider_updates_synchronized_offers(self, client):
+        """If a venue provider with synced offers is deleted and then
+        re-created, all of its offers should be updated.
+        """
+        provider = providers_factories.PublicApiProviderFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venueIdAtOfferProvider=None)
+        venue = venue_provider.venue
+
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        another_provider = providers_factories.PublicApiProviderFactory()
+        providers_factories.VenueProviderFactory(
+            provider=another_provider, venue=venue, venueIdAtOfferProvider=None, isActive=False
+        )
+
+        sync_offers = offers_factories.ThingOfferFactory.create_batch(
+            3, lastProvider=provider, venue=venue, isActive=True
+        )
+
+        synced_offer_with_another_provider = offers_factories.ThingOfferFactory(
+            lastProvider=another_provider, venue=venue, isActive=False
+        )
+
+        inactive_not_synced_offer = offers_factories.ThingOfferFactory(venue=venue, isActive=False)
+
+        sync_offer_ids = {offer.id for offer in sync_offers}
+
+        # delete venue provider: all synced offers should have been deactivated
+        response = client.with_session_auth(email=user.email).delete(f"/venueProviders/{venue_provider.id}")
+        assert response.status_code == 204
+
+        map(db.session.refresh, sync_offers)
+        assert not any([offer.isActive for offer in sync_offers])
+
+        venue_provider_data = {
+            "providerId": venue_provider.providerId,
+            "venueId": venue_provider.venueId,
+        }
+
+        response = client.post("/venueProviders", json=venue_provider_data)
+
+        assert response.status_code == 201
+
+        sync_offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(sync_offer_ids))
+        assert all(offer.isActive for offer in sync_offers)
+
+        # should not have been updated (since it not synced)
+        assert not inactive_not_synced_offer.isActive
+
+        # should not have been updated (since it was synced with another provider)
+        assert not synced_offer_with_another_provider.isActive
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")

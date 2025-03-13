@@ -11,6 +11,7 @@ from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
+from pcapi.core.providers.api import update_venue_synchronized_offers_active_status_job
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
@@ -86,6 +87,15 @@ def create_venue_provider(
                 quantity=body.quantity,
                 venueIdAtOfferProvider=body.venueIdAtOfferProvider,
             ),
+        )
+
+        repository.on_commit(
+            functools.partial(
+                update_venue_synchronized_offers_active_status_job.delay,
+                venue.id,
+                provider.id,
+                new_venue_provider.isActive,
+            )
         )
     except exceptions.NoMatchingAllocineTheater:
         raise ApiErrors(
