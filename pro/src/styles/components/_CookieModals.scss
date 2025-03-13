@@ -18,7 +18,7 @@ $action-gap: rem.torem(10px);
 .orejime-Modal {
   background: var(--color-background-default);
   box-shadow: 0 2px 16px var(--color-medium-shadow);
-  color: var(--color-input-text-color);
+  color: var(--color-text-default);
 }
 
 .orejime-Notice-actionItem button,
@@ -55,7 +55,6 @@ $action-gap: rem.torem(10px);
   &-title {
     @include fonts.body-accent;
 
-    color: var(--color-input-text-color);
     line-height: var(--typography-body-line-height);
     margin-bottom: rem.torem(8px);
   }
@@ -67,7 +66,6 @@ $action-gap: rem.torem(10px);
 
   &-description {
     margin-bottom: rem.torem(16px);
-    color: var(--color-black);
 
     @include fonts.body;
   }
@@ -209,10 +207,6 @@ $action-gap: rem.torem(10px);
     &-label {
       margin-bottom: rem.torem(8px);
       display: inline-block;
-
-      & > span {
-        color: var(--color-input-text-color);
-      }
     }
 
     &-purposes {

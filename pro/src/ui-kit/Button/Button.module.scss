@@ -120,7 +120,7 @@
   &-quaternary,
   &-ternary-pink,
   &-quaternary-pink {
-    color: var(--color-black);
+    color: var(--color-text-default);
     align-items: flex-start;
     justify-content: flex-start;
     background-color: transparent;
@@ -167,7 +167,7 @@
 
     margin-top: rem.torem(6px);
     margin-bottom: rem.torem(6px);
-    color: var(--color-black);
+    color: var(--color-text-default);
 
     .button-icon:not(.has-tooltip) {
       height: var(--typography-body-xs-line-height);
