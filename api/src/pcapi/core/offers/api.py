@@ -320,7 +320,7 @@ def create_offer(
     return offer
 
 
-def _get_offerer_address_from_address_body(
+def get_offerer_address_from_address_body(
     address_body: offerers_schemas.AddressBodyModel | None, venue: offerers_models.Venue
 ) -> offerers_models.OffererAddress | None:
     if not address_body:
@@ -344,7 +344,7 @@ def update_offer(
 
     # updated using the pro interface
     if body.address:
-        offerer_address_from_body = _get_offerer_address_from_address_body(address_body=body.address, venue=offer.venue)
+        offerer_address_from_body = get_offerer_address_from_address_body(address_body=body.address, venue=offer.venue)
 
         if offerer_address_from_body is not None:
             fields["offererAddress"] = offerer_address_from_body
