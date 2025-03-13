@@ -3,8 +3,8 @@ import { getOffersCountToDisplay } from 'commons/utils/getOffersCountToDisplay'
 import { NoResults } from 'components/NoResults/NoResults'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
 
+import { LoadingContent } from './LoadingSkeleton'
 import styles from './OffersTable.module.scss'
 
 type OffersTableProps = {
@@ -34,13 +34,16 @@ export const OffersTable = ({
             variant={CalloutVariant.INFO}
             className={styles['offers-table-callout']}
           >
-            L’affichage est limité à {MAX_OFFERS_TO_DISPLAY} offres. Modifiez les filtres pour
-            affiner votre recherche.
+            L’affichage est limité à {MAX_OFFERS_TO_DISPLAY} offres. Modifiez
+            les filtres pour affiner votre recherche.
           </Callout>
         )}
         {hasOffers && (
           <div className={styles['offers-table-title']}>
-            <h2 id="offers-table-title" className={styles['offers-table-title-heading']}>
+            <h2
+              id="offers-table-title"
+              className={styles['offers-table-title-heading']}
+            >
               Liste des offres
             </h2>
             <div>
@@ -52,12 +55,16 @@ export const OffersTable = ({
         )}
       </div>
       {isLoading ? (
-        <Spinner className={styles['offers-table-spinner']} />
+        <LoadingContent />
       ) : (
         <>
           {hasOffers && (
             <>
-              <table role="table" className={styles['offers-table-table']} aria-labelledby="offers-table-title">
+              <table
+                role="table"
+                className={styles['offers-table-table']}
+                aria-labelledby="offers-table-title"
+              >
                 {children}
               </table>
               {pagination && (
