@@ -3,6 +3,7 @@
 .modal-content {
   padding: rem.torem(24px);
   min-width: rem.torem(416px);
+  color: var(--color-text-default);
 
   &-title {
     color: var(--color-grey-dark);

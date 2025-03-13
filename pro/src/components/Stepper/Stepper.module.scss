@@ -52,7 +52,7 @@ $number-size: rem.torem(30px);
 
     &.selectionnable {
       .step {
-        color: var(--color-black);
+        color: var(--color-text-default);
 
         .number {
           .inner {

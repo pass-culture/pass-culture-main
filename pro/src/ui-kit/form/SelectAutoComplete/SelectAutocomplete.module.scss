@@ -11,7 +11,7 @@
 
 .multi-select-autocomplete-placeholder-input::placeholder {
   &:not(:disabled) {
-    color: var(--color-black);
+    color: var(--color-text-default);
   }
 }
 
@@ -25,7 +25,7 @@
     align-items: center;
     background-color: var(--color-background-subtle);
     border-radius: rem.torem(100px);
-    color: var(--color-black);
+    color: var(--color-text-default);
     cursor: pointer;
     display: flex;
     height: rem.torem(18px);
