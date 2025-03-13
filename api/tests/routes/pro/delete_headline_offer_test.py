@@ -39,10 +39,8 @@ class Returns204Test:
         offerer = offer.venue.managingOfferer
         another_offer = offers_factories.OfferFactory()
         another_offerer = another_offer.venue.managingOfferer
-        offers_factories.StockFactory(offer=offer)
-        offers_factories.StockFactory(offer=another_offer)
-        headline_offer = offers_factories.HeadlineOfferFactory(offer=offer)
-        another_headline_offer = offers_factories.HeadlineOfferFactory(offer=another_offer)
+        headline_offer = offers_factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
+        another_headline_offer = offers_factories.HeadlineOfferFactory(offer=another_offer, create_mediation=True)
 
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         offerers_factories.UserOffererFactory(user=pro, offerer=another_offerer)
@@ -62,7 +60,7 @@ class Returns401Test:
         offer = offers_factories.OfferFactory()
         offers_factories.StockFactory(offer=offer)
         offerers_factories.UserOffererFactory(user=pro, offerer=offer.venue.managingOfferer)
-        headline_offer = offers_factories.HeadlineOfferFactory(offer=offer)
+        headline_offer = offers_factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
         data = {"offererId": offer.venue.managingOfferer.id}
 
         response = client.post("/offers/delete_headline", json=data)
