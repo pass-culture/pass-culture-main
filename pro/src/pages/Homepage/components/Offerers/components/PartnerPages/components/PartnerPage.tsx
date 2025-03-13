@@ -120,14 +120,13 @@ export const PartnerPage = ({
         hasVenue
         isInsidePartnerBlock
       />
-
-      <PartnerPageIndividualSection
+      {venue.hasPartnerPage && <PartnerPageIndividualSection
         venueId={venue.id}
         venueName={venue.name}
         offererId={offerer.id}
         isVisibleInApp={Boolean(venue.isVisibleInApp)}
         isDisplayedInHomepage
-      />
+      />}
       <PartnerPageCollectiveSection
         collectiveDmsApplications={venue.collectiveDmsApplications}
         venueId={venue.id}

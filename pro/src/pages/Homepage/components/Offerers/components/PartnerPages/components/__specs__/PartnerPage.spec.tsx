@@ -19,7 +19,7 @@ import { PartnerPage, PartnerPageProps } from '../PartnerPage'
 
 const mockLogEvent = vi.fn()
 
-const renderPartnerPages = (props: Partial<PartnerPageProps>) => {
+const renderPartnerPages = (props: Partial<PartnerPageProps>, features?: string[]) => {
   renderWithProviders(
     <PartnerPage
       offerer={{ ...defaultGetOffererResponseModel }}
@@ -32,6 +32,7 @@ const renderPartnerPages = (props: Partial<PartnerPageProps>) => {
         user: { currentUser: sharedCurrentUserFactory() },
         offerer: currentOffererFactory(),
       },
+      features, 
     }
   )
 }
@@ -86,6 +87,12 @@ describe('PartnerPages', () => {
     )
   })
 
+  it('should display a "Grand public" section', () => {
+    renderPartnerPages({})
+
+    expect(screen.getByText('Grand public')).toBeInTheDocument()
+  })
+
   it('should display the EAC section', () => {
     renderPartnerPages({
       venue: {
@@ -102,5 +109,29 @@ describe('PartnerPages', () => {
     expect(
       screen.getByText('Faire une demande de référencement ADAGE')
     ).toBeInTheDocument()
+  })
+
+  describe('when open to public feature is enabled', () => {
+    it('should display the "Grand public" section when the venue has a partner page', () => {
+      renderPartnerPages({
+        venue: {
+          ...defaultGetOffererVenueResponseModel,
+          hasPartnerPage: true,
+        },
+      }, ['WIP_IS_OPEN_TO_PUBLIC'])
+
+      expect(screen.getByText('Grand public')).toBeInTheDocument()
+    })
+
+    it('should not display the "Grand public" section when the venue does not have a partner page', () => {
+      renderPartnerPages({
+        venue: {
+          ...defaultGetOffererVenueResponseModel,
+          hasPartnerPage: false,
+        },
+      }, ['WIP_IS_OPEN_TO_PUBLIC'])
+
+      expect(screen.queryByText('Grand public')).not.toBeInTheDocument()
+    })
   })
 })
