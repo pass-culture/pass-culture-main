@@ -21,7 +21,6 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
     num_queries_with_error = 1  # retrieve API key
     num_queries_with_error += 1  # retrieve offer
-    num_queries_with_error += 1  # retrieve feature_flags for api key validation
     num_queries = num_queries_with_error + 1  # future_offer (a backref)
 
     def setup_base_resource(self, venue=None) -> offers_models.Offer:

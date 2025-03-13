@@ -12,7 +12,6 @@ class GetNationalProgramsTest(PublicAPIEndpointBaseHelper):
     endpoint_method = "get"
 
     num_queries = 1  # select api_key, offerer and provider
-    num_queries += 1  # select features
     num_queries += 1  # select national_program
 
     def test_list_national_programs(self, client):

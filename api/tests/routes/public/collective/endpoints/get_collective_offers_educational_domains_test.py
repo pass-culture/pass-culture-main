@@ -14,7 +14,6 @@ class CollectiveOffersGetEducationalDomainsTest(PublicAPIEndpointBaseHelper):
     endpoint_method = "get"
 
     num_queries = 1  # select api_key, offerer and provider
-    num_queries += 1  # select features
     num_queries += 1  # select educational_domain
 
     def test_list_educational_domains(self, client):

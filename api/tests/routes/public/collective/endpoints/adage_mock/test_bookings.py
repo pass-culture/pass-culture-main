@@ -176,13 +176,12 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
     default_factory = factories.ConfirmedCollectiveBookingFactory
 
     on_success_num_queries = 1  # 1. get api key
-    on_success_num_queries += 1  # 2. get FF
-    on_success_num_queries += 1  # 3. get collective booking
-    on_success_num_queries += 1  # 4. get collective stock (lock for update)
-    on_success_num_queries += 1  # 5. get collective booking (refresh)
-    on_success_num_queries += 1  # 6. does pricing exists for collective booking?
-    on_success_num_queries += 1  # 7. get finance events for booking
-    on_success_num_queries += 1  # 8. update booking
+    on_success_num_queries += 1  # 2. get collective booking
+    on_success_num_queries += 1  # 3. get collective stock (lock for update)
+    on_success_num_queries += 1  # 4. get collective booking (refresh)
+    on_success_num_queries += 1  # 5. does pricing exists for collective booking?
+    on_success_num_queries += 1  # 6. get finance events for booking
+    on_success_num_queries += 1  # 7. update booking
 
     @pytest.mark.parametrize(
         "booking_factory",
@@ -219,13 +218,12 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
             booking_id = cancelled_booking.id
 
             expected_queries_count = 1  # 1. get api key
-            expected_queries_count += 1  # 2. get FF
-            expected_queries_count += 1  # 3. get collective booking
-            expected_queries_count += 1  # 4. get collective stock (lock for update)
-            expected_queries_count += 1  # 5. get collective booking (refresh)
-            expected_queries_count += 1  # 6. does pricing exists for collective booking?
-            expected_queries_count += 1  # 7. get finance events for booking
-            expected_queries_count += 1  # 8. rollback
+            expected_queries_count += 1  # 2. get collective booking
+            expected_queries_count += 1  # 3. get collective stock (lock for update)
+            expected_queries_count += 1  # 4. get collective booking (refresh)
+            expected_queries_count += 1  # 5. does pricing exists for collective booking?
+            expected_queries_count += 1  # 6. get finance events for booking
+            expected_queries_count += 1  # 7. rollback
 
             with assert_num_queries(expected_queries_count):
                 self.assert_request_has_expected_result(
@@ -248,11 +246,10 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
             booking_id = reimbursed_booking.id
 
             expected_queries_count = 1  # 1. get api key
-            expected_queries_count += 1  # 2. get FF
-            expected_queries_count += 1  # 3. get collective booking
-            expected_queries_count += 1  # 4. get collective stock (lock for update)
-            expected_queries_count += 1  # 5. get collective booking (refresh)
-            expected_queries_count += 1  # 6. rollback
+            expected_queries_count += 1  # 2. get collective booking
+            expected_queries_count += 1  # 3. get collective stock (lock for update)
+            expected_queries_count += 1  # 4. get collective booking (refresh)
+            expected_queries_count += 1  # 5. rollback
 
             with assert_num_queries(expected_queries_count):
                 self.assert_request_has_expected_result(
@@ -267,8 +264,7 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
         auth_client = client.with_explicit_token(plain_api_key)
 
         expected_queries_count = 1  # 1. get api key
-        expected_queries_count += 1  # 2. get FF
-        expected_queries_count += 1  # 3. get collective booking
+        expected_queries_count += 1  # 2. get collective booking
 
         with assert_num_queries(expected_queries_count):
             self.assert_request_has_expected_result(
@@ -290,12 +286,11 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
             booking_id = booking.id
 
             expected_queries_count = 1  # 1. get api key
-            expected_queries_count += 1  # 2. get FF
-            expected_queries_count += 1  # 3. get collective booking
-            expected_queries_count += 1  # 4. get collective stock (lock for update)
-            expected_queries_count += 1  # 5. get collective booking (refresh)
-            expected_queries_count += 1  # 6. does pricing exists for collective booking?
-            expected_queries_count += 1  # 7. rollback
+            expected_queries_count += 1  # 2. get collective booking
+            expected_queries_count += 1  # 3. get collective stock (lock for update)
+            expected_queries_count += 1  # 4. get collective booking (refresh)
+            expected_queries_count += 1  # 5. does pricing exists for collective booking?
+            expected_queries_count += 1  # 6. rollback
 
             with assert_num_queries(expected_queries_count):
                 self.assert_request_has_expected_result(
@@ -388,8 +383,7 @@ class ResetCollectiveBookingTest(AdageMockEndpointHelper):
         auth_client = client.with_explicit_token(plain_api_key)
         with assert_attribute_does_not_change(booking, "status"):
             expected_num_queries = 1  # 1. get api key
-            expected_num_queries += 1  # 2. get FF
-            expected_num_queries += 1  # 3. get collective booking (no update triggered since status does not change)
+            expected_num_queries += 1  # 2. get collective booking (no update triggered since status does not change)
 
             booking_id = booking.id
             with assert_num_queries(expected_num_queries):
@@ -411,9 +405,8 @@ class ResetCollectiveBookingTest(AdageMockEndpointHelper):
 
         with assert_attribute_value_changes_to(booking, "status", models.CollectiveBookingStatus.PENDING):
             expected_num_queries = 1  # 1. get api key
-            expected_num_queries += 1  # 2. get FF
-            expected_num_queries += 1  # 3. get collective booking
-            expected_num_queries += 1  # 4. update booking
+            expected_num_queries += 1  # 2. get collective booking
+            expected_num_queries += 1  # 3. update booking
 
             booking_id = booking.id
             with assert_num_queries(expected_num_queries):
@@ -439,8 +432,7 @@ class ResetCollectiveBookingTest(AdageMockEndpointHelper):
 
         with assert_attribute_does_not_change(booking, "status"):
             expected_num_queries = 1  # 1. get api key
-            expected_num_queries += 1  # 2. get FF
-            expected_num_queries += 1  # 3. get collective booking
+            expected_num_queries += 1  # 2. get collective booking
 
             booking_id = booking.id
             with assert_num_queries(expected_num_queries):
@@ -466,9 +458,8 @@ class RepayCollectiveBookingTest(AdageMockEndpointHelper):
             booking_id = used_booking.id
 
             expected_num_queries = 1  # 1. get api key
-            expected_num_queries += 1  # 2. get FF
-            expected_num_queries += 1  # 3. get collective booking
-            expected_num_queries += 1  # 4. update booking
+            expected_num_queries += 1  # 2. get collective booking
+            expected_num_queries += 1  # 3. update booking
 
             with assert_num_queries(expected_num_queries):
                 self.assert_request_has_expected_result(
@@ -497,8 +488,7 @@ class RepayCollectiveBookingTest(AdageMockEndpointHelper):
             booking_id = booking.id
 
             expected_num_queries = 1  # 1. get api key
-            expected_num_queries += 1  # 2. get FF
-            expected_num_queries += 1  # 3. get collective booking
+            expected_num_queries += 1  # 2. get collective booking
 
             with assert_num_queries(expected_num_queries):
                 self.assert_request_has_expected_result(
@@ -529,10 +519,10 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
         offer_id = offer.id
 
         expected_num_queries = 1  # 1. get api key
-        expected_num_queries += 1  # 2. get FF
-        expected_num_queries += 1  # 3. get collective offer
+        expected_num_queries += 1  # 2. get collective offer
+        expected_num_queries += 1  # 3. get venue
         expected_num_queries += 1  # 4. get stock (booking limit datetime)
-        expected_num_queries += 1  # 5. get venue
+        expected_num_queries += 1  # 5. get FF
         expected_num_queries += 1  # 6. search redactor
         expected_num_queries += 1  # 7. save (new) redactor
         expected_num_queries += 1  # 8. get institution (with program) based on UAI
