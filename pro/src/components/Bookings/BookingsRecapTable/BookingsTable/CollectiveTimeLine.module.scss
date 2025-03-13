@@ -47,11 +47,10 @@
 .contact-link {
   @include fonts.button;
 
-  color: var(--color-black);
+  color: var(--color-text-default);
 
   &:hover,
   &:focus {
-    color: var(--color-black);
     cursor: pointer;
     text-decoration: underline;
   }

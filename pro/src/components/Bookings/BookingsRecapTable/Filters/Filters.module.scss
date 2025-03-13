@@ -47,7 +47,7 @@
 .table-head-label {
   @include fonts.body-accent-xs;
 
-  color: var(--color-black);
+  color: var(--color-text-default);
   min-height: rem.torem(60px);
   padding: rem.torem(14px);
   vertical-align: middle;

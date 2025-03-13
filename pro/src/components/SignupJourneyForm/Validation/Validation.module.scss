@@ -15,13 +15,12 @@
   margin-top: rem.torem(8px);
   padding: rem.torem(16px);
   background: var(--color-background-subtle);
-  color: var(--color-grey-dark);
+  color: var(--color-text-default);
   border-radius: rem.torem(8px);
 
   .data-line {
     @include fonts.body;
 
-    color: var(--color-black);
     margin-bottom: rem.torem(8px);
     overflow-wrap: break-word;
 

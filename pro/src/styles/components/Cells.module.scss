@@ -208,7 +208,7 @@
   outline: none;
   border: none;
   background-color: var(--color-background-default);
-  color: var(--color-black);
+  color: var(--color-text-default);
   height: rem.torem(32px);
 
   &[data-state="open"] {

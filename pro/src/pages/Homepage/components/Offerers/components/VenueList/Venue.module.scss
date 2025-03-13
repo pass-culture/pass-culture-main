@@ -32,6 +32,7 @@
   background: none;
   border: none;
   word-break: break-all;
+  color: var(--color-text-default);
 
   &-button {
     @include fonts.title3;
