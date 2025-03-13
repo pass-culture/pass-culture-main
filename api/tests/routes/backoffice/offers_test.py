@@ -769,6 +769,9 @@ class ListOffersTest(GetEndpointHelper):
             "search-3-search_field": "VALIDATION",
             "search-3-operator": "IN",
             "search-3-validation": offers_models.OfferValidationStatus.PENDING.value,
+            "search-2-search_field": "VALIDATED_OFFERER",
+            "search-2-operator": "EQUALS",
+            "search-2-boolean": "true",
         }
 
         with assert_num_queries(self.expected_num_queries):

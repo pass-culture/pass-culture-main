@@ -192,6 +192,12 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "facet": "venue.id",
         "column": offers_models.Offer.venueId,
     },
+    "VALIDATED_OFFERER": {
+        "field": "boolean",
+        "special": lambda x: x == "true",
+        "column": offerers_models.Offerer.isValidated,
+        "inner_join": "offerer",
+    },
     "VALIDATION": {
         "field": "validation",
         "column": offers_models.Offer.validation,
@@ -234,25 +240,35 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
         {
             "name": "criterion",
             "args": (criteria_models.Criterion, offers_models.Offer.criteria),
-        }
+        },
     ],
     "offer_criterion": [
         {
             "name": "offer_criterion",
             "args": (criteria_models.OfferCriterion, offers_models.Offer.id == criteria_models.OfferCriterion.offerId),
-        }
+        },
     ],
     "offerer_address": [
         {
             "name": "offerer_address",
             "args": (offerers_models.OffererAddress, offers_models.Offer.offererAddress),
-        }
+        },
     ],
     "venue": [
         {
             "name": "venue",
             "args": (offerers_models.Venue, offers_models.Offer.venue),
-        }
+        },
+    ],
+    "offerer": [
+        {
+            "name": "venue",
+            "args": (offerers_models.Venue, offers_models.Offer.venue),
+        },
+        {
+            "name": "offerer",
+            "args": (offerers_models.Offerer, offerers_models.Venue.managingOfferer),
+        },
     ],
 }
 
@@ -282,7 +298,7 @@ def _get_offer_ids_algolia(form: forms.GetOfferAlgoliaSearchForm) -> list[int]:
 
 
 def _get_offer_ids_query(form: forms.GetOfferAdvancedSearchForm) -> BaseQuery:
-    query, inner_joins, _, warnings = utils.generate_search_query(
+    query, _, _, warnings = utils.generate_search_query(
         query=offers_models.Offer.query,
         search_parameters=form.search.data,
         fields_definition=SEARCH_FIELD_TO_PYTHON,
@@ -291,13 +307,6 @@ def _get_offer_ids_query(form: forms.GetOfferAdvancedSearchForm) -> BaseQuery:
     )
     for warning in warnings:
         flash(escape(warning), "warning")
-
-    if form.only_validated_offerers.data:
-        if "venue" not in inner_joins:
-            query = query.join(offerers_models.Venue, offers_models.Offer.venue)
-        if "offerer" not in inner_joins:
-            query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
-        query = query.filter(offerers_models.Offerer.isValidated)
 
     # +1 to check if there are more results than requested
     # union() above may cause duplicates, but distinct() affects performance and causes timeout;
