@@ -2254,11 +2254,10 @@ class HeadlineOfferTest:
         factories.StockFactory(offer=offer)
 
         headline_offer = factories.HeadlineOfferFactory(offer=offer)
-        assert headline_offer.isActive
+        assert not headline_offer.isActive
 
         api.set_upper_timespan_of_inactive_headline_offers()
 
-        assert not headline_offer.isActive
         assert headline_offer.timespan.upper is not None
 
         mocked_async_index_offer_ids.assert_called_once_with(

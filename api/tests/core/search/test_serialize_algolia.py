@@ -399,7 +399,7 @@ def test_serialize_offer_book_format():
 
 
 def test_serialize_offer_forever_headline():
-    headline_offer = offers_factories.HeadlineOfferFactory()
+    headline_offer = offers_factories.HeadlineOfferFactory(create_mediation=True)
     serialized = algolia.AlgoliaBackend().serialize_offer(headline_offer.offer, 0)
     assert serialized["offer"]["isHeadline"] is True
     assert "isHeadlineUntil" not in serialized["offer"]
@@ -408,7 +408,9 @@ def test_serialize_offer_forever_headline():
 @time_machine.travel("2025-01-01")
 def test_serialize_offer_temporarily_headline():
     now = datetime.datetime.utcnow()
-    headline_offer = offers_factories.HeadlineOfferFactory(timespan=(now, now + relativedelta(days=1)))
+    headline_offer = offers_factories.HeadlineOfferFactory(
+        timespan=(now, now + relativedelta(days=1)), create_mediation=True
+    )
     serialized = algolia.AlgoliaBackend().serialize_offer(headline_offer.offer, 0)
     assert serialized["offer"]["isHeadline"] is True
     assert serialized["offer"]["isHeadlineUntil"] == 1735776000

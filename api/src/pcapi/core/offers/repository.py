@@ -1159,11 +1159,13 @@ def get_offer_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
     )
 
 
-def get_offerer_active_headline_offer_even_not_yet_disabled_by_cron(offerer_id: int) -> models.HeadlineOffer | None:
+def get_current_headline_offer(offerer_id: int) -> models.HeadlineOffer | None:
     return (
-        models.HeadlineOffer.query.join(offerers_models.Venue)
+        models.HeadlineOffer.query.join(offerers_models.Venue, models.HeadlineOffer.venueId == offerers_models.Venue.id)
+        .join(offerers_models.Offerer, offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
         .filter(
-            models.HeadlineOffer.isActiveOrNotYetDisabled == True, offerers_models.Venue.managingOffererId == offerer_id
+            offerers_models.Offerer.id == offerer_id,
+            models.HeadlineOffer.timespan.contains(datetime.datetime.utcnow()),
         )
         .one_or_none()
     )
