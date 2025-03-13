@@ -1297,6 +1297,59 @@ RESPONSE_FORM_RESPONSE_WITH_ALL_TYPES = {
     "page_count": 1,
 }
 
+
+RESPONSE_FORM_RESPONSE_WITHOUT_LABELS = {
+    "items": [
+        {
+            "landing_id": "nj0g9wtuhxhkqdw11qnj0g9wnf3edhxu",
+            "token": "nj0g9wtuhxhkqdw11qnj0g9wnf3edhxu",  # ggignore
+            "response_id": "nj0g9wtuhxhkqdw11qnj0g9wnf3edhxu",
+            "response_type": "completed",
+            "landed_at": "2025-01-15T13:20:56Z",
+            "submitted_at": "2025-01-15T13:22:27Z",
+            "metadata": {
+                "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+                "platform": "other",
+                "referer": "https://passculture.typeform.com/to/AllTypes",
+                "network_id": "02caf8bf57",
+                "browser": "default",
+            },
+            "hidden": {},
+            "calculated": {"score": 0},
+            "answers": [
+                {
+                    "field": {
+                        "id": "roLXsK1FpiIW",
+                        "type": "phone_number",
+                        "ref": "a4691847-bb60-4dbc-a7da-073eedc4bc03",
+                    },
+                    "type": "phone_number",
+                    "phone_number": "+33123456789",
+                },
+                {
+                    "field": {
+                        "id": "L89x83bmiIzF",
+                        "type": "multiple_choice",
+                        "ref": "2aa27f04-5c30-4503-ab94-fc0e37aa34c8",
+                    },
+                    "type": "choices",
+                    "choices": {
+                        "ids": ["qUe33PcIaIo8", "cFRtsTxvAoqD", "DTx86VXdIO6A"],
+                        "refs": [
+                            "66b6183c-f0f1-4b0c-b845-10608af06210",
+                            "ffeff665-3aca-489a-a783-b970fec839db",
+                            "d8fd5c75-8dcf-41c4-9eae-7982a6a03c56",
+                        ],
+                    },
+                },
+            ],
+        }
+    ],
+    "total_items": 1,
+    "page_count": 1,
+}
+
+
 RESPONSE_FORM_404_NOT_FOUND = {"code": "FORM_NOT_FOUND", "description": "Non existing form with id AaAaAa"}
 
 RESPONSE_FORM_RESPONSES_404_NOT_FOUND = {"code": "NOT_FOUND", "description": "Endpoint not found"}
