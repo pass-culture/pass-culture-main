@@ -1,8 +1,7 @@
 import logging
 import typing
 
-from sqlalchemy import create_engine
-from sqlalchemy import engine
+import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.models.api_errors import ApiErrors
@@ -20,13 +19,13 @@ def get_backend() -> "BaseBackend":
 
 class BaseBackend:
     def __init__(self) -> None:
-        self._engine: engine.Engine | None = None
+        self._engine: sa.engine.Engine | None = None
 
-    def _get_engine(self) -> engine.Engine:
+    def _get_engine(self) -> sa.engine.Engine:
         raise NotImplementedError
 
     @property
-    def engine(self) -> engine.Engine:
+    def engine(self) -> sa.engine.Engine:
         if not self._engine:
             self._engine = self._get_engine()
         return self._engine
@@ -44,9 +43,9 @@ class BaseBackend:
 
 
 class ClickhouseBackend(BaseBackend):
-    def _get_engine(self) -> engine.Engine:
+    def _get_engine(self) -> sa.engine.Engine:
         ip = settings.CLICKHOUSE_IP
         user = settings.CLICKHOUSE_USER
         password = settings.CLICKHOUSE_PASSWORD
         uri = f"clickhouse://{user}:{password}@{ip}:8123/default?protocol=http"
-        return create_engine(uri, pool_pre_ping=True)
+        return sa.create_engine(uri, pool_pre_ping=True)

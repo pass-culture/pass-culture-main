@@ -5,11 +5,8 @@ import time
 import typing
 
 from authlib.integrations.flask_client import OAuth
-from flask import Flask
-from flask import Response
-from flask import g
-from flask import jsonify
-from flask import request
+
+import flask
 from flask.logging import default_handler
 import flask.wrappers
 from flask_login import LoginManager
@@ -76,29 +73,29 @@ def before_request() -> None:
             }
         )
     sentry_sdk.set_tag("correlation-id", get_or_set_correlation_id())
-    g.request_start = time.perf_counter()
-    g.log_request_details_extra = {}
+    flask.g.request_start = time.perf_counter()
+    flask.g.log_request_details_extra = {}
 
 
 @app.after_request
 def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Response:
     extra = {
         "statusCode": response.status_code,
-        "method": request.method,
-        "route": str(request.url_rule),  # e.g "/offers/<offer_id>"
-        "path": request.path,
-        "queryParams": request.query_string.decode(request.url_charset, errors="backslashreplace"),
+        "method": flask.request.method,
+        "route": str(flask.request.url_rule),  # e.g "/offers/<offer_id>"
+        "path": flask.request.path,
+        "queryParams": flask.request.query_string.decode(flask.request.url_charset, errors="backslashreplace"),
         "size": response.headers.get("Content-Length", type=int),
-        "deviceId": request.headers.get("device-id"),
-        "sourceIp": request.remote_addr,
-        "requestId": request.headers.get("request-id"),
-        "appVersion": request.headers.get("app-version"),
-        "commitHash": request.headers.get("commit-hash"),
-        "codePushId": request.headers.get("code-push-id"),
-        "platform": request.headers.get("platform"),
+        "deviceId": flask.request.headers.get("device-id"),
+        "sourceIp": flask.request.remote_addr,
+        "requestId": flask.request.headers.get("request-id"),
+        "appVersion": flask.request.headers.get("app-version"),
+        "commitHash": flask.request.headers.get("commit-hash"),
+        "codePushId": flask.request.headers.get("code-push-id"),
+        "platform": flask.request.headers.get("platform"),
     }
     try:
-        duration = round((time.perf_counter() - g.request_start) * 1000)  # milliseconds
+        duration = round((time.perf_counter() - flask.g.request_start) * 1000)  # milliseconds
     except AttributeError:
         # If an error occurs in any "before request" function before
         # our `before_request()` above is called, `g.request_start`
@@ -109,13 +106,13 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
         extra["duration"] = duration
 
     try:
-        extra.update(g.log_request_details_extra)
+        extra.update(flask.g.log_request_details_extra)
     except AttributeError:
         logger.warning("g.log_request_details_extra was not available in log_request_details", exc_info=True)
     except Exception:  # pylint: disable=broad-exception-caught
         logger.warning("g.log_request_details_extra does not seem to contain a valid dict", exc_info=True)
 
-    logger.info("HTTP request at %s", request.path, extra=extra)
+    logger.info("HTTP request at %s", flask.request.path, extra=extra)
 
     return response
 
@@ -211,8 +208,8 @@ app.url_map.strict_slashes = False
 
 # The argument `backoffice_template_name` is not used, but it is needed
 # to have the same signature as `backoffice_app.generate_error_response()`.
-def generate_error_response(errors: dict, backoffice_template_name: str = "not used") -> Response:
-    return jsonify(errors)
+def generate_error_response(errors: dict, backoffice_template_name: str = "not used") -> flask.Response:
+    return flask.jsonify(errors)
 
 
 with app.app_context():
