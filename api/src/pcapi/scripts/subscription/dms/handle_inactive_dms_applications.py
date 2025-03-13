@@ -19,13 +19,13 @@ logger = logging.getLogger(__name__)
 
 PRE_GENERALISATION_DEPARTMENTS = ["08", "22", "25", "29", "34", "35", "56", "58", "67", "71", "84", "93", "94", "973"]
 
-INACTIVITY_MESSAGE = """Aucune activité n’a eu lieu sur votre dossier depuis plus de {delay} jours.
+INACTIVITY_MESSAGE = """Aucune activité n’a eu lieu sur ton dossier depuis plus de {delay} jours.
 
-Conformément à nos CGUs, en cas d’absence de réponse ou de justification insuffisante, nous nous réservons le droit de refuser votre création de compte. Aussi nous avons classé sans suite votre dossier n°{application_number}.
+Conformément à nos CGUs, en cas d’absence de réponse ou de justification insuffisante, nous nous réservons le droit de refuser ta création de compte. Aussi nous avons classé sans suite ton dossier n°{application_number}.
 
-Sous réserve d’être encore éligible, vous pouvez si vous le souhaitez refaire une demande d’inscription. Nous vous invitons à soumettre un nouveau dossier en suivant ce lien : https://www.demarches-simplifiees.fr/dossiers/new?procedure_id={procedure_id}
+Sous réserve d’être encore éligible, tu peux si tu le souhaites refaire une demande d’inscription. Nous t'invitons à soumettre un nouveau dossier en suivant ce lien : https://www.demarches-simplifiees.fr/dossiers/new?procedure_id={procedure_id}
 
-Vous trouverez toutes les informations dans notre FAQ pour vous accompagner dans cette démarche : https://aide.passculture.app/hc/fr/sections/4411991878545-Inscription-et-modification-d-information-sur-Démarches-Simplifiées
+Tu trouveras toutes les informations dans notre FAQ pour t'accompagner dans cette démarche : https://aide.passculture.app/hc/fr/sections/4411991878545-Inscription-et-modification-d-information-sur-Démarches-Simplifiées
 """
 
 
