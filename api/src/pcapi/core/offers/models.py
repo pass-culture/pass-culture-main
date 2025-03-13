@@ -544,42 +544,20 @@ class HeadlineOffer(PcObject, Base, Model):
     @hybrid_property
     def isActive(self) -> bool:
         now = datetime.datetime.utcnow()
-        return (
-            (self.timespan.upper is None or self.timespan.upper > now)
-            and self.timespan.lower <= now
-            and self.offer.status == OfferStatus.ACTIVE
-        )
+        has_images = self.offer.mediations or (self.offer.product.images if self.offer.product else None)
+        return now in self.timespan and self.offer.status == OfferStatus.ACTIVE and has_images
 
     @isActive.expression  # type: ignore[no-redef]
     def isActive(cls) -> bool:  # pylint: disable=no-self-argument
         offer_alias = sa_orm.aliased(Offer)  # avoids cartesian product
         return sa.and_(
-            sa.or_(sa.func.upper(cls.timespan) == None, (sa.func.upper(cls.timespan) > sa.func.now())),
-            sa.func.lower(cls.timespan) <= sa.func.now(),
+            cls.timespan.contains(sa.cast(sa.func.now(), sa.TIMESTAMP)),
             offer_alias.id == cls.offerId,
             offer_alias.status == OfferStatus.ACTIVE,
-        )
-
-    @hybrid_property
-    def isActiveOrNotYetDisabled(self) -> bool:
-        now = datetime.datetime.utcnow()
-        return (self.timespan.upper is None or self.timespan.upper > now) and self.timespan.lower <= now
-
-    @isActiveOrNotYetDisabled.expression  # type: ignore[no-redef]
-    def isActiveOrNotYetDisabled(cls) -> bool:  # pylint: disable=no-self-argument
-        # In order to create a new headline offer, we must find the previous active
-        # headline offer and disable it by adding a new timespan's upper value set to now.
-        # A cronjob runs every 10min to disable headline offer that should be
-        # (offer not ACTIVE anymore, picture removed). So a time gap of 10min exists
-        # in which a headline offer has not upper timespan but should not be active anyway.
-        # If we try to upsert a new headline offer in this time gap,
-        # we need to get this headline offer not returned by isActive and disable it by adding an upper timespan.
-        now = datetime.datetime.utcnow()
-        offer_alias = sa_orm.aliased(Offer)  # avoids cartesian product
-        return sa.and_(
-            sa.or_(sa.func.upper(cls.timespan) == None, (sa.func.upper(cls.timespan) > now)),
-            sa.func.lower(cls.timespan) <= now,
-            offer_alias.id == cls.offerId,
+            sa.or_(
+                sa.exists().where(Mediation.offerId == offer_alias.id),
+                sa.exists().where(ProductMediation.productId == offer_alias.productId),
+            ),
         )
 
 

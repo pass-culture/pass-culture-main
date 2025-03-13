@@ -57,7 +57,6 @@ class Return200Test:
         offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.VERSO)
 
         offer = offers_factories.OfferFactory(venue=venue, product=product)
-        offers_factories.StockFactory(offer=offer)
         offers_factories.HeadlineOfferFactory(offer=offer, venue=venue)
         client = client.with_session_auth(email=pro.email)
         offerer_id = offerer.id
@@ -97,12 +96,10 @@ class Return400Test:
         offerer = user_offerer.offerer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.OfferFactory(venue=venue)
-        offers_factories.StockFactory(offer=offer)
-        offers_factories.HeadlineOfferFactory(offer=offer, venue=venue)
+        offers_factories.HeadlineOfferFactory(offer=offer, venue=venue, create_mediation=True)
         other_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         other_offer = offers_factories.OfferFactory(venue=other_venue)
-        offers_factories.StockFactory(offer=other_offer)
-        offers_factories.HeadlineOfferFactory(offer=other_offer, venue=other_venue)
+        offers_factories.HeadlineOfferFactory(offer=other_offer, venue=other_venue, create_mediation=True)
         client = client.with_session_auth(email=pro.email)
         offerer_id = offerer.id
         with assert_num_queries(self.num_queries):

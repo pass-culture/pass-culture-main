@@ -1977,7 +1977,6 @@ class HeadlineOfferTest:
         factories.StockFactory(offer=offer)
         factories.MediationFactory(offer=offer)
         headline_offer = api.make_offer_headline(offer=offer)
-        db.session.commit()  # see comment in make_offer_headline()
 
         assert offer.is_headline_offer
         assert headline_offer.isActive
@@ -2062,7 +2061,6 @@ class HeadlineOfferTest:
             offer=offer_1, timespan=finished_timespan, create_mediation=True
         )
         new_headline_offer = api.make_offer_headline(offer=offer_2)
-        db.session.commit()  # see comment in make_offer_headline()
         assert not old_headline_offer.isActive
         assert new_headline_offer.isActive
         assert not offer_1.is_headline_offer
@@ -2254,11 +2252,10 @@ class HeadlineOfferTest:
         factories.StockFactory(offer=offer)
 
         headline_offer = factories.HeadlineOfferFactory(offer=offer)
-        assert headline_offer.isActive
+        assert not headline_offer.isActive
 
         api.set_upper_timespan_of_inactive_headline_offers()
 
-        assert not headline_offer.isActive
         assert headline_offer.timespan.upper is not None
 
         mocked_async_index_offer_ids.assert_called_once_with(
@@ -2297,7 +2294,6 @@ class HeadlineOfferTest:
         finished_timespan = (creation_time, creation_time + timedelta(days=10))
         headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan, create_mediation=True)
         new_headline_offer = api.upsert_headline_offer(offer)
-        db.session.commit()  # see comment in make_offer_headline()
 
         assert not headline_offer.isActive
         assert headline_offer.timespan.upper is not None
