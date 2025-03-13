@@ -1,8 +1,8 @@
 import * as yup from 'yup'
 
 import { emailSchema } from 'commons/utils/isValidEmail'
-import { passwordValidationStatus } from 'ui-kit/formV2/PasswordInput/validation'
 import { phoneValidationSchema } from 'ui-kit/form/PhoneNumberInput/phoneValidationSchema'
+import { passwordValidationStatus } from 'ui-kit/formV2/PasswordInput/validation'
 
 export const validationSchema = (newSignup: boolean) => {
   const schema = yup.object().shape({
