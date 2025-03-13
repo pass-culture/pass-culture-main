@@ -3501,6 +3501,90 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
+            "/native/v1/me/reminders": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_me_reminders",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PostReminderRequest",
+                                },
+                            },
+                        },
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Created",
+                        },
+                        "403": {
+                            "description": "Forbidden",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ValidationError",
+                                    },
+                                },
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [
+                        {
+                            "JWTAuth": [],
+                        },
+                    ],
+                    "summary": "post_reminder <POST>",
+                    "tags": [],
+                },
+            },
+            "/native/v1/me/reminders/{reminder_id}": {
+                "delete": {
+                    "description": "",
+                    "operationId": "delete__native_v1_me_reminders_{reminder_id}",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "reminder_id",
+                            "required": True,
+                            "schema": {
+                                "format": "int32",
+                                "type": "integer",
+                            },
+                        },
+                    ],
+                    "responses": {
+                        "204": {
+                            "description": "No Content",
+                        },
+                        "403": {
+                            "description": "Forbidden",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ValidationError",
+                                    },
+                                },
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [
+                        {
+                            "JWTAuth": [],
+                        },
+                    ],
+                    "summary": "delete_reminder <DELETE>",
+                    "tags": [],
+                },
+            },
             "/native/v1/oauth/google/account": {
                 "post": {
                     "description": "",
@@ -4253,31 +4337,6 @@ def test_public_api(client):
                         },
                     },
                     "summary": "refresh <POST>",
-                    "tags": [],
-                }
-            },
-            "/native/v1/reminder": {
-                "post": {
-                    "description": "",
-                    "operationId": "post__native_v1_reminder",
-                    "parameters": [],
-                    "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/PostReminderRequest"}}
-                        }
-                    },
-                    "responses": {
-                        "201": {"description": "Created"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"JWTAuth": []}],
-                    "summary": "post_reminder <POST>",
                     "tags": [],
                 }
             },

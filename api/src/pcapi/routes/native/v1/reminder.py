@@ -13,7 +13,7 @@ from .. import blueprint
 logger = logging.getLogger(__name__)
 
 
-@blueprint.native_route("/reminder", methods=["POST"])
+@blueprint.native_route("/me/reminders", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=201)
 @authenticated_and_active_user_required
 @atomic()
@@ -23,3 +23,11 @@ def post_reminder(
     reminder = reminders_api.create_reminder(user, body)
 
     return serialization.PostReminderResponse(id=reminder.id, offer=reminder.futureOffer.offer)
+
+
+@blueprint.native_route("/me/reminders/<int:reminder_id>", methods=["DELETE"])
+@spectree_serialize(api=blueprint.api, on_success_status=204)
+@authenticated_and_active_user_required
+@atomic()
+def delete_reminder(user: users_models.User, reminder_id: int) -> None:
+    reminders_api.delete_reminder(user, reminder_id)

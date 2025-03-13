@@ -5,9 +5,9 @@ from pcapi.models import db
 from pcapi.routes.native.v1.serialization.reminder import PostReminderRequest
 
 
-def create_reminder(user: User, reminder: PostReminderRequest) -> FutureOfferReminder:
+def create_reminder(user: User, reminder_body: PostReminderRequest) -> FutureOfferReminder:
 
-    query = db.session.query(FutureOffer).filter(FutureOffer.offerId == reminder.offer_id)
+    query = db.session.query(FutureOffer).filter(FutureOffer.offerId == reminder_body.offer_id)
     future_offer = query.first_or_404()
 
     existing_reminder = (
@@ -26,3 +26,10 @@ def create_reminder(user: User, reminder: PostReminderRequest) -> FutureOfferRem
     db.session.flush()
 
     return reminder
+
+
+def delete_reminder(user: User, reminder_id: int) -> None:
+
+    reminder = db.session.query(FutureOfferReminder).filter_by(id=reminder_id, user=user).first_or_404()
+
+    db.session.delete(reminder)
