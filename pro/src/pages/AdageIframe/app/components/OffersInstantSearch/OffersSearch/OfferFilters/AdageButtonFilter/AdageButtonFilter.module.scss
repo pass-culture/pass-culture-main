@@ -17,6 +17,7 @@
   height: rem.torem(40px);
   white-space: nowrap;
   cursor: pointer;
+  color: var(--color-text-default);
 
   &-is-active {
     @include fonts.button;

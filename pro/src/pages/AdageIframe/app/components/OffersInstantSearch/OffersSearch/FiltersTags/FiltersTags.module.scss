@@ -15,6 +15,7 @@
   @include fonts.body-accent-xs;
 
   background-color: var(--color-background-info);
+  color: var(--color-text-default);
   border: none;
   padding: rem.torem(8px) rem.torem(12px);
   border-radius: rem.torem(20px);

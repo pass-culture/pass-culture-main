@@ -15,6 +15,7 @@
   border: rem.torem(1px) solid var(--color-grey-dark);
   border-radius: rem.torem(8px);
   max-width: rem.torem(400px);
+  color: var(--color-text-default);
 
   &-icon {
     height: size.$button-icon-size;
