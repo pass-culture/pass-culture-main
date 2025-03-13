@@ -3,8 +3,6 @@
 @use "styles/mixins/_size.scss" as size;
 
 .discovery {
-  background-color: var(--color-adage-discovery-background);
-
   &-playlists {
     display: flex;
     flex-direction: column;
