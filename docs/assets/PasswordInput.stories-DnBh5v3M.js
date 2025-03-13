@@ -1,0 +1,16 @@
+import{j as o}from"./jsx-runtime-CfatFE5O.js";import{c as P}from"./index-DeARc5FM.js";import{R as v,r as N}from"./index-ClcD9ViR.js";import{s as b,a as j}from"./stroke-show-B6taz1DI.js";import{B as A}from"./Button-CG_YbFBA.js";import{B}from"./types-DjX_gQD6.js";import{T as S}from"./TextInput-n9ADS3z-.js";import"./_commonjsHelpers-Cpj98o6Y.js";import"./stroke-pass-CALgybTM.js";import"./SvgIcon-CUWb-Ez8.js";import"./Tooltip-Bh4x5Y8V.js";import"./Button.module-BhPz46Z7.js";import"./BaseInput-CgeMAOOV.js";import"./FieldError-DblMbt5C.js";import"./stroke-error-DSZD431a.js";import"./FieldLayoutCharacterCount-B0iCo194.js";const i={"password-input-wrapper":"_password-input-wrapper_1css3_1","password-input-wrapper-error":"_password-input-wrapper-error_1css3_7"},a=v.forwardRef(({label:n,name:_,description:y,autoComplete:q,error:p,hideAsterisk:x=!1,...I},C)=>{const[t,R]=N.useState(!0),V=!!p,k=D=>{D.preventDefault(),R(E=>!E)};return o.jsx("div",{className:P([i["password-input-wrapper"]],{[i["password-input-wrapper-error"]]:V}),children:o.jsx(S,{ref:C,className:i["password-input"],label:n,name:_,description:y,type:t?"password":"text",autoComplete:q,error:p,asterisk:!x,rightButton:()=>o.jsx(A,{icon:t?b:j,iconAlt:t?"Afficher le mot de passe":"Cacher le mot de passe",onClick:k,variant:B.TERNARY}),...I})})});a.displayName="PasswordInput";try{a.displayName="PasswordInput",a.__docgenInfo={description:"",displayName:"PasswordInput",props:{label:{defaultValue:null,description:"",name:"label",required:!0,type:{name:"string"}},name:{defaultValue:null,description:"",name:"name",required:!0,type:{name:"string"}},description:{defaultValue:null,description:"",name:"description",required:!1,type:{name:"string"}},autoComplete:{defaultValue:null,description:"",name:"autoComplete",required:!1,type:{name:"string"}},error:{defaultValue:null,description:"",name:"error",required:!1,type:{name:"string"}},hideAsterisk:{defaultValue:{value:"false"},description:"",name:"hideAsterisk",required:!1,type:{name:"boolean"}}}}}catch{}const $={title:"ui-kit/formsV2/PasswordInput",component:a},e={args:{name:"password",label:"Mot de passe *"}},r={args:{...e.args,error:"Ce champs est requis"}},s={args:{...e.args,description:"Choisissez un mot de passe fort et difficile à deviner"}};var d,u,m;e.parameters={...e.parameters,docs:{...(d=e.parameters)==null?void 0:d.docs,source:{originalSource:`{
+  args: {
+    name: 'password',
+    label: 'Mot de passe *'
+  }
+}`,...(m=(u=e.parameters)==null?void 0:u.docs)==null?void 0:m.source}}};var c,l,f;r.parameters={...r.parameters,docs:{...(c=r.parameters)==null?void 0:c.docs,source:{originalSource:`{
+  args: {
+    ...Default.args,
+    error: 'Ce champs est requis'
+  }
+}`,...(f=(l=r.parameters)==null?void 0:l.docs)==null?void 0:f.source}}};var w,g,h;s.parameters={...s.parameters,docs:{...(w=s.parameters)==null?void 0:w.docs,source:{originalSource:`{
+  args: {
+    ...Default.args,
+    description: 'Choisissez un mot de passe fort et difficile à deviner'
+  }
+}`,...(h=(g=s.parameters)==null?void 0:g.docs)==null?void 0:h.source}}};const ee=["Default","WithRequiredError","WithDescription"];export{e as Default,s as WithDescription,r as WithRequiredError,ee as __namedExportsOrder,$ as default};
