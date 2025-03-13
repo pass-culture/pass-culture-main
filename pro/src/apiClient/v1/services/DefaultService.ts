@@ -69,7 +69,6 @@ import type { ListBookingsResponseModel } from '../models/ListBookingsResponseMo
 import type { ListCollectiveBookingsResponseModel } from '../models/ListCollectiveBookingsResponseModel';
 import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
-import type { ListNationalProgramsResponseModel } from '../models/ListNationalProgramsResponseModel';
 import type { ListOffersResponseModel } from '../models/ListOffersResponseModel';
 import type { ListProviderResponse } from '../models/ListProviderResponse';
 import type { ListVenueProviderResponse } from '../models/ListVenueProviderResponse';
@@ -1241,21 +1240,6 @@ export class DefaultService {
         'ean': ean,
         'offerer_id': offererId,
       },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * get_national_programs <GET>
-   * @returns ListNationalProgramsResponseModel OK
-   * @throws ApiError
-   */
-  public getNationalPrograms(): CancelablePromise<ListNationalProgramsResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/national-programs',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
