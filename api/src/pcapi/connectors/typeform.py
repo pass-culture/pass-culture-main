@@ -275,7 +275,7 @@ class TypeformBackend(BaseBackend):
                         )
                     case "choices":
                         choice_id = hashlib.sha1(b" ".join(i.encode() for i in answer["choices"]["ids"])).hexdigest()
-                        text = "\n".join(answer["choices"]["labels"])
+                        text = "\n".join(answer["choices"]["labels"]) if "labels" in answer["choices"] else None
                         answers.append(
                             TypeformAnswer(
                                 field_id=answer["field"]["id"],

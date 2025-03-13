@@ -191,6 +191,21 @@ choice C
 choice B"""
         )
 
+    def test_get_choices_response_without_labels(self):
+        form_id = "AllTypes"
+        with requests_mock.Mocker() as mock:
+            mock.get(
+                f"https://api.typeform.com/forms/{form_id}/responses",
+                json=fixtures.RESPONSE_FORM_RESPONSE_WITHOUT_LABELS,
+            )
+            responses = typeform.get_responses(form_id)
+
+        assert len(responses) == 1
+        response = responses[0]
+
+        assert len(response.answers) == 1
+        assert response.answers[0].text is None
+
     def test_get_responses_not_found(self):
         form_id = "AaAaAa"
         with requests_mock.Mocker() as mock:
