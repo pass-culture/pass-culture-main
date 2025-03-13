@@ -164,7 +164,6 @@ export type { ListCollectiveBookingsResponseModel } from './models/ListCollectiv
 export type { ListCollectiveOffersQueryModel } from './models/ListCollectiveOffersQueryModel';
 export type { ListCollectiveOffersResponseModel } from './models/ListCollectiveOffersResponseModel';
 export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel';
-export type { ListNationalProgramsResponseModel } from './models/ListNationalProgramsResponseModel';
 export type { ListOffersOfferResponseModel } from './models/ListOffersOfferResponseModel';
 export type { ListOffersQueryModel } from './models/ListOffersQueryModel';
 export type { ListOffersResponseModel } from './models/ListOffersResponseModel';
