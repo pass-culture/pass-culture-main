@@ -2,7 +2,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-$arrow-triangle-height: rem.torem(8px);
+$arrow-triangle-height: rem.torem(4px);
 
 .tooltip-container {
   display: inline-block;
@@ -20,14 +20,13 @@ $arrow-triangle-height: rem.torem(8px);
       &::after {
         content: "";
         position: absolute;
-        margin-bottom: 4px;
         width: 0;
         height: 0;
         border-width: $arrow-triangle-height;
         border-style: solid;
         border-color: var(--color-secondary-dark) transparent transparent
           transparent;
-        top: -($arrow-triangle-height * 1.6);
+        top: calc(-1.1 * ($arrow-triangle-height + rem.torem(2px)));
         left: 50%;
         transform: translate(-50%);
       }
@@ -38,14 +37,14 @@ $arrow-triangle-height: rem.torem(8px);
     @include fonts.body-accent-xs;
 
     position: absolute;
-    padding-bottom: rem.torem(12px);
+    padding-bottom: calc($arrow-triangle-height + rem.torem(2px));
     top: 0;
 
     &-panel {
       border-radius: rem.torem(3px);
       background-color: var(--color-secondary-dark);
       color: var(--color-white);
-      padding: rem.torem(4px);
+      padding: rem.torem(4px) rem.torem(8px);
       max-width: rem.torem(200px);
       width: max-content;
       text-align: center;
