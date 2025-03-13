@@ -2071,16 +2071,23 @@ def check_can_move_collective_offer_venue(
 def get_venues_with_same_pricing_point(
     offer: models.Offer | educational_models.CollectiveOffer,
 ) -> list[offerers_models.Venue]:
-    venues_choices = (
+    venues_choices_query = (
         offerers_models.Venue.query.filter(
             offerers_models.Venue.managingOffererId == offer.venue.managingOffererId,
             offerers_models.Venue.id != offer.venueId,
         )
-        .join(
+        .outerjoin(
             offerers_models.VenuePricingPointLink,
             sa.and_(
                 offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
                 offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
+            ),
+        )
+        .outerjoin(
+            offerers_models.VenueBankAccountLink,
+            sa.and_(
+                offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
             ),
         )
         .options(
@@ -2093,10 +2100,25 @@ def get_venues_with_same_pricing_point(
             sa.orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
                 offerers_models.VenuePricingPointLink.pricingPointId, offerers_models.VenuePricingPointLink.timespan
             ),
+            sa.orm.contains_eager(offerers_models.Venue.bankAccountLinks).load_only(
+                offerers_models.VenueBankAccountLink.bankAccountId, offerers_models.VenueBankAccountLink.timespan
+            ),
         )
         .order_by(offerers_models.Venue.common_name)
-        .all()
     )
+
+    if offer.venue.current_pricing_point_link:
+        venues_choices_query = venues_choices_query.filter(
+            offerers_models.VenuePricingPointLink.pricingPointId
+            == offer.venue.current_pricing_point_link.pricingPointId
+        )
+
+    if offer.venue.current_bank_account_link:
+        venues_choices_query = venues_choices_query.filter(
+            offerers_models.VenueBankAccountLink.bankAccountId == offer.venue.current_bank_account_link.bankAccountId
+        )
+    venues_choices = venues_choices_query.all()
+
     if not venues_choices:
         raise exceptions.NoDestinationVenue()
 
@@ -2360,6 +2382,77 @@ def move_collective_offer_venue(
 
     for collective_booking in collective_bookings:
         assert not collective_booking.isReimbursed
+        collective_booking.venueId = destination_venue.id
+        db.session.add(collective_booking)
+
+        # when offer has priced bookings, pricing point for destination venue must be the same as pricing point
+        # used for pricing (same as venue pricing point at the time pricing was processed)
+        pricing = collective_booking.pricings[0] if collective_booking.pricings else None
+        if pricing and pricing.pricingPointId != destination_pricing_point_id:
+            raise exceptions.BookingsHaveOtherPricingPoint()
+
+        finance_event = collective_booking.finance_events[0] if collective_booking.finance_events else None
+        if finance_event:
+            finance_event.venueId = destination_venue.id
+            finance_event.pricingPointId = destination_pricing_point_id
+            if finance_event.status == finance_models.FinanceEventStatus.PENDING:
+                finance_event.status = finance_models.FinanceEventStatus.READY
+                finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(collective_booking)
+            db.session.add(finance_event)
+
+    db.session.flush()
+
+
+def move_collective_offer_venue_no_restriction(
+    collective_offer: educational_models.CollectiveOffer, destination_venue: offerers_models.Venue
+) -> None:
+    venue_choices = get_venues_with_same_pricing_point(collective_offer)
+
+    if destination_venue not in venue_choices:
+        raise exceptions.ForbiddenDestinationVenue()
+
+    destination_pricing_point_link = destination_venue.current_pricing_point_link
+    destination_pricing_point_id = (
+        destination_pricing_point_link.pricingPointId if destination_pricing_point_link else None
+    )
+
+    collective_bookings = (
+        educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.collectiveStock)
+        .outerjoin(
+            # max 1 row joined thanks to idx_uniq_collective_booking_id
+            finance_models.FinanceEvent,
+            sa.and_(
+                finance_models.FinanceEvent.collectiveBookingId == educational_models.CollectiveBooking.id,
+                finance_models.FinanceEvent.status.in_(
+                    (finance_models.FinanceEventStatus.PENDING, finance_models.FinanceEventStatus.READY)
+                ),
+            ),
+        )
+        .outerjoin(
+            # max 1 row joined thanks to idx_uniq_booking_id
+            finance_models.Pricing,
+            sa.and_(
+                finance_models.Pricing.collectiveBookingId == educational_models.CollectiveBooking.id,
+                finance_models.Pricing.status != finance_models.PricingStatus.CANCELLED,
+            ),
+        )
+        .options(
+            sa.orm.load_only(educational_models.CollectiveBooking.status),
+            sa.orm.contains_eager(educational_models.CollectiveBooking.finance_events).load_only(
+                finance_models.FinanceEvent.status
+            ),
+            sa.orm.contains_eager(educational_models.CollectiveBooking.pricings).load_only(
+                finance_models.Pricing.pricingPointId, finance_models.Pricing.status
+            ),
+        )
+        .filter(educational_models.CollectiveStock.collectiveOfferId == collective_offer.id)
+        .all()
+    )
+
+    collective_offer.venue = destination_venue
+    db.session.add(collective_offer)
+
+    for collective_booking in collective_bookings:
         collective_booking.venueId = destination_venue.id
         db.session.add(collective_booking)
 
