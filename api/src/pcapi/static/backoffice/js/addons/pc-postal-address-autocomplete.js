@@ -402,7 +402,9 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     }
 
     const $isManualAddress = this.#getIsManualAddress($autoComplete)
-    $isManualAddress.value = ""
+    if ($isManualAddress) {
+      $isManualAddress.value = ""
+    }
   }
 
   #onBlur = (event) => {
@@ -413,7 +415,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
         this.#getDropdown(event.target).classList.remove('show')
         this.#resetForm(event.target)
       }
-    }, 100)
+    }, 200)
   }
 
   #onResetForm = (event) => {
