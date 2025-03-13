@@ -116,11 +116,13 @@ export const OfferCardComponent = ({
             )}
         </div>
       </Link>
-      <OfferFavoriteButton
-        offer={{ ...offer, isTemplate: true }}
-        className={styles['offer-favorite-button']}
-        viewType={viewType}
-      />
+      <div className={styles['offer-favorite-button-container']}>
+        <OfferFavoriteButton
+          offer={{ ...offer, isTemplate: true }}
+          className={styles['offer-favorite-button']}
+          viewType={viewType}
+        />
+      </div>
     </div>
   )
 }
