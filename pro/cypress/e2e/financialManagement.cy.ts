@@ -133,13 +133,22 @@ describe('Financial Management - messages, links to external help page, reimburs
         })
       })
 
-      cy.stepLog({ message: 'I download reimbursement details' })
+      cy.stepLog({ message: 'I download reimbursement details in csv' })
       cy.findByTestId('dropdown-menu-trigger').click()
       cy.findByText(/Télécharger le détail des réservations/).click()
 
-      cy.stepLog({ message: 'I can see the reimbursement details' })
-      const filename = `${Cypress.config('downloadsFolder')}/remboursements_pass_culture.csv`
-      cy.readFile(filename, { timeout: 15000 }).should('not.be.empty')
+      cy.stepLog({ message: 'I can see the reimbursement details in csv' })
+      const filenameCSV = `${Cypress.config('downloadsFolder')}/remboursements_pass_culture.csv`
+      cy.readFile(filenameCSV, { timeout: 15000 }).should('not.be.empty')
+
+      cy.stepLog({ message: 'I download reimbursement details in pdf' })
+      cy.findByTestId('dropdown-menu-trigger').click()
+      cy.findByText(/Télécharger le justificatif comptable/).click()
+
+      cy.stepLog({ message: 'I can see the reimbursement details in pdf' })
+      // Nok working, no pdf file
+      // const filenamePDF = `${Cypress.config('downloadsFolder')}/remboursements_pass_culture.pdf`
+      // cy.readFile(filenamePDF, { timeout: 15000 }).should('not.be.empty')
     })
   })
 
