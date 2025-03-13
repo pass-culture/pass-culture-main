@@ -20,8 +20,8 @@ from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer_request
 from pcapi.core.educational.api import adage as educational_api_adage
+from pcapi.core.educational.api import national_program as national_program_api
 from pcapi.core.educational.api import shared as api_shared
-import pcapi.core.educational.api.national_program as national_program_api
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.schemas import EducationalBookingEdition
 from pcapi.core.educational.utils import get_image_from_url
@@ -293,13 +293,8 @@ def get_location_values(
     When we receive the offerVenue field, in the "offererVenue" case we check venueId and force intervention_area to be empty
     When we receive location, we also write to offerVenue to keep the field up to date
     """
-
-    # TODO: we should put here collective-related functions from pcapi.core.offers.api (e.g update_collective_offer)
-    # and decide where to put shared code
-    from pcapi.core.offers.api import _get_offerer_address_from_address_body
-
     address_body = offer_data.location.address if offer_data.location else None
-    offerer_address = _get_offerer_address_from_address_body(address_body=address_body, venue=venue)
+    offerer_address = offers_api.get_offerer_address_from_address_body(address_body=address_body, venue=venue)
     intervention_area = offer_data.intervention_area or []
 
     offer_venue: educational_models.OfferVenueDict
@@ -592,8 +587,6 @@ def create_collective_offer_public(
     requested_id: int,
     body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel,
 ) -> educational_models.CollectiveOffer:
-    from pcapi.core.offers.api import update_offer_fraud_information
-
     venue = educational_repository.fetch_venue_for_new_offer(body.venue_id, requested_id)
     if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
         raise exceptions.CulturalPartnerNotFoundException("No venue has been found for the selected siren")
@@ -676,7 +669,7 @@ def create_collective_offer_public(
         priceDetail=body.educational_price_detail,
     )
 
-    update_offer_fraud_information(offer=collective_offer, user=None)
+    offers_api.update_offer_fraud_information(offer=collective_offer, user=None)
 
     db.session.add(collective_offer)
     db.session.add(collective_stock)
@@ -834,10 +827,8 @@ def edit_collective_offer_public(
 def publish_collective_offer(
     offer: educational_models.CollectiveOffer, user: User
 ) -> educational_models.CollectiveOffer:
-    from pcapi.core.offers.api import update_offer_fraud_information
-
     if offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
-        update_offer_fraud_information(offer, user)
+        offers_api.update_offer_fraud_information(offer, user)
 
     return offer
 
@@ -845,10 +836,8 @@ def publish_collective_offer(
 def publish_collective_offer_template(
     offer_template: educational_models.CollectiveOfferTemplate, user: User
 ) -> educational_models.CollectiveOfferTemplate:
-    from pcapi.core.offers.api import update_offer_fraud_information
-
     if offer_template.validation == offer_mixin.OfferValidationStatus.DRAFT:
-        update_offer_fraud_information(offer_template, user)
+        offers_api.update_offer_fraud_information(offer_template, user)
 
         on_commit(
             partial(
@@ -1378,8 +1367,6 @@ def _update_collective_offer(
     location_body: "collective_offers_serialize.CollectiveOfferLocationModel | None",
     user: users_models.User,
 ) -> list[str]:
-    from pcapi.core.offers.api import _get_offerer_address_from_address_body
-
     offer_validation.check_validation_status(offer)
     offer_validation.check_contact_request(offer, new_values)
 
@@ -1397,7 +1384,9 @@ def _update_collective_offer(
     # receive location -> extract location field and write to offerVenue to keep the field up to date
     if edit_location:
         assert location_body is not None
-        offerer_address = _get_offerer_address_from_address_body(address_body=location_body.address, venue=offer.venue)
+        offerer_address = offers_api.get_offerer_address_from_address_body(
+            address_body=location_body.address, venue=offer.venue
+        )
         new_values["offererAddress"] = offerer_address
 
         offer_venue = get_offer_venue_from_location(
