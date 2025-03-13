@@ -171,6 +171,23 @@ def handle_dms_application(
         "dms_state": state,
     }
 
+    application_content = dms_serializer.parse_beneficiary_information_graphql(dms_application)
+    if not application_content.field_errors:
+        logger.info(
+            "Successfully parsed DMS application",
+            extra=log_extra_data,
+        )
+    logger.info("[DMS] Application received with state %s", state, extra=log_extra_data)
+
+    # Application may be refused after being instructed, even if there is no user account
+    if state in (dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going):
+        _process_check_birth_date(
+            application_content, dms_application.procedure.number, application_scalar_id, dms_application.labels
+        )
+
+        if _process_instructor_annotation(application_content, application_scalar_id):
+            state = dms_models.GraphQLApplicationStates(application_content.state)
+
     user = find_user_by_email(user_email)
     if not user:
         logger.info("[DMS] User not found for application", extra=log_extra_data)
@@ -183,22 +200,6 @@ def handle_dms_application(
             latest_modification_datetime=dms_application.latest_modification_datetime,
         )
         return None
-
-    application_content = dms_serializer.parse_beneficiary_information_graphql(dms_application)
-    if not application_content.field_errors:
-        logger.info(
-            "Successfully parsed DMS application",
-            extra=log_extra_data,
-        )
-    logger.info("[DMS] Application received with state %s", state, extra=log_extra_data)
-
-    if state in (dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going):
-        _process_check_birth_date(
-            application_content, dms_application.procedure.number, application_scalar_id, dms_application.labels
-        )
-
-        if _process_instructor_annotation(application_content, application_scalar_id):
-            state = dms_models.GraphQLApplicationStates(application_content.state)
 
     fraud_check = fraud_dms_api.get_fraud_check(user, application_number)
     if fraud_check is None:
