@@ -5,11 +5,9 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { useRemoteConfigParams } from 'app/App/analytics/firebase'
 import { Layout } from 'app/App/layout/Layout'
-import {
-  GET_OFFERER_NAMES_QUERY_KEY,
-  GET_VENUE_TYPES_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
+import { GET_VENUE_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
+import { useOffererNamesQuery } from 'commons/hooks/swr/useOffererNamesQuery'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { sortByLabel } from 'commons/utils/strings'
@@ -47,9 +45,8 @@ export const Homepage = (): JSX.Element => {
     }
   }, [remoteConfigData])
 
-  const offererNamesQuery = useSWR([GET_OFFERER_NAMES_QUERY_KEY], () =>
-    api.listOfferersNames()
-  )
+  const offererNamesQuery = useOffererNamesQuery()
+
   const offererNames = offererNamesQuery.data?.offerersNames
 
   const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
