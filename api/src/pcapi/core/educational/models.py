@@ -318,7 +318,6 @@ class PlaylistType(enum.Enum):
 
 
 class CollectiveLocationType(enum.Enum):
-    VENUE = "VENUE"
     SCHOOL = "SCHOOL"
     ADDRESS = "ADDRESS"
     TO_BE_DEFINED = "TO_BE_DEFINED"

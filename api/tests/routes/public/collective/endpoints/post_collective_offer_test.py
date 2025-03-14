@@ -250,7 +250,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert offer.offerVenue == payload["offerVenue"]
 
         assert offer.offererAddressId == venue.offererAddressId
-        assert offer.locationType == educational_models.CollectiveLocationType.VENUE
+        assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
     @time_machine.travel(time_travel_str)

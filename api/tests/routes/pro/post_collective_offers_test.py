@@ -271,7 +271,7 @@ class Returns200Test:
         assert offer.locationComment == None
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
-    def test_location_venue(self, client):
+    def test_location_address_venue(self, client):
         venue = offerers_factories.VenueFactory()
         oa = venue.offererAddress
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
@@ -281,7 +281,7 @@ class Returns200Test:
             "interventionArea": None,
             "offerVenue": None,
             "location": {
-                "locationType": models.CollectiveLocationType.VENUE.value,
+                "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
                 "address": {
                     "isVenueAddress": True,
@@ -302,7 +302,7 @@ class Returns200Test:
         offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
 
         assert offer.offererAddressId == oa.id
-        assert offer.locationType == models.CollectiveLocationType.VENUE
+        assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
         assert offer.offerVenue == {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}

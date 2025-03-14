@@ -6,7 +6,6 @@
  * An enumeration.
  */
 export enum CollectiveLocationType {
-  VENUE = 'VENUE',
   SCHOOL = 'SCHOOL',
   ADDRESS = 'ADDRESS',
   TO_BE_DEFINED = 'TO_BE_DEFINED',
