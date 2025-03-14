@@ -1,7 +1,9 @@
 import datetime
+from unittest.mock import patch
 
 import pytest
-from sqlalchemy import exc
+import sqlalchemy as sa
+from sqlalchemy import exc as sa_exc
 import time_machine
 
 import pcapi.core.bookings.constants as bookings_constants
@@ -713,15 +715,46 @@ class HeadlineOfferTest:
     def test_headline_offer_is_active(self):
         headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, None))
         assert headline_offer.isActive
+        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(True)).one() == headline_offer
+        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(False)).first() == None
 
     def test_headline_offer_with_ending_time_in_the_future_is_active(self):
         headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, self.day_after_tomorrow))
         assert headline_offer.isActive
+        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(True)).one() == headline_offer
+        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(False)).first() == None
 
     def test_headline_offer_is_not_active(self):
         headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, self.day_after_tomorrow))
         with time_machine.travel(self.next_month):
             assert not headline_offer.isActive
+            # note: it is not possible to test the sql expression here
+            # as time_machine affects only python time, not sql's
+
+    def test_headline_offer_without_mediation_is_not_active(self):
+        headline_offer = factories.HeadlineOfferFactory(
+            timespan=(self.today, self.day_after_tomorrow), without_mediation=True
+        )
+        assert not headline_offer.isActive
+        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(True)).first() is None
+        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(False)).one() == headline_offer
+
+    def test_headline_offer_with_product_mediation_is_active(self):
+        product = factories.ProductFactory(
+            name="Capitale du sud-est",
+            description="La cité c'est le sang",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            gcuCompatibilityType=models.GcuCompatibilityType.COMPATIBLE,
+        )
+        factories.ProductMediationFactory(product=product, imageType=models.TiteliveImageType.RECTO)
+        factories.ProductMediationFactory(product=product, imageType=models.TiteliveImageType.VERSO)
+
+        offer = factories.OfferFactory(product=product)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, without_mediation=True)
+
+        assert headline_offer.isActive
+        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(True)).one() == headline_offer
+        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(False)).first() == None
 
     @pytest.mark.parametrize(
         "timespan,overlaping_timespan",
@@ -735,17 +768,15 @@ class HeadlineOfferTest:
     def test_unicity_headline_offer(self, timespan, overlaping_timespan):
         offer = factories.OfferFactory(isActive=True)
         factories.HeadlineOfferFactory(offer=offer, timespan=timespan)
-        with pytest.raises(exc.IntegrityError):
+        with pytest.raises(sa_exc.IntegrityError):
             factories.HeadlineOfferFactory(offer=offer, timespan=overlaping_timespan)
 
     def test_unicity_headline_offer_by_venue(self):
         venue = offerers_factories.VenueFactory()
         offer = factories.OfferFactory(isActive=True, venue=venue)
         another_offer_on_the_same_venue = factories.OfferFactory(isActive=True, venue=venue)
-        factories.StockFactory(offer=offer)
-        factories.StockFactory(offer=another_offer_on_the_same_venue)
         factories.HeadlineOfferFactory(offer=offer)
-        with pytest.raises(exc.IntegrityError):
+        with pytest.raises(sa_exc.IntegrityError):
             factories.HeadlineOfferFactory(offer=another_offer_on_the_same_venue)
 
 

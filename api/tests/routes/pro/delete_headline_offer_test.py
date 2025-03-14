@@ -16,7 +16,6 @@ class Returns204Test:
         pro = users_factory.ProFactory()
         offer = offers_factories.OfferFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offer.venue.managingOfferer)
-        offers_factories.StockFactory(offer=offer)
         headline_offer = offers_factories.HeadlineOfferFactory(offer=offer)
         ten_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=10)
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
@@ -39,8 +38,6 @@ class Returns204Test:
         offerer = offer.venue.managingOfferer
         another_offer = offers_factories.OfferFactory()
         another_offerer = another_offer.venue.managingOfferer
-        offers_factories.StockFactory(offer=offer)
-        offers_factories.StockFactory(offer=another_offer)
         headline_offer = offers_factories.HeadlineOfferFactory(offer=offer)
         another_headline_offer = offers_factories.HeadlineOfferFactory(offer=another_offer)
 
@@ -60,7 +57,6 @@ class Returns401Test:
     def test_delete_headline_when_current_user_has_no_rights_on_offer(self, client):
         pro = users_factory.ProFactory()
         offer = offers_factories.OfferFactory()
-        offers_factories.StockFactory(offer=offer)
         offerers_factories.UserOffererFactory(user=pro, offerer=offer.venue.managingOfferer)
         headline_offer = offers_factories.HeadlineOfferFactory(offer=offer)
         data = {"offererId": offer.venue.managingOfferer.id}

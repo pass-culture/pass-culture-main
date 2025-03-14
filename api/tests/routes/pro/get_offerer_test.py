@@ -666,9 +666,9 @@ class GetOffererTest:
             datetime.datetime.utcnow() - datetime.timedelta(days=2),
             datetime.datetime.utcnow() - datetime.timedelta(days=2),
         )
-        offers_factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
-        offers_factories.HeadlineOfferFactory(offer=offer, timespan=inactive_timespan, create_mediation=True)
-        offers_factories.HeadlineOfferFactory(offer=inactive_offer_on_another_venue, create_mediation=True)
+        offers_factories.HeadlineOfferFactory(offer=offer)
+        offers_factories.HeadlineOfferFactory(offer=offer, timespan=inactive_timespan)
+        offers_factories.HeadlineOfferFactory(offer=inactive_offer_on_another_venue)
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
