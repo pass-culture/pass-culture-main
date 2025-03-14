@@ -995,7 +995,7 @@ class FinanceIncident(PcObject, Base, Model):
 
     origin: FinanceIncidentRequestOrigin = sqla.Column(
         db_utils.MagicEnum(FinanceIncidentRequestOrigin),
-        nullable=True,
+        nullable=False,
         index=True,
     )
 
