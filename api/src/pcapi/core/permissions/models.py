@@ -70,6 +70,7 @@ class Permissions(enum.Enum):
     READ_REIMBURSEMENT_RULES = "visualiser les tarifs dérogatoires"
     CREATE_REIMBURSEMENT_RULES = "créer un tarif dérogatoire"
 
+    CREATE_INCIDENTS = "créer des incidents et gestes commerciaux"
     READ_INCIDENTS = "visualiser les incidents"
     MANAGE_INCIDENTS = "gérer les incidents"
     VALIDATE_COMMERCIAL_GESTURE = "valider les gestes commerciaux"

@@ -15,7 +15,6 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     ],
     "codir_admin": [
         perm_models.Permissions.READ_INCIDENTS,
-        perm_models.Permissions.MANAGE_INCIDENTS,
         perm_models.Permissions.VALIDATE_COMMERCIAL_GESTURE,
     ],
     "support_n1": [
@@ -27,6 +26,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.SUSPEND_USER,
         perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT,
         perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST,
+        perm_models.Permissions.CREATE_INCIDENTS,
     ],
     "support_n3": [
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
@@ -44,13 +44,15 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.READ_INCIDENTS,
-        perm_models.Permissions.MANAGE_INCIDENTS,
         perm_models.Permissions.READ_TECH_PARTNERS,
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
+        perm_models.Permissions.CREATE_INCIDENTS,
     ],
     "support_pro_n2": [
         perm_models.Permissions.MOVE_SIRET,
         perm_models.Permissions.ADVANCED_PRO_SUPPORT,
+        perm_models.Permissions.CREATE_INCIDENTS,
+        perm_models.Permissions.MANAGE_INCIDENTS,
     ],
     "fraude_conformite": [
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
@@ -65,6 +67,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_OFFERS,
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
+        perm_models.Permissions.CREATE_INCIDENTS,
     ],
     "fraude_jeunes": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
@@ -77,6 +80,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "daf": [
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.READ_INCIDENTS,
+        perm_models.Permissions.CREATE_INCIDENTS,
+        perm_models.Permissions.MANAGE_INCIDENTS,
     ],
     "responsable_daf": [
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
@@ -169,6 +174,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_CHRONICLE,
         perm_models.Permissions.MANAGE_CHRONICLE,
         perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST,
+        perm_models.Permissions.CREATE_INCIDENTS,
     ],
     "global_access": [
         perm_models.Permissions.READ_ADMIN_ACCOUNTS,
@@ -210,6 +216,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_CHRONICLE,
         perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST,
         perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW,
+        perm_models.Permissions.CREATE_INCIDENTS,
     ],
     "dpo": [
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,

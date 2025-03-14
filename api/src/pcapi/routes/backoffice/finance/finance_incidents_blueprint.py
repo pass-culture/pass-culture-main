@@ -308,7 +308,7 @@ def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
 
 
 @finance_incidents_blueprint.route("/individual-bookings/overpayment-creation-form", methods=["GET", "POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+@utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
 def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeResponse:
     form = forms.BookingOverPaymentIncidentForm()
     additional_data = {}
@@ -374,7 +374,7 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
 
 
 @finance_incidents_blueprint.route("/individual-bookings/commercial-gesture-creation-form", methods=["GET", "POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+@utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
 def get_individual_bookings_commercial_gesture_creation_form() -> utils.BackofficeResponse:
     form = forms.CommercialGestureCreationForm()
     additional_data = {}
@@ -433,7 +433,7 @@ def get_individual_bookings_commercial_gesture_creation_form() -> utils.Backoffi
 @finance_incidents_blueprint.route(
     "/collective-bookings/<int:collective_booking_id>/overpayment-creation-form", methods=["GET", "POST"]
 )
-@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+@utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
 def get_collective_booking_overpayment_creation_form(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking: educational_models.CollectiveBooking = (
         educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id)
@@ -486,7 +486,7 @@ def get_collective_booking_overpayment_creation_form(collective_booking_id: int)
     "/collective-bookings/<int:collective_booking_id>/commercial-gesture-creation-form",
     methods=["GET", "POST"],
 )
-@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+@utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
 def get_collective_booking_commercial_gesture_creation_form(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking: educational_models.CollectiveBooking = (
         educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id)
@@ -536,7 +536,7 @@ def get_collective_booking_commercial_gesture_creation_form(collective_booking_i
 
 
 @finance_incidents_blueprint.route("/individual-bookings/create-overpayment", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+@utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
 def create_individual_booking_overpayment() -> utils.BackofficeResponse:
     form = forms.BookingOverPaymentIncidentForm()
 
@@ -595,7 +595,7 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
 
 
 @finance_incidents_blueprint.route("/individual-bookings/create-commercial-gesture", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+@utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
 def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
     form = forms.CommercialGestureCreationForm()
 
@@ -660,7 +660,7 @@ def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
 @finance_incidents_blueprint.route(
     "/collective-bookings/<int:collective_booking_id>/create-overpayment", methods=["POST"]
 )
-@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+@utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
 def create_collective_booking_overpayment(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
     if not collective_booking:
@@ -699,7 +699,7 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> utils.B
 @finance_incidents_blueprint.route(
     "/collective-bookings/<int:collective_booking_id>/create-commercial-gesture", methods=["POST"]
 )
-@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+@utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
 def create_collective_booking_commercial_gesture(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
     if not collective_booking:
