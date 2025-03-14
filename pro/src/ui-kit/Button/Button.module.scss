@@ -69,7 +69,7 @@
     &:disabled,
     &.button-disabled {
       background-color: var(--color-background-disabled);
-      color: var(--color-grey-dark);
+      color: var(--color-text-disabled);
       border-color: var(--color-grey-light);
 
       .button-icon {
@@ -102,7 +102,7 @@
     &:disabled,
     &.button-disabled {
       background-color: var(--color-background-disabled);
-      color: var(--color-grey-dark);
+      color: var(--color-text-disabled);
       border-color: var(--color-grey-light);
     }
 
@@ -141,7 +141,7 @@
     &:disabled,
     &.button-disabled {
       text-decoration: none;
-      color: var(--color-grey-dark);
+      color: var(--color-text-disabled);
     }
 
     &:disabled .button-icon,
@@ -200,6 +200,7 @@
     border: rem.torem(1px) solid var(--color-grey-dark);
     border-radius: rem.torem(6px);
     max-width: rem.torem(400px);
+    color: var(--color-text-subtle);
 
     &:hover:not(:disabled, .button-disabled) {
       box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
@@ -210,7 +211,7 @@
     &.button-disabled {
       background: var(--color-background-disabled);
       border-color: var(--color-grey-light);
-      color: var(--color-grey-dark);
+      color: var(--color-text-disabled);
 
       .button-icon {
         color: var(--color-grey-dark);

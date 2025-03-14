@@ -16,7 +16,7 @@
 .booking-offer-additional-info {
   @include fonts.body-accent-xs;
 
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
   display: flex;
   align-items: center;
 }
@@ -25,7 +25,7 @@
   @include fonts.body-accent-xs;
 
   margin-top: rem.torem(4px);
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
 }
 
 .stocks {

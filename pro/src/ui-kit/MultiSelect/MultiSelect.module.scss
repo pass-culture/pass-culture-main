@@ -55,7 +55,7 @@
   &:disabled {
     background-color: var(--color-background-disabled);
     border: rem.torem(1px) solid var(--color-input-border-color-disabled);
-    color: var(--color-grey-dark);
+    color: var(--color-text-disabled);
     cursor: auto;
   }
 

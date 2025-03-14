@@ -4,7 +4,7 @@
 .legal-infos {
   @include fonts.body-accent-xs;
 
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
 
   .quaternary-link {
     color: var(--color-primary);
@@ -28,7 +28,7 @@
     @include fonts.body-accent-s;
 
     margin-bottom: rem.torem(8px);
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
   }
 
   &-link {
@@ -46,7 +46,7 @@
     @include fonts.body-accent-s;
 
     display: inline;
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
     text-decoration: underline;
 
     &:hover {

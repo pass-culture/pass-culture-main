@@ -15,7 +15,7 @@
     gap: rem.torem(12px);
 
     :disabled + & {
-      color: var(--color-input-text-color-disabled);
+      color: var(--color-text-disabled);
       cursor: default;
     }
 
@@ -33,7 +33,7 @@
     &-description {
       @include fonts.body-xs;
 
-      color: var(--color-grey-dark);
+      color: var(--color-text-subtle);
       margin-top: rem.torem(4px);
     }
   }
@@ -134,7 +134,7 @@
   &.is-disabled {
     border-color: var(--color-input-border-color-disabled);
     background-color: var(--color-background-disabled);
-    color: var(--color-grey-dark);
+    color: var(--color-text-disabled);
 
     &:hover {
       box-shadow: none;

@@ -22,7 +22,7 @@
   &-description {
     @include fonts.body-accent-xs;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
     margin-top: rem.torem(4px);
   }
 
@@ -98,7 +98,7 @@
   }
 
   &.is-disabled {
-    color: var(--color-input-text-color-disabled);
+    color: var(--color-text-disabled);
 
     .base-checkbox-label {
       cursor: not-allowed;
