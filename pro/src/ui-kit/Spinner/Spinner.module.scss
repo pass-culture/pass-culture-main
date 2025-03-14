@@ -1,7 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .loading-spinner {
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
   text-align: center;
 
   &-icon {

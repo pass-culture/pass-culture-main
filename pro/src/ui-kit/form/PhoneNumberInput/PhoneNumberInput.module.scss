@@ -59,7 +59,7 @@ $input-phone-number-padding-left: calc(
 .phone-format {
   @include fonts.body-xs;
 
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
   margin-bottom: rem.torem(forms.$label-space-before-input);
 }
 

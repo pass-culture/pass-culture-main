@@ -43,7 +43,7 @@
 
     &:disabled {
       border: rem.torem(1px) solid var(--color-input-border-color-disabled);
-      color: var(--color-grey-dark);
+      color: var(--color-text-disabled);
       cursor: auto;
     }
   }
@@ -78,6 +78,6 @@
   &-placeholder {
     @include fonts.body-italic;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
   }
 }

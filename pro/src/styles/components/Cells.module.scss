@@ -120,13 +120,13 @@
 .isbn {
   @include fonts.body-accent-xs;
 
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
 }
 
 .stocks {
   @include fonts.body-accent-xs;
 
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
   display: flex;
   align-items: center;
   position: relative;

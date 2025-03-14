@@ -9,13 +9,13 @@
   &-step-title-passed {
     @include fonts.body-accent;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
   }
 
   &-step-title-disabled {
     @include fonts.body-accent;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-disabled);
   }
 
   &-step-decription-with-link {

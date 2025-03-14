@@ -22,7 +22,7 @@
 .min-max-container {
   @include fonts.body-accent-xs;
 
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
   display: flex;
   justify-content: space-between;
 }

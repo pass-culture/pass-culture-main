@@ -53,7 +53,7 @@ $cardlink-max-width: rem.torem(565px);
   &-description {
     @include fonts.body-xs;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
     margin-top: rem.torem(4px);
   }
 
