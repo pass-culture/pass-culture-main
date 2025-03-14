@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.core.users import testing
 
 from tests.test_utils import run_command
@@ -12,7 +13,14 @@ from tests.test_utils import run_command
 
 @pytest.mark.usefixtures("clean_database")
 def test_update_brevo_and_batch_users(app, caplog):
-    users_factories.BeneficiaryGrant18Factory.create_batch(2)
+    users_factories.UserFactory()
+    users_factories.BeneficiaryGrant18Factory()
+    users_factories.UnderageBeneficiaryFactory()
+    users_factories.BeneficiaryFactory(
+        roles=[users_models.UserRole.BENEFICIARY, users_models.UserRole.NON_ATTACHED_PRO]
+    )
+    users_factories.ProFactory()
+    users_factories.NonAttachedProFactory()
 
     with patch(
         "pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts"
@@ -26,9 +34,9 @@ def test_update_brevo_and_batch_users(app, caplog):
         assert caplog.messages[0].startswith(
             "[update_brevo_and_batch_users] Update multiple user attributes in [Batch, Brevo] with user ids in range "
         )
-        assert "[update_brevo_and_batch_users] 2 users formatted for Batch..." in caplog.messages
-        assert "[update_brevo_and_batch_users] 2 users formatted for Brevo..." in caplog.messages
-        assert "[update_brevo_and_batch_users] 2 users updated" in caplog.messages
+        assert "[update_brevo_and_batch_users] 4 users formatted for Batch..." in caplog.messages
+        assert "[update_brevo_and_batch_users] 4 users formatted for Brevo..." in caplog.messages
+        assert "[update_brevo_and_batch_users] 4 users updated" in caplog.messages
         assert "Failed to collect user attributes" not in str(caplog.messages)
 
     mock_import_contacts.assert_called()
