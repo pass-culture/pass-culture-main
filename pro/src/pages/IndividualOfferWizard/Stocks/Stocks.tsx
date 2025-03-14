@@ -1,8 +1,8 @@
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { IndivualOfferLayout } from 'components/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { getTitle } from 'components/IndividualOffer/IndivualOfferLayout/utils/getTitle'
+import { IndividualOfferLayout } from 'components/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
+import { getTitle } from 'components/IndividualOffer/IndividualOfferLayout/utils/getTitle'
 import { StocksEventCreation } from 'components/IndividualOffer/StocksEventCreation/StocksEventCreation'
 import { StocksEventEdition } from 'components/IndividualOffer/StocksEventEdition/StocksEventEdition'
 import { StocksThing } from 'components/IndividualOffer/StocksThing/StocksThing'
@@ -22,7 +22,7 @@ export const Stocks = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout
+    <IndividualOfferLayout
       offer={offer}
       title={getTitle(mode)}
       mode={mode}
@@ -37,7 +37,7 @@ export const Stocks = (): JSX.Element | null => {
       ) : (
         <StocksThing offer={offer} />
       )}
-    </IndivualOfferLayout>
+    </IndividualOfferLayout>
   )
 }
 

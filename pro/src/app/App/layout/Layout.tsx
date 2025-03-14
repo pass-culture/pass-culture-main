@@ -26,7 +26,16 @@ export interface LayoutProps {
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
    */
-  mainHeading?: string
+  mainHeading?: React.ReactNode
+  /**
+   * Any content to display above the main heading.
+   */
+  mainTopElement?: React.ReactNode
+  /**
+   * In case both <h1> & back to nav link
+   * had to be declared within the children
+   */
+  areMainHeadingAndBackToNavLinkInChild?: boolean
   layout?:
     | 'basic'
     | 'funnel'
@@ -36,15 +45,15 @@ export interface LayoutProps {
     | 'logged-out'
     | 'sign-up'
   showFooter?: boolean
-  mainBanner?: React.ReactNode
 }
 
 export const Layout = ({
   children,
   mainHeading,
-  mainBanner,
+  mainTopElement,
   layout = 'basic',
   showFooter = layout !== 'funnel',
+  areMainHeadingAndBackToNavLinkInChild = false,
 }: LayoutProps) => {
   const currentUser = useSelector(selectCurrentUser)
   const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
@@ -55,8 +64,9 @@ export const Layout = ({
 
   const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
   const isConnected = !!currentUser
+  const isBackToNavLinkDisplayed = areMainHeadingAndBackToNavLinkInChild || (mainHeading && isConnected)
 
-  const mainHeadingWrapper = mainHeading && (
+  const mainHeadingWrapper = mainHeading ? (
     <div className={styles['main-heading-wrapper']}>
       <h1 className={styles['main-heading-title']}>{mainHeading}</h1>
       {isConnected && (
@@ -66,7 +76,7 @@ export const Layout = ({
         />
       )}
     </div>
-  )
+  ) : null
 
   return (
     <>
@@ -78,7 +88,7 @@ export const Layout = ({
           }
         }}
       >
-        <SkipLinks />
+        <SkipLinks shouldDisplayTopPageLink={!isBackToNavLinkDisplayed} />
         {currentUser?.isImpersonated && (
           <aside className={styles['connect-as']}>
             <SvgIcon
@@ -209,7 +219,7 @@ export const Layout = ({
                   </>
                 ) : (
                   <>
-                    {mainBanner}
+                    {mainTopElement}
                     <div
                       className={cn(
                         styles.content,

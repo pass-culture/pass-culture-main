@@ -6,8 +6,8 @@ import { GET_VENUES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { IndivualOfferLayout } from 'components/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { getTitle } from 'components/IndividualOffer/IndivualOfferLayout/utils/getTitle'
+import { IndividualOfferLayout } from 'components/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
+import { getTitle } from 'components/IndividualOffer/IndividualOfferLayout/utils/getTitle'
 import { IndividualOfferDetailsScreen } from 'pages/IndividualOffer/IndividualOfferDetails/components/IndividualOfferDetailsScreen'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -32,14 +32,14 @@ const IndividualOfferDetails = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout
+    <IndividualOfferLayout
       offer={offer}
       title={getTitle(mode)}
       mode={mode}
       venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
     >
       <IndividualOfferDetailsScreen venues={venuesQuery.data.venues} />
-    </IndivualOfferLayout>
+    </IndividualOfferLayout>
   )
 }
 

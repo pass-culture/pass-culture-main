@@ -7,6 +7,7 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
+import { Layout } from 'app/App/layout/Layout'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { HelpLink } from 'components/HelpLink/HelpLink'
@@ -64,28 +65,28 @@ export const CollectiveOfferLayout = ({
   }
 
   return (
-    <div className={styles['eac-layout']}>
-      <div className={styles['eac-layout-headings']}>
-        {isTemplate && (
+    <Layout
+      layout={'sticky-actions'}
+      mainHeading={
+        <>
+          {title}
+          <span className={styles['eac-layout-sub-heading']}>{subTitle}</span>
+        </>
+      }
+      mainTopElement={isTemplate && (
           <Tag
             variant={TagVariant.SMALL_OUTLINE}
             className={styles['eac-layout-tag']}
           >
             Offre vitrine
           </Tag>
-        )}
-        {}
-        <h1 className={styles['eac-layout-heading']}>
-          {title}
-          <span className={styles['eac-layout-sub-heading']}>{subTitle}</span>
-        </h1>
-        {isCreation && (
-          <CollectiveBudgetCallout
-            pageName={isTemplate ? 'template-offer-creation' : 'offer-creation'}
-          />
-        )}
-      </div>
-
+      )}
+    >
+      {isCreation && (
+        <CollectiveBudgetCallout
+          pageName={isTemplate ? 'template-offer-creation' : 'offer-creation'}
+        />
+      )}
       {!selectedOfferer?.allowedOnAdage ? (
         <></>
       ) : navigationProps.isCreatingOffer ? (
@@ -107,9 +108,8 @@ export const CollectiveOfferLayout = ({
           activeStep={navigationProps.activeStep}
         />
       )}
-
       {children}
       <HelpLink />
-    </div>
+    </Layout>
   )
 }

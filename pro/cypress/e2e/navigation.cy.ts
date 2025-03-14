@@ -36,7 +36,7 @@ describe('Navigation', () => {
     cy.get('a[aria-label^="Gérer la page Mon Lieu"]').click()
 
     cy.stepLog({ message: 'I should be at the top of the page' })
-    cy.get('[id=top-page]').should('have.focus', { timeout: 1000 })
+    cy.get('[id=unaccessible-top-page]').should('have.focus', { timeout: 1000 })
     cy.get('[id=content-wrapper]').then((el) => {
       expect(el.get(0).scrollTop).to.eq(0)
     })
