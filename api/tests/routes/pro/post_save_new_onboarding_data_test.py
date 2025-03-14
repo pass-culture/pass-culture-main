@@ -29,6 +29,7 @@ REQUEST_BODY = {
     "createVenueWithoutSiret": False,
     "target": "INDIVIDUAL",
     "venueTypeCode": "MOVIE",
+    "isOpenToPublic": False,
     "webPresence": "https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
     "token": "token",
 }
