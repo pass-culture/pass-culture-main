@@ -530,6 +530,14 @@ def _render_offer_list(
     )
 
 
+@list_offers_blueprint.route("/tests", methods=["GET"])
+def test_offers() -> utils.BackofficeResponse:
+    import time
+
+    time.sleep(300)
+    return "did we timeout ?"
+
+
 @list_offers_blueprint.route("", methods=["GET"])
 def list_offers() -> utils.BackofficeResponse:
     form = forms.GetOfferAdvancedSearchForm(formdata=utils.get_query_params())
@@ -546,6 +554,8 @@ def list_offers() -> utils.BackofficeResponse:
         form_data.update({"search-0-search_field": "ID", "search-0-operator": "IN"})
         form = forms.GetOfferAdvancedSearchForm(formdata=form_data)
         return _render_offer_list(advanced_form=form, page="offer")
+
+    logger.info("Starting research query")
 
     offers = _get_offers_by_ids(
         offer_ids=_get_offer_ids_query(form),
