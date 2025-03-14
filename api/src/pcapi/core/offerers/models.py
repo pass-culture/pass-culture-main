@@ -258,7 +258,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     isPermanent = Column(Boolean, nullable=False, default=False)
 
-    isOpenToPublic = Column(Boolean, nullable=True, default=None)
+    isOpenToPublic = Column(Boolean, nullable=False, default=False)
 
     comment = Column(
         TEXT,
