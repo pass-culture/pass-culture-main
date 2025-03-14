@@ -105,6 +105,34 @@ def _format_date(date: datetime | None) -> str | None:
     return date.strftime(BATCH_DATETIME_FORMAT) if date else None
 
 
+def _format_offer_attributes(offer: offers_models.Offer) -> dict:
+    stock = min(
+        offer.bookableStocks,
+        default=None,
+        key=lambda stock: (stock.bookingLimitDatetime is None, stock.bookingLimitDatetime, stock.price),
+    )
+    stock_quantity: int | None = None
+    event_date: str | None = None
+    expiry_date: str | None = None
+    if stock is not None:
+        if stock.remainingQuantity != "unlimited":
+            stock_quantity = stock.remainingQuantity
+        event_date = _format_date(stock.beginningDatetime)
+        expiry_date = _format_date(stock.bookingLimitDatetime)
+
+    offer_attributes = {
+        "offer_id": offer.id,
+        "offer_name": textwrap.shorten(offer.name, width=64, placeholder="..."),
+        "offer_category": offer.categoryId,
+        "offer_subcategory": offer.subcategoryId,
+        "offer_type": "duo" if offer.isDuo else "solo",
+        "stock": stock_quantity,
+        "event_date": event_date,
+        "expiry_date": expiry_date,
+    }
+    return {key: value for key, value in offer_attributes.items() if value is not None}
+
+
 def track_deposit_activated_event(user_id: int, deposit: finance_models.Deposit) -> None:
     event_name = push_notifications.BatchEvent.USER_DEPOSIT_ACTIVATED
     event_payload = {"deposit_type": deposit.type.value, "deposit_amount": round(deposit.amount)}
@@ -142,7 +170,7 @@ def track_ubble_ko_event(user_id: int, reason_code: fraud_models.FraudReasonCode
 
 def track_offer_added_to_favorites_event(user_id: int, offer: offers_models.Offer) -> None:
     event_name = push_notifications.BatchEvent.HAS_ADDED_OFFER_TO_FAVORITES
-    formatted_offer_attributes = format_offer_attributes(offer)
+    formatted_offer_attributes = _format_offer_attributes(offer)
     payload = batch_tasks.TrackBatchEventRequest(
         event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
     )
@@ -151,7 +179,7 @@ def track_offer_added_to_favorites_event(user_id: int, offer: offers_models.Offe
 
 def track_offer_booked_event(user_id: int, offer: offers_models.Offer) -> None:
     event_name = push_notifications.BatchEvent.HAS_BOOKED_OFFER
-    formatted_offer_attributes = format_offer_attributes(offer)
+    formatted_offer_attributes = _format_offer_attributes(offer)
     payload = batch_tasks.TrackBatchEventRequest(
         event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
     )
@@ -173,31 +201,3 @@ def track_booking_cancellation(booking: bookings_models.Booking) -> None:
     }
     payload = batch_tasks.TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user.id)
     batch_tasks.track_event_task.delay(payload)
-
-
-def format_offer_attributes(offer: offers_models.Offer) -> dict:
-    stock = min(
-        offer.bookableStocks,
-        default=None,
-        key=lambda stock: (stock.bookingLimitDatetime is None, stock.bookingLimitDatetime, stock.price),
-    )
-    stock_quantity: int | None = None
-    event_date: str | None = None
-    expiry_date: str | None = None
-    if stock is not None:
-        if stock.remainingQuantity != "unlimited":
-            stock_quantity = stock.remainingQuantity
-        event_date = _format_date(stock.beginningDatetime)
-        expiry_date = _format_date(stock.bookingLimitDatetime)
-
-    offer_attributes = {
-        "offer_id": offer.id,
-        "offer_name": textwrap.shorten(offer.name, width=64, placeholder="..."),
-        "offer_category": offer.categoryId,
-        "offer_subcategory": offer.subcategoryId,
-        "offer_type": "duo" if offer.isDuo else "solo",
-        "stock": stock_quantity,
-        "event_date": event_date,
-        "expiry_date": expiry_date,
-    }
-    return {key: value for key, value in offer_attributes.items() if value is not None}
