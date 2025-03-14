@@ -41,6 +41,7 @@ class CollectiveOffersSearchAttributes(enum.Enum):
     PRICE = "Prix"
     MINISTRY = "Ministère"
     MEG = "Marseille en Grand"
+    VALIDATED_OFFERER = "Entité juridique validée"
 
 
 operator_no_require_value = ["NOT_EXIST"]
@@ -63,6 +64,7 @@ form_field_configuration = {
     "PRICE": {"field": "price", "operator": ["EQUALS", "LESS_THAN", "GREATER_THAN_OR_EQUAL_TO"]},
     "MINISTRY": {"field": "ministry", "operator": ["IN", "NOT_IN"]},
     "MEG": {"field": "boolean", "operator": ["NULLABLE"]},
+    "VALIDATED_OFFERER": {"field": "boolean", "operator": ["EQUALS"]},
 }
 
 
@@ -230,9 +232,6 @@ class GetCollectiveOfferAdvancedSearchForm(forms.GetOffersBaseFields):
         csrf = False
 
     method = "GET"
-    only_validated_offerers = fields.PCSwitchBooleanField(
-        "Uniquement les offres des entités juridiques validées", full_row=True
-    )
     search = fields.PCFieldListField(
         fields.PCFormField(CollectiveOfferAdvancedSearchSubForm),
         label="recherches",

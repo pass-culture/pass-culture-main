@@ -110,6 +110,12 @@ SEARCH_FIELD_TO_PYTHON = {
         "field": "venue",
         "column": educational_models.CollectiveOffer.venueId,
     },
+    "VALIDATED_OFFERER": {
+        "field": "boolean",
+        "special": lambda x: x == "true",
+        "column": offerers_models.Offerer.isValidated,
+        "inner_join": "offerer",
+    },
     "VALIDATION": {"field": "validation", "column": educational_models.CollectiveOffer.validation},
     "PRICE": {
         "field": "price",
@@ -175,13 +181,23 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
                 aliased_stock,
                 educational_models.CollectiveOffer.collectiveStock,
             ),
-        }
+        },
     ],
     "venue": [
         {
             "name": "venue",
             "args": (offerers_models.Venue, educational_models.CollectiveOffer.venue),
-        }
+        },
+    ],
+    "offerer": [
+        {
+            "name": "venue",
+            "args": (offerers_models.Venue, educational_models.CollectiveOffer.venue),
+        },
+        {
+            "name": "offerer",
+            "args": (offerers_models.Offerer, offerers_models.Venue.managingOfferer),
+        },
     ],
     "institution": [
         {
@@ -218,7 +234,7 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
 
 
 def _get_collective_offer_ids_query(form: forms.GetCollectiveOfferAdvancedSearchForm) -> BaseQuery:
-    base_query, inner_joins, _, warnings = utils.generate_search_query(
+    base_query, _, _, warnings = utils.generate_search_query(
         query=educational_models.CollectiveOffer.query,
         search_parameters=form.search.data,
         fields_definition=SEARCH_FIELD_TO_PYTHON,
@@ -227,13 +243,6 @@ def _get_collective_offer_ids_query(form: forms.GetCollectiveOfferAdvancedSearch
     )
     for warning in warnings:
         flash(escape(warning), "warning")
-
-    if form.only_validated_offerers.data:
-        if "venue" not in inner_joins:
-            base_query = base_query.join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
-        if "offerer" not in inner_joins:
-            base_query = base_query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
-        base_query = base_query.filter(offerers_models.Offerer.isValidated)
 
     if form.sort.data:
         base_query = base_query.order_by(
