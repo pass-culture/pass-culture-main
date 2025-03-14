@@ -73,7 +73,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
             <>Vous ne trouvez pas votre adresse ?</>
           )}
         </Button>
-        {manuallySetAddress.value && <AddressManual isStreetOptional={true} />}
+        {manuallySetAddress.value && <AddressManual />}
         {isOpenToPublicEnabled && <OpenToPublicToggle />}
       </FormLayout.Row>
     </FormLayout.Section>

@@ -25,12 +25,10 @@ export interface AddressFormValues {
 
 interface AddressManualProps {
   readOnlyFields?: string[]
-  isStreetOptional?: boolean
 }
 
 export const AddressManual = ({
   readOnlyFields = [],
-  isStreetOptional = false,
 }: AddressManualProps): JSX.Element => {
   const [coords, coordsMeta] = useField<string>('coords')
 
@@ -66,7 +64,7 @@ export const AddressManual = ({
           name="street"
           disabled={readOnlyFields.includes('street')}
           maxLength={200}
-          isOptional={isStreetOptional}
+          isOptional={true}
         />
       </FormLayout.Row>
       <FormLayout.Row inline className={styles['inline-fields']}>
