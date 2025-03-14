@@ -224,7 +224,7 @@ class Returns200Test:
             user__lastConnectionDate=datetime.utcnow(),
         )
         venue = offerers_factories.VenueFactory(
-            name="old name", managingOfferer=user_offerer.offerer, isOpenToPublic=None
+            name="old name", managingOfferer=user_offerer.offerer, isOpenToPublic=False
         )
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id

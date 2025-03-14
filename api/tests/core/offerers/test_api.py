@@ -2217,7 +2217,7 @@ class CreateFromOnboardingDataTest:
         created_venue = created_user_offerer.offerer.managedVenues[0]
 
         self.assert_common_venue_attrs(created_venue)
-        assert created_venue.isOpenToPublic is None
+        assert created_venue.isOpenToPublic is False
         assert created_venue.comment is None
         assert created_venue.siret == "85331845900031"
         assert created_venue.current_pricing_point_id == created_venue.id

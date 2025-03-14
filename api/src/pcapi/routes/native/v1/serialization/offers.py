@@ -140,7 +140,7 @@ class OfferVenueResponse(BaseModel):
     publicName: str | None
     coordinates: Coordinates
     isPermanent: bool
-    isOpenToPublic: bool | None
+    isOpenToPublic: bool
     timezone: str
     bannerUrl: str | None
 
