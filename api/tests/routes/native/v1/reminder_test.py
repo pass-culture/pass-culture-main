@@ -11,6 +11,48 @@ from pcapi.core.users import factories as users_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+class GetRemindersTest:
+    num_queries_success = 1  # select user
+    num_queries_success += 1  # select future_offer_reminders
+
+    def test_should_be_logged_in_to_get_reminders(self, client):
+        with assert_num_queries(0):
+            response = client.get("/native/v1/me/reminders")
+            assert response.status_code == 401
+
+    def test_get_reminders(self, client):
+        user_1 = users_factories.BeneficiaryFactory()
+        user_2 = users_factories.BeneficiaryFactory()
+
+        offer_1 = offers_factories.OfferFactory(isActive=False)
+        offer_2 = offers_factories.OfferFactory(isActive=False)
+        offer_3 = offers_factories.OfferFactory(isActive=False)
+
+        future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+
+        future_offer_1 = offers_factories.FutureOfferFactory(offer=offer_1, publicationDate=future_publication_date)
+        future_offer_2 = offers_factories.FutureOfferFactory(offer=offer_2, publicationDate=future_publication_date)
+        future_offer_3 = offers_factories.FutureOfferFactory(offer=offer_3, publicationDate=future_publication_date)
+
+        reminder_1 = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_1, user=user_1)
+        reminder_2 = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_2, user=user_1)
+        _ = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_3, user=user_2)
+
+        expected_reminders = {
+            "reminders": [
+                {"id": reminder_1.id, "offer": {"id": offer_1.id}},
+                {"id": reminder_2.id, "offer": {"id": offer_2.id}},
+            ]
+        }
+
+        user_email = user_1.email
+        with assert_num_queries(self.num_queries_success):
+            response = response = client.with_token(user_email).get("/native/v1/me/reminders")
+            assert response.status_code == 200
+
+        assert response.json == expected_reminders
+
+
 class PostReminderTest:
     num_queries_success = 1  # select user
     num_queries_success += 1  # select future_offer
