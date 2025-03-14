@@ -36,7 +36,7 @@
   &:disabled {
     cursor: unset;
     background-color: var(--color-background-disabled);
-    color: var(--color-input-text-color-disabled);
+    color: var(--color-text-disabled);
     opacity: 1;
     border-color: var(--color-input-border-color-disabled);
 
@@ -48,7 +48,7 @@
   &::placeholder {
     @include fonts.body-italic;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
     opacity: 1;
   }
 
@@ -85,7 +85,7 @@
   }
 
   :disabled + & {
-    color: var(--color-input-text-color-disabled);
+    color: var(--color-text-disabled);
   }
 }
 

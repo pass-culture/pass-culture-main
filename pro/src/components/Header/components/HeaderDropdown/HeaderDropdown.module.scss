@@ -121,7 +121,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   &-title {
     @include fonts.body-accent-xs;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
 
     &.tablet-only {
       margin-top: rem.torem(8px);
@@ -155,7 +155,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
 
     @include fonts.body-accent-xs;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
 
     &.tablet-only {
       margin-top: rem.torem(8px);

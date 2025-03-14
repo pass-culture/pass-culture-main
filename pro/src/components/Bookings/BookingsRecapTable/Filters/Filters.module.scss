@@ -12,7 +12,7 @@
   .bs-filter-legend {
     @include fonts.body-accent-xs;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
     padding-bottom: rem.torem(8px);
     white-space: nowrap;
   }

@@ -19,7 +19,7 @@
 .mandatory {
   @include fonts.body-accent-xs;
 
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
 }
 
 @media (min-width: size.$tablet) {
