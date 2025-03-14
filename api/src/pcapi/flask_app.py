@@ -258,10 +258,12 @@ def teardown_atomic(exc: BaseException | None = None) -> None:
 
 @app.teardown_request
 def remove_db_session(exc: BaseException | None = None) -> None:
+    logger.info("start remove session")
     try:
         db.session.remove()
     except AttributeError:
-        pass
+        logger.info("failed remove session")
+    logger.info("success remove session")
 
 
 with app.app_context():
