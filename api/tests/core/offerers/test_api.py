@@ -97,6 +97,7 @@ class CreateVenueTest:
             "venueTypeCode": "VISUAL_ARTS",
             "bookingEmail": "venue@example.com",
             "siret": offerer.siren + "00000",
+            "isOpenToPublic": False,
             "audioDisabilityCompliant": True,
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": True,
@@ -2143,6 +2144,7 @@ class CreateFromOnboardingDataTest:
                 postalCode=offerers_schemas.VenuePostalCode("75001"),
                 street=offerers_schemas.VenueAddress("3 RUE DE VALOIS"),
             ),
+            isOpenToPublic=True,
             siret="85331845900031",
             publicName="Nom public de mon lieu",
             createVenueWithoutSiret=create_venue_without_siret,
@@ -2217,7 +2219,7 @@ class CreateFromOnboardingDataTest:
         created_venue = created_user_offerer.offerer.managedVenues[0]
 
         self.assert_common_venue_attrs(created_venue)
-        assert created_venue.isOpenToPublic is None
+        assert created_venue.isOpenToPublic is True
         assert created_venue.comment is None
         assert created_venue.siret == "85331845900031"
         assert created_venue.current_pricing_point_id == created_venue.id

@@ -280,7 +280,7 @@ class CreateOffererQueryModel(BaseModel):
 class SaveNewOnboardingDataQueryModel(BaseModel):
     address: offerers_schemas.AddressBodyModel
     createVenueWithoutSiret: bool = False
-    isOpenToPublic: bool | None
+    isOpenToPublic: bool
     publicName: str | None
     siret: str
     target: Target
