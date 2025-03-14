@@ -1,10 +1,13 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import * as hooks from 'commons/hooks/swr/useOfferer'
 import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
-import { currentOffererFactory, sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import {
+  currentOffererFactory,
+  sharedCurrentUserFactory,
+} from 'commons/utils/factories/storeFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -34,7 +37,7 @@ const renderCollectiveOfferCreation = (
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
       offerer: currentOffererFactory({
-        selectedOffererId: 10
+        selectedOffererId: 10,
       }),
     },
   })
@@ -84,11 +87,14 @@ describe('CollectiveOfferCreation', () => {
         name: /Créer une offre/,
       })
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', {
-        name: 'Quel est le type de votre offre ?',
-      })
-    ).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', {
+          name: 'Quel est le type de votre offre ?',
+        })
+      ).toBeInTheDocument()
+    })
   })
 
   it('should render with template tag', async () => {
