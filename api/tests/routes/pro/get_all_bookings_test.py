@@ -1,5 +1,7 @@
 from datetime import datetime
+from datetime import timedelta
 from datetime import timezone
+from decimal import Decimal
 from typing import Any
 from unittest.mock import patch
 
@@ -43,6 +45,7 @@ class GetAllBookingsTest:
             event_date=None,
             venue_id=None,
             offer_id=None,
+            offerer_id=None,
             offerer_address_id=None,
             page=3,
             per_page_limit=1000,
@@ -68,6 +71,7 @@ class GetAllBookingsTest:
             event_date=None,
             venue_id=None,
             offer_id=None,
+            offerer_id=None,
             offerer_address_id=None,
             page=1,
             per_page_limit=1000,
@@ -97,6 +101,7 @@ class GetAllBookingsTest:
             event_date=None,
             venue_id=venue.id,
             offer_id=None,
+            offerer_id=None,
             offerer_address_id=None,
             page=1,
             per_page_limit=1000,
@@ -126,6 +131,7 @@ class GetAllBookingsTest:
             event_date=None,
             venue_id=None,
             offer_id=offer.id,
+            offerer_id=None,
             offerer_address_id=None,
             page=1,
             per_page_limit=1000,
@@ -249,6 +255,32 @@ class Returns200Test:
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 2
+
+    def test_user_can_filter_bookings_by_offerer(self, client):
+        pro_user = users_factories.ProFactory()
+        offerer1 = offerers_factories.UserOffererFactory(user=pro_user).offerer
+        offerer2 = offerers_factories.UserOffererFactory(user=pro_user).offerer
+
+        venue1 = offerers_factories.VenueFactory(managingOfferer=offerer1)
+        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer2)
+
+        booked_date = datetime.utcnow()
+
+        booking1 = bookings_factories.BookingFactory(dateCreated=booked_date, stock__offer__venue=venue1)
+        booking2 = bookings_factories.BookingFactory(dateCreated=booked_date, stock__offer__venue=venue2)
+
+        client = client.with_session_auth(pro_user.email)
+
+        response = client.get(
+            f"/bookings/pro?&offererId={offerer1.id}&bookingStatusFilter=booked&bookingPeriodBeginningDate={(booked_date-timedelta(days=1)).strftime('%Y-%m-%d')}&bookingPeriodEndingDate={(booked_date+timedelta(days=1)).strftime('%Y-%m-%d')}"
+        )
+        assert response.json["total"] == 1
+        assert len(response.json["bookingsRecap"]) == 1
+        booking = response.json["bookingsRecap"][0]
+        beneficiary = booking["beneficiary"]
+        assert beneficiary["email"] == booking1.user.email
+        assert Decimal(str(booking["bookingAmount"])) == booking1.amount
+        assert booking["stock"]["offerId"] == booking1.stock.offer.id
 
     def when_requested_with_event_date(self, client: Any):
         requested_date = "2020-08-12"

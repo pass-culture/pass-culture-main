@@ -105,6 +105,7 @@ def find_by_pro_user(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
+    offerer_id: int | None = None,
     offerer_address_id: int | None = None,
     page: int = 1,
     per_page_limit: int = 1000,
@@ -116,6 +117,7 @@ def find_by_pro_user(
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
+        offerer_id=offerer_id,
         offerer_address_id=offerer_address_id,
     )
 
@@ -126,6 +128,7 @@ def find_by_pro_user(
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
+        offerer_id=offerer_id,
         offerer_address_id=offerer_address_id,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
@@ -374,6 +377,7 @@ def get_export(
     booking_period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = BookingStatusFilter.BOOKED,
     event_date: date | None = None,
+    offerer_id: int | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
@@ -384,6 +388,7 @@ def get_export(
         period=booking_period,
         status_filter=status_filter,
         event_date=event_date,
+        offerer_id=offerer_id,
         venue_id=venue_id,
         offer_id=offer_id,
         offerer_address_id=offerer_address_id,
@@ -434,6 +439,7 @@ def _get_filtered_bookings_query(
     period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
+    offerer_id: int | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
@@ -493,6 +499,8 @@ def _get_filtered_bookings_query(
                     ]
                 )
             )
+    if offerer_id is not None:
+        bookings_query = bookings_query.filter(Booking.offererId == offerer_id)
 
     if venue_id is not None:
         bookings_query = bookings_query.filter(Booking.venueId == venue_id)
@@ -602,6 +610,7 @@ def _get_filtered_bookings_count(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
+    offerer_id: int | None = None,
     offerer_address_id: int | None = None,
 ) -> int:
     bookings = (
@@ -612,6 +621,7 @@ def _get_filtered_bookings_count(
             event_date=event_date,
             venue_id=venue_id,
             offer_id=offer_id,
+            offerer_id=offerer_id,
             offerer_address_id=offerer_address_id,
         )
         .with_entities(Booking.id, Booking.quantity)
@@ -629,6 +639,7 @@ def _get_filtered_booking_report(
     period: tuple[date, date] | None,
     status_filter: BookingStatusFilter | None,
     event_date: date | None = None,
+    offerer_id: int | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
@@ -678,6 +689,7 @@ def _get_filtered_booking_report(
             period=period,
             status_filter=status_filter,
             event_date=event_date,
+            offerer_id=offerer_id,
             venue_id=venue_id,
             offer_id=offer_id,
             offerer_address_id=offerer_address_id,
@@ -705,6 +717,7 @@ def _get_filtered_booking_pro(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
+    offerer_id: int | None = None,
     offerer_address_id: int | None = None,
 ) -> BaseQuery:
     VenueOffererAddress = aliased(OffererAddress)
@@ -745,6 +758,7 @@ def _get_filtered_booking_pro(
             event_date=event_date,
             venue_id=venue_id,
             offer_id=offer_id,
+            offerer_id=offerer_id,
             offerer_address_id=offerer_address_id,
             extra_joins=(
                 (Stock.offer,),

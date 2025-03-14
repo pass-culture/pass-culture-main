@@ -33,6 +33,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     per_page_limit = 1000
     venue_id = query.venue_id
     offer_id = query.offer_id
+    offerer_id = query.offerer_id
     offerer_address_id = query.offerer_address_id
     event_date = query.event_date
     booking_status = query.booking_status_filter
@@ -50,6 +51,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
+        offerer_id=offerer_id,
         offerer_address_id=offerer_address_id,
         page=int(page),
         per_page_limit=per_page_limit,
@@ -215,6 +217,7 @@ def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDat
 
 
 def _create_booking_export_file(query: ListBookingsQueryModel, export_type: BookingExportType) -> bytes:
+    offerer_id = query.offerer_id
     venue_id = query.venue_id
     event_date = query.event_date
     offerer_address_id = query.offerer_address_id
@@ -231,6 +234,7 @@ def _create_booking_export_file(query: ListBookingsQueryModel, export_type: Book
         booking_period=booking_period,
         status_filter=booking_status,
         event_date=event_date,
+        offerer_id=offerer_id,
         venue_id=venue_id,
         export_type=export_type,
         offerer_address_id=offerer_address_id,
