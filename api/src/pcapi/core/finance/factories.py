@@ -368,12 +368,12 @@ class FinanceCommercialGestureFactory(BaseFactory):
     kind = models.IncidentType.COMMERCIAL_GESTURE
     status = models.IncidentStatus.CREATED
     details = {
-        "origin": "Demande e-mail",
         "createdAt": datetime.datetime.utcnow().isoformat(),
         "authorId": 1,
         "validator": "",
         "validatedAt": "",
     }
+    origin = models.FinanceIncidentRequestOrigin.SUPPORT_PRO
 
 
 class IndividualBookingFinanceCommercialGestureFactory(BaseFactory):
