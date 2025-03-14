@@ -43,10 +43,6 @@ class CreateSpecialEventForm(FlaskForm):
         validators=(wtforms.validators.DataRequired("La date de l'opération est obligatoire"),),
     )
 
-    # TODO: offerer ID
-    # TODO: venue ID
-    # TODO: offer ID ?
-
     def filter_typeform_id(self, data: str | None) -> str | None:
         if data:
             try:

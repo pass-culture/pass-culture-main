@@ -82,13 +82,11 @@ def incidents_fixture() -> tuple:
         incident__origin=finance_models.FinanceIncidentRequestOrigin.FRAUDE,
     ).incident
 
-    # TODO: créer un FinanceEvent pour chaque incident
     return incident1, incident2, incident3
 
 
 @pytest.fixture(scope="function", name="closed_incident")
 def closed_incident_fixture() -> tuple:
-    # FIXME: we should not call all these apis but I was told there was no way to get a closed event with factories
     venue = offerers_factories.VenueFactory(pricing_point="self")
     bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
     offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
