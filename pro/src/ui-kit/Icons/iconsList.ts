@@ -61,6 +61,7 @@ import strokeAccessibilityBrainIcon from 'icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEarIcon from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEyeIcon from 'icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from 'icons/stroke-accessibility-leg.svg'
+import strokeAddCalendarIcon from 'icons/stroke-add-calendar.svg'
 import strokeArticleIcon from 'icons/stroke-article.svg'
 import strokeBarcodeIcon from 'icons/stroke-barcode.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
@@ -143,7 +144,7 @@ interface IconListItem {
 // Those icons are put in the order of the design library here:
 // https://www.figma.com/file/AEXCkb4KbUyPmB4BRFa88s/PRO---Library?type=design&node-id=8059-111986&t=sLfFXFbaXGFLjdhX-0
 export const fullIcons: IconListItem[] = [
-  { src: fillThumbUp},
+  { src: fillThumbUp },
   { src: fullPauseIcon },
   { src: fullPlayIcon },
   { src: fullValidateIcon },
@@ -279,6 +280,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokePageNotFoundIcon, viewBox: '0 0 130 100' },
   { src: strokeBoostIcon },
   { src: strokeVisualArtIcon },
+  { src: strokeAddCalendarIcon },
 ]
 
 export const otherIcons: IconListItem[] = [

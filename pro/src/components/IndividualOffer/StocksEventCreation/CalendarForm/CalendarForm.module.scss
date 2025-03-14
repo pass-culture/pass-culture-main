@@ -1,0 +1,50 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.container {
+  width: 100%;
+  padding: rem.torem(32px) 0;
+}
+
+.title {
+  @include fonts.title2();
+
+  margin-bottom: rem.torem(32px);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(40px);
+  align-items: center;
+}
+
+.icon-container {
+  position: relative;
+  display: flex;
+
+  &::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    top: rem.torem(-34px);
+    left: rem.torem(16px);
+    width: rem.torem(91.86px);
+    height: rem.torem(91.86px);
+    border-radius: 100%;
+    background-color: var(--color-background-accent-light);
+  }
+}
+
+.icon {
+  width: rem.torem(73.24px);
+  height: rem.torem(73.24px);
+  color: var(--color-secondary);
+  position: relative;
+  z-index: 1;
+}
+
+.button {
+  display: inline-block;
+  width: fit-content;
+}
