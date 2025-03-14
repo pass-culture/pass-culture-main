@@ -1353,7 +1353,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
 
 class GetOverpaymentCreationFormTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form"
-    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+    needed_permission = perm_models.Permissions.CREATE_FINANCE_INCIDENTS
 
     expected_num_queries = 7
 
@@ -1456,7 +1456,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
 class GetCollectiveBookingOverpaymentFormTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.get_collective_booking_overpayment_creation_form"
     endpoint_kwargs = {"collective_booking_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+    needed_permission = perm_models.Permissions.CREATE_FINANCE_INCIDENTS
 
     expected_num_queries = 10
 
@@ -1486,7 +1486,7 @@ class GetCollectiveBookingOverpaymentFormTest(PostEndpointHelper):
 
 class CreateOverpaymentTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.create_individual_booking_overpayment"
-    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+    needed_permission = perm_models.Permissions.CREATE_FINANCE_INCIDENTS
 
     @pytest.mark.parametrize("zendesk_id", [None, 1])
     @pytest.mark.parametrize("comment", [None, "Commentaire facultatif"])
@@ -1624,7 +1624,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
 
 class GetCommercialGestureCreationFormTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form"
-    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+    needed_permission = perm_models.Permissions.CREATE_FINANCE_INCIDENTS
 
     expected_num_queries = 7
 
@@ -1734,7 +1734,7 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
 
 class CreateCommercialGestureTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.create_individual_booking_commercial_gesture"
-    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+    needed_permission = perm_models.Permissions.CREATE_FINANCE_INCIDENTS
 
     @pytest.mark.parametrize("zendesk_id", [None, 1])
     @pytest.mark.parametrize("comment", [None, "Commentaire facultatif"])
@@ -1893,7 +1893,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
 class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.create_collective_booking_overpayment"
     endpoint_kwargs = {"collective_booking_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+    needed_permission = perm_models.Permissions.CREATE_FINANCE_INCIDENTS
 
     @pytest.mark.parametrize("zendesk_id", [None, 1])
     @pytest.mark.parametrize("comment", [None, "Commentaire facultatif"])
