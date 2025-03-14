@@ -48,6 +48,16 @@
     margin-bottom: rem.torem(24px);
 
     &-title {
+      @include fonts.title3;
+
+      margin-bottom: rem.torem(24px);
+    }
+  }
+
+  &-sub-sub-section {
+    margin-bottom: rem.torem(24px);
+
+    &-title {
       @include fonts.title4;
 
       margin-bottom: rem.torem(24px);
