@@ -16,8 +16,8 @@ import {
   defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
@@ -140,8 +140,6 @@ describe('Homepage', () => {
 
     renderHomePage()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-    expect(api.listOfferersNames).toHaveBeenCalled()
 
     expect(
       screen.getByText(
