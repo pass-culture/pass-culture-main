@@ -1,3 +1,4 @@
+from itertools import islice
 import logging
 import typing
 
@@ -204,8 +205,10 @@ def index_offers_staging(clear: bool) -> None:
         raise RuntimeError("This script should only be run on staging")
     if clear:
         search.unindex_all_offers()
-    offer_ids_to_reindex = staging_indexation.get_relevant_offers_to_index()
-    search.reindex_offer_ids(offer_ids_to_reindex)
+
+    offer_ids_to_reindex = iter(staging_indexation.get_relevant_offers_to_index())
+    while batch := tuple(islice(offer_ids_to_reindex, 1000)):
+        search.reindex_offer_ids(batch)
 
 
 @blueprint.cli.command("clean_indexation_processing_queues")
