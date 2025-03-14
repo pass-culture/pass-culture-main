@@ -51,7 +51,7 @@ def get_location_options(venue: offerers_models.Venue) -> list[LocationOption]:
                 "venueId": venue.id,
                 "otherAddress": "",
             },
-            "locationType": educational_models.CollectiveLocationType.VENUE,
+            "locationType": educational_models.CollectiveLocationType.ADDRESS,
         },
         {
             "name": "La culture dans l'école",
@@ -123,30 +123,24 @@ def get_offer_address_id(
     location_option: LocationOption,
     managing_offerer: offerers_models.Offerer,
 ) -> int | None:
-    location_type = location_option.get("locationType")
+    if location_option["locationType"] != educational_models.CollectiveLocationType.ADDRESS:
+        return None
+
     offer_venue = location_option["offerVenue"]
+    if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
+        target_venue = offerers_models.Venue.query.get(offer_venue["venueId"])
+        return target_venue.offererAddressId if target_venue is not None else None
 
-    if location_type == educational_models.CollectiveLocationType.ADDRESS:
-        factory = (
-            geography_factories.ManualAddressFactory
-            if location_option.get("isManualEdition", False)
-            else geography_factories.AddressFactory
-        )
-        address = factory(
-            street=offer_venue.get("otherAddress"),
-        )
-        offerer_address = offerers_factories.OffererAddressFactory(
-            label=location_option["name"], address=address, offerer=managing_offerer
-        )
-        return offerer_address.id
-
-    if location_type == educational_models.CollectiveLocationType.VENUE:
-        target_venue_id = offer_venue.get("venueId")
-        if target_venue_id is not None:
-            target_venue = offerers_models.Venue.query.get(target_venue_id)
-            if target_venue:
-                return target_venue.offererAddressId
-    return None
+    factory = (
+        geography_factories.ManualAddressFactory
+        if location_option.get("isManualEdition", False)
+        else geography_factories.AddressFactory
+    )
+    address = factory(street=offer_venue["otherAddress"])
+    offerer_address = offerers_factories.OffererAddressFactory(
+        label=location_option["name"], address=address, offerer=managing_offerer
+    )
+    return offerer_address.id
 
 
 def create_offers(
