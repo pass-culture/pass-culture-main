@@ -88,7 +88,7 @@
                                  data-bs-toggle="modal"
                                  data-bs-target=".pc-validate-booking-modal-{{ collective_booking.id }}">Valider la réservation</a>
                             </li>
-                            {% if has_permission('MANAGE_INCIDENTS') %}
+                            {% if has_permission("CREATE_INCIDENTS") %}
                               <li class="dropdown-item p-0">
                                 <a class="btn btn-sm d-block w-100 text-start px-3"
                                    data-bs-toggle="modal"
@@ -101,7 +101,7 @@
                                  data-bs-toggle="modal"
                                  data-bs-target=".pc-cancel-booking-modal-{{ collective_booking.id }}">Annuler la réservation</a>
                             </li>
-                          {% elif collective_booking.isReimbursed and has_permission('MANAGE_INCIDENTS') %}
+                          {% elif collective_booking.isReimbursed and has_permission("CREATE_INCIDENTS") %}
                             <li class="dropdown-item p-0">
                               <a class="btn btn-sm d-block w-100 text-start px-3"
                                  data-bs-toggle="modal"
@@ -203,7 +203,7 @@
             {% endfor %}
           </tbody>
         </table>
-        {% if has_permission("MANAGE_INCIDENTS") %}
+        {% if has_permission("CREATE_INCIDENTS") %}
           {% for collective_booking in rows %}
             {% if collective_booking.isReimbursed %}
               {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_collective_booking_overpayment_creation_form", collective_booking_id=collective_booking.id) , "overpayment-creation-modal-" + collective_booking.id|string) }}
