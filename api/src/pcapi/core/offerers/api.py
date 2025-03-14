@@ -152,14 +152,12 @@ def update_venue(
         )
 
         old_oa = venue.offererAddress
-        new_oa = models.OffererAddress(offerer=venue.managingOfferer)
         if is_venue_location_updated:
             update_venue_location(
                 venue,
                 modifications,
                 location_modifications,
                 venue_snapshot=venue_snapshot,
-                new_oa=new_oa,
                 is_manual_edition=is_manual_edition,
             )
         elif is_manual_edition_updated:
@@ -167,7 +165,6 @@ def update_venue(
             duplicate_oa(
                 venue=venue,
                 old_oa=old_oa,
-                new_oa=new_oa,
                 is_manual_edition=is_manual_edition,
                 venue_snapshot=venue_snapshot,
             )
@@ -278,7 +275,6 @@ def update_venue_location(
     modifications: dict,
     location_modifications: dict,
     venue_snapshot: history_api.ObjectUpdateSnapshot,
-    new_oa: models.OffererAddress,
     is_manual_edition: bool = False,
 ) -> None:
     """
@@ -334,7 +330,12 @@ def update_venue_location(
     if not is_manual_edition:
         snapshot_location_data["banId"] = address.banId
 
-    new_oa.address = address
+    new_oa = get_offerer_address(venue.managingOffererId, address.id, label=venue.common_name)
+    if new_oa:
+        new_oa.label = None
+    else:
+        new_oa = models.OffererAddress(offerer=venue.managingOfferer)
+        new_oa.address = address
     db.session.add(new_oa)
     db.session.flush()  # flush to get the new_oa.id
     target = venue.offererAddress.address
@@ -3083,6 +3084,7 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
 
 
 def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress:
+    offerer_address: models.OffererAddress | None  # helps mypy
     with transaction():
         try:
             offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
@@ -3094,7 +3096,14 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
             else:
                 db.session.rollback()
 
-    offerer_address = (
+    offerer_address = get_offerer_address(offerer_id, address_id, label)
+    assert offerer_address is not None  # helps mypy
+
+    return offerer_address
+
+
+def get_offerer_address(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress | None:
+    return (
         db.session.query(models.OffererAddress)
         .filter(
             models.OffererAddress.offererId == offerer_id,
@@ -3105,10 +3114,9 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
         .first()
     )
 
-    return offerer_address
-
 
 def create_offerer_address(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress:
+    assert offerer_id
     try:
         offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
         db.session.add(offerer_address)
@@ -3135,10 +3143,10 @@ def switch_old_oa_label(
 def duplicate_oa(
     venue: models.Venue,
     old_oa: models.OffererAddress,
-    new_oa: models.OffererAddress,
     is_manual_edition: bool,
     venue_snapshot: history_api.ObjectUpdateSnapshot,
 ) -> None:
+    new_oa = models.OffererAddress(offerer=venue.managingOfferer)
     new_oa.label = old_oa.label
     if old_oa.address.isManualEdition != is_manual_edition:
         new_oa.address = get_or_create_address(
