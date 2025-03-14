@@ -25,13 +25,16 @@
 
 .legal-infos-callout {
   .legal-infos-paragraph {
-    @include fonts.body-s;
+    @include fonts.body-accent-s;
 
     margin-bottom: rem.torem(8px);
     color: var(--color-grey-dark);
   }
 
   &-link {
+    @include fonts.body-accent-s;
+
+    display: inline;
     color: var(--color-primary);
 
     &:hover {
@@ -40,6 +43,9 @@
   }
 
   &-maillink {
+    @include fonts.body-accent-s;
+
+    display: inline;
     color: var(--color-grey-dark);
     text-decoration: underline;
 

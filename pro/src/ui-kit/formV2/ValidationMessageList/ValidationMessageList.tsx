@@ -28,7 +28,11 @@ export const ValidationMessageList = ({
         return (
           <div key={k} className={styles['field-layout-error']}>
             {errors[k] ? (
-              <FieldError name={getPasswordRuleLabel(k)} iconAlt="Il manque ">
+              <FieldError
+                name={getPasswordRuleLabel(k)}
+                iconAlt="Il manque "
+                className={styles['field-error']}
+              >
                 {getPasswordRuleLabel(k)}
               </FieldError>
             ) : (

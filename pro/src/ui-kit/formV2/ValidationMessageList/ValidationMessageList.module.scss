@@ -5,10 +5,14 @@
   @include forms.field-layout-footer;
 
   min-height: initial;
-  margin-top: 0;
+  margin-top: rem.torem(-16px);
   flex-direction: column;
 
   &:not(:empty) {
     margin-bottom: rem.torem(16px);
   }
+}
+
+.field-error {
+  color: var(--color-grey-semi-dark);
 }

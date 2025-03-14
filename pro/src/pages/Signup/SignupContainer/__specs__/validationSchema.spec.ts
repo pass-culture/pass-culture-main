@@ -49,7 +49,10 @@ describe('validationSchema', () => {
     {
       description: 'not valid form without password',
       formValues: { ...signupFormDefault, password: '' },
-      expectedErrors: ['Veuillez renseigner un mot de passe'],
+      expectedErrors: [
+        'Veuillez renseigner un mot de passe',
+        'Veuillez renseigner un mot de passe valide avec : ',
+      ],
     },
     {
       description: 'not valid form with wrong password',

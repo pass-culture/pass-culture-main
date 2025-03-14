@@ -38,12 +38,6 @@ describe('<ValidationMessageList />', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('should not appear when password is empty', () => {
-    renderValidationMessageList({ passwordValue: '' })
-
-    expect(screen.queryByTestId(/^error-/)).not.toBeInTheDocument()
-  })
-
   describe('validation cases', () => {
     // Generates tests names for each test case
     const generateTestName = ({

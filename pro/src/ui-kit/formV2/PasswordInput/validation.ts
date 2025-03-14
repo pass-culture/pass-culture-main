@@ -41,19 +41,17 @@ export const getPasswordRuleLabel = (value: string) => {
 }
 
 export const passwordValidationStatus = (
-  password: string | undefined
+  password: string
 ): { [key: string]: boolean } => {
   const errors: { [key: string]: boolean } = {}
-  if (password) {
-    errors[PasswordValidationCheck.LENGTH] = password.length < 12
-    const hasUpperCase = /[A-Z]/.test(password)
-    errors[PasswordValidationCheck.UPPER_CASE] = !hasUpperCase
-    const hasLowerCase = /[a-z]/.test(password)
-    errors[PasswordValidationCheck.LOWER_CASE] = !hasLowerCase
-    const hasNumber = /[0-9]/.test(password)
-    errors[PasswordValidationCheck.NUMBER] = !hasNumber
-    const hasSymbole = /[!"#$%&'()*+,-./:;<=>?@[\\^_`{|}~\]]/.test(password)
-    errors[PasswordValidationCheck.SYMBOLE] = !hasSymbole
-  }
+  errors[PasswordValidationCheck.LENGTH] = password.length < 12
+  const hasUpperCase = /[A-Z]/.test(password)
+  errors[PasswordValidationCheck.UPPER_CASE] = !hasUpperCase
+  const hasLowerCase = /[a-z]/.test(password)
+  errors[PasswordValidationCheck.LOWER_CASE] = !hasLowerCase
+  const hasNumber = /[0-9]/.test(password)
+  errors[PasswordValidationCheck.NUMBER] = !hasNumber
+  const hasSymbole = /[!"#$%&'()*+,-./:;<=>?@[\\^_`{|}~\]]/.test(password)
+  errors[PasswordValidationCheck.SYMBOLE] = !hasSymbole
   return errors
 }

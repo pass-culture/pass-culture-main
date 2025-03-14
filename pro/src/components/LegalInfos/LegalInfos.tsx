@@ -1,9 +1,10 @@
 import cn from 'classnames'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import fullLinkIcon from 'icons/full-link.svg'
 import fullMailIcon from 'icons/full-mail.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -35,29 +36,31 @@ export const LegalInfos = ({
     >
       <p className={styles['legal-infos-paragraph']}>
         En cliquant sur S’inscrire, vous acceptez nos{' '}
-        <Link
+        <ButtonLink
+          variant={ButtonVariant.QUATERNARY}
+          icon={fullLinkIcon}
           className={styles['legal-infos-callout-link']}
-          rel="noreferrer"
-          target="_blank"
+          opensInNewTab
           onClick={() =>
             logEvent(Events.CLICKED_CONSULT_CGU, { from: location.pathname })
           }
           to="https://pass.culture.fr/cgu-professionnels/"
         >
           Conditions générales d’utilisation.
-        </Link>
+        </ButtonLink>
       </p>
       <p className={styles['legal-infos-paragraph']}>
         Pour la gestion de vos données personnelles par la SAS pass Culture,
         vous pouvez consulter la charte des données personnelles ou contacter{' '}
-        <Link
+        <ButtonLink
+          variant={ButtonVariant.QUATERNARY}
+          icon={fullLinkIcon}
           className={styles['legal-infos-callout-maillink']}
           to={`mailto:${DPOMail}`}
-          rel="noreferrer"
-          target="_blank"
+          isExternal
         >
           {DPOMail}
-        </Link>
+        </ButtonLink>
         .
       </p>
     </Callout>
