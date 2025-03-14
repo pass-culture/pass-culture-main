@@ -31,6 +31,7 @@ from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRes
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.workers import apps_flyer_job
 
 from .. import blueprint
 from .serialization import authentication
@@ -151,6 +152,9 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     user.isEmailValidated = True
     repository.save(user)
     external_attributes_api.update_external_user(user)
+
+    if "apps_flyer" in user.externalIds:
+        apps_flyer_job.log_user_registration_event_job.delay(user.id)
 
     try:
         dms_subscription_api.try_dms_orphan_adoption(user)

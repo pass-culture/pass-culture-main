@@ -5,6 +5,7 @@ import json
 import logging
 import re
 from unittest import mock
+from unittest.mock import ANY
 from unittest.mock import patch
 
 import pytest
@@ -1145,6 +1146,51 @@ class BookOfferTest:
 
             assert Booking.query.count() == 0
             assert str(exc.value) == "DISABLE_CGR_EXTERNAL_BOOKINGS is active"
+
+    @patch("pcapi.core.bookings.api.apps_flyer_job.log_user_booked_offer_event_job.delay")
+    def test_apps_flyer_called_when_booking_offer(self, mocked_apps_flyer_job):
+        apps_flyer_data = {
+            "apps_flyer": {"user": "some-user-id", "platform": "ANDROID"},
+            "firebase_pseudo_id": "firebase_pseudo_id",
+        }
+        beneficiary = users_factories.BeneficiaryGrant18Factory(externalIds=apps_flyer_data)
+        stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
+
+        api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+
+        mocked_apps_flyer_job.assert_called_once_with(beneficiary.id, stock.offerId, ANY)
+
+    def test_apps_flyer_not_called_when_booking_offer_without_apps_flyer_id(self):
+        beneficiary = users_factories.BeneficiaryGrant18Factory(externalIds={})
+        stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
+
+        with patch(
+            "pcapi.core.bookings.api.apps_flyer_job.log_user_booked_offer_event_job.delay"
+        ) as mocked_apps_flyer_job:
+            api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+
+            mocked_apps_flyer_job.assert_not_called()
+
+    @pytest.mark.features(DISABLE_CGR_EXTERNAL_BOOKINGS=True)
+    def test_should_raise_error_when_cgr_external_bookings_are_disabled(self):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        boost_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer_solo = offers_factories.EventOfferFactory(
+            name="Séance ciné solo",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+        )
+        stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="123%12354114%CGR#111")
+
+        # When
+        with pytest.raises(feature.DisabledFeatureError) as exc:
+            api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
+
+        assert Booking.query.count() == 0
+        assert str(exc.value) == "DISABLE_CGR_EXTERNAL_BOOKINGS is active"
 
 
 @pytest.mark.usefixtures("db_session")
