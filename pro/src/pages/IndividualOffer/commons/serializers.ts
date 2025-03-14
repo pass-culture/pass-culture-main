@@ -90,7 +90,9 @@ export const serializePatchOffer = ({
         latitude: sentValues.latitude ?? '',
         longitude: sentValues.longitude ?? '',
         postalCode: sentValues.postalCode ?? '',
-        street: removeQuotes(sentValues.street?.trim() ?? ''),
+        street: sentValues.street
+          ? removeQuotes(sentValues.street.trim())
+          : null,
         label: sentValues.locationLabel,
         isManualEdition: sentValues.manuallySetAddress,
         isVenueAddress:

@@ -42,7 +42,7 @@ describe('AddressManual', () => {
     render(<TestForm />)
 
     // Fields must be present and required
-    expect(screen.getByLabelText(/Adresse postale/)).toBeRequired()
+    expect(screen.getByLabelText(/Adresse postale/)).not.toBeRequired()
     expect(screen.getByLabelText(/Code postal/)).toBeRequired()
     expect(screen.getByLabelText(/Ville/)).toBeRequired()
     expect(screen.getByLabelText(/Coordonnées GPS/)).toBeRequired()

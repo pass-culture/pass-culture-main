@@ -237,7 +237,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
         publicName: '',
         'search-addressAutocomplete': '',
         siret: '123 456 789 33333',
-        street: '',
+        street: null,
       })
     })
 

@@ -122,9 +122,7 @@ export const VenueSettingsForm = ({
                     )}
                   </Button>
                 </FormLayout.Row>
-                {manuallySetAddress.value && (
-                  <AddressManual isStreetOptional={true} />
-                )}
+                {manuallySetAddress.value && <AddressManual />}
               </>
             </>
           )}

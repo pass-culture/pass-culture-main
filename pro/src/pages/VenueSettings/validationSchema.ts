@@ -15,7 +15,7 @@ export const getValidationSchema = (isVenueVirtual: boolean) =>
             'Veuillez sélectionner une adresse parmi les suggestions'
           ),
       }),
-    street: yup.string().trim(),
+    street: yup.string().nullable().trim(),
     postalCode: yup
       .string()
       .trim()
