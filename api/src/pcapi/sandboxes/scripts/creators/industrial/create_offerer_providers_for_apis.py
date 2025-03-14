@@ -143,7 +143,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
             total_views_last_30_days=total_views_last_30_days,
         ),
     )
-    offers_factories.HeadlineOfferFactory(offer=top_offer, create_mediation=True)
+    offers_factories.HeadlineOfferFactory(offer=top_offer)
 
     offers_factories.EventStockFactory(
         offer__name="Taylor à Besançon !",
