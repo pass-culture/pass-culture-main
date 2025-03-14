@@ -2007,7 +2007,7 @@ class HeadlineOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_remove_headline_offer(self, mocked_async_index_offer_ids):
         offer = factories.OfferFactory(isActive=True)
-        headline_offer = factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer)
 
         api.remove_headline_offer(offer.venue.managingOffererId)
         db.session.commit()  # see comment in make_offer_headline()
@@ -2028,9 +2028,7 @@ class HeadlineOfferTest:
         offer = factories.OfferFactory(isActive=True, venue=venue)
         creation_time = datetime.utcnow()
         finished_timespan = (creation_time, creation_time + timedelta(days=10))
-        old_headline_offer = factories.HeadlineOfferFactory(
-            offer=offer, timespan=finished_timespan, create_mediation=True
-        )
+        old_headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
 
         one_eternity_later = creation_time + timedelta(days=1000)
         with time_machine.travel(one_eternity_later):
@@ -2058,11 +2056,10 @@ class HeadlineOfferTest:
 
         ten_days_ago = datetime.utcnow() - timedelta(days=10)
         finished_timespan = (ten_days_ago, ten_days_ago + timedelta(days=1))
-        old_headline_offer = factories.HeadlineOfferFactory(
-            offer=offer_1, timespan=finished_timespan, create_mediation=True
-        )
+        old_headline_offer = factories.HeadlineOfferFactory(offer=offer_1, timespan=finished_timespan)
         new_headline_offer = api.make_offer_headline(offer=offer_2)
         db.session.commit()  # see comment in make_offer_headline()
+
         assert not old_headline_offer.isActive
         assert new_headline_offer.isActive
         assert not offer_1.is_headline_offer
@@ -2152,9 +2149,9 @@ class HeadlineOfferTest:
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_set_upper_timespan_of_inactive_headline_offers(self, mocked_async_index_offer_ids):
-        headline_offer_1 = factories.HeadlineOfferFactory(create_mediation=True)
-        headline_offer_3 = factories.HeadlineOfferFactory(create_mediation=True)
-        headline_offer_2 = factories.HeadlineOfferFactory(create_mediation=True)
+        headline_offer_1 = factories.HeadlineOfferFactory()
+        headline_offer_3 = factories.HeadlineOfferFactory()
+        headline_offer_2 = factories.HeadlineOfferFactory()
 
         assert headline_offer_1.isActive
         assert headline_offer_1.timespan.upper is None
@@ -2186,10 +2183,10 @@ class HeadlineOfferTest:
         offer_with_product_mediation = factories.OfferFactory(product=product_with_mediation)
         offer_without_product_mediation = factories.OfferFactory(product=product_without_mediation)
         headline_offer_with_product_mediation = factories.HeadlineOfferFactory(
-            offer=offer_with_product_mediation, create_mediation=False
+            offer=offer_with_product_mediation, without_mediation=True
         )
         headline_offer_without_product_mediation = factories.HeadlineOfferFactory(
-            offer=offer_without_product_mediation, create_mediation=False
+            offer=offer_without_product_mediation, without_mediation=True
         )
 
         assert headline_offer_with_product_mediation.offer.images
@@ -2213,7 +2210,7 @@ class HeadlineOfferTest:
     def test_do_not_update_upper_timespan_of_already_inactive_headline_offers(self, mocked_async_index_offer_ids):
         creation_time = datetime.utcnow() - timedelta(days=20)
         finished_timespan = (creation_time, creation_time + timedelta(days=10))
-        old_headline_offer = factories.HeadlineOfferFactory(timespan=finished_timespan, create_mediation=True)
+        old_headline_offer = factories.HeadlineOfferFactory(timespan=finished_timespan)
 
         api.set_upper_timespan_of_inactive_headline_offers()
         assert old_headline_offer.timespan.lower.date() == creation_time.date()
@@ -2231,8 +2228,8 @@ class HeadlineOfferTest:
         creation_time_2 = datetime.utcnow() - timedelta(days=1)
         finished_timespan = (creation_time_1, ending_time_1)
         unfinished_timespan = (creation_time_2, None)
-        old_headline_offer = factories.HeadlineOfferFactory(timespan=finished_timespan, create_mediation=True)
-        current_headline_offer = factories.HeadlineOfferFactory(timespan=unfinished_timespan, create_mediation=False)
+        old_headline_offer = factories.HeadlineOfferFactory(timespan=finished_timespan)
+        current_headline_offer = factories.HeadlineOfferFactory(timespan=unfinished_timespan, without_mediation=True)
 
         api.set_upper_timespan_of_inactive_headline_offers()
 
@@ -2251,9 +2248,8 @@ class HeadlineOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_set_upper_timespan_of_inactive_headline_offers_without_image(self, mocked_async_index_offer_ids):
         offer = factories.OfferFactory(isActive=True)
-        factories.StockFactory(offer=offer)
 
-        headline_offer = factories.HeadlineOfferFactory(offer=offer)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, without_mediation=True)
         assert not headline_offer.isActive
 
         api.set_upper_timespan_of_inactive_headline_offers()
@@ -2271,7 +2267,7 @@ class HeadlineOfferTest:
         another_offer = factories.OfferFactory(venue=offer.venue)
         factories.StockFactory(offer=another_offer)
         factories.MediationFactory(offer=another_offer)
-        headline_offer = factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer)
 
         new_headline_offer = api.upsert_headline_offer(another_offer)
         db.session.commit()  # see comment in make_offer_headline()
@@ -2294,7 +2290,7 @@ class HeadlineOfferTest:
         offer = factories.OfferFactory(venue__venueTypeCode=VenueTypeCode.LIBRARY)
         creation_time = datetime.utcnow() - timedelta(days=20)
         finished_timespan = (creation_time, creation_time + timedelta(days=10))
-        headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan, create_mediation=True)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
         new_headline_offer = api.upsert_headline_offer(offer)
         db.session.commit()  # see comment in make_offer_headline()
 

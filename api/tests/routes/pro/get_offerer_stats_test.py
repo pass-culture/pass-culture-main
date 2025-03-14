@@ -27,9 +27,8 @@ class OffererStatsTest:
         offer_2 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id)
         mediation = offers_factories.MediationFactory(offer=offer_2)
         offer_3 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id)
-        offers_factories.StockFactory(offer=offer_2)
         offers_factories.HeadlineOfferFactory(
-            offer=offer_2, venue=offer_2.venue, timespan=(datetime.datetime.utcnow(),)
+            offer=offer_2, venue=offer_2.venue, timespan=(datetime.datetime.utcnow(),), without_mediation=True
         )
 
         offerers_factories.OffererStatsFactory(
