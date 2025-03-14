@@ -419,24 +419,18 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     from pcapi.core.fraud import api as fraud_api
     from pcapi.core.users.api import get_domains_credit
 
-    is_pro_user: bool = user.has_pro_role or user.has_non_attached_pro_role
-
-    if is_pro_user:
-        user_bookings: list[bookings_models.Booking] = []
-        favorites: list[users_models.Favorite] = []
-    else:
-        user_bookings = get_user_bookings(user) if not is_pro_user else []
-        favorites = (
-            users_models.Favorite.query.filter_by(userId=user.id)
-            .options(joinedload(users_models.Favorite.offer).load_only(offers_models.Offer.subcategoryId))
-            .order_by(users_models.Favorite.id.desc())
-            .all()
-        )
+    user_bookings = get_user_bookings(user)
+    favorites = (
+        users_models.Favorite.query.filter_by(userId=user.id)
+        .options(joinedload(users_models.Favorite.offer).load_only(offers_models.Offer.subcategoryId))
+        .order_by(users_models.Favorite.id.desc())
+        .all()
+    )
 
     last_favorite = favorites[0] if favorites else None
     most_favorite_offer_subcategories = get_most_favorite_subcategories(favorites)
 
-    domains_credit = get_domains_credit(user, user_bookings) if not is_pro_user else None
+    domains_credit = get_domains_credit(user, user_bookings)
     bookings_attributes = get_bookings_categories_and_subcategories(user_bookings)
     booking_venues_count = len({booking.venueId for booking in user_bookings})
     last_recredit = finance_api.get_latest_age_related_user_recredit(user)
@@ -474,7 +468,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         is_eligible=user.is_eligible,
         is_email_validated=user.isEmailValidated,
         is_phone_validated=user.is_phone_validated,
-        is_pro=is_pro_user,
+        is_pro=False,
         last_booking_date=user_bookings[0].dateCreated if user_bookings else None,
         last_favorite_creation_date=last_favorite.dateCreated if last_favorite else None,
         last_name=user.lastName,
