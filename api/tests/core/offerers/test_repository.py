@@ -276,7 +276,7 @@ class GetOffererAddressesTest:
 class GetOffererHeadlineOfferTest:
     def test_return_headline_offer(self):
         offer = offers_factories.OfferFactory()
-        offers_factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
+        offers_factories.HeadlineOfferFactory(offer=offer)
 
         headline_offer = repository.get_offerer_headline_offer(offer.venue.managingOffererId)
 
@@ -288,8 +288,8 @@ class GetOffererHeadlineOfferTest:
         other_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.OfferFactory(venue=venue)
         other_offer = offers_factories.OfferFactory(venue=other_venue)
-        offers_factories.HeadlineOfferFactory(offer=offer, venue=venue, create_mediation=True)
-        offers_factories.HeadlineOfferFactory(offer=other_offer, venue=other_venue, create_mediation=True)
+        offers_factories.HeadlineOfferFactory(offer=offer, venue=venue)
+        offers_factories.HeadlineOfferFactory(offer=other_offer, venue=other_venue)
 
         with pytest.raises(exceptions.TooManyHeadlineOffersForOfferer):
             repository.get_offerer_headline_offer(offerer.id)

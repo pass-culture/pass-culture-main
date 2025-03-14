@@ -948,7 +948,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Nom de l'offre"] == "good"
 
     def test_list_offers_has_headline(self, authenticated_client):
-        offers_factories.HeadlineOfferFactory(offer__name="good", create_mediation=True)
+        offers_factories.HeadlineOfferFactory(offer__name="good")
         offers_factories.OfferFactory(name="bad")
         query_args = {
             "search-0-search_field": "HEADLINE",
@@ -964,7 +964,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Nom de l'offre"] == "good"
 
     def test_list_offers_has_no_headline(self, authenticated_client):
-        offers_factories.HeadlineOfferFactory(offer__name="bad", create_mediation=True)
+        offers_factories.HeadlineOfferFactory(offer__name="bad")
         offers_factories.OfferFactory(name="good")
         query_args = {
             "search-0-search_field": "HEADLINE",

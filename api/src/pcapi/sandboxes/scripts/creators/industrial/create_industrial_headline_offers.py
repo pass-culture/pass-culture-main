@@ -26,7 +26,9 @@ def create_industrial_headline_offers(offers_by_name: dict[str, Offer]) -> None:
             and offer.status == OfferStatus.ACTIVE
             and not offer.venue.has_headline_offer
         ):
-            headline_offers_by_name[offer_name] = offers_factories.HeadlineOfferFactory(offer=offer, venue=offer.venue)
+            headline_offers_by_name[offer_name] = offers_factories.HeadlineOfferFactory(
+                offer=offer, venue=offer.venue, without_mediation=True
+            )
 
             headline_offer_limit_per_offerer[offerer_name] = (
                 headline_offer_limit_per_offerer[offerer_name] - 1

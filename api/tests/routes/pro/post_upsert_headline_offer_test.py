@@ -62,7 +62,6 @@ class Returns200Test:
                 datetime.datetime.utcnow() - datetime.timedelta(days=20),
                 datetime.datetime.utcnow() - datetime.timedelta(days=10),
             ),
-            create_mediation=True,
         )
         assert not offer.is_headline_offer
 
@@ -71,7 +70,6 @@ class Returns200Test:
         }
         client = client.with_session_auth(pro_user.email)
         response = client.post("/offers/upsert_headline", json=data)
-
         assert response.status_code == 201
         assert offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.count() == 2
@@ -88,9 +86,9 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
         offer = offers_factories.OfferFactory(venue=venue)
         another_offer = offers_factories.OfferFactory(venue=venue)
-        offers_factories.StockFactory(offer=another_offer)
         offers_factories.MediationFactory(offer=another_offer)
-        offers_factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
+        offers_factories.StockFactory(offer=another_offer)
+        offers_factories.HeadlineOfferFactory(offer=offer)
 
         data = {
             "offerId": another_offer.id,
@@ -119,9 +117,9 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
         offer = offers_factories.OfferFactory(venue=venue, isActive=False)
         another_offer = offers_factories.OfferFactory(venue=venue)
-        offers_factories.StockFactory(offer=another_offer)
         offers_factories.MediationFactory(offer=another_offer)
-        offers_factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
+        offers_factories.StockFactory(offer=another_offer)
+        offers_factories.HeadlineOfferFactory(offer=offer)
 
         data = {
             "offerId": another_offer.id,
@@ -151,7 +149,7 @@ class Returns400Test:
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
         offer = offers_factories.OfferFactory(venue=venue)
-        offers_factories.HeadlineOfferFactory(offer=offer, create_mediation=True)
+        offers_factories.HeadlineOfferFactory(offer=offer)
 
         data = {
             "offerId": offer.id,
@@ -174,7 +172,6 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
         offer = offers_factories.OfferFactory(venue=venue, isActive=False)
         offers_factories.StockFactory(offer=offer)
-        offers_factories.MediationFactory(offer=offer)
 
         data = {
             "offerId": offer.id,

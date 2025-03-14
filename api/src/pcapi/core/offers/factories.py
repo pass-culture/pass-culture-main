@@ -273,15 +273,15 @@ class HeadlineOfferFactory(BaseFactory):
     timespan = (datetime.datetime.utcnow(),)
 
     @factory.post_generation
-    def create_mediation(
+    def without_mediation(
         self,
         create: bool,
-        create_mediation: bool = False,
+        without_mediation: bool = False,
         **_kwargs: typing.Any,
     ) -> None:
         if create:
             StockFactory(offer=self.offer)
-            if create_mediation:
+            if not without_mediation:
                 MediationFactory(offer=self.offer)
 
 
