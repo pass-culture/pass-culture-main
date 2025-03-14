@@ -3,6 +3,7 @@ import dataclasses
 from datetime import datetime
 from datetime import timedelta
 import enum
+import hashlib
 import json
 import logging
 import random
@@ -34,6 +35,7 @@ class TokenType(enum.Enum):
     ACCOUNT_CREATION = "account_creation"
     OAUTH_STATE = "oauth_state"
     DISCORD_OAUTH = "discord_oauth"
+    PASSWORDLESS_LOGIN = "passwordless_login"
 
 
 T = typing.TypeVar("T", bound="AbstractToken")
@@ -53,14 +55,9 @@ class AbstractToken(abc.ABC):
         CREATE = "create"
 
     @classmethod
-    def load_and_check(
-        cls: typing.Type[T],
-        encoded_token: str,
-        type_: TokenType,
-        user_id: int | None = None,
-    ) -> T:
-        token = cls.load_without_checking(encoded_token, type_=type_, user_id=user_id)
-        token.check(type_, user_id)
+    def load_and_check(cls: typing.Type[T], encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> T:
+        token = cls.load_without_checking(encoded_token, *args, **kwargs)
+        token.check(*args, **kwargs)
         return token
 
     @classmethod
@@ -130,6 +127,17 @@ class Token(AbstractToken):
         return int(self.key_suffix)
 
     @classmethod
+    def load_and_check(
+        cls: typing.Type[T],
+        encoded_token: str,
+        type_: TokenType,
+        user_id: int | None = None,
+    ) -> T:
+        token = cls.load_without_checking(encoded_token, type_=type_, user_id=user_id)
+        token.check(type_, user_id)
+        return token
+
+    @classmethod
     def load_without_checking(cls, encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> "Token":
         try:
             payload = utils.decode_jwt_token(encoded_token)
@@ -172,6 +180,17 @@ class SixDigitsToken(AbstractToken):
     @classmethod
     def _get_redis_extra_data_key(cls, type_: TokenType, user_id: int) -> str:
         return f"pcapi:token:data:{type_.value}_{user_id}"
+
+    @classmethod
+    def load_and_check(
+        cls: typing.Type[T],
+        encoded_token: str,
+        type_: TokenType,
+        user_id: int | None = None,
+    ) -> T:
+        token = cls.load_without_checking(encoded_token, type_=type_, user_id=user_id)
+        token.check(type_, user_id)
+        return token
 
     @classmethod
     def load_without_checking(
@@ -315,7 +334,7 @@ class AsymetricToken(AbstractToken):
     """
 
     @classmethod
-    def load_without_checking(
+    def load_and_check(
         cls, encoded_token: str, public_key: bytes, *args: typing.Any, **kwargs: typing.Any
     ) -> "AsymetricToken":
         try:
@@ -333,11 +352,22 @@ class AsymetricToken(AbstractToken):
         return cls(type_, uuid4, encoded_token, data)
 
     @classmethod
+    def load_without_checking(cls, encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> "AsymetricToken":
+        """Decode the JWT token without verifying signature. If you want to be able to trust
+        the data within the payload, you must use `load_and_check`
+        """
+        payload = utils.decode_jwt_token_rs256(encoded_token, verify_signature=False)
+        type_ = TokenType(payload["token_type"])
+        uuid4 = payload["uuid"]
+
+        data = payload.get("data", {})
+        return cls(type_, uuid4, encoded_token, data)
+
+    @classmethod
     def create(
         cls,
         type_: TokenType,
         private_key: bytes,
-        public_key: bytes,
         ttl: timedelta | None,
         *,
         data: dict | None = None,
@@ -354,6 +384,105 @@ class AsymetricToken(AbstractToken):
         encoded_token = utils.encode_jwt_payload_rs256(payload, private_key=private_key)
         if ttl is None or ttl > timedelta(0):
             app.redis_client.set(cls.get_redis_key(type_, random_uuid), encoded_token, ex=ttl)
-        token = cls.load_without_checking(encoded_token, public_key=public_key)
+        token = cls(type_, random_uuid, encoded_token, payload["data"])
         token._log(cls._TokenAction.CREATE)
         return token
+
+
+PASSWORDLESS_REDIS_KEY_TEMPLATE = "pcapi:token:%(type_)s:%(key_suffix)s"
+
+
+def create_passwordless_login_token(user_id: int, ttl: timedelta) -> str:
+    """
+    Single use token that allow a user to login without entering any credentials.
+    This token is signed using a RSA private key and verified using the corresponding
+    public key.
+    In exchange of this token, a user should be returned a valid session.
+
+    The payload of this token expects several claims:
+
+        jti: Token unique identifier preventing replay attacks. Ensure each JWT is used only once.
+        sub: The subject of the token. Contains the user id.
+        iat: Issued at.
+        exp: Expiration date.
+
+    Returns:
+        A JWT token (str)
+    """
+    issued_at = datetime.utcnow()
+    expiration_date = issued_at + ttl
+
+    jti = str(uuid.uuid4())
+    exp = int(expiration_date.timestamp())
+    iat = int(issued_at.timestamp())
+    sub = str(user_id)
+
+    # There's virtually none chance two users can have the same
+    # jti within the lifetime of their respective token.
+    # However let's be defensive, hashing together the user_id and the corresponding jti
+    # we ensure this case is covered.
+    value = json.dumps({"user_id": sub, "jti": jti})
+    key_suffix = hashlib.sha256(value.encode()).hexdigest()
+    redis_key = PASSWORDLESS_REDIS_KEY_TEMPLATE % {
+        "type_": TokenType.PASSWORDLESS_LOGIN.value,
+        "key_suffix": key_suffix,
+    }
+    app.redis_client.set(redis_key, value, ex=ttl)
+
+    token = utils.encode_jwt_payload_rs256(
+        {"sub": sub, "iat": iat, "exp": exp, "jti": jti},
+        private_key=settings.PASSWORDLESS_LOGIN_PRIVATE_KEY,
+        expiration_date=expiration_date,
+    )
+    return token
+
+
+def validate_passwordless_token(token: str) -> dict:
+    """Validate and consume the passwordless login token.
+    If valid, return the content of the payload.
+
+    Returns:
+        payload (dict): The payload of the token containing the JTI, the subject (user_id), the expiration and issued_at dates.
+
+    Raises:
+        InvalidToken (exception): If anything goes wrong while decoding or validating the token, we don’t want to give any additional hints, we raise `InvalidToken` in any cases.
+    """
+    try:
+        payload = utils.decode_jwt_token_rs256(
+            token, public_key=settings.PASSWORDLESS_LOGIN_PUBLIC_KEY, require=["exp", "iat", "sub", "jti"]
+        )
+    except jwt.ExpiredSignatureError as exc:
+        # Authentic but expired token
+        raise exc
+    except jwt.PyJWTError as exc:
+        # Base exception for all others case we might be interested on
+        logger.warning(
+            "%s (reason: %s) raised while decoding passwordless login token: %s", exc.__class__.__name__, exc, token
+        )
+        raise users_exceptions.InvalidToken from exc
+
+    value = json.dumps({"user_id": payload["sub"], "jti": payload["jti"]})
+    key_suffix = hashlib.sha256(value.encode()).hexdigest()
+    redis_key = PASSWORDLESS_REDIS_KEY_TEMPLATE % {
+        "type_": TokenType.PASSWORDLESS_LOGIN.value,
+        "key_suffix": key_suffix,
+    }
+
+    with app.redis_client.pipeline() as pipeline:
+        pipeline.get(redis_key)
+        pipeline.delete(redis_key)
+        results = pipeline.execute()
+    redis_value = json.loads(results[0])
+
+    # The below statement are purely defensive code.
+    # We should ALWAYS have a perfect match between
+    # the payload of the token and what has been stored in the redis queue
+    if redis_value["user_id"] != payload["sub"] or redis_value["jti"] != payload["jti"]:
+        # Aborting
+        logger.error(
+            "Mismatch between the payload of an authentic passwordless login token and the corresponding redis value. Token: %s",
+            token,
+        )
+        raise users_exceptions.InvalidToken
+
+    return payload

@@ -1,6 +1,7 @@
 from datetime import date
 from datetime import datetime
 import logging
+import typing
 
 from dateutil.relativedelta import relativedelta
 import jwt
@@ -44,8 +45,16 @@ def encode_jwt_payload_rs256(
     return jwt.encode(token_payload, key=private_key, algorithm=ALGORITHM_RS_256)
 
 
-def decode_jwt_token_rs256(jwt_token: str, public_key: str | bytes) -> dict:
-    return jwt.decode(jwt_token, key=public_key, algorithms=[ALGORITHM_RS_256])
+def decode_jwt_token_rs256(jwt_token: str, public_key: str | bytes | None = None, **options: typing.Any) -> dict:
+    if (public_key is None and options.get("verify_signature") is not False) or (
+        public_key and "verify_signature" in options
+    ):
+        raise RuntimeError(
+            "You have to either provide the public_key to verify the signature or the use the `verify_signature` options set to False"
+        )
+    if public_key:
+        return jwt.decode(jwt_token, key=public_key, algorithms=[ALGORITHM_RS_256], options=options)
+    return jwt.decode(jwt_token, algorithms=[ALGORITHM_RS_256], options=options)
 
 
 def get_age_at_date(birth_date: date, specified_datetime: datetime, department_code: str | None = None) -> int:
