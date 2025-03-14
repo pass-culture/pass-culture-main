@@ -13,7 +13,7 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { BoxFormLayout } from 'ui-kit/BoxFormLayout/BoxFormLayout'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { PhoneNumberInput } from 'ui-kit/formV2/PhoneNumberInput/PhoneNumberInput'
 
 import styles from './UserForm.module.scss'
 import { validationSchema } from './validationSchema'
@@ -42,6 +42,7 @@ export const UserPhoneForm = ({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
   } = hookForm
 
   const onSubmit = async (values: UserPhoneBodyModel) => {
@@ -78,9 +79,23 @@ export const UserPhoneForm = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormLayout>
           <FormLayout.Row>
-            <TextInput
+            <PhoneNumberInput
               label="Téléphone"
-              {...register('phoneNumber')}
+              {...register('phoneNumber', {
+                onBlur(event) {
+                  // This is because entries like "+33600110011invalid" are considered valid by libphonenumber-js,
+                  // We need to explicitely extract "+33600110011" that is in the .number property
+                  try {
+                    const phoneNumber = parseAndValidateFrenchPhoneNumber(
+                      event.target.value
+                    ).number
+                    setValue('phoneNumber', phoneNumber)
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  } catch (e) {
+                    // phone is considered invalid by the lib, so we does nothing here and let yup indicates the error
+                  }
+                },
+              })}
               required={true}
               error={errors.phoneNumber?.message}
               asterisk={false}

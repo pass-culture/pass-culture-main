@@ -47,8 +47,12 @@ describe('components:UserPhoneForm', () => {
 
     renderUserPhoneForm(props)
 
-    await userEvent.clear(screen.getByLabelText('Téléphone'))
-    await userEvent.type(screen.getByLabelText('Téléphone'), '0692790350')
+    const phoneInput = screen.getByRole('textbox', {
+      name: /Numéro de téléphone/,
+    })
+
+    await userEvent.clear(phoneInput)
+    await userEvent.type(phoneInput, '0692790350')
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
 
@@ -60,7 +64,7 @@ describe('components:UserPhoneForm', () => {
   it('should render the form with phone number input', () => {
     renderUserPhoneForm(props)
 
-    const phoneInput = screen.getByLabelText(/Téléphone/)
+    const phoneInput = screen.getByText(/Téléphone/)
     const submitButton = screen.getByRole('button', { name: /Enregistrer/ })
     const cancelButton = screen.getByRole('button', { name: /Annuler/ })
 
@@ -74,7 +78,9 @@ describe('components:UserPhoneForm', () => {
 
     renderUserPhoneForm(props)
 
-    const phoneInput = screen.getByLabelText(/Téléphone/)
+    const phoneInput = screen.getByRole('textbox', {
+      name: /Numéro de téléphone/,
+    })
     const submitButton = screen.getByRole('button', { name: /Enregistrer/ })
 
     await userEvent.type(phoneInput, invalidPhoneNumber)
@@ -92,8 +98,12 @@ describe('components:UserPhoneForm', () => {
 
     renderUserPhoneForm(props)
 
-    await userEvent.clear(screen.getByLabelText('Téléphone'))
-    await userEvent.type(screen.getByLabelText('Téléphone'), '0692790350')
+    const phoneInput = screen.getByRole('textbox', {
+      name: /Numéro de téléphone/,
+    })
+
+    await userEvent.clear(phoneInput)
+    await userEvent.type(phoneInput, '0692790350')
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
 
@@ -107,9 +117,13 @@ describe('components:UserPhoneForm', () => {
 
     renderUserPhoneForm(props)
 
-    await userEvent.type(screen.getByLabelText('Téléphone'), '0692790350')
+    const phoneInput = screen.getByRole('textbox', {
+      name: /Numéro de téléphone/,
+    })
+
+    await userEvent.type(phoneInput, '0692790350')
     await userEvent.click(screen.getByText('Annuler'))
 
-    expect(screen.getByLabelText('Téléphone')).toHaveValue('0615142345')
+    expect(phoneInput).toHaveValue('0615142345')
   })
 })
