@@ -5,7 +5,7 @@ from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import GcuCompatibilityType
-from pcapi.core.offers.models import TiteliveImageType
+from pcapi.core.offers.models import ImageType
 import pcapi.core.users.factories as users_factories
 
 
@@ -29,8 +29,8 @@ class Returns200Test:
             },
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )
-        offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.RECTO)
-        offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.VERSO)
+        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
+        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.VERSO)
 
         test_client = client.with_session_auth(email=user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
