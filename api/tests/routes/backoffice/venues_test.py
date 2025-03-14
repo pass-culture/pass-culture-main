@@ -2239,9 +2239,9 @@ class UpdateVenueTest(PostEndpointHelper):
         data = self._get_current_data(venue)
 
         with patch("pcapi.core.offerers.api.update_venue", side_effect=sa.exc.IntegrityError("test", "test", "test")):
-            response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+            response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data, follow_redirects=True)
 
-        assert response.status_code == 400
+        assert response.status_code == 200  # after redirect
         assert (
             "Une erreur s'est produite : (builtins.str) test [SQL: test] [parameters: 'test']"
             in html_parser.extract_alert(response.data)
