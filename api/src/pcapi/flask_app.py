@@ -248,20 +248,20 @@ def mark_4xx_as_invalid(response: flask.Response) -> flask.Response:
 
 
 @app.teardown_request
+def remove_db_session(exc: BaseException | None = None) -> None:
+    try:
+        db.session.remove()
+    except AttributeError:
+        pass
+
+
+@app.teardown_request
 def teardown_atomic(exc: BaseException | None = None) -> None:
     if app.config.get("USE_GLOBAL_ATOMIC", False):
         if exc:
             repository.mark_transaction_as_invalid()
         repository._manage_session()
         db.session.autoflush = True
-
-
-@app.teardown_request
-def remove_db_session(exc: BaseException | None = None) -> None:
-    try:
-        db.session.remove()
-    except AttributeError:
-        pass
 
 
 with app.app_context():
