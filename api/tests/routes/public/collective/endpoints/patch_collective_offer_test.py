@@ -1234,7 +1234,7 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
         )
 
         assert offer.offererAddressId == venue_provider.venue.offererAddressId
-        assert offer.locationType == educational_models.CollectiveLocationType.VENUE
+        assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
     def test_change_to_offerer_venue_other_venue(self, client):

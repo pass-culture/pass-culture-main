@@ -59,11 +59,11 @@ class Returns200Test:
 
         assert response_json["location"] is None
 
-    def test_location_venue(self, client):
+    def test_location_address_venue(self, client):
         venue = offerers_factories.VenueFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(
             venue=venue,
-            locationType=educational_models.CollectiveLocationType.VENUE,
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,
             offererAddressId=venue.offererAddressId,
             interventionArea=None,
@@ -78,7 +78,7 @@ class Returns200Test:
 
         response_json = response.json
         response_location = response_json["location"]
-        assert response_location["locationType"] == "VENUE"
+        assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
         assert response_location["address"]["id_oa"] == venue.offererAddressId

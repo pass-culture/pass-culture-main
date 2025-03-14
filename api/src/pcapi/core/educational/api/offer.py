@@ -200,16 +200,12 @@ class CollectiveOfferLocation:
 
 
 def get_location_from_offer_venue(
-    offer_venue: educational_models.OfferVenueDict, venue: offerers_models.Venue | None, is_offer_venue: bool
+    offer_venue: educational_models.OfferVenueDict, venue: offerers_models.Venue | None
 ) -> CollectiveOfferLocation:
     match offer_venue["addressType"]:
         case educational_models.OfferAddressType.OFFERER_VENUE:
             return CollectiveOfferLocation(
-                location_type=(
-                    educational_models.CollectiveLocationType.VENUE
-                    if is_offer_venue
-                    else educational_models.CollectiveLocationType.ADDRESS
-                ),
+                location_type=educational_models.CollectiveLocationType.ADDRESS,
                 location_comment=None,
                 offerer_address=venue.offererAddress if venue else None,
             )
@@ -243,16 +239,10 @@ def get_offer_venue_from_location(
     location_type: educational_models.CollectiveLocationType | None,
     location_comment: str | None,
     offerer_address: offerers_models.OffererAddress | None,
+    is_venue_address: bool,
     venue_id: int,
 ) -> educational_models.OfferVenueDict:
     match location_type:
-        case educational_models.CollectiveLocationType.VENUE:
-            return {
-                "addressType": educational_models.OfferAddressType.OFFERER_VENUE,
-                "otherAddress": "",
-                "venueId": venue_id,
-            }
-
         case educational_models.CollectiveLocationType.SCHOOL:
             return {
                 "addressType": educational_models.OfferAddressType.SCHOOL,
@@ -261,6 +251,13 @@ def get_offer_venue_from_location(
             }
 
         case educational_models.CollectiveLocationType.ADDRESS:
+            if is_venue_address:
+                return {
+                    "addressType": educational_models.OfferAddressType.OFFERER_VENUE,
+                    "otherAddress": "",
+                    "venueId": venue_id,
+                }
+
             if offerer_address is not None and offerer_address.address is not None:
                 other_address = offerer_address.address.fullAddress
             else:
@@ -293,7 +290,7 @@ def get_location_values(
     When we receive the offerVenue field, in the "offererVenue" case we check venueId and force intervention_area to be empty
     When we receive location, we also write to offerVenue to keep the field up to date
     """
-    address_body = offer_data.location.address if offer_data.location else None
+    address_body = offer_data.location.address if offer_data.location is not None else None
     offerer_address = offers_api.get_offerer_address_from_address_body(address_body=address_body, venue=venue)
     intervention_area = offer_data.intervention_area or []
 
@@ -313,6 +310,7 @@ def get_location_values(
             location_type=offer_data.location.locationType,
             location_comment=offer_data.location.locationComment,
             offerer_address=offerer_address,
+            is_venue_address=address_body.isVenueAddress if address_body is not None else False,
             venue_id=venue.id,
         )
 
@@ -628,9 +626,7 @@ def create_collective_offer_public(
 
         location_venue = educational_repository.fetch_venue_for_new_offer(venue_id, requested_id)
 
-    location = get_location_from_offer_venue(
-        offer_venue=offer_venue, venue=location_venue, is_offer_venue=venue.id == offer_venue["venueId"]
-    )
+    location = get_location_from_offer_venue(offer_venue=offer_venue, venue=location_venue)
 
     collective_offer = educational_models.CollectiveOffer(
         venue=venue,
@@ -752,10 +748,7 @@ def edit_collective_offer_public(
         if "otherAddress" in offer_venue:
             offer_venue["otherAddress"] = offer_venue["otherAddress"] or ""
 
-        venue_id = new_values.get("venueId", offer.venueId)  # current offer.venueId or the new received value if given
-        location = get_location_from_offer_venue(
-            offer_venue=offer_venue, venue=location_venue, is_offer_venue=venue_id == offer_venue["venueId"]
-        )
+        location = get_location_from_offer_venue(offer_venue=offer_venue, venue=location_venue)
 
         new_values["locationType"] = location.location_type
         new_values["locationComment"] = location.location_comment
@@ -1396,6 +1389,7 @@ def _update_collective_offer(
             location_type=location_body.locationType,
             location_comment=location_body.locationComment,
             offerer_address=offerer_address,
+            is_venue_address=location_body.address.isVenueAddress if location_body.address is not None else False,
             venue_id=offer.venueId,
         )
         new_values["offerVenue"] = offer_venue
