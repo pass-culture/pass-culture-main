@@ -773,7 +773,9 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         )
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(err)), "warning")
         mark_transaction_as_invalid()
-        return render_venue_details(venue, form), 400
+        # Redirect because we can't fetch data in the current request:
+        # This Session's transaction has been rolled back due to a previous exception during flush
+        return redirect(url_for(".get", venue_id=venue_id))
     except ApiErrors as api_errors:
         for error_key, error_details in api_errors.errors.items():
             for error_detail in error_details:
@@ -782,7 +784,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
                     "warning",
                 )
         mark_transaction_as_invalid()
-        return render_venue_details(venue, form), 400
+        return redirect(url_for(".get", venue_id=venue_id))
 
     if not venue_was_permanent and new_permanent and venue.thumbCount == 0:
         transactional_mails.send_permanent_venue_needs_picture(venue)
