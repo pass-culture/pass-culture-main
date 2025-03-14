@@ -30,7 +30,7 @@ describe('Financial Management - messages, links to external help page, reimburs
       )
     })
 
-    it('I should be able to see messages, reimbursement details and offerer selection change', () => {
+    it('I should be redirected to the homepage when offerer selection change', () => {
       logInAndGoToPage(login1, '/remboursements')
 
       cy.stepLog({
@@ -96,50 +96,12 @@ describe('Financial Management - messages, links to external help page, reimburs
       cy.findByTestId('header-dropdown-menu-div').should('not.exist')
       cy.findAllByTestId('spinner').should('not.exist')
 
-      cy.stepLog({ message: 'These receipt results should be displayed' })
-      const data = [
-        [
-          'Date du justificatif',
-          'Type de document',
-          'Compte bancaire',
-          'N° de virement',
-          'Montant remboursé',
-          'Actions',
-        ],
-        [
-          '',
-          '',
-          'Trop perçu',
-          'Libellé des coordonnées bancaires n°0',
-          'N/A',
-          '-10,00',
-        ],
-      ]
-      const numRows = data.length - 1
-      const numColumns = data[0].length
-
-      cy.findAllByTestId('spinner').should('not.exist')
-      cy.findAllByTestId('invoice-item-row').should('have.length', numRows)
-
-      // Vérification des titres des colonnes
-      const titleArray = data[0]
-      cy.findAllByTestId('invoice-title-row').within(() => {
-        cy.get('th').then(($elt) => {
-          for (let column = 0; column < numColumns; column++) {
-            if (titleArray[column] !== '') {
-              cy.wrap($elt).eq(column).should('contain', titleArray[column])
-            }
-          }
-        })
+      cy.stepLog({
+        message:
+          'We must be redirected on the homepage of the new offerer, who’s not onboarded',
       })
-
-      cy.stepLog({ message: 'I download reimbursement details' })
-      cy.findByTestId('dropdown-menu-trigger').click()
-      cy.findByText(/Télécharger le détail des réservations/).click()
-
-      cy.stepLog({ message: 'I can see the reimbursement details' })
-      const filename = `${Cypress.config('downloadsFolder')}/remboursements_pass_culture.csv`
-      cy.readFile(filename, { timeout: 15000 }).should('not.be.empty')
+      cy.findByText('Bienvenue sur le pass Culture Pro !')
+      cy.findByText('À qui souhaitez-vous proposer votre première offre ?')
     })
   })
 
