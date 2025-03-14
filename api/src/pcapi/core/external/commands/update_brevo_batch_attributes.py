@@ -81,8 +81,14 @@ def _run_iteration(min_user_id: int, max_user_id: int, synchronize_batch: bool, 
         User.query.filter(User.id.in_(user_ids))
         .filter(
             User.isActive.is_(True),
-            sa.not_(User.has_pro_role),
-            sa.not_(User.has_admin_role),
+            sa.or_(  # type: ignore[type-var]
+                sa.and_(
+                    sa.not_(User.has_pro_role),
+                    sa.not_(User.has_non_attached_pro_role),
+                    sa.not_(User.has_admin_role),
+                ),
+                User.is_beneficiary,
+            ),
         )
         .all()
     )

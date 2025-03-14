@@ -378,6 +378,9 @@ def import_contacts_in_sendinblue(
     ]
 
     # send pro users request
+    # FIXME (prouzet, 2025-03-14): import_contacts_in_sendinblue is not called when refreshing pro users
+    # This part causes an HTTP 400 error: {"code":"missing_parameter","message":"Missing listIds or newList"}
+    # List is mandatory when calling import_contacts endpoint.
     if pro_users:
         configuration = brevo_python.Configuration()
         configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
