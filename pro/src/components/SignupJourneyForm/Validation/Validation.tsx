@@ -212,7 +212,8 @@ export const Validation = (): JSX.Element => {
           </div>
           <div className={styles['data-line']}>{offerer.siret}</div>
           <div className={styles['data-line']}>
-            {offerer.street}, {offerer.postalCode} {offerer.city}
+            {offerer.street && `${offerer.street}, `}
+            {offerer.postalCode} {offerer.city}
           </div>
         </div>
       </section>
