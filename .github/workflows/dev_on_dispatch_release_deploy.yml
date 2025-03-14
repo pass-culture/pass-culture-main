@@ -94,6 +94,7 @@ jobs:
       cluster_scope: metier
       cluster_environment: ehp
       workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
+      apply_algolia_config: true
       deploy_api: true
       deploy_pro: true
       doc-api-entrypoint: 'api/documentation'
@@ -112,6 +113,7 @@ jobs:
       cluster_scope: metier
       cluster_environment: ehp
       workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
+      apply_algolia_config: true
       deploy_api: true
       deploy_pro: true
       doc-api-entrypoint: 'api/documentation'
@@ -130,6 +132,7 @@ jobs:
       cluster_scope: metier
       cluster_environment: prod
       workload_identity_provider_secret_name: gcp_metier_prod_workload_identity_provider
+      apply_algolia_config: true
       deploy_api: true
       deploy_pro: true
     secrets:

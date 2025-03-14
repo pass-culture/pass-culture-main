@@ -17,6 +17,7 @@ jobs:
       api-documentation-changed: ${{ steps.check-api-documentation-changes.outputs.any_modified }}
       pro-changed: ${{ steps.check-pro-changes.outputs.any_modified }}
       dependencies-changed: ${{ steps.check-dependencies-changes.outputs.any_modified }}
+      algolia-config-changed: ${{ steps.check-algolia-config-changes.outputs.any_modified }}
       push-tags: ${{ steps.pcapi-tags.outputs.push-tags }}
       checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
       checksum-tag-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
@@ -52,6 +53,14 @@ jobs:
           files: |
             api/poetry.lock
             pro/yarn.lock
+      - name: "Check changes in Algolia configuration"
+        id: check-algolia-config-changes
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            api/src/pcapi/algolia_settings_collective_offers.json
+            api/src/pcapi/algolia_settings_offers.json
+            api/src/pcapi/algolia_settings_venues.json
       - name: "Define pcapi image tags."
         id: pcapi-tags
         run: |
@@ -276,7 +285,7 @@ jobs:
 
   deploy-to-testing:
     name: "Deploy to testing"
-    needs: [test-api, test-pro, push-pcapi-console, push-pcapi]
+    needs: [pcapi-init-job, test-api, test-pro, push-pcapi-console, push-pcapi]
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
@@ -289,6 +298,7 @@ jobs:
       cluster_scope: metier
       cluster_environment: ehp
       workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
+      apply_algolia_config: ${{ needs.pcapi-init-job.algolia-config-changed == 'true' }}
       deploy_api: ${{ needs.test-api.result == 'success' }}
       deploy_pro: ${{ needs.test-pro.result == 'success' }}
     secrets:

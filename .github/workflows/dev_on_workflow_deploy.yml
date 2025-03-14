@@ -19,6 +19,10 @@ on:
       workload_identity_provider_secret_name:
         type: string
         required: true
+      apply_algolia_config:
+        type: boolean
+        required: false
+        default: false
       deploy_api:
         type: boolean
         required: false
@@ -254,9 +258,9 @@ jobs:
 
   apply-algolia-config:
     name: "apply Algolia settings"
-    needs: deploy-api
+    needs: [deploy-api]
     if: |
-      (inputs.environment == 'staging' || inputs.environment == 'production') &&
+      (inputs.apply_algolia_config == 'true') &&
       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped')
     environment: ${{ inputs.environment }}
     permissions:
