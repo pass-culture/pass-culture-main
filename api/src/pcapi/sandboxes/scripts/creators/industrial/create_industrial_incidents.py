@@ -2,7 +2,8 @@ import datetime
 import decimal
 import logging
 from unittest.mock import patch
-import uuid
+
+import factory
 
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import factories as bookings_factories
@@ -128,7 +129,7 @@ def _create_one_individual_incident(
             1,
             stock__offer__venue=venue,
             stock__price=decimal.Decimal("19990"),  # 19.99k€
-            user__firstName=f"martin.cident_{uuid.uuid4()}@example.com",
+            user__email=factory.Sequence("martin.cident_{}@example.com".format),
             user__deposit__source="create_industrial_incidents() in industrial sandbox",
             user__deposit__amount=decimal.Decimal("20300"),  # 20.3k€
         )
@@ -172,7 +173,7 @@ def _create_one_individual_incident(
             size=3,
             stock__offer__venue=venue,
             stock__price=decimal.Decimal("20") + decimal.Decimal(iteration),
-            user__firstName=f"valent.incident_{uuid.uuid4()}@example.com",
+            user__email=factory.Sequence("valent.incident_{}@example.com".format),
         )
         for booking in new_bookings:
             bookings_api.mark_as_used(
