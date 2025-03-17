@@ -202,12 +202,12 @@ export const CollectiveActionsCells = ({
       }
       setIsCancelledBookingModalOpen(false)
 
-      const cancelSucessNotification = areCollectiveNewStatusesEnabled
-        ? 'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
-        : 'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.'
-      notify.success(cancelSucessNotification, {
-        duration: NOTIFICATION_LONG_SHOW_DURATION,
-      })
+      notify.success(
+        'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.',
+        {
+          duration: NOTIFICATION_LONG_SHOW_DURATION,
+        }
+      )
     } catch (error) {
       if (isErrorAPIError(error) && getErrorCode(error) === 'NO_BOOKING') {
         notify.error(
@@ -324,10 +324,6 @@ export const CollectiveActionsCells = ({
       (offer.booking.booking_status === CollectiveBookingStatus.PENDING ||
         offer.booking.booking_status === CollectiveBookingStatus.CONFIRMED)
 
-  const offerActivationWording =
-    'Votre offre est maintenant active et visible dans ADAGE'
-  const offerDeactivationWording = `Votre offre est ${areCollectiveNewStatusesEnabled ? 'mise en pause' : 'désactivée'} et n’est plus visible sur ADAGE`
-
   const activateOffer = async () => {
     const { isActive, id } = offer
     try {
@@ -337,7 +333,9 @@ export const CollectiveActionsCells = ({
       })
 
       notify.success(
-        !isActive ? offerActivationWording : offerDeactivationWording
+        !isActive
+          ? 'Votre offre est maintenant active et visible dans ADAGE'
+          : 'Votre offre est mise en pause et n’est plus visible sur ADAGE'
       )
     } catch {
       return notify.error(
@@ -458,9 +456,7 @@ export const CollectiveActionsCells = ({
                 onSelect={activateOffer}
               >
                 <Button icon={fullHideIcon} variant={ButtonVariant.TERNARY}>
-                  {areCollectiveNewStatusesEnabled
-                    ? 'Mettre en pause'
-                    : 'Masquer la publication'}
+                  Mettre en pause
                 </Button>
               </DropdownMenu.Item>
             )}

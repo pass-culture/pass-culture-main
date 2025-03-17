@@ -10,7 +10,6 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { Button } from 'ui-kit/Button/Button'
@@ -30,9 +29,6 @@ export const CollectiveActionButtons = ({
 }: CollectiveActionButtonsProps) => {
   const { mutate } = useSWRConfig()
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const areNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
-  )
 
   const notify = useNotification()
 
@@ -54,13 +50,12 @@ export const CollectiveActionButtons = ({
         Number(bookingRecap.bookingId),
       ])
 
-      const cancelSucessNotification = areNewStatusesEnabled
-        ? 'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
-        : 'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.'
-
-      notify.success(cancelSucessNotification, {
-        duration: NOTIFICATION_LONG_SHOW_DURATION,
-      })
+      notify.success(
+        'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.',
+        {
+          duration: NOTIFICATION_LONG_SHOW_DURATION,
+        }
+      )
     } catch (error) {
       if (isErrorAPIError(error) && getErrorCode(error) === 'NO_BOOKING') {
         notify.error(

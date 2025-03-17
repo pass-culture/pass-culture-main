@@ -2,7 +2,6 @@ import { useFormikContext } from 'formik'
 import { ChangeEvent, useId } from 'react'
 
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isDateValid } from 'commons/utils/date'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Callout } from 'ui-kit/Callout/Callout'
@@ -25,9 +24,6 @@ export const FormDates = ({
 }: FormDatesProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<OfferEducationalFormValues>()
-  const areNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
-  )
 
   const subtitleId = useId()
 
@@ -42,10 +38,6 @@ export const FormDates = ({
       await setFieldValue('endingDate', newBeginningDate)
     }
   }
-
-  const deactivateWording = areNewStatusesEnabled
-    ? 'mise en pause'
-    : 'désactivée'
 
   return (
     <div className={styles['container']}>
@@ -68,8 +60,8 @@ export const FormDates = ({
                   variant={CalloutVariant.INFO}
                   className={styles.banner}
                 >
-                  {`Votre offre sera ${deactivateWording} automatiquement à l’issue des dates
-            précisées ci-dessous.`}
+                  Votre offre sera mise en pause automatiquement à l’issue des
+                  dates précisées ci-dessous.
                 </Callout>
                 <FormLayout.Row className={styles['row-container']}>
                   <DatePicker

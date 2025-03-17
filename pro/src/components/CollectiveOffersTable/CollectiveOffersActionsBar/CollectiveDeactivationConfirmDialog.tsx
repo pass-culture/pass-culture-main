@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { NBSP } from 'commons/core/shared/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import fullEyeIcon from 'icons/full-hide.svg'
 
@@ -24,18 +23,13 @@ export const CollectiveDeactivationConfirmDialog = ({
 }: CollectiveDeactivationConfirmDialogProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
-  const areNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
-  )
 
-  const deactivateWording = areNewStatusesEnabled
-    ? 'mettre en pause'
-    : 'masquer'
+  const deactivateWording = 'mettre en pause'
 
   return (
     <ConfirmDialog
       cancelText={'Annuler'}
-      confirmText={areNewStatusesEnabled ? 'Mettre en pause' : 'Masquer'}
+      confirmText={'Mettre en pause'}
       onCancel={() => {
         logEvent(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
           from: location.pathname,

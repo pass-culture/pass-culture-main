@@ -1,6 +1,4 @@
-
 import { OfferStatus } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
@@ -42,39 +40,16 @@ const OFFER_STATUS_PROPERTIES: Record<
   [OfferStatus.REJECTED]: {
     variant: TagVariant.BLACK,
     icon: strokeCloseIcon,
-    label: 'refusée',
+    label: 'non conforme',
   },
   [OfferStatus.PENDING]: {
     variant: TagVariant.DARK_GREY,
     icon: strokeClockIcon,
-    label: 'en attente',
+    label: 'en instruction',
   },
   [OfferStatus.INACTIVE]: {
     variant: TagVariant.DARK_GREY,
     icon: fullHideIcon,
-    label: 'désactivée',
-  },
-}
-
-const NEW_OFFER_STATUS_PROPERTIES: Record<
-  string,
-  {
-    variant: TagVariant
-    icon: string
-    label: string
-  }
-> = {
-  ...OFFER_STATUS_PROPERTIES,
-  [OfferStatus.REJECTED]: {
-    ...OFFER_STATUS_PROPERTIES[OfferStatus.REJECTED],
-    label: 'non conforme',
-  },
-  [OfferStatus.PENDING]: {
-    ...OFFER_STATUS_PROPERTIES[OfferStatus.PENDING],
-    label: 'en instruction',
-  },
-  [OfferStatus.INACTIVE]: {
-    ...OFFER_STATUS_PROPERTIES[OfferStatus.PENDING],
     label: 'en pause',
   },
 }
@@ -84,17 +59,10 @@ type StatusLabelProps = {
 }
 
 export const StatusLabel = ({ status }: StatusLabelProps) => {
-  const areNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
-  )
-  const statusProperties = areNewStatusesEnabled
-    ? NEW_OFFER_STATUS_PROPERTIES
-    : OFFER_STATUS_PROPERTIES
-
   return (
-    <Tag variant={statusProperties[status].variant}>
-      <SvgIcon alt="" src={statusProperties[status].icon} />
-      {statusProperties[status].label}
+    <Tag variant={OFFER_STATUS_PROPERTIES[status].variant}>
+      <SvgIcon alt="" src={OFFER_STATUS_PROPERTIES[status].icon} />
+      {OFFER_STATUS_PROPERTIES[status].label}
     </Tag>
   )
 }

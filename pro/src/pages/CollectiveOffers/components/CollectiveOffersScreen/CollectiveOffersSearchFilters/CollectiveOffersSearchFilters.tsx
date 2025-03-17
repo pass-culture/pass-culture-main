@@ -39,16 +39,16 @@ interface CollectiveOffersSearchFiltersProps {
 
 const collectiveFilterStatus = [
   {
-    label: 'Validation en attente',
+    label: 'En instruction',
     value: CollectiveOfferDisplayedStatus.PENDING,
   },
   {
-    label: 'Refusée',
+    label: 'Non conforme',
     value: CollectiveOfferDisplayedStatus.REJECTED,
   },
   { label: 'Publiée sur ADAGE', value: CollectiveOfferDisplayedStatus.ACTIVE },
   {
-    label: 'Masquée sur ADAGE',
+    label: 'En pause',
     value: CollectiveOfferDisplayedStatus.INACTIVE,
   },
   { label: 'Préréservée', value: CollectiveOfferDisplayedStatus.PREBOOKED },
@@ -62,6 +62,14 @@ const collectiveFilterStatus = [
   {
     label: 'Brouillon',
     value: CollectiveOfferDisplayedStatus.DRAFT,
+  },
+  {
+    label: 'Remboursée',
+    value: CollectiveOfferDisplayedStatus.REIMBURSED,
+  },
+  {
+    label: 'Annulée',
+    value: CollectiveOfferDisplayedStatus.CANCELLED,
   },
 ]
 
@@ -82,9 +90,6 @@ export const CollectiveOffersSearchFilters = ({
 }: CollectiveOffersSearchFiltersProps): JSX.Element => {
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
-  )
-  const areCollectiveNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
 
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
@@ -173,38 +178,11 @@ export const CollectiveOffersSearchFilters = ({
   const searchByOfferNameLabel = 'Nom de l’offre'
 
   const statusFilterOptions = [
-    ...collectiveFilterStatus
-      .filter(
-        (status) =>
-          !isNewOffersAndBookingsActive ||
-          status.value !== CollectiveOfferDisplayedStatus.INACTIVE
-      )
-      .map((status) => {
-        if (areCollectiveNewStatusesEnabled) {
-          if (status.value === CollectiveOfferDisplayedStatus.PENDING) {
-            return { ...status, label: 'En instruction' }
-          }
-          if (status.value === CollectiveOfferDisplayedStatus.REJECTED) {
-            return { ...status, label: 'Non conforme' }
-          }
-          if (status.value === CollectiveOfferDisplayedStatus.INACTIVE) {
-            return { ...status, label: 'En pause' }
-          }
-        }
-        return status
-      }),
-    ...(areCollectiveNewStatusesEnabled
-      ? [
-          {
-            label: 'Remboursée',
-            value: CollectiveOfferDisplayedStatus.REIMBURSED,
-          },
-          {
-            label: 'Annulée',
-            value: CollectiveOfferDisplayedStatus.CANCELLED,
-          },
-        ]
-      : []),
+    ...collectiveFilterStatus.filter(
+      (status) =>
+        !isNewOffersAndBookingsActive ||
+        status.value !== CollectiveOfferDisplayedStatus.INACTIVE
+    ),
   ]
 
   return (

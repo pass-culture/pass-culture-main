@@ -505,13 +505,8 @@ describe('CollectiveOffersScreen', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should show the reimbursed status option if the ENABLE_COLLECTIVE_NEW_STATUSES FF is active', async () => {
-    renderOffers(
-      {
-        ...props,
-      },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
+  it('should show the reimbursed status option', async () => {
+    renderOffers(props)
 
     await userEvent.click(
       screen.getByRole('combobox', {
@@ -540,13 +535,8 @@ describe('CollectiveOffersScreen', () => {
     ).toBeInTheDocument()
   })
 
-  it('should show the cancelled status option if the ENABLE_COLLECTIVE_NEW_STATUSES FF is active', async () => {
-    renderOffers(
-      {
-        ...props,
-      },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
+  it('should show the cancelled status option ', async () => {
+    renderOffers(props)
 
     await userEvent.click(
       screen.getByRole('combobox', {
@@ -555,21 +545,5 @@ describe('CollectiveOffersScreen', () => {
     )
 
     expect(screen.getByRole('option', { name: 'Annulée' })).toBeInTheDocument()
-  })
-
-  it('should not show the cancelled status option if the ENABLE_COLLECTIVE_NEW_STATUSES FF is inactive', async () => {
-    renderOffers({
-      ...props,
-    })
-
-    await userEvent.click(
-      screen.getByRole('combobox', {
-        name: 'Statut',
-      })
-    )
-
-    expect(
-      screen.queryByRole('option', { name: 'Annulée' })
-    ).not.toBeInTheDocument()
   })
 })

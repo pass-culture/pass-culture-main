@@ -5,7 +5,6 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFERER_V2_STATS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { getOffersCountToDisplay } from 'commons/utils/getOffersCountToDisplay'
 import { Card } from 'components/Card/Card'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -60,18 +59,13 @@ const StatBlock = ({ icon, count, label, link, linkLabel }: StatBlockProps) => (
 
 export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
   const { logEvent } = useAnalytics()
-  const areNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
-  )
 
   const getOffererV2StatsQuery = useSWR(
     offerer.id ? [GET_OFFERER_V2_STATS_QUERY_KEY, offerer.id] : null,
     ([, offererId]) => api.getOffererV2Stats(offererId)
   )
 
-  const pendingOfferWording = areNewStatusesEnabled
-    ? 'en instruction'
-    : 'en attente'
+  const pendingOfferWording = 'en instruction'
 
   const isLoading = getOffererV2StatsQuery.isLoading
   const stats = getOffererV2StatsQuery.data
