@@ -36,10 +36,6 @@ describe('Create collective offers', () => {
     cy.intercept({ method: 'GET', url: '/offerers/educational*' }).as(
       'educationalOfferers'
     )
-
-    cy.setFeatureFlags([
-      { name: 'ENABLE_COLLECTIVE_NEW_STATUSES', isActive: true },
-    ])
   })
 
   it('I can create an offer with draft status', () => {
