@@ -117,3 +117,7 @@ class UserNotABeneficiary(DiscordException):
 
 class UserUnderage(DiscordException):
     pass
+
+
+class UnknownDepositType(Exception):
+    pass
