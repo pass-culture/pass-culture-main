@@ -13,5 +13,6 @@ type Story = StoryObj<typeof ValidationMessageList>
 export const Default: Story = {
   args: {
     passwordValue: 'change me', // ggignore
+    hasError: false,
   },
 }

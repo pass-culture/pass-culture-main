@@ -57,6 +57,10 @@
     flex-direction: row;
     gap: rem.torem(16px);
   }
+
+  &-password {
+    margin-bottom: rem.torem(32px);
+  }
 }
 
 .signup-form-group {

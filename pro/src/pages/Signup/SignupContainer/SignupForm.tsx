@@ -96,16 +96,18 @@ export const SignupForm = (): JSX.Element => {
             asterisk={!isNewSignupEnabled}
           />
         </FormLayout.Row>
-        <FormLayout.Row>
+        <FormLayout.Row className={styles['signup-form-row-password']}>
           <PasswordInput
             {...register('password')}
-            error={errors.password?.message}
             label="Mot de passe"
             autoComplete="new-password"
             required
             asterisk={!isNewSignupEnabled}
           />
-          <ValidationMessageList passwordValue={newPassword} />
+          <ValidationMessageList
+            passwordValue={newPassword}
+            hasError={!!errors.password}
+          />
         </FormLayout.Row>
         {!isNewSignupEnabled && (
           <FormLayout.Row>

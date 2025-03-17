@@ -6,14 +6,7 @@ export const validationSchema = yup.object().shape({
   oldPassword: yup
     .string()
     .required('Veuillez renseigner votre mot de passe actuel'),
-  newPassword: yup
-    .string()
-    .required('Veuillez renseigner votre nouveau mot de passe')
-    .test(
-      'isPasswordValid',
-      'Veuillez respecter le format requis :',
-      isPasswordValid
-    ),
+  newPassword: yup.string().required().test('isPasswordValid', isPasswordValid),
   newConfirmationPassword: yup
     .string()
     .oneOf(

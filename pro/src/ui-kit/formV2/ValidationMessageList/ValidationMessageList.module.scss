@@ -1,18 +1,21 @@
 @use "styles/mixins/_forms.scss" as forms;
 @use "styles/mixins/rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
 
 .password-footer {
   @include forms.field-layout-footer;
 
   min-height: initial;
-  margin-top: rem.torem(-16px);
-  flex-direction: column;
+  margin-top: rem.torem(-20px);
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  gap: rem.torem(8px) rem.torem(12px);
 
   &:not(:empty) {
     margin-bottom: rem.torem(16px);
   }
 }
 
-.field-error {
+.field-error-pristine {
   color: var(--color-grey-semi-dark);
 }

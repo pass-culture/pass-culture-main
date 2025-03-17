@@ -34,7 +34,7 @@ export const getPasswordRuleLabel = (value: string) => {
     case PasswordValidationCheck.NUMBER:
       return '1 chiffre'
     case PasswordValidationCheck.SYMBOLE:
-      return '1 caractère spécial (!@#$%^&*...)'
+      return '1 caractère spécial'
     default:
       return ''
   }
