@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import logging
 
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
@@ -146,6 +147,8 @@ class AdageLoggerClient(AdageClient):
                     courriel="contact+collegelatour@example.com",
                     telephone="0600000000",
                     codePostal="75000",
+                    latitude=decimal.Decimal("48.8534"),
+                    longitude=decimal.Decimal("2.3488"),
                 )
             ]
         raise exceptions.AdageEducationalInstitutionNotFound("Requested educational institution not found for Adage")
