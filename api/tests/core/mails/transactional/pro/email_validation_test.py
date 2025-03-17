@@ -20,7 +20,7 @@ class SendProUserValidationEmailTest:
         token = token_utils.Token.create(token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, ttl=None, user_id=user.id)
 
         # When
-        send_signup_email_confirmation_to_pro(user, token)
+        send_signup_email_confirmation_to_pro(user, token.encoded_token)
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
