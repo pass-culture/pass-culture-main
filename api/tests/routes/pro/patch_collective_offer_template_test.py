@@ -458,6 +458,20 @@ class Returns200Test:
 
         assert offer.offerVenue == {"addressType": "other", "otherAddress": "Right here", "venueId": None}
 
+    def test_national_program_unchanged(self, client):
+        program = educational_factories.NationalProgramFactory()
+        offer_ctx = build_offer_context(offer_kwargs={"nationalProgram": program})
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        payload = {"name": "hello"}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 200
+        offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer_id).one()
+        assert offer.nationalProgramId == program.id
+
 
 class Returns400Test:
     def test_empty_name(self, client):
