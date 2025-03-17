@@ -54,7 +54,7 @@ class Returns200Test:
             bookingEmails=["booking@youpi.com", "kingboo@piyou.com"],
             contactPhone="0600000000",
             subcategoryId="CINE_PLEIN_AIR",
-            educational_domains=None,
+            educational_domains=[educational_factories.EducationalDomainFactory()],
             students=[models.StudentLevels.CAP1],
             interventionArea=["01", "07", "08"],
         )
@@ -64,8 +64,10 @@ class Returns200Test:
             status=models.CollectiveBookingStatus.PENDING,
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-        domain = educational_factories.EducationalDomainFactory(name="Architecture")
         national_program = educational_factories.NationalProgramFactory()
+        domain = educational_factories.EducationalDomainFactory(
+            name="Architecture", nationalPrograms=[national_program]
+        )
 
         data = {
             "name": "New name",
@@ -431,6 +433,67 @@ class Returns200Test:
         offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.nationalProgramId == program.id
 
+    def test_national_program_set_none(self, client):
+        program = educational_factories.NationalProgramFactory()
+        offer = educational_factories.CollectiveOfferFactory(nationalProgram=program)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"nationalProgramId": None}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        assert offer.nationalProgramId is None
+
+    def test_national_program_valid_update_program(self, client):
+        new_program = educational_factories.NationalProgramFactory()
+        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[new_program])
+        offer = educational_factories.CollectiveOfferFactory(domains=[current_domain])
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"nationalProgramId": new_program.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        assert offer.nationalProgramId == new_program.id
+        assert [domain.id for domain in offer.domains] == [current_domain.id]
+
+    def test_national_program_valid_update_domains(self, client):
+        current_program = educational_factories.NationalProgramFactory()
+        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        new_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        offer = educational_factories.CollectiveOfferFactory(domains=[current_domain], nationalProgram=current_program)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"domains": [new_domain.id]}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        assert offer.nationalProgramId == current_program.id
+        assert [domain.id for domain in offer.domains] == [new_domain.id]
+
+    def test_national_program_valid_update_domains_and_program(self, client):
+        current_program = educational_factories.NationalProgramFactory()
+        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        new_program = educational_factories.NationalProgramFactory()
+        new_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[new_program])
+        offer = educational_factories.CollectiveOfferFactory(domains=[current_domain], nationalProgram=current_program)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"domains": [new_domain.id], "nationalProgramId": new_program.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        assert offer.nationalProgramId == new_program.id
+        assert [domain.id for domain in offer.domains] == [new_domain.id]
+
 
 class Returns400Test:
     def test_patch_offer_with_empty_name(self, app, client):
@@ -626,6 +689,65 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
         assert response.json == {"global": ["National program not found"]}
+
+    def test_update_collective_offer_with_inactive_national_program(self, client):
+        program = educational_factories.NationalProgramFactory(isActive=False)
+        domain = educational_factories.EducationalDomainFactory(nationalPrograms=[program])
+        offer = educational_factories.CollectiveOfferFactory(domains=[domain])
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"nationalProgramId": program.id}
+        client = client.with_session_auth("user@example.com")
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"}
+
+    def test_update_collective_offer_with_invalid_national_program_update_program(self, client):
+        program = educational_factories.NationalProgramFactory()
+        domain = educational_factories.EducationalDomainFactory()
+        offer = educational_factories.CollectiveOfferFactory(domains=[domain])
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"nationalProgramId": program.id}
+        client = client.with_session_auth("user@example.com")
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}
+
+    def test_update_collective_offer_with_invalid_national_program_update_domains(self, client):
+        program = educational_factories.NationalProgramFactory()
+        domain = educational_factories.EducationalDomainFactory(nationalPrograms=[program])
+        offer = educational_factories.CollectiveOfferFactory(domains=[domain], nationalProgram=program)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"domains": [educational_factories.EducationalDomainFactory().id]}
+        client = client.with_session_auth("user@example.com")
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}
+
+    def test_update_collective_offer_with_invalid_national_program_update_domains_and_program(self, client):
+        program = educational_factories.NationalProgramFactory()
+        domain = educational_factories.EducationalDomainFactory(nationalPrograms=[program])
+        offer = educational_factories.CollectiveOfferFactory(domains=[domain], nationalProgram=program)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {
+            "domains": [educational_factories.EducationalDomainFactory().id],
+            "nationalProgramId": educational_factories.NationalProgramFactory().id,
+        }
+        client = client.with_session_auth("user@example.com")
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}
 
     def test_update_collective_offer_booking_emails_invalid(self, client):
         offer = educational_factories.CollectiveOfferFactory()

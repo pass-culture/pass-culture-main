@@ -66,7 +66,7 @@ def build_payload_context():
     national_program = educational_factories.NationalProgramFactory()
     template_start = build_template_start()
     template_end = build_template_end(template_start)
-    domain = educational_factories.EducationalDomainFactory(name="Danse")
+    domain = educational_factories.EducationalDomainFactory(name="Danse", nationalPrograms=[national_program])
     return PayloadContext(
         national_program=national_program,
         template_start=template_start,
@@ -471,6 +471,75 @@ class Returns200Test:
         offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer_id).one()
         assert offer.nationalProgramId == program.id
 
+    def test_national_program_set_none(self, client):
+        program = educational_factories.NationalProgramFactory()
+        offer_ctx = build_offer_context(offer_kwargs={"nationalProgram": program})
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        payload = {"nationalProgramId": None}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 200
+        offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer_id).one()
+        assert offer.nationalProgramId is None
+
+    def test_national_program_valid_update_program(self, client):
+        new_program = educational_factories.NationalProgramFactory()
+        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[new_program])
+        offer_ctx = build_offer_context(offer_kwargs={"educational_domains": [current_domain]})
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        payload = {"nationalProgramId": new_program.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 200
+        offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer_id).one()
+        assert offer.nationalProgramId == new_program.id
+        assert [domain.id for domain in offer.domains] == [current_domain.id]
+
+    def test_national_program_valid_update_domains(self, client):
+        current_program = educational_factories.NationalProgramFactory()
+        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        new_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        offer_ctx = build_offer_context(
+            offer_kwargs={"educational_domains": [current_domain], "nationalProgram": current_program}
+        )
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        payload = {"domains": [new_domain.id]}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 200
+        offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer_id).one()
+        assert offer.nationalProgramId == current_program.id
+        assert [domain.id for domain in offer.domains] == [new_domain.id]
+
+    def test_national_program_valid_update_domains_and_program(self, client):
+        current_program = educational_factories.NationalProgramFactory()
+        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        new_program = educational_factories.NationalProgramFactory()
+        new_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[new_program])
+        offer_ctx = build_offer_context(
+            offer_kwargs={"educational_domains": [current_domain], "nationalProgram": current_program}
+        )
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        payload = {"domains": [new_domain.id], "nationalProgramId": new_program.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 200
+        offer = models.CollectiveOfferTemplate.query.filter(models.CollectiveOfferTemplate.id == offer_id).one()
+        assert offer.nationalProgramId == new_program.id
+        assert [domain.id for domain in offer.domains] == [new_domain.id]
+
 
 class Returns400Test:
     def test_empty_name(self, client):
@@ -542,6 +611,65 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"global": ["National program not found"]}
+
+    def test_inactive_national_program(self, client):
+        program = educational_factories.NationalProgramFactory(isActive=False)
+        domain = educational_factories.EducationalDomainFactory(nationalPrograms=[program])
+        offer_ctx = build_offer_context(offer_kwargs={"domains": [domain]})
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+        data = {"nationalProgramId": program.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"}
+
+    def test_invalid_national_program_update_program(self, client):
+        program = educational_factories.NationalProgramFactory()
+        domain = educational_factories.EducationalDomainFactory()
+        offer_ctx = build_offer_context(offer_kwargs={"domains": [domain]})
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+        data = {"nationalProgramId": program.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}
+
+    def test_invalid_national_program_update_domains(self, client):
+        program = educational_factories.NationalProgramFactory()
+        domain = educational_factories.EducationalDomainFactory(nationalPrograms=[program])
+        offer_ctx = build_offer_context(offer_kwargs={"domains": [domain], "nationalProgram": program})
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+        data = {"domains": [educational_factories.EducationalDomainFactory().id]}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}
+
+    def test_invalid_national_program_update_domains_and_program(self, client):
+        program = educational_factories.NationalProgramFactory()
+        domain = educational_factories.EducationalDomainFactory(nationalPrograms=[program])
+        offer_ctx = build_offer_context(offer_kwargs={"domains": [domain], "nationalProgram": program})
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+        data = {
+            "domains": [educational_factories.EducationalDomainFactory().id],
+            "nationalProgramId": educational_factories.NationalProgramFactory().id,
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}
 
     def test_contact_form_all_fields_null(self, client):
         offer_ctx = build_offer_context()
