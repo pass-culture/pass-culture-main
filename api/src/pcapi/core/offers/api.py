@@ -69,6 +69,7 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
+from pcapi.utils.chunks import get_chunks
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.custom_logic import OPERATIONS
@@ -450,43 +451,39 @@ def update_offer(
 
 def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notification: bool = False) -> None:
     query = query.filter(models.Offer.validation == models.OfferValidationStatus.APPROVED)
-    raw_results = query.with_entities(models.Offer.id, models.Offer.venueId).all()
-    offer_ids: typing.Sequence[int] = []
-    venue_ids: typing.Sequence[int] = []
-    if raw_results:
-        offer_ids, venue_ids = zip(*raw_results)
-    venue_ids = sorted(set(venue_ids))
-    number_of_offers_to_update = len(offer_ids)
-    logger.info(
-        "Batch update of offers",
-        extra={"updated_fields": update_fields, "nb_offers": number_of_offers_to_update, "venue_ids": venue_ids},
-    )
-    if "isActive" in update_fields.keys():
-        message = "Offers has been activated" if update_fields["isActive"] else "Offers has been deactivated"
-        technical_message_id = "offers.activated" if update_fields["isActive"] else "offers.deactivated"
-        logger.info(
-            message,
-            extra={"offer_ids": offer_ids, "venue_ids": venue_ids},
-            technical_message_id=technical_message_id,
-        )
+    query = query.with_entities(models.Offer.id, models.Offer.venueId).yield_per(2_500)
 
-    batch_size = 1000
-    for current_start_index in range(0, number_of_offers_to_update, batch_size):
-        offer_ids_batch = offer_ids[
-            current_start_index : min(current_start_index + batch_size, number_of_offers_to_update)
-        ]
+    offers_count = 0
+    found_venue_ids = set()
 
-        query_to_update = models.Offer.query.filter(models.Offer.id.in_(offer_ids_batch))
+    logger.info("Batch update of offers: start", extra={"updated_fields": update_fields})
+
+    for chunk in get_chunks(query, chunk_size=2_500):
+        raw_offer_ids, raw_venue_ids = zip(*chunk)
+        offer_ids = set(raw_offer_ids)
+        venue_ids = set(raw_venue_ids)
+
+        offers_count += len(offer_ids)
+        found_venue_ids |= set(venue_ids)
+
+        query_to_update = models.Offer.query.filter(models.Offer.id.in_(offer_ids))
         query_to_update.update(update_fields, synchronize_session=False)
-        if is_managed_transaction():
-            db.session.flush()
-        else:
-            db.session.commit()
+        db.session.flush()
+
+        if "isActive" in update_fields:
+            on_commit(
+                partial(
+                    logger.info,
+                    "Offers has been activated" if update_fields["isActive"] else "Offers has been deactivated",
+                    technical_message_id="offers.activated" if update_fields["isActive"] else "offers.deactivated",
+                    extra={"offer_ids": offer_ids, "venue_ids": venue_ids},
+                )
+            )
 
         on_commit(
             partial(
                 search.async_index_offer_ids,
-                offer_ids_batch,
+                offer_ids,
                 reason=search.IndexationReason.OFFER_BATCH_UPDATE,
                 log_extra={"changes": set(update_fields.keys())},
             ),
@@ -498,6 +495,14 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
         if send_email_notification and withdrawal_updated:
             for offer in query_to_update.all():
                 transactional_mails.send_email_for_each_ongoing_booking(offer)
+
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
+
+    log_extra = {"updated_fields": update_fields, "nb_offers": offers_count, "nb_venues": len(found_venue_ids)}
+    logger.info("Batch update of offers: end", extra=log_extra)
 
 
 def activate_future_offers(publication_date: datetime.datetime | None = None) -> None:
