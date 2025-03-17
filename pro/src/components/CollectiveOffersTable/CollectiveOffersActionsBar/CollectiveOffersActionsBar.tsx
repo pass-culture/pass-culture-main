@@ -38,17 +38,11 @@ export type CollectiveOffersActionsBarProps = {
   areTemplateOffers: boolean
 }
 
-const computeDeactivationSuccessMessage = (
-  nbSelectedOffers: number,
-  areNewStatusesEnabled: boolean
-) => {
-  const deactivationWording = areNewStatusesEnabled
-    ? 'mise en pause'
-    : 'masquée'
+const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
   const successMessage =
     nbSelectedOffers > 1
-      ? `offres ont bien été ${deactivationWording}s`
-      : `offre a bien été ${deactivationWording}`
+      ? 'offres ont bien été mises en pause'
+      : 'offre a bien été mise en pause'
   return `${nbSelectedOffers} ${successMessage}`
 }
 
@@ -179,10 +173,7 @@ export function CollectiveOffersActionsBar({
           )
           await mutate(collectiveOffersQueryKeys)
           notify.success(
-            computeDeactivationSuccessMessage(
-              selectedOffers.length,
-              areNewStatusesEnabled
-            )
+            computeDeactivationSuccessMessage(selectedOffers.length)
           )
         } catch {
           notify.error('Une erreur est survenue')
@@ -399,7 +390,7 @@ export function CollectiveOffersActionsBar({
             icon={fullHideIcon}
             variant={ButtonVariant.SECONDARY}
           >
-            {areNewStatusesEnabled ? 'Mettre en pause' : 'Masquer'}
+            Mettre en pause
           </Button>
           <Button
             onClick={() =>

@@ -53,20 +53,11 @@ const computeAllDeactivationSuccessMessage = (nbSelectedOffers: number) =>
     ? 'Les offres sont en cours de désactivation, veuillez rafraichir dans quelques instants'
     : 'Une offre est en cours de désactivation, veuillez rafraichir dans quelques instants'
 
-const computeDeactivationSuccessMessage = (
-  nbSelectedOffers: number,
-  areNewStatusesEnabled: boolean
-) => {
-  const deactivateWordingPlural = areNewStatusesEnabled
-    ? 'mises en pause'
-    : 'désactivées'
-  const deactivateWording = areNewStatusesEnabled
-    ? 'mise en pause'
-    : 'désactivée'
+const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
   const successMessage =
     nbSelectedOffers > 1
-      ? `offres ont bien été ${deactivateWordingPlural}`
-      : `offre a bien été ${deactivateWording}`
+      ? 'offres ont bien été mises en pause'
+      : 'offre a bien été mise en pause'
   return `${nbSelectedOffers} ${successMessage}`
 }
 
@@ -75,8 +66,7 @@ const updateIndividualOffersStatus = async (
   areAllOffersSelected: boolean,
   selectedOfferIds: number[],
   notify: ReturnType<typeof useNotification>,
-  apiFilters: SearchFiltersParams,
-  areNewStatusesEnabled: boolean
+  apiFilters: SearchFiltersParams
 ) => {
   const filters = serializeApiFilters(apiFilters)
   const payload: PatchAllOffersActiveStatusBodyModel = {
@@ -91,9 +81,7 @@ const updateIndividualOffersStatus = async (
     venueId: filters.venueId ?? null,
     offererAddressId: filters.offererAddressId ?? null,
   }
-  const deactivationWording = areNewStatusesEnabled
-    ? 'la mise en pause'
-    : 'la désactivation'
+  const deactivationWording = 'la mise en pause'
   if (areAllOffersSelected) {
     //  Bulk edit if all editable offers are selected
     try {
@@ -122,10 +110,7 @@ const updateIndividualOffersStatus = async (
       notify.success(
         isActive
           ? computeActivationSuccessMessage(selectedOfferIds.length)
-          : computeDeactivationSuccessMessage(
-              selectedOfferIds.length,
-              areNewStatusesEnabled
-            )
+          : computeDeactivationSuccessMessage(selectedOfferIds.length)
       )
     } catch {
       notify.error(
@@ -166,9 +151,6 @@ export const IndividualOffersActionsBar = ({
   const [isDeactivationDialogOpen, setIsDeactivationDialogOpen] =
     useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const areNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
-  )
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
@@ -196,8 +178,7 @@ export const IndividualOffersActionsBar = ({
         )
         .map((offer) => offer.id),
       notify,
-      apiFilters,
-      areNewStatusesEnabled
+      apiFilters
     )
 
     handleClose()
@@ -275,7 +256,7 @@ export const IndividualOffersActionsBar = ({
               icon={fullHideIcon}
               variant={ButtonVariant.SECONDARY}
             >
-              {areNewStatusesEnabled ? 'Mettre en pause' : 'Désactiver'}
+              Mettre en pause
             </Button>
           )}
           {canDelete && (

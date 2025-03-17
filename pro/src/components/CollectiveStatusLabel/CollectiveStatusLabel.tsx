@@ -1,10 +1,7 @@
 import cn from 'classnames'
 import { ReactElement } from 'react'
 
-import {
-  CollectiveOfferDisplayedStatus,
-} from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
@@ -26,10 +23,6 @@ type CollectiveStatusLabelProps = {
 export const CollectiveStatusLabel = ({
   offerDisplayedStatus,
 }: CollectiveStatusLabelProps) => {
-  const areNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
-  )
-
   switch (offerDisplayedStatus) {
     case CollectiveOfferDisplayedStatus.PENDING:
       return (
@@ -42,7 +35,7 @@ export const CollectiveStatusLabel = ({
               alt=""
             />
           }
-          label={areNewStatusesEnabled ? 'en instruction' : 'en attente'}
+          label="en instruction"
         />
       )
     case CollectiveOfferDisplayedStatus.REJECTED:
@@ -56,7 +49,7 @@ export const CollectiveStatusLabel = ({
               className={style['status-label-icon']}
             />
           }
-          label={areNewStatusesEnabled ? 'non conforme' : 'refusée'}
+          label="non conforme"
         />
       )
     case CollectiveOfferDisplayedStatus.INACTIVE:
@@ -70,7 +63,7 @@ export const CollectiveStatusLabel = ({
               className={style['status-label-icon']}
             />
           }
-          label={areNewStatusesEnabled ? 'en pause' : 'masquée'}
+          label="en pause"
         />
       )
     case CollectiveOfferDisplayedStatus.ACTIVE:
@@ -132,24 +125,20 @@ export const CollectiveStatusLabel = ({
           label="expirée"
         />
       )
-    // @ts-expect-error Fallthrough case in switch.
     case CollectiveOfferDisplayedStatus.REIMBURSED:
-      if (areNewStatusesEnabled) {
-        return (
-          <StatusLabel
-            className={style['status-reimbursed']}
-            icon={
-              <SvgIcon
-                alt=""
-                src={strokeEuroIcon}
-                className={style['status-label-icon']}
-              />
-            }
-            label="remboursée"
-          />
-        )
-      }
-    // eslint-disable-next-line no-fallthrough
+      return (
+        <StatusLabel
+          className={style['status-reimbursed']}
+          icon={
+            <SvgIcon
+              alt=""
+              src={strokeEuroIcon}
+              className={style['status-label-icon']}
+            />
+          }
+          label="remboursée"
+        />
+      )
     case CollectiveOfferDisplayedStatus.ENDED:
       return (
         <StatusLabel

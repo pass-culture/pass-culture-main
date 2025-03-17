@@ -51,6 +51,10 @@ const collectiveFilterStatus = [
     label: 'Brouillon',
     value: CollectiveOfferDisplayedStatus.DRAFT,
   },
+  {
+    label: 'Terminée',
+    value: CollectiveOfferDisplayedStatus.ENDED,
+  },
 ]
 
 type StatusFormValues = {

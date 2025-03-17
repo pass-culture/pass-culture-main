@@ -24,26 +24,18 @@ describe('StatusLabel', () => {
   })
   it('should display "désactivée" if offer is inactive', () => {
     renderStatusLabel(OfferStatus.INACTIVE)
-    expect(screen.getByText('désactivée')).toBeInTheDocument()
+    expect(screen.getByText('en pause')).toBeInTheDocument()
   })
   it('should display "en attente" if offer is pending', () => {
     renderStatusLabel(OfferStatus.PENDING)
-    expect(screen.getByText('en attente')).toBeInTheDocument()
+    expect(screen.getByText('en instruction')).toBeInTheDocument()
   })
   it('should display "refusée" if offer is rejected', () => {
     renderStatusLabel(OfferStatus.REJECTED)
-    expect(screen.getByText('refusée')).toBeInTheDocument()
+    expect(screen.getByText('non conforme')).toBeInTheDocument()
   })
   it('should display "épuisée" if offer is sold out', () => {
     renderStatusLabel(OfferStatus.SOLD_OUT)
     expect(screen.getByText('épuisée')).toBeInTheDocument()
-  })
-  it('should display "non conforme" if offer is rejected when FF is active', () => {
-    renderStatusLabel(OfferStatus.REJECTED, ['ENABLE_COLLECTIVE_NEW_STATUSES'])
-    expect(screen.getByText('non conforme')).toBeInTheDocument()
-  })
-  it('should display "en instruction" if offer is pending when FF is active', () => {
-    renderStatusLabel(OfferStatus.PENDING, ['ENABLE_COLLECTIVE_NEW_STATUSES'])
-    expect(screen.getByText('en instruction')).toBeInTheDocument()
   })
 })

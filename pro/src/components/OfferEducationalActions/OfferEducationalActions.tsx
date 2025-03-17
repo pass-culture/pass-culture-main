@@ -84,10 +84,6 @@ export const OfferEducationalActions = ({
 
   const { mutate } = useSWRConfig()
 
-  const offerAdageActivated =
-    'Votre offre est maintenant active et visible dans ADAGE'
-  const offerAdageDeactivate = `Votre offre est ${areCollectiveNewStatusesEnabled ? 'mise en pause' : 'désactivée'} et n’est plus visible sur ADAGE`
-
   const setIsOfferActive = async (isActive: boolean) => {
     try {
       if (offer.isTemplate) {
@@ -101,7 +97,11 @@ export const OfferEducationalActions = ({
           isActive,
         })
       }
-      notify.success(isActive ? offerAdageActivated : offerAdageDeactivate)
+      notify.success(
+        isActive
+          ? 'Votre offre est maintenant active et visible dans ADAGE'
+          : 'Votre offre est mise en pause et n’est plus visible sur ADAGE'
+      )
     } catch (error) {
       if (error instanceof Error) {
         return notify.error(
@@ -175,15 +175,10 @@ export const OfferEducationalActions = ({
     (lastBookingStatus !== CollectiveBookingStatus.CANCELLED ||
       offer.displayedStatus === CollectiveOfferDisplayedStatus.EXPIRED)
 
-  const shouldDisplayStatusSeparator =
-    shouldDisplayAdagePublicationButton || shouldDisplayBookingLink
-
-  const canPublishOffer =
-    areCollectiveNewStatusesEnabled &&
-    isActionAllowedOnCollectiveOffer(
-      offer,
-      CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
-    )
+  const canPublishOffer = isActionAllowedOnCollectiveOffer(
+    offer,
+    CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
+  )
 
   const canHideOffer =
     areCollectiveNewStatusesEnabled &&
@@ -268,7 +263,7 @@ export const OfferEducationalActions = ({
                 : 'réservation'}
             </ButtonLink>
           )}
-          {shouldDisplayStatusSeparator && (
+          {shouldDisplayBookingLink && (
             <>
               <div className={style.separator} />{' '}
             </>
