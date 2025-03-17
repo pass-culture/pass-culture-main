@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useEffect, useState } from 'react'
 
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
@@ -11,10 +12,12 @@ import styles from './ValidationMessageList.module.scss'
 
 export interface ValidationMessageListProps {
   passwordValue: string
+  hasError: boolean
 }
 
 export const ValidationMessageList = ({
   passwordValue,
+  hasError,
 }: ValidationMessageListProps) => {
   const [errors, setErrors] = useState<{ [key: string]: boolean }>({})
 
@@ -31,7 +34,9 @@ export const ValidationMessageList = ({
               <FieldError
                 name={getPasswordRuleLabel(k)}
                 iconAlt="Il manque "
-                className={styles['field-error']}
+                className={cn({
+                  [styles['field-error-pristine']]: !hasError,
+                })}
               >
                 {getPasswordRuleLabel(k)}
               </FieldError>

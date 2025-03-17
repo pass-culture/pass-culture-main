@@ -111,15 +111,24 @@ export const UserPasswordForm = ({
                 label="Mot de passe actuel"
               />
             </FormLayout.Row>
-            <FormLayout.Row>
+            <FormLayout.Row className={styles['form-row-password']}>
               <PasswordInput
                 {...register('newPassword', {
                   onChange: () => trigger('newPassword'),
                 })}
-                error={errors.newPassword?.message}
+                error={
+                  // This is because we only want to display the field error if it's coming back from the API
+                  // In this case, API error responses don't have a ".type" property (which is specific to Yup)
+                  !errors.newPassword?.type
+                    ? errors.newPassword?.message
+                    : undefined
+                }
                 label="Nouveau mot de passe"
               />
-              <ValidationMessageList passwordValue={newPassword} />
+              <ValidationMessageList
+                passwordValue={newPassword}
+                hasError={!!errors.newPassword}
+              />
             </FormLayout.Row>
             <FormLayout.Row>
               <PasswordInput

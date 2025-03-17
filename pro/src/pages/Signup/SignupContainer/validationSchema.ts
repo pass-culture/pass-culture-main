@@ -12,16 +12,12 @@ export const validationSchema = (isNewSignupEnabled: boolean) => {
       .test(emailSchema),
     password: yup
       .string()
-      .required('Veuillez renseigner un mot de passe')
-      .test(
-        'isPasswordValid',
-        'Veuillez renseigner un mot de passe valide avec : ',
-        (paswordValue) => {
-          const errors = passwordValidationStatus(paswordValue)
-          const hasError = Object.values(errors).some((error) => error)
-          return !hasError
-        }
-      ),
+      .required()
+      .test('isPasswordValid', (passwordValue) => {
+        const errors = passwordValidationStatus(passwordValue)
+        const hasError = Object.values(errors).some((error) => error)
+        return !hasError
+      }),
     lastName: yup.string().max(128).required('Veuillez renseigner votre nom'),
     firstName: yup
       .string()

@@ -17,6 +17,7 @@ import {
 
 const defaultProps: ValidationMessageListProps = {
   passwordValue: 'a', // ggignore
+  hasError: false,
 }
 
 const renderValidationMessageList = (
