@@ -11,7 +11,6 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import {
   PartnerPagesProps,
   PartnerPages,
-  SAVED_VENUE_ID_KEY,
 } from './PartnerPages'
 
 const renderPartnerPages = (props: Partial<PartnerPagesProps> = {}) => {
@@ -73,31 +72,6 @@ describe('PartnerPages', () => {
     ).toBeInTheDocument()
     // it should use public name if available
     expect(screen.getByText('a really cool name !')).toBeInTheDocument()
-  })
-
-  it('should load saved venue in localStorage if no get parameter', () => {
-    const selectedVenue = {
-      ...defaultGetOffererVenueResponseModel,
-      id: 666,
-      name: 'super lieu',
-    }
-    localStorage.setItem(SAVED_VENUE_ID_KEY, selectedVenue.id.toString())
-
-    renderPartnerPages({
-      venues: [{ ...defaultGetOffererVenueResponseModel }, selectedVenue],
-    })
-
-    expect(screen.getAllByText('super lieu')[0]).toBeInTheDocument()
-  })
-
-  it('should not used saved venue in localStorage if it is not an option', () => {
-    localStorage.setItem(SAVED_VENUE_ID_KEY, '123456')
-
-    renderPartnerPages({ venues: [{ ...defaultGetOffererVenueResponseModel }] })
-
-    expect(
-      screen.getByText(defaultGetOffererVenueResponseModel.name)
-    ).toBeInTheDocument()
   })
 
   it('should should change image when changing venue', async () => {

@@ -24,6 +24,7 @@ import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { Tab, Tabs } from 'ui-kit/Tabs/Tabs'
 
+import { getPathToNavigateTo } from './context'
 import styles from './VenueEdition.module.scss'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
@@ -90,34 +91,35 @@ export const VenueEdition = (): JSX.Element | null => {
     },
   ]
 
-  const activeStep = location.pathname.includes('collectif')
+  const context = location.pathname.includes('collectif')
     ? 'collective'
-    : 'individual'
+    : location.pathname.includes('partner-page') ?
+      'partnerPage'
+      : 'address'
 
-  const permanentVenues =
-    offerer.managedVenues?.filter((venue) => venue.isPermanent) ?? []
+  const filteredVenues =
+    offerer.managedVenues?.filter((venue) => context === 'partnerPage' ? venue.hasPartnerPage : venue.isPermanent) ?? []
 
-  const venuesOptions: SelectOption[] = permanentVenues.map((venue) => ({
+  const venuesOptions: SelectOption[] = filteredVenues.map((venue) => ({
     label: venue.publicName || venue.name,
     value: venue.id.toString(),
   }))
 
-  const titleText =
-    activeStep === 'collective'
-      ? 'Page dans ADAGE'
-      : !venue.isPermanent
-        ? 'Page adresse'
-        : 'Page sur l’application'
+  const titleText = context === 'collective'
+    ? 'Page dans ADAGE'
+    : context === 'partnerPage'
+      ? 'Page sur l’application'
+      : 'Page adresse'
 
   return (
     <Layout mainHeading={titleText}>
       <div>
         <FormLayout>
-          {venuesOptions.length > 1 && venue.isPermanent && (
+          {context !== 'address' && venuesOptions.length > 1 && (
             <>
               <FormLayout.Row>
                 <FieldLayout
-                  label={`Sélectionnez votre page ${activeStep === 'individual' ? 'partenaire' : 'dans ADAGE'}`}
+                  label={`Sélectionnez votre page ${context === 'collective' ? 'dans ADAGE' : 'partenaire'}`}
                   name="venues"
                   isOptional
                   className={styles['select-partner-page']}
@@ -127,9 +129,9 @@ export const VenueEdition = (): JSX.Element | null => {
                     options={venuesOptions}
                     value={venueId ?? ''}
                     onChange={(e) => {
-                      navigate(
-                        `/structures/${offererId}/lieux/${e.target.value}`
-                      )
+                      const venueId = e.target.value
+                      const path = getPathToNavigateTo(offererId as string, venueId)
+                      navigate(path)
                     }}
                   />
                 </FieldLayout>
@@ -148,15 +150,15 @@ export const VenueEdition = (): JSX.Element | null => {
         {!venue.isPermanent && (
           <Tabs
             tabs={tabs}
-            selectedKey={activeStep}
+            selectedKey={context === 'collective' ? 'collective' : 'individual'}
             className={styles['tabs']}
           />
         )}
 
-        {activeStep === 'collective' && <CollectiveDataEdition venue={venue} />}
-        {activeStep === 'individual' && (
-          <VenueEditionFormScreen venue={venue} />
-        )}
+        {context === 'collective'
+          ? <CollectiveDataEdition venue={venue} />
+          : <VenueEditionFormScreen venue={venue} />
+        }
       </div>
     </Layout>
   )

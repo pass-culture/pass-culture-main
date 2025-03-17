@@ -18,7 +18,17 @@ import {
 
 import { VenueEdition } from '../VenueEdition'
 
-const renderVenueEdition = (options?: RenderWithProvidersOptions) => {
+interface VenueEditionTestProps {
+  context?: 'adage' | 'partnerPage' | 'address'
+  options?: RenderWithProvidersOptions
+}
+
+const renderVenueEdition = ({ context = 'address', options }: VenueEditionTestProps = {}) => {
+  const offererId = defaultGetOffererResponseModel.id
+  const venueId = defaultGetVenue.id
+  const translatedContext = context === 'adage' ? '/collectif' : context === 'partnerPage' ? '/partner-page' : ''
+  const initialPath = `/structures/${offererId}/lieux/${venueId}${translatedContext}/edition`
+
   return renderWithProviders(
     <Routes>
       <Route
@@ -29,9 +39,7 @@ const renderVenueEdition = (options?: RenderWithProvidersOptions) => {
     </Routes>,
     {
       user: sharedCurrentUserFactory(),
-      initialRouterEntries: [
-        `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/edition`,
-      ],
+      initialRouterEntries: [initialPath],
       ...options,
     }
   )
@@ -78,8 +86,8 @@ describe('VenueEdition', () => {
   })
 
   describe('about title (main heading / h1)', () => {
-    it('should display "Page sur l’application" for a non-permanent venue & individual partner page', async () => {
-      renderVenueEdition()
+    it('should display "Page sur l’application" for a permanent venue & individual partner page', async () => {
+      renderVenueEdition({ context: 'partnerPage' })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
@@ -88,16 +96,8 @@ describe('VenueEdition', () => {
       ).toBeInTheDocument()
     })
 
-    it('should display "Page adresse" for a permanent venue & individual partner page', async () => {
-      vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
-        ...baseVenue,
-        isPermanent: false,
-      })
-      renderVenueEdition({
-        initialRouterEntries: [
-          `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}`,
-        ],
-      })
+    it('should display "Page adresse" for a non-permanent venue & individual partner page', async () => {
+      renderVenueEdition({ context: 'address' })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
@@ -105,11 +105,7 @@ describe('VenueEdition', () => {
     })
 
     it('should display "Page dans ADAGE" for a collective partner page', async () => {
-      renderVenueEdition({
-        initialRouterEntries: [
-          `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/collectif/edition`,
-        ],
-      })
+      renderVenueEdition({ context: 'adage' })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
@@ -144,7 +140,7 @@ describe('VenueEdition', () => {
           },
         ],
       })
-      renderVenueEdition()
+      renderVenueEdition({ context: 'partnerPage' })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
@@ -175,10 +171,11 @@ describe('VenueEdition', () => {
             id: 666,
             publicName: 'Mon lieu diabolique',
             isPermanent: false,
+            hasPartnerPage: false,
           },
         ],
       })
-      renderVenueEdition()
+      renderVenueEdition({ context: 'partnerPage' })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
@@ -188,11 +185,6 @@ describe('VenueEdition', () => {
     })
 
     it('should not let choose an other partner page when on adress page', async () => {
-      vi.spyOn(api, 'getVenue').mockResolvedValue({
-        ...baseVenue,
-        isPermanent: false,
-      })
-
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
         ...defaultGetOffererResponseModel,
         managedVenues: [
@@ -208,7 +200,7 @@ describe('VenueEdition', () => {
           },
         ],
       })
-      renderVenueEdition()
+      renderVenueEdition({ context: 'address' })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
@@ -234,9 +226,7 @@ describe('VenueEdition', () => {
         ...baseVenue,
         isPermanent: true,
       })
-      renderVenueEdition({
-        user: sharedCurrentUserFactory(),
-      })
+      renderVenueEdition({ options: { user: sharedCurrentUserFactory() }})
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
       expect(screen.queryByText('Pour le grand public')).not.toBeInTheDocument()
@@ -248,7 +238,7 @@ describe('VenueEdition', () => {
         ...baseVenue,
         isPermanent: false,
       })
-      renderVenueEdition({})
+      renderVenueEdition()
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
       expect(screen.getByText('Pour le grand public')).toBeInTheDocument()
@@ -304,11 +294,7 @@ describe('VenueEdition', () => {
         ...baseVenue,
         isPermanent: true,
       })
-      renderVenueEdition({
-        initialRouterEntries: [
-          `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}`,
-        ],
-      })
+      renderVenueEdition({ context: 'address' })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
@@ -324,11 +310,7 @@ describe('VenueEdition', () => {
         ...baseVenue,
         isPermanent: false,
       })
-      renderVenueEdition({
-        initialRouterEntries: [
-          `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}`,
-        ],
-      })
+      renderVenueEdition({ context: 'address' })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
