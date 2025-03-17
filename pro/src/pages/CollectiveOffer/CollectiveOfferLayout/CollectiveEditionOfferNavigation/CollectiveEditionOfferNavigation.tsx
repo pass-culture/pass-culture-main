@@ -31,7 +31,6 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
-import { canArchiveCollectiveOfferFromSummary } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
 import fullArchiveIcon from 'icons/full-archive.svg'
 import fullCopyIcon from 'icons/full-duplicate.svg'
 import fullPlusIcon from 'icons/full-plus.svg'
@@ -65,9 +64,6 @@ export const CollectiveEditionOfferNavigation = ({
   const navigate = useNavigate()
   const location = useLocation()
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
-  const areCollectiveNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
-  )
 
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
@@ -110,34 +106,28 @@ export const CollectiveEditionOfferNavigation = ({
       offer.displayedStatus !== CollectiveOfferDisplayedStatus.ARCHIVED) ||
     !isCollectiveOffer(offer)
 
-  const canArchiveOffer = areCollectiveNewStatusesEnabled
-    ? offer &&
-      isActionAllowedOnCollectiveOffer(
-        offer,
-        isTemplate
-          ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
-          : CollectiveOfferAllowedAction.CAN_ARCHIVE
-      )
-    : offer && canArchiveCollectiveOfferFromSummary(offer)
+  const canArchiveOffer =
+    offer &&
+    isActionAllowedOnCollectiveOffer(
+      offer,
+      isTemplate
+        ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
+        : CollectiveOfferAllowedAction.CAN_ARCHIVE
+    )
 
-  const canDuplicateOffer = offer
-    ? areCollectiveNewStatusesEnabled
-      ? isActionAllowedOnCollectiveOffer(
-          offer,
-          CollectiveOfferAllowedAction.CAN_DUPLICATE
-        )
-      : !isTemplate
-    : false
+  const canDuplicateOffer =
+    offer &&
+    isActionAllowedOnCollectiveOffer(
+      offer,
+      CollectiveOfferAllowedAction.CAN_DUPLICATE
+    )
 
-  const canCreateBookableOffer = offer
-    ? areCollectiveNewStatusesEnabled
-      ? isActionAllowedOnCollectiveOffer(
-          offer,
-          CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
-        )
-      : isTemplate &&
-        offer.displayedStatus !== CollectiveOfferDisplayedStatus.PENDING
-    : false
+  const canCreateBookableOffer =
+    offer &&
+    isActionAllowedOnCollectiveOffer(
+      offer,
+      CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
+    )
 
   const tabs: Tab[] = [
     {
@@ -188,7 +178,7 @@ export const CollectiveEditionOfferNavigation = ({
                 from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
                 offererId: selectedOffererId?.toString(),
                 offerId,
-                offerStatus: offer?.displayedStatus,
+                offerStatus: offer.displayedStatus,
                 offerType: 'collective',
               })
               await duplicateBookableOffer(navigate, notify, offerId)
@@ -209,7 +199,7 @@ export const CollectiveEditionOfferNavigation = ({
                   offererId: selectedOffererId?.toString(),
                   offerId,
                   offerType: 'collective',
-                  offerStatus: offer?.displayedStatus,
+                  offerStatus: offer.displayedStatus,
                 })
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 createOfferFromTemplate(

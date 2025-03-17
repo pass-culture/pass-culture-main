@@ -32,7 +32,7 @@ describe('CollectiveBookingDetails', () => {
     expect(screen.getByText(/test@example.com/)).toBeInTheDocument()
   })
 
-  it('should show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES is on and offer has CAN_CANCEL allowed action', async () => {
+  it('should show cancel button when offer has CAN_CANCEL allowed action', async () => {
     const offer = getCollectiveOfferFactory({
       allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
       id: 1,
@@ -47,10 +47,7 @@ describe('CollectiveBookingDetails', () => {
       <CollectiveBookingDetails
         bookingDetails={bookingDetails}
         bookingRecap={bookingRecap}
-      />,
-      {
-        features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
-      }
+      />
     )
 
     expect(
@@ -58,7 +55,7 @@ describe('CollectiveBookingDetails', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES is and offer has not CAN_CANCEL allowed action', async () => {
+  it('should not show cancel button when offer has not CAN_CANCEL allowed action', async () => {
     const offer = getCollectiveOfferFactory({
       allowedActions: [],
       id: 1,
@@ -73,10 +70,7 @@ describe('CollectiveBookingDetails', () => {
       <CollectiveBookingDetails
         bookingDetails={bookingDetails}
         bookingRecap={bookingRecap}
-      />,
-      {
-        features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
-      }
+      />
     )
 
     await waitFor(() => {

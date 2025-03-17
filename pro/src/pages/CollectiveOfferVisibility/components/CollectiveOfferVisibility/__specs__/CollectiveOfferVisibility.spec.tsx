@@ -495,22 +495,19 @@ describe('CollectiveOfferVisibility', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not disable institution input when allowedAction CAN_EDIT_INSTITUTION exist and FF ENABLE_COLLECTIVE_NEW_STATUSES enable', async () => {
+  it('should not disable institution input when allowedAction CAN_EDIT_INSTITUTION exist', async () => {
     props.initialValues = {
       ...props.initialValues,
       institution: '12',
     }
-    renderVisibilityStep(
-      {
-        ...props,
-        mode: Mode.READ_ONLY,
-        offer: {
-          ...props.offer,
-          allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION],
-        },
+    renderVisibilityStep({
+      ...props,
+      mode: Mode.READ_ONLY,
+      offer: {
+        ...props.offer,
+        allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION],
       },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
+    })
     expect(
       await screen.findByLabelText(
         /Nom de l’établissement scolaire ou code UAI/
@@ -519,19 +516,16 @@ describe('CollectiveOfferVisibility', () => {
     expect(screen.getByText(/Enregistrer et continuer/)).not.toBeDisabled()
   })
 
-  it('should disable institution input when allowedAction CAN_EDIT_INSTITUTION  doesnt exist and FF ENABLE_COLLECTIVE_NEW_STATUSES enable', async () => {
+  it('should disable institution input when allowedAction CAN_EDIT_INSTITUTION  doesnt exist', async () => {
     props.initialValues = {
       ...props.initialValues,
       institution: '12',
     }
-    renderVisibilityStep(
-      {
-        ...props,
-        mode: Mode.READ_ONLY,
-        offer: { ...props.offer, allowedActions: [] },
-      },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
+    renderVisibilityStep({
+      ...props,
+      mode: Mode.READ_ONLY,
+      offer: { ...props.offer, allowedActions: [] },
+    })
     expect(
       await screen.findByLabelText(
         /Nom de l’établissement scolaire ou code UAI/

@@ -16,19 +16,12 @@ import {
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
-import {
-  isCollectiveOffer,
-  isCollectiveOfferTemplate,
-  Mode,
-} from 'commons/core/OfferEducational/types'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
-  isDateValid,
-  toDateStrippedOfTimezone,
 } from 'commons/utils/date'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
@@ -43,7 +36,6 @@ import style from './OfferEducationalActions.module.scss'
 
 export interface OfferEducationalActionsProps {
   className?: string
-  isBooked: boolean
   offer:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
@@ -52,16 +44,12 @@ export interface OfferEducationalActionsProps {
 
 export const OfferEducationalActions = ({
   className,
-  isBooked,
   offer,
   mode,
 }: OfferEducationalActionsProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const selectedOffererId = useSelector(selectCurrentOffererId)
-  const areCollectiveNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
-  )
   const lastBookingId = isCollectiveOffer(offer) ? offer.lastBookingId : null
   const lastBookingStatus = isCollectiveOffer(offer)
     ? offer.lastBookingStatus
@@ -126,49 +114,8 @@ export const OfferEducationalActions = ({
     ])
   }
 
-  const isTemplateOfferExpired =
-    isDateValid(offer.dates?.end) &&
-    new Date(offer.dates.end).getTime() < Date.now()
-
-  const activateOffer = async () => {
-    // TODO(anoukhello - 25-10-24) remove this condition when new collective status and actions will be enabled
-    // as publish action should not be enable for expired template offers
-    if (isTemplateOfferExpired) {
-      notify.error(
-        "Les dates de l'offre sont dépassées. Pour la publier, vous devez les modifier."
-      )
-      return
-    }
-    if (isCollectiveOfferTemplate(offer) || offer.isActive) {
-      await setIsOfferActive(!offer.isActive)
-      return
-    }
-
-    if (
-      !offer.collectiveStock?.bookingLimitDatetime ||
-      toDateStrippedOfTimezone(offer.collectiveStock.bookingLimitDatetime) >
-        new Date()
-    ) {
-      await setIsOfferActive(true)
-      return
-    }
-    notify.error(
-      'La date limite de réservation est dépassée. Pour publier l’offre, vous devez modifier la date limite de réservation.'
-    )
-  }
-
   const shouldShowOfferActions =
     mode === Mode.EDITION || mode === Mode.READ_ONLY
-
-  const shouldDisplayAdagePublicationButton =
-    !areCollectiveNewStatusesEnabled &&
-    !isBooked &&
-    ![
-      CollectiveOfferDisplayedStatus.EXPIRED,
-      CollectiveOfferDisplayedStatus.PENDING,
-      CollectiveOfferDisplayedStatus.REJECTED,
-      CollectiveOfferDisplayedStatus.ARCHIVED,
-    ].includes(offer.displayedStatus)
 
   const shouldDisplayBookingLink =
     lastBookingId &&
@@ -180,27 +127,10 @@ export const OfferEducationalActions = ({
     CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
   )
 
-  const canHideOffer =
-    areCollectiveNewStatusesEnabled &&
-    isActionAllowedOnCollectiveOffer(
-      offer,
-      CollectiveOfferTemplateAllowedAction.CAN_HIDE
-    )
-
-  const shouldShowHideButton =
-    !areCollectiveNewStatusesEnabled &&
-    offer.isActive &&
-    !isTemplateOfferExpired
-
-  const publishButtonConfig = shouldShowHideButton
-    ? {
-        wording: 'Masquer la publication sur ADAGE',
-        icon: fullHideIcon,
-      }
-    : {
-        wording: 'Publier sur ADAGE',
-        icon: strokeCheckIcon,
-      }
+  const canHideOffer = isActionAllowedOnCollectiveOffer(
+    offer,
+    CollectiveOfferTemplateAllowedAction.CAN_HIDE
+  )
 
   return (
     <>
@@ -224,17 +154,6 @@ export const OfferEducationalActions = ({
               className={style['button-link']}
             >
               Publier
-            </Button>
-          )}
-          {shouldDisplayAdagePublicationButton && (
-            <Button
-              icon={publishButtonConfig.icon}
-              onClick={activateOffer}
-              variant={ButtonVariant.TERNARY}
-              className={style['button-link']}
-              iconPosition={IconPositionEnum.LEFT}
-            >
-              {publishButtonConfig.wording}
             </Button>
           )}
 

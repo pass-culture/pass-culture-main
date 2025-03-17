@@ -391,18 +391,13 @@ describe('CollectiveActionsCells', () => {
     })
   })
 
-  it('should allow edition for a template offer when the ENABLE_COLLECTIVE_NEW_STATUSES FF is enabled and the edition of details is allowed', async () => {
-    renderCollectiveActionsCell(
-      {
-        offer: collectiveOfferFactory({
-          isShowcase: true,
-          allowedActions: [
-            CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
-          ],
-        }),
-      },
-      ['ENABLE_COLLECTIVE_NEW_STATUSES']
-    )
+  it('should allow template offer edition when details edition is allowed', async () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isShowcase: true,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS],
+      }),
+    })
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Voir les actions' })
@@ -411,16 +406,13 @@ describe('CollectiveActionsCells', () => {
     expect(screen.getByText('Modifier')).toBeInTheDocument()
   })
 
-  it('should not allow edition for a template offer when the ENABLE_COLLECTIVE_NEW_STATUSES FF is enabled and the edition of details is not allowed', async () => {
-    renderCollectiveActionsCell(
-      {
-        offer: collectiveOfferFactory({
-          isShowcase: true,
-          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
-        }),
-      },
-      ['ENABLE_COLLECTIVE_NEW_STATUSES']
-    )
+  it('should not allow template offer edition for a template offer when details edition is not allowed', async () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isShowcase: true,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
+      }),
+    })
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Voir les actions' })
@@ -454,17 +446,14 @@ describe('CollectiveActionsCells', () => {
       name: 'institution',
     },
   ])(
-    'should allow edition for a bookable offer when the ENABLE_COLLECTIVE_NEW_STATUSES FF is enabled and the edition of $name is allowed',
+    'should show edition the $name edition action is allowed',
     async ({ actions }) => {
-      renderCollectiveActionsCell(
-        {
-          offer: collectiveOfferFactory({
-            isShowcase: false,
-            allowedActions: actions,
-          }),
-        },
-        ['ENABLE_COLLECTIVE_NEW_STATUSES']
-      )
+      renderCollectiveActionsCell({
+        offer: collectiveOfferFactory({
+          isShowcase: false,
+          allowedActions: actions,
+        }),
+      })
 
       await userEvent.click(
         screen.getByRole('button', { name: 'Voir les actions' })
@@ -474,19 +463,16 @@ describe('CollectiveActionsCells', () => {
     }
   )
 
-  it('should not allow edition for a bookable offer when the ENABLE_COLLECTIVE_NEW_STATUSES FF is enabled and no edition action is allowed', async () => {
-    renderCollectiveActionsCell(
-      {
-        offer: collectiveOfferFactory({
-          isShowcase: false,
-          allowedActions: [
-            CollectiveOfferAllowedAction.CAN_ARCHIVE,
-            CollectiveOfferAllowedAction.CAN_CANCEL,
-          ],
-        }),
-      },
-      ['ENABLE_COLLECTIVE_NEW_STATUSES']
-    )
+  it('should not show edition button when no edition action is allowed', async () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isShowcase: false,
+        allowedActions: [
+          CollectiveOfferAllowedAction.CAN_ARCHIVE,
+          CollectiveOfferAllowedAction.CAN_CANCEL,
+        ],
+      }),
+    })
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Voir les actions' })
@@ -495,16 +481,13 @@ describe('CollectiveActionsCells', () => {
     expect(screen.queryByText('Modifier')).not.toBeInTheDocument()
   })
 
-  it('should show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES and offer has CAN_CANCEL allowed action', async () => {
-    renderCollectiveActionsCell(
-      {
-        offer: collectiveOfferFactory({
-          isShowcase: false,
-          allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
-        }),
-      },
-      ['ENABLE_COLLECTIVE_NEW_STATUSES']
-    )
+  it('should show cancel button when offer has CAN_CANCEL allowed action', async () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isShowcase: false,
+        allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
+      }),
+    })
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Voir les actions' })
@@ -513,16 +496,13 @@ describe('CollectiveActionsCells', () => {
     expect(screen.getByText('Annuler la réservation')).toBeInTheDocument()
   })
 
-  it('should allow to hide template offer when the ENABLE_COLLECTIVE_NEW_STATUSES FF is enabled', async () => {
-    renderCollectiveActionsCell(
-      {
-        offer: collectiveOfferFactory({
-          isShowcase: true,
-          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
-        }),
-      },
-      ['ENABLE_COLLECTIVE_NEW_STATUSES']
-    )
+  it('should hide template offer on hide button press', async () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isShowcase: true,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
+      }),
+    })
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Voir les actions' })
@@ -539,32 +519,26 @@ describe('CollectiveActionsCells', () => {
     )
   })
 
-  it('should not show cancel button when ENABLE_COLLECTIVE_NEW_STATUSES and offer has not CAN_CANCEL allowed action', () => {
-    renderCollectiveActionsCell(
-      {
-        offer: collectiveOfferFactory({
-          isShowcase: false,
-          allowedActions: [],
-        }),
-      },
-      ['ENABLE_COLLECTIVE_NEW_STATUSES']
-    )
+  it('should not show cancel button when offer has not CAN_CANCEL allowed action', () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isShowcase: false,
+        allowedActions: [],
+      }),
+    })
 
     expect(screen.queryByText('Annuler la réservation')).not.toBeInTheDocument()
   })
 
-  it('should allow to publish template offer when the ENABLE_COLLECTIVE_NEW_STATUSES FF is enabled', async () => {
-    renderCollectiveActionsCell(
-      {
-        offer: collectiveOfferFactory({
-          isShowcase: true,
-          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
-          isActive: false,
-          displayedStatus: CollectiveOfferDisplayedStatus.INACTIVE,
-        }),
-      },
-      ['ENABLE_COLLECTIVE_NEW_STATUSES']
-    )
+  it('should publish template offer on publish button press', async () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isShowcase: true,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
+        isActive: false,
+        displayedStatus: CollectiveOfferDisplayedStatus.INACTIVE,
+      }),
+    })
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Voir les actions' })

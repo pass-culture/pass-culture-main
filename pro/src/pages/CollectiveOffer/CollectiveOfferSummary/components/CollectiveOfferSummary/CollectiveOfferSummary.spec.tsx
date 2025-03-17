@@ -3,7 +3,6 @@ import { expect } from 'vitest'
 
 import {
   CollectiveOfferAllowedAction,
-  CollectiveOfferStatus,
   CollectiveOfferTemplateAllowedAction,
   EacFormat,
   OfferContactFormEnum,
@@ -164,10 +163,12 @@ describe('CollectiveOfferSummary', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should display the edition button when the FF ENABLE_COLLECTIVE_NEW_STATUSES is disabled and the offer is template', async () => {
+  it('should display the edition buttons when the template offer can be edited', async () => {
     renderCollectiveOfferSummary({
       ...props,
-      offer: getCollectiveOfferTemplateFactory(),
+      offer: getCollectiveOfferTemplateFactory({
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS],
+      }),
       offerEditLink: '123',
     })
 
@@ -176,155 +177,102 @@ describe('CollectiveOfferSummary', () => {
     expect(screen.getByRole('link', { name: 'Modifier' })).toBeInTheDocument()
   })
 
-  it('should display the edition buttons when the FF ENABLE_COLLECTIVE_NEW_STATUSES is disabled and the offer is not archived', async () => {
+  it('should not display the edition buttons when the template offer cannot be edited', async () => {
+    renderCollectiveOfferSummary({
+      ...props,
+      offer: getCollectiveOfferTemplateFactory({
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
+      }),
+      offerEditLink: '123',
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(
+      screen.queryByRole('link', { name: 'Modifier' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not display the edition buttons when the bookable offer cannot be edited', async () => {
     renderCollectiveOfferSummary({
       ...props,
       offer: getCollectiveOfferFactory({
-        status: CollectiveOfferStatus.ACTIVE,
+        allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
       }),
       offerEditLink: '123',
-      stockEditLink: '234',
-      visibilityEditLink: '345',
     })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(3)
-  })
-
-  it('should display the edition buttons when the FF ENABLE_COLLECTIVE_NEW_STATUSES is enabled the template offer can be edited', async () => {
-    renderCollectiveOfferSummary(
-      {
-        ...props,
-        offer: getCollectiveOfferTemplateFactory({
-          allowedActions: [
-            CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
-          ],
-        }),
-        offerEditLink: '123',
-      },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-    expect(screen.getByRole('link', { name: 'Modifier' })).toBeInTheDocument()
-  })
-
-  it('should not display the edition buttons when the FF ENABLE_COLLECTIVE_NEW_STATUSES is enabled the template offer cannot be edited', async () => {
-    renderCollectiveOfferSummary(
-      {
-        ...props,
-        offer: getCollectiveOfferTemplateFactory({
-          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
-        }),
-        offerEditLink: '123',
-      },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
     expect(
       screen.queryByRole('link', { name: 'Modifier' })
     ).not.toBeInTheDocument()
   })
 
-  it('should not display the edition buttons when the FF ENABLE_COLLECTIVE_NEW_STATUSES is enabled the bookable offer cannot be edited', async () => {
-    renderCollectiveOfferSummary(
-      {
-        ...props,
-        offer: getCollectiveOfferFactory({
-          allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
-        }),
-        offerEditLink: '123',
-      },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-    expect(
-      screen.queryByRole('link', { name: 'Modifier' })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should display one edition button when the FF ENABLE_COLLECTIVE_NEW_STATUSES is enabled and the offer description is editable', async () => {
-    renderCollectiveOfferSummary(
-      {
-        ...props,
-        offer: getCollectiveOfferFactory({
-          allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
-        }),
-        offerEditLink: '123',
-      },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
+  it('should display one edition button when the offer description is editable', async () => {
+    renderCollectiveOfferSummary({
+      ...props,
+      offer: getCollectiveOfferFactory({
+        allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
+      }),
+      offerEditLink: '123',
+    })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.queryByRole('link', { name: 'Modifier' })).toBeInTheDocument()
   })
 
-  it('should display two edition buttons when the FF ENABLE_COLLECTIVE_NEW_STATUSES is enabled and the offer description and price are editable', async () => {
-    renderCollectiveOfferSummary(
-      {
-        ...props,
-        offer: getCollectiveOfferFactory({
-          allowedActions: [
-            CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
-            CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
-          ],
-        }),
-        offerEditLink: '123',
-        stockEditLink: '234',
-      },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
+  it('should display two edition buttons when the offer description and price are editable', async () => {
+    renderCollectiveOfferSummary({
+      ...props,
+      offer: getCollectiveOfferFactory({
+        allowedActions: [
+          CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+          CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+        ],
+      }),
+      offerEditLink: '123',
+      stockEditLink: '234',
+    })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(2)
   })
 
-  it('should display two edition buttons when the FF ENABLE_COLLECTIVE_NEW_STATUSES is enabled and the offer description and dates are editable', async () => {
-    renderCollectiveOfferSummary(
-      {
-        ...props,
-        offer: getCollectiveOfferFactory({
-          allowedActions: [
-            CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
-            CollectiveOfferAllowedAction.CAN_EDIT_DATES,
-          ],
-        }),
-        offerEditLink: '123',
-        stockEditLink: '234',
-      },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
+  it('should display two edition buttons when the offer description and dates are editable', async () => {
+    renderCollectiveOfferSummary({
+      ...props,
+      offer: getCollectiveOfferFactory({
+        allowedActions: [
+          CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+          CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+        ],
+      }),
+      offerEditLink: '123',
+      stockEditLink: '234',
+    })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(2)
   })
 
-  it('should display three edition buttons when the FF ENABLE_COLLECTIVE_NEW_STATUSES is enabled and the offer description, dates and institution are editable', async () => {
-    renderCollectiveOfferSummary(
-      {
-        ...props,
-        offer: getCollectiveOfferFactory({
-          allowedActions: [
-            CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
-            CollectiveOfferAllowedAction.CAN_EDIT_DATES,
-            CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
-          ],
-        }),
-        offerEditLink: '123',
-        stockEditLink: '234',
-        visibilityEditLink: '345',
-      },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
+  it('should display three edition buttons when the offer description, dates and institution are editable', async () => {
+    renderCollectiveOfferSummary({
+      ...props,
+      offer: getCollectiveOfferFactory({
+        allowedActions: [
+          CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+          CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+          CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
+        ],
+      }),
+      offerEditLink: '123',
+      stockEditLink: '234',
+      visibilityEditLink: '345',
+    })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 

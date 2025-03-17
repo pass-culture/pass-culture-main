@@ -24,7 +24,6 @@ import {
   SENT_DATA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
 import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import {
@@ -92,16 +91,10 @@ export const CollectiveOfferVisibilityScreen = ({
   const [teachersOptions, setTeachersOptions] = useState<TeacherOption[]>([])
   const [buttonPressed, setButtonPressed] = useState(false)
 
-  const areCollectiveNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  const canEditInstitution = isActionAllowedOnCollectiveOffer(
+    offer,
+    CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION
   )
-
-  const canEditInstitution = areCollectiveNewStatusesEnabled
-    ? isActionAllowedOnCollectiveOffer(
-        offer,
-        CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION
-      )
-    : mode !== Mode.READ_ONLY
 
   const institutionsOptions: InstitutionOption[] = useMemo(
     () =>
@@ -246,7 +239,6 @@ export const CollectiveOfferVisibilityScreen = ({
 
       <OfferEducationalActions
         className={styles.actions}
-        isBooked={Boolean(offer.collectiveStock?.isBooked)}
         offer={offer}
         mode={mode}
       />
