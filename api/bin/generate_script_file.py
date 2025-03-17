@@ -22,6 +22,27 @@ import pcapi
 PCAPI_DIR = pathlib.Path(pcapi.__path__[0])
 SCRIPT_PATH = PCAPI_DIR / "scripts"
 
+HEADER = """\
+\"""
+Job console documentation here: https://www.notion.so/passcultureapp/Documentation-Job-Console-769beeacd5a146de9c97b6f8ee544276
+Assumed path to the script (copy-paste in github actions): 
+
+https://github.com/pass-culture/pass-culture-main/blob/{git_branch_name}/api/src/pcapi/scripts/{namespace}/main.py
+
+\"""
+
+
+"""
+
+DEFAULT_HEADER = """\
+\"""
+Job console documentation here: https://www.notion.so/passcultureapp/Documentation-Job-Console-769beeacd5a146de9c97b6f8ee544276
+Could not generate a path to the script: no git_branch_name provided
+\"""
+
+
+"""
+
 PYTHON_TEMPLATE = """\
 import argparse
 import logging
@@ -32,12 +53,18 @@ from pcapi.models import db
 
 logger = logging.getLogger(__name__)
 
+def main(not_dry: bool) -> None:
+    # implement your script here
+    pass
+
 if __name__ == "__main__":
     app.app_context().push()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--not-dry", action="store_true")
     args = parser.parse_args()
+
+    main(not_dry=args.not_dry)
 
     if args.not_dry:
         logger.info("Finished")
@@ -48,13 +75,29 @@ if __name__ == "__main__":
 """
 
 
-def main(namespace: str, with_sql: bool) -> None:
+def get_active_branch_name() -> str | None:
+    head_dir = PCAPI_DIR / "../../../" / ".git" / "HEAD"
+    with head_dir.open("r", encoding="utf8") as f:
+        content = f.read().splitlines()
+
+    for line in content:
+        if line[0:4] == "ref:":
+            return line.partition("refs/heads/")[2]
+
+    return None
+
+
+def main(namespace: str, git_branch_name: str | None, with_sql: bool) -> None:
     path = SCRIPT_PATH / namespace
     if not os.path.exists(path):
         os.makedirs(path)
 
     if not os.path.exists(path / "main.py"):
         with open(path / "main.py", mode="w", encoding="utf8") as f:
+            if not git_branch_name:
+                f.write(DEFAULT_HEADER)
+            else:
+                f.write(HEADER.format(git_branch_name=git_branch_name, namespace=namespace))
             f.write(PYTHON_TEMPLATE)
 
     if with_sql:
@@ -71,4 +114,10 @@ if __name__ == "__main__":
     if not args.namespace:
         raise ValueError("Please provide a namespace")
 
-    main(namespace=args.namespace, with_sql=args.with_sql)
+    current_branch_name = get_active_branch_name()
+    if current_branch_name is None:
+        print(
+            "Could not find the current branch name. Make sure you are on a branch before running this script, if you want a nice url to copy paste when running in Github Actions."
+        )
+
+    main(namespace=args.namespace, git_branch_name=current_branch_name, with_sql=args.with_sql)
