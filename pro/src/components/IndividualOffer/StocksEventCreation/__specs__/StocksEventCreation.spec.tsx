@@ -34,7 +34,8 @@ vi.mock('apiClient/api', () => ({
 
 const renderStockEventCreation = async (
   stocks: GetOfferStockResponseModel[],
-  props: StocksEventCreationProps
+  props: StocksEventCreationProps,
+  features?: string[]
 ) => {
   vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
     stocks,
@@ -85,11 +86,15 @@ const renderStockEventCreation = async (
           offerId: 1,
         }),
       ],
+      features,
     }
   )
-  await waitFor(() => {
-    expect(api.getStocks).toHaveBeenCalledTimes(1)
-  })
+
+  if (!features?.includes('WIP_ENABLE_EVENT_WITH_OPENING_HOUR')) {
+    await waitFor(() => {
+      expect(api.getStocks).toHaveBeenCalledTimes(1)
+    })
+  }
 }
 
 const tomorrow = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
@@ -186,5 +191,15 @@ describe('StocksEventCreation', () => {
       screen.getByText('Ajouter une ou plusieurs dates')
     ).toBeInTheDocument()
     expect(api.upsertStocks).not.toHaveBeenCalled()
+  })
+
+  it('should show the calendar form if the FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR is enabled', async () => {
+    await renderStockEventCreation([], { offer: getIndividualOfferFactory() }, [
+      'WIP_ENABLE_EVENT_WITH_OPENING_HOUR',
+    ])
+
+    expect(
+      screen.getByRole('heading', { name: 'Calendrier' })
+    ).toBeInTheDocument()
   })
 })
