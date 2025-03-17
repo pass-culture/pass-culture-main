@@ -31,9 +31,6 @@ describe('Search collective offers', () => {
         offerArchived = response.body.offerArchived
       }
     )
-    cy.setFeatureFlags([
-      { name: 'ENABLE_COLLECTIVE_NEW_STATUSES', isActive: true },
-    ])
   })
 
   beforeEach(() => {

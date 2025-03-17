@@ -48,9 +48,6 @@ describe('Adage confirmation', () => {
         )
       }
     )
-    cy.setFeatureFlags([
-      { name: 'ENABLE_COLLECTIVE_NEW_STATUSES', isActive: true },
-    ])
   })
 
   it('I should be able to search with several filters and see expected results', () => {
