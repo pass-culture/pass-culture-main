@@ -11,7 +11,7 @@ from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.connectors.entreprise import models as entreprise_models
 from pcapi.connectors.entreprise import sirene
-from pcapi.core.bookings import models as bookings_models
+from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -213,18 +213,9 @@ def _can_close_offerer(offerer: offerers_models.Offerer) -> bool:
     if not FeatureToggle.ENABLE_AUTO_CLOSE_CLOSED_OFFERERS.is_active():
         return False
 
-    # TODO (prouzet, 2025-03-12) use bookings_repository.offerer_has_ongoing_bookings(offerer.id) in PC-34645
-    if db.session.query(
-        bookings_models.Booking.query.filter(
-            bookings_models.Booking.offererId == offerer.id,
-            bookings_models.Booking.status.in_(
-                [bookings_models.BookingStatus.CONFIRMED, bookings_models.BookingStatus.USED]
-            ),
-        ).exists()
-    ).scalar():
+    if bookings_repository.offerer_has_ongoing_bookings(offerer.id):
         return False
 
-    # TODO (prouzet, 2025-03-12) remove USED from offerer_has_ongoing_collective_bookings in PC-34645
     if educational_repository.offerer_has_ongoing_collective_bookings(offerer.id):
         return False
 

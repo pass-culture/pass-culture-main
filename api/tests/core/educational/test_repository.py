@@ -770,7 +770,6 @@ class OffererHasOngoingCollectiveBookingsTest:
         [
             educational_factories.ConfirmedCollectiveBookingFactory,
             educational_factories.PendingCollectiveBookingFactory,
-            educational_factories.UsedCollectiveBookingFactory,
         ],
     )
     def test_has_bookings(self, app, factory):
@@ -782,10 +781,31 @@ class OffererHasOngoingCollectiveBookingsTest:
         with assert_num_queries(1):
             assert educational_repository.offerer_has_ongoing_collective_bookings(offerer_id=offerer_id) is True
 
+    @pytest.mark.parametrize(
+        "factory",
+        [
+            educational_factories.ConfirmedCollectiveBookingFactory,
+            educational_factories.PendingCollectiveBookingFactory,
+            educational_factories.UsedCollectiveBookingFactory,
+        ],
+    )
+    def test_has_bookings_include_used(self, app, factory):
+        offerer = offerers_factories.OffererFactory()
+        factory(offerer=offerer)
+        educational_factories.ReimbursedCollectiveBookingFactory(offerer=offerer)
+
+        offerer_id = offerer.id
+        with assert_num_queries(1):
+            assert (
+                educational_repository.offerer_has_ongoing_collective_bookings(offerer_id=offerer_id, include_used=True)
+                is True
+            )
+
     def test_has_no_booking(self, app):
         offerer = offerers_factories.OffererFactory()
         educational_factories.ReimbursedCollectiveBookingFactory(offerer=offerer)
         educational_factories.CancelledCollectiveBookingFactory(offerer=offerer)
+        educational_factories.UsedCollectiveBookingFactory(offerer=offerer)
 
         offerer_id = offerer.id
         with assert_num_queries(1):
