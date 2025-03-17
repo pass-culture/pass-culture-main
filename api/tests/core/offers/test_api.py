@@ -1866,16 +1866,14 @@ class BatchUpdateOffersTest:
 
         assert len(caplog.records) == 2
         first_record = caplog.records[0]
+
+        assert first_record.message == "Batch update of offers: start"
+        assert first_record.extra == {"updated_fields": {"isActive": True}}
+
         second_record = caplog.records[1]
 
-        assert first_record.message == "Batch update of offers"
-        assert first_record.extra == {
-            "nb_offers": 0,
-            "updated_fields": {"isActive": True},
-            "venue_ids": [],
-        }
-        assert second_record.message == "Offers has been activated"
-        assert second_record.extra == {"offer_ids": [], "venue_ids": []}
+        assert second_record.message == "Batch update of offers: end"
+        assert second_record.extra == {"updated_fields": {"isActive": True}, "nb_offers": 0, "nb_venues": 0}
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate(self, mocked_async_index_offer_ids, caplog):
@@ -1899,20 +1897,21 @@ class BatchUpdateOffersTest:
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer1.id, offer2.id])
 
-        assert len(caplog.records) == 2
+        assert len(caplog.records) == 3
         first_record = caplog.records[0]
         second_record = caplog.records[1]
+        third_record = caplog.records[2]
 
-        assert first_record.message == "Batch update of offers"
-        assert first_record.extra == {
-            "nb_offers": 2,
-            "updated_fields": {"isActive": True},
-            "venue_ids": [offer1.venueId, offer2.venueId],
-        }
+        assert first_record.message == "Batch update of offers: start"
+        assert first_record.extra == {"updated_fields": {"isActive": True}}
+
         assert second_record.message == "Offers has been activated"
         assert second_record.extra.keys() == {"offer_ids", "venue_ids"}
         assert set(second_record.extra["offer_ids"]) == {offer1.id, offer2.id}
-        assert second_record.extra["venue_ids"] == [offer1.venueId, offer2.venueId]
+        assert second_record.extra["venue_ids"] == {offer1.venueId, offer2.venueId}
+
+        assert third_record.message == "Batch update of offers: end"
+        assert third_record.extra == {"updated_fields": {"isActive": True}, "nb_offers": 2, "nb_venues": 2}
 
     def test_deactivate(self, caplog):
         offer1 = factories.OfferFactory()
@@ -1927,20 +1926,21 @@ class BatchUpdateOffersTest:
         assert not models.Offer.query.get(offer2.id).isActive
         assert models.Offer.query.get(offer3.id).isActive
 
-        assert len(caplog.records) == 3
+        assert len(caplog.records) == 4
         first_record = caplog.records[0]
         second_record = caplog.records[1]
+        last_record = caplog.records[-1]
 
-        assert first_record.message == "Batch update of offers"
-        assert first_record.extra == {
-            "nb_offers": 2,
-            "updated_fields": {"isActive": False},
-            "venue_ids": [offer1.venueId, offer2.venueId],
-        }
+        assert first_record.message == "Batch update of offers: start"
+        assert first_record.extra == {"updated_fields": {"isActive": False}}
+
         assert second_record.message == "Offers has been deactivated"
         assert second_record.extra.keys() == {"offer_ids", "venue_ids"}
         assert set(second_record.extra["offer_ids"]) == {offer1.id, offer2.id}
-        assert second_record.extra["venue_ids"] == [offer1.venueId, offer2.venueId]
+        assert second_record.extra["venue_ids"] == {offer1.venueId, offer2.venueId}
+
+        assert last_record.message == "Batch update of offers: end"
+        assert last_record.extra == {"updated_fields": {"isActive": False}, "nb_offers": 2, "nb_venues": 2}
 
 
 @pytest.mark.usefixtures("db_session")
