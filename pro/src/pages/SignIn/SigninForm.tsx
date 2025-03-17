@@ -93,7 +93,6 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             type="submit"
             className={styles['buttons']}
             isLoading={formState.isSubmitting}
-            disabled={!formState.isValid}
           >
             Se connecter
           </Button>
