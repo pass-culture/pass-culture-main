@@ -2929,8 +2929,132 @@ class GetUserRegistrationStepCreditV3Test(GetEndpointHelper):
         assert step_icon_titles[4] == SubscriptionItemStatus.VOID.value
         assert text_views[4].text == "Pass 17"
 
+    def test_registration_age_15_before_decree_current_age_18(self, authenticated_client, settings):
+        # Setup:
+        # - Sign-up at 15 before the decree started
+        # - Decree starts one day before the user's 18th birthday
+        # - User is 18 years old now
+
+        # Expected registration timeline:
+        # 1. Email validation ✓
+        # 2. Complete profile ✓
+        # 3. ID check ✓
+        # 4. Honor statement ✓
+        # 5. Pass 15-17 ✓
+        # 6. Phone validation ✗
+        # 7. Complete profile ✓
+        # 8. ID check ✓
+        # 9. Honor statement ✓
+        # 10. Pass 18 ✓
+        now = datetime.datetime.utcnow()
+        birthdate = now - relativedelta(years=18, days=15)
+        birthdate = birthdate.replace(hour=0, minute=0, second=0)
+        settings.CREDIT_V3_DECREE_DATETIME = birthdate + relativedelta(years=18) - relativedelta(days=1)
+        user = users_factories.UserFactory(
+            dateCreated=birthdate + relativedelta(years=15, months=9, days=4),
+            dateOfBirth=birthdate,
+            phoneValidationStatus=None,
+            roles=[users_models.UserRole.BENEFICIARY],
+            validatedBirthDate=birthdate,
+        )
+        users_factories.DepositGrantFactory(
+            dateCreated=user.dateCreated,
+            user=user,
+            amount=80_00,
+            type="GRANT_15_17",
+            expirationDate=settings.CREDIT_V3_DECREE_DATETIME + relativedelta(days=5),
+        )
+        users_factories.DepositGrantFactory(user=user, amount=151_15, type="GRANT_17_18")
+
+        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+            dateCreated=user.dateCreated,
+            user=user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+            dateCreated=user.dateCreated,
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+            dateCreated=user.dateCreated,
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
+        )
+
+        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+        assert response.status_code == 200
+
+        soup = html_parser.get_soup(response.data)
+
+        step_icon_views = soup.select(".steps .step-status-icon-container i")
+        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
+        text_views = soup.select(".steps .step-text")
+
+        assert soup.select('[data-registration-steps-id="underage+age-18"]')
+        assert len(step_icon_views) == 10
+        assert len(step_icon_titles) == 10
+        assert len(text_views) == 10
+
+        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert text_views[0].text == "Validation Email"
+
+        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert text_views[1].text == "Profil Complet"
+
+        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert text_views[2].text == "ID Check"
+
+        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert text_views[3].text == "Attestation sur l'honneur"
+
+        assert step_icon_titles[4] == SubscriptionItemStatus.OK.value
+        assert text_views[4].text == "Ancien Pass 15-17"
+
+        assert step_icon_titles[5] == SubscriptionItemStatus.VOID.value
+        assert text_views[5].text == "Validation N° téléphone"
+
+        assert step_icon_titles[6] == SubscriptionItemStatus.OK.value
+        assert text_views[6].text == "Profil Complet"
+
+        assert step_icon_titles[7] == SubscriptionItemStatus.OK.value
+        assert text_views[7].text == "ID Check"
+
+        assert step_icon_titles[8] == SubscriptionItemStatus.OK.value
+        assert text_views[8].text == "Attestation sur l'honneur"
+
+        assert step_icon_titles[9] == SubscriptionItemStatus.OK.value
+        assert text_views[9].text == "Pass 18"
+
     def test_registration_age_17_after_decree_current_age_18(self, authenticated_client, settings):
         # Setup:
+        # - Decree starts at age 16
         # - Sign-up at 17 after the decree started
         # - User is 18 years old now
         #
@@ -3038,6 +3162,93 @@ class GetUserRegistrationStepCreditV3Test(GetEndpointHelper):
         assert text_views[8].text == "Attestation sur l'honneur"
 
         assert step_icon_titles[9] == SubscriptionItemStatus.OK.value
+        assert text_views[9].text == "Pass 18"
+
+    def test_registration_age_17_decree_age_17_current_age_18(self, authenticated_client, settings):
+        # Setup:
+        # - Decree start at age 17
+        # - Sign-up at 17 after the decree started
+        # - User is 18 years old now
+        #
+        # Expected registration timeline:
+        # 1. Email validation ✓
+        # 2. Complete profile ✓
+        # 3. ID check ✓
+        # 4. Honor statement ✗
+        # 5. Pass 17 ✗
+        # 6. Phone validation ✗
+        # 7. Complete profile ✗
+        # 8. ID check ✓
+        # 9. Honor statement ✗
+        # 10. Pass 18 ✗
+        now = datetime.datetime.utcnow()
+        birth_date = now - relativedelta(years=18, days=10)
+        settings.CREDIT_V3_DECREE_DATETIME = now - relativedelta(days=17)
+        user = users_factories.UserFactory(
+            dateCreated=now - relativedelta(days=14),
+            dateOfBirth=birth_date,
+            phoneValidationStatus=None,
+            roles=[],
+            validatedBirthDate=birth_date,
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+            dateCreated=user.dateCreated,
+            user=user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+            dateCreated=user.dateCreated,
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
+        )
+
+        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+        assert response.status_code == 200
+
+        soup = html_parser.get_soup(response.data)
+
+        step_icon_views = soup.select(".steps .step-status-icon-container i")
+        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
+        text_views = soup.select(".steps .step-text")
+
+        assert soup.select('[data-registration-steps-id="age-17-18"]')
+        assert len(step_icon_views) == 10
+        assert len(step_icon_titles) == 10
+        assert len(text_views) == 10
+
+        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert text_views[0].text == "Validation Email"
+
+        assert step_icon_titles[1] == SubscriptionItemStatus.TODO.value
+        assert text_views[1].text == "Profil Complet"
+
+        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert text_views[2].text == "ID Check"
+
+        assert step_icon_titles[3] == SubscriptionItemStatus.TODO.value
+        assert text_views[3].text == "Attestation sur l'honneur"
+
+        assert step_icon_titles[4] == SubscriptionItemStatus.VOID.value
+        assert text_views[4].text == "Pass 17"
+
+        assert step_icon_titles[5] == SubscriptionItemStatus.TODO.value
+        assert text_views[5].text == "Validation N° téléphone"
+
+        assert step_icon_titles[6] == SubscriptionItemStatus.TODO.value
+        assert text_views[6].text == "Profil Complet"
+
+        assert step_icon_titles[7] == SubscriptionItemStatus.OK.value
+        assert text_views[7].text == "ID Check"
+
+        assert step_icon_titles[8] == SubscriptionItemStatus.TODO.value
+        assert text_views[8].text == "Attestation sur l'honneur"
+
+        assert step_icon_titles[9] == SubscriptionItemStatus.VOID.value
         assert text_views[9].text == "Pass 18"
 
     def test_registration_age_18_after_decree(self, authenticated_client, settings):
