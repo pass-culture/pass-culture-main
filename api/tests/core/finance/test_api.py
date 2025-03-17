@@ -3284,14 +3284,22 @@ def invoice_nc_test_data():
 
 class GenerateInvoicesTest:
     # Mock slow functions that we are not interested in.
+    @pytest.mark.parametrize(
+        "offerer_factory", [offerers_factories.OffererFactory, offerers_factories.ClosedOffererFactory]
+    )
     @mock.patch("pcapi.core.finance.api._generate_invoice_html")
     @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
     @pytest.mark.usefixtures("clean_temp_files")
-    def test_basics(self, _mocked1, _mocked2):
-        stock1 = offers_factories.ThingStockFactory(offer__venue__pricing_point="self")
+    def test_basics(self, _mocked1, _mocked2, offerer_factory):
+        offerer = offerer_factory()
+        stock1 = offers_factories.ThingStockFactory(
+            offer__venue__managingOfferer=offerer, offer__venue__pricing_point="self"
+        )
         finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock1)
         booking1 = finance_event1.booking
-        stock2 = offers_factories.ThingStockFactory(offer__venue__pricing_point="self")
+        stock2 = offers_factories.ThingStockFactory(
+            offer__venue__managingOfferer=offerer, offer__venue__pricing_point="self"
+        )
         finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock2)
         booking2 = finance_event2.booking
         for finance_event in (finance_event1, finance_event2):

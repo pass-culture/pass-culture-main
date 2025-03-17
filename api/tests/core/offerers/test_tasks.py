@@ -218,9 +218,11 @@ class CheckOffererTest:
         # Using TestingBackend:
         # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
         offerer = offerers_factories.OffererFactory(siren="109599001")
+        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
 
         bookings_factories.CancelledBookingFactory(offerer=offerer, stock__offer__venue__managingOfferer=offerer)
         bookings_factories.ReimbursedBookingFactory(offerer=offerer, stock__offer__venue__managingOfferer=offerer)
+        bookings_factories.UsedBookingFactory(offerer=offerer, stock__offer__venue__managingOfferer=offerer)
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
@@ -244,20 +246,26 @@ class CheckOffererTest:
             "closure_date": "2025-01-16",
         }
 
-    @pytest.mark.parametrize(
-        "booking_factory", [bookings_factories.BookingFactory, bookings_factories.UsedBookingFactory]
-    )
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == user_offerer.user.email
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.OFFERER_CLOSED.value)
+        assert mails_testing.outbox[0]["params"] == {
+            "OFFERER_NAME": offerer.name,
+            "SIREN": offerer.siren,
+            "END_DATE": "jeudi 16 janvier 2025",
+            "HAS_THING_BOOKINGS": True,
+            "HAS_EVENT_BOOKINGS": False,
+        }
+
     @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
     @patch("pcapi.core.offerers.api.close_offerer")
     @time_machine.travel("2025-01-21 12:00:00")
-    def test_do_not_close_inactive_offerer_with_ongoing_bookings(
-        self, mock_close_offerer, client, siren_caduc_tag, booking_factory
-    ):
+    def test_do_not_close_inactive_offerer_with_ongoing_bookings(self, mock_close_offerer, client, siren_caduc_tag):
         # Using TestingBackend:
         # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
         offerer = offerers_factories.OffererFactory(siren="109599001")
 
-        booking_factory(offerer=offerer, stock__offer__venue__managingOfferer=offerer)
+        bookings_factories.BookingFactory(offerer=offerer, stock__offer__venue__managingOfferer=offerer)
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
@@ -277,6 +285,7 @@ class CheckOffererTest:
         assert action.extraData == {"modified_info": {"tags": {"new_info": siren_caduc_tag.label}}}
 
         mock_close_offerer.assert_not_called()
+        assert len(mails_testing.outbox) == 0
 
     @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=False)
     @patch("pcapi.core.offerers.api.close_offerer")
@@ -309,6 +318,7 @@ class CheckOffererTest:
         # Using TestingBackend:
         # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
         offerer = offerers_factories.OffererFactory(siren="109599001", tags=[siren_caduc_tag])
+        offerers_factories.UserOffererFactory(offerer=offerer)
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
@@ -328,6 +338,8 @@ class CheckOffererTest:
         assert action.offererId == offerer.id
         assert action.comment == "L'entité juridique est détectée comme fermée le 05/03/2025 via l'API Sirene (INSEE)"
         assert action.extraData == {"closure_date": "2025-03-05"}  # tag was already set
+
+        assert len(mails_testing.outbox) == 1
 
     @patch("time.sleep")
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
