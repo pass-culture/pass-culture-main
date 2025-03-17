@@ -28,7 +28,7 @@ class Returns204Test:
         data = BASE_DATA_PRO.copy()
 
         # When
-        response = client.post("/v2/users/signup/pro", json=data)
+        response = client.post("/users/signup", json=data)
 
         # Then
         assert response.status_code == 204
@@ -67,7 +67,7 @@ class Returns204Test:
         data = BASE_DATA_PRO_WITHOUT_PHONE.copy()
 
         # When
-        response = client.post("/v2/users/signup/pro", json=data)
+        response = client.post("/users/signup", json=data)
 
         # Then
         assert response.status_code == 204
@@ -104,7 +104,7 @@ class Returns204Test:
         data = BASE_DATA_PRO.copy()
 
         # When
-        response = client.post("/v2/users/signup/pro", json=data)
+        response = client.post("/users/signup", json=data)
 
         # Then
         assert response.status_code == 204
@@ -120,7 +120,7 @@ class Returns400Test:
         del data["email"]
 
         # When
-        response = client.post("/v2/users/signup/pro", json=data)
+        response = client.post("/users/signup", json=data)
 
         # Then
         assert response.status_code == 400
@@ -133,7 +133,7 @@ class Returns400Test:
         data["email"] = "toto"
 
         # When
-        response = client.post("/v2/users/signup/pro", json=data)
+        response = client.post("/users/signup", json=data)
 
         # Then
         assert response.status_code == 400
@@ -143,10 +143,10 @@ class Returns400Test:
     def test_when_email_is_already_used(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
-        client.post("/v2/users/signup/pro", json=data)
+        client.post("/users/signup", json=data)
 
         # When
-        response = client.post("/v2/users/signup/pro", json=data)
+        response = client.post("/users/signup", json=data)
 
         # Then
         assert response.status_code == 400
@@ -159,7 +159,7 @@ class Returns400Test:
         del data["password"]
 
         # When
-        response = client.post("/v2/users/signup/pro", json=data)
+        response = client.post("/users/signup", json=data)
 
         # Then
         assert response.status_code == 400
@@ -172,7 +172,7 @@ class Returns400Test:
         data["password"] = "weakpassword"
 
         # When
-        response = client.post("/v2/users/signup/pro", json=data)
+        response = client.post("/users/signup", json=data)
 
         # Then
         assert response.status_code == 400
@@ -198,7 +198,7 @@ class Returns400Test:
         }
 
         # When
-        response = client.post("/v2/users/signup/pro", json=user_json)
+        response = client.post("/users/signup", json=user_json)
 
         # Then
         assert response.status_code == 400
@@ -211,7 +211,7 @@ class Returns400Test:
         data["phoneNumber"] = "abc 123"
 
         # When
-        response = client.post("/v2/users/signup/pro", json=data)
+        response = client.post("/users/signup", json=data)
 
         # Then
         assert response.status_code == 400
@@ -225,7 +225,7 @@ class Returns400Test:
         data["phoneNumber"] = "0873492896"
 
         # When
-        response = client.post("/v2/users/signup/pro", json=data)
+        response = client.post("/users/signup", json=data)
 
         # Then
         assert response.status_code == 400
@@ -239,7 +239,7 @@ class Returns400Test:
         data = BASE_DATA_PRO_WITHOUT_PHONE.copy()
 
         # When
-        response = client.post("/v2/users/signup/pro", json=data)
+        response = client.post("/users/signup", json=data)
 
         # Then
         assert response.status_code == 400
