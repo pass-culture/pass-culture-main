@@ -3,6 +3,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
+from pcapi.core.finance.models import DepositType
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import models as history_models
 from pcapi.core.users import constants
@@ -10,6 +11,8 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
+
+from . import exceptions
 
 
 class EligibilityError(Exception):
@@ -337,3 +340,15 @@ def get_known_birthday_at_date(user: users_models.User, at_date: datetime.dateti
             )
 
     return known_birthday_at_date
+
+
+def get_activated_eligibility(deposit_type: DepositType) -> users_models.EligibilityType:
+    match deposit_type:
+        case DepositType.GRANT_17_18:
+            return users_models.EligibilityType.AGE17_18
+        case DepositType.GRANT_15_17:
+            return users_models.EligibilityType.UNDERAGE
+        case DepositType.GRANT_18:
+            return users_models.EligibilityType.AGE18
+        case _:
+            raise exceptions.UnknownDepositType(f"{deposit_type}")

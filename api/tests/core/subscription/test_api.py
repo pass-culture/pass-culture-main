@@ -19,6 +19,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.exceptions import InvalidEligibilityTypeException
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -1871,6 +1872,107 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         recredit_types = [recredit.recreditType for recredit in user.deposit.recredits]
         assert set(recredit_types) == {finance_models.RecreditType.RECREDIT_17, finance_models.RecreditType.RECREDIT_18}
         assert user.recreditAmountToShow == 200
+
+    def test_user_with_old_fraud_checks_get_correct_deposit_and_role(self):
+        """
+        This test is inspired from real life data, and aims to reproduce a bug
+
+        We generate a user that:
+        - First had a failed AGE18 acvtivation attempt (thus having some AGE18 ok fraud checks)
+        - Then had a successful UNDERAGE activation attempt
+        - Finally tries a GRANT_17_18 activation attempt, while being elligible.
+          - They used to get an error when activating and get the wrong role (with an awful 500 error)
+          - But now they get the right role (and a nice 200 response)
+        """
+
+        user = users_factories.PhoneValidatedUserFactory(
+            # I immediately give the user the phone, date of birth, and roles that they will have after activation
+            phoneNumber="0612345678",
+            dateCreated=datetime(2022, 2, 21, 18, 12, 0),
+            dateOfBirth=datetime(2007, 1, 17),
+            roles=[users_models.UserRole.UNDERAGE_BENEFICIARY],
+        )
+
+        # The user first tried a AGE18 activation, but cancelled it.
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            dateCreated=datetime(2022, 6, 14, 15, 30, 00),
+            status=fraud_models.FraudCheckStatus.CANCELED,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            reason="Created by script. https://passculture.atlassian.net/browse/PC-15549 ; Eligibility type changed by the identity provider",
+            resultContent=None,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            dateCreated=datetime(2022, 9, 30, 16, 20, 00),
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            reason="[Rattrapage PC-17406] création d'un fraud_check pour tous les utilisateurs dont le numéro est validé",
+            resultContent=None,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            dateCreated=datetime(2022, 8, 7, 18, 49, 00),
+            status=fraud_models.FraudCheckStatus.CANCELED,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=fraud_models.FraudCheckType.UBBLE,
+            reason="Eligibility type changed by the identity provider",
+            resultContent=fraud_factories.UbbleContentFactory(),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            dateCreated=datetime(2022, 8, 7, 19, 3, 00),
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            reason="statement from /subscription/honor_statement endpoint",
+            resultContent=None,
+        )
+
+        # Then they tru an UNDERAGE activation (because they are in fact not 18yo)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            dateCreated=datetime(2022, 8, 10, 15, 27, 00),
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            reason="Created by script. https://passculture.atlassian.net/browse/PC-15549",
+            resultContent=None,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            dateCreated=datetime(2022, 8, 8, 2, 26, 00),
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.UBBLE,
+            reason="",
+            resultContent=fraud_factories.UbbleContentFactory(),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            dateCreated=datetime(2022, 8, 10, 15, 27, 00),
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            reason="statement from /subscription/honor_statement endpoint",
+            resultContent=None,
+        )
+
+        # And had their deposit UNDERAGE granted
+        users_factories.DepositGrantFactory(
+            user=user,
+            type=finance_models.DepositType.GRANT_15_17,
+            dateCreated=datetime(2022, 8, 10, 17, 27),
+        )
+
+        # Now, the user tries to activate the 17-18 grant, a few years later (used to give a wrong UNDERAGE role)
+        with time_machine.travel(datetime(2025, 3, 10)):
+            fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+            subscription_api.activate_beneficiary_if_no_missing_step(user)
+        assert user.roles == [users_models.UserRole.BENEFICIARY]
+        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
 
 
 @pytest.mark.usefixtures("db_session")
