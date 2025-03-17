@@ -1345,10 +1345,25 @@ def _update_collective_offer(
     offer_validation.check_validation_status(offer)
     offer_validation.check_contact_request(offer, new_values)
 
-    if "nationalProgramId" in new_values:
+    # check domains and national program
+    domains_to_check = offer.domains
+    edit_domains = "domains" in new_values
+    if edit_domains:
+        domain_ids = new_values.pop("domains")
+        new_values["domains"] = get_educational_domains_from_ids(domain_ids)
+        domains_to_check = new_values["domains"]
+
+    program_id_to_check = offer.nationalProgramId
+    edit_national_program = "nationalProgramId" in new_values
+    if edit_national_program:
         national_program_id = new_values.pop("nationalProgramId")
         national_program_api.link_or_unlink_offer_to_program(national_program_id, offer)
+        program_id_to_check = national_program_id
 
+    if edit_domains or edit_national_program:
+        offer_validation.validate_national_program(national_program_id=program_id_to_check, domains=domains_to_check)
+
+    # check offerVenue
     edit_offer_venue = "offerVenue" in new_values
     edit_location = "location" in new_values
     if edit_offer_venue and edit_location:
@@ -1389,11 +1404,6 @@ def _update_collective_offer(
         if key == "subcategoryId":
             offer_validation.check_offer_is_eligible_for_educational(value.name)
             offer.subcategoryId = value.name
-            continue
-
-        if key == "domains":
-            domains = get_educational_domains_from_ids(value)
-            offer.domains = domains
             continue
 
         setattr(offer, key, value)
