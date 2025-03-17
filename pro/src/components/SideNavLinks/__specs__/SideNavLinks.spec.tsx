@@ -85,13 +85,19 @@ describe('SideNavLinks', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display partner link if user as partner page', async () => {
+  it('should display partner link if user as partner page to display 1st venue partner page as default', async () => {
+    const mockedManagedVenues = [
+      { ...defaultGetOffererVenueResponseModel, isPermanent: true, id: 17 },
+      { ...defaultGetOffererVenueResponseModel, isPermanent: false, id: 18 },
+      { ...defaultGetOffererVenueResponseModel, isPermanent: false, id: 19 },
+    ]
+
+    const offerer = currentOffererFactory()
+
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       hasPartnerPage: true,
-      managedVenues: [
-        { ...defaultGetOffererVenueResponseModel, isPermanent: true, id: 17 },
-      ],
+      managedVenues: mockedManagedVenues,
     })
 
     renderSideNavLinks({
@@ -99,13 +105,21 @@ describe('SideNavLinks', () => {
         user: {
           currentUser: sharedCurrentUserFactory(),
         },
-        offerer: currentOffererFactory(),
+        offerer,
       },
     })
 
-    expect(
-      await screen.findByText('Page sur l’application')
-    ).toBeInTheDocument()
+    const link = await screen.findByRole('link', {
+      name: 'Page sur l’application',
+    })
+    expect(link).toBeInTheDocument()
+    const defaultVenueId = mockedManagedVenues.find(
+      (venue) => venue.isPermanent
+    )?.id
+    expect(link).toHaveAttribute(
+      'href',
+      `/structures/${offerer.selectedOffererId}/lieux/${defaultVenueId}/page-partenaire`
+    )
   })
 
   it('should not display partner link if user as no partner page', () => {

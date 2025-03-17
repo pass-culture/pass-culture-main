@@ -29,7 +29,6 @@ import { updateUser } from 'commons/store/user/reducer'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { Notification } from 'components/Notification/Notification'
-import { SAVED_VENUE_ID_KEY } from 'pages/Homepage/components/Offerers/components/PartnerPages/PartnerPages'
 
 import { useBeamer } from './analytics/beamer'
 import { useFirebase } from './analytics/firebase'
@@ -82,7 +81,6 @@ export const App = (): JSX.Element | null => {
       api.signout()
       if (storageAvailable('localStorage')) {
         localStorage.removeItem(SAVED_OFFERER_ID_KEY)
-        localStorage.removeItem(SAVED_VENUE_ID_KEY)
       }
       dispatch(updateUser(null))
       dispatch(updateSelectedOffererId(null))
