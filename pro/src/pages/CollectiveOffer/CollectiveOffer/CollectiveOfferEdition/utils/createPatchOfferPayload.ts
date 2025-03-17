@@ -116,7 +116,6 @@ export const createPatchOfferPayload = (
   })
   // We use this to patch field when user want to make it empty
   changedValues.contactPhone = offer.phone || null
-  changedValues.nationalProgramId = Number(offer.nationalProgramId) || null
 
   return changedValues
 }
@@ -163,7 +162,6 @@ export const createPatchOfferTemplatePayload = (
       ? offer.contactUrl
       : null
 
-  changedValues.nationalProgramId = Number(offer.nationalProgramId) || null
   changedValues.dates =
     offer.datesType === 'specific_dates' &&
     offer.beginningDate &&
