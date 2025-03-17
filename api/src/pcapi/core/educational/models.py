@@ -1630,6 +1630,10 @@ class EducationalInstitution(PcObject, Base, Model):
         "CollectivePlaylist", back_populates="institution"
     )
 
+    latitude: decimal.Decimal | None = sa.Column(sa.Numeric(8, 5), nullable=True)
+
+    longitude: decimal.Decimal | None = sa.Column(sa.Numeric(8, 5), nullable=True)
+
     __table_args__ = (
         sa.Index("ix_educational_institution_type_name_city", institutionType + " " + name + " " + city),
         sa.Index(

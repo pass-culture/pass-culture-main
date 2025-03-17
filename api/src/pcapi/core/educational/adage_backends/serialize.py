@@ -119,6 +119,8 @@ class AdageEducationalInstitution(educational_schemas.AdageBaseResponseModel):
     courriel: str | None
     telephone: str | None
     codePostal: str
+    latitude: decimal.Decimal | None
+    longitude: decimal.Decimal | None
 
 
 class AdageCollectiveRequest(educational_schemas.AdageBaseResponseModel):

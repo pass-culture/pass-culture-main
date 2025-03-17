@@ -1,4 +1,5 @@
 import datetime
+import decimal
 
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
@@ -139,6 +140,8 @@ class AdageSpyClient(AdageClient):
                 courriel="contact+collegelatour@example.com",
                 telephone="0600000000",
                 codePostal="75000",
+                latitude=decimal.Decimal("48.8534100"),
+                longitude=decimal.Decimal("2.3488000"),
             ),
             AdageEducationalInstitution(
                 uai="0470010E",
@@ -148,6 +151,8 @@ class AdageSpyClient(AdageClient):
                 courriel="contact+squall@example.com",
                 telephone="0600000000",
                 codePostal="75001",
+                latitude=decimal.Decimal("48.8534100"),
+                longitude=decimal.Decimal("2.3488000"),
             ),
         ]
 

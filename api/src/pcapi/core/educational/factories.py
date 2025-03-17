@@ -44,6 +44,8 @@ class EducationalInstitutionFactory(BaseFactory):
     email = factory.LazyAttribute(_institution_email_builder)
     phoneNumber = "0600000000"
     institutionType = "COLLEGE"
+    latitude = 48.8566
+    longitude = 2.3522
 
 
 class CollectiveOfferFactory(BaseFactory):

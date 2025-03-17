@@ -283,6 +283,32 @@ def create_educational_institution_from_adage(institution: AdageEducationalInsti
     return educational_institution
 
 
+def synchronise_institutions_geolocation(adage_year_id: str | None = None) -> None:
+    if adage_year_id is None:
+        year = find_educational_year_by_date(datetime.utcnow())
+        if year is None:
+            raise educational_exceptions.EducationalYearNotFound()
+        adage_year_id = year.adageId
+
+    adage_institutions = get_adage_educational_institutions(adage_year_id)
+    adage_uais = [instition.uai for instition in adage_institutions]
+
+    educational_institutions = EducationalInstitution.query.filter(
+        EducationalInstitution.institutionId.in_(adage_uais)
+    ).all()
+    educational_institutions_by_uai = {
+        institution.institutionId: institution for institution in educational_institutions
+    }
+
+    for adage_institution in adage_institutions:
+        educational_institution = educational_institutions_by_uai.get(adage_institution.uai)
+        if educational_institution:
+            educational_institution.latitude = adage_institution.latitude
+            educational_institution.longitude = adage_institution.longitude
+            db.session.add(educational_institution)
+    db.session.flush()
+
+
 def synchronise_rurality_level() -> None:
     rows = list(InstitutionRuralLevelQuery().execute())
     actual_rows = (

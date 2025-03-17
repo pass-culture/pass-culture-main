@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import json
 from unittest import mock
 
@@ -15,7 +16,6 @@ from pcapi.core.educational.api.offer import unindex_expired_or_archived_collect
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.offers import exceptions as offers_exceptions
-import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
 from pcapi.utils import db as db_utils
@@ -695,3 +695,30 @@ class SynchroniseRuralityLevelTest:
         assert institutions[1].ruralLevel == educational_models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE
         assert institutions[2].ruralLevel == educational_models.InstitutionRuralLevel.GRANDS_CENTRES_URBAINS
         assert institutions[3].ruralLevel == None
+
+
+@pytest.mark.usefixtures("db_session")
+class SynchroniseInstitutionsGeolocationTest:
+    def test_synchronise_institutions_geolocation(self):
+        educational_factories.EducationalCurrentYearFactory()
+
+        institution = educational_factories.EducationalInstitutionFactory(
+            institutionId="0470009E", latitude=None, longitude=None
+        )
+        institution_with_values = educational_factories.EducationalInstitutionFactory(
+            institutionId="0470010E", latitude=42, longitude=2
+        )
+
+        # The backend for test is in AdageSpyClient#get_adage_educational_institutions
+        institution_not_present = educational_factories.EducationalInstitutionFactory(
+            institutionId="0111111E", latitude=None, longitude=None
+        )
+
+        institution_api.synchronise_institutions_geolocation()
+
+        assert institution.latitude == decimal.Decimal("48.8534100")
+        assert institution.longitude == decimal.Decimal("2.3488000")
+        assert institution_with_values.latitude == decimal.Decimal("48.8534100")
+        assert institution_with_values.longitude == decimal.Decimal("2.3488000")
+        assert institution_not_present.latitude is None
+        assert institution_not_present.longitude is None
