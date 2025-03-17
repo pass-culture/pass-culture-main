@@ -1,52 +1,51 @@
 import contextlib
+import logging
 from unittest.mock import patch
 
 import pytest
 
 from pcapi.connectors import api_adresse
-from pcapi.connectors.entreprise.backends.testing import TestingBackend
 import pcapi.core.geography.factories as geography_factories
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offerers.models import OffererAddress
-from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.models import db
-from pcapi.scripts.transform_virtual_venues.main import FetchAddressError
+from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.scripts.transform_virtual_venues.main import HeadQuarterInfo
 from pcapi.scripts.transform_virtual_venues.main import MissingSirenError
-from pcapi.scripts.transform_virtual_venues.main import NotAVirtualVenue
-from pcapi.scripts.transform_virtual_venues.main import get_backend
-from pcapi.scripts.transform_virtual_venues.main import get_or_create_offerer_address
-from pcapi.scripts.transform_virtual_venues.main import transform_venues_from_offerers_with_one_unique_virtual_venue
-from pcapi.scripts.transform_virtual_venues.main import transform_virtual_venue
-from pcapi.scripts.transform_virtual_venues.main import venues_from_offerers_with_one_unique_virtual_venue
+from pcapi.scripts.transform_virtual_venues.main import SiretNotActiveOrNotDiffusible
+from pcapi.scripts.transform_virtual_venues.main import get_offerer_with_one_virtual_venue_query
+from pcapi.scripts.transform_virtual_venues.main import transform_offerer_unique_virtual_venue_to_physical_venue
+from pcapi.scripts.transform_virtual_venues.main import transform_virtual_venue_to_physical_venue
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class VenuesFromOfferersWithOneUniqueVirtualVenueTest:
+class GetOffererWithOneVirtualVenueQueryTest:
     def test_one_existing_unique_virtual_offerer(self):
-        expected_venue = offerers_factories.VirtualVenueFactory()
+        virtual_venue = offerers_factories.VirtualVenueFactory()
 
-        venues = venues_from_offerers_with_one_unique_virtual_venue().all()
-        assert len(venues) == 1
-        assert venues[0].id == expected_venue.id
+        offerers = get_offerer_with_one_virtual_venue_query().all()
+        assert len(offerers) == 1
+        assert offerers[0].id == virtual_venue.managingOffererId
 
     def test_returns_nothing_if_multiple_virtual_venues(self):
         offerer = offerers_factories.OffererFactory()
         offerers_factories.VirtualVenueFactory.create_batch(2, managingOfferer=offerer)
 
-        venues = venues_from_offerers_with_one_unique_virtual_venue().all()
-        assert not venues
+        offerers = get_offerer_with_one_virtual_venue_query().all()
+        assert not offerers
 
-    def test_returns_venues_from_multiple_matching_offerers(self):
+    def test_returns_offerers(self):
         offerer1 = offerers_factories.OffererFactory()
         offerer2 = offerers_factories.OffererFactory()
 
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer1)
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer2)
+
         # venues from offerers that have one (not more) virtual venue
-        expected_venues = [
-            offerers_factories.VirtualVenueFactory(managingOfferer=offerer1),
-            offerers_factories.VirtualVenueFactory(managingOfferer=offerer2),
-        ]
+        expected_offerers = [offerer1, offerer2]
 
         # more than one virtual venue: should not match
         offerer3 = offerers_factories.OffererFactory()
@@ -60,177 +59,154 @@ class VenuesFromOfferersWithOneUniqueVirtualVenueTest:
         offerer4 = offerers_factories.OffererFactory()
         offerers_factories.VenueFactory.create_batch(2, managingOfferer=offerer4)
 
-        venues = venues_from_offerers_with_one_unique_virtual_venue().all()
-        assert len(venues) == len(expected_venues)
-        assert {v.id for v in venues} == {v.id for v in expected_venues}
+        offerers = get_offerer_with_one_virtual_venue_query().all()
+        assert len(offerers) == len(expected_offerers)
+        assert {v.id for v in offerers} == {v.id for v in expected_offerers}
 
 
-@contextlib.contextmanager
-def assert_no_difference(model):
-    before_count = model.query.count()
-    yield
-    assert model.query.count() == before_count
+def build_address(offerer: Offerer):
+    return geography_factories.AddressFactory(street=offerer.street, postalCode=offerer.postalCode, city=offerer.city)
 
 
-@contextlib.contextmanager
-def assert_difference(model, delta=1):
-    before_count = model.query.count()
-    yield
-    assert model.query.count() == before_count + delta
-
-
-class GetOrCreateOffererAddressTest:
-    def test_create_offerer_address(self):
-        venue = offerers_factories.VirtualVenueFactory()
-        address = geography_factories.AddressFactory()
-
-        with assert_difference(OffererAddress):
-            oa = get_or_create_offerer_address(venue.managingOffererId, address.id)
-            db.session.commit()
-
-        assert oa.offerer == venue.managingOfferer
-        assert oa.address == address
-
-    def test_get_offerer_address(self):
-        venue = offerers_factories.VirtualVenueFactory()
-        address = geography_factories.AddressFactory()
-        oa = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer, address=address)
-
-        with assert_no_difference(OffererAddress):
-            oa = get_or_create_offerer_address(oa.offererId, oa.addressId, oa.label)
-            db.session.commit()
-
-        assert oa.offerer == venue.managingOfferer
-        assert oa.address == address
-
-
-def build_address():
-    return geography_factories.AddressFactory(
-        street=TestingBackend.address.street,
-        postalCode=TestingBackend.address.postal_code,
-        city=TestingBackend.address.city,
-        inseeCode=TestingBackend.address.insee_code,
-    )
-
-
-class TransformVirtualVenueTest:
-    def test_transform_virtual_venue(self):
-        build_address()
+class TransformVirtualVenueToPhysicalVenueTest:
+    def test_transform_virtual_venue_to_physical_venue(self):
         venue = offerers_factories.VirtualVenueFactory(managingOfferer__siren="012345678")
+        build_address(venue.managingOfferer)
 
-        transform_virtual_venue(venue, False)
+        transform_virtual_venue_to_physical_venue(venue, venue.managingOfferer, False)
 
         db.session.refresh(venue)
 
         assert venue.offererAddress
         assert venue.siret
-        assert venue.name == "MINISTERE DE LA CULTURE"
+        assert venue.name == "Raison sociale"
+        assert venue.publicName == "Enseigne"
+        assert venue.venueTypeCode == VenueTypeCode.ADMINISTRATIVE
         assert not venue.isVirtual
-        assert not venues_from_offerers_with_one_unique_virtual_venue().all()
+        assert not get_offerer_with_one_virtual_venue_query().all()
 
-    def test_does_not_transform_physical_venue(self):
-        build_address()
-        venue = offerers_factories.VenueFactory(managingOfferer__siren="012345678")
+    @patch("pcapi.scripts.transform_virtual_venues.main.get_head_quarter_info")
+    def test_transform_virtual_venue_to_physical_venue_when_no_raison_sociale_or_enseigne(
+        self, get_head_quarter_info_mock
+    ):
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer__siren="012345678", publicName=None)
+        build_address(venue.managingOfferer)
 
-        with pytest.raises(NotAVirtualVenue):
-            transform_virtual_venue(venue, False)
+        get_head_quarter_info_mock.return_value = HeadQuarterInfo(
+            diffusible=True, active=True, siret="78467169500087", raison_sociale=None, enseigne=None
+        )
 
+        transform_virtual_venue_to_physical_venue(venue, venue.managingOfferer, False)
+
+        db.session.refresh(venue)
+
+        assert venue.offererAddress
+        assert venue.siret
+        assert venue.name == venue.managingOfferer.name
+        assert venue.publicName == None
         assert not venue.isVirtual
+        assert not get_offerer_with_one_virtual_venue_query().all()
 
-    @patch("pcapi.connectors.api_adresse.get_address")
-    def test_does_not_transform_virtual_venue_if_no_address_found(self, mock_get_ban_address):
+    @patch("pcapi.scripts.transform_virtual_venues.main.get_head_quarter_info")
+    @pytest.mark.parametrize(
+        "head_quarter_info",
+        [
+            HeadQuarterInfo(diffusible=False, active=True, siret="78467169500087", raison_sociale=None, enseigne=None),
+            HeadQuarterInfo(diffusible=True, active=False, siret="78467169500087", raison_sociale=None, enseigne=None),
+        ],
+    )
+    def test_transform_virtual_venue_to_physical_venue_should_raise_because_not_diffusible_or_not_active(
+        self, get_head_quarter_info_mock, head_quarter_info
+    ):
         venue = offerers_factories.VirtualVenueFactory(managingOfferer__siren="012345678")
+        build_address(venue.managingOfferer)
 
-        mock_get_ban_address.side_effect = api_adresse.NoResultException
+        get_head_quarter_info_mock.return_value = head_quarter_info
 
-        with pytest.raises(FetchAddressError):
-            transform_virtual_venue(venue, False)
+        with pytest.raises(SiretNotActiveOrNotDiffusible):
+            transform_virtual_venue_to_physical_venue(venue, venue.managingOfferer, False)
 
+        db.session.refresh(venue)
+
+        assert not venue.offererAddress
+        assert not venue.siret
         assert venue.isVirtual
+        assert get_offerer_with_one_virtual_venue_query().all()
 
-    def test_does_not_transform_virtual_venue_if_offerer_has_no_siren(self):
-        build_address()
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer__siren="")
+    def test_transform_virtual_venue_to_physical_venue_should_raise_because_siren_is_missing(self):
+        offerer = offerers_factories.OffererFactory()
+        offerer.siren = None
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        build_address(venue.managingOfferer)
 
         with pytest.raises(MissingSirenError):
-            transform_virtual_venue(venue, False)
+            transform_virtual_venue_to_physical_venue(venue, venue.managingOfferer, False)
 
+        db.session.refresh(venue)
+
+        assert not venue.offererAddress
+        assert not venue.siret
         assert venue.isVirtual
+        assert get_offerer_with_one_virtual_venue_query().all()
 
 
 class TransformVenuesFromOfferersWithOneUniqueVirtualVenueTest:
-    def test_transform_venues(self):
-        build_address()
 
+    @patch("pcapi.scripts.transform_virtual_venues.main.transform_virtual_venue_to_physical_venue")
+    @patch("pcapi.scripts.transform_virtual_venues.main.delete_venue")
+    def test_transform_venues(self, delete_venue_mock, transform_virtual_venue_to_physical_venue_mock):
         # for each offerer:
         # one virtual venue (no more, no less) -> should be updated
         offerer1 = offerers_factories.OffererFactory()
-        offerer2 = offerers_factories.OffererFactory()
-        expected_venues = [
-            offerers_factories.VirtualVenueFactory(managingOfferer=offerer1),
-            offerers_factories.VirtualVenueFactory(managingOfferer=offerer2),
-        ]
+        build_address(offerer1)
+        rejected_offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.REJECTED)
+
+        virtual_venue_that_should_be_transformed = offerers_factories.VirtualVenueFactory(managingOfferer=offerer1)
+        virtual_venue_that_should_be_deleted = offerers_factories.VirtualVenueFactory(managingOfferer=rejected_offerer)
 
         # one virtual venue and one physical venue -> none should be updated
-        offerer2 = offerers_factories.OffererFactory()
-        offerers_factories.VirtualVenueFactory(managingOfferer=offerer2)
-        offerers_factories.VenueFactory(managingOfferer=offerer2)
+        offerer4 = offerers_factories.OffererFactory()
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer4)
+        offerers_factories.VenueFactory(managingOfferer=offerer4)
 
         # one virtual venue and no physical venue -> should not be updated
         offerer3 = offerers_factories.OffererFactory()
         offerers_factories.VenueFactory(managingOfferer=offerer3)
 
-        transformed_venue_ids = transform_venues_from_offerers_with_one_unique_virtual_venue(False)
-        assert transformed_venue_ids == {v.id for v in expected_venues}
+        transform_offerer_unique_virtual_venue_to_physical_venue(False)
+        delete_venue_mock.assert_called_once_with(virtual_venue_that_should_be_deleted.id)
+        transform_virtual_venue_to_physical_venue_mock.assert_called_once_with(
+            virtual_venue_that_should_be_transformed, offerer1, dry_run=False
+        )
 
-        for venue in Venue.query.filter(Venue.id.in_(transformed_venue_ids)).all():
-            assert venue.offererAddress
-            assert venue.siret
-            assert not venue.isVirtual
-
-    def test_rollback_changes_for_one_venue_if_error_and_updated_others(self):
-        def assert_updated(venue):
-            assert venue.offererAddress
-            assert venue.siret
-            assert not venue.isVirtual
-
-        def assert_not_updated(venue):
-            assert not venue.offererAddress
-            assert not venue.siret
-            assert venue.isVirtual
-
-        build_address()
-
+    @patch("pcapi.scripts.transform_virtual_venues.main.transform_virtual_venue_to_physical_venue")
+    @pytest.mark.parametrize(
+        "exception,expected_logging_level,expected_message",
+        [
+            (MissingSirenError(), logging.WARNING, "Offerer does not have a SIREN"),
+            (SiretNotActiveOrNotDiffusible(), logging.WARNING, "Siret info cannot be used"),
+            (api_adresse.AdresseApiException(), logging.WARNING, "Failed to found address on BAN API"),
+            (Exception(), logging.ERROR, "Virtual Venue could not be transformed because of unexpected error"),
+        ],
+    )
+    def test_transform_venues(
+        self,
+        transform_virtual_venue_to_physical_venue_mock,
+        caplog,
+        exception,
+        expected_logging_level,
+        expected_message,
+    ):
         # for each offerer:
         # one virtual venue (no more, no less) -> should be updated
         offerer1 = offerers_factories.OffererFactory()
-        offerer2 = offerers_factories.OffererFactory()
-        offerer3 = offerers_factories.OffererFactory()
-        expected_venues = [
-            offerers_factories.VirtualVenueFactory(managingOfferer=offerer1),
-            offerers_factories.VirtualVenueFactory(managingOfferer=offerer2),
-            offerers_factories.VirtualVenueFactory(managingOfferer=offerer3),
-        ]
+        build_address(offerer1)
 
-        original_backend = get_backend()
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer1)
 
-        path = "pcapi.scripts.transform_virtual_venues.main.get_backend"
-        with patch(path) as mock_transform_virtual_venue:
-            # first venue should be updated
-            # second should not because of error
-            # third should be updated
-            mock_transform_virtual_venue.side_effect = [
-                original_backend,
-                RuntimeError("test"),
-                original_backend,
-            ]
+        transform_virtual_venue_to_physical_venue_mock.side_effect = exception
 
-            with pytest.raises(RuntimeError):
-                transform_venues_from_offerers_with_one_unique_virtual_venue(False)
+        with caplog.at_level(expected_logging_level):
+            transform_offerer_unique_virtual_venue_to_physical_venue(False)
 
-            # Assert updated
-            assert_updated(expected_venues[0])
-
-            # Assert not updated
-            assert_not_updated(expected_venues[1])
-            assert_not_updated(expected_venues[2])
+        assert caplog.records[0].message == expected_message

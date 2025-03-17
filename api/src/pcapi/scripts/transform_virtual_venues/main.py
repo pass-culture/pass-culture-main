@@ -8,28 +8,30 @@ Script to transform virtual venues into physical ones, meaning:
 """
 
 import argparse
+import dataclasses
 import logging
-import typing
-from typing import Collection
 
 from flask_sqlalchemy import BaseQuery
-import pydantic.v1 as pydantic_v1
-import sqlalchemy.orm as sa_orm
+import sqlalchemy as sqla
+import sqlalchemy.sql.functions as sqla_func
 
 from pcapi import settings
 from pcapi.connectors import api_adresse
 from pcapi.connectors.entreprise.backends.api_entreprise import EntrepriseBackend
 from pcapi.connectors.entreprise.backends.testing import TestingBackend
-from pcapi.connectors.entreprise.models import SireneAddress
 from pcapi.core.geography.models import Address
 from pcapi.core.geography.repository import search_addresses
 from pcapi.core.offerers.api import LocationData
+from pcapi.core.offerers.api import delete_venue
 from pcapi.core.offerers.api import get_or_create_address
 from pcapi.core.offerers.api import get_or_create_offerer_address
+import pcapi.core.offerers.exceptions as offerers_exceptions
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.flask_app import app
 from pcapi.models import db
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.utils import siren as siren_utils
@@ -40,26 +42,8 @@ logger = logging.getLogger(__name__)
 
 app.app_context().push()
 
-QUERY = """
-select 
-    venue.id
-from
-    venue
-left join (
-    select venue."managingOffererId", count(*) "venue_count" from venue
-    group by venue."managingOffererId"
-) as temp on temp."managingOffererId" = venue."managingOffererId"
-where 
-    temp."venue_count" = 1
-    and venue."isVirtual" = True;
-"""
-
 
 class TransformVirtualVenueError(Exception):
-    pass
-
-
-class NotAVirtualVenue(TransformVirtualVenueError):
     pass
 
 
@@ -67,27 +51,17 @@ class MissingSirenError(TransformVirtualVenueError):
     pass
 
 
-class FetchAddressError(TransformVirtualVenueError):
-    pass
-
-
 class SiretNotActiveOrNotDiffusible(TransformVirtualVenueError):
     pass
 
 
-class SiretInfo(pydantic_v1.BaseModel):
-    if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
-        siret: str
-    else:
-        siret: pydantic_v1.constr(strip_whitespace=True, min_length=14, max_length=14)
-    active: bool
+@dataclasses.dataclass
+class HeadQuarterInfo:
     diffusible: bool
-    name: str | None
-    publicName: str | None
-    address: SireneAddress
-    ape_code: str | None
-    ape_label: str | None = None  # optional, set only from API Entreprise
-    legal_category_code: str
+    active: bool
+    siret: str
+    enseigne: str | None
+    raison_sociale: str | None
 
 
 # pylint: disable=abstract-method
@@ -97,25 +71,19 @@ class EntrepriseWithHeadQuartersBackend(EntrepriseBackend):
     inside the console job.
     """
 
-    def get_head_quarter(self, siren: str) -> SiretInfo:
+    def get_head_quarter(self, siren: str) -> HeadQuarterInfo:
         """
         Documentation: https://entreprise.api.gouv.fr/developpeurs/openapi#tag/Informations-generales/paths/~1v3~1insee~1sirene~1unites_legales~1diffusibles~1%7Bsiren%7D~1siege_social/get
         """
         subpath = f"/v3/insee/sirene/unites_legales/diffusibles/{siren}/siege_social"
         data = self._cached_get(subpath)["data"]
 
-        is_diffusible = self._is_diffusible(data)
-
-        return SiretInfo(
+        return HeadQuarterInfo(
             siret=data["siret"],
+            diffusible=self._is_diffusible(data),
             active=data["etat_administratif"] == "A",
-            diffusible=is_diffusible,
-            name=data["unite_legale"]["personne_morale_attributs"]["raison_sociale"],
-            publicName=data["enseigne"],
-            address=self._get_address_from_sirene_data(data["adresse"]),
-            ape_code=data["activite_principale"]["code"],
-            ape_label=data["activite_principale"]["libelle"],
-            legal_category_code=data["unite_legale"]["forme_juridique"]["code"],
+            enseigne=data["enseigne"],
+            raison_sociale=data["unite_legale"]["personne_morale_attributs"]["raison_sociale"],
         )
 
 
@@ -124,38 +92,28 @@ class EntrepriseWithHeadQuartersTestingBackend(TestingBackend):
     staging and production environments.
     """
 
-    def get_head_quarter(self, siren: str) -> SiretInfo:
+    def get_head_quarter(self, siren: str) -> HeadQuarterInfo:
         assert len(siren) == siren_utils.SIREN_LENGTH
 
         self._check_siren(siren)
         siret = siren + "09876"
 
-        ape_code, ape_label = self._ape_code_and_label(siret)
-
         # allows to get a non-diffusible offerer in dev/testing environments: any SIRET which starts with '9'
         if not self._is_diffusible(siret):
-            return SiretInfo(
+            return HeadQuarterInfo(
                 siret=siret,
-                active=self._is_active(siret),
                 diffusible=False,
-                name="[ND]",
-                publicName="MINISTERE DE LA CULTURE",
-                address=self.nd_address,
-                ape_code=ape_code,
-                ape_label=ape_label,
-                legal_category_code=self._legal_category_code(siret),
+                active=self._is_active(siret),
+                enseigne="[ND] Enseigne",
+                raison_sociale="[ND] Raison sociale",
             )
 
-        return SiretInfo(
+        return HeadQuarterInfo(
             siret=siret,
-            active=self._is_active(siret),
             diffusible=True,
-            name="MINISTERE DE LA CULTURE",
-            publicName="MINISTERE DE LA CULTURE",
-            address=self.address,
-            ape_code=ape_code,
-            ape_label=ape_label,
-            legal_category_code=self._legal_category_code(siret),
+            active=self._is_active(siret),
+            enseigne="Enseigne",
+            raison_sociale="Raison sociale",
         )
 
 
@@ -165,142 +123,163 @@ def get_backend() -> EntrepriseWithHeadQuartersBackend | EntrepriseWithHeadQuart
     return EntrepriseWithHeadQuartersTestingBackend()
 
 
-def venues_from_offerers_with_one_unique_virtual_venue() -> BaseQuery:
-    ids = {row[0] for row in db.session.execute(QUERY)}
-    return Venue.query.filter(Venue.id.in_(ids)).options(sa_orm.joinedload(Venue.managingOfferer))
+def get_head_quarter_info(siren: str) -> HeadQuarterInfo:
+    return get_backend().get_head_quarter(siren)
 
 
-def get_siret(venue: Venue) -> SiretInfo:
-    """Find a venue's siret using its managing offerer's head quarters"""
-    if not venue.managingOfferer.siren:
-        raise MissingSirenError(f"venue #{venue.id}")
+def get_offerer_with_one_virtual_venue_query() -> BaseQuery:
+    sub_query = (
+        sqla.select(sqla_func.count(Venue.id).label("venue_count"), Venue.managingOffererId)
+        .select_from(Venue)
+        .group_by(Venue.managingOffererId)
+        .subquery("sub_venues")
+    )
 
-    siren = venue.managingOfferer.siren[:9]
+    return (
+        Offerer.query.filter(sub_query.c.venue_count == 1, Venue.isVirtual == True)
+        .join(sub_query, sub_query.c.managingOffererId == Offerer.id)
+        .join(Venue, Venue.managingOffererId == Offerer.id)
+    )
 
-    siret_info = get_backend().get_head_quarter(siren)
 
-    return siret_info
-
-
-def get_address(siret_info: SiretInfo) -> Address:
-    """Search address based on siret_info's geographical data.
+def get_address(offerer: Offerer) -> Address:
+    """Search address based on offerer's geographical data.
 
     If nothing is found, use the BAN API and create the missing address.
     """
-    addresses = search_addresses(
-        street=siret_info.address.street, city=siret_info.address.city, postal_code=siret_info.address.postal_code
-    )
+    addresses = search_addresses(street=offerer.street or "", city=offerer.city, postal_code=offerer.postalCode)
 
     if addresses:
         return addresses[0]
 
-    try:
-        ban_address = api_adresse.get_address(
-            address=siret_info.address.street,
-            postcode=siret_info.address.postal_code,
-            city=siret_info.address.city,
-            strict=True,
-        )
-        location_data = LocationData(
-            street=ban_address.street,
-            city=ban_address.city,
-            postal_code=ban_address.postcode,
-            insee_code=ban_address.citycode,
-            latitude=ban_address.latitude,
-            longitude=ban_address.longitude,
-            ban_id=ban_address.id,
-        )
-    except api_adresse.NoResultException:
-        msg = (
-            f"street: '{siret_info.address.street}' / "
-            f"city: '{siret_info.address.city}' / "
-            f"postal code: '{siret_info.address.postal_code}'"
-        )
-        raise FetchAddressError(msg)
+    ban_address = api_adresse.get_address(
+        address=offerer.street,
+        postcode=offerer.postalCode,
+        city=offerer.city,
+        strict=True,
+    )
+    location_data = LocationData(
+        street=ban_address.street,
+        city=ban_address.city,
+        postal_code=ban_address.postcode,
+        insee_code=ban_address.citycode,
+        latitude=ban_address.latitude,
+        longitude=ban_address.longitude,
+        ban_id=ban_address.id,
+    )
 
     return get_or_create_address(location_data=location_data, is_manual_edition=False)
 
 
-@atomic()
-def transform_virtual_venue(venue: Venue, dry_run: bool) -> None:
-    if not venue.isVirtual:
-        raise NotAVirtualVenue(f"venue #{venue.id}")
+def transform_virtual_venue_to_physical_venue(venue: Venue, offerer: Offerer, dry_run: bool) -> None:
+    # Fetching administrative data on the Entreprise API
+    if not offerer.siren:
+        raise MissingSirenError()
 
-    siret_info = get_siret(venue)
+    head_quarter_info = get_head_quarter_info(offerer.siren[:9])
 
-    if not (siret_info.active and siret_info.diffusible):
+    if not (head_quarter_info.active and head_quarter_info.diffusible):
         raise SiretNotActiveOrNotDiffusible()
 
-    address = get_address(siret_info)
-    offerer_address = get_or_create_offerer_address(offerer_id=venue.managingOffererId, address_id=address.id)
+    # Fetching address data
+    address = get_address(offerer)
 
-    venue.siret = siret_info.siret
-    if siret_info.name:
-        venue.name = siret_info.name
-    if siret_info.publicName:
-        venue.publicName = siret_info.publicName
-    venue.isVirtual = False
-    venue.venueTypeCode = VenueTypeCode.ADMINISTRATIVE
     venue.street = address.street  # type: ignore[method-assign]
     venue.departementCode = address.departmentCode
     venue.postalCode = address.postalCode
     venue.city = address.city
     venue.latitude = address.latitude
     venue.longitude = address.longitude
-    venue.offererAddress = offerer_address
+    venue.offererAddress = get_or_create_offerer_address(offerer_id=offerer.id, address_id=address.id)
+    venue.isVirtual = False
+    venue.siret = head_quarter_info.siret
+    venue.venueTypeCode = VenueTypeCode.ADMINISTRATIVE
+    if head_quarter_info.enseigne:
+        venue.publicName = head_quarter_info.enseigne
+    venue.name = head_quarter_info.raison_sociale or offerer.name
 
     db.session.flush()
 
+    logger.info(
+        "Virtual venue transformed to a physical venue",
+        extra={
+            "venue": {
+                "id": venue.id,
+                "siret": head_quarter_info.siret,
+                "name": venue.name,
+                "publicName": venue.publicName,
+            },
+            "address": {
+                "street": address.street,
+                "departmentCode": address.departmentCode,
+                "postalCode": address.postalCode,
+                "city": address.city,
+                "latitude": address.latitude,
+                "longitude": address.longitude,
+            },
+        },
+    )
+
+
+@atomic()
+def transform_or_delete_virtual_venue(venue: Venue, offerer: Offerer, dry_run: bool) -> None:
     if dry_run:
-        mark_transaction_as_invalid()  # to rollback `get_or_create_address` & `get_or_create_offerer_address`
-        logger.info(
-            (
-                "Virtual venue %s would be transformed to a physical venue with following info"
-                "\n - siret: %s"
-                "\n - name: %s"
-                "\n - publicName: %s"
-                "\n - street: %s"
-                "\n - departementCode: %s"
-                "\n - postalCode: %s"
-                "\n - city: %s"
-                "\n - latitude: %s"
-                "\n - longitude: %s"
-            ),
-            venue.id,
-            siret_info.siret,
-            siret_info.name,
-            siret_info.publicName,
-            address.street,
-            address.departmentCode,
-            address.postalCode,
-            address.city,
-            address.latitude,
-            address.longitude,
+        mark_transaction_as_invalid()  # to rollback any transformations
+
+    # Delete venues from offerer that are not valid
+    if offerer.validationStatus not in (ValidationStatus.NEW, ValidationStatus.PENDING, ValidationStatus.VALIDATED):
+        delete_venue(venue.id)
+        logging.info(
+            "Successfully deleted virtual venue", extra={"offererId": venue.managingOffererId, "venueId": venue.id}
+        )
+    else:
+        transform_virtual_venue_to_physical_venue(venue, offerer, dry_run=dry_run)
+        logging.info(
+            "Successfully transformed virtual venue ", extra={"offererId": venue.managingOffererId, "venueId": venue.id}
         )
 
 
-def transform_venues_from_offerers_with_one_unique_virtual_venue(dry_run: bool) -> Collection[int]:
-    def transform_commit_and_log(venue: Venue) -> int | None:
-        logger.info("start venue transformation... %s", venue.id)
+def transform_offerer_unique_virtual_venue_to_physical_venue(dry_run: bool) -> None:
+    query = get_offerer_with_one_virtual_venue_query()
 
+    for offerer in query:
+        venue = Venue.query.filter(Venue.isVirtual == True, Venue.managingOffererId == offerer.id).one()
         try:
-            transform_virtual_venue(venue, dry_run)
+            transform_or_delete_virtual_venue(venue, offerer, dry_run)
+        # DELETE ERROR
+        except offerers_exceptions.CannotDeleteVenueWithBookingsException:
+            logging.warning("Virtual Venue could not be deleted because it has bookings", extra={"venueId": venue.id})
+        # TRANSFORMATION ERRORS
         except MissingSirenError:
-            logging.info("Offerer #%s does not have a SIREN (Venue #%s)", venue.managingOffererId, venue.id)
-            return None
+            logging.warning(
+                "Offerer does not have a SIREN", extra={"offererId": venue.managingOffererId, "venueId": venue.id}
+            )
         except SiretNotActiveOrNotDiffusible:
-            logging.info("Siret info cannot be used for Virtual Venue #%s", venue.id)
-            return None
-        except FetchAddressError as err:
-            logging.info("No address found on BAN API for venue #%s with address info %s", venue.id, err)
-            return None
-
-        logger.info("venue transformation for %s done!", venue.id)
-        return venue.id
-
-    venues = venues_from_offerers_with_one_unique_virtual_venue()
-    ids = [transform_commit_and_log(venue) for venue in venues]
-    return {_id for _id in ids if _id}
+            logging.warning(
+                "Siret info cannot be used", extra={"offererId": venue.managingOffererId, "venueId": venue.id}
+            )
+        except api_adresse.AdresseException as err:
+            logging.warning(
+                "Failed to found address on BAN API",
+                extra={
+                    "venueId": venue.id,
+                    "address": {
+                        "street": offerer.street,
+                        "city": offerer.street,
+                        "postalCode": offerer.postalCode,
+                    },
+                    "exception": {"message": str(err), "class": err.__class__.__name__},
+                },
+            )
+        except Exception as err:  # pylint: disable=broad-exception-caught
+            logging.error(
+                "Virtual Venue could not be transformed because of unexpected error",
+                extra={
+                    "offererId": venue.managingOffererId,
+                    "venueId": venue.id,
+                    "exception": {"message": str(err), "class": err.__class__.__name__},
+                },
+            )
 
 
 if __name__ == "__main__":
@@ -308,4 +287,4 @@ if __name__ == "__main__":
     parser.add_argument("--dry-run", action=argparse.BooleanOptionalAction)
     args = parser.parse_args()
 
-    transform_venues_from_offerers_with_one_unique_virtual_venue(args.dry_run)
+    transform_offerer_unique_virtual_venue_to_physical_venue(args.dry_run)
