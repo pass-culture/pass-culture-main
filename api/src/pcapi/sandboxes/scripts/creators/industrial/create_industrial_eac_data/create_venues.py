@@ -9,6 +9,7 @@ from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.utils import siren as siren_utils
 
 
 VENUE_EDUCATIONAL_STATUS = {
@@ -36,7 +37,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         departementCode="56",
         postalCode="56000",
         city="Lorient",
-        siret="55208131766522",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
     # eac_2
     offerer = next(offerer_iterator)
@@ -51,7 +52,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         departementCode="91",
         postalCode="91000",
         city="CORBEIL-ESSONNES",
-        siret="44460844212351",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
         venueTypeCode=offerers_models.VenueTypeCode.LIBRARY,
     )
     create_venue(
@@ -59,7 +60,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"real_venue 1 {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="44460844212690",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
     )
     # eac_pending_bank_informations
     offerer = next(offerer_iterator)
@@ -70,7 +71,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         adageInscriptionDate=datetime.utcnow() - timedelta(days=30),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="55204695506065",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
 
     # eac_no_cb
@@ -82,7 +83,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         adageInscriptionDate=datetime.utcnow() - timedelta(days=13),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="44478651100022",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
     # eac_rejected
     offerer = next(offerer_iterator)
@@ -92,14 +93,14 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         reimbursement=True,
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="89749229400011",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
     create_venue(
         managingOfferer=offerer,
         name=f"real_venue 1 {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="89749229400326",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
     )
     # DMS venues
     application_id_generator = count(11922836)
@@ -110,7 +111,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="53816052400012",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue,
@@ -131,7 +132,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="53816065600012",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue,
@@ -152,7 +153,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="84308238900019",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue,
@@ -173,7 +174,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="52423735100019",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue,
@@ -194,7 +195,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="53816061500018",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue,
@@ -215,7 +216,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="45650053700018",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
         adageId="98762",
         adageInscriptionDate=datetime.utcnow() - timedelta(days=30),
     )
@@ -238,7 +239,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="84800945200014",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
         adageId="98763",
         adageInscriptionDate=datetime.utcnow(),
     )
@@ -261,7 +262,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="84817150000384",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue_with_accepted_dms_status,
@@ -280,7 +281,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"rejected_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="84817150000632",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue_with_rejected_dms_status,
@@ -302,7 +303,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"Lieu {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="95651314700192",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
         adageId="98764",
     )
 
@@ -313,7 +314,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="95651315000384",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue_with_accepted_dms_status,
@@ -328,7 +329,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         state="accepte",
     )
     educational_factories.CollectiveDmsApplicationWithNoVenueFactory(
-        siret="95651315000387",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
         application=next(application_id_generator),
         procedure=57189,
         lastChangeDate=datetime.fromisoformat("2023-03-25T16:08:35+01:00"),
@@ -352,7 +353,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         departementCode="57",
         postalCode="57000",
         city="Lorient",
-        siret="55208131766523",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
         pricing_point="self",
     )
     create_venue(
@@ -366,7 +367,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         departementCode="57",
         postalCode="57000",
         city="Lorient",
-        siret="55208131766524",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
         pricing_point="self",
     )
     # eac_with_addresses_cases
@@ -382,7 +383,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         departementCode="57",
         postalCode="57000",
         city="Lorient",
-        siret="55208131766525",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
         pricing_point="self",
     )
     create_venue(
@@ -396,7 +397,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         departementCode="57",
         postalCode="57000",
         city="Lorient",
-        siret="55208131766526",
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
         pricing_point="self",
     )
 
