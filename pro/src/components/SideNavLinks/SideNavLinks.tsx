@@ -25,7 +25,6 @@ import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeHomeIcon from 'icons/stroke-home.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
-import { getSavedVenueId } from 'pages/Homepage/components/Offerers/components/PartnerPages/PartnerPages'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -55,15 +54,19 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY
   )
 
-  const { data: selectedOfferer, error: offererApiError } = useOfferer(selectedOffererId, true)
+  const { data: selectedOfferer, error: offererApiError } = useOfferer(
+    selectedOffererId,
+    true
+  )
   const isUserOffererValidated = !offererApiError
 
   const permanentVenues =
     selectedOfferer?.managedVenues?.filter((venue) => venue.isPermanent) ?? []
-
-  const venueId =
-    getSavedVenueId(selectedOfferer?.managedVenues ?? []) ??
-    permanentVenues[0]?.id
+  const hasPartnerPageVenues =
+    selectedOfferer?.managedVenues?.filter((venue) => venue.hasPartnerPage) ??
+    []
+  const venueId = permanentVenues[0]?.id
+  const firstPartnerPageVenueId = hasPartnerPageVenues[0]?.id
 
   useEffect(() => {
     if (sideNavCollapseSize) {
@@ -186,10 +189,10 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   </span>
                 </NavLink>
               </li>
-              {selectedOfferer?.hasPartnerPage && venueId && (
+              {firstPartnerPageVenueId && (
                 <li>
                   <NavLink
-                    to={`/structures/${offererId}/lieux/${venueId}`}
+                    to={`/structures/${offererId}/lieux/${firstPartnerPageVenueId}/page-partenaire`}
                     className={({ isActive }) =>
                       classnames(styles['nav-links-item'], {
                         [styles['nav-links-item-active']]: isActive,

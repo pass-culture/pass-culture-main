@@ -6,6 +6,7 @@ import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { OpeningHoursReadOnly } from 'pages/VenueEdition/OpeningHoursReadOnly/OpeningHoursReadOnly'
 
 import { AccessibilityReadOnly } from './AccessibilityReadOnly/AccessibilityReadOnly'
+import { getPathToNavigateTo } from './context'
 
 interface VenueEditionReadOnlyProps {
   venue: GetVenueResponseModel
@@ -27,7 +28,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
   return (
     <SummarySection
       title="Vos informations pour le grand public"
-      editLink={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/edition`}
+      editLink={getPathToNavigateTo(venue.managingOfferer.id, venue.id, true)}
     >
       <SummarySubSection
         title="À propos de votre activité"

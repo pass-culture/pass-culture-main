@@ -8,7 +8,6 @@ import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
 import { updateUser } from 'commons/store/user/reducer'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { storageAvailable } from 'commons/utils/storageAvailable'
-import { SAVED_VENUE_ID_KEY } from 'pages/Homepage/components/Offerers/components/PartnerPages/PartnerPages'
 
 export const useRedirectLoggedUser = () => {
   const navigate = useNavigate()
@@ -42,7 +41,6 @@ export const useRedirectLoggedUser = () => {
       // Reset the user and selected offerer to prevent issues when connecting
       if (storageAvailable('localStorage')) {
         localStorage.removeItem(SAVED_OFFERER_ID_KEY)
-        localStorage.removeItem(SAVED_VENUE_ID_KEY)
       }
       dispatch(updateUser(null))
       dispatch(updateSelectedOffererId(null))
