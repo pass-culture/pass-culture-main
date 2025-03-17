@@ -127,9 +127,7 @@ export const SignupForm = (): JSX.Element => {
               })}
               error={errors.phoneNumber?.message}
               name="phoneNumber"
-              label={
-                'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
-              }
+              label={'Téléphone (utilisé uniquement par le pass Culture)'}
               required
             />
           </FormLayout.Row>
