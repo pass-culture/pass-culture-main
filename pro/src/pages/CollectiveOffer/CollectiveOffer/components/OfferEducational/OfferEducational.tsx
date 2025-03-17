@@ -70,7 +70,6 @@ export const OfferEducational = ({
   domainsOptions,
   nationalPrograms,
   mode,
-  isOfferBooked = false,
   isTemplate,
 }: OfferEducationalProps): JSX.Element => {
   const notify = useNotification()
@@ -202,7 +201,6 @@ export const OfferEducational = ({
       {offer && (
         <OfferEducationalActions
           className={styles.actions}
-          isBooked={isOfferBooked}
           offer={offer}
           mode={mode}
         />

@@ -284,7 +284,7 @@ describe('ollectiveOfferRow', () => {
       booking: { id: 1, booking_status: CollectiveBookingStatus.PENDING },
     })
 
-    renderOfferItem(props, { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] })
+    renderOfferItem(props)
 
     const bookingLink = screen.getByRole('link', {
       name: 'Voir la préréservation',
@@ -365,7 +365,7 @@ describe('ollectiveOfferRow', () => {
       booking: { booking_status: CollectiveBookingStatus.PENDING, id: 1 },
       allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
     })
-    renderOfferItem(props, { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] })
+    renderOfferItem(props)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Voir les actions' })
@@ -406,7 +406,7 @@ describe('ollectiveOfferRow', () => {
       )
     )
 
-    renderOfferItem(props, { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] })
+    renderOfferItem(props)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Voir les actions' })

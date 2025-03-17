@@ -115,7 +115,7 @@ describe('CollectiveEditionOfferNavigation', () => {
 
     props = {
       activeStep: CollectiveOfferStep.DETAILS,
-      offerId: offerId,
+      offerId,
       isTemplate: false,
       offer: getCollectiveOfferFactory(),
     }
@@ -157,20 +157,17 @@ describe('CollectiveEditionOfferNavigation', () => {
     expect(duplicateOfferButton).toBeInTheDocument()
   })
 
-  it('should show create bookable offer if offer is template and ff is active', () => {
-    renderCollectiveEditingOfferNavigation(
-      {
-        ...props,
-        isTemplate: true,
-        offer: {
-          ...offer,
-          allowedActions: [
-            CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
-          ],
-        },
+  it('should show create bookable offer when CAN_CREATE_BOOKABLE_OFFER is allowed', () => {
+    renderCollectiveEditingOfferNavigation({
+      ...props,
+      isTemplate: true,
+      offer: {
+        ...offer,
+        allowedActions: [
+          CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+        ],
       },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
+    })
 
     const duplicateOffer = screen.getByRole('button', {
       name: 'Créer une offre réservable',
@@ -179,17 +176,14 @@ describe('CollectiveEditionOfferNavigation', () => {
     expect(duplicateOffer).toBeInTheDocument()
   })
 
-  it('should show duplicate button if offer is bookable and ff is active', () => {
-    renderCollectiveEditingOfferNavigation(
-      {
-        ...props,
-        isTemplate: false,
-        offer: getCollectiveOfferFactory({
-          allowedActions: [CollectiveOfferAllowedAction.CAN_DUPLICATE],
-        }),
-      },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
+  it('should show duplicate button when CAN_DUPLICATE is allowed', () => {
+    renderCollectiveEditingOfferNavigation({
+      ...props,
+      isTemplate: false,
+      offer: getCollectiveOfferFactory({
+        allowedActions: [CollectiveOfferAllowedAction.CAN_DUPLICATE],
+      }),
+    })
 
     const duplicateOffer = screen.getByRole('button', {
       name: 'Dupliquer',
@@ -316,18 +310,15 @@ describe('CollectiveEditionOfferNavigation', () => {
     expect(archiveButton).not.toBeInTheDocument()
   })
 
-  it('should not see archive button when FF status is enable and archive action is not possible', () => {
-    renderCollectiveEditingOfferNavigation(
-      {
-        ...props,
-        isTemplate: true,
-        offer: {
-          ...offer,
-          allowedActions: [],
-        },
+  it('should not see archive button archive action is not possible', () => {
+    renderCollectiveEditingOfferNavigation({
+      ...props,
+      isTemplate: true,
+      offer: {
+        ...offer,
+        allowedActions: [],
       },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
+    })
 
     const archiveButton = screen.queryByRole('button', {
       name: 'Archiver',
@@ -336,18 +327,15 @@ describe('CollectiveEditionOfferNavigation', () => {
     expect(archiveButton).not.to.toBeInTheDocument()
   })
 
-  it('should see archive button when FF status is enable and archive action is possible for template offer', () => {
-    renderCollectiveEditingOfferNavigation(
-      {
-        ...props,
-        isTemplate: true,
-        offer: {
-          ...offer,
-          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
-        },
+  it('should see archive button when archive action is allowed', () => {
+    renderCollectiveEditingOfferNavigation({
+      ...props,
+      isTemplate: true,
+      offer: {
+        ...offer,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
       },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
+    })
 
     const archiveButton = screen.getByRole('button', {
       name: 'Archiver',
@@ -356,17 +344,14 @@ describe('CollectiveEditionOfferNavigation', () => {
     expect(archiveButton).toBeInTheDocument()
   })
 
-  it('should see archive button when FF status is enable and archive action is possible for bookable offer', () => {
-    renderCollectiveEditingOfferNavigation(
-      {
-        ...props,
-        isTemplate: false,
-        offer: getCollectiveOfferFactory({
-          allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
-        }),
-      },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
+  it('should see archive button on bookable offer archive action is allowed', () => {
+    renderCollectiveEditingOfferNavigation({
+      ...props,
+      isTemplate: false,
+      offer: getCollectiveOfferFactory({
+        allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
+      }),
+    })
 
     const archiveButton = screen.getByRole('button', {
       name: 'Archiver',

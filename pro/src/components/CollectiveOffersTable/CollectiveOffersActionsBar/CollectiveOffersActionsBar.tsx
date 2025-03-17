@@ -20,7 +20,6 @@ import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
-import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
 import { computeActivationSuccessMessage } from 'components/OffersTable/utils/computeActivationSuccessMessage'
 import { computeSelectedOffersLabel } from 'components/OffersTable/utils/computeSelectedOffersLabel'
 import fullHideIcon from 'icons/full-hide.svg'
@@ -44,18 +43,6 @@ const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
       ? 'offres ont bien été mises en pause'
       : 'offre a bien été mise en pause'
   return `${nbSelectedOffers} ${successMessage}`
-}
-
-function canDeactivateCollectiveOffers(offers: CollectiveOfferResponseModel[]) {
-  return offers.every((offer) => {
-    //  Check that all the offers are published or expired
-    return (
-      offer.status === CollectiveOfferStatus.ACTIVE ||
-      (offer.status === CollectiveOfferStatus.EXPIRED &&
-        (!offer.booking?.booking_status ||
-          offer.booking.booking_status === CollectiveBookingStatus.CANCELLED))
-    )
-  })
 }
 
 const toggleCollectiveOffersActiveInactiveStatus = async (
@@ -121,9 +108,6 @@ export function CollectiveOffersActionsBar({
 
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
-  )
-  const areNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
 
   const { mutate } = useSWRConfig()
@@ -211,14 +195,12 @@ export function CollectiveOffersActionsBar({
 
   function openArchiveOffersDialog() {
     const archivableOffers = selectedOffers.filter((offer) => {
-      return areNewStatusesEnabled
-        ? isActionAllowedOnCollectiveOffer(
-            offer,
-            offer.isShowcase
-              ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
-              : CollectiveOfferAllowedAction.CAN_ARCHIVE
-          )
-        : canArchiveCollectiveOffer(offer)
+      return isActionAllowedOnCollectiveOffer(
+        offer,
+        offer.isShowcase
+          ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
+          : CollectiveOfferAllowedAction.CAN_ARCHIVE
+      )
     })
     if (archivableOffers.length < selectedOffers.length) {
       notify.error(
@@ -228,17 +210,6 @@ export function CollectiveOffersActionsBar({
     } else {
       setIsArchiveDialogOpen(true)
     }
-  }
-
-  function openDeactivateOffersDialog() {
-    if (!canDeactivateCollectiveOffers(selectedOffers)) {
-      notify.error(
-        `Seules les offres au statut publié ou expiré peuvent être masquées.`
-      )
-      clearSelectedOfferIds()
-      return
-    }
-    setIsDeactivationDialogOpen(true)
   }
 
   function openHideOffersDialog() {
@@ -382,22 +353,14 @@ export function CollectiveOffersActionsBar({
             Archiver
           </Button>
           <Button
-            onClick={
-              areNewStatusesEnabled
-                ? openHideOffersDialog
-                : openDeactivateOffersDialog
-            }
+            onClick={openHideOffersDialog}
             icon={fullHideIcon}
             variant={ButtonVariant.SECONDARY}
           >
             Mettre en pause
           </Button>
           <Button
-            onClick={() =>
-              areNewStatusesEnabled
-                ? publishOffers()
-                : updateOfferStatus(CollectiveOfferDisplayedStatus.ACTIVE)
-            }
+            onClick={publishOffers}
             icon={fullValidateIcon}
             variant={ButtonVariant.SECONDARY}
           >

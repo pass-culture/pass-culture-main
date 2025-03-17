@@ -1,6 +1,5 @@
 import {
   CollectiveOfferAllowedAction,
-  CollectiveOfferStatus,
   CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -9,7 +8,6 @@ import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
 } from 'commons/core/OfferEducational/types'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { SynchronizedProviderInformation } from 'components/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
@@ -45,40 +43,24 @@ export const CollectiveOfferSummary = ({
   stockEditLink,
   visibilityEditLink,
 }: CollectiveOfferSummaryProps) => {
-  const offerManuallyCreated = isCollectiveOffer(offer) && !offer.isPublicApi
-
-  const areNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
-  )
-
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
-  const canEditOfferWithoutStatusFF =
-    offer.status !== CollectiveOfferStatus.ARCHIVED &&
-    (offerManuallyCreated || offer.isTemplate)
+  const canEditDetails = isActionAllowedOnCollectiveOffer(
+    offer,
+    offer.isTemplate
+      ? CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
+      : CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+  )
 
-  const canEditDetails = areNewStatusesEnabled
-    ? isActionAllowedOnCollectiveOffer(
-        offer,
-        offer.isTemplate
-          ? CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
-          : CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
-      )
-    : canEditOfferWithoutStatusFF
+  const canEditDatesAndPrice = [
+    CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+    CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+  ].some((action) => isActionAllowedOnCollectiveOffer(offer, action))
 
-  const canEditDatesAndPrice = areNewStatusesEnabled
-    ? [
-        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
-        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
-      ].some((action) => isActionAllowedOnCollectiveOffer(offer, action))
-    : canEditOfferWithoutStatusFF
-
-  const canEditInstitution = areNewStatusesEnabled
-    ? isActionAllowedOnCollectiveOffer(
-        offer,
-        CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION
-      )
-    : canEditOfferWithoutStatusFF
+  const canEditInstitution = isActionAllowedOnCollectiveOffer(
+    offer,
+    CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION
+  )
 
   return (
     <>

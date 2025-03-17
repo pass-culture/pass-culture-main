@@ -12,7 +12,6 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
-  CollectiveOfferStatus,
   CollectiveOfferTemplateAllowedAction,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -38,7 +37,6 @@ import {
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
-import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
 import fullClearIcon from 'icons/full-clear.svg'
@@ -108,9 +106,6 @@ export const CollectiveActionsCells = ({
 
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
-  )
-  const areCollectiveNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
@@ -259,70 +254,41 @@ export const CollectiveActionsCells = ({
     })
   }
 
-  const canDuplicateOffer = areCollectiveNewStatusesEnabled
-    ? isActionAllowedOnCollectiveOffer(
-        offer,
-        CollectiveOfferAllowedAction.CAN_DUPLICATE
-      )
-    : offer.displayedStatus !== CollectiveOfferDisplayedStatus.DRAFT
+  const canDuplicateOffer = isActionAllowedOnCollectiveOffer(
+    offer,
+    CollectiveOfferAllowedAction.CAN_DUPLICATE
+  )
 
-  const canCreateBookableOffer = areCollectiveNewStatusesEnabled
-    ? isActionAllowedOnCollectiveOffer(
-        offer,
-        CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
-      )
-    : offer.isShowcase &&
-      ![
-        CollectiveOfferDisplayedStatus.DRAFT,
-        CollectiveOfferDisplayedStatus.PENDING,
-      ].includes(offer.displayedStatus)
+  const canCreateBookableOffer = isActionAllowedOnCollectiveOffer(
+    offer,
+    CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
+  )
 
-  const canArchiveOffer = areCollectiveNewStatusesEnabled
-    ? isActionAllowedOnCollectiveOffer(
-        offer,
-        offer.isShowcase
-          ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
-          : CollectiveOfferAllowedAction.CAN_ARCHIVE
-      )
-    : canArchiveCollectiveOffer(offer)
+  const canArchiveOffer = isActionAllowedOnCollectiveOffer(
+    offer,
+    offer.isShowcase
+      ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
+      : CollectiveOfferAllowedAction.CAN_ARCHIVE
+  )
 
-  const canPublishOffer = areCollectiveNewStatusesEnabled
-    ? isActionAllowedOnCollectiveOffer(
-        offer,
-        CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
-      )
-    : false
+  const canPublishOffer = isActionAllowedOnCollectiveOffer(
+    offer,
+    CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
+  )
 
-  const canHideOffer = areCollectiveNewStatusesEnabled
-    ? isActionAllowedOnCollectiveOffer(
-        offer,
-        CollectiveOfferTemplateAllowedAction.CAN_HIDE
-      )
-    : false
+  const canHideOffer = isActionAllowedOnCollectiveOffer(
+    offer,
+    CollectiveOfferTemplateAllowedAction.CAN_HIDE
+  )
 
-  const noActionsAllowed = areCollectiveNewStatusesEnabled
-    ? offer.allowedActions.length === 0
-    : offer.isShowcase &&
-      [
-        CollectiveOfferDisplayedStatus.ARCHIVED,
-        CollectiveOfferDisplayedStatus.PENDING,
-      ].includes(offer.displayedStatus)
+  const noActionsAllowed = offer.allowedActions.length === 0
 
-  const canEditOffer = areCollectiveNewStatusesEnabled
-    ? hasOfferAnyEditionActionAllowed(offer)
-    : offer.isEditable &&
-      !offer.isPublicApi &&
-      offer.status !== CollectiveOfferStatus.ARCHIVED
+  const canEditOffer = hasOfferAnyEditionActionAllowed(offer)
 
-  const isBookingCancellable = areCollectiveNewStatusesEnabled
-    ? isActionAllowedOnCollectiveOffer(
-        offer,
-        CollectiveOfferAllowedAction.CAN_CANCEL
-      )
-    : offer.status === CollectiveOfferStatus.SOLD_OUT &&
-      offer.booking &&
-      (offer.booking.booking_status === CollectiveBookingStatus.PENDING ||
-        offer.booking.booking_status === CollectiveBookingStatus.CONFIRMED)
+  const isBookingCancellable = isActionAllowedOnCollectiveOffer(
+    offer,
+    CollectiveOfferAllowedAction.CAN_CANCEL
+  )
 
   const activateOffer = async () => {
     const { isActive, id } = offer

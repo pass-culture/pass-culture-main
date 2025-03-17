@@ -61,7 +61,6 @@ const renderOfferEducationalActions = (
 describe('OfferEducationalActions', () => {
   const defaultValues = {
     className: 'string',
-    isBooked: false,
     offer: getCollectiveOfferFactory(),
     mode: Mode.EDITION,
   }
@@ -130,7 +129,7 @@ describe('OfferEducationalActions', () => {
   })
 
   it('should display actions button and status tag by default', () => {
-    renderOfferEducationalActions({ ...defaultValues, isBooked: false })
+    renderOfferEducationalActions({ ...defaultValues })
     expect(
       screen.getByRole('button', { name: 'Masquer la publication sur ADAGE' })
     ).toBeInTheDocument()
@@ -281,18 +280,15 @@ describe('OfferEducationalActions', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should display adage publish button if action is allowed', async () => {
-    renderOfferEducationalActions(
-      {
-        ...defaultValues,
-        offer: getCollectiveOfferTemplateFactory({
-          isTemplate: true,
-          status: CollectiveOfferStatus.INACTIVE,
-          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
-        }),
-      },
-      ['ENABLE_COLLECTIVE_NEW_STATUSES']
-    )
+  it('should display adage publish button when action is allowed', async () => {
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: getCollectiveOfferTemplateFactory({
+        isTemplate: true,
+        status: CollectiveOfferStatus.INACTIVE,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
+      }),
+    })
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -305,18 +301,15 @@ describe('OfferEducationalActions', () => {
     )
   })
 
-  it('should display adage pause button if action is allowed', async () => {
-    renderOfferEducationalActions(
-      {
-        ...defaultValues,
-        offer: getCollectiveOfferTemplateFactory({
-          isTemplate: true,
-          status: CollectiveOfferStatus.ACTIVE,
-          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
-        }),
-      },
-      ['ENABLE_COLLECTIVE_NEW_STATUSES']
-    )
+  it('should display adage pause button when action is allowed', async () => {
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: getCollectiveOfferTemplateFactory({
+        isTemplate: true,
+        status: CollectiveOfferStatus.ACTIVE,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
+      }),
+    })
 
     await userEvent.click(
       screen.getByRole('button', {

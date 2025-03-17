@@ -60,7 +60,7 @@ export const ArchiveConfirmationModal = ({
       onConfirm={onConfirmArchive}
       cancelText="Annuler"
       confirmText={
-        hasMultipleOffers ? 'Archiver les offres ' : 'Archiver l’offre'
+        hasMultipleOffers ? 'Archiver les offres' : 'Archiver l’offre'
       }
       icon={strokeThingIcon}
       title={

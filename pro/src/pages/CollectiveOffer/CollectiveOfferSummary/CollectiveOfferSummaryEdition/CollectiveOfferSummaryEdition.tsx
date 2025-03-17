@@ -2,10 +2,7 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
-import {
-  Mode,
-  isCollectiveOfferTemplate,
-} from 'commons/core/OfferEducational/types'
+import { Mode } from 'commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
@@ -47,11 +44,6 @@ export const CollectiveOfferSummaryEdition = ({
     >
       <OfferEducationalActions
         className={styles.actions}
-        isBooked={
-          isCollectiveOfferTemplate(offer)
-            ? false
-            : Boolean(offer.collectiveStock?.isBooked)
-        }
         offer={offer}
         mode={Mode.EDITION}
       />

@@ -16,7 +16,6 @@ import {
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { SelectOption } from 'commons/custom_types/form'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { sortByLabel } from 'commons/utils/strings'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
@@ -82,19 +81,14 @@ export const OfferEducationalForm = ({
 
   const { data: selectedOfferer } = useOfferer(userOfferer?.id)
 
-  const areCollectiveNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
-  )
-
   const canEditDetails =
-    areCollectiveNewStatusesEnabled && offer
-      ? isActionAllowedOnCollectiveOffer(
-          offer,
-          isCollectiveOffer(offer)
-            ? CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
-            : CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
-        )
-      : mode !== Mode.READ_ONLY
+    !offer ||
+    isActionAllowedOnCollectiveOffer(
+      offer,
+      isCollectiveOffer(offer)
+        ? CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+        : CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
+    )
 
   useEffect(() => {
     async function handleOffererValues() {
@@ -169,7 +163,7 @@ export const OfferEducationalForm = ({
                 offer={offer}
               />
             )}
-            {values.offererId && values.venueId  && isEligible ? (
+            {values.offererId && values.venueId && isEligible ? (
               <>
                 <FormOfferType
                   domainsOptions={domainsOptions}

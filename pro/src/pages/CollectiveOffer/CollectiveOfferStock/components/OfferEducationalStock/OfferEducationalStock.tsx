@@ -1,5 +1,5 @@
 /* @debt standard "Gautier: Do not load internal page dependencies"*/
-import { addDays, isAfter, isBefore } from 'date-fns'
+import { addDays, isBefore } from 'date-fns'
 import { FormikProvider, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
 import * as yup from 'yup'
@@ -16,10 +16,8 @@ import {
   isCollectiveOffer,
   Mode,
   EducationalOfferType,
-  isCollectiveOfferTemplate,
 } from 'commons/core/OfferEducational/types'
 import { NBSP } from 'commons/core/shared/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isDateValid } from 'commons/utils/date'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
@@ -81,33 +79,15 @@ export const OfferEducationalStock = <
           isBefore(new Date(), addDays(new Date(startDatetime), 2))))
   )
 
-  const disablePriceAndParticipantInputs =
-    isCollectiveOffer(offer) &&
-    mode === Mode.READ_ONLY &&
-    Boolean(
-      offer.lastBookingStatus === CollectiveBookingStatus.REIMBURSED ||
-        (offer.lastBookingStatus === CollectiveBookingStatus.USED &&
-          startDatetime &&
-          isAfter(new Date(), addDays(new Date(startDatetime), 2)))
-    )
-
-  const areCollectiveNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  const canEditDiscount = isActionAllowedOnCollectiveOffer(
+    offer,
+    CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
   )
 
-  const canEditDiscount = areCollectiveNewStatusesEnabled
-    ? isActionAllowedOnCollectiveOffer(
-        offer,
-        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
-      )
-    : !disablePriceAndParticipantInputs
-
-  const canEditDates = areCollectiveNewStatusesEnabled
-    ? isActionAllowedOnCollectiveOffer(
-        offer,
-        CollectiveOfferAllowedAction.CAN_EDIT_DATES
-      )
-    : mode !== Mode.READ_ONLY
+  const canEditDates = isActionAllowedOnCollectiveOffer(
+    offer,
+    CollectiveOfferAllowedAction.CAN_EDIT_DATES
+  )
 
   const postForm = async (values: OfferEducationalStockFormValues) => {
     setIsLoading(true)
@@ -142,11 +122,6 @@ export const OfferEducationalStock = <
     <>
       <OfferEducationalActions
         className={styles.actions}
-        isBooked={
-          isCollectiveOfferTemplate(offer)
-            ? false
-            : Boolean(offer.collectiveStock?.isBooked)
-        }
         offer={offer}
         mode={mode}
       />
@@ -252,11 +227,7 @@ export const OfferEducationalStock = <
               <ActionsBarSticky.Right dirtyForm={dirty} mode={mode}>
                 <Button
                   type="submit"
-                  disabled={
-                    areCollectiveNewStatusesEnabled
-                      ? !(canEditDiscount || canEditDates)
-                      : disablePriceAndParticipantInputs
-                  }
+                  disabled={!(canEditDiscount || canEditDates)}
                   isLoading={isLoading}
                 >
                   Enregistrer et continuer

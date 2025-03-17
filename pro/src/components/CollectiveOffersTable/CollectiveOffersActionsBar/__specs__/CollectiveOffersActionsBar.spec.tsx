@@ -505,28 +505,25 @@ describe('ActionsBar', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not archive offers on click on "Archiver" when at least one offer cannot be archived and ff is active', async () => {
-    renderActionsBar(
-      {
-        ...props,
+  it('should not archive offers on click on "Archiver" when at least one offer cannot be archived', async () => {
+    renderActionsBar({
+      ...props,
 
-        selectedOffers: [
-          collectiveOfferFactory({
-            id: 1,
-            status: CollectiveOfferStatus.ACTIVE,
-            stocks,
-            allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
-          }),
-          collectiveOfferFactory({
-            id: 2,
-            status: CollectiveOfferStatus.PENDING,
-            stocks,
-            allowedActions: [],
-          }),
-        ],
-      },
-      ['ENABLE_COLLECTIVE_NEW_STATUSES']
-    )
+      selectedOffers: [
+        collectiveOfferFactory({
+          id: 1,
+          status: CollectiveOfferStatus.ACTIVE,
+          stocks,
+          allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
+        }),
+        collectiveOfferFactory({
+          id: 2,
+          status: CollectiveOfferStatus.PENDING,
+          stocks,
+          allowedActions: [],
+        }),
+      ],
+    })
 
     const archivingButton = screen.getByText('Archiver')
     await userEvent.click(archivingButton)
@@ -602,22 +599,19 @@ describe('ActionsBar', () => {
     )
   })
 
-  it('should display new wording and allowedAction when the FF ENABLE_COLLECTIVE_NEW_STATUSES is enabled ', async () => {
-    renderActionsBar(
-      {
-        ...props,
-        areTemplateOffers: true,
-        selectedOffers: [
-          collectiveOfferFactory({
-            isShowcase: true,
-            status: CollectiveOfferStatus.INACTIVE,
-            hasBookingLimitDatetimesPassed: false,
-            allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
-          }),
-        ],
-      },
-      ['ENABLE_COLLECTIVE_NEW_STATUSES']
-    )
+  it('should publish offer when action is allowed ', async () => {
+    renderActionsBar({
+      ...props,
+      areTemplateOffers: true,
+      selectedOffers: [
+        collectiveOfferFactory({
+          isShowcase: true,
+          status: CollectiveOfferStatus.INACTIVE,
+          hasBookingLimitDatetimesPassed: false,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
+        }),
+      ],
+    })
 
     await userEvent.click(screen.getByText('Publier'))
 
@@ -628,22 +622,19 @@ describe('ActionsBar', () => {
     expect(screen.getByText('1 offre a bien été publiée')).toBeInTheDocument()
   })
 
-  it('should display error message when trying to publish offer bookable when the FF ENABLE_COLLECTIVE_NEW_STATUSES is enabled', async () => {
-    renderActionsBar(
-      {
-        ...props,
-        areTemplateOffers: true,
-        selectedOffers: [
-          collectiveOfferFactory({
-            isShowcase: false,
-            status: CollectiveOfferStatus.INACTIVE,
-            hasBookingLimitDatetimesPassed: false,
-            allowedActions: [],
-          }),
-        ],
-      },
-      ['ENABLE_COLLECTIVE_NEW_STATUSES']
-    )
+  it('should display error message when trying to publish bookable offer', async () => {
+    renderActionsBar({
+      ...props,
+      areTemplateOffers: true,
+      selectedOffers: [
+        collectiveOfferFactory({
+          isShowcase: false,
+          status: CollectiveOfferStatus.INACTIVE,
+          hasBookingLimitDatetimesPassed: false,
+          allowedActions: [],
+        }),
+      ],
+    })
 
     await userEvent.click(screen.getByText('Publier'))
 
