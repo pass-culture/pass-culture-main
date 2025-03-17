@@ -61,9 +61,7 @@ export const ActivityForm = ({
         <FormLayout.Row>
           <PhoneNumberInput
             name="phoneNumber"
-            label={
-              'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
-            }
+            label={'Téléphone (utilisé uniquement par le pass Culture)'}
           />
         </FormLayout.Row>
       )}
