@@ -97,7 +97,7 @@ def activate_beneficiary_for_eligibility(
             eligibility=eligibility,
             age_at_registration=age_at_registration,
         )
-        add_eligibility_role(user, eligibility)
+        add_eligibility_role(user, eligibility_api.get_activated_eligibility(deposit.type))
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit.source})
 
     transactional_mails.send_accepted_as_beneficiary_email(user=user)
