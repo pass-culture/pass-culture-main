@@ -22,23 +22,23 @@ class CreateOffer(SchemasBaseModel):
     motor_disability_compliant: bool
     visual_disability_compliant: bool
 
-    booking_contact: EmailStr | None = None
-    booking_email: EmailStr | None = None
-    description: str | None = None
-    duration_minutes: int | None = None
-    external_ticket_office_url: HttpUrl | None = None
-    extra_data: typing.Any = None
-    id_at_provider: str | None = None
-    is_duo: bool | None = None
-    url: HttpUrl | None = None
-    withdrawal_delay: int | None = None
-    withdrawal_details: str | None = None
-    withdrawal_type: offers_models.WithdrawalTypeEnum | None = None
+    booking_contact: EmailStr | None
+    booking_email: EmailStr | None
+    description: str | None
+    duration_minutes: int | None
+    external_ticket_office_url: HttpUrl | None
+    extra_data: typing.Any
+    id_at_provider: str | None
+    is_duo: bool | None
+    url: HttpUrl | None
+    withdrawal_delay: int | None
+    withdrawal_details: str | None
+    withdrawal_type: offers_models.WithdrawalTypeEnum | None
 
     # is_national must be placed after url so that the validator
     # can access the url field in the dict of values
     # (which contains only previously validated fields)
-    is_national: bool | None = None
+    is_national: bool | None
 
     @validator("is_duo")
     def validate_is_duo(cls, is_duo: bool | None) -> bool:
@@ -59,10 +59,10 @@ class CreateDraftOffer(SchemasBaseModel):
     name: str
     subcategory_id: str
     venue_id: int
-    description: str | None = None
-    url: HttpUrl | None = None
-    extra_data: typing.Any = None
-    duration_minutes: int | None = None
+    description: str | None
+    url: HttpUrl | None
+    extra_data: typing.Any
+    duration_minutes: int | None
     product_id: int | None
 
     @validator("name", pre=True)
@@ -77,35 +77,35 @@ class CreateDraftOffer(SchemasBaseModel):
 
 
 class UpdateOffer(SchemasBaseModel):
-    name: str | None = None
-    audio_disability_compliant: bool | None = None
-    mental_disability_compliant: bool | None = None
-    motor_disability_compliant: bool | None = None
-    visual_disability_compliant: bool | None = None
+    name: str | None
+    audio_disability_compliant: bool | None
+    mental_disability_compliant: bool | None
+    motor_disability_compliant: bool | None
+    visual_disability_compliant: bool | None
 
-    address: offerers_schemas.AddressBodyModel | None = None
-    booking_contact: EmailStr | None = None
-    booking_email: EmailStr | None = None
-    description: str | None = None
-    duration_minutes: int | None = None
-    external_ticket_office_url: HttpUrl | None = None
-    extra_data: typing.Any = None
-    id_at_provider: str | None = None
-    is_duo: bool | None = None
+    address: offerers_schemas.AddressBodyModel | None
+    booking_contact: EmailStr | None
+    booking_email: EmailStr | None
+    description: str | None
+    duration_minutes: int | None
+    external_ticket_office_url: HttpUrl | None
+    extra_data: typing.Any
+    id_at_provider: str | None
+    is_duo: bool | None
     offerer_address: offerers_models.OffererAddress | None
-    url: HttpUrl | None = None
-    withdrawal_delay: int | None = None
-    withdrawal_details: str | None = None
-    withdrawal_type: offers_models.WithdrawalTypeEnum | None = None
+    url: HttpUrl | None
+    withdrawal_delay: int | None
+    withdrawal_details: str | None
+    withdrawal_type: offers_models.WithdrawalTypeEnum | None
 
-    is_active: bool | None = None
+    is_active: bool | None
 
     # is_national must be placed after url so that the validator
     # can access the url field in the dict of values
     # (which contains only previously validated fields)
-    is_national: bool | None = None
+    is_national: bool | None
 
-    should_send_mail: bool | None = None
+    should_send_mail: bool | None
 
     @validator("is_duo")
     def validate_is_duo(cls, is_duo: bool | None) -> bool:
@@ -124,12 +124,12 @@ class UpdateOffer(SchemasBaseModel):
 
 
 class UpdateDraftOffer(SchemasBaseModel):
-    name: str | None = None
-    subcategory_id: str | None = None
-    url: HttpUrl | None = None
-    description: str | None = None
-    extra_data: dict[str, typing.Any] | None = None
-    duration_minutes: int | None = None
+    name: str | None
+    subcategory_id: str | None
+    url: HttpUrl | None
+    description: str | None
+    extra_data: dict[str, typing.Any] | None
+    duration_minutes: int | None
 
     @validator("subcategory_id", pre=True)
     def validate_subcategory_id(cls, subcategory_id: str, values: dict) -> str:
