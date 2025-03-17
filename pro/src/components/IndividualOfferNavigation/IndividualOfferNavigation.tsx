@@ -4,6 +4,7 @@ import { generatePath, useLocation } from 'react-router-dom'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useActiveStep } from 'commons/hooks/useActiveStep'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
@@ -28,6 +29,9 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const { offer, isEvent: isEventOfferContext } = useIndividualOfferContext()
   const activeStep = useActiveStep(Object.values(OFFER_WIZARD_STEP_IDS))
+  const isEventWithOpeningHoursEnabled = useActiveFeature(
+    'WIP_ENABLE_EVENT_WITH_OPENING_HOUR'
+  )
   const mode = useOfferWizardMode()
   const hasOffer = offer !== null
   const hasPriceCategories = Boolean(
@@ -80,7 +84,9 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
       },
       {
         id: OFFER_WIZARD_STEP_IDS.STOCKS,
-        label: 'Dates & Capacités',
+        label: isEventWithOpeningHoursEnabled
+          ? 'Calendrier'
+          : 'Dates & Capacités',
         path: getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode,
