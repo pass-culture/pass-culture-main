@@ -449,6 +449,19 @@ class Returns200Test:
 
         assert offer.offerVenue == {"addressType": "other", "otherAddress": "Right here", "venueId": None}
 
+    def test_national_program_unchanged(self, client):
+        program = educational_factories.NationalProgramFactory()
+        offer = educational_factories.CollectiveOfferFactory(nationalProgram=program)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"name": "hello"}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        assert offer.nationalProgramId == program.id
+
 
 class Returns400Test:
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)

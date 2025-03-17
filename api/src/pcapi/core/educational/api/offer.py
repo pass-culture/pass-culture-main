@@ -1294,9 +1294,6 @@ def update_collective_offer(
         if new_venue.managingOffererId != offerer.id:
             raise exceptions.OffererOfVenueDontMatchOfferer()
 
-    nationalProgramId = new_values.pop("nationalProgramId", None)
-    national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update)
-
     if new_venue:
         move_collective_offer_venue(offer_to_update, new_venue)
 
@@ -1337,9 +1334,6 @@ def update_collective_offer_template(
         if new_venue.managingOffererId != offerer.id:
             raise exceptions.OffererOfVenueDontMatchOfferer()
 
-    nationalProgramId = new_values.pop("nationalProgramId", None)
-    national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update)
-
     if "dates" in new_values:
         dates = new_values.pop("dates", None)
         if dates:
@@ -1372,6 +1366,10 @@ def _update_collective_offer(
 ) -> list[str]:
     offer_validation.check_validation_status(offer)
     offer_validation.check_contact_request(offer, new_values)
+
+    if "nationalProgramId" in new_values:
+        national_program_id = new_values.pop("nationalProgramId")
+        national_program_api.link_or_unlink_offer_to_program(national_program_id, offer)
 
     edit_offer_venue = "offerVenue" in new_values
     edit_location = "location" in new_values
