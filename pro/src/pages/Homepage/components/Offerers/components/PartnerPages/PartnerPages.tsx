@@ -6,34 +6,11 @@ import {
   VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { SelectOption } from 'commons/custom_types/form'
-import { storageAvailable } from 'commons/utils/storageAvailable'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import { PartnerPage } from './components/PartnerPage'
 import styles from './PartnerPages.module.scss'
-
-export const SAVED_VENUE_ID_KEY = 'homepageSelectedVenueId'
-
-export const getSavedVenueId = (
-  venues: GetOffererVenueResponseModel[]
-): string | null => {
-  const isLocalStorageAvailable = storageAvailable('localStorage')
-  if (!isLocalStorageAvailable) {
-    return null
-  }
-
-  const savedVenueId = localStorage.getItem(SAVED_VENUE_ID_KEY)
-
-  if (
-    !savedVenueId ||
-    !venues.map((venue) => String(venue.id)).includes(savedVenueId)
-  ) {
-    return null
-  }
-
-  return savedVenueId
-}
 
 export interface PartnerPagesProps {
   offerer: GetOffererResponseModel
@@ -48,7 +25,7 @@ export const PartnerPages = ({
 }: PartnerPagesProps) => {
   const [selectedVenueId, setSelectedVenueId] = useState<string>(
     venues.length > 0
-      ? (getSavedVenueId(venues) ?? venues[0].id.toString())
+      ? venues[0].id.toString()
       : ''
   )
 
@@ -81,9 +58,6 @@ export const PartnerPages = ({
               value={selectedVenueId}
               onChange={(e) => {
                 setSelectedVenueId(e.target.value)
-                if (storageAvailable('localStorage')) {
-                  localStorage.setItem(SAVED_VENUE_ID_KEY, e.target.value)
-                }
               }}
             />
           </FieldLayout>

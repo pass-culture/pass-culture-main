@@ -22,6 +22,7 @@ import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { AccessibilityForm } from './AccessibilityForm/AccessibilityForm'
+import { getPathToNavigateTo } from './context'
 import { OpeningHoursForm } from './OpeningHoursForm/OpeningHoursForm'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
 import { serializeEditVenueBodyModel } from './serializers'
@@ -80,7 +81,8 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
-      navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}`)
+      const path = getPathToNavigateTo(venue.managingOfferer.id, venue.id)
+      navigate(path)
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
         from: location.pathname,
