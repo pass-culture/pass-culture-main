@@ -7,7 +7,7 @@ export const validationSchema = (isOpenToPublicEnabled: boolean) => {
     siret: yup.string().required(),
     name: yup.string().required(),
     publicName: yup.string().nullable(),
-    ...(isOpenToPublicEnabled ? { isOpenToPublic: yup.string().required() } : {}),
+    ...(isOpenToPublicEnabled ? { isOpenToPublic: yup.string().required('Veuillez sélectionner un choix') } : {}),
     ...addressValidationSchema,
   })
 }
