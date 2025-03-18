@@ -287,6 +287,9 @@ class BaseOfferResponseGetterDict(GetterDict):
         if key == "isExpired":
             return offer.hasBookingLimitDatetimesPassed
 
+        if key == "isHeadline":
+            return offer.is_headline_offer
+
         if key == "metadata":
             return offer_metadata.get_metadata_from_offer(offer)
 
@@ -417,6 +420,7 @@ class BaseOfferResponse(ConfiguredBaseModel):
     extraData: OfferExtraDataResponse | None
     isExpired: bool
     isExternalBookingsDisabled: bool
+    isHeadline: bool
     is_forbidden_to_underage: bool
     isReleased: bool
     isSoldOut: bool

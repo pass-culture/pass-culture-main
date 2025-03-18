@@ -1871,6 +1871,24 @@ class OffersV2Test:
             key=lambda a: a["id"],
         )
 
+    def test_get_headline_offer(self, client):
+        offer = offers_factories.OfferFactory()
+        offer_id = offer.id
+        with assert_num_queries(self.base_num_queries):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["isHeadline"] is False
+
+    def test_get_not_headline_offer(self, client):
+        headline_offer = offers_factories.HeadlineOfferFactory()
+        offer_id = headline_offer.offer.id
+        with assert_num_queries(self.base_num_queries):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["isHeadline"] is True
+
 
 class OffersStocksTest:
     def test_return_empty_on_empty_request(self, client):
