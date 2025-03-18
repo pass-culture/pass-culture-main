@@ -6,7 +6,6 @@ import {
   BaseInputProps,
 } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
-import { FieldLayoutBaseProps } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { FieldLayoutCharacterCount } from 'ui-kit/form/shared/FieldLayout/FieldLayoutCharacterCount/FieldLayoutCharacterCount'
 
 import styles from './TextInput.module.scss'
@@ -14,35 +13,42 @@ import styles from './TextInput.module.scss'
 /**
  * Props for the TextInput component.
  *
- * @extends FieldLayoutBaseProps
  * @extends BaseInputProps
  */
-type TextInputProps = FieldLayoutBaseProps &
-  BaseInputProps & {
-    readOnly?: boolean
-    /**
-     * Allows decimal numbers in the input.
-     * Must be provided with `type="number"` to be effective.
-     * Unused when `readOnly` is true.
-     * @default true
-     */
-    hasDecimal?: boolean
-    /**
-     * A custom error message to be displayed.
-     * If this prop is provided, the error message will be displayed and the field will be marked as errored
-     */
-    error?: string
-    /**
-     * A custom character counter to be displayed.
-     * If this prop is provided, the counter will be displayed
-     */
-    count?: number
-    /**
-     * A property to not displayed asterisk even if field is required
-     * If this prop is provided, the asterisk will not be displayed
-     */
-    asterisk?: boolean
-  }
+type TextInputProps = BaseInputProps & {
+  name: string
+  label?: string | React.ReactNode
+  description?: string
+  isLabelHidden?: boolean
+  /**
+   * Allows decimal numbers in the input.
+   * Must be provided with `type="number"` to be effective.
+   * Unused when `readOnly` is true.
+   * @default true
+   */
+  hasDecimal?: boolean
+  /**
+   * A custom error message to be displayed.
+   * If this prop is provided, the error message will be displayed and the field will be marked as errored
+   */
+  error?: string
+  /**
+   * A custom character counter to be displayed.
+   * If this prop is provided, the counter will be displayed
+   */
+  count?: number
+  /**
+   * A property to not displayed asterisk even if field is required
+   * If this prop is provided, the asterisk will not be displayed
+   */
+  asterisk?: boolean
+  /**
+   * A custom component to be displayed next to the input.
+   * It can be used to display additional information or related actions like
+   * a checkbox to reset the input value.
+   */
+  inputExtension?: React.ReactNode
+}
 
 /**
  * The TextInput component is a customizable input field that integrates with Formik for form state management.
@@ -77,7 +83,6 @@ export const TextInput = React.forwardRef(
     {
       name,
       type = 'text',
-      disabled,
       readOnly,
       label,
       className,
@@ -92,6 +97,7 @@ export const TextInput = React.forwardRef(
       description,
       error,
       count,
+      inputExtension,
       ...props
     }: TextInputProps,
     ref: ForwardedRef<HTMLInputElement>
@@ -99,7 +105,6 @@ export const TextInput = React.forwardRef(
     const input = (
       <BaseInput
         name={name}
-        disabled={disabled}
         hasError={!!error}
         maxLength={maxLength}
         type={type}
@@ -148,6 +153,7 @@ export const TextInput = React.forwardRef(
           <>
             <div className={styles['text-input']}>
               {input}
+              {inputExtension}
               <div className={styles['input-layout-footer']}>
                 <div
                   role="alert"
