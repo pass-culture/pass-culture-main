@@ -1,9 +1,9 @@
-import memoize from 'lodash.memoize'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { unhumanizeSiren } from 'commons/core/Offerers/utils'
 import { validateSiren } from 'commons/core/Offerers/validate'
+import { memoize } from 'commons/utils/memoize'
 
 type GetSirenDataResponse = {
   values?: {

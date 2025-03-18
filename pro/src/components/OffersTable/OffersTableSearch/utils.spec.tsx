@@ -1,19 +1,23 @@
-import { renderHook, act } from '@testing-library/react'
-import isEqual from 'lodash.isequal'
-import { Provider } from "react-redux";
+import { act, renderHook } from '@testing-library/react'
+import { Provider } from 'react-redux'
 
 import { configureTestStore } from 'commons/store/testUtils'
+import { isEqual } from 'commons/utils/isEqual'
 
-import { SelectedFilters, useStoredFilterConfig, getStoredFilterConfig } from './utils'
+import {
+  getStoredFilterConfig,
+  SelectedFilters,
+  useStoredFilterConfig,
+} from './utils'
 
 const renderStoredFilterConfigHook = () => {
   const store = configureTestStore({})
   const wrapper = ({ children }: { children: any }) => (
-    <Provider store={store}>
-      {children}
-    </Provider>
+    <Provider store={store}>{children}</Provider>
   )
-  const { result } = renderHook(() => useStoredFilterConfig('individual'), { wrapper })
+  const { result } = renderHook(() => useStoredFilterConfig('individual'), {
+    wrapper,
+  })
   return result
 }
 
@@ -42,16 +46,21 @@ describe('getStoredFilterConfig', () => {
         filtersVisibility: true,
         storedFilters: MOCKED_FILTERS,
       }
-      window.sessionStorage.setItem('INDIVIDUAL_OFFERS_FILTER_CONFIG', JSON.stringify(storedValue))
+      window.sessionStorage.setItem(
+        'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+        JSON.stringify(storedValue)
+      )
 
-      const { filtersVisibility, storedFilters } = getStoredFilterConfig('individual')
+      const { filtersVisibility, storedFilters } =
+        getStoredFilterConfig('individual')
 
       expect(filtersVisibility).toBe(storedValue.filtersVisibility)
       expect(isEqual(storedFilters, storedValue.storedFilters)).toBeTruthy()
     })
 
     it('should return filtersVisibility=false & an empty object as default in absence of stored filter config', () => {
-      const { filtersVisibility, storedFilters } = getStoredFilterConfig('individual')
+      const { filtersVisibility, storedFilters } =
+        getStoredFilterConfig('individual')
 
       expect(filtersVisibility).toBe(false)
       expect(isEqual(storedFilters, {})).toBeTruthy()
@@ -66,7 +75,8 @@ describe('getStoredFilterConfig', () => {
         }
       )
 
-      const { filtersVisibility, storedFilters } = getStoredFilterConfig('individual')
+      const { filtersVisibility, storedFilters } =
+        getStoredFilterConfig('individual')
 
       expect(filtersVisibility).toBe(false)
       expect(isEqual(storedFilters, {})).toBeTruthy()

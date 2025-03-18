@@ -1,9 +1,8 @@
-import memoize from 'lodash.memoize'
-
 import { api, apiAdresse } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { unhumanizeSiret } from 'commons/core/Venue/utils'
 import { validateSiret } from 'commons/core/Venue/validate'
+import { memoize } from 'commons/utils/memoize'
 
 export type GetSiretDataResponse = {
   values?: {

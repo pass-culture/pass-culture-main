@@ -1,6 +1,5 @@
-import isEqual from 'lodash.isequal'
-
 import { CollectiveStockEditionBodyModel } from 'apiClient/v1'
+import { isEqual } from 'commons/utils/isEqual'
 
 import { OfferEducationalStockFormValues } from '../types'
 

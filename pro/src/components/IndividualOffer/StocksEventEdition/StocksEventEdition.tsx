@@ -1,6 +1,5 @@
 import cn from 'classnames'
 import { FieldArray, FormikProvider, useFormik } from 'formik'
-import isEqual from 'lodash/isEqual'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
@@ -25,6 +24,7 @@ import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { usePaginationWithSearchParams } from 'commons/hooks/usePagination'
 import { getToday } from 'commons/utils/date'
 import { hasErrorCode } from 'commons/utils/error'
+import { isEqual } from 'commons/utils/isEqual'
 import {
   convertTimeFromVenueTimezoneToUtc,
   getLocalDepartementDateTimeFromUtc,

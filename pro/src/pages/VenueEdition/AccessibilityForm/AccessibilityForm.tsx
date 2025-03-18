@@ -1,9 +1,9 @@
 import { useFormikContext } from 'formik'
-import isEqual from 'lodash.isequal'
 import { useMemo } from 'react'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
+import { isEqual } from 'commons/utils/isEqual'
 import { ExternalAccessibility } from 'components/ExternalAccessibility/ExternalAccessibility'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { AccessibilityCallout } from 'pages/VenueEdition/AccessibilityCallout/AccessibilityCallout'
@@ -26,7 +26,8 @@ export const AccessibilityForm = ({
   externalAccessibilityData,
   isSubSubSection,
 }: AccessiblityFormProps) => {
-  const { values, setFieldValue, initialValues } = useFormikContext<VenueEditionFormValues>()
+  const { values, setFieldValue, initialValues } =
+    useFormikContext<VenueEditionFormValues>()
   const checkboxGroup = useAccessibilityOptions(setFieldValue)
 
   const hasChangedSinceLastSubmit = useMemo(
@@ -35,40 +36,44 @@ export const AccessibilityForm = ({
   )
 
   const isAccessibilityDefinedViaAccesLibre = !!externalAccessibilityData
-  const title = isAccessibilityDefinedViaAccesLibre ?
-    'Modalités d’accessibilité via acceslibre' :
-    'Modalités d’accessibilité'
+  const title = isAccessibilityDefinedViaAccesLibre
+    ? 'Modalités d’accessibilité via acceslibre'
+    : 'Modalités d’accessibilité'
 
-  const FormLayoutSection = isSubSubSection ? FormLayout.SubSubSection : FormLayout.SubSection
+  const FormLayoutSection = isSubSubSection
+    ? FormLayout.SubSubSection
+    : FormLayout.SubSection
 
   return (
     <FormLayoutSection title={title}>
-      {
-        isAccessibilityDefinedViaAccesLibre
-          ? <ExternalAccessibility
-              externalAccessibilityId={externalAccessibilityId}
-              externalAccessibilityData={externalAccessibilityData}
+      {isAccessibilityDefinedViaAccesLibre ? (
+        <ExternalAccessibility
+          externalAccessibilityId={externalAccessibilityId}
+          externalAccessibilityData={externalAccessibilityData}
+        />
+      ) : (
+        <>
+          <FormLayout.Row>
+            <CheckboxGroup
+              group={checkboxGroup}
+              groupName="accessibility"
+              legend="Votre établissement est accessible au public en situation de handicap :"
             />
-          : <>
-              <FormLayout.Row>
-                <CheckboxGroup
-                  group={checkboxGroup}
-                  groupName="accessibility"
-                  legend="Votre établissement est accessible au public en situation de handicap :"
-                />
-              </FormLayout.Row>
-              {hasChangedSinceLastSubmit && (
-                <FormLayout.Row>
-                  <Checkbox
-                    label="Appliquer le changement à toutes les offres existantes"
-                    name="isAccessibilityAppliedOnAllOffers"
-                    className={styles['apply-on-all-offers-checkbox']}
-                  />
-                </FormLayout.Row>
-              )}
-              {isVenuePermanent && <AccessibilityCallout className={styles['callout']} />}
-            </>
-      }
+          </FormLayout.Row>
+          {hasChangedSinceLastSubmit && (
+            <FormLayout.Row>
+              <Checkbox
+                label="Appliquer le changement à toutes les offres existantes"
+                name="isAccessibilityAppliedOnAllOffers"
+                className={styles['apply-on-all-offers-checkbox']}
+              />
+            </FormLayout.Row>
+          )}
+          {isVenuePermanent && (
+            <AccessibilityCallout className={styles['callout']} />
+          )}
+        </>
+      )}
     </FormLayoutSection>
   )
 }

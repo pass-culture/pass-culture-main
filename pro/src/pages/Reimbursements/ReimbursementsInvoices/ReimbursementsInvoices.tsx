@@ -1,5 +1,4 @@
 import { format, subMonths } from 'date-fns'
-import isEqual from 'lodash.isequal'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
@@ -13,6 +12,7 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FORMAT_ISO_DATE_ONLY, getToday } from 'commons/utils/date'
+import { isEqual } from 'commons/utils/isEqual'
 import { sortByLabel } from 'commons/utils/strings'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -69,7 +69,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
       return invoices
     },
     {
-      fallbackData: []
+      fallbackData: [],
     }
   )
 
@@ -81,7 +81,10 @@ export const ReimbursementsInvoices = (): JSX.Element => {
 
   const getOffererBankAccountsAndAttachedVenuesQuery = useSWR(
     selectedOffererId
-      ? [GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY, selectedOffererId]
+      ? [
+          GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
+          selectedOffererId,
+        ]
       : null,
     ([, selectedOffererId]) =>
       api.getOffererBankAccountsAndAttachedVenues(selectedOffererId)
@@ -99,7 +102,8 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   }, [INITIAL_FILTERS])
 
   if (
-    getOffererBankAccountsAndAttachedVenuesQuery.isLoading || getInvoicesQuery.isLoading ||
+    getOffererBankAccountsAndAttachedVenuesQuery.isLoading ||
+    getInvoicesQuery.isLoading ||
     hasInvoiceQuery.isLoading
   ) {
     return <Spinner />
@@ -117,7 +121,9 @@ export const ReimbursementsInvoices = (): JSX.Element => {
 
   const invoices = getInvoicesQuery.data
   const hasInvoice = Boolean(hasInvoiceQuery.data.hasInvoice)
-  const hasNoSearchResult = (!getInvoicesQuery.error && !invoices.length && hasSearchedOnce) || (!invoices.length && hasInvoice)
+  const hasNoSearchResult =
+    (!getInvoicesQuery.error && !invoices.length && hasSearchedOnce) ||
+    (!invoices.length && hasInvoice)
   const hasNoInvoicesYet = !hasSearchedOnce && !hasInvoice
 
   return (

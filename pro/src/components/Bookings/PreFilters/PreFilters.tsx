@@ -1,5 +1,4 @@
 import classNames from 'classnames'
-import isEqual from 'lodash.isequal'
 import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
@@ -17,6 +16,7 @@ import { SelectOption } from 'commons/custom_types/form'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { isDateValid } from 'commons/utils/date'
+import { isEqual } from 'commons/utils/isEqual'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MultiDownloadButtonsModal } from 'components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import fullRefreshIcon from 'icons/full-refresh.svg'
