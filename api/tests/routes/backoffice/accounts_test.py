@@ -10,6 +10,7 @@ from flask import url_for
 import pytest
 import pytz
 
+from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
@@ -97,11 +98,19 @@ def create_bunch_of_accounts():
         phoneNumber="+33123456789",
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
     )
-    grant_18 = users_factories.BeneficiaryGrant18Factory(
+    old_grant_18 = users_factories.BeneficiaryGrant18Factory(
         firstName="Abdel Yves Akhim",
         lastName="Flaille",
         email="ayaf@example.net",
         phoneNumber="+33756273849",
+        phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1),
+    )
+    new_grant_18 = users_factories.BeneficiaryFactory(
+        firstName="Vincent",
+        lastName="Auriol",
+        email="quatrièmerépu@example.net",
+        phoneNumber="+33138479387",
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
     )
     pro = users_factories.UserFactory(
@@ -128,9 +137,9 @@ def create_bunch_of_accounts():
     offerers_factories.UserOffererFactory(user=pro_user)
 
     # Beneficiary which is also hired by a pro should be returned
-    offerers_factories.UserOffererFactory(user=grant_18)
+    offerers_factories.UserOffererFactory(user=old_grant_18)
 
-    return underage, grant_18, pro, random, no_address
+    return underage, old_grant_18, new_grant_18, pro, random, no_address
 
 
 # TODO (prouzet) tests in which cards are checked
@@ -180,7 +189,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
             assert response.status_code == 400
 
     def test_can_search_public_account_by_id(self, authenticated_client):
-        underage, _, _, _, _ = create_bunch_of_accounts()
+        underage, _, _, _, _, _ = create_bunch_of_accounts()
         user_id = underage.id
 
         with assert_num_queries(self.expected_num_queries):
@@ -198,7 +207,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         )
 
     def test_can_search_public_account_by_multiple_ids(self, authenticated_client):
-        searched_user1, _, _, searched_user2, _ = create_bunch_of_accounts()
+        searched_user1, _, _, _, searched_user2, _ = create_bunch_of_accounts()
         search_query = f" {searched_user1.id}, {searched_user2.id}"
 
         with assert_num_queries(self.expected_num_queries):
@@ -230,9 +239,9 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         [
             ("Yves", 1),  # "Abdel Yves Akhim"
             ("Abdel Akhim", 1),  # "Abdel Yves Akhim"
-            ("Gérard", 2),  # Gérard
-            ("Gerard", 2),  # Gérard
-            ("Jean Luc", 4),  # Jean-Luc
+            ("Gérard", 3),  # Gérard
+            ("Gerard", 3),  # Gérard
+            ("Jean Luc", 5),  # Jean-Luc
         ],
     )
     def test_can_search_public_account_by_first_name(self, authenticated_client, query, expected_index):
@@ -254,7 +263,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
 
     @pytest.mark.parametrize("query", ["ALGÉZIC", "Algézic", "Algezic"])
     def test_can_search_public_account_by_name(self, authenticated_client, query):
-        _, _, _, random, _ = create_bunch_of_accounts()
+        _, _, _, _, random, _ = create_bunch_of_accounts()
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
@@ -271,7 +280,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         )
 
     def test_can_search_public_account_by_email(self, authenticated_client):
-        _, _, _, random, _ = create_bunch_of_accounts()
+        _, _, _, _, random, _ = create_bunch_of_accounts()
         email = random.email
 
         with assert_num_queries(self.expected_num_queries):
@@ -289,7 +298,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         )
 
     def test_can_search_public_account_by_multiple_emails(self, authenticated_client):
-        searched_user1, _, _, searched_user2, _ = create_bunch_of_accounts()
+        searched_user1, _, _, _, searched_user2, _ = create_bunch_of_accounts()
         search_query = f" {searched_user1.email},   {searched_user2.email},"
 
         with assert_num_queries(self.expected_num_queries):
@@ -300,23 +309,29 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert set(cards_titles) == {searched_user1.full_name, searched_user2.full_name}
 
     def test_can_search_public_account_by_email_domain(self, authenticated_client):
-        underage, grant_18, _, random, _ = create_bunch_of_accounts()
+        underage, old_grant_18, new_grant_18, _, random, _ = create_bunch_of_accounts()
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="@example.net"))
             assert response.status_code == 200
 
         cards_titles = html_parser.extract_cards_titles(response.data)
-        assert set(cards_titles) == {underage.full_name, grant_18.full_name, random.full_name}
+        assert set(cards_titles) == {
+            underage.full_name,
+            old_grant_18.full_name,
+            new_grant_18.full_name,
+            random.full_name,
+        }
 
         cards_text = html_parser.extract_cards_text(response.data)
         assert_user_equals(cards_text[0], underage)
-        assert_user_equals(cards_text[1], grant_18)
-        assert_user_equals(cards_text[2], random)
+        assert_user_equals(cards_text[1], old_grant_18)
+        assert_user_equals(cards_text[2], new_grant_18)
+        assert_user_equals(cards_text[3], random)
 
     @pytest.mark.parametrize("query", ["+33756273849", "0756273849", "756273849"])
     def test_can_search_public_account_by_phone(self, authenticated_client, query):
-        _, grant_18, _, _, _ = create_bunch_of_accounts()
+        _, old_grant_18, _, _, _, _ = create_bunch_of_accounts()
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
@@ -326,14 +341,14 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert_response_location(
             response,
             "backoffice_web.public_accounts.get_public_account",
-            user_id=grant_18.id,
+            user_id=old_grant_18.id,
             q=query,
             search_rank=1,
             total_items=1,
         )
 
     def test_can_search_public_account_even_with_missing_city_address(self, authenticated_client):
-        _, _, _, _, no_address = create_bunch_of_accounts()
+        _, _, _, _, _, no_address = create_bunch_of_accounts()
         phone_number = no_address.phoneNumber
 
         with assert_num_queries(self.expected_num_queries):
@@ -352,7 +367,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
 
     @pytest.mark.parametrize("query", ["Abdel Yves Akhim Flaille", "Abdel Flaille", "Flaille Akhim", "Yves Abdel"])
     def test_can_search_public_account_by_both_first_name_and_name(self, authenticated_client, query):
-        _, grant_18, _, _, _ = create_bunch_of_accounts()
+        _, old_grant_18, _, _, _, _ = create_bunch_of_accounts()
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
@@ -362,7 +377,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert_response_location(
             response,
             "backoffice_web.public_accounts.get_public_account",
-            user_id=grant_18.id,
+            user_id=old_grant_18.id,
             q=query,
             search_rank=1,
             total_items=1,
@@ -435,7 +450,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
 
     def test_can_search_public_account_young_but_also_pro(self, authenticated_client):
         # She has started subscription process, but is also hired by an offerer
-        young_and_pro = users_factories.BeneficiaryGrant18Factory(
+        young_and_pro = users_factories.BeneficiaryFactory(
             firstName="Maud",
             lastName="Zarella",
             email="mz@example.com",
@@ -459,13 +474,13 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         )
 
     def test_search_suspended_public_account_data(self, authenticated_client):
-        underage, grant_18, _, _, _ = create_bunch_of_accounts()
+        underage, old_grant_18, _, _, _, _ = create_bunch_of_accounts()
         # we must have at least two results so that it does not redirect to details page and we can check cards content
-        common_name = "Supended-Family"
+        common_name = "Suspended-Family"
         underage.lastName = common_name
         underage.isActive = False
-        grant_18.lastName = common_name
-        grant_18.isActive = False
+        old_grant_18.lastName = common_name
+        old_grant_18.isActive = False
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.USER_SUSPENDED,
             actionDate=None,
@@ -480,7 +495,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 2
         assert_user_equals(cards_text[0], underage)
-        assert_user_equals(cards_text[1], grant_18)
+        assert_user_equals(cards_text[1], old_grant_18)
 
     def test_search_suspended_unsuspended_twice(self, authenticated_client):
         user = users_factories.UserFactory(isActive=False)
@@ -612,7 +627,6 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert_user_equals(cards_text[1], suspended_user)
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 class GetPublicAccountTest(GetEndpointHelper):
     endpoint = "backoffice_web.public_accounts.get_public_account"
     endpoint_kwargs = {"user_id": 1}
@@ -670,7 +684,9 @@ class GetPublicAccountTest(GetEndpointHelper):
             user = users_factories.UserFactory()
             return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
 
-    @pytest.mark.parametrize("index,expected_badge", [(0, "Ancien Pass 15-17"), (1, "Ancien Pass 18"), (3, None)])
+    @pytest.mark.parametrize(
+        "index,expected_badge", [(0, "Ancien Pass 15-17"), (1, "Ancien Pass 18"), (2, "Pass 18"), (3, None)]
+    )
     def test_get_public_account(self, authenticated_client, index, expected_badge):
         users = create_bunch_of_accounts()
         user = users[index]
@@ -771,7 +787,6 @@ class GetPublicAccountTest(GetEndpointHelper):
         parsed_html = html_parser.get_soup(response.data)
         assert parsed_html.find("i", class_="pc-email-changed-icon") is not None
 
-    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + relativedelta(years=2))
     @pytest.mark.parametrize(
         "reasonCodes,reason",
         (
@@ -789,7 +804,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         birth_date = datetime.datetime.utcnow() - relativedelta(years=18, days=15)
         id_piece_number = "1234243344533"
 
-        original_user = users_factories.BeneficiaryGrant18Factory(
+        original_user = users_factories.BeneficiaryFactory(
             dateCreated=birth_date + relativedelta(years=18, months=3),
             firstName=first_name,
             lastName=last_name,
@@ -812,7 +827,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             user=duplicate_user,
             type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
             status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=duplicate_user,
@@ -826,30 +841,29 @@ class GetPublicAccountTest(GetEndpointHelper):
                 birth_date=birth_date.date().isoformat(),
                 id_document_number=id_piece_number,
             ),
-            eligibilityType=users_models.EligibilityType.AGE18,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=duplicate_user,
             type=fraud_models.FraudCheckType.PHONE_VALIDATION,
             status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=duplicate_user,
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
         duplicate_user_id = duplicate_user.id
-        with assert_num_queries(self.expected_num_queries + 1):  # +1 to get duplicate user info
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url_for(self.endpoint, user_id=duplicate_user_id))
             assert response.status_code == 200
 
         content = html_parser.content_as_text(response.data)
         assert f"User ID doublon : {original_user.id}" in content
 
-    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + relativedelta(years=1))
     def test_get_public_account_birth_dates(self, authenticated_client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, days=15),
@@ -870,12 +884,12 @@ class GetPublicAccountTest(GetEndpointHelper):
         [
             (
                 users_factories.BeneficiaryGrant18Factory,
-                "287,50 € Crédit restant 300,00 €",
+                "137,50 € Crédit restant 150,00 €",
                 "87,50 € Crédit digital restant 100,00 €",
             ),
             (
                 users_factories.CaledonianBeneficiaryGrant18Factory,
-                "287,50 € (34308 CFP) Crédit restant 300,00 € (35800 CFP)",
+                "137,50 € (16408 CFP) Crédit restant 150,00 € (17900 CFP)",
                 "87,50 € (10442 CFP) Crédit digital restant 100,00 € (11933 CFP)",
             ),
         ],
@@ -904,7 +918,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert expected_digital_remaining_text in cards_text
 
     def test_get_non_beneficiary_credit(self, authenticated_client):
-        _, _, _, random, _ = create_bunch_of_accounts()
+        _, _, _, _, random, _ = create_bunch_of_accounts()
         user_id = random.id
 
         with assert_num_queries(self.expected_num_queries_with_ff):
@@ -985,15 +999,14 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert not html_parser.extract_table_rows(response.data, parent_class="bookings-tab-pane")
         assert "Aucune réservation à ce jour" in response.data.decode("utf-8")
 
-    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + datetime.timedelta(days=30))
     def test_fraud_check_link(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()
         # modifiy the date for clearer tests
-        user.beneficiaryFraudChecks[0].dateCreated = datetime.date.today() - datetime.timedelta(days=5)
+        user.beneficiaryFraudChecks[0].dateCreated = datetime.datetime.utcnow() - datetime.timedelta(days=5)
         old_dms = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.DMS,
-            dateCreated=datetime.date.today() - datetime.timedelta(days=2),
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
         )
 
         user_id = user.id
@@ -1014,7 +1027,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         new_dms = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.DMS,
-            dateCreated=datetime.date.today() - datetime.timedelta(days=1),
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
         )
 
         response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
@@ -1028,13 +1041,10 @@ class GetPublicAccountTest(GetEndpointHelper):
             in main_dossier_card
         )
 
-    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + relativedelta(years=1))
     def test_get_public_account_history(self, legit_user, authenticated_client):
         # More than 30 days ago to have deterministic order because "Import ubble" is generated randomly between
         # -30 days and -1 day in BeneficiaryImportStatusFactory
-        user = users_factories.BeneficiaryGrant18Factory(
-            dateCreated=datetime.datetime.utcnow() - relativedelta(days=40)
-        )
+        user = users_factories.BeneficiaryFactory(dateCreated=datetime.datetime.utcnow() - relativedelta(days=40))
         no_date_action = history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.USER_SUSPENDED,
             actionDate=None,
@@ -1076,58 +1086,73 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         assert response.status_code == 200
         history_rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
-        assert len(history_rows) == 7
+        assert len(history_rows) == 10
 
         assert history_rows[0]["Type"] == "Étape de vérification"
         assert history_rows[0]["Date/Heure"].startswith(datetime.date.today().strftime("Le %d/%m/%Y à"))
-        assert history_rows[0]["Commentaire"] == "ubble, age-18, ok, [raison inconnue], None"
+        assert history_rows[0]["Commentaire"] == "honor_statement, age-17-18, ok, [raison inconnue], None"
         assert not history_rows[0]["Auteur"]
 
-        assert history_rows[1]["Type"] == "Import ubble"
-        assert history_rows[1]["Date/Heure"].startswith("Le ")
-        assert history_rows[1]["Commentaire"].startswith("CREATED")
+        assert history_rows[1]["Type"] == "Étape de vérification"
+        assert history_rows[1]["Date/Heure"].startswith(datetime.date.today().strftime("Le %d/%m/%Y à"))
+        assert history_rows[1]["Commentaire"] == "ubble, age-17-18, ok, [raison inconnue], None"
         assert not history_rows[1]["Auteur"]
 
-        assert history_rows[2]["Type"] == history_models.ActionType.INFO_MODIFIED.value
-        assert history_rows[2]["Date/Heure"].startswith(
+        assert history_rows[2]["Type"] == "Étape de vérification"
+        assert history_rows[2]["Date/Heure"].startswith(datetime.date.today().strftime("Le %d/%m/%Y à"))
+        assert history_rows[2]["Commentaire"] == "profile_completion, age-17-18, ok, [raison inconnue], None"
+        assert not history_rows[2]["Auteur"]
+
+        assert history_rows[3]["Type"] == "Étape de vérification"
+        assert history_rows[3]["Date/Heure"].startswith(datetime.date.today().strftime("Le %d/%m/%Y à"))
+        assert history_rows[3]["Commentaire"] == "phone_validation, age-17-18, ok, [raison inconnue], None"
+        assert not history_rows[3]["Auteur"]
+
+        assert history_rows[4]["Type"] == history_models.ActionType.INFO_MODIFIED.value
+        assert history_rows[4]["Date/Heure"].startswith(
             (datetime.date.today() - relativedelta(days=30)).strftime("Le %d/%m/%Y à ")
         )
-        assert history_rows[2]["Commentaire"].startswith("Informations modifiées :")
-        assert "Nom : Pignon → Leblanc" in history_rows[2]["Commentaire"]
-        assert "Prénom : suppression de : François" in history_rows[2]["Commentaire"]
-        assert "Date de naissance : 2001-04-14 → 2000-09-19" in history_rows[2]["Commentaire"]
-        assert history_rows[2]["Auteur"] == admin.full_name
+        assert history_rows[4]["Commentaire"].startswith("Informations modifiées :")
+        assert "Nom : Pignon → Leblanc" in history_rows[4]["Commentaire"]
+        assert "Prénom : suppression de : François" in history_rows[4]["Commentaire"]
+        assert "Date de naissance : 2001-04-14 → 2000-09-19" in history_rows[4]["Commentaire"]
+        assert history_rows[4]["Auteur"] == admin.full_name
 
-        assert history_rows[3]["Type"] == history_models.ActionType.USER_UNSUSPENDED.value
-        assert history_rows[3]["Date/Heure"].startswith(
+        assert history_rows[5]["Type"] == history_models.ActionType.USER_UNSUSPENDED.value
+        assert history_rows[5]["Date/Heure"].startswith(
             (datetime.date.today() - relativedelta(days=35)).strftime("Le %d/%m/%Y à ")
         )
-        assert history_rows[3]["Commentaire"] == unsuspended.comment
-        assert history_rows[3]["Auteur"] == admin.full_name
+        assert history_rows[5]["Commentaire"] == unsuspended.comment
+        assert history_rows[5]["Auteur"] == admin.full_name
 
-        assert history_rows[4]["Type"] == history_models.ActionType.USER_CREATED.value
-        assert history_rows[4]["Date/Heure"].startswith(
+        assert history_rows[6]["Type"] == history_models.ActionType.USER_CREATED.value
+        assert history_rows[6]["Date/Heure"].startswith(
             (datetime.date.today() - relativedelta(days=40)).strftime("Le %d/%m/%Y à ")
         )
-        assert not history_rows[4]["Commentaire"]
-        assert history_rows[4]["Auteur"] == user.full_name
+        assert not history_rows[6]["Commentaire"]
+        assert history_rows[6]["Auteur"] == user.full_name
 
-        assert history_rows[5]["Type"] == "Attribution d'un crédit"
-        assert history_rows[5]["Date/Heure"].startswith(
+        assert history_rows[7]["Type"] == "Attribution d'un crédit"
+        assert history_rows[7]["Date/Heure"].startswith(
             (datetime.date.today() - relativedelta(days=40)).strftime("Le %d/%m/%Y à ")
         )
-        assert history_rows[5]["Commentaire"] == "Attribution d'un ancien crédit 18 de 300,00 €"
+        assert history_rows[7]["Commentaire"] == "Attribution d'un crédit 17-18 de 150,00 €"
 
-        assert history_rows[6]["Type"] == history_models.ActionType.USER_SUSPENDED.value
-        assert not history_rows[6]["Date/Heure"]  # Empty date, at the end of the list
-        assert history_rows[6]["Commentaire"].startswith("Fraude suspicion")
-        assert history_rows[6]["Auteur"] == legit_user.full_name
+        assert history_rows[8]["Type"] == "Recrédit du compte"
+        assert history_rows[8]["Date/Heure"].startswith(
+            (datetime.date.today() - relativedelta(days=40)).strftime("Le %d/%m/%Y à ")
+        )
+        assert history_rows[8]["Commentaire"] == "Recrédit à 18 ans de 150,00 € sur un crédit 17-18"
+
+        assert history_rows[9]["Type"] == history_models.ActionType.USER_SUSPENDED.value
+        assert not history_rows[9]["Date/Heure"]  # Empty date, at the end of the list
+        assert history_rows[9]["Commentaire"].startswith("Fraude suspicion")
+        assert history_rows[9]["Auteur"] == legit_user.full_name
 
     def test_get_public_account_anonymized_user(self, authenticated_client):
         user = users_factories.UserFactory(roles=[users_models.UserRole.ANONYMIZED])
 
         user_id = user.id
-        # expected_num_queries depends on the number of feature flags checked (2 + user + FF)
         with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
@@ -1335,7 +1360,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert len(mails_testing.outbox) == 0
 
     def test_update_email_triggers_history_token_and_mail(self, authenticated_client):
-        user, _, _, _, _ = create_bunch_of_accounts()
+        user, _, _, _, _, _ = create_bunch_of_accounts()
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form={"email": "Updated@example.com"})
 
@@ -1357,7 +1382,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert email_history[0].newEmail == "updated@example.com"
 
     def test_update_invalid_email(self, authenticated_client):
-        user, _, _, _, _ = create_bunch_of_accounts()
+        user, _, _, _, _, _ = create_bunch_of_accounts()
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form={"email": "updated.example.com"})
 

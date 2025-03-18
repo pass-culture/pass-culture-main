@@ -1051,7 +1051,6 @@ class GetBatchMarkAsUsedIndividualBookingsFormTest(GetEndpointHelper):
             assert response.status_code == 200
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 class BatchMarkBookingAsUsedTest(PostEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.batch_validate_individual_bookings"
     needed_permission = perm_models.Permissions.MANAGE_BOOKINGS

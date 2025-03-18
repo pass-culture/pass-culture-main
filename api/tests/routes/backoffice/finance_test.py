@@ -485,7 +485,6 @@ class CancelIncidentTest(PostEndpointHelper):
         assert history_models.ActionHistory.query.count() == 0
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.validate_finance_overpayment_incident"
     endpoint_kwargs = {"finance_incident_id": 1}
@@ -690,7 +689,6 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
         assert len(mails_testing.outbox) == 0
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.validate_finance_commercial_gesture"
     endpoint_kwargs = {"finance_incident_id": 1}
