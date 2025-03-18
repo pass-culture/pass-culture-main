@@ -6,7 +6,6 @@ from flask_login import login_required
 import sqlalchemy as sqla
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
-import sqlalchemy.orm.exc as sa_exceptions
 
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
@@ -648,7 +647,7 @@ def get_active_venue_offer_by_ean(venue_id: int, ean: str) -> offers_serialize.G
         venue = offerers_repository.get_venue_by_id(venue_id)
         rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
         offer = offers_repository.get_active_offer_by_venue_id_and_ean(venue_id, ean)
-    except sa_exceptions.NoResultFound:
+    except exceptions.OfferNotFound:
         raise api_errors.ApiErrors(
             errors={
                 "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
