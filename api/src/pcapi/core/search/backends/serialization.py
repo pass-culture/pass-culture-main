@@ -121,9 +121,13 @@ class AlgoliaSerializationMixin:
         tags = [criterion.name for criterion in offer.criteria]
 
         extra_data = offer.product.extraData if offer.product and offer.product.extraData else offer.extraData or {}
-        extra_data_artist = " ".join(
-            str(extra_data.get(key, "")) for key in ("author", "performer", "speaker", "stageDirector")
-        )
+
+        extra_data_artists = []
+        for key in ("author", "performer", "speaker", "stageDirector"):
+            artist = str(extra_data.get(key) or "")
+            if _is_artist_valid(artist):
+                extra_data_artists.append(artist)
+
         artists = (
             [{"id": artist.id, "image": artist.image, "name": artist.name} for artist in offer.product.artists]
             if offer.product and offer.product.artists
@@ -214,7 +218,7 @@ class AlgoliaSerializationMixin:
             "objectID": offer.id,
             "offer": {
                 "allocineId": extra_data.get("allocineId"),
-                "artist": extra_data_artist.strip() or None,
+                "artist": " ".join(extra_data_artists).strip() or None,
                 "bookMacroSection": macro_section,
                 "dateCreated": date_created,
                 "dates": sorted(dates),
@@ -433,3 +437,9 @@ def format_coordinates(latitude: Numeric | None, longitude: Numeric | None) -> d
 
 def _transform_collective_offer_template_id(collective_offer_template_id: int) -> str:
     return f"T-{collective_offer_template_id}"
+
+
+def _is_artist_valid(artist: str) -> bool:
+    return (
+        bool(artist) and "," not in artist and ";" not in artist and artist.lower() not in ("collectif", "collectifs")
+    )

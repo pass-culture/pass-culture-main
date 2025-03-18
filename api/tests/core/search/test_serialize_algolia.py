@@ -426,6 +426,32 @@ def test_serialize_offer_artists():
     assert serialized["artists"] == [{"id": artist.id, "name": artist.name, "image": artist.image}]
 
 
+def test_filter_artists():
+    offer = offers_factories.OfferFactory(
+        extraData={
+            "author": "collectifs",
+            "performer": "Collectif",
+            "speaker": "Artiste1, Artiste2",
+            "stageDirector": "Artiste1;Artiste2",
+        }
+    )
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert "artist" not in serialized["offer"]
+
+
+def test_filter_on_empty_artist():
+    offer = offers_factories.OfferFactory(
+        extraData={
+            "author": None,
+            "performer": "",
+            "speaker": "Artiste1",
+            "stageDirector": "Artiste2",
+        }
+    )
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert serialized["offer"]["artist"] == "Artiste1 Artiste2"
+
+
 def test_serialize_venue():
     venue = offerers_factories.VenueFactory(
         venueTypeCode=offerers_models.VenueTypeCode.VISUAL_ARTS,
