@@ -28,7 +28,8 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { Option } from 'ui-kit/MultiSelect/MultiSelect'
+
+import { DomainOption } from '../useOfferEducationalFormData'
 
 import { FormAccessibility } from './FormAccessibility/FormAccessibility'
 import { FormContact } from './FormContact/FormContact'
@@ -47,7 +48,7 @@ import styles from './OfferEducationalForm.module.scss'
 
 export type OfferEducationalFormProps = {
   userOfferer: GetEducationalOffererResponseModel | null
-  domainsOptions: Option[]
+  domainsOptions: DomainOption[]
   nationalPrograms: SelectOption<number>[]
   isTemplate: boolean
   mode: Mode
@@ -169,11 +170,10 @@ export const OfferEducationalForm = ({
                 offer={offer}
               />
             )}
-            {values.offererId && values.venueId  && isEligible ? (
+            {values.offererId && values.venueId && isEligible ? (
               <>
                 <FormOfferType
                   domainsOptions={domainsOptions}
-                  nationalPrograms={nationalPrograms}
                   disableForm={!canEditDetails}
                   isTemplate={isTemplate}
                 />
