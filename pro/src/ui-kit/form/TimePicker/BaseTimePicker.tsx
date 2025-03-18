@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useId } from 'react'
+import { ForwardedRef, forwardRef, useId } from 'react'
 
 import { isValidTime } from 'commons/utils/timezone'
 
@@ -9,7 +9,7 @@ import styles from './BaseTimePicker.module.scss'
 import { SuggestedTimeList } from './types'
 
 type Props = Omit<BaseInputProps, 'value'> & {
-  value: string
+  value?: string
   suggestedTimeList?: SuggestedTimeList
 }
 
@@ -42,40 +42,48 @@ const getTimeOptions = (suggestedTimeList?: SuggestedTimeList) => {
   return timeOptions
 }
 
-export const BaseTimePicker = ({
-  className,
-  suggestedTimeList = { interval: 15 },
-  ...props
-}: Props): JSX.Element => {
-  const optionsListId = useId()
-  const timeOptions = getTimeOptions(suggestedTimeList)
-  const hasTimeOptions = timeOptions.length > 0
+export const BaseTimePicker = forwardRef(
+  (
+    { className, suggestedTimeList = { interval: 15 }, ...props }: Props,
+    ref: ForwardedRef<HTMLInputElement>
+  ): JSX.Element => {
+    const optionsListId = useId()
+    const timeOptions = getTimeOptions(suggestedTimeList)
+    const hasTimeOptions = timeOptions.length > 0
 
-  // When registered, time value might be translated to '9:00'.
-  // This is a workaround to init and display the value as '09:00'.
-  const paddedValue =
-    props.value && props.value.length === 4 ? `0${props.value}` : props.value
-  const formattedValue = isValidTime(paddedValue) ? paddedValue : ''
+    // When registered, time value might be translated to '9:00'.
+    // This is a workaround to init and display the value as '09:00'.
+    if (props.value?.length === 4) {
+      props.value = `0${props.value}`
+    }
 
-  return (
-    <>
-      <BaseInput
-        type="time"
-        {...(hasTimeOptions ? { list: optionsListId } : {})}
-        autoComplete="off"
-        {...props}
-        value={formattedValue}
-        className={cn(className, styles['timepicker'])}
-      />
-      {hasTimeOptions && (
-        <datalist id={optionsListId} data-testid="timepicker-datalist">
-          {timeOptions.map((time) => (
-            <option key={time} value={time}>
-              {time}
-            </option>
-          ))}
-        </datalist>
-      )}
-    </>
-  )
-}
+    return (
+      <>
+        <BaseInput
+          type="time"
+          {...(hasTimeOptions ? { list: optionsListId } : {})}
+          autoComplete="off"
+          {...props}
+          //  If the component has no ref, it is controlled, and the value must not be undefined
+          //  Otherwise React thinks it becomes controlled, and switching inbetween control modes is forbidden
+          value={
+            ref ? props.value : isValidTime(props.value) ? props.value : ''
+          }
+          className={cn(className, styles['timepicker'])}
+          ref={ref}
+        />
+        {hasTimeOptions && (
+          <datalist id={optionsListId} data-testid="timepicker-datalist">
+            {timeOptions.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </datalist>
+        )}
+      </>
+    )
+  }
+)
+
+BaseTimePicker.displayName = 'BaseTimePicker'
