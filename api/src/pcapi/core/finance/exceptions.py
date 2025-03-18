@@ -6,15 +6,15 @@ from pcapi.utils import requests
 from . import models
 
 
-class FinanceError(Exception):
+class FinanceException(Exception):
     pass
 
 
-class NonCancellablePricingError(FinanceError):
+class NonCancellablePricingError(FinanceException):
     pass
 
 
-class ReimbursementRuleValidationError(Exception):
+class ReimbursementRuleValidationError(FinanceException):
     pass
 
 
@@ -41,15 +41,15 @@ class DepositTypeAlreadyGrantedException(ApiErrors):
         super().__init__({"user": [f'Cet utilisateur a déjà été crédité de la subvention "{deposit_type.name}".']})
 
 
-class UserNotGrantable(Exception):
+class UserNotGrantable(FinanceException):
     pass
 
 
-class UserCannotBeRecredited(Exception):
+class UserCannotBeRecredited(FinanceException):
     pass
 
 
-class UserHasNotFinishedSubscription(Exception):
+class UserHasNotFinishedSubscription(FinanceException):
     pass
 
 
@@ -57,35 +57,35 @@ class UserHasAlreadyActiveDeposit(UserNotGrantable):
     pass
 
 
-class FinanceIncidentAlreadyCancelled(Exception):
+class FinanceIncidentAlreadyCancelled(FinanceException):
     pass
 
 
-class FinanceIncidentAlreadyValidated(Exception):
+class FinanceIncidentAlreadyValidated(FinanceException):
     pass
 
 
-class NoInvoiceToGenerate(Exception):
+class NoInvoiceToGenerate(FinanceException):
     pass
 
 
-class VenueAlreadyLinkedToAnotherBankAccount(Exception):
+class VenueAlreadyLinkedToAnotherBankAccount(FinanceException):
     pass
 
 
-class CommercialGestureOnMultipleStock(Exception):
+class CommercialGestureOnMultipleStock(FinanceException):
     pass
 
 
-class FinanceBackendApiError(FinanceError):
+class FinanceBackendApiError(FinanceException):
     pass
 
 
-class FinanceBackendNotConfigured(FinanceError):
+class FinanceBackendNotConfigured(FinanceException):
     pass
 
 
-class FinanceBackendException(FinanceError):
+class FinanceBackendException(FinanceException):
     def __init__(self, response: requests.Response, message: str, include_body: bool = True) -> None:
         self.url = response.request.url
         self.method = response.request.method

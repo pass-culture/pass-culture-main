@@ -6,6 +6,7 @@ import re
 from pcapi import settings
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
+from pcapi.core.fraud import exceptions as fraud_exceptions
 from pcapi.core.fraud import repository as fraud_repository
 import pcapi.core.fraud.utils as fraud_utils
 import pcapi.core.mails.transactional as transaction_mails
@@ -35,22 +36,22 @@ logger = logging.getLogger(__name__)
 FRAUD_RESULT_REASON_SEPARATOR = ";"
 
 
-class FraudCheckError(Exception):
+class FraudCheckError(fraud_exceptions.FraudException):
     pass
 
 
-class EligibilityError(Exception):
+class EligibilityError(fraud_exceptions.FraudException):
     pass
 
 
-class DuplicateIdPieceNumber(Exception):
+class DuplicateIdPieceNumber(fraud_exceptions.FraudException):
     def __init__(self, id_piece_number: str, duplicate_user_id: int) -> None:
         self.id_piece_number = id_piece_number
         self.duplicate_user_id = duplicate_user_id
         super().__init__()
 
 
-class DuplicateIneHash(Exception):
+class DuplicateIneHash(fraud_exceptions.FraudException):
     def __init__(self, ine_hash: str, duplicate_user_id: int) -> None:
         self.ine_hash = ine_hash
         self.duplicate_user_id = duplicate_user_id
