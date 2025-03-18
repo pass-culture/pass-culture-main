@@ -1,11 +1,12 @@
+
 // @ts-expect-error no types for this lib yet
 import * as Orejime from 'orejime'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { v4 as uuidv4 } from 'uuid'
 
 import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'
 import { storageAvailable } from 'commons/utils/storageAvailable'
+
 
 import {
   Consents,
@@ -28,7 +29,7 @@ export const useOrejime = () => {
           storageAvailable('localStorage') &&
           localStorage.getItem(LOCAL_STORAGE_DEVICE_ID_KEY) === null
         ) {
-          localStorage.setItem(LOCAL_STORAGE_DEVICE_ID_KEY, uuidv4())
+          localStorage.setItem(LOCAL_STORAGE_DEVICE_ID_KEY, self.crypto.randomUUID())
         }
 
         try {
