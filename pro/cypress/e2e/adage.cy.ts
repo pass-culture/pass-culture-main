@@ -43,6 +43,7 @@ describe('ADAGE discovery', () => {
                       educationalInstitutionUAICode: 'all',
                       interventionArea: ['2A', '2B'],
                       schoolInterventionArea: null,
+                      locationType: 'TO_BE_DEFINED',
                       eventAddressType: 'other',
                       beginningDatetime: 1726907257.840899,
                       description:
