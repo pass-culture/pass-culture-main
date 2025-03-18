@@ -390,6 +390,9 @@ class AlgoliaSerializationMixin:
                     else None
                 ),
                 "eventAddressType": collective_offer_template.offerVenue.get("addressType"),
+                "locationType": (
+                    collective_offer_template.locationType.value if collective_offer_template.locationType else None
+                ),
                 "beginningDatetime": date_created,  # this hack is needed to make the order keeps working
                 "description": remove_stopwords(collective_offer_template.description),
             },

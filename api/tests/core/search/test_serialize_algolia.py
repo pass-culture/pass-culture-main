@@ -5,19 +5,18 @@ from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
 
-import pcapi.core.artist.factories as artists_factories
-import pcapi.core.artist.models as artists_models
+from pcapi.core.artist import factories as artists_factories
+from pcapi.core.artist import models as artists_models
 from pcapi.core.categories import subcategories
-import pcapi.core.criteria.factories as criteria_factories
-import pcapi.core.educational.factories as educational_factories
-from pcapi.core.educational.models import OfferAddressType
-from pcapi.core.educational.models import StudentLevels
-import pcapi.core.geography.factories as geography_factories
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offerers.models as offerers_models
+from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
+from pcapi.core.geography import factories as geography_factories
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.schemas import VenueTypeCode
-import pcapi.core.offers.factories as offers_factories
-import pcapi.core.offers.models as offers_models
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.providers.constants import BookFormat
 from pcapi.core.search.backends import algolia
 from pcapi.core.search.backends import serialization
@@ -526,7 +525,7 @@ def test_serialize_collective_offer_template():
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
         description="description formidable",
-        students=[StudentLevels.CAP1, StudentLevels.CAP2],
+        students=[educational_models.StudentLevels.CAP1, educational_models.StudentLevels.CAP2],
         subcategoryId=subcategories.CONCERT.id,
         venue__offererAddress=venue_offerer_address,
         venue__name="La Moyenne Librairie SA",
@@ -535,7 +534,13 @@ def test_serialize_collective_offer_template():
         venue__adageId="123456",
         educational_domains=[domain1, domain2],
         interventionArea=None,
-        offerVenue={"addressType": OfferAddressType.OFFERER_VENUE, "venueId": offer_venue.id, "otherAddress": ""},
+        offerVenue={
+            "addressType": educational_models.OfferAddressType.OFFERER_VENUE,
+            "venueId": offer_venue.id,
+            "otherAddress": "",
+        },
+        locationType=educational_models.CollectiveLocationType.ADDRESS,
+        offererAddress=offer_venue_offerer_address,
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
@@ -550,7 +555,8 @@ def test_serialize_collective_offer_template():
             "educationalInstitutionUAICode": "all",
             "interventionArea": [],
             "schoolInterventionArea": None,
-            "eventAddressType": OfferAddressType.OFFERER_VENUE.value,
+            "eventAddressType": educational_models.OfferAddressType.OFFERER_VENUE.value,
+            "locationType": educational_models.CollectiveLocationType.ADDRESS.value,
             "beginningDatetime": 1641031200.0,
             "description": collective_offer_template.description,
         },
@@ -586,7 +592,7 @@ def test_serialize_collective_offer_template_legacy():
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
         description="description formidable",
-        students=[StudentLevels.CAP1, StudentLevels.CAP2],
+        students=[educational_models.StudentLevels.CAP1, educational_models.StudentLevels.CAP2],
         subcategoryId=subcategories.CONCERT.id,
         venue__street="Place de la mairie",
         venue__postalCode="86140",
@@ -597,7 +603,13 @@ def test_serialize_collective_offer_template_legacy():
         venue__adageId="123456",
         educational_domains=[domain1, domain2],
         interventionArea=None,
-        offerVenue={"addressType": OfferAddressType.OFFERER_VENUE, "venueId": venue.id, "otherAddress": ""},
+        offerVenue={
+            "addressType": educational_models.OfferAddressType.OFFERER_VENUE,
+            "venueId": venue.id,
+            "otherAddress": "",
+        },
+        locationType=None,
+        offererAddress=None,
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
@@ -612,7 +624,8 @@ def test_serialize_collective_offer_template_legacy():
             "educationalInstitutionUAICode": "all",
             "interventionArea": [],
             "schoolInterventionArea": None,
-            "eventAddressType": OfferAddressType.OFFERER_VENUE.value,
+            "eventAddressType": educational_models.OfferAddressType.OFFERER_VENUE.value,
+            "locationType": None,
             "beginningDatetime": 1641031200.0,
             "description": collective_offer_template.description,
         },
