@@ -14,7 +14,6 @@ from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
-from markupsafe import escape
 import sqlalchemy as sa
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
@@ -23,8 +22,10 @@ from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import api as finance_api
+from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud import exceptions as fraud_exceptions
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -33,6 +34,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription.models import SubscriptionItemStatus
 from pcapi.core.subscription.models import SubscriptionStep
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
@@ -49,6 +51,7 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
+from pcapi.models.feature import DisabledFeatureError
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import filters
@@ -1834,10 +1837,17 @@ def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
     history_api.add_action(history_models.ActionType.USER_PHONE_VALIDATED, author=current_user, user=user)
     db.session.flush()
 
-    subscription_api.activate_beneficiary_if_no_missing_step(user)
-    users_api.delete_all_users_phone_validation_tokens(user)
-
-    flash("Le numéro de téléphone a été validé", "success")
+    try:
+        subscription_api.activate_beneficiary_if_no_missing_step(user)
+    except subscription_exceptions.SubscriptionException as exc:
+        mark_transaction_as_invalid()
+        flash(
+            Markup("Une erreur s'est produite : {message}").format(message=str(exc) or exc.__class__.__name__),
+            "warning",
+        )
+    else:
+        users_api.delete_all_users_phone_validation_tokens(user)
+        flash("Le numéro de téléphone a été validé", "success")
 
     return redirect(get_public_account_link(user_id), code=303)
 
@@ -1933,9 +1943,12 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
             review=fraud_models.FraudReviewStatus(form.status.data),
             reviewed_eligibility=eligibility,
         )
-    except (fraud_api.FraudCheckError, fraud_api.EligibilityError) as err:
+    except (fraud_exceptions.FraudException, finance_exceptions.FinanceException, DisabledFeatureError) as exc:
         mark_transaction_as_invalid()
-        flash(escape(str(err)), "warning")
+        flash(
+            Markup("Une erreur s'est produite : {message}").format(message=str(exc) or exc.__class__.__name__),
+            "warning",
+        )
     else:
         flash("Validation réussie", "success")
 

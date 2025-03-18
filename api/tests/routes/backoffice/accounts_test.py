@@ -2,7 +2,6 @@ import dataclasses
 import datetime
 import os
 import re
-from unittest import mock
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
@@ -14,6 +13,7 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
@@ -24,6 +24,7 @@ from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription.models import SubscriptionItemStatus
 from pcapi.core.subscription.models import SubscriptionStep
 from pcapi.core.testing import assert_num_queries
@@ -34,6 +35,7 @@ from pcapi.core.users.models import EligibilityType
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.models.feature import DisabledFeatureError
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.repository import repository
 from pcapi.routes.backoffice.accounts import forms as account_forms
@@ -1497,7 +1499,7 @@ class ResendValidationEmailTest(PostEndpointHelper):
         assert not mails_testing.outbox
 
 
-class ManualPhoneNumberValidationTest(PostEndpointHelper):
+class ManuallyValidatePhoneNumberTest(PostEndpointHelper):
     endpoint = "backoffice_web.public_accounts.manually_validate_phone_number"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
@@ -1520,6 +1522,33 @@ class ManualPhoneNumberValidationTest(PostEndpointHelper):
         assert history_models.ActionHistory.query.filter(history_models.ActionHistory.user == user).count() == 1
         assert not token_utils.Token.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
         assert token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
+
+    @pytest.mark.usefixtures("clean_database")
+    def test_manually_validate_phone_number_exception(self, authenticated_client):
+        user = users_factories.UserFactory(phoneValidationStatus=None, phoneNumber="+33601010203")
+
+        token_utils.Token.create(
+            token_utils.TokenType.RESET_PASSWORD, users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME, user.id
+        )
+        token_utils.Token.create(
+            token_utils.TokenType.PHONE_VALIDATION, users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME, user.id
+        )
+
+        with patch(
+            "pcapi.core.subscription.api.activate_beneficiary_if_no_missing_step",
+            side_effect=subscription_exceptions.InvalidEligibilityTypeException("Test"),
+        ):
+            response = self.post_to_endpoint(authenticated_client, user_id=user.id, follow_redirects=True)
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == "Une erreur s'est produite : Test"
+
+        db.session.refresh(user)
+        assert not user.is_phone_validated
+        assert not user.roles
+        assert not user.deposits
+        assert history_models.ActionHistory.query.count() == 0
+        assert token_utils.Token.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
 
 class SendValidationCodeTest(PostEndpointHelper):
@@ -1549,7 +1578,7 @@ class SendValidationCodeTest(PostEndpointHelper):
     def test_phone_validation_code_sending_ignores_limit(self, authenticated_client):
         user = users_factories.UserFactory(phoneValidationStatus=None, phoneNumber="+33612345678")
 
-        with mock.patch("pcapi.core.fraud.phone_validation.sending_limit.is_SMS_sending_allowed") as limit_mock:
+        with patch("pcapi.core.fraud.phone_validation.sending_limit.is_SMS_sending_allowed") as limit_mock:
             limit_mock.return_value = False
             response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
@@ -1585,7 +1614,7 @@ class SendValidationCodeTest(PostEndpointHelper):
             assert not sms_testing.requests, f"[{idx}] {len(sms_testing.requests)} sms sent"
 
 
-class UpdatePublicAccountReviewTest(PostEndpointHelper):
+class ReviewPublicAccountTest(PostEndpointHelper):
     endpoint = "backoffice_web.public_accounts.review_public_account"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW
@@ -1766,6 +1795,25 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
         assert any(
             recredit.recreditType == finance_models.RecreditType.RECREDIT_18 for recredit in user.deposit.recredits
         )
+
+    @pytest.mark.parametrize("exception_class", [finance_exceptions.UserCannotBeRecredited, DisabledFeatureError])
+    def test_review_public_account_exception(self, authenticated_client, exception_class):
+        user = users_factories.BeneficiaryFactory()
+
+        form = {
+            "status": fraud_models.FraudReviewStatus.OK.name,
+            "eligibility": users_models.EligibilityType.AGE17_18.name,
+            "reason": "test",
+        }
+
+        with patch(
+            "pcapi.core.subscription.api.activate_beneficiary_for_eligibility",
+            side_effect=exception_class(),
+        ):
+            response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form, follow_redirects=True)
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == f"Une erreur s'est produite : {exception_class.__name__}"
 
 
 class GetPublicAccountHistoryTest:
