@@ -48,17 +48,14 @@ from pcapi.core.users import utils as users_utils
 from pcapi.core.users.email import update as email_update
 from pcapi.domain.password import random_password
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import DisabledFeatureError
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
-from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.forms import utils as forms_utils
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.utils import email as email_utils
 
@@ -187,7 +184,7 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
         return redirect(url_for(".get_public_account", user_id=user_id))
 
     if users_api.is_beneficiary_anonymizable(user):
-        _anonymyze_user(user, current_user)
+        _anonymize_user(user, current_user)
     elif users_api.is_only_beneficiary(user):
         _pre_anonymize_user(user, current_user)
     else:
@@ -196,7 +193,7 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
     return redirect(url_for(".get_public_account", user_id=user_id))
 
 
-def _anonymyze_user(user: users_models.User, author: users_models.User) -> None:
+def _anonymize_user(user: users_models.User, author: users_models.User) -> None:
     user_anonymized = users_api.anonymize_user(user, author=current_user, force=True)
     if user_anonymized:
         db.session.flush()
@@ -223,12 +220,6 @@ def _pre_anonymize_user(user: users_models.User, author: users_models.User) -> N
         else:
             db.session.flush()
             flash("L'utilisateur a été suspendu et sera anonymisé le jour de ses 21 ans", "success")
-
-
-def _has_user_pending_anonymization(user_id: int) -> bool:
-    return db.session.query(
-        users_models.GdprUserAnonymization.query.filter(users_models.GdprUserAnonymization.userId == user_id).exists()
-    ).scalar()
 
 
 @public_accounts_blueprint.route("/search", methods=["GET"])
@@ -435,17 +426,6 @@ def render_public_account_details(
         manual_review_form = None
         if utils.has_current_user_permission(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW):
             manual_review_form = account_forms.ManualReviewForm()
-            excluded_eligibilities = []
-            if not (
-                feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active()
-                and datetime.datetime.utcnow() > settings.CREDIT_V3_DECREE_DATETIME
-            ):
-                excluded_eligibilities.append(users_models.EligibilityType.AGE17_18)
-            manual_review_form.eligibility.choices = forms_utils.choices_from_enum(
-                users_models.EligibilityType,
-                formatter=filters.format_eligibility_type,
-                exclude_opts=excluded_eligibilities,
-            )
 
         kwargs.update(
             {

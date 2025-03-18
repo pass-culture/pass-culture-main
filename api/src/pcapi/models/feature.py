@@ -239,10 +239,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
-    FEATURES_DISABLED_BY_DEFAULT += (
-        FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API,
-        FeatureToggle.WIP_ENABLE_CREDIT_V3,
-    )
+    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API,)
 
 
 def add_feature_to_database(feature: Feature) -> None:
