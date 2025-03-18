@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-
+import { useEffect, useState } from 'react'
 
 import { EacFormat } from 'apiClient/adage'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -23,19 +23,17 @@ import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
 
-import { getNationalProgramsForDomains } from '../../constants/getNationalProgramsForDomains'
+import { DomainOption } from '../../useOfferEducationalFormData'
 import styles from '../OfferEducationalForm.module.scss'
 
 export interface FormTypeProps {
-  domainsOptions: Option[]
-  nationalPrograms: SelectOption<number>[]
+  domainsOptions: DomainOption[]
   disableForm: boolean
   isTemplate: boolean
 }
 
 export const FormOfferType = ({
   domainsOptions,
-  nationalPrograms,
   disableForm,
   isTemplate,
 }: FormTypeProps): JSX.Element => {
@@ -43,14 +41,39 @@ export const FormOfferType = ({
     useFormikContext<OfferEducationalFormValues>()
   const { logEvent } = useAnalytics()
 
+  const [selectedPrograms, setSelectedPrograms] = useState<SelectOption[]>([])
+
+
   const eacFormatOptions = Object.entries(EacFormat).map(([, value]) => ({
     id: value,
     label: String(value),
   }))
 
-  const nationalProgramsForDomains = nationalPrograms.filter((program) =>
-    getNationalProgramsForDomains(values.domains).includes(program.value)
-  )
+  const domains: Option[] = domainsOptions.map((domain) => ({
+    id: domain.id,
+    label: domain.label,
+  }))
+
+  useEffect(() => {
+    if (values.domains.length) {
+      const selectedDomains = domainsOptions.filter((domain) =>
+        values.domains.includes(domain.id)
+      )
+
+      const associatedPrograms = selectedDomains
+        .flatMap((domain) => domain.nationalPrograms)
+        .map((program) => ({
+          value: program.id,
+          label: program.name,
+        }))
+        .filter(
+          (program, index, self) =>
+            index === self.findIndex((p) => p.value === program.value)
+        )
+
+      setSelectedPrograms(associatedPrograms)
+    }
+  }, [values.domains, domainsOptions])
 
   const logHasClickedGenerateTemplateDescription = useFunctionOnce(() => {
     logEvent(Events.CLICKED_GENERATE_TEMPLATE_DESCRIPTION, {
@@ -85,16 +108,48 @@ export const FormOfferType = ({
               name="domains"
               hasSearch
               searchLabel="Recherche"
-              options={domainsOptions}
-              defaultOptions={domainsOptions.filter((option) =>
+              options={domains}
+              defaultOptions={domains.filter((option) =>
                 values.domains.includes(option.id)
               )}
               buttonLabel="Domaines artistiques"
               onSelectedOptionsChanged={async (selectedOptions) => {
-                await setFieldValue('domains', [
-                  ...selectedOptions.map((elm) => Number(elm.id)),
-                ])
+                // Pour les domains
+                await setFieldValue(
+                  'domains',
+                  selectedOptions.map((elm) => Number(elm.id))
+                )
                 await setFieldTouched('domains', true)
+
+                const newDomainIds = selectedOptions.map((option) => option.id)
+
+                const selectedDomains = domainsOptions.filter((domain) =>
+                  newDomainIds.includes(domain.id)
+                )
+
+                const newAssociatedPrograms = selectedDomains
+                  .flatMap((domain) => domain.nationalPrograms)
+                  .map((program) => ({
+                    value: program.id,
+                    label: program.name,
+                  }))
+                  .filter(
+                    (program, index, self) =>
+                      index === self.findIndex((p) => p.value === program.value)
+                  )
+
+                const currentSelectedProgramId = values.nationalProgramId
+
+                const selectedProgramStillExists = newAssociatedPrograms.some(
+                  (program) =>
+                    program.value.toString() === currentSelectedProgramId
+                )
+
+                if (!selectedProgramStillExists && currentSelectedProgramId) {
+                  await setFieldValue('nationalProgramId', '')
+                }
+
+                setSelectedPrograms(newAssociatedPrograms)
               }}
               onBlur={() => setFieldTouched('domains', true)}
               disabled={disableForm}
@@ -135,7 +190,7 @@ export const FormOfferType = ({
           />
         </FormLayout.Row>
 
-        {nationalPrograms.length > 0 && (
+        {selectedPrograms.length > 0 && (
           <FormLayout.Row
             sideComponent={
               <InfoBox>
@@ -151,7 +206,7 @@ export const FormOfferType = ({
                   label: 'Sélectionnez un dispositif national',
                   value: '',
                 },
-                ...nationalProgramsForDomains,
+                ...selectedPrograms,
               ]}
               label="Dispositif national"
               name="nationalProgramId"
