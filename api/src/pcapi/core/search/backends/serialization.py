@@ -129,7 +129,10 @@ class AlgoliaSerializationMixin:
                 extra_data_artists.append(artist)
 
         artists = (
-            [{"id": artist.id, "image": artist.image, "name": artist.name} for artist in offer.product.artists]
+            [
+                {"id": artist.id, "image": artist.image or offer.thumbUrl, "name": artist.name}
+                for artist in offer.product.artists
+            ]
             if offer.product and offer.product.artists
             else None
         )
