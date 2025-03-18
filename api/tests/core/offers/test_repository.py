@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 import pytest
 import time_machine
@@ -10,6 +11,7 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.geography import factories as geography_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
@@ -2242,3 +2244,67 @@ class GetHeadlineOfferFiltersTest:
         headline_offer = factories.HeadlineOfferFactory(offer=offer, venue=venue, without_mediation=True)
         headline_offer_query_result = repository.get_current_headline_offer(user_offerer.offerer.id)
         assert headline_offer_query_result == headline_offer
+
+
+@pytest.mark.usefixtures("db_session")
+class GetActiveOfferByVenueIdAndEanTest:
+    EAN = "0000000000001"
+
+    def test_existing_offer_is_found(self):
+        offer = factories.ThingOfferFactory(ean=self.EAN)
+        res = repository.get_active_offer_by_venue_id_and_ean(offer.venueId, offer.ean)
+
+        assert res == offer
+
+    def test_existing_offer_amongst_many_others_is_found(self):
+        main_venue = offerers_factories.VenueFactory()
+        another_venue = offerers_factories.VenueFactory()
+
+        offer = factories.ThingOfferFactory(venue=main_venue, ean=self.EAN)
+        factories.ThingOfferFactory(venue=main_venue, ean=self.EAN, isActive=False)
+        factories.ThingOfferFactory(venue=main_venue, ean="0000000000002")
+
+        factories.ThingOfferFactory(venue=another_venue, ean=self.EAN)
+        factories.ThingOfferFactory(venue=another_venue, ean="0000000000002")
+
+        res = repository.get_active_offer_by_venue_id_and_ean(offer.venueId, offer.ean)
+
+        assert res == offer
+
+    def test_most_recent_offer_is_returned_if_many_amongst_venue_shares_same_ean(self, caplog):
+        def past_date(delta):
+            today = datetime.datetime.now(datetime.timezone.utc)
+            return today - datetime.timedelta(days=delta)
+
+        venue = offerers_factories.VenueFactory()
+        offers = [
+            factories.ThingOfferFactory(venue=venue, ean=self.EAN, dateCreated=past_date(1)),
+            factories.ThingOfferFactory(venue=venue, ean=self.EAN, dateCreated=past_date(2)),
+            factories.ThingOfferFactory(venue=venue, ean=self.EAN, dateCreated=past_date(3)),
+        ]
+
+        with caplog.at_level(logging.WARNING):
+            res = repository.get_active_offer_by_venue_id_and_ean(venue.id, self.EAN)
+
+        assert any([log.message == "EAN shared by more than one offer across a venue" for log in caplog.records])
+
+        assert res == offers[0]
+
+    def test_offer_from_another_venue_raises_an_error(self):
+        another_venue = offerers_factories.VenueFactory()
+        offer = factories.ThingOfferFactory(ean=self.EAN)
+
+        with pytest.raises(exceptions.OfferNotFound):
+            repository.get_active_offer_by_venue_id_and_ean(another_venue.id, offer.ean)
+
+    def test_unknown_ean_raises_an_error(self):
+        offer = factories.ThingOfferFactory(ean=self.EAN)
+
+        with pytest.raises(exceptions.OfferNotFound):
+            repository.get_active_offer_by_venue_id_and_ean(offer.venueId, "0000000000002")
+
+    def test_inactive_offer_raises_an_error(self):
+        offer = factories.ThingOfferFactory(ean=self.EAN, isActive=False)
+
+        with pytest.raises(exceptions.OfferNotFound):
+            repository.get_active_offer_by_venue_id_and_ean(offer.venueId, offer.ean)

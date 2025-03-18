@@ -1208,15 +1208,37 @@ def get_product_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
 
 
 def get_active_offer_by_venue_id_and_ean(venue_id: int, ean: str) -> models.Offer:
-    return models.Offer.query.filter(
-        models.Offer.venueId == venue_id,
-        models.Offer.isActive.is_(True),
-        sa.or_(
-            models.Offer.ean == ean,
-            # TODO: Remove when ean is migrated out of extraData
-            models.Offer.extraData["ean"].astext == ean,
-        ),
-    ).one()
+    """Search (active) offer by venue and EAN.
+
+    Notes:
+        a venue might have more than one offer sharing the same EAN.
+        It should not happen but it can. If so, the error should be
+        logged and the most recent one should be returned.
+    """
+    offers = (
+        models.Offer.query.filter(
+            models.Offer.venueId == venue_id,
+            models.Offer.isActive.is_(True),
+            sa.or_(
+                models.Offer.ean == ean,
+                # TODO: Remove when ean is migrated out of extraData
+                models.Offer.extraData["ean"].astext == ean,
+            ),
+        )
+        .order_by(models.Offer.dateCreated.desc())
+        .all()
+    )
+
+    if not offers:
+        raise exceptions.OfferNotFound()
+
+    if len(offers) > 1:
+        logger.warning(
+            "EAN shared by more than one offer across a venue",
+            extra={"ean": ean, "venue_id": venue_id, "offers_ids": [offer.id for offer in offers]},
+        )
+
+    return offers[0]
 
 
 def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> models.Offer:
