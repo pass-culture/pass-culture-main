@@ -72,9 +72,14 @@ class ValidateUserTest:
         user = users_models.User.query.filter_by(email="pro@example.com").one()
         assert user.email == "pro@example.com"
         assert user.isEmailValidated is False
-
+        # TODO To delete, verif des cas d erreur
+        # mocked_pipeline_exec.return_value = [f'{{"user_id": "{user.id + 1}", "jti": "{str(uuid.uuid4())}"}}', 1]
+        # from datetime import timedelta
+        # import datetime
+        # fake = token_utils.create_passwordless_login_token(user.id, ttl=timedelta(seconds=0))
+        # mocked_pipeline_exec.return_value = [f'{{"user_id": "{user.id}", "jti": "{str(uuid.uuid4())}"}}', 1]
+        # response = client.patch(f"/users/validate_signup/{fake}")
         mocked_pipeline_exec.return_value = [f'{{"user_id": "{user.id}", "jti": "{str(uuid.uuid4())}"}}', 1]
-
         response = client.patch(f"/users/validate_signup/{passwordless_login_token}")
         assert response.status_code == 204
         assert "Set-Cookie" in response.headers

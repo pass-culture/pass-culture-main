@@ -75,15 +75,40 @@ def signup_pro(body: users_serializers.ProUserCreationBodyV2Model) -> None:
 @blueprint.pro_private_api.route("/users/validate_signup/<token>", methods=["PATCH"])
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def validate_user(token: str) -> None:
-    try:
-        stored_token = token_utils.Token.load_and_check(token, token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION)
-        user_to_validate = users_models.User.query.get_or_404(stored_token.user_id)
-        stored_token.expire()
-        users_api.validate_pro_user_email(user_to_validate)
-    except users_exceptions.InvalidToken:
+    def basic_token_error_handling() -> None:
         errors = ResourceNotFoundError()
         errors.add_error("global", "Ce lien est invalide")
         raise errors
+
+    def classic_token_check(token: str) -> None:
+        try:
+            stored_token = token_utils.Token.load_and_check(token, token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION)
+            user_to_validate = users_models.User.query.get_or_404(stored_token.user_id)
+            stored_token.expire()
+            users_api.validate_pro_user_email(user_to_validate)
+        except users_exceptions.InvalidToken:
+            basic_token_error_handling()
+
+    if FeatureToggle.WIP_2025_SIGN_UP.is_active():
+        try:
+            user_id = token_utils.validate_passwordless_token(token)["sub"]
+            user = users_models.User.query.get_or_404(user_id)
+            users_api.validate_pro_user_email(user)
+        except RuntimeError:
+            classic_token_check(token)
+        except users_exceptions.ExpiredToken:
+            basic_token_error_handling()
+        except users_exceptions.InvalidToken:
+            basic_token_error_handling()
+        else:
+            discard_session()
+            login_user(user)
+            stamp_session(user)
+            flask.session["last_login"] = datetime.utcnow().timestamp()
+            users_api.update_last_connection_date(user)
+            # return users_serializers.SharedLoginUserResponseModel.from_orm(user)
+    else:
+        classic_token_check(token)
 
 
 @blueprint.pro_private_api.route("/users/tuto-seen", methods=["PATCH"])
