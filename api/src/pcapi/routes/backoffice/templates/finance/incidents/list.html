@@ -60,7 +60,9 @@
                   <td>{{ incident.due_amount_by_offerer | format_cents(target=incident.venue) }}</td>
                   <td>{{ links.build_offerer_name_to_details_link(incident.venue.managingOfferer) }}</td>
                   <td>{{ links.build_venue_name_to_details_link(venue) }}</td>
-                  <td>{% if incident.origin %}{{ incident.origin.value }}{% endif %}</td>
+                  <td>
+                    {% if incident.origin %}{{ incident.origin.value }}{% endif %}
+                  </td>
                   <td>
                     {% if incident.zendeskId %}{{ links.build_zendesk_ticket_external_link(incident.zendeskId) }}{% endif %}
                   </td>
