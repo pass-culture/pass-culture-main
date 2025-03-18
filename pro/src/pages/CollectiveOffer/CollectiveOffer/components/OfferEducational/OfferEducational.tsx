@@ -31,7 +31,6 @@ import {
   FORM_ERROR_MESSAGE,
   SENT_DATA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
-import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
@@ -42,11 +41,11 @@ import {
   createPatchOfferPayload,
   createPatchOfferTemplatePayload,
 } from 'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferEdition/utils/createPatchOfferPayload'
-import { Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 import styles from './OfferEducational.module.scss'
 import { OfferEducationalForm } from './OfferEducationalForm/OfferEducationalForm'
 import { useCollectiveOfferImageUpload } from './useCollectiveOfferImageUpload'
+import { DomainOption } from './useOfferEducationalFormData'
 import { getOfferEducationalValidationSchema } from './validationSchema'
 
 export interface OfferEducationalProps {
@@ -58,8 +57,7 @@ export interface OfferEducationalProps {
   mode: Mode
   isOfferBooked?: boolean
   isOfferActive?: boolean
-  domainsOptions: Option[]
-  nationalPrograms: SelectOption<number>[]
+  domainsOptions: DomainOption[]
   isTemplate: boolean
   isOfferCreated?: boolean
 }
@@ -68,7 +66,6 @@ export const OfferEducational = ({
   offer,
   userOfferer,
   domainsOptions,
-  nationalPrograms,
   mode,
   isTemplate,
 }: OfferEducationalProps): JSX.Element => {
