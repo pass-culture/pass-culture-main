@@ -8,8 +8,8 @@
 </div>
 <div class="modal-body row">
   {% if information %}<div class="my-3">{{ information }}</div>{% endif %}
-  {% if details is not none %}
-    <div class="d-flex flex-column">
+  <div class="d-flex flex-column">
+    {% if details %}
       <table>
         <thead>
           <tr>
@@ -35,14 +35,14 @@
           sera comptabilisée sur l'année du jour de sa validation.
         </div>
       {% endif %}
-      {% if is_feature_active("WIP_ENABLE_CLICKHOUSE_IN_BO") %}
-        <div class="my-3 small">
-          Le chiffre d'affaires est mis à jour chaque nuit, les nouvelles réservations et les changements d'état
-          du jour ne sont pas encore pris en compte dans ce tableau.
-        </div>
-      {% endif %}
-    </div>
-  {% endif %}
+    {% endif %}
+    {% if is_feature_active("WIP_ENABLE_CLICKHOUSE_IN_BO") %}
+      <div class="my-3 small">
+        Le chiffre d'affaires est mis à jour chaque nuit, les nouvelles réservations et les changements d'état
+        du jour ne sont pas encore pris en compte dans ce tableau.
+      </div>
+    {% endif %}
+  </div>
 </div>
 <div class="modal-footer">
   <button type="button"

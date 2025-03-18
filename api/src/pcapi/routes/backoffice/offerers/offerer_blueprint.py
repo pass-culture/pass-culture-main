@@ -292,13 +292,16 @@ def get_stats_data(offerer: offerers_models.Offerer) -> dict:
         stats["inactive"]["total"] = stats["inactive"]["collective"] + stats["inactive"]["individual"]
 
     if FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO.is_active():
-        try:
-            clickhouse_results = clickhouse_queries.TotalExpectedRevenueQuery().execute(
-                tuple(venue.id for venue in offerer.managedVenues)
-            )
-            stats["total_revenue"] = clickhouse_results[0].expected_revenue
-        except ApiErrors:
-            stats["total_revenue"] = PLACEHOLDER
+        if not offerer.managedVenues:
+            stats["total_revenue"] = 0
+        else:
+            try:
+                clickhouse_results = clickhouse_queries.TotalExpectedRevenueQuery().execute(
+                    tuple(venue.id for venue in offerer.managedVenues)
+                )
+                stats["total_revenue"] = clickhouse_results[0].expected_revenue
+            except ApiErrors:
+                stats["total_revenue"] = PLACEHOLDER
     elif not (is_collective_too_big or is_individual_too_big):
         stats["total_revenue"] = offerers_api.get_offerer_total_revenue(offerer.id)
 
@@ -333,33 +336,34 @@ def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
         raise NotFound()
 
     if FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO.is_active():
-        try:
-            clickhouse_results = clickhouse_queries.AggregatedTotalRevenueQuery().execute(
-                tuple(venue.id for venue in offerer.managedVenues)
-            )
-            details: dict[str, dict] = {}
-            future = {"individual": decimal.Decimal(0.0), "collective": decimal.Decimal(0.0)}
-            for aggregated_revenue in clickhouse_results:
-                details[str(aggregated_revenue.year)] = {
-                    "individual": aggregated_revenue.revenue.individual,
-                    "collective": aggregated_revenue.revenue.collective,
-                }
-                future["individual"] += (
-                    aggregated_revenue.expected_revenue.individual - aggregated_revenue.revenue.individual
+        details: dict[str, dict] = {}
+        if offerer.managedVenues:
+            try:
+                clickhouse_results = clickhouse_queries.AggregatedTotalRevenueQuery().execute(
+                    tuple(venue.id for venue in offerer.managedVenues)
                 )
-                future["collective"] += (
-                    aggregated_revenue.expected_revenue.collective - aggregated_revenue.revenue.collective
+                future = {"individual": decimal.Decimal(0.0), "collective": decimal.Decimal(0.0)}
+                for aggregated_revenue in clickhouse_results:
+                    details[str(aggregated_revenue.year)] = {
+                        "individual": aggregated_revenue.revenue.individual,
+                        "collective": aggregated_revenue.revenue.collective,
+                    }
+                    future["individual"] += (
+                        aggregated_revenue.expected_revenue.individual - aggregated_revenue.revenue.individual
+                    )
+                    future["collective"] += (
+                        aggregated_revenue.expected_revenue.collective - aggregated_revenue.revenue.collective
+                    )
+                if sum(future.values()) > 0:
+                    details["En cours"] = future
+            except ApiErrors as api_error:
+                return render_template(
+                    "components/revenue_details.html",
+                    information=Markup(
+                        "Une erreur s'est produite lors de la lecture des données sur Clickhouse : {error}"
+                    ).format(error=api_error.errors["clickhouse"]),
+                    target=offerer,
                 )
-            if sum(future.values()) > 0:
-                details["En cours"] = future
-        except ApiErrors as api_error:
-            return render_template(
-                "components/revenue_details.html",
-                information=Markup(
-                    "Une erreur s'est produite lors de la lecture des données sur Clickhouse : {error}"
-                ).format(error=api_error.errors["clickhouse"]),
-                target=offerer,
-            )
     else:
         details = offerers_repository.get_revenues_per_year(offererId=offerer_id)
 

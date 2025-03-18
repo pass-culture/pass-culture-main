@@ -905,6 +905,19 @@ class GetOffererStatsTest(GetEndpointHelper):
         mock_run_query.assert_called_once()
         assert "70,48 € de CA" in html_parser.extract_cards_text(response.data)[0]
 
+    @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
+    @pytest.mark.settings(CLICKHOUSE_BACKEND="pcapi.connectors.clickhouse.backend.ClickhouseBackend")
+    @patch("pcapi.connectors.clickhouse.backend.BaseBackend.run_query")
+    def test_offerer_total_revenue_from_when_no_venue(self, mock_run_query, authenticated_client):
+        offerer_id = offerers_factories.OffererFactory().id
+
+        with assert_num_queries(self.expected_num_queries_when_clickhouse_enabled):
+            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            assert response.status_code == 200
+
+        mock_run_query.assert_not_called()
+        assert "0 € de CA" in html_parser.extract_cards_text(response.data)[0]
+
 
 class GetOffererStatsDataTest:
     # get active/inactive stats (6 query)
@@ -1027,6 +1040,7 @@ class GetOffererStatsDataTest:
         assert total_revenue == 0.0
 
     def test_no_bookings(self, offerer):
+        offerers_factories.VenueFactory(managingOfferer=offerer)
         db.session.refresh(offerer)
 
         with assert_num_queries(self.expected_num_queries):
@@ -1075,7 +1089,7 @@ class GetOffererRevenueDetailsTest(GetEndpointHelper):
     )
     def test_offerer_revenue_details_from_clickhouse(self, mock_run_query, authenticated_client):
         offerer = offerers_factories.OffererFactory()
-        offerers_factories.VenueFactory.create_batch(2)
+        offerers_factories.VenueFactory.create_batch(2, managingOfferer=offerer)
         offerer_id = offerer.id
 
         with assert_num_queries(self.expected_num_queries_when_clickhouse_enabled):
@@ -1095,6 +1109,19 @@ class GetOffererRevenueDetailsTest(GetEndpointHelper):
         assert rows[2]["Année"] == "2022"
         assert rows[2]["CA offres IND"] == "123,40 €"
         assert rows[2]["CA offres EAC"] == "1 500,00 €"
+
+    @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
+    @pytest.mark.settings(CLICKHOUSE_BACKEND="pcapi.connectors.clickhouse.backend.ClickhouseBackend")
+    @patch("pcapi.connectors.clickhouse.backend.BaseBackend.run_query")
+    def test_offerer_revenue_details_when_no_venue(self, mock_run_query, authenticated_client):
+        offerer_id = offerers_factories.OffererFactory().id
+
+        with assert_num_queries(self.expected_num_queries_when_clickhouse_enabled):
+            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            assert response.status_code == 200
+
+        mock_run_query.assert_not_called()
+        assert "€" not in html_parser.content_as_text(response.data)
 
 
 class GetOffererHistoryTest(GetEndpointHelper):
