@@ -1,19 +1,25 @@
+import { useFormContext } from 'react-hook-form'
+
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'commons/core/Offers/constants'
 import strokeDateIcon from 'icons/stroke-date.svg'
 import thingStrokeIcon from 'icons/stroke-thing.svg'
 import strokeVirtualEventIcon from 'icons/stroke-virtual-event.svg'
 import strokeVirtualThingIcon from 'icons/stroke-virtual-thing.svg'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
+import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import styles from './IndividualOfferType.module.scss'
 
-export const IndividualOfferType = (): JSX.Element | null => {
+export const IndividualOfferType = () => {
+  const { setValue, getValues } = useFormContext()
+
   return (
     <RadioGroup
       name="individualOfferSubtype"
       className={styles['container']}
       legend={<h2 className={styles['legend']}>Votre offre est :</h2>}
+      onChange={(e) => setValue('offer.individualOfferSubtype', e.target.value)}
+      checkedOption={getValues('offer.individualOfferSubtype')}
       group={[
         {
           label: 'Un bien physique',

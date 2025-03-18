@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { FormikProvider, useFormik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import {
   COLLECTIVE_OFFER_SUBTYPE,
@@ -11,29 +11,30 @@ import {
 import { OfferTypeFormValues } from '../../types'
 import { IndividualOfferType } from '../IndividualOfferType'
 
-const TestForm = (): JSX.Element => {
+const OfferTypeIndividualForm = (): JSX.Element => {
   const initialValues: OfferTypeFormValues = {
-    offerType: OFFER_TYPES.INDIVIDUAL_OR_DUO,
-    collectiveOfferSubtype: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
-    collectiveOfferSubtypeDuplicate:
-      COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,
-    individualOfferSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
+    offer: {
+      offerType: OFFER_TYPES.INDIVIDUAL_OR_DUO,
+      collectiveOfferSubtype: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
+      collectiveOfferSubtypeDuplicate:
+        COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,
+      individualOfferSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
+    },
   }
 
-  const formik = useFormik<OfferTypeFormValues>({
-    initialValues: initialValues,
-    onSubmit: vi.fn(),
+  const methods = useForm<OfferTypeFormValues>({
+    defaultValues: initialValues,
   })
 
   return (
-    <FormikProvider value={formik}>
+    <FormProvider {...methods}>
       <IndividualOfferType />
-    </FormikProvider>
+    </FormProvider>
   )
 }
 
 const renderOfferTypeIndividual = () => {
-  return render(<TestForm />)
+  return render(<OfferTypeIndividualForm />)
 }
 
 describe('OfferTypeIndividual', () => {
