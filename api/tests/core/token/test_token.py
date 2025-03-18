@@ -308,12 +308,6 @@ class PasswordLessLoginTokenTest:
     private_key = rsa.generate_private_key(public_exponent=3, key_size=1024)
     public_key = private_key.public_key()
 
-    private_key = rsa.generate_private_key(
-        public_exponent=3,
-        key_size=1024,
-    )
-    public_key = private_key.public_key()
-
     private_pem_file = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.TraditionalOpenSSL,

@@ -15,6 +15,8 @@ import urllib.parse
 
 from alembic import command
 from alembic.config import Config
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 import ecdsa
 from faker import Faker
 from flask import Flask
@@ -720,6 +722,26 @@ def pytest_collection_finish(session):
             pytest.exit("You can not run backoffice tests with non backoffice tests")
     if any(BO_matches):
         session.config.option.markexpr = "backoffice"
+
+
+@pytest.fixture(name="rsa_keys")
+def generate_rsa_keys():
+    """
+    Fixture to generate a pair of RSA private and public keys
+    Concerns are puts on performance over security
+    This is for tests purposes, DO NOT copy paste this code for production keys.
+    """
+    private_key = rsa.generate_private_key(public_exponent=3, key_size=1024)
+    public_key = private_key.public_key()
+    private_key_pem_file = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+    public_key_pem_file = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo
+    )
+    return private_key_pem_file, public_key_pem_file
 
 
 #################################################################################################################
