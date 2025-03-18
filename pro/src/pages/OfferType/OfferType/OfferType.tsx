@@ -1,14 +1,9 @@
-import { FormikProvider, useFormik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
-import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import {
-  CollectiveOfferType as CollectiveOfferApiType,
-  GetOfferersNamesResponseModel,
-} from 'apiClient/v1'
-import { GET_OFFERER_NAMES_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { CollectiveOfferType as CollectiveOfferApiType } from 'apiClient/v1'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
@@ -27,8 +22,8 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import strokeProfIcon from 'icons/stroke-prof.svg'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
+import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { ActionsBar } from './ActionsBar/ActionsBar'
@@ -37,7 +32,7 @@ import { IndividualOfferType } from './IndividualOfferType/IndividualOfferType'
 import styles from './OfferType.module.scss'
 import { OfferTypeFormValues } from './types'
 
-export const OfferTypeScreen = (): JSX.Element => {
+export const OfferTypeScreen = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
@@ -45,32 +40,34 @@ export const OfferTypeScreen = (): JSX.Element => {
   const queryVenueId = queryParams.get('lieu')
 
   const notify = useNotification()
+
   const initialValues: OfferTypeFormValues = {
-    offerType: OFFER_TYPES.INDIVIDUAL_OR_DUO,
-    collectiveOfferSubtype: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
-    collectiveOfferSubtypeDuplicate:
-      COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,
-    individualOfferSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
+    offer: {
+      offerType: OFFER_TYPES.INDIVIDUAL_OR_DUO,
+      collectiveOfferSubtype: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
+      collectiveOfferSubtypeDuplicate:
+        COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,
+      individualOfferSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
+    },
   }
 
-  const { data } = useSWR<
-    GetOfferersNamesResponseModel | null,
-    string,
-    [string]
-  >([GET_OFFERER_NAMES_QUERY_KEY], () => api.listOfferersNames())
-  const offerersNames = data?.offerersNames
+  const methods = useForm<OfferTypeFormValues>({
+    defaultValues: initialValues,
+  })
 
-  //  If there is no offerer id in the url, consider the first offerer found in the user's offerers list
-  const offererId = queryOffererId || offerersNames?.[0].id
-  const { data: offerer, isLoading: isOffererLoading } = useOfferer(offererId)
+  const { handleSubmit, setValue, getValues, watch } = methods
+
+  const offer = watch('offer')
+
+  const { data: offerer, isLoading: isOffererLoading } =
+    useOfferer(queryOffererId)
 
   const isOnboarding = location.pathname.indexOf('onboarding') !== -1
-  const onSubmit = async (values: OfferTypeFormValues) => {
-    if (values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
+
+  const onSubmit = async ({ offer }: OfferTypeFormValues) => {
+    if (offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
       const params = new URLSearchParams(location.search)
-      if (values.individualOfferSubtype) {
-        params.append('offer-type', values.individualOfferSubtype)
-      }
+      params.append('offer-type', offer.individualOfferSubtype)
 
       return navigate({
         pathname: getIndividualOfferUrl({
@@ -82,15 +79,15 @@ export const OfferTypeScreen = (): JSX.Element => {
       })
     }
 
-    // Offer type is EDUCATIONAL
-    if (values.collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.TEMPLATE) {
+    if (offer.collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.TEMPLATE) {
       return navigate({
         pathname: '/offre/creation/collectif/vitrine',
         search: location.search,
       })
     }
+
     if (
-      values.collectiveOfferSubtypeDuplicate ===
+      offer.collectiveOfferSubtypeDuplicate ===
       COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
     ) {
       const apiFilters = {
@@ -127,10 +124,9 @@ export const OfferTypeScreen = (): JSX.Element => {
       )
 
       if (templateOffersOnSelectedVenue.length === 0) {
-        notify.error(
+        return notify.error(
           'Vous devez créer une offre vitrine avant de pouvoir utiliser cette fonctionnalité'
         )
-        return
       } else {
         return navigate({
           pathname: '/offre/creation/collectif/selection',
@@ -145,19 +141,8 @@ export const OfferTypeScreen = (): JSX.Element => {
     })
   }
 
-  const formik = useFormik<OfferTypeFormValues>({
-    initialValues: initialValues,
-    onSubmit,
-  })
-  const { values } = formik
-
   const isDisabledForEducationnal =
-    values.offerType === OFFER_TYPES.EDUCATIONAL && !offerer?.allowedOnAdage
-
-  const hasNotChosenOfferType = values.individualOfferSubtype === ''
-
-  const isDisableForIndividual =
-    values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && hasNotChosenOfferType
+    offer.offerType === OFFER_TYPES.EDUCATIONAL && !offerer?.allowedOnAdage
 
   return (
     <>
@@ -166,8 +151,8 @@ export const OfferTypeScreen = (): JSX.Element => {
       )}
       <div className={styles['offer-type-container']}>
         <h1 className={styles['offer-type-title']}>Créer une offre</h1>
-        <FormikProvider value={formik}>
-          <form onSubmit={formik.handleSubmit}>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <FormLayout>
               {/* If we're on boarding process, we don't need to ask for offer type (we already chose individual at previous step) */}
               {!isOnboarding && (
@@ -178,6 +163,10 @@ export const OfferTypeScreen = (): JSX.Element => {
                       À qui destinez-vous cette offre ?
                     </h2>
                   }
+                  onChange={(e) =>
+                    setValue('offer.offerType', e.target.value as OFFER_TYPES)
+                  }
+                  checkedOption={getValues('offer.offerType')}
                   group={[
                     {
                       label: 'Au grand public',
@@ -196,23 +185,22 @@ export const OfferTypeScreen = (): JSX.Element => {
                   displayMode="inline-grow"
                 />
               )}
-              {values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
+
+              {offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
                 <IndividualOfferType />
               )}
-              {values.offerType === OFFER_TYPES.EDUCATIONAL &&
+
+              {offer.offerType === OFFER_TYPES.EDUCATIONAL &&
                 (isOffererLoading ? (
                   <Spinner />
                 ) : (
                   <CollectiveOfferType offerer={offerer} />
                 ))}
-              <ActionsBar
-                disableNextButton={
-                  isDisabledForEducationnal || isDisableForIndividual
-                }
-              />
+
+              <ActionsBar disableNextButton={isDisabledForEducationnal} />
             </FormLayout>
           </form>
-        </FormikProvider>
+        </FormProvider>
       </div>
     </>
   )

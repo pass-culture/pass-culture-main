@@ -1,12 +1,12 @@
-import { useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
-  OFFER_TYPES,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
+  OFFER_TYPES,
 } from 'commons/core/Offers/constants'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { getLastDmsApplicationForOfferer } from 'commons/utils/getLastCollectiveDmsApplication'
@@ -16,10 +16,8 @@ import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
-
-import { OfferTypeFormValues } from '../types'
+import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import styles from './CollectiveOfferType.module.scss'
 
@@ -29,7 +27,7 @@ interface CollectiveOfferTypeProps {
 
 export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
   const location = useLocation()
-  const { values } = useFormikContext<OfferTypeFormValues>()
+  const { setValue, getValues } = useFormContext()
 
   const queryParams = new URLSearchParams(location.search)
   const queryOffererId = useSelector(selectCurrentOffererId)
@@ -49,6 +47,10 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
           legend={
             <h2 className={styles['legend']}>Quel est le type de l’offre ?</h2>
           }
+          onChange={(e) =>
+            setValue('offer.collectiveOfferSubtype', e.target.value)
+          }
+          checkedOption={getValues('offer.collectiveOfferSubtype')}
           group={[
             {
               label: 'Une offre réservable',
@@ -68,8 +70,9 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
           variant={RadioVariant.BOX}
         />
       )}
+
       {offerer?.allowedOnAdage &&
-        values.collectiveOfferSubtype ===
+        getValues('offer.collectiveOfferSubtype') ===
           COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
           <RadioGroup
             name="collectiveOfferSubtypeDuplicate"
@@ -79,6 +82,10 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
                 Créer une nouvelle offre ou dupliquer une offre ?
               </h2>
             }
+            onChange={(e) =>
+              setValue('offer.collectiveOfferSubtypeDuplicate', e.target.value)
+            }
+            checkedOption={getValues('offer.collectiveOfferSubtypeDuplicate')}
             group={[
               {
                 label: 'Créer une nouvelle offre',
@@ -98,7 +105,8 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
             variant={RadioVariant.BOX}
           />
         )}
-      {values.offerType === OFFER_TYPES.EDUCATIONAL &&
+
+      {getValues('offer.offerType') === OFFER_TYPES.EDUCATIONAL &&
         !offerer?.isValidated && (
           <Callout
             variant={CalloutVariant.INFO}
@@ -108,20 +116,20 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
             Culture.
           </Callout>
         )}
-      {!offerer?.allowedOnAdage &&
-        (lastDmsApplication && (
-          <Callout
-            variant={CalloutVariant.INFO}
-            links={[
-              {
-                href: `/structures/${queryOffererId}/lieux/${lastDmsApplication.venueId}/collectif`,
-                label: 'Voir ma demande de référencement',
-              },
-            ]}
-          >
-            Vous avez une demande de référencement en cours de traitement
-          </Callout>
-        ))}
+
+      {!offerer?.allowedOnAdage && lastDmsApplication && (
+        <Callout
+          variant={CalloutVariant.INFO}
+          links={[
+            {
+              href: `/structures/${queryOffererId}/lieux/${lastDmsApplication.venueId}/collectif`,
+              label: 'Voir ma demande de référencement',
+            },
+          ]}
+        >
+          Vous avez une demande de référencement en cours de traitement
+        </Callout>
+      )}
     </>
   )
 }
