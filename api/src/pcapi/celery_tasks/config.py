@@ -25,6 +25,7 @@ CELERY_BASE_SETTINGS: typing.Final = dict(
         "tasks.mails.priority.*": {"queue": CELERY_EXTERNAL_CALLS_PRIORITY_QUEUE_NAME},
         "tasks.offers.default.*": {"queue": CELERY_INTERNAL_CALLS_DEFAULT_QUEUE_NAME},
         "tasks.offers.priority.*": {"queue": CELERY_INTERNAL_CALLS_PRIORITY_QUEUE_NAME},
+        "tasks.offerers.default.*": {"queue": "celery.external_calls.default"},
     },
     task_ignore_result=True,
 )
