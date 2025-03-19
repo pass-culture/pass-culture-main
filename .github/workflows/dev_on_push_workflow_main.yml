@@ -55,7 +55,7 @@ jobs:
             pro/yarn.lock
       - name: "Check changes in Algolia configuration"
         id: check-algolia-config-changes
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@v46
         with:
           files: |
             api/src/pcapi/algolia_settings_collective_offers.json
