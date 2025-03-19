@@ -11,6 +11,7 @@ import wtforms
 
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
@@ -389,3 +390,12 @@ class RejectCollectiveOfferForm(FlaskForm):
 
 class BatchRejectCollectiveOfferForm(empty_forms.BatchForm, RejectCollectiveOfferForm):
     pass
+
+
+class MoveCollectiveOfferForm(FlaskForm):
+    venue = fields.PCSelectWithPlaceholderValueField("Nouveau partenaire culturel", choices=[], validate_choice=False)
+
+    def set_venue_choices(self, venues: list[offerers_models.Venue]) -> None:
+        self.venue.choices = [
+            (venue.id, f"{venue.common_name} ({venue.siret if venue.siret else 'Pas de SIRET'})") for venue in venues
+        ]
