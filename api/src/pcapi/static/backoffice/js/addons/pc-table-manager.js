@@ -104,14 +104,45 @@ class PcTableManager extends PcAddOn {
   }
   /** MENU **/
   #initializeMenu = ($table, configuration) => {
-    const $container = document.createElement('div')
-    $container.id = "pc-table-manager-menu-container-" + configuration.id
-    $container.classList.add('dropdown')
-    this.#createMenu($container, configuration, false)
-    $table.before($container)
+    let $container
+    if ($table.dataset.pcTableMenuContainerId){
+      $container = document.querySelector('#' + $table.dataset.pcTableMenuContainerId)
+      $container.classList.add('dropdown')
+    } else {
+      $container = document.createElement('div')
+      $container.classList.add('dropdown')
+      $table.before($container)
+    }
+    this.#createMenu($container, configuration)
+    this.#updateMenuContent(configuration)
   }
 
-  #createMenu = ($container, configuration, open) => {
+  #createMenu = ($container, configuration) => {
+    const innerHTML = `
+        <button class="btn btn-outline-primary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-layout-three-columns"></i>
+          Colonnes
+        </button>
+      <div class="dropdown-menu pc-table-manager-dropdown"  data-pc-target-table-id="${configuration.id}">
+        <div class="pc-drop-down-header">
+          <span>
+            Affichez et ordonnez les<br/>colonnes de votre choix.
+          </span>
+          <i class="bi bi-x-lg pc-table-manager-close-menu" data-pc-target-table-id="${configuration.id}"></i>
+        </div>
+        <div class="pc-table-manager-buttons">
+          <a class="link-primary pc-table-manager-display-all" href="" data-pc-target-table-id="${configuration.id}">Tout afficher</a>
+          <a class="link-primary pc-table-manager-display-none" href="" data-pc-target-table-id="${configuration.id}">Tout masquer</a>
+          <a class="link-primary pc-table-manager-display-default" href="" data-pc-target-table-id="${configuration.id}">Réinitialiser</a></div>
+        <ul class="pc-table-manager-draggable" data-pc-target-table-id="${configuration.id}" id="pc-table-manager-menu-container-${configuration.id}" >
+        </ul>
+      </div>
+    `
+    $container.innerHTML = innerHTML
+  }
+
+  #updateMenuContent = (configuration) => {
+    const $container = document.querySelector(`#pc-table-manager-menu-container-${configuration.id}`)
     const elements = []
     configuration.columns.forEach((column) => {
       elements.push(
@@ -126,29 +157,7 @@ class PcTableManager extends PcAddOn {
         `
       )
     })
-    
-    const innerHTML = `
-        <button class="btn btn-outline-primary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-layout-three-columns"></i>
-          Colonnes
-        </button>
-      <div class="dropdown-menu pc-table-manager-dropdown${open?' show':''}"  data-pc-target-table-id="${configuration.id}">
-        <div class="pc-drop-down-header">
-          <span>
-            Affichez et ordonnez les<br/>colonnes de votre choix.
-          </span>
-          <i class="bi bi-x-lg pc-table-manager-close-menu" data-pc-target-table-id="${configuration.id}"></i>
-        </div>
-        <div class="pc-table-manager-buttons">
-          <a class="link-primary pc-table-manager-display-all" href="" data-pc-target-table-id="${configuration.id}">Tout afficher</a>
-          <a class="link-primary pc-table-manager-display-none" href="" data-pc-target-table-id="${configuration.id}">Tout masquer</a>
-          <a class="link-primary pc-table-manager-display-default" href="" data-pc-target-table-id="${configuration.id}">Réinitialiser</a></div>
-        <ul class="pc-table-manager-draggable" data-pc-target-table-id="${configuration.id}">
-          ${elements.join("\n")}
-        </ul>
-      </div>
-    `
-    $container.innerHTML = innerHTML
+    $container.innerHTML = elements.join("\n")
   }
 
   #stopPropagation = (event) => {
@@ -338,14 +347,6 @@ class PcTableManager extends PcAddOn {
     $table.classList.remove('d-none')
   }
 
-  #applyConfigurationOnMenu = (configuration) => {
-    const $container = document.querySelector(`#pc-table-manager-menu-container-${configuration.id}`)
-    if ($container !== null){
-      const $menu = $container.querySelector('.pc-table-manager-dropdown')
-      this.#createMenu($container, configuration, $menu.classList.contains('show'))
-    }
-  }
-
   #getConfigurationForEdit = (id) => {
     return structuredClone(this.configurations[id])
   }
@@ -371,8 +372,8 @@ class PcTableManager extends PcAddOn {
       this.configurations[defaultConfiguration.id] = defaultConfiguration
       const oldConfiguration = this.getConfiguration(defaultConfiguration.id)
       const configuration = this.#mergeConfigurations(oldConfiguration, defaultConfiguration)
-      this.applyConfiguration(configuration)
       this.#initializeMenu($table, configuration)
+      this.applyConfiguration(configuration)
     })
   }
 
@@ -402,17 +403,10 @@ class PcTableManager extends PcAddOn {
   }
 
   applyConfiguration = (configuration) => {
-    // Only in prototype
-    const startTime = performance.now()
     this.#applyConfigurationOnTable(configuration)
-    this.#applyConfigurationOnMenu(configuration)
+    this.#updateMenuContent(configuration)
     this.saveConfiguration(configuration)
     this.configurations[configuration.id] = configuration
-
-    // Only in prototype
-
-    const endTime = performance.now()
-    console.log(`configuration applied in  ${endTime - startTime} milliseconds`)
   }
 
   saveConfiguration = (configuration) => {
