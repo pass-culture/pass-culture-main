@@ -1741,7 +1741,7 @@ def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
     venues_choices = offerers_repository.get_offerers_venues_with_pricing_point(
         offer.venue,
         include_without_pricing_points=True,
-        check_pricing_points=True,
+        only_similar_pricing_points=True,
     )
     if not venues_choices:
         raise exceptions.NoDestinationVenue()
