@@ -1317,6 +1317,29 @@ class ListOffersTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["Entité juridique"] == "Offerer Top Acteur"
 
+    def test_list_offers_with_product_image(self, authenticated_client):
+        product_mediation = offers_factories.ProductMediationFactory()
+        offer = offers_factories.OfferFactory(product=product_mediation.product)
+
+        query_args = self._get_query_args_by_id(offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        expected = f'''style="background-image: url('{product_mediation.url}')"'''
+        assert expected.encode() in response.data
+
+    def test_list_offers_with_mediation_image(self, authenticated_client):
+        mediation = offers_factories.MediationFactory()
+
+        query_args = self._get_query_args_by_id(mediation.offerId)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        expected = f'''style="background-image: url('{mediation.thumbUrl}')"'''
+        assert expected.encode() in response.data
+
 
 class EditOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.edit_offer"
