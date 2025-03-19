@@ -758,13 +758,15 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
 def get_offerers_venues_with_pricing_point(
     venue: models.Venue,
     include_without_pricing_points: bool = False,
-    check_pricing_points: bool = False,
+    only_similar_pricing_points: bool = False,
+    filter_same_bank_account: bool = False,
 ) -> list[models.Venue]:
     """
     Returns the venues of an offerer - excluding provided venue - and their associated active pricing points.
     By default, returns only the venues with pricing points.
-    `without_pricing_points` includes venues without active pricing points.
+    `include_without_pricing_points` includes venues without active pricing points.
     `only_similar_pricing_points` includes only venues with the same pricing points as the provided venue.
+    `filter_same_bank_account` exclude venues with a different bank account.
     """
     venues_choices_query = (
         models.Venue.query.join(
@@ -792,10 +794,27 @@ def get_offerers_venues_with_pricing_point(
         )
         .order_by(models.Venue.common_name)
     )
-    if check_pricing_points and venue.current_pricing_point_link:
+    if only_similar_pricing_points and venue.current_pricing_point_link:
         venues_choices_query = venues_choices_query.filter(
             models.VenuePricingPointLink.pricingPointId == venue.current_pricing_point_link.pricingPointId
         )
+
+    if filter_same_bank_account:
+        venues_choices_query = venues_choices_query.outerjoin(
+            models.VenueBankAccountLink,
+            sqla.and_(
+                models.VenueBankAccountLink.venueId == models.Venue.id,
+                models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+            ),
+        ).options(
+            sqla.orm.contains_eager(models.Venue.bankAccountLinks).load_only(
+                models.VenueBankAccountLink.bankAccountId, models.VenueBankAccountLink.timespan
+            )
+        )
+        if venue.current_bank_account_link:
+            venues_choices_query = venues_choices_query.filter(
+                models.VenueBankAccountLink.bankAccountId == venue.current_bank_account_link.bankAccountId
+            )
     venues_choices = venues_choices_query.all()
     return venues_choices
 

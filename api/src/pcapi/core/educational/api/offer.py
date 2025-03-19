@@ -1149,48 +1149,71 @@ def batch_update_collective_offers_template(query: BaseQuery, update_fields: dic
 
 
 def check_can_move_collective_offer_venue(
-    collective_offer: educational_models.CollectiveOffer,
+    collective_offer: educational_models.CollectiveOffer, with_restrictions: bool = True
 ) -> list[offerers_models.Venue]:
-    count_started_stocks = (
-        educational_models.CollectiveStock.query.with_entities(educational_models.CollectiveStock.id)
-        .filter(
-            educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
-            educational_models.CollectiveStock.startDatetime < datetime.datetime.utcnow(),
+    if with_restrictions:
+        count_started_stocks = (
+            educational_models.CollectiveStock.query.with_entities(educational_models.CollectiveStock.id)
+            .filter(
+                educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
+                educational_models.CollectiveStock.startDatetime < datetime.datetime.utcnow(),
+            )
+            .count()
         )
-        .count()
-    )
-    if count_started_stocks > 0:
-        raise offers_exceptions.OfferEventInThePast(count_started_stocks)
+        if count_started_stocks > 0:
+            raise offers_exceptions.OfferEventInThePast(count_started_stocks)
 
-    count_reimbursed_bookings = (
-        educational_models.CollectiveBooking.query.with_entities(educational_models.CollectiveBooking.id)
-        .join(educational_models.CollectiveBooking.collectiveStock)
-        .filter(
-            educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
-            educational_models.CollectiveBooking.isReimbursed,
+        count_reimbursed_bookings = (
+            educational_models.CollectiveBooking.query.with_entities(educational_models.CollectiveBooking.id)
+            .join(educational_models.CollectiveBooking.collectiveStock)
+            .filter(
+                educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
+                educational_models.CollectiveBooking.isReimbursed,
+            )
+            .count()
         )
-        .count()
-    )
-    if count_reimbursed_bookings > 0:
-        raise offers_exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
+        if count_reimbursed_bookings > 0:
+            raise offers_exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
 
-    venues_choices = offerers_repository.get_offerers_venues_with_pricing_point(collective_offer.venue)
+    venues_choices = offerers_repository.get_offerers_venues_with_pricing_point(
+        collective_offer.venue,
+        include_without_pricing_points=not with_restrictions,
+        only_similar_pricing_points=not with_restrictions,
+        filter_same_bank_account=not with_restrictions,
+    )
     if not venues_choices:
         raise offers_exceptions.NoDestinationVenue()
     return venues_choices
 
 
 def move_collective_offer_venue(
-    collective_offer: educational_models.CollectiveOffer, destination_venue: offerers_models.Venue
+    collective_offer: educational_models.CollectiveOffer,
+    destination_venue: offerers_models.Venue,
+    with_restrictions: bool = True,
 ) -> None:
-    venue_choices = check_can_move_collective_offer_venue(collective_offer)
+    venue_choices = check_can_move_collective_offer_venue(collective_offer, with_restrictions=with_restrictions)
 
     if destination_venue not in venue_choices:
         raise offers_exceptions.ForbiddenDestinationVenue()
 
     destination_pricing_point_link = destination_venue.current_pricing_point_link
-    assert destination_pricing_point_link  # for mypy - it would not be in venue_choices without link
-    destination_pricing_point_id = destination_pricing_point_link.pricingPointId
+    if not with_restrictions:
+        destination_pricing_point_id = (
+            destination_pricing_point_link.pricingPointId if destination_pricing_point_link else None
+        )
+    else:
+        assert destination_pricing_point_link  # for mypy - it would not be in venue_choices without link
+        destination_pricing_point_id = destination_pricing_point_link.pricingPointId
+
+    finance_event_statuses = [finance_models.FinanceEventStatus.PENDING, finance_models.FinanceEventStatus.READY]
+    if not with_restrictions:
+        finance_event_statuses.extend(
+            [
+                finance_models.FinanceEventStatus.PRICED,
+                finance_models.FinanceEventStatus.CANCELLED,
+                finance_models.FinanceEventStatus.NOT_TO_BE_PRICED,
+            ]
+        )
 
     collective_bookings = (
         educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.collectiveStock)
@@ -1199,9 +1222,7 @@ def move_collective_offer_venue(
             finance_models.FinanceEvent,
             sa.and_(
                 finance_models.FinanceEvent.collectiveBookingId == educational_models.CollectiveBooking.id,
-                finance_models.FinanceEvent.status.in_(
-                    (finance_models.FinanceEventStatus.PENDING, finance_models.FinanceEventStatus.READY)
-                ),
+                finance_models.FinanceEvent.status.in_(finance_event_statuses),
             ),
         )
         .outerjoin(
@@ -1229,7 +1250,6 @@ def move_collective_offer_venue(
     db.session.add(collective_offer)
 
     for collective_booking in collective_bookings:
-        assert not collective_booking.isReimbursed
         collective_booking.venueId = destination_venue.id
         db.session.add(collective_booking)
 
@@ -1239,8 +1259,12 @@ def move_collective_offer_venue(
         if pricing and pricing.pricingPointId != destination_pricing_point_id:
             raise offers_exceptions.BookingsHaveOtherPricingPoint()
 
-        finance_event = collective_booking.finance_events[0] if collective_booking.finance_events else None
-        if finance_event:
+        if with_restrictions:
+            finance_events = [collective_booking.finance_events[0]] if collective_booking.finance_events else []
+        else:
+            finance_events = collective_booking.finance_events if collective_booking.finance_events else []
+
+        for finance_event in finance_events:
             finance_event.venueId = destination_venue.id
             finance_event.pricingPointId = destination_pricing_point_id
             if finance_event.status == finance_models.FinanceEventStatus.PENDING:
