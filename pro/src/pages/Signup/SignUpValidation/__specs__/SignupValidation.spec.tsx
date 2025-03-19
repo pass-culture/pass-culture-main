@@ -78,6 +78,15 @@ describe('src | components | pages | Signup | validation', () => {
     })
   })
 
+  it('should verify validity of passwordless login token and redirect to pro home page', async () => {
+    const validateUser = vi.spyOn(api, 'validateUser').mockResolvedValue()
+    renderSignupValidation({features: ['WIP_2025_SIGN_UP']})
+    expect(validateUser).toHaveBeenNthCalledWith(1, 'AAA')
+    await waitFor(() => {
+      expect(window.location.pathname.includes("acceuil"))
+    })
+  })
+
   it('should verify user link is not valid and redirect to connexion', async () => {
     vi.spyOn(api, 'validateUser').mockRejectedValue(
       new ApiError(

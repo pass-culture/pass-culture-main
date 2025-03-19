@@ -4,6 +4,7 @@ import { useParams, Navigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 
 type Params = { token: string }
@@ -12,6 +13,7 @@ export const SignupValidation = (): JSX.Element | null => {
   const { token } = useParams<Params>()
   const currentUser = useSelector(selectCurrentUser)
   const [urlToRedirect, setUrlToRedirect] = useState<string>()
+  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
 
   useEffect(() => {
     const validateTokenAndRedirect = async () => {
@@ -20,7 +22,7 @@ export const SignupValidation = (): JSX.Element | null => {
       } else if (token) {
         try {
           await api.validateUser(token)
-          setUrlToRedirect('/connexion?accountValidation=true')
+          isNewSignupEnabled ? setUrlToRedirect('/accueil') : setUrlToRedirect('/connexion?accountValidation=true')
         } catch (error) {
           if (isErrorAPIError(error)) {
             const errors = getError(error)
