@@ -5,7 +5,6 @@ import { useLocation, useParams } from 'react-router-dom'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-  GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
@@ -13,6 +12,8 @@ import { HelpLink } from 'components/HelpLink/HelpLink'
 import { CollectiveCreationOfferNavigation } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import { getActiveStep } from 'pages/CollectiveOfferRoutes/utils/getActiveStep'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
+
+import { useOfferEducationalFormData } from '../CollectiveOffer/components/OfferEducational/useOfferEducationalFormData'
 
 import { CollectiveEditionOfferNavigation } from './CollectiveEditionOfferNavigation/CollectiveEditionOfferNavigation'
 import styles from './CollectiveOfferLayout.module.scss'
@@ -27,7 +28,6 @@ export interface CollectiveOfferLayoutProps {
   offer?:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
-  userOfferer?: GetEducationalOffererResponseModel | null
 }
 
 export const CollectiveOfferLayout = ({
@@ -38,12 +38,16 @@ export const CollectiveOfferLayout = ({
   isTemplate = false,
   requestId = null,
   offer,
-  userOfferer,
 }: CollectiveOfferLayoutProps): JSX.Element => {
   const location = useLocation()
   const isSummaryPage = location.pathname.includes('recapitulatif')
 
-  const { data: selectedOfferer } = useOfferer(userOfferer?.id)
+  const { ...offerEducationalFormData } = useOfferEducationalFormData(
+    null,
+    offer
+  )
+
+  const { data: selectedOfferer } = useOfferer(offerEducationalFormData.offerer?.id)
   const { offerId: offerIdFromParams } = useParams<{
     offerId: string
   }>()

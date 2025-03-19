@@ -1,10 +1,11 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
+import { managedVenueFactory, userOffererFactory } from 'commons/utils/factories/userOfferersFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -23,7 +24,16 @@ vi.mock('react-router-dom', async () => ({
   default: vi.fn(),
 }))
 
-const renderCollectiveOfferSummaryCreation = async (
+vi.mock('apiClient/api', () => ({
+  api: {
+    listEducationalOfferers: vi.fn(),
+    getCategories: vi.fn(),
+    getCollectiveOffer: vi.fn(),
+    getCollectiveOfferTemplate: vi.fn(),
+  },
+}))
+
+const renderCollectiveOfferSummaryCreation = (
   path: string,
   props: MandatoryCollectiveOfferFromParamsProps,
   options?: RenderWithProvidersOptions
@@ -32,7 +42,6 @@ const renderCollectiveOfferSummaryCreation = async (
     ...options,
     initialRouterEntries: [path],
   })
-  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
 const defaultProps = {
@@ -42,6 +51,13 @@ const defaultProps = {
 }
 
 describe('CollectiveOfferSummaryCreation', () => {
+  const venue = managedVenueFactory({ id: 1 })
+  const offerer = userOffererFactory({
+    id: 1,
+    name: 'Ma super structure',
+    managedVenues: [venue],
+  })
+
   beforeEach(() => {
     vi.spyOn(api, 'getCategories').mockResolvedValue({
       categories: [],
@@ -49,15 +65,18 @@ describe('CollectiveOfferSummaryCreation', () => {
     })
     vi.spyOn(api, 'getCollectiveOffer')
     vi.spyOn(api, 'getCollectiveOfferTemplate')
+    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
+      educationalOfferers: [offerer],
+    })
   })
 
   it('should render collective offer summary ', async () => {
-    await renderCollectiveOfferSummaryCreation(
+    renderCollectiveOfferSummaryCreation(
       '/offre/A1/collectif/creation/recapitulatif',
       defaultProps
     )
     expect(
-      screen.getByRole('heading', {
+      await screen.findByRole('heading', {
         name: /Créer une offre/,
       })
     ).toBeInTheDocument()
@@ -69,35 +88,35 @@ describe('CollectiveOfferSummaryCreation', () => {
   })
 
   it('should have requete parameter in the link for previous step when requete is present in the URL', async () => {
-    await renderCollectiveOfferSummaryCreation(
+    renderCollectiveOfferSummaryCreation(
       '/offre/A1/collectif/creation/recapitulatif',
       defaultProps
     )
 
-    const previousStepLink = screen.getByText('Retour')
+    const previousStepLink = await screen.findByText('Retour')
     expect(previousStepLink.getAttribute('href')).toBe(
       '/offre/1/collectif/visibilite?requete=1'
     )
   })
 
   it('should display the saved information in the action bar', async () => {
-    await renderCollectiveOfferSummaryCreation(
+    renderCollectiveOfferSummaryCreation(
       '/offre/A1/collectif/creation/recapitulatif',
       defaultProps
     )
 
-    expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
+    expect(await screen.findByText('Brouillon enregistré')).toBeInTheDocument()
 
     expect(screen.getByText('Enregistrer et continuer')).toBeInTheDocument()
   })
 
   it('should render bookable offer summary creation with three edit links (details, stock, institution)', async () => {
-    await renderCollectiveOfferSummaryCreation(
+    renderCollectiveOfferSummaryCreation(
       '/offre/A1/collectif/creation/recapitulatif',
       defaultProps
     )
 
-    expect(screen.getAllByText('Modifier')).toHaveLength(3)
+    expect(await screen.findAllByText('Modifier')).toHaveLength(3)
   })
 
   it('should render template offer summary creation with one edit link', async () => {
@@ -107,11 +126,11 @@ describe('CollectiveOfferSummaryCreation', () => {
       offerer: undefined,
     }
 
-    await renderCollectiveOfferSummaryCreation(
+    renderCollectiveOfferSummaryCreation(
       '/offre/A1/collectif/creation/recapitulatif',
       templateProps
     )
 
-    expect(screen.getAllByText('Modifier')).toHaveLength(1)
+    expect(await screen.findAllByText('Modifier')).toHaveLength(1)
   })
 })
