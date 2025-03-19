@@ -1,18 +1,26 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import createFetchMock from 'vitest-fetch-mock'
 
+import { api } from 'apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { getCollectiveOfferTemplateFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import { managedVenueFactory, userOffererFactory } from 'commons/utils/factories/userOfferersFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CollectiveOfferSummaryEdition } from './CollectiveOfferSummaryEdition'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
+
+vi.mock('apiClient/api', () => ({
+  api: {
+    listEducationalOfferers: vi.fn(),
+  },
+}))
 
 const renderCollectiveOfferSummaryEdition = (
   offer:
@@ -29,6 +37,19 @@ describe('CollectiveOfferSummary', () => {
     | GetCollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
 
+  const venue = managedVenueFactory({ id: 1 })
+  const offerer = userOffererFactory({
+    id: 1,
+    name: 'Ma super structure',
+    managedVenues: [venue],
+  })
+
+  beforeEach(() => {
+    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
+      educationalOfferers: [offerer],
+    })
+  })
+
   it('should display desactive offer option when offer is active and not booked', async () => {
     offer = getCollectiveOfferTemplateFactory({
       isTemplate: true,
@@ -36,9 +57,8 @@ describe('CollectiveOfferSummary', () => {
     })
 
     renderCollectiveOfferSummaryEdition(offer)
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    const desactivateOffer = screen.getByRole('button', {
+    const desactivateOffer = await screen.findByRole('button', {
       name: 'Masquer la publication sur ADAGE',
     })
     expect(desactivateOffer).toBeInTheDocument()
