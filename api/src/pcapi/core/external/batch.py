@@ -86,14 +86,12 @@ def format_user_attributes(
     if user_attributes.booking_subcategories:
         attributes["ut.booking_subcategories"] = user_attributes.booking_subcategories
 
-    if cultural_survey_answers:
-        attributes.update(
-            {
-                "ut.intended_categories": cultural_survey_answers.get(
-                    cultural_survey_models.CulturalSurveyQuestionEnum.PROJECTIONS.value, []
-                )
-            }
+    if cultural_survey_answers and (
+        intended_categories := cultural_survey_answers.get(
+            cultural_survey_models.CulturalSurveyQuestionEnum.PROJECTIONS.value, []
         )
+    ):
+        attributes["ut.intended_categories"] = intended_categories
 
     if batch_extra_data:
         attributes["date(u.last_status_update_date)"] = _format_date(batch_extra_data["last_status_update_date"])

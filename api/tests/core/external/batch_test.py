@@ -89,3 +89,16 @@ class FormatUserAttributesTest:
         )
 
         assert formatted_attributes["ut.intended_categories"] == ["PROJECTION_CONCERT", "PROJECTION_FESTIVAL"]
+
+    def test_format_attributes_with_empty_cultural_survey_answers(self):
+        cultural_survey_answers = {
+            cultural_survey_models.CulturalSurveyQuestionEnum.SORTIES.value: [],
+            cultural_survey_models.CulturalSurveyQuestionEnum.PROJECTIONS.value: [],
+        }
+
+        formatted_attributes = format_user_attributes(
+            common_user_attributes, cultural_survey_answers=cultural_survey_answers
+        )
+
+        # A Batch tag can't be an empty list, otherwise the API returns an error
+        assert "ut.intended_categories" not in formatted_attributes
