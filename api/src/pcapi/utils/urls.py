@@ -36,10 +36,10 @@ def build_pc_pro_offer_link(offer: CollectiveOffer | CollectiveOfferTemplate | O
 
 def build_pc_pro_offer_path(offer: CollectiveOffer | CollectiveOfferTemplate | Offer) -> str:
     if isinstance(offer, CollectiveOffer):
-        return f"/offre/{offer.id}/collectif/edition"
+        return f"/offre/{offer.id}/collectif/recapitulatif"
 
     if isinstance(offer, CollectiveOfferTemplate):
-        return f"/offre/T-{offer.id}/collectif/edition"
+        return f"/offre/T-{offer.id}/collectif/recapitulatif"
 
     return f"/offre/individuelle/{offer.id}/recapitulatif"
 
