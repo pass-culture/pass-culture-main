@@ -625,7 +625,7 @@ class SearchVenueTest:
         assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 2
-        sorted_cards_text = sorted(cards_text, key=lambda text: re.findall(r"Venue ID : \d+ ", text)[0])
+        sorted_cards_text = sorted(cards_text, key=lambda text: int(re.findall(r"Venue ID : (\d+) ", text)[0]))
         assert_venue_equals(sorted_cards_text[0], self.venues[1])  # Cinéma Beta
         assert_venue_equals(sorted_cards_text[1], self.venues[7])  # Cinéma Delta
 
