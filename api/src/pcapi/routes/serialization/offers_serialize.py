@@ -110,6 +110,26 @@ class PostOfferBodyModel(BaseModel):
         extra = "forbid"
 
 
+class PostDraftOfferBodyModel(BaseModel):
+    name: str
+    subcategory_id: str
+    venue_id: int
+    description: str | None
+    url: HttpUrl | None
+    extra_data: typing.Any
+    duration_minutes: int | None
+    product_id: int | None
+
+    @validator("name", pre=True)
+    def validate_name(cls, name: str, values: dict) -> str:
+        check_offer_name_length_is_valid(name)
+        return name
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     address: offerers_schemas.AddressBodyModel | None
     bookingContact: EmailStr | None
@@ -132,6 +152,24 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     def validate_name(cls, name: str) -> str:
         if name:
             check_offer_name_length_is_valid(name)
+        return name
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class PatchDraftOfferBodyModel(BaseModel):
+    name: str | None
+    subcategory_id: str | None
+    url: HttpUrl | None
+    description: str | None
+    extra_data: dict[str, typing.Any] | None
+    duration_minutes: int | None
+
+    @validator("name", pre=True)
+    def validate_name(cls, name: str, values: dict) -> str:
+        check_offer_name_length_is_valid(name)
         return name
 
     class Config:
