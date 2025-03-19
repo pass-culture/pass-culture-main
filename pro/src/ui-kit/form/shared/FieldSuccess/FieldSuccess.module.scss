@@ -5,7 +5,7 @@
 .field-success {
   @include fonts.body-accent-xs;
 
-  color: var(--color-valid);
+  color: var(--color-text-success);
   display: flex;
   text-align: left;
 
