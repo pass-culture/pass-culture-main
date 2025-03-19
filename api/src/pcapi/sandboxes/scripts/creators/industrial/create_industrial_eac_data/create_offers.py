@@ -120,8 +120,7 @@ def get_location_options(venue: offerers_models.Venue) -> list[LocationOption]:
 
 
 def get_offer_address_id(
-    location_option: LocationOption,
-    managing_offerer: offerers_models.Offerer,
+    location_option: LocationOption, managing_offerer: offerers_models.Offerer, oa_label: str
 ) -> int | None:
     if location_option["locationType"] != educational_models.CollectiveLocationType.ADDRESS:
         return None
@@ -138,7 +137,7 @@ def get_offer_address_id(
     )
     address = factory(street=offer_venue["otherAddress"])
     offerer_address = offerers_factories.OffererAddressFactory(
-        label=location_option["name"], address=address, offerer=managing_offerer
+        label=oa_label, address=address, offerer=managing_offerer
     )
     return offerer_address.id
 
@@ -806,7 +805,14 @@ def _set_offer_location_columns(
 ) -> None:
     offer.locationType = location_option.get("locationType")
     offer.locationComment = location_option.get("locationComment")
-    offer.offererAddressId = get_offer_address_id(location_option=location_option, managing_offerer=offerer)
+
+    oa_label = offer.name
+    if isinstance(offer, educational_models.CollectiveOfferTemplate):
+        oa_label += " (template)"
+
+    offer.offererAddressId = get_offer_address_id(
+        location_option=location_option, managing_offerer=offerer, oa_label=oa_label
+    )
 
 
 def create_offers_booking_with_different_offer_venues(

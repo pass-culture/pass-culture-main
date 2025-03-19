@@ -394,9 +394,9 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         adageInscriptionDate=datetime.utcnow() - timedelta(days=3),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        departementCode="57",
-        postalCode="57000",
-        city="Lorient",
+        departementCode="33",
+        postalCode="33000",
+        city="Bordeaux",
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
         pricing_point="self",
     )
