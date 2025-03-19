@@ -341,22 +341,6 @@ SEARCH_GROUP_CARTES_JEUNES = SearchGroup(
     label="Cartes jeunes",
     included_subcategories=["CARTE_JEUNES"],
 )
-# FIXME (thconte, 2024-10-15): Delete this SearchGroup once app's minimal version has bumped
-SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE = SearchGroup(
-    children=[
-        NATIVE_CATEGORY_CD,
-        NATIVE_CATEGORY_MUSIQUE_EN_LIGNE,
-        NATIVE_CATEGORY_VINYLES,
-    ],
-    search_value="CD_VINYLE_MUSIQUE_EN_LIGNE",
-    label="CD, vinyles, musique en ligne",
-    included_subcategories=[
-        "ABO_PLATEFORME_MUSIQUE",
-        "SUPPORT_PHYSIQUE_MUSIQUE_CD",
-        "SUPPORT_PHYSIQUE_MUSIQUE_VINYLE",
-        "TELECHARGEMENT_MUSIQUE",
-    ],
-)
 SEARCH_GROUP_CONCERTS_FESTIVALS = SearchGroup(
     children=[
         NATIVE_CATEGORY_CONCERTS_EVENEMENTS,
@@ -375,32 +359,6 @@ SEARCH_GROUP_EVENEMENTS_EN_LIGNE = SearchGroup(
     search_value="EVENEMENTS_EN_LIGNE",
     label="Évènements en ligne",
     included_subcategories=["LIVESTREAM_EVENEMENT", "LIVESTREAM_MUSIQUE", "LIVESTREAM_PRATIQUE_ARTISTIQUE"],
-)
-# FIXME (thconte, 2024-10-03): Delete this SearchGroup once app's minimal version has bumped
-SEARCH_GROUP_FILMS_SERIES_CINEMA = SearchGroup(
-    children=[
-        NATIVE_CATEGORY_ABO_PLATEFORME_VIDEO,
-        NATIVE_CATEGORY_CARTES_CINEMA,
-        NATIVE_CATEGORY_DVD_BLU_RAY,
-        NATIVE_CATEGORY_EVENEMENTS_CINEMA,
-        NATIVE_CATEGORY_SEANCES_DE_CINEMA,
-        NATIVE_CATEGORY_VIDEOS_ET_DOCUMENTAIRES,
-    ],
-    search_value="FILMS_SERIES_CINEMA",
-    label="Cinéma, films et séries",
-    included_subcategories=[
-        "ABO_PLATEFORME_VIDEO",
-        "AUTRE_SUPPORT_NUMERIQUE",
-        "CARTE_CINE_ILLIMITE",
-        "CARTE_CINE_MULTISEANCES",
-        "CINE_PLEIN_AIR",
-        "CINE_VENTE_DISTANCE",
-        "EVENEMENT_CINE",
-        "FESTIVAL_CINE",
-        "SEANCE_CINE",
-        "SUPPORT_PHYSIQUE_FILM",
-        "VOD",
-    ],
 )
 SEARCH_GROUP_CINEMA = SearchGroup(
     children=[
@@ -429,16 +387,6 @@ SEARCH_GROUP_FILMS_DOCUMENTAIRES_SERIES = SearchGroup(
     search_value="FILMS_DOCUMENTAIRES_SERIES",
     label="Films, séries et documentaires",
     included_subcategories=["ABO_PLATEFORME_VIDEO", "AUTRE_SUPPORT_NUMERIQUE", "SUPPORT_PHYSIQUE_FILM", "VOD"],
-)
-# FIXME (thconte, 2024-10-15): Delete this SearchGroup once app's minimal version has bumped
-SEARCH_GROUP_INSTRUMENTS = SearchGroup(
-    children=[
-        NATIVE_CATEGORY_ACHAT_LOCATION_INSTRUMENT,
-        NATIVE_CATEGORY_PARTITIONS_DE_MUSIQUE,
-    ],
-    search_value="INSTRUMENTS",
-    label="Instruments de musique",
-    included_subcategories=["ACHAT_INSTRUMENT", "BON_ACHAT_INSTRUMENT", "LOCATION_INSTRUMENT", "PARTITION"],
 )
 SEARCH_GROUP_JEUX_JEUX_VIDEOS = SearchGroup(
     children=[
@@ -572,17 +520,14 @@ SEARCH_NODES_ROOT = SearchNode(
     label="Root",
     children=[
         SEARCH_GROUP_CONCERTS_FESTIVALS,
-        SEARCH_GROUP_FILMS_SERIES_CINEMA,
         SEARCH_GROUP_CINEMA,
         SEARCH_GROUP_FILMS_DOCUMENTAIRES_SERIES,
         SEARCH_GROUP_LIVRES,
         SEARCH_GROUP_MUSIQUE,
-        SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE,
         SEARCH_GROUP_ARTS_LOISIRS_CREATIFS,
         SEARCH_GROUP_SPECTACLES,
         SEARCH_GROUP_MUSEES_VISITES_CULTURELLES,
         SEARCH_GROUP_JEUX_JEUX_VIDEOS,
-        SEARCH_GROUP_INSTRUMENTS,
         SEARCH_GROUP_MEDIA_PRESSE,
         SEARCH_GROUP_CARTES_JEUNES,
         SEARCH_GROUP_RENCONTRES_CONFERENCES,
