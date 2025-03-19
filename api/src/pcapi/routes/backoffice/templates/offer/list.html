@@ -22,6 +22,7 @@
            name="pc-table-multi-select-check-all" />
   </th>
   <th scope="col">Actions</th>
+  <th scope="col">Image</th>
   <th scope="col">ID</th>
   <th scope="col">Nom de l'offre</th>
   <th scope="col">Catégorie</th>
@@ -125,6 +126,21 @@
             {% endif %}
           </ul>
         </div>
+      </td>
+      <td class="px-2 py-3">
+        {% if row.offer_mediation %}
+          {% set mediation_url = row.offer_mediation.id | offer_mediation_link(row.offer_mediation.thumbCount) %}
+        {% elif  row.product_mediation %}
+          {% set mediation_url = row.product_mediation | product_mediation_link %}
+        {% endif %}
+        {% if mediation_url %}
+          <div class="rounded pc-offer-table-image pc-offer-table-image-container"
+               style="background-image: url('{{ mediation_url }}')"></div>
+        {% else %}
+          <div class="rounded pc-offer-table-no-image pc-offer-table-image-container">
+            <i class="bi bi-file-image"></i>
+          </div>
+        {% endif %}
       </td>
       <td>{{ links.build_offer_details_link(offer) }}</td>
       <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
