@@ -71,9 +71,11 @@
                     data-fetch-url="{{ url_for('backoffice_web.offer.get_batch_edit_offer_form') }}"
                     data-use-confirmation-modal="true">Éditer les offres</button>
           </div>
+          <div id="offer-table-menu"></div>
         </div>
         <table class="table mb-4{% if is_feature_active("WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION") %} pc-table-manager d-none{% endif %}"
                data-pc-table-manager-id="offer-table"
+               data-pc-table-menu-container-id="offer-table-menu"
                data-table-multi-select-id="table-individual-offers-multiselect">
           <thead>
             <tr>
