@@ -52,3 +52,29 @@
 tr:has( input:checked) {
   background-color: rgba(0,0,0, 0.075);
 }
+
+.pc-offer-table-image-container {
+  height: 129px;
+  width: 96px;
+}
+
+.pc-offer-table-image{
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.pc-offer-table-no-image{
+  background-color: $gray-100;
+  padding: 48px 32px;
+  i{
+    width:32px;
+    height:32px;
+    display:block;
+    font-size:32px;
+    &::before{
+      color:$gray-600;
+      vertical-align: 1em;
+    }
+  }
+}

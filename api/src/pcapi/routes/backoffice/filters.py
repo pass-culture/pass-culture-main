@@ -1637,6 +1637,23 @@ def format_user_subscription_tunnel_step_status(status: str) -> str:
     return markup.format(status=status)
 
 
+def offer_mediation_link(mediation_id: int, thumb_count: int) -> str | None:
+    mediation = offers_models.Mediation(
+        id=mediation_id,
+        thumbCount=thumb_count,
+    )
+    return mediation.thumbUrl
+
+
+def product_mediation_link(uuid: str) -> str | None:
+    mediation = offers_models.ProductMediation(
+        uuid=uuid,
+        imageType=offers_models.TiteliveImageType.RECTO,
+        productId=0,
+    )
+    return mediation.url
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -1734,3 +1751,5 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["offer_type"] = get_offer_type
     app.jinja_env.filters["nl2br"] = nl2br
     app.jinja_env.filters["format_user_subscription_tunnel_step_status"] = format_user_subscription_tunnel_step_status
+    app.jinja_env.filters["offer_mediation_link"] = offer_mediation_link
+    app.jinja_env.filters["product_mediation_link"] = product_mediation_link
