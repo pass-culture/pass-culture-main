@@ -1,6 +1,7 @@
 from operator import or_
 
 import sqlalchemy as sa
+from sqlalchemy import orm as sa_orm
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
@@ -14,16 +15,14 @@ def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
             offerers_models.Venue.siret == siret,
             sa.not_(offerers_models.Venue.isVirtual),
         )
-        .options(sa.orm.joinedload(offerers_models.Venue.contact))
-        .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
-        .options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
+        .options(*_get_common_joinedload_options())
         .one()
     )
     return [venue]
 
 
 def get_relative_venues_by_siret(siret: str, permanent_only: bool = False) -> list[offerers_models.Venue]:
-    aliased_venue = sa.orm.aliased(offerers_models.Venue)
+    aliased_venue = sa_orm.aliased(offerers_models.Venue)
     query = db.session.query(offerers_models.Venue)
     query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
     query = query.join(aliased_venue, offerers_models.Offerer.managedVenues)
@@ -39,9 +38,7 @@ def get_relative_venues_by_siret(siret: str, permanent_only: bool = False) -> li
             offerers_models.Venue.isPermanent,
             aliased_venue.isPermanent,
         )
-    query = query.options(sa.orm.joinedload(offerers_models.Venue.contact))
-    query = query.options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
-    query = query.options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
+    query = query.options(*_get_common_joinedload_options())
     # group venues by offerer
     query = query.order_by(offerers_models.Venue.managingOffererId, offerers_models.Venue.name)
 
@@ -59,12 +56,10 @@ def get_all_venues(page: int | None, per_page: int | None) -> list[offerers_mode
         .order_by(offerers_models.Venue.id)
         .offset((page - 1) * per_page)
         .limit(per_page)
-        .options(sa.orm.joinedload(offerers_models.Venue.contact))
-        .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
-        .options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
-        .options(sa.orm.joinedload(offerers_models.Venue.googlePlacesInfo))
+        .options(*_get_common_joinedload_options())
+        .options(sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo))
         .options(
-            sa.orm.joinedload(offerers_models.Venue.collectiveDomains).load_only(
+            sa_orm.joinedload(offerers_models.Venue.collectiveDomains).load_only(
                 educational_models.EducationalDomain.id, educational_models.EducationalDomain.name
             )
         )
@@ -84,9 +79,7 @@ def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
             ),
             sa.not_(offerers_models.Venue.isVirtual),
         )
-        .options(sa.orm.joinedload(offerers_models.Venue.contact))
-        .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
-        .options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
+        .options(*_get_common_joinedload_options())
         .all()
     )
     return venues
@@ -96,7 +89,7 @@ def get_relative_venues_by_name(name: str) -> list[offerers_models.Venue]:
     name = name.replace(" ", "%")
     name = name.replace("-", "%")
     name = clean_accents(name)
-    aliased_venue = sa.orm.aliased(offerers_models.Venue)
+    aliased_venue = sa_orm.aliased(offerers_models.Venue)
 
     query = db.session.query(offerers_models.Venue)
     query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
@@ -111,11 +104,18 @@ def get_relative_venues_by_name(name: str) -> list[offerers_models.Venue]:
             sa.func.immutable_unaccent(aliased_venue.publicName).ilike(f"%{name}%"),
         ),
     )
-    query = query.options(sa.orm.joinedload(offerers_models.Venue.contact))
-    query = query.options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
-    query = query.options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
+    query = query.options(*_get_common_joinedload_options())
 
     # group venues by offerer
     query = query.order_by(offerers_models.Venue.managingOffererId, offerers_models.Venue.name)
 
     return query.all()
+
+
+def _get_common_joinedload_options() -> tuple[sa_orm.Load, ...]:
+    return (
+        sa_orm.joinedload(offerers_models.Venue.contact),
+        sa_orm.joinedload(offerers_models.Venue.venueLabel),
+        sa_orm.joinedload(offerers_models.Venue.managingOfferer),
+        sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
+    )

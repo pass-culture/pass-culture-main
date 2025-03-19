@@ -20,16 +20,17 @@ class Returns200Test:
         response = client.get("/adage/v1/venues")
 
         assert response.status_code == 200
+        venue_address = venue1.offererAddress.address
         assert response.json == {
             "venues": [
                 {
                     "id": venue1.id,
                     "adageId": venue1.adageId,
                     "name": venue1.name,
-                    "address": venue1.street,
-                    "latitude": float(venue1.latitude),
-                    "longitude": float(venue1.longitude),
-                    "city": venue1.city,
+                    "address": venue_address.street,
+                    "latitude": float(venue_address.latitude),
+                    "longitude": float(venue_address.longitude),
+                    "city": venue_address.city,
                     "siret": venue1.siret,
                     "publicName": venue1.publicName,
                     "description": venue1.description,

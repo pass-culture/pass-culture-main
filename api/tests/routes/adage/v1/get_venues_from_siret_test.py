@@ -32,16 +32,17 @@ class Returns200Test:
         response = client.get("/adage/v1/venues/12345678912345")
 
         assert response.status_code == 200
+        venue_address = venue.offererAddress.address
         assert response.json == {
             "venues": [
                 {
                     "id": venue.id,
                     "adageId": venue.adageId,
                     "name": venue.name,
-                    "address": venue.address,
-                    "latitude": float(venue.latitude),
-                    "longitude": float(venue.longitude),
-                    "city": venue.city,
+                    "address": venue_address.street,
+                    "latitude": float(venue_address.latitude),
+                    "longitude": float(venue_address.longitude),
+                    "city": venue_address.city,
                     "siret": venue.siret,
                     "publicName": venue.publicName,
                     "description": venue.description,
@@ -98,16 +99,17 @@ class Returns200Test:
         response = client.get("/adage/v1/venues/12345678912345")
 
         assert response.status_code == 200
+        venue_address = venue.offererAddress.address
         assert response.json == {
             "venues": [
                 {
                     "id": venue.id,
                     "adageId": venue.adageId,
                     "name": venue.name,
-                    "address": venue.address,
-                    "latitude": float(venue.latitude),
-                    "longitude": float(venue.longitude),
-                    "city": venue.city,
+                    "address": venue_address.street,
+                    "latitude": float(venue_address.latitude),
+                    "longitude": float(venue_address.longitude),
+                    "city": venue_address.city,
                     "siret": venue.siret,
                     "publicName": venue.publicName,
                     "description": venue.description,
@@ -172,16 +174,17 @@ class Returns200Test:
         response = client.get("/adage/v1/venues/12345678912345")
 
         assert response.status_code == 200
+        venue_address = venue.offererAddress.address
         assert response.json == {
             "venues": [
                 {
                     "id": venue.id,
                     "adageId": venue.adageId,
                     "name": venue.name,
-                    "address": venue.address,
-                    "latitude": float(venue.latitude),
-                    "longitude": float(venue.longitude),
-                    "city": venue.city,
+                    "address": venue_address.street,
+                    "latitude": float(venue_address.latitude),
+                    "longitude": float(venue_address.longitude),
+                    "city": venue_address.city,
                     "siret": venue.siret,
                     "publicName": venue.publicName,
                     "description": venue.description,
@@ -265,16 +268,18 @@ class Returns200Test:
         response = client.get("/adage/v1/venues/12345678912345?getRelative=true")
 
         assert response.status_code == 200
+        venue1_address = venue1.offererAddress.address
+        venue2_address = venue2.offererAddress.address
         assert response.json == {
             "venues": [
                 {
                     "id": venue1.id,
                     "adageId": venue1.adageId,
                     "name": venue1.name,
-                    "address": venue1.address,
-                    "latitude": float(venue1.latitude),
-                    "longitude": float(venue1.longitude),
-                    "city": venue1.city,
+                    "address": venue1_address.street,
+                    "latitude": float(venue1_address.latitude),
+                    "longitude": float(venue1_address.longitude),
+                    "city": venue1_address.city,
                     "siret": venue1.siret,
                     "publicName": venue1.publicName,
                     "description": venue1.description,
@@ -306,10 +311,10 @@ class Returns200Test:
                     "id": venue2.id,
                     "adageId": venue2.adageId,
                     "name": venue2.name,
-                    "address": venue2.address,
-                    "latitude": float(venue2.latitude),
-                    "longitude": float(venue2.longitude),
-                    "city": venue2.city,
+                    "address": venue2_address.street,
+                    "latitude": float(venue2_address.latitude),
+                    "longitude": float(venue2_address.longitude),
+                    "city": venue2_address.city,
                     "siret": venue2.siret,
                     "publicName": venue2.publicName,
                     "description": venue2.description,
