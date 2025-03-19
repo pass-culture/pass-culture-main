@@ -80,6 +80,18 @@ class IncidentValidationForm(FlaskForm):
     )
 
 
+class CommentForm(FlaskForm):
+    comment = fields.PCCommentField("Commentaire interne")
+
+
+class BatchIncidentValidationForm(empty_forms.BatchForm, IncidentValidationForm):
+    pass
+
+
+class BatchIncidentCancellationForm(empty_forms.BatchForm, CommentForm):
+    pass
+
+
 class GetIncidentsSearchForm(forms_utils.PCForm):
     class Meta:
         csrf = False

@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime
 import typing
 
@@ -27,14 +28,15 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers.exceptions import ProviderException
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.finance import forms
 from pcapi.routes.backoffice.finance import validation
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.offerers import forms as offerer_forms
 from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
 
@@ -177,7 +179,7 @@ def list_incidents() -> utils.BackofficeResponse:
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_finance_incident_cancellation_form(finance_incident_id: int) -> utils.BackofficeResponse:
-    form = offerer_forms.CommentForm()
+    form = forms.CommentForm()
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
@@ -197,7 +199,7 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
     if not incident:
         raise NotFound()
 
-    form = offerer_forms.CommentForm()
+    form = forms.CommentForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=incident.id), 303)
@@ -302,7 +304,7 @@ def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
     return render_template(
         "finance/incidents/get/details/history.html",
         actions=actions,
-        form=offerer_forms.CommentForm(),
+        form=forms.CommentForm(),
         dst=url_for("backoffice_web.finance_incidents.comment_incident", finance_incident_id=finance_incident_id),
     )
 
@@ -797,7 +799,7 @@ def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     if not incident:
         raise NotFound()
 
-    form = offerer_forms.CommentForm()
+    form = forms.CommentForm()
 
     if not form.validate():
         flash("Le formulaire comporte des erreurs", "warning")
@@ -879,6 +881,222 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
         return _get_finance_commercial_gesture_validation_form(finance_incident)
 
     return _get_finance_overpayment_incident_validation_form(finance_incident)
+
+
+@finance_incidents_blueprint.route("/batch-validation-form", methods=["GET", "POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def get_batch_finance_incidents_validation_form() -> utils.BackofficeResponse:
+    form = forms.BatchIncidentValidationForm()
+    incidents_type = None
+
+    if form.object_ids.data:
+
+        finance_incidents = finance_models.FinanceIncident.query.filter(
+            finance_models.FinanceIncident.id.in_(form.object_ids_list),
+        ).all()
+
+        if not (
+            valid := validation.check_validate_or_cancel_finance_incidents(finance_incidents, is_validation_action=True)
+        ):
+            mark_transaction_as_invalid()
+            return render_template(
+                "components/turbo/modal_empty_form.html",
+                form=empty_forms.BatchForm(),
+                messages=valid.messages,
+            )
+
+        incidents_type = finance_incidents[0].kind
+        if incidents_type == finance_models.IncidentType.COMMERCIAL_GESTURE:
+            form = empty_forms.BatchForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.finance_incidents.batch_validate_finance_incidents"),
+        div_id="batch-validate-modal",
+        title=Markup("Voulez-vous valider les {kind} sélectionnés ?").format(
+            kind="trop perçus" if incidents_type == finance_models.IncidentType.OVERPAYMENT else "gestes commerciaux"
+        ),
+        button_text="Valider",
+        information=Markup("Vous allez valider {number_of_incidents} incident(s). Voulez vous continuer ?").format(
+            number_of_incidents=len(form.object_ids_list),
+        ),
+    )
+
+
+@finance_incidents_blueprint.route("/batch-validation", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def batch_validate_finance_incidents() -> utils.BackofficeResponse:
+    form = forms.BatchIncidentValidationForm()
+
+    finance_incidents = finance_models.FinanceIncident.query.filter(
+        finance_models.FinanceIncident.id.in_(form.object_ids_list)
+    ).all()
+
+    if finance_incidents[0].kind == finance_models.IncidentType.COMMERCIAL_GESTURE:
+        form = empty_forms.BatchForm()
+
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        mark_transaction_as_invalid()
+        return redirect(request.referrer or url_for("backoffice_web.finance_incidents.list_finance_incidents"), 303)
+
+    error_dict = defaultdict(list)
+    success_count = 0
+    if finance_incidents[0].kind == finance_models.IncidentType.OVERPAYMENT:
+        for incident in finance_incidents:
+            with atomic():
+                try:
+                    finance_api.validate_finance_overpayment_incident(
+                        incident,
+                        force_debit_note=(
+                            form.compensation_mode.data == forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name
+                        ),
+                        author=current_user,
+                    )
+                    success_count += 1
+                except (ExternalBookingException, ProviderException) as err:
+                    error_dict[str(err) or err.__class__.__name__].append(incident.id)
+                    mark_transaction_as_invalid()
+
+    elif finance_incidents[0].kind == finance_models.IncidentType.COMMERCIAL_GESTURE:
+        for incident in finance_incidents:
+            with atomic():
+                try:
+                    finance_api.validate_finance_commercial_gesture(
+                        incident,
+                        author=current_user,
+                    )
+                    success_count += 1
+                except (ExternalBookingException, ProviderException) as err:
+                    error_dict[str(err) or err.__class__.__name__].append(incident.id)
+                    mark_transaction_as_invalid()
+
+    _flash_success_and_error_messages(success_count, error_dict, True)
+    return redirect(request.referrer or url_for("backoffice_web.finance_incidents.list_finance_incidents"), 303)
+
+
+@finance_incidents_blueprint.route("/batch-cancellation-form", methods=["GET", "POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def get_batch_finance_incidents_cancellation_form() -> utils.BackofficeResponse:
+    form = forms.BatchIncidentCancellationForm()
+    incidents_type = None
+
+    if form.object_ids.data:
+
+        finance_incidents = finance_models.FinanceIncident.query.filter(
+            finance_models.FinanceIncident.id.in_(form.object_ids_list),
+        ).all()
+        incidents_type = finance_incidents[0].kind
+
+        if not (
+            valid := validation.check_validate_or_cancel_finance_incidents(
+                finance_incidents, is_validation_action=False
+            )
+        ):
+            mark_transaction_as_invalid()
+            return render_template(
+                "components/turbo/modal_empty_form.html",
+                form=empty_forms.BatchForm(),
+                messages=valid.messages,
+            )
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=forms.BatchIncidentCancellationForm(),
+        dst=url_for("backoffice_web.finance_incidents.batch_cancel_finance_incidents"),
+        div_id="batch-reject-modal",
+        title=Markup("Voulez-vous annuler les {kind} sélectionnés ?").format(
+            kind="trop perçus" if incidents_type == finance_models.IncidentType.OVERPAYMENT else "gestes commerciaux"
+        ),
+        button_text="Confirmer l'annulation",
+        information=Markup("Vous allez annuler {number_of_incidents} incident(s). Voulez vous continuer ?").format(
+            number_of_incidents=len(form.object_ids_list),
+        ),
+    )
+
+
+@finance_incidents_blueprint.route("/batch-cancellation", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def batch_cancel_finance_incidents() -> utils.BackofficeResponse:
+    form = forms.BatchIncidentCancellationForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        mark_transaction_as_invalid()
+        return redirect(request.referrer or url_for("backoffice_web.finance_incidents.list_finance_incidents"), 303)
+
+    finance_incidents = finance_models.FinanceIncident.query.filter(
+        finance_models.FinanceIncident.id.in_(form.object_ids_list),
+    ).all()
+
+    success_count = 0
+    error_dict = defaultdict(list)
+    for incident in finance_incidents:
+        with atomic():
+            try:
+                finance_api.cancel_finance_incident(
+                    incident,
+                    comment=form.comment.data,
+                    author=current_user,
+                )
+                success_count += 1
+            except (
+                finance_exceptions.FinanceIncidentAlreadyCancelled,
+                finance_exceptions.FinanceIncidentAlreadyValidated,
+            ) as err:
+                error_dict[err.__class__.__name__].append(incident.id)
+                mark_transaction_as_invalid()
+
+    _flash_success_and_error_messages(success_count, error_dict, is_validating=False)
+    return redirect(request.referrer or url_for("backoffice_web.finance_incidents.list_finance_incidents"), 303)
+
+
+def _build_incident_error_str(incident_ids: list[str], message: str) -> str:
+    return Markup("- {count} {message} pour {incident} ({incident_ids})").format(
+        count=len(incident_ids),
+        message=message,
+        incident=pluralize(len(incident_ids), "l'incident", "les incidents"),
+        incident_ids=",".join(incident_ids),
+    )
+
+
+def _flash_success_and_error_messages(
+    success_count: int, error_dict: dict[str, list[str]], is_validating: bool
+) -> None:
+    if success_count > 0:
+        flash(
+            f"{success_count} {pluralize(success_count, 'incident a', 'incidents ont')} été {'validé' if is_validating else 'annulé'}{pluralize(success_count)}",
+            "success",
+        )
+
+    if error_dict:
+        if success_count > 0:
+            error_text = Markup("Certains incidents n'ont pas pu être {action} et ont été ignorés :<br> ").format(
+                action="validés" if is_validating else "annulés"
+            )
+        else:
+            error_text = Markup("Impossible {action} ces incidents : <br>").format(
+                action="de valider" if is_validating else "d'annuler"
+            )
+        for key in error_dict:
+            incident_ids = [str(incident_id) for incident_id in error_dict[key]]
+            match key:
+                case "FinanceIncidentAlreadyCancelled":
+                    error_text += _build_incident_error_str(
+                        incident_ids,
+                        f"incident{pluralize(len(incident_ids))} déjà annulé{pluralize(len(incident_ids))}",
+                    )
+                case "FinanceIncidentAlreadyValidated":
+                    error_text += _build_incident_error_str(
+                        incident_ids,
+                        f"incident{pluralize(len(incident_ids))} déjà validé{pluralize(len(incident_ids))}",
+                    )
+                case _:
+                    error_text += _build_incident_error_str(
+                        incident_ids,
+                        f"""erreur{pluralize(len(incident_ids))} {pluralize(len(incident_ids), "s'est produite", "se sont produites")} : "{key}" """,
+                    )
+        flash(error_text, "warning")
 
 
 @finance_incidents_blueprint.route("/overpayment/<int:finance_incident_id>/validate", methods=["POST"])
