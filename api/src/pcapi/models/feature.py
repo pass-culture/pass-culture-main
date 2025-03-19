@@ -122,6 +122,9 @@ class FeatureToggle(enum.Enum):
     WIP_ASYNCHRONOUS_CELERY_MAILS = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de mails"
     )
+    WIP_ASYNCHRONOUS_CELERY_TASKS_OFFERERS = (
+        'Activer le backend de tâches asynchrones Celery pour les tâches "offerers"'
+    )
     WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION = (
         "Désactiver la notification push Batch pour l'annulation d'une réservation"
     )
@@ -216,6 +219,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE,
     FeatureToggle.WIP_ADD_VIDEO,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS,
+    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS_OFFERERS,
     FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION,
     FeatureToggle.WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED,
     FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED,
