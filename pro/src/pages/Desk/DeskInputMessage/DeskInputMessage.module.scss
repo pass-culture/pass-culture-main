@@ -6,7 +6,7 @@
   white-space: pre-line;
 
   &-default {
-    color: var(--color-valid);
+    color: var(--color-text-success);
   }
 
   &-error {
@@ -14,6 +14,6 @@
   }
 
   &-success {
-    color: var(--color-valid);
+    color: var(--color-text-success);
   }
 }
