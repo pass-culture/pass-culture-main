@@ -474,7 +474,6 @@ class AccessibilityProviderFactory(BaseFactory):
 class OffererAddressFactory(BaseFactory):
     class Meta:
         model = models.OffererAddress
-        sqlalchemy_get_or_create = ("offerer", "address", "label")
 
     label = factory.Sequence("Address label {}".format)
     address = factory.SubFactory(geography_factories.AddressFactory)

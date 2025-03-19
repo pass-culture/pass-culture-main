@@ -536,6 +536,7 @@ class Returns200Test:
             managingOfferer=user_offerer.offerer,
         )
         venue_without_siret = offerers_factories.VenueWithoutSiretFactory(managingOfferer=user_offerer.offerer)
+        initial_offer_address_ids = [venue.offererAddressId, venue_without_siret.offererAddressId]
 
         mocked_get_address.return_value = AddressInfo(
             id="58062",
@@ -575,7 +576,8 @@ class Returns200Test:
         ).all()
         offerer_address = offerer_addresses[0]
 
-        assert len(offerer_addresses) == 2
+        assert len(offerer_addresses) == 3
+        assert {oa.id for oa in offerer_addresses} == {*initial_offer_address_ids, venue_without_siret.offererAddressId}
         assert venue.offererAddressId == offerer_address.id
         assert address.street == None  # Centroid found only, nothing to fill in street column
         assert address.city == venue.city == "Château-Chinon (Ville)"
