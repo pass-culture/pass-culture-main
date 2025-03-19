@@ -5099,6 +5099,116 @@ class LegacyUserRecreditTest:
 
 @pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
 class UserRecreditAfterDecreeTest:
+
+    def test_user_with_finished_age_18_process_is_credited_with_correct_role(self):
+        """
+        This test is inspired from real life data, and aims to reproduce a bug
+
+        We generate a user that:
+        - Tried to start at 18yo in the past (this gives them some correct fraud checks for the future 18yo real process)
+        - Them get their underage deposit
+        - Finish the 18yo steps, but are not yet activated (happens rarely)
+        They are then processed in the recredit_users function, and should be correctly credited with a role BENEFICIARY
+        """
+        declared_birthdate = datetime.datetime(2004, 3, 18)  # tried to start at 18yo
+        real_birthdate = datetime.date(2007, 3, 18)  # was not 18 at the time. Is 18 now
+        today = datetime.datetime(2025, 3, 19)
+
+        user = users_factories.EmailValidatedUserFactory(
+            dateCreated=datetime.datetime(2022, 12, 5, 13, 41, 0),
+            dateOfBirth=declared_birthdate,
+        )
+
+        # The user first tried a AGE18 activation, but cancelled it.
+        fraud_factories.PhoneValidationFraudCheckFactory(
+            user=user,
+            dateCreated=datetime.datetime(2022, 12, 5, 13, 42, 00),
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        user.phoneNumber = "0693949596"
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user,
+            dateCreated=datetime.datetime(2022, 12, 5, 13, 43, 00),
+            status=fraud_models.FraudCheckStatus.CANCELED,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            reason="Completed in application step ; Eligibility type changed by the identity provider",
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            dateCreated=datetime.datetime(2023, 5, 13, 16, 39, 00),
+            status=fraud_models.FraudCheckStatus.CANCELED,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=fraud_models.FraudCheckType.UBBLE,
+            reason="Eligibility type changed by the identity provider",
+            resultContent=fraud_factories.UbbleContentFactory(birth_date=real_birthdate),
+        )
+        # Ubble updates the birth date
+        user.validatedBirthDate = real_birthdate
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            dateCreated=datetime.datetime(2023, 5, 13, 16, 43, 00),
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            reason="statement from /subscription/honor_statement endpoint",
+            resultContent=None,
+        )
+
+        # Then they try an UNDERAGE activation (because they are in fact not 18yo)
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user,
+            dateCreated=datetime.datetime(2023, 5, 13, 16, 59, 00),
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            reason="Completed in application step",
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            dateCreated=datetime.datetime(2023, 5, 13, 16, 59, 00),
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.UBBLE,
+            reason="",
+            resultContent=fraud_factories.UbbleContentFactory(birth_date=real_birthdate),
+        )
+        fraud_factories.HonorStatementFraudCheckFactory(
+            user=user,
+            dateCreated=datetime.datetime(2023, 5, 14, 00, 9, 00),
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            reason="statement from /subscription/honor_statement endpoint",
+            resultContent=None,
+        )
+        # And had their deposit UNDERAGE granted
+        deposit = users_factories.DepositGrantFactory(
+            user=user,
+            type=models.DepositType.GRANT_15_17,
+            dateCreated=datetime.datetime(2023, 5, 14, 00, 9, 00),
+            amount=60,
+        )
+        user.roles = [users_models.UserRole.UNDERAGE_BENEFICIARY]
+        # one year after they get recredited
+        factories.RecreditFactory(
+            deposit=deposit,
+            dateCreated=datetime.datetime(2024, 3, 18, 8, 19, 00),
+            amount=30,
+            recreditType=models.RecreditType.RECREDIT_17,
+            comment="Recredit 17",
+        )
+
+        # Another year after they start their 18yo application
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
+            dateCreated=datetime.datetime(2025, 3, 18, 11, 10, 00),
+        )
+
+        with time_machine.travel(today):
+            api.recredit_users()
+        assert user.deposit.type == models.DepositType.GRANT_17_18
+        assert user.roles == [users_models.UserRole.BENEFICIARY]
+
     @pytest.mark.parametrize("age", [15, 16, 17, 18])
     def test_user_already_recredited(self, age):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
