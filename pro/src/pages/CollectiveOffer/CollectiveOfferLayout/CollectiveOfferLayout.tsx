@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -8,6 +9,7 @@ import {
 } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { HelpLink } from 'components/HelpLink/HelpLink'
 import { CollectiveCreationOfferNavigation } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
@@ -42,9 +44,11 @@ export const CollectiveOfferLayout = ({
 }: CollectiveOfferLayoutProps): JSX.Element => {
   const location = useLocation()
   const isSummaryPage = location.pathname.includes('recapitulatif')
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const offererId = selectedOffererId?.toString()
 
   const { ...offerEducationalFormData } = useOfferEducationalFormData(
-    null,
+    Number(offererId),
     offer
   )
 

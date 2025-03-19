@@ -76,7 +76,7 @@ const CollectiveOfferStockEdition = ({
   }
 
   return (
-    <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
+    <CollectiveOfferLayout offer={offer} subTitle={offer.name} isTemplate={isTemplate}>
       <OfferEducationalStock
         initialValues={initialValues}
         mode={
