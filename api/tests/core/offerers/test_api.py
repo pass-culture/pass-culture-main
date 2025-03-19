@@ -81,6 +81,56 @@ def test_new_offerer_auto_tagging(db_session, ape_code, expected_tag):
     assert expected_tag in (tag.label for tag in offerer.tags)
 
 
+class UpdateVenueTest:
+    def test_update_venue_switch_addresses_twice(self):
+        """
+        This test ensures that we do no longer have the exception:
+        psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "ix_unique_offerer_address_per_label"
+        DETAIL:  Key ("offererId", "addressId", label)=(811, 512, Le Petit Rintintin 0) already exists.
+        """
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.UserFactory()
+
+        modifications_1 = {
+            "street": "Avenue des Champs Elysées",
+            "latitude": "48.871285",
+            "longitude": "2.302859",
+            "banId": "75108_1733",
+        }
+        modifications_2 = {
+            "street": "Place de la Concorde",
+            "postalCode": "75001",
+            "latitude": "48.865609",
+            "longitude": "2.322913",
+            "banId": "75101_2259",
+        }
+
+        offerers_api.update_venue(venue, modifications_1, modifications_1, author)
+        oa_1 = venue.offererAddress
+        assert oa_1.label is None
+        address_1 = venue.offererAddress.address
+        assert address_1.street == modifications_1["street"]
+
+        offerers_api.update_venue(venue, modifications_2, modifications_2, author)
+        oa_2 = venue.offererAddress
+        assert oa_2.label is None
+        assert oa_1.label == venue.common_name
+        address_2 = venue.offererAddress.address
+        assert address_2.street == modifications_2["street"]
+
+        offerers_api.update_venue(venue, modifications_1, modifications_1, author)
+        assert venue.offererAddress == oa_1
+        assert oa_1.label is None
+        assert oa_2.label == venue.common_name
+        assert venue.offererAddress.address == address_1
+
+        offerers_api.update_venue(venue, modifications_2, modifications_2, author)
+        assert venue.offererAddress == oa_2
+        assert oa_2.label is None
+        assert oa_1.label == venue.common_name
+        assert venue.offererAddress.address == address_2
+
+
 class CreateVenueTest:
     def base_data(self, offerer):
         return {
