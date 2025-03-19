@@ -6,6 +6,7 @@ from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
+import jwt
 from sqlalchemy.exc import IntegrityError
 from werkzeug import Response
 
@@ -94,19 +95,20 @@ def validate_user(token: str) -> None:
             user_id = token_utils.validate_passwordless_token(token)["sub"]
             user = users_models.User.query.get_or_404(user_id)
             users_api.validate_pro_user_email(user)
-        except RuntimeError:
+        except jwt.InvalidAlgorithmError:
+            # Users could have signup before the FF were activated, but validate their email after.
+            # This can safely be removed a few days after the FF activation, while users consume their tokens.
             classic_token_check(token)
         except users_exceptions.ExpiredToken:
+            # To be changed in PC-34119
             basic_token_error_handling()
         except users_exceptions.InvalidToken:
             basic_token_error_handling()
-        else:
-            discard_session()
-            login_user(user)
-            stamp_session(user)
-            flask.session["last_login"] = datetime.utcnow().timestamp()
-            users_api.update_last_connection_date(user)
-            # return users_serializers.SharedLoginUserResponseModel.from_orm(user)
+        discard_session()
+        login_user(user)
+        stamp_session(user)
+        flask.session["last_login"] = datetime.utcnow().timestamp()
+        users_api.update_last_connection_date(user)
     else:
         classic_token_check(token)
 
