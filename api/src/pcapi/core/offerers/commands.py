@@ -4,6 +4,7 @@ import logging
 import click
 import sqlalchemy as sa
 
+from pcapi.celery_tasks import offerers as celery_tasks_offerers
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.connectors.entreprise import sirene
 from pcapi.core.offerers import api as offerers_api
@@ -50,14 +51,18 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
     logger.info("check_active_offerers will check %s offerers in cloud tasks today", len(offerers))
 
     for offerer in offerers:
-        # Do not flood Sirene API (max. 30 per minute for the whole product)
-        offerers_tasks.check_offerer_siren_task.delay(
-            offerers_tasks.CheckOffererSirenRequest(
-                siren=offerer.siren,
-                close_or_tag_when_inactive=not dry_run,
-                fill_in_codir_report=codir_report_is_enabled,
-            )
+        payload = offerers_tasks.CheckOffererSirenRequest(
+            siren=offerer.siren,
+            close_or_tag_when_inactive=not dry_run,
+            fill_in_codir_report=codir_report_is_enabled,
         )
+
+        # Do not flood Sirene API (max. 30 per minute for the whole product)
+        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS_OFFERERS.is_active():
+            logger.info("add task: %s", payload)
+            celery_tasks_offerers.check_offerer_siren_task_celery.delay(payload.dict())
+        else:
+            offerers_tasks.check_offerer_siren_task.delay(payload)
 
 
 @blueprint.cli.command("check_closed_offerers")
@@ -95,13 +100,16 @@ def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None)
     )
 
     for siren in known_siren_list:
-        # Do not flood Sirene API (max. 30 per minute for the whole product)
-        offerers_tasks.check_offerer_siren_task.delay(
-            offerers_tasks.CheckOffererSirenRequest(
-                siren=siren,
-                close_or_tag_when_inactive=not dry_run,
-            )
+        payload = offerers_tasks.CheckOffererSirenRequest(
+            siren=siren,
+            close_or_tag_when_inactive=not dry_run,
         )
+
+        # Do not flood Sirene API (max. 30 per minute for the whole product)
+        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS_OFFERERS.is_active():
+            celery_tasks_offerers.check_offerer_siren_task_celery.delay(payload.dict())
+        else:
+            offerers_tasks.check_offerer_siren_task.delay(payload)
 
 
 @log_cron_with_transaction
