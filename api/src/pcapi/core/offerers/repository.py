@@ -169,13 +169,19 @@ def find_offerer_by_id(offerer_id: int) -> models.Offerer | None:
     return models.Offerer.query.filter_by(id=offerer_id).one_or_none()
 
 
-def find_venue_by_id(venue_id: int) -> models.Venue | None:
-    return (
+def find_venue_by_id(venue_id: int, load_address: bool = False) -> models.Venue | None:
+    query = (
         models.Venue.query.filter_by(id=venue_id)
         .options(sqla.orm.joinedload(models.Venue.venueLabel))
         .options(sqla.orm.joinedload(models.Venue.managingOfferer))
-        .one_or_none()
     )
+
+    if load_address:
+        query = query.options(
+            sqla_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address)
+        )
+
+    return query.one_or_none()
 
 
 def find_venue_and_provider_by_id(venue_id: int) -> models.Venue | None:
@@ -189,7 +195,7 @@ def find_venue_and_provider_by_id(venue_id: int) -> models.Venue | None:
 
 
 def find_relative_venue_by_id(venue_id: int) -> list[models.Venue]:
-    aliased_venue = sqla.orm.aliased(models.Venue)
+    aliased_venue = sqla_orm.aliased(models.Venue)
 
     query = db.session.query(models.Venue)
     query = query.join(models.Offerer, models.Venue.managingOfferer)
@@ -201,9 +207,10 @@ def find_relative_venue_by_id(venue_id: int) -> list[models.Venue]:
         sqla.not_(aliased_venue.isVirtual),
         aliased_venue.id == venue_id,
     )
-    query = query.options(sqla.orm.joinedload(models.Venue.contact))
-    query = query.options(sqla.orm.joinedload(models.Venue.venueLabel))
-    query = query.options(sqla.orm.joinedload(models.Venue.managingOfferer))
+    query = query.options(sqla_orm.joinedload(models.Venue.contact))
+    query = query.options(sqla_orm.joinedload(models.Venue.venueLabel))
+    query = query.options(sqla_orm.joinedload(models.Venue.managingOfferer))
+    query = query.options(sqla_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
     # group venues by offerer
     query = query.order_by(models.Venue.managingOffererId, models.Venue.name)
     return query.all()
