@@ -181,3 +181,24 @@ def check_commercial_gesture_total_amount(
                 message="Au moins un des jeunes ayant fait une réservation a encore du crédit pour payer la réservation.",
             )
     return Valid(True)
+
+
+def check_validate_or_cancel_finance_incidents(
+    finance_incidents: list[finance_models.FinanceIncident], is_validation_action: bool
+) -> Valid:
+    if len({incident.kind for incident in finance_incidents}) != 1:
+        return Valid(
+            is_valid=False,
+            message="Impossible de {action} des trop perçus et des gestes commerciaux dans la même action".format(
+                action="valider" if is_validation_action else "rejeter"
+            ),
+        )
+
+    if {incident.status for incident in finance_incidents} != set([finance_models.IncidentStatus.CREATED]):
+        return Valid(
+            is_valid=False,
+            message="""Seuls les incidents au statut "créé" peuvent faire l'objet d'une {action}""".format(
+                action="validation" if is_validation_action else "annulation"
+            ),
+        )
+    return Valid(True)
