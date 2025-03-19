@@ -303,25 +303,16 @@ class AsymetricTokenTest:
             )
 
 
+@pytest.mark.usefixtures("rsa_keys")
 class PasswordLessLoginTokenTest:
     token_type = token_tools.TokenType.PASSWORDLESS_LOGIN
-    private_key = rsa.generate_private_key(public_exponent=3, key_size=1024)
-    public_key = private_key.public_key()
 
-    private_pem_file = private_key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.TraditionalOpenSSL,
-        encryption_algorithm=serialization.NoEncryption(),
-    )
-    public_pem_file = public_key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo,
-    )
-
-    @pytest.mark.settings(PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file)
     @mock.patch("flask.current_app.redis_client.set")
     @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
-    def test_can_create_password_less_login_token(self, mocked_uuid, mocked_redis_set):
+    def test_can_create_password_less_login_token(self, mocked_uuid, mocked_redis_set, settings, rsa_keys):
+        private_key_pem_file, public_key_pem_file = rsa_keys
+        settings.PASSWORDLESS_LOGIN_PRIVATE_KEY = private_key_pem_file
+        settings.PASSWORDLESS_LOGIN_PUBLIC_KEY = public_key_pem_file
         expected_jti = str(mocked_uuid())
         expected_ttl = timedelta(hours=8)
         expected_user_id = 1
@@ -338,22 +329,23 @@ class PasswordLessLoginTokenTest:
             redis_key, json.dumps({"user_id": str(expected_user_id), "jti": expected_jti}), ex=expected_ttl
         )
 
-        payload = jwt.decode(token, self.public_pem_file, algorithms=["RS256"])
+        payload = jwt.decode(token, public_key_pem_file, algorithms=["RS256"])
 
         assert payload["jti"] == expected_jti
         assert payload["exp"] - payload["iat"] == 8 * 3600
         assert payload["sub"] == str(expected_user_id)
 
-    @pytest.mark.settings(
-        PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file, PASSWORDLESS_LOGIN_PUBLIC_KEY=public_pem_file
-    )
     @pytest.mark.parametrize("missing_claim", ["exp", "iat", "sub", "jti"])
     @mock.patch("pcapi.core.users.utils.encode_jwt_payload_rs256")
     @mock.patch("flask.current_app.redis_client.set")
     @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
     def test_token_with_missing_mandatory_claim_raise_decode_error_accordingly(
-        self, mocked_uuid, mocked_redis_set, mocked_encode_jwt_rs256, missing_claim
+        self, mocked_uuid, mocked_redis_set, mocked_encode_jwt_rs256, missing_claim, settings, rsa_keys
     ):
+        private_key_pem_file, public_key_pem_file = rsa_keys
+        settings.PASSWORDLESS_LOGIN_PRIVATE_KEY = private_key_pem_file
+        settings.PASSWORDLESS_LOGIN_PUBLIC_KEY = public_key_pem_file
+
         jti = str(mocked_uuid())
         ttl = timedelta(hours=8)
         sub = 1
@@ -383,17 +375,25 @@ class PasswordLessLoginTokenTest:
         assert isinstance(exc_info.value.__cause__, jwt.exceptions.MissingRequiredClaimError)
         assert str(exc_info.value.__cause__) == f'Token is missing the "{missing_claim}" claim'
 
-    @pytest.mark.settings(
-        PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file, PASSWORDLESS_LOGIN_PUBLIC_KEY=public_pem_file
-    )
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.execute")
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.delete")
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.get")
     @mock.patch("pcapi.flask_app.redis.client.Redis.set")
     @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
     def test_can_successfully_consume_passwordless_login_token(
-        self, mocked_uuid, mocked_redis_set, mocked_pipeline_get, mocked_pipeline_del, mocked_pipeline_execute
+        self,
+        mocked_uuid,
+        mocked_redis_set,
+        mocked_pipeline_get,
+        mocked_pipeline_del,
+        mocked_pipeline_execute,
+        settings,
+        rsa_keys,
     ):
+        private_key_pem_file, public_key_pem_file = rsa_keys
+        settings.PASSWORDLESS_LOGIN_PRIVATE_KEY = private_key_pem_file
+        settings.PASSWORDLESS_LOGIN_PUBLIC_KEY = public_key_pem_file
+
         expected_jti = str(mocked_uuid())
         expected_ttl = timedelta(hours=8)
         expected_user_id = 1
@@ -422,17 +422,26 @@ class PasswordLessLoginTokenTest:
         assert payload["exp"] - payload["iat"] == 8 * 3600
         assert payload["sub"] == str(expected_user_id)
 
-    @pytest.mark.settings(
-        PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file, PASSWORDLESS_LOGIN_PUBLIC_KEY=public_pem_file
-    )
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.execute")
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.delete")
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.get")
     @mock.patch("pcapi.flask_app.redis.client.Redis.set")
     @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
     def test_aborting_auto_login_when_token_payload_and_redis_queue_mismatch(
-        self, mocked_uuid, mocked_redis_set, mocked_pipeline_get, mocked_pipeline_del, mocked_pipeline_execute, caplog
+        self,
+        mocked_uuid,
+        mocked_redis_set,
+        mocked_pipeline_get,
+        mocked_pipeline_del,
+        mocked_pipeline_execute,
+        caplog,
+        settings,
+        rsa_keys,
     ):
+        private_key_pem_file, public_key_pem_file = rsa_keys
+        settings.PASSWORDLESS_LOGIN_PRIVATE_KEY = private_key_pem_file
+        settings.PASSWORDLESS_LOGIN_PUBLIC_KEY = public_key_pem_file
+
         expected_jti = str(mocked_uuid())
         expected_ttl = timedelta(hours=8)
         expected_user_id = 1
