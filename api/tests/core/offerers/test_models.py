@@ -602,12 +602,14 @@ class VenueHasPartnerPageTest:
             offers_factories.OfferFactory(venue=venue)
         assert venue.has_partner_page is has_partner_page
 
-    def test_chelou(self):
+    def test_has_partner_page_isolation(self):
         offerer_1 = factories.OffererFactory(isActive=True)
         offerer_2 = factories.OffererFactory(isActive=True)
-        partner_page = factories.VenueFactory(managingOfferer=offerer_2, isPermanent=True)
+        partner_page_venue = factories.VenueFactory(managingOfferer=offerer_2, isPermanent=True)
         venue = factories.VenueFactory(managingOfferer=offerer_1, isPermanent=False)
-        offers_factories.OfferFactory(venue=partner_page)
+        offers_factories.OfferFactory(venue=partner_page_venue)
 
         assert venue.has_partner_page is False
-        assert partner_page.has_partner_page is True
+        assert partner_page_venue.has_partner_page is True
+        assert models.Venue.query.filter(models.Venue.has_partner_page == False).all() == [venue]
+        assert models.Venue.query.filter(models.Venue.has_partner_page == True).all() == [partner_page_venue]

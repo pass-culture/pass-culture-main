@@ -759,16 +759,17 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def has_partner_page(cls):  # pylint: disable=no-self-argument
         from pcapi.core.offers.models import Offer
 
+        AliasedVenue = sa.orm.aliased(Venue)
         return (
             sa.select(1)
             .select_from(Offer)
-            .join(Venue, Offer.venueId == Venue.id)
-            .join(Offerer, Offerer.id == Venue.managingOffererId)
+            .join(AliasedVenue, Offer.venueId == AliasedVenue.id)
+            .join(Offerer, Offerer.id == AliasedVenue.managingOffererId)
             .where(
                 Offerer.isActive.is_(True),
-                Venue.isPermanent.is_(True),
-                Venue.isVirtual.is_(False),
-                Venue.id == cls.id,
+                AliasedVenue.isPermanent.is_(True),
+                AliasedVenue.isVirtual.is_(False),
+                AliasedVenue.id == cls.id,
             )
             .exists()
         )
