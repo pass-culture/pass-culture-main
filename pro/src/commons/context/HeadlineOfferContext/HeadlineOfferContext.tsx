@@ -75,7 +75,7 @@ export function HeadlineOfferContextProvider({ children }: HeadlineOfferContextP
     setIsHeadlineOfferBannerOpen(initialIsHeadlineOfferBannerOpen)
   }, [initialIsHeadlineOfferBannerOpen])
 
-  const { data: rawHeadlineOffer } = useSWR(
+  const { data: rawHeadlineOffer, error } = useSWR(
     selectedOffererId && isHeadlineOfferAvailable
       ? [GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId]
       : null,
@@ -86,11 +86,20 @@ export function HeadlineOfferContextProvider({ children }: HeadlineOfferContextP
         if (error.status !== 404) {
           throw error
         }
+      },
+      onErrorRetry: (error) => {
+        // By default, SWR retries on error. We don't want to retry on 404,
+        // since it's expected when there is no headline offer.
+        if (error.status === 404) {
+          return
+        }
       }
     }
   )
 
-  const headlineOffer = rawHeadlineOffer ?? null
+  // Sometimes rawHeadlineOffer still contains cached data while the offer is no longer an headline offer,
+  // by different means that didn't trigger a mutation (e.g. the offer has 0 stock, is deactivated).
+  const headlineOffer = error ? null : (rawHeadlineOffer ?? null)
 
   const closeHeadlineOfferBanner = () => {
     setIsHeadlineOfferBannerOpen(false)
