@@ -3522,6 +3522,9 @@ def recredit_user_if_no_missing_step(user: users_models.User) -> None:
     recredit = _recredit_user(user)
     if not recredit:
         raise exceptions.UserCannotBeRecredited("Failed to recredit user")
+    if recredit.recreditType == models.RecreditType.RECREDIT_18:
+        user.remove_underage_beneficiary_role()
+        user.add_beneficiary_role()
 
     user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
     db.session.add(user)
@@ -3529,7 +3532,7 @@ def recredit_user_if_no_missing_step(user: users_models.User) -> None:
     external_attributes_api.update_external_user(user)
     push_notifications.track_account_recredited(user.id, user.deposit, len(user.deposits))
     if feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and recredit.amount > 0:
-        if user.age and user.age >= 18:
+        if user.age and user.age >= users_constants.ELIGIBILITY_AGE_18:
             # After the decree, send email to 18 years old users only
             # This email will hold information about the recredit after 18 years old specifics
             transactional_mails.send_recredit_email_to_18_years_old(user)
