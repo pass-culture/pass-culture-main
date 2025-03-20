@@ -20,7 +20,7 @@ export interface SliderProps extends React.HTMLProps<HTMLInputElement> {
    * The scale or unit of the value being represented (e.g., '%', 'kg', etc.).
    * @default ''
    */
-  scale?: number
+  scale?: string
   /**
    * Whether to hide the label visually.
    * @default false
@@ -70,7 +70,7 @@ export interface SliderProps extends React.HTMLProps<HTMLInputElement> {
  * - **Visual Feedback**: The `displayValue` prop provides instant feedback on the current value, improving usability for all users, including those with cognitive impairments.
  */
 export const Slider = ({
-  scale = 0,
+  scale = '',
   hideLabel = false,
   displayMinMaxValues = true,
   displayValue = false,
@@ -78,7 +78,6 @@ export const Slider = ({
   ...props
 }: SliderProps): JSX.Element => {
   const labelId = useId()
-
   const min = props.min || DEFAULT_SLIDER_MIN_VALUE
   const max = props.max || DEFAULT_SLIDER_MAX_VALUE
 

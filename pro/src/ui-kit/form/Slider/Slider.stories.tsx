@@ -28,7 +28,7 @@ export const Default: Story = {
     name: 'myField',
     scale: 'km',
     onChange: () => {
-      //  Control the result here with e.target.checked
+      //  Control the result here with e.target.value
     },
   },
   decorators: [

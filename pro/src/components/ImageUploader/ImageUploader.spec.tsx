@@ -4,7 +4,7 @@ import { forwardRef } from 'react'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { ImageUploaderProps, ImageUploader } from './ImageUploader'
+import { ImageUploader, ImageUploaderProps } from './ImageUploader'
 import { UploaderModeEnum } from './types'
 
 vi.mock('react-avatar-editor', () => {
@@ -117,6 +117,7 @@ describe('ImageUploader', () => {
       onImageDelete: async () => {},
       mode: UploaderModeEnum.OFFER,
     }
+
     renderImageUploader(props)
 
     await userEvent.click(screen.getByText('Ajouter une image'))
