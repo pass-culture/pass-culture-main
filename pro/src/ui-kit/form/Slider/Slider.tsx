@@ -1,4 +1,4 @@
-import { useField } from 'formik'
+import { useId } from 'react'
 
 import styles from './Slider.module.scss'
 
@@ -15,12 +15,12 @@ export interface SliderProps extends React.HTMLProps<HTMLInputElement> {
   /**
    * The name of the slider field.
    */
-  fieldName: string
+  name: string
   /**
    * The scale or unit of the value being represented (e.g., '%', 'kg', etc.).
    * @default ''
    */
-  scale?: string
+  scale?: number
   /**
    * Whether to hide the label visually.
    * @default false
@@ -36,6 +36,10 @@ export interface SliderProps extends React.HTMLProps<HTMLInputElement> {
    * @default false
    */
   displayValue?: boolean
+  /**
+   * The handleChange function's event is typed as React.ChangeEvent<HTMLInputElement>
+   */
+  onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
 }
 
 /**
@@ -52,7 +56,7 @@ export interface SliderProps extends React.HTMLProps<HTMLInputElement> {
  *
  * @example
  * <Slider
- *   fieldName="volume"
+ *   name="volume"
  *   label="Volume Control"
  *   scale="%"
  *   displayValue={true}
@@ -66,40 +70,43 @@ export interface SliderProps extends React.HTMLProps<HTMLInputElement> {
  * - **Visual Feedback**: The `displayValue` prop provides instant feedback on the current value, improving usability for all users, including those with cognitive impairments.
  */
 export const Slider = ({
-  fieldName,
-  scale = '',
+  scale = 0,
   hideLabel = false,
   displayMinMaxValues = true,
   displayValue = false,
-  ...inputAttrs
+  onChange,
+  ...props
 }: SliderProps): JSX.Element => {
-  const [field] = useField(fieldName)
+  const labelId = useId()
 
-  const min = inputAttrs.min || DEFAULT_SLIDER_MIN_VALUE
-  const max = inputAttrs.max || DEFAULT_SLIDER_MAX_VALUE
+  const min = props.min || DEFAULT_SLIDER_MIN_VALUE
+  const max = props.max || DEFAULT_SLIDER_MAX_VALUE
 
   return (
     <div>
       <div className={styles['slider-header']}>
         <label
-          htmlFor={fieldName}
+          htmlFor={labelId}
           className={hideLabel ? styles['visually-hidden'] : ''}
         >
-          {inputAttrs.label}
+          {props.label}
         </label>
         {displayValue && (
           <span className={styles['input-value']}>
-            {field.value}&nbsp;{scale}
+            {props.value}&nbsp;{scale}
           </span>
         )}
       </div>
       <input
-        {...field}
         type="range"
+        id={labelId}
         className={styles.slider}
         min={min}
         max={max}
-        step={inputAttrs.step || DEFAULT_SLIDER_STEP_VALUE}
+        value={props.value}
+        step={props.step || DEFAULT_SLIDER_STEP_VALUE}
+        onChange={onChange}
+        {...props}
       />
       {displayMinMaxValues && (
         <div className={styles['min-max-container']}>
