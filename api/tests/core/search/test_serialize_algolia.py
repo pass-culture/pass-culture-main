@@ -18,6 +18,9 @@ from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers.constants import BookFormat
+from pcapi.core.reactions import factories as reactions_factories
+from pcapi.core.reactions.models import ReactionTypeEnum
+from pcapi.core.search import get_base_query_for_offer_indexation
 from pcapi.core.search.backends import algolia
 from pcapi.core.search.backends import serialization
 from pcapi.utils.human_ids import humanize
@@ -462,6 +465,17 @@ def test_filter_on_empty_artist():
     )
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["offer"]["artist"] == "Artiste1 Artiste2"
+
+
+def test_serialize_offer_likes_count():
+    offer = offers_factories.OfferFactory()
+    reactions_factories.ReactionFactory(reactionType=ReactionTypeEnum.LIKE, offer=offer)
+    reactions_factories.ReactionFactory(reactionType=ReactionTypeEnum.DISLIKE, offer=offer)
+    reactions_factories.ReactionFactory(reactionType=ReactionTypeEnum.NO_REACTION, offer=offer)
+
+    offer = get_base_query_for_offer_indexation().filter(offers_models.Offer.id == offer.id).one()
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert serialized["offer"]["likes"] == 1
 
 
 def test_serialize_venue():
