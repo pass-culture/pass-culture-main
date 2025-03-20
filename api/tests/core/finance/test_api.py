@@ -5318,6 +5318,36 @@ class UserRecreditAfterDecreeTest:
         assert user_2.deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_18
         assert user_2.deposit.amount == 30 + 150  #  30 (credit 17 before decree) + 150 (for 18 year old after decree)
 
+    def test_booking_transfer_when_recrediting_underage_deposit(self):
+        one_year_before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
+        next_week = datetime.datetime.utcnow() + relativedelta(weeks=1)
+        with time_machine.travel(one_year_before_decree):
+            user = users_factories.BeneficiaryFactory(
+                age=16, phoneNumber="+33600000000", deposit__amount=30, deposit__expirationDate=next_week
+            )
+            # Bookings that can still be cancelled
+            bookings_factories.BookingFactory(deposit=user.deposit, amount=1)
+            bookings_factories.UsedBookingFactory(deposit=user.deposit, amount=2)
+            # Bookings in a 'terminal' state, cannot be cancelled outside of a finance incident
+            bookings_factories.CancelledBookingFactory(deposit=user.deposit, amount=12)
+            bookings_factories.ReimbursedBookingFactory(deposit=user.deposit, amount=13)
+
+        api.recredit_users()
+
+        # User is 17, and was recredited with RECREDIT_17 on its new deposit
+        assert len(user.deposits) == 2
+        assert user.deposit.type == models.DepositType.GRANT_17_18
+        assert user.deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_17
+
+        assert len(user.deposit.bookings) == 2
+        newly_credited_amount = 50
+        remaining_credit_amount = 30 - 13 - 2 - 1  # sum of the amounts of all the non-cancelled bookings
+        amount_transferred_alongside_the_bookings = 1 + 2
+        assert (
+            user.deposit.amount
+            == newly_credited_amount + remaining_credit_amount + amount_transferred_alongside_the_bookings
+        )
+
     def test_recredit_only_if_identity_fraud_check_is_ok(self):
         last_year = datetime.datetime.utcnow() - relativedelta(years=1)
         with time_machine.travel(last_year):

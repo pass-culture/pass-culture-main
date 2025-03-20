@@ -50,6 +50,7 @@ import sqlalchemy.sql.functions as sqla_func
 from pcapi import settings
 from pcapi.connectors import googledrive
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.categories.models import ReimbursementRuleChoices
 from pcapi.core.educational.api import booking as educational_api_booking
 import pcapi.core.educational.models as educational_models
 from pcapi.core.external import batch as push_notifications
@@ -3034,7 +3035,6 @@ def _recredit_user(user: users_models.User) -> models.Recredit | None:
 
 
 def _recredit_user_v3(user: users_models.User) -> models.Recredit | None:
-    from pcapi.core.users.api import get_domains_credit
 
     if not user.deposit or not user.age:
         return None
@@ -3044,12 +3044,42 @@ def _recredit_user_v3(user: users_models.User) -> models.Recredit | None:
     if user.deposit.type == models.DepositType.GRANT_17_18:
         return _recredit_grant_17_18_deposit_using_age(user)
 
+    new_deposit = _create_new_deposit_and_transfer_funds(user, user_eligibility)
+    latest_age_related_recredit = next(
+        (
+            recredit
+            for recredit in new_deposit.recredits
+            if recredit.recreditType != models.RecreditType.PREVIOUS_DEPOSIT
+        ),
+        None,
+    )
+
+    return latest_age_related_recredit
+
+
+def _create_new_deposit_and_transfer_funds(
+    user: users_models.User, user_eligibility: users_models.EligibilityType
+) -> models.Deposit:
+    from pcapi.core.users.api import get_domains_credit
+
+    if not user.deposit or not user.age:
+        raise ValueError("User must have a deposit and age. This function should not be called.")
+
+    # Extract what needs to be transfered from current active deposit
     domains_credit = get_domains_credit(user)
     if not domains_credit:
         amount_to_transfer = decimal.Decimal(0)
     else:
         amount_to_transfer = decimal.Decimal(domains_credit.all.remaining)
+    booking_that_can_be_cancelled = [
+        booking
+        for booking in user.deposit.bookings
+        if booking.status in [bookings_models.BookingStatus.CONFIRMED, bookings_models.BookingStatus.USED]
+        # Ignore non-reimbursed bookings. Thay are not cancelled by the user nor the cultural partners.
+        and not booking.stock.offer.subcategory.reimbursement_rule == ReimbursementRuleChoices.NOT_REIMBURSED
+    ]
 
+    # create new deposit
     expire_current_deposit_for_user(user)
     new_deposit = create_deposit_v3(
         user,
@@ -3057,13 +3087,17 @@ def _recredit_user_v3(user: users_models.User) -> models.Recredit | None:
         eligibility=user_eligibility,
         age_at_registration=None,
     )
-    latest_age_related_recredit = new_deposit.recredits[0] if new_deposit.recredits else None
+
+    # Transfer bookings and update deposit amount
+    for booking in booking_that_can_be_cancelled:
+        amount_to_transfer += booking.total_amount
+        booking.depositId = new_deposit.id
+
     if amount_to_transfer:
         _recredit_deposit(
-            user.deposit, user.age, recredit_type=models.RecreditType.PREVIOUS_DEPOSIT, amount=amount_to_transfer
+            new_deposit, user.age, recredit_type=models.RecreditType.PREVIOUS_DEPOSIT, amount=amount_to_transfer
         )
-
-    return latest_age_related_recredit
+    return new_deposit
 
 
 def _recredit_user_v2(user: users_models.User) -> models.Recredit | None:

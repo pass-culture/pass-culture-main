@@ -662,7 +662,8 @@ class CreateBeneficiaryTest:
         )
 
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
-        assert user.deposit.amount == 150 + 10  # remaining amount after single 20€ booking
+        assert user.deposit.amount == 150 + 30
+        assert len(user.deposit.bookings) == 1  # The booking was transferred
 
 
 @pytest.mark.usefixtures("db_session")
