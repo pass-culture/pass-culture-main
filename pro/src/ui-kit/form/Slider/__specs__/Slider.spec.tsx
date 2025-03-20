@@ -1,18 +1,12 @@
 import { render, screen } from '@testing-library/react'
-import { Formik } from 'formik'
 
 import { Slider, SliderProps } from '../Slider'
 
-const renderSlider = (props: SliderProps) =>
-  render(
-    <Formik initialValues={{ sliderValue: 0 }} onSubmit={() => {}}>
-      <Slider {...props} />
-    </Formik>
-  )
+const renderSlider = (props: SliderProps) => render(<Slider {...props} />)
 
 describe('Slider', () => {
   const defaultProps = {
-    fieldName: 'sliderValue',
+    name: 'sliderValue',
     scale: 'km',
     displayValue: false,
   }
