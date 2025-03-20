@@ -67,12 +67,11 @@ describe('CollectiveOfferLayout', () => {
 
   it('should display creation from template title', () => {
     renderCollectiveOfferLayout('/offre/A1/collectif/', {
-      isFromTemplate: true,
       isCreation: true,
     })
 
     const title = screen.getByRole('heading', {
-      name: /Créer une offre vitrine/,
+      name: /Créer une offre réservable/,
     })
 
     expect(title).toBeInTheDocument()
