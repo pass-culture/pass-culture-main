@@ -52,7 +52,6 @@ const defaultProps: OfferEducationalFormProps = {
   }),
   mode: Mode.CREATION,
   domainsOptions: [],
-  nationalPrograms: [],
   isTemplate: false,
   imageOffer: null,
   onImageUpload: vi.fn(),
