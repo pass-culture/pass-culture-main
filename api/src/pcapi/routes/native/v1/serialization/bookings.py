@@ -8,7 +8,6 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers.models import OffererAddress
-from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.reactions.models import ReactionTypeEnum
@@ -32,6 +31,17 @@ class BookOfferResponse(BaseModel):
     bookingId: int
 
 
+class BookingVenueResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "coordinates":
+            return Coordinates(latitude=self._obj.latitude, longitude=self._obj.longitude)
+
+        if key == "address":
+            return self._obj.street
+
+        return super().get(key, default)
+
+
 class BookingVenueResponse(BaseModel):
     id: int
     # TODO: (lixxday, 28/08/2024) Remove the following fields when the frontend is ready
@@ -46,12 +56,7 @@ class BookingVenueResponse(BaseModel):
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
-
-    @classmethod
-    def from_orm(cls, venue: Venue) -> "BookingVenueResponse":
-        venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
-        venue.address = venue.street
-        return super().from_orm(venue)
+        getter_dict = BookingVenueResponseGetterDict
 
 
 class BookingOfferExtraData(BaseModel):
