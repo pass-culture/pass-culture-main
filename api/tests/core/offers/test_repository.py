@@ -1035,10 +1035,12 @@ class GetOffersByPublicationDateTest:
         offer_to_publish_1 = factories.OfferFactory()
         factories.FutureOfferFactory(offer=offer_to_publish_1, publicationDate=publication_date)
         offer_to_publish_2 = factories.OfferFactory()
-        factories.FutureOfferFactory(offer=offer_to_publish_2, publicationDate=publication_date)
+        factories.FutureOfferFactory(
+            offer=offer_to_publish_2, publicationDate=publication_date - datetime.timedelta(minutes=13)
+        )
 
         offer_after = factories.OfferFactory()
-        publication_date_after = publication_date + datetime.timedelta(hours=1)
+        publication_date_after = publication_date + datetime.timedelta(minutes=17)
         factories.FutureOfferFactory(offer=offer_after, publicationDate=publication_date_after)
 
         query = repository.get_offers_by_publication_date(publication_date=publication_date)
