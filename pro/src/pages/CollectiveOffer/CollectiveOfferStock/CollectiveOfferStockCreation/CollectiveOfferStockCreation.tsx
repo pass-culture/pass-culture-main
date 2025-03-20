@@ -170,7 +170,6 @@ export const CollectiveOfferStockCreation = ({
   return (
     <CollectiveOfferLayout
       subTitle={offer.name}
-      isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
       isTemplate={isTemplate}
       isCreation={isCreation}
       requestId={requestId}

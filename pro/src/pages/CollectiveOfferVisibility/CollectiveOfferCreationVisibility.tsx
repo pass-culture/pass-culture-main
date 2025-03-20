@@ -7,7 +7,6 @@ import {
   GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import {
-  isCollectiveOffer,
   isCollectiveOfferTemplate,
   Mode,
 } from 'commons/core/OfferEducational/types'
@@ -63,7 +62,6 @@ export const CollectiveOfferVisibility = ({
   return (
     <CollectiveOfferLayout
       subTitle={offer.name}
-      isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
       isTemplate={isTemplate}
       isCreation={isCreation}
       requestId={requestId}

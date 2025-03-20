@@ -1,4 +1,3 @@
-import { isCollectiveOffer } from 'commons/core/OfferEducational/types'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
   MandatoryCollectiveOfferFromParamsProps,
@@ -15,7 +14,6 @@ export const CollectiveOfferPreviewCreation = ({
   return (
     <CollectiveOfferLayout
       subTitle={offer.name}
-      isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
       isTemplate={isTemplate}
       isCreation
       offer={offer}

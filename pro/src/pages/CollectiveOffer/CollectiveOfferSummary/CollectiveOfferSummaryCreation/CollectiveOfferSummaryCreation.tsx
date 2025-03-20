@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
+import { Mode } from 'commons/core/OfferEducational/types'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
@@ -34,7 +34,6 @@ export const CollectiveOfferSummaryCreation = ({
   return (
     <CollectiveOfferLayout
       subTitle={offer.name}
-      isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
       isTemplate={isTemplate}
       isCreation={true}
       offer={offer}
