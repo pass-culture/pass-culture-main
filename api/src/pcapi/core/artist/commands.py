@@ -109,29 +109,42 @@ def import_all_artist_product_links() -> None:
 
 def import_all_artist_aliases() -> None:
     logger.info("Importing artist aliases from BigQuery")
-    imported_aliases: list[artist_models.ArtistAlias] = []
 
-    for raw_alias in get_all_artist_aliases():
-        existing_alias = artist_models.ArtistAlias.query.filter_by(
-            artist_id=raw_alias.artist_id,
-            artist_alias_name=raw_alias.artist_alias_name,
-        ).first()
-        if existing_alias:
-            continue
-
-        new_alias = artist_models.ArtistAlias(
-            artist_id=raw_alias.artist_id,
-            artist_alias_name=raw_alias.artist_alias_name,
-            artist_cluster_id=raw_alias.artist_cluster_id,
-            artist_type=get_artist_type(raw_alias.artist_type),
-            artist_wiki_data_id=raw_alias.artist_wiki_data_id,
-            offer_category_id=raw_alias.offer_category_id,
+    def exists_alias(alias: ArtistAliasModel) -> bool:
+        return (
+            artist_models.ArtistAlias.query.filter_by(
+                artist_id=alias.artist_id,
+                artist_alias_name=alias.artist_alias_name,
+                artist_cluster_id=alias.artist_cluster_id,
+            ).first()
+            is not None
         )
 
-        imported_aliases.append(new_alias)
-        if len(imported_aliases) == BATCH_SIZE:
-            bulk_update_database(imported_aliases)
+    def create_alias(alias: ArtistAliasModel) -> artist_models.ArtistAlias:
+        return artist_models.ArtistAlias(
+            artist_id=alias.artist_id,
+            artist_alias_name=alias.artist_alias_name,
+            artist_cluster_id=alias.artist_cluster_id,
+            artist_type=get_artist_type(alias.artist_type),
+            artist_wiki_data_id=alias.artist_wiki_data_id,
+            offer_category_id=alias.offer_category_id,
+        )
 
-        imported_aliases = []
+    generic_import(get_all_artist_aliases, exists_alias, create_alias)
 
-    bulk_update_database(imported_aliases)
+
+def generic_import(get_all, exists, create):
+    imported = []
+    for item in get_all():
+        if exists(item):
+            continue
+
+        new = create(item)
+
+        imported.append(new)
+        if len(imported) == BATCH_SIZE:
+            bulk_update_database(imported)
+
+        imported = []
+
+    bulk_update_database(imported)
