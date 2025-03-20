@@ -17,6 +17,8 @@ blueprint = Blueprint(__name__, __name__)
 
 logger = logging.getLogger(__name__)
 
+BATCH_SIZE = 1000
+
 
 @blueprint.cli.command("import_all_artists_data")
 def import_all_artists_data() -> None:
@@ -70,6 +72,10 @@ def import_all_artists() -> None:
         )
 
         imported_artists.append(new_artist)
+        if len(imported_artists) == BATCH_SIZE:
+            bulk_update_database(imported_artists)
+            imported_artists = []
+
     bulk_update_database(imported_artists)
 
 
@@ -90,7 +96,11 @@ def import_all_artist_product_links() -> None:
             product_id=raw_product_link.product_id,
             artist_type=get_artist_type(raw_product_link.artist_type),
         )
+
         imported_product_links.append(new_product_link)
+        if len(imported_product_links) == BATCH_SIZE:
+            bulk_update_database(imported_product_links)
+            imported_product_links = []
 
     bulk_update_database(imported_product_links)
 
@@ -115,6 +125,10 @@ def import_all_artist_aliases() -> None:
             artist_wiki_data_id=raw_alias.artist_wiki_data_id,
             offer_category_id=raw_alias.offer_category_id,
         )
+
         imported_aliases.append(new_alias)
+        if len(imported_aliases) == BATCH_SIZE:
+            bulk_update_database(imported_aliases)
+            imported_aliases = []
 
     bulk_update_database(imported_aliases)
