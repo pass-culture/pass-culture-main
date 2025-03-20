@@ -16,7 +16,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class ImportAllArtistsTest:
-    @mock.patch("pcapi.core.artist.commands.get_all_artists")
+    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
     def test_import_all_artists_creates_artists(
         self,
         get_all_artists_mock,
@@ -30,7 +30,7 @@ class ImportAllArtistsTest:
         all_artists = Artist.query.all()
         assert len(all_artists) == 2
 
-    @mock.patch("pcapi.core.artist.commands.get_all_artists")
+    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
     def test_import_all_artists_creates_artists_is_idempotent(
         self,
         get_all_artists_mock,
@@ -52,7 +52,7 @@ class ImportAllArtistsTest:
         all_artists = Artist.query.all()
         assert len(all_artists) == 2
 
-    @mock.patch("pcapi.core.artist.commands.get_all_artist_product_links")
+    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkQuery.execute")
     def test_import_all_artist_product_links_creates_product_links(
         self,
         get_all_artists_product_links_mock,
@@ -86,8 +86,8 @@ class ImportAllArtistsTest:
         for product in performer.products:
             assert product in albums_by_same_artist
 
-    @mock.patch("pcapi.core.artist.commands.get_all_artist_aliases")
-    @mock.patch("pcapi.core.artist.commands.get_all_artists")
+    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistAliasQuery.execute")
+    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
     def test_import_all_artist_aliases_creates_artist_aliases_creates_artist_aliases(
         self,
         get_all_artists_mock,
