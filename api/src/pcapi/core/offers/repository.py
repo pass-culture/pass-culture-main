@@ -181,8 +181,13 @@ def get_capped_offers_for_filters(
 def get_offers_by_publication_date(publication_date: datetime.datetime | None = None) -> BaseQuery:
     if publication_date is None:
         publication_date = datetime.datetime.utcnow()
-    publication_date = publication_date.replace(minute=0, second=0, microsecond=0, tzinfo=None)
-    future_offers_subquery = db.session.query(models.FutureOffer.offerId).filter_by(publicationDate=publication_date)
+
+    upper_bound = publication_date
+    lower_bound = upper_bound - datetime.timedelta(minutes=15)
+
+    future_offers_subquery = db.session.query(models.FutureOffer.offerId).filter(
+        models.FutureOffer.publicationDate <= upper_bound, models.FutureOffer.publicationDate > lower_bound
+    )
     return models.Offer.query.filter(models.Offer.id.in_(future_offers_subquery))
 
 
