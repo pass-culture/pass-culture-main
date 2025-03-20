@@ -4,7 +4,6 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import utils as educational_utils
-from pcapi.models import feature
 
 
 def update_collective_stock_booking(
@@ -71,9 +70,4 @@ def _update_collective_booking_pending(expired_booking: educational_models.Colle
 def _should_update_collective_booking_pending(
     booking: educational_models.CollectiveBooking | None, booking_limit: datetime.datetime
 ) -> bool:
-    return (
-        feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active()
-        and booking is not None
-        and booking.is_expired
-        and booking_limit > datetime.datetime.utcnow()
-    )
+    return booking is not None and booking.is_expired and booking_limit > datetime.datetime.utcnow()

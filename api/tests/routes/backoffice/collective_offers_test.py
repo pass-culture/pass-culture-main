@@ -1326,7 +1326,6 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     # - fetch CollectiveOffer
     # - _is_collective_offer_price_editable
     expected_num_queries = 4
-    expected_num_queries_with_ff = expected_num_queries + 1
 
     def test_nominal(self, legit_user, authenticated_client):
         start_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
@@ -1434,7 +1433,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__rejectionReason=educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

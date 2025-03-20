@@ -9,8 +9,6 @@ from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import factories as user_factories
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 
-from tests.conftest import TestClient
-
 
 STATUSES_ALLOWING_CANCEL = (
     models.CollectiveOfferDisplayedStatus.PREBOOKED,
@@ -171,31 +169,3 @@ class Returns403Test:
             "code": "CANCEL_NOT_ALLOWED",
             "message": "This collective offer status does not allow cancellation",
         }
-
-
-class Returns400Test:
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    @pytest.mark.parametrize(
-        "status",
-        [
-            models.CollectiveBookingStatus.CANCELLED,
-            models.CollectiveBookingStatus.USED,
-            models.CollectiveBookingStatus.REIMBURSED,
-        ],
-    )
-    def test_offer_that_cannot_be_cancelled_because_of_status(self, client: TestClient, status):
-        user = user_factories.UserFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
-
-        educational_booking = factories.CollectiveBookingFactory(
-            status=status, collectiveStock__collectiveOffer__venue__managingOfferer=offerer
-        )
-        offer_id = educational_booking.collectiveStock.collectiveOffer.id
-
-        client = client.with_session_auth(user.email)
-        response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
-
-        assert response.status_code == 400
-        assert response.json == {"code": "NO_BOOKING", "message": "This collective offer has no booking to cancel"}
-        assert len(adage_api_testing.adage_requests) == 0

@@ -7,7 +7,7 @@ from pcapi.core.educational import testing as educational_testing
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.models import CollectiveOfferTemplate
-import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 
 
@@ -51,29 +51,6 @@ class Returns204Test:
         assert response.status_code == 204
         assert not CollectiveOfferTemplate.query.get(offer1.id).isActive
         assert not CollectiveOfferTemplate.query.get(offer2.id).isActive
-
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_only_approved_offers_patch(self, client):
-        approved_offer = CollectiveOfferTemplateFactory(isActive=False)
-        venue = approved_offer.venue
-        pending_offer = CollectiveOfferTemplateFactory(venue=venue, validation=OfferValidationStatus.PENDING)
-        rejected_offer = CollectiveOfferTemplateFactory(venue=venue, validation=OfferValidationStatus.REJECTED)
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
-
-        data = {
-            "ids": [approved_offer.id, pending_offer.id, rejected_offer.id],
-            "isActive": True,
-        }
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            client = client.with_session_auth("pro@example.com")
-            response = client.patch("/collective/offers-template/active-status", json=data)
-
-        assert response.status_code == 204
-        assert approved_offer.isActive
-        assert not pending_offer.isActive
-        assert not rejected_offer.isActive
 
 
 @pytest.mark.usefixtures("db_session")

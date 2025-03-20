@@ -472,7 +472,6 @@ class PrebookedCollectiveOfferFactory(CollectiveOfferBaseFactory):
         PendingCollectiveBookingFactory(collectiveStock=stock)
 
 
-# Cancelled offers are relevant only when the FF ENABLE_COLLECTIVE_NEW_STATUSES is active
 class CancelledWithoutBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_cancelled_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
@@ -480,7 +479,6 @@ class CancelledWithoutBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
         CollectiveStockFactory(startDatetime=in_past, collectiveOffer=self)
 
 
-# Cancelled offers are relevant only when the FF ENABLE_COLLECTIVE_NEW_STATUSES is active
 class CancelledWithBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_cancelled_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
@@ -491,7 +489,6 @@ class CancelledWithBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
         )
 
 
-# Cancelled offers are relevant only when the FF ENABLE_COLLECTIVE_NEW_STATUSES is active
 class CancelledDueToExpirationCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_cancelled_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
@@ -526,7 +523,6 @@ class EndedCollectiveOfferFactory(CollectiveOfferBaseFactory):
             UsedCollectiveBookingFactory(collectiveStock=stock)
 
 
-# Reimbursed offers are relevant only when the FF ENABLE_COLLECTIVE_NEW_STATUSES is active
 class ReimbursedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_reimbursed_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:

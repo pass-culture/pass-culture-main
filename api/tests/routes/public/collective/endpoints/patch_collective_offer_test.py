@@ -954,42 +954,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert booking.cancellationDate == None
         assert booking.confirmationLimitDate == new_limit
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_should_not_update_expired_booking(self, client):
-        now = datetime.utcnow()
-        limit = now - timedelta(days=2)
-
-        key, venue_provider = self.setup_active_venue_provider()
-        client_with_token = client.with_explicit_token(key)
-        offer = educational_factories.CollectiveOfferFactory(
-            venue=venue_provider.venue, provider=venue_provider.provider
-        )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer, startDatetime=now + timedelta(days=5), bookingLimitDatetime=limit
-        )
-        booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock,
-            status=educational_models.CollectiveBookingStatus.CANCELLED,
-            cancellationReason=educational_models.CollectiveBookingCancellationReasons.EXPIRED,
-            cancellationDate=now - timedelta(days=1),
-            confirmationLimitDate=limit,
-        )
-
-        new_limit = now + timedelta(days=1)
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client_with_token.patch(
-                self.endpoint_url.format(offer_id=offer.id), json={"bookingLimitDatetime": new_limit.isoformat()}
-            )
-            assert response.status_code == 200
-
-        db.session.refresh(stock)
-        db.session.refresh(booking)
-        assert stock.bookingLimitDatetime == new_limit
-        assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
-        assert booking.cancellationReason == educational_models.CollectiveBookingCancellationReasons.EXPIRED
-        assert booking.cancellationDate == now - timedelta(days=1)
-        assert booking.confirmationLimitDate == limit
-
     def test_description_invalid(self, client):
         key, venue_provider = self.setup_active_venue_provider()
         client_with_token = client.with_explicit_token(key)

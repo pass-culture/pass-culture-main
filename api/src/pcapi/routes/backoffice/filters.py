@@ -36,7 +36,6 @@ from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-from pcapi.models import feature as feature_model
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.routes.backoffice.accounts import serialization as serialization_accounts
@@ -557,21 +556,15 @@ def format_collective_offer_displayed_status(
         case educational_models.CollectiveOfferDisplayedStatus.ACTIVE:
             return "Publiée"
         case educational_models.CollectiveOfferDisplayedStatus.PENDING:
-            if feature_model.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-                return "En instruction"
-            return "En attente"
+            return "En instruction"
         case educational_models.CollectiveOfferDisplayedStatus.REJECTED:
-            if feature_model.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-                return "Non conforme"
-            return "Refusée"
+            return "Non conforme"
         case educational_models.CollectiveOfferDisplayedStatus.PREBOOKED:
             return "Préréservée"
         case educational_models.CollectiveOfferDisplayedStatus.BOOKED:
             return "Réservée"
         case educational_models.CollectiveOfferDisplayedStatus.INACTIVE:
-            if feature_model.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-                return "En pause"
-            return "Masquée"
+            return "En pause"
         case educational_models.CollectiveOfferDisplayedStatus.EXPIRED:
             return "Expirée"
         case educational_models.CollectiveOfferDisplayedStatus.ENDED:
