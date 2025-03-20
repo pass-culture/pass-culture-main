@@ -1,8 +1,24 @@
+from sqlalchemy.orm import joinedload
+
 from pcapi.core.offers.models import FutureOffer
+from pcapi.core.offers.models import Offer
 from pcapi.core.reminders.models import FutureOfferReminder
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.routes.native.v1.serialization.reminder import PostReminderRequest
+
+
+def get_reminders(user: User) -> list[FutureOfferReminder]:
+    return (
+        db.session.query(FutureOfferReminder)
+        .filter(FutureOfferReminder.userId == user.id)
+        .options(
+            joinedload(FutureOfferReminder.futureOffer)
+            .load_only(FutureOffer.offerId)
+            .joinedload(FutureOffer.offer)
+            .load_only(Offer.id)
+        )
+    ).all()
 
 
 def create_reminder(user: User, reminder_body: PostReminderRequest) -> FutureOfferReminder:

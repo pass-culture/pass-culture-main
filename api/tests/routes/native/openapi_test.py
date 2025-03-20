@@ -3509,6 +3509,36 @@ def test_public_api(client):
                 }
             },
             "/native/v1/me/reminders": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_me_reminders",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                        },
+                        "403": {
+                            "description": "Forbidden",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ValidationError",
+                                    },
+                                },
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [
+                        {
+                            "JWTAuth": [],
+                        },
+                    ],
+                    "summary": "get_reminders <GET>",
+                    "tags": [],
+                },
                 "post": {
                     "description": "",
                     "operationId": "post__native_v1_me_reminders",
