@@ -16,18 +16,18 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { ReSendEmailCallout } from 'components/ReSendEmailCallout/ReSendEmailCallout'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { Hero } from 'ui-kit/Hero/Hero'
 
 import emailIcon from './assets/email.svg'
 import styles from './LostPassword.module.scss'
 import { validationSchema } from './validationSchema'
+import { CancelablePromise } from 'apiClient/v1'
 
 type FormValues = { email: string }
 
@@ -58,8 +58,7 @@ export const LostPassword = (): JSX.Element => {
 
   const submitChangePasswordRequest = async (formValues: FormValues) => {
     try {
-      const token = await getReCaptchaToken('resetPassword')
-      await api.resetPassword({ token, email: formValues.email })
+      await sendChangePasswordRequest(formValues.email)
       setEmail(formValues.email)
     } catch (e) {
       if (e === RECAPTCHA_ERROR) {
@@ -67,6 +66,13 @@ export const LostPassword = (): JSX.Element => {
       }
       notification.error('Une erreur est survenue')
     }
+  }
+
+  const sendChangePasswordRequest = async (
+    email: string
+  ): CancelablePromise<void> => {
+    const token = await getReCaptchaToken('resetPassword')
+    return api.resetPassword({ token, email: email })
   }
 
   const successComponent = is2025SignUpEnabled ? (
@@ -82,12 +88,7 @@ export const LostPassword = (): JSX.Element => {
       <p className={styles['change-password-request-success-body']}>
         Cliquez sur le lien envoyé par email à <b>{email}</b>
       </p>
-      <Callout variant={CalloutVariant.DEFAULT}>
-        <p className={styles['change-password-request-success-info']}>
-          Vous n’avez pas reçu d’email ? <br /> Vérifiez vos spams ou cliquez
-          ici pour le recevoir à nouveau.
-        </p>
-      </Callout>
+      <ReSendEmailCallout action={() => sendChangePasswordRequest(email)} />
     </section>
   ) : (
     <Hero

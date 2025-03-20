@@ -92,6 +92,9 @@ describe('LostPassword', () => {
         expect(
           screen.getByText(/Vous allez recevoir un email !/)
         ).toBeInTheDocument()
+        expect(
+          screen.getByText(/Vous n’avez pas reçu d’email ?/)
+        ).toBeInTheDocument()
       })
     })
   })
