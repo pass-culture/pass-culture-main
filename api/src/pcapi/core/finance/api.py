@@ -98,6 +98,31 @@ RECREDIT_UNDERAGE_USERS_BATCH_SIZE = 500
 MIN_DATE_TO_PRICE = datetime.datetime(2021, 12, 31, 23, 0)  # UTC
 PRICE_EVENTS_BATCH_SIZE = 100
 CASHFLOW_BATCH_LABEL_PREFIX = "VIR"
+ORIGIN_OF_CREDIT_CASE: sa.sql.elements.Case = sa.case(
+    (
+        bookings_models.Booking.usedRecreditType == bookings_models.BookingRecreditType.RECREDIT_17,
+        "PR18-",
+    ),
+    (
+        bookings_models.Booking.usedRecreditType == bookings_models.BookingRecreditType.RECREDIT_18,
+        "PR18+",
+    ),
+    (
+        sa.or_(
+            sa.and_(
+                bookings_models.Booking.usedRecreditType == None,
+                models.Deposit.type == models.DepositType.GRANT_17_18,
+            ),
+            models.Deposit.type == models.DepositType.GRANT_15_17,
+        ),
+        "AR18-",
+    ),
+    (
+        models.Deposit.type == models.DepositType.GRANT_18,
+        "AR18+",
+    ),
+    else_="",
+)
 
 
 def get_pricing_ordering_date(
@@ -1494,8 +1519,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
                     (offerers_models.Offerer.is_caledonian == True, offerers_models.Offerer.rid7),
                     else_=offerers_models.Offerer.siren,
                 ).label("offerer_siren"),
-                models.Deposit.type.label("deposit_type"),
-                bookings_models.Booking.usedRecreditType.label("used_recredit_type"),
+                ORIGIN_OF_CREDIT_CASE.label("origin_of_credit"),
                 sa.case((offerers_models.Offerer.is_caledonian == True, "NC"), else_=None).label("caledonian_label"),
                 sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
             )
@@ -1563,8 +1587,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
             sa.column("bank_account_label"),
             sa.column("offerer_name"),
             sa.column("offerer_siren"),
-            sa.column("deposit_type"),
-            sa.column("used_recredit_type"),
+            sa.column("origin_of_credit"),
             sa.column("caledonian_label"),
         )
         .with_entities(
@@ -1572,8 +1595,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
             sa.column("bank_account_label"),
             sa.column("offerer_name"),
             sa.column("offerer_siren"),
-            sa.column("deposit_type"),
-            sa.column("used_recredit_type"),
+            sa.column("origin_of_credit"),
             sa.column("caledonian_label"),
             sqla_func.sum(sa.column("pricing_amount")).label("pricing_amount"),
         )
@@ -1622,14 +1644,8 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
 def _payment_details_row_formatter(sql_row: typing.Any) -> tuple:
     if hasattr(sql_row, "ministry"):
         booking_type = "EACC"
-    elif sql_row.used_recredit_type == bookings_models.BookingRecreditType.RECREDIT_17.value:
-        booking_type = "PR18-"
-    elif sql_row.used_recredit_type == bookings_models.BookingRecreditType.RECREDIT_18.value:
-        booking_type = "PR18+"
-    elif sql_row.deposit_type == models.DepositType.GRANT_15_17.value:
-        booking_type = "AR18-"
-    elif sql_row.deposit_type == models.DepositType.GRANT_18.value:
-        booking_type = "AR18+"
+    elif hasattr(sql_row, "origin_of_credit"):
+        booking_type = sql_row.origin_of_credit
     else:
         raise ValueError("Unknown booking type (not educational nor individual)")
 
@@ -1962,13 +1978,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.Invoice.reference.label("invoice_reference"),
                 models.Invoice.bankAccountId.label("bank_account_id"),
                 models.PricingLine.category.label("pricing_line_category"),
-                models.Deposit.type.label("deposit_type"),
-                sa.case(
-                    (bookings_models.Booking.usedRecreditType.is_not(None), bookings_models.Booking.usedRecreditType),
-                    else_="",
-                ).label(
-                    "used_recredit_type"
-                ),  # the case is for sorting purposes
+                ORIGIN_OF_CREDIT_CASE.label("origin_of_credit"),
                 sa.case((offerers_models.Offerer.is_caledonian == True, "NC"), else_=None).label("ministry"),
                 sqla_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
             )
@@ -2051,8 +2061,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 sa.column("invoice_reference"),
                 sa.column("bank_account_id"),
                 sa.column("pricing_line_category"),
-                sa.column("deposit_type"),
-                sa.column("used_recredit_type"),
+                sa.column("origin_of_credit"),
                 sa.column("ministry"),
             )
             .with_entities(
@@ -2060,8 +2069,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 sa.column("invoice_reference"),
                 sa.column("bank_account_id"),
                 sa.column("pricing_line_category"),
-                sa.column("deposit_type"),
-                sa.column("used_recredit_type"),
+                sa.column("origin_of_credit"),
                 sa.column("ministry"),
                 sqla_func.sum(sa.column("pricing_line_amount")).label("pricing_line_amount"),
             )
@@ -2113,8 +2121,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
         indiv_data,
         key=lambda o: (
             o.invoice_reference,
-            o.deposit_type,
-            o.used_recredit_type,
+            o.origin_of_credit,
             pricing_line_dict[o.pricing_line_category],
         ),
     )
@@ -2134,14 +2141,8 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
 def _invoice_row_formatter(sql_row: typing.Any) -> tuple:
     if sql_row.ministry and sql_row.ministry != "NC":
         booking_type = "EACC"
-    elif sql_row.used_recredit_type == bookings_models.BookingRecreditType.RECREDIT_17.value:
-        booking_type = "PR18-"
-    elif sql_row.used_recredit_type == bookings_models.BookingRecreditType.RECREDIT_18.value:
-        booking_type = "PR18+"
-    elif sql_row.deposit_type == models.DepositType.GRANT_15_17.value:
-        booking_type = "AR18-"
-    elif sql_row.deposit_type == models.DepositType.GRANT_18.value:
-        booking_type = "AR18+"
+    elif hasattr(sql_row, "origin_of_credit"):
+        booking_type = sql_row.origin_of_credit
     else:
         raise ValueError("Unknown booking type (not educational nor individual)")
 
