@@ -76,8 +76,8 @@ describe('useFocus', () => {
       screen.getByRole('link', { name: 'Page Without "Back to Nav" link' })
     )
 
-    expect(document.activeElement?.id).toEqual('top-page')
+    expect(document.activeElement?.id).toEqual('unaccessible-top-page')
     await userEvent.tab()
-    expect(document.activeElement?.id).not.toEqual('top-page')
+    expect(document.activeElement?.id).not.toEqual('unaccessible-top-page')
   })
 })

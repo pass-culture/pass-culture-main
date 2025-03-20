@@ -7,12 +7,6 @@
   margin-bottom: rem.torem(16px);
 }
 
-.offer-type-title {
-  @include fonts.title1;
-
-  margin-bottom: rem.torem(32px);
-}
-
 .offer-type-container {
   max-width: rem.torem(486px);
 }

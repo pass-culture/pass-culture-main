@@ -4,7 +4,6 @@ import { useSWRConfig } from 'swr'
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
-import { Layout } from 'app/App/layout/Layout'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   isCollectiveOfferTemplate,
@@ -77,20 +76,18 @@ const CollectiveOfferStockEdition = ({
   }
 
   return (
-    <Layout layout="sticky-actions">
-      <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-        <OfferEducationalStock
-          initialValues={initialValues}
-          mode={
-            offer.collectiveStock?.isEducationalStockEditable
-              ? Mode.EDITION
-              : Mode.READ_ONLY
-          }
-          offer={offer}
-          onSubmit={handleSubmitStock}
-        />
-      </CollectiveOfferLayout>
-    </Layout>
+    <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
+      <OfferEducationalStock
+        initialValues={initialValues}
+        mode={
+          offer.collectiveStock?.isEducationalStockEditable
+            ? Mode.EDITION
+            : Mode.READ_ONLY
+        }
+        offer={offer}
+        onSubmit={handleSubmitStock}
+      />
+    </CollectiveOfferLayout>
   )
 }
 

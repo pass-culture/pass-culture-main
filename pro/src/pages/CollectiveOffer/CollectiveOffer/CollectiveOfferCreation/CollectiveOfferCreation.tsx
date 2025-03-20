@@ -28,31 +28,30 @@ export const CollectiveOfferCreation = ({
     offer
   )
 
-  return (
-    <Layout layout={'sticky-actions'}>
-      {!isReady ? (
-        <Spinner />
-      ) : (
-        <CollectiveOfferLayout
-          subTitle={offer?.name}
-          isCreation
-          isTemplate={isTemplate}
-          isFromTemplate={location.pathname.includes('vitrine')}
-          requestId={requestId}
-          offer={offer}
-          userOfferer={offerEducationalFormData.offerer}
-        >
-          <OfferEducational
-            userOfferer={offerEducationalFormData.offerer}
-            domainsOptions={offerEducationalFormData.domains}
-            nationalPrograms={offerEducationalFormData.nationalPrograms}
-            offer={offer}
-            mode={Mode.CREATION}
-            isTemplate={isTemplate}
-          />
-        </CollectiveOfferLayout>
-      )}
+  if (!isReady) {
+    return <Layout layout={'sticky-actions'}>
+      <Spinner />
     </Layout>
+  }
+
+  return (
+    <CollectiveOfferLayout
+      subTitle={offer?.name}
+      isCreation
+      isTemplate={isTemplate}
+      isFromTemplate={location.pathname.includes('vitrine')}
+      requestId={requestId}
+      offer={offer}
+    >
+      <OfferEducational
+        userOfferer={offerEducationalFormData.offerer}
+        domainsOptions={offerEducationalFormData.domains}
+        nationalPrograms={offerEducationalFormData.nationalPrograms}
+        offer={offer}
+        mode={Mode.CREATION}
+        isTemplate={isTemplate}
+      />
+    </CollectiveOfferLayout>
   )
 }
 

@@ -86,7 +86,7 @@ const renderForm = async (options?: RenderWithProvidersOptions) => {
   )
 
   await waitFor(() => {
-    screen.getByText('Paramètres généraux')
+    screen.getByText('Tous les champs suivis d’un * sont obligatoires.')
   })
 }
 

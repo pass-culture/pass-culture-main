@@ -43,7 +43,10 @@ const EmailChangeValidation = (): JSX.Element => {
   }
 
   return (
-    <Layout layout="logged-out">
+    <Layout
+      layout="logged-out"
+      mainHeading={isSuccess ? 'Et voilà !' : 'Votre lien a expiré !'}
+    >
       <EmailChangeValidationScreen isSuccess={isSuccess} />
     </Layout>
   )

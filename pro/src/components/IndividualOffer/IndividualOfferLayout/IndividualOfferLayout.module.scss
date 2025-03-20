@@ -33,10 +33,21 @@
   gap: rem.torem(16px);
 }
 
+.title-and-back-to-nav-link {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
 .title {
   @include fonts.title1;
 
   flex: auto;
+}
+
+.back-to-nav-link {
+  margin-left: rem.torem(16px);
 }
 
 .status {

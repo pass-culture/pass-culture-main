@@ -30,9 +30,8 @@ export const Reimbursements = (): JSX.Element => {
   }
 
   return (
-    <Layout>
+    <Layout mainHeading='Gestion financière'>
       <div className={styles['reimbursements-container']}>
-        <h1 className={styles['title']}>Gestion financière</h1>
         <div>
           <ReimbursementsTabs selectedOfferer={selectedOfferer} />
           <Outlet context={{ selectedOfferer }} />

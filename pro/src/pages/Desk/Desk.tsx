@@ -135,7 +135,7 @@ export const Desk = (): JSX.Element => {
 
   return (
     <HeadlineOfferContextProvider>
-      <Layout mainHeading="Guichet" mainBanner={<HeadlineOfferBanner />}>
+      <Layout mainHeading="Guichet" mainTopElement={<HeadlineOfferBanner />}>
         <p className={styles.advice}>
           Saisissez les contremarques présentées par les bénéficiaires afin de
           les valider ou de les invalider.

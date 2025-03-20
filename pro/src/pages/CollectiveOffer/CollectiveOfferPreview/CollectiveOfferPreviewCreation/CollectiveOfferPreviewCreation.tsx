@@ -1,4 +1,3 @@
-import { Layout } from 'app/App/layout/Layout'
 import { isCollectiveOffer } from 'commons/core/OfferEducational/types'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
@@ -14,18 +13,16 @@ export const CollectiveOfferPreviewCreation = ({
   offerer,
 }: MandatoryCollectiveOfferFromParamsProps) => {
   return (
-    <Layout layout={'sticky-actions'}>
-      <CollectiveOfferLayout
-        subTitle={offer.name}
-        isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
-        isTemplate={isTemplate}
-        isCreation
-        offer={offer}
-      >
-        <CollectiveOfferPreviewCreationScreen offer={offer} offerer={offerer} />
-        <RouteLeavingGuardCollectiveOfferCreation when={false} />
-      </CollectiveOfferLayout>
-    </Layout>
+    <CollectiveOfferLayout
+      subTitle={offer.name}
+      isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+      isTemplate={isTemplate}
+      isCreation
+      offer={offer}
+    >
+      <CollectiveOfferPreviewCreationScreen offer={offer} offerer={offerer} />
+      <RouteLeavingGuardCollectiveOfferCreation when={false} />
+    </CollectiveOfferLayout>
   )
 }
 

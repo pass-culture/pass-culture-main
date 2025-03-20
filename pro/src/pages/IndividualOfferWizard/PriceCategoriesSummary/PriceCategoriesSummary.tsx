@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { IndivualOfferLayout } from 'components/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
+import { IndividualOfferLayout } from 'components/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
 import { PriceCategoriesSection } from 'components/IndividualOffer/SummaryScreen/PriceCategoriesSection/PriceCategoriesSection'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -18,9 +18,9 @@ const PriceCategoriesSummary = (): JSX.Element | null => {
   )?.canBeDuo
 
   return (
-    <IndivualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
+    <IndividualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
       <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
-    </IndivualOfferLayout>
+    </IndividualOfferLayout>
   )
 }
 

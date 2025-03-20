@@ -63,7 +63,7 @@ const CollectiveBookings = (): JSX.Element => {
   }
 
   return (
-    <Layout>
+    <Layout mainHeading='Réservations collectives'>
       <BookingsContainer
         audience={Audience.COLLECTIVE}
         getFilteredBookingsAdapter={getFilteredCollectiveBookingsAdapter}

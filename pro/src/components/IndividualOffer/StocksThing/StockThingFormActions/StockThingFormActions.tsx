@@ -12,7 +12,7 @@ export interface StockThingFormActionsProps {
 export const StockThingFormActions = ({
   actions,
 }: StockThingFormActionsProps): JSX.Element => {
-  const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
+  const isMobileScreen = useMediaQuery('(min-width: 64rem)')
 
   return (
     <div className={styles['button-actions']}>

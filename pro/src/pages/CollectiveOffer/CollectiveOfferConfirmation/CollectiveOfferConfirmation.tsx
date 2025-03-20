@@ -27,7 +27,7 @@ const CollectiveOfferConfirmation = ({
   }
 
   return (
-    <Layout>
+    <Layout areMainHeadingAndBackToNavLinkInChild>
       <CollectiveOfferConfirmationScreen
         isShowcase={offer.isTemplate}
         offerStatus={offer.displayedStatus}

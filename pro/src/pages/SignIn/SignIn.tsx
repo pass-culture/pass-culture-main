@@ -27,7 +27,6 @@ import { storageAvailable } from 'commons/utils/storageAvailable'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
-import styles from './Signin.module.scss'
 import { SigninForm } from './SigninForm'
 import { validationSchema } from './validationSchema'
 
@@ -163,13 +162,13 @@ export const SignIn = (): JSX.Element => {
   return shouldRedirect ? (
     <Navigate to="/" replace />
   ) : (
-    <Layout layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}>
-      <h1 className={styles['title']}>
-        {is2025SignUpEnabled
-          ? 'Connexion'
-          : 'Bienvenue sur l’espace partenaires culturels'}
-      </h1>
-
+    <Layout
+      layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}
+      mainHeading={is2025SignUpEnabled
+        ? 'Connexion'
+        : 'Bienvenue sur l’espace partenaires culturels'
+      }
+    >
       <MandatoryInfo areAllFieldsMandatory={true} />
       <FormProvider {...hookForm}>
         <SigninForm onSubmit={hookForm.handleSubmit(onSubmit)} />
