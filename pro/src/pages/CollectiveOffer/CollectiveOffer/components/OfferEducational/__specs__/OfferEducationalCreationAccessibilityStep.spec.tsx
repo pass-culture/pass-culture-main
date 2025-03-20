@@ -29,7 +29,7 @@ function renderComponent(props: OfferEducationalProps) {
   })
 }
 
-describe('screens | OfferEducational : event address step', () => {
+describe('screens | OfferEducational : accessibility step', () => {
   let props: OfferEducationalProps
 
   const firstVenueId = 12

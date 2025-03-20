@@ -21,7 +21,7 @@ import {
 } from '../constants/labels'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
-describe('screens | OfferEducational', () => {
+describe('screens | OfferEducational: edition', () => {
   let props: OfferEducationalProps
 
   beforeEach(() => {

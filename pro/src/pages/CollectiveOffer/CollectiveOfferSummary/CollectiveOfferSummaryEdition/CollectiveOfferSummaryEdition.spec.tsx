@@ -3,12 +3,16 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
 import {
+  CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { getCollectiveOfferTemplateFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { managedVenueFactory, userOffererFactory } from 'commons/utils/factories/userOfferersFactories'
+import {
+  managedVenueFactory,
+  userOffererFactory,
+} from 'commons/utils/factories/userOfferersFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CollectiveOfferSummaryEdition } from './CollectiveOfferSummaryEdition'
@@ -50,16 +54,17 @@ describe('CollectiveOfferSummary', () => {
     })
   })
 
-  it('should display desactive offer option when offer is active and not booked', async () => {
+  it('should display hide offer option when action is allowed', async () => {
     offer = getCollectiveOfferTemplateFactory({
       isTemplate: true,
       isActive: true,
+      allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
     })
 
     renderCollectiveOfferSummaryEdition(offer)
 
     const desactivateOffer = await screen.findByRole('button', {
-      name: 'Masquer la publication sur ADAGE',
+      name: 'Mettre en pause',
     })
     expect(desactivateOffer).toBeInTheDocument()
   })

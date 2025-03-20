@@ -9,7 +9,10 @@ import {
   EducationalOfferType,
 } from 'commons/core/OfferEducational/types'
 import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
-import { renderWithProviders, RenderWithProvidersOptions } from 'commons/utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'commons/utils/renderWithProviders'
 import { Button } from 'ui-kit/Button/Button'
 
 import { generateValidationSchema } from '../../validationSchema'
@@ -19,7 +22,7 @@ const renderFormStock = ({
   initialValues,
   onSubmit = vi.fn(),
   props,
-  options
+  options,
 }: {
   initialValues: OfferEducationalStockFormValues
   onSubmit: () => void
@@ -42,7 +45,7 @@ const renderFormStock = ({
           Enregistrer
         </Button>
       </Form>
-    </Formik>, 
+    </Formik>,
     options
   )
 }
@@ -181,7 +184,7 @@ describe('FormStock', () => {
     expect(eventTimeInput).toBeDisabled()
   })
 
-  it('should disable start datetime, end datetime, price and place and event time inputs when allowedAction CAN_EDIT_DATES and CAN_EDIT_DISCOUNT doesnt exists and ENABLE_COLLECTIVE_NEW_STATUSES is enabled', () => {
+  it('should disable start datetime, end datetime, price and place and event time inputs when allowed actions CAN_EDIT_DATES and CAN_EDIT_DISCOUNT do not exist', () => {
     renderFormStock({
       initialValues: initialValues,
       onSubmit,
@@ -191,9 +194,6 @@ describe('FormStock', () => {
         canEditDates: false,
         preventPriceIncrease: false,
       },
-      options: {
-        features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
-      }
     })
 
     const startDatetimeInput = screen.getByLabelText('Date de début')
@@ -209,7 +209,7 @@ describe('FormStock', () => {
     expect(eventTimeInput).toBeDisabled()
   })
 
-  it('should not disable price, place number, start datetime, end datetime and event time when allowedAction CAN_EDIT_DISCOUNT and CAN_EDIT_DATES exists and ENABLE_COLLECTIVE_NEW_STATUSES is enabled', () => {
+  it('should not disable price, place number, start datetime, end datetime and event time when allowed actions CAN_EDIT_DISCOUNT and CAN_EDIT_DATES exist', () => {
     renderFormStock({
       initialValues: initialValues,
       onSubmit,
@@ -219,9 +219,6 @@ describe('FormStock', () => {
         canEditDates: true,
         preventPriceIncrease: false,
       },
-      options: {
-        features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
-      }
     })
 
     const startDatetimeInput = screen.getByLabelText('Date de début')

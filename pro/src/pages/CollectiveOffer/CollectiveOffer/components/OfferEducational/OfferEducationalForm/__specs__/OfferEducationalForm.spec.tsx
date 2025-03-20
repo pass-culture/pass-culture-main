@@ -137,31 +137,28 @@ describe('OfferEducationalForm', () => {
     ).not.toBeChecked()
   })
 
-  it('should disable save button when access is read only', async () => {
+  it('should disable save button when CAN_EDIT_DETAILS is not allowed', async () => {
     renderOfferEducationalForm({
       ...defaultProps,
-      mode: Mode.READ_ONLY,
+      offer: {
+        ...getCollectiveOfferTemplateFactory(),
+        allowedActions: [],
+      },
     })
 
     const saveButton = await screen.findByText('Enregistrer et continuer')
     expect(saveButton).toBeDisabled()
   })
 
-  it('should not disable form fields if the FF ENABLE_COLLECTIVE_NEW_STATUSES is active', async () => {
-    renderOfferEducationalForm(
-      {
-        ...defaultProps,
-        isTemplate: true,
-        offer: {
-          ...getCollectiveOfferTemplateFactory(),
-          allowedActions: [
-            CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
-          ],
-        },
-        mode: Mode.EDITION,
+  it('should not disable form fields when CAN_EDIT_DETAILS is allowed', async () => {
+    renderOfferEducationalForm({
+      ...defaultProps,
+      isTemplate: true,
+      offer: {
+        ...getCollectiveOfferTemplateFactory(),
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS],
       },
-      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
-    )
+    })
 
     expect(
       await screen.findByRole('checkbox', { name: 'Par email' })

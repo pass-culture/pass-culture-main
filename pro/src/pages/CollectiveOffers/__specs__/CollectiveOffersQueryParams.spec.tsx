@@ -157,12 +157,9 @@ describe('route CollectiveOffers', () => {
       )
       await userEvent.click(screen.getByText('Rechercher'))
 
-      expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives',
-        {
-          replace: true,
-        }
-      )
+      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives', {
+        replace: true,
+      })
     })
 
     it('should have venue value when user filters by venue', async () => {
@@ -179,12 +176,9 @@ describe('route CollectiveOffers', () => {
       await userEvent.selectOptions(venueSelect, firstVenueOption)
       await userEvent.click(screen.getByText('Rechercher'))
 
-      expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/collectives?lieu=1`,
-        {
-          replace: true,
-        }
-      )
+      expect(mockNavigate).toHaveBeenCalledWith(`/offres/collectives?lieu=1`, {
+        replace: true,
+      })
     })
 
     it('should have venue value be removed when user asks for all venues', async () => {

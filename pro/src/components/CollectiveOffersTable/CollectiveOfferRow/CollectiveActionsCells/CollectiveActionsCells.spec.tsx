@@ -109,6 +109,7 @@ describe('CollectiveActionsCells', () => {
   it('should archive an offer on click on the action', async () => {
     renderCollectiveActionsCell({
       offer: collectiveOfferFactory({
+        allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         stocks: [
           {
             startDatetime: String(new Date()),
@@ -141,6 +142,7 @@ describe('CollectiveActionsCells', () => {
   it('should deselect an offer selected when the offer has just been archived', async () => {
     renderCollectiveActionsCell({
       offer: collectiveOfferFactory({
+        allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         stocks: [
           {
             startDatetime: String(new Date()),
@@ -171,70 +173,86 @@ describe('CollectiveActionsCells', () => {
     expect(mockDeselectOffer).toHaveBeenCalledTimes(1)
   })
 
-  it('should not display duplicate button for draft template offer', async () => {
+  it('should show action buttons when action is allowed on bookable offer', async () => {
     renderCollectiveActionsCell({
       offer: collectiveOfferFactory({
-        isShowcase: true,
-        displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
+        isShowcase: false,
+        allowedActions: [
+          CollectiveOfferAllowedAction.CAN_ARCHIVE,
+          CollectiveOfferAllowedAction.CAN_DUPLICATE,
+          CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+          CollectiveOfferAllowedAction.CAN_CANCEL,
+        ],
       }),
     })
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Voir les actions' })
     )
+
+    expect(screen.getByText('Archiver')).toBeInTheDocument()
+    expect(screen.getByText('Dupliquer')).toBeInTheDocument()
+    expect(screen.getByText('Modifier')).toBeInTheDocument()
+    expect(screen.getByText('Annuler la réservation')).toBeInTheDocument()
+  })
+
+  it('should show action buttons when action is allowed on template offer', async () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isShowcase: true,
+        allowedActions: [
+          CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
+          CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+          CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE,
+          CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
+          CollectiveOfferTemplateAllowedAction.CAN_HIDE,
+          CollectiveOfferTemplateAllowedAction.CAN_PUBLISH,
+        ],
+      }),
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+
+    expect(screen.getByText('Archiver')).toBeInTheDocument()
+    expect(screen.getByText('Créer une offre réservable')).toBeInTheDocument()
+    expect(screen.getByText('Modifier')).toBeInTheDocument()
+    expect(screen.getByText('Mettre en pause')).toBeInTheDocument()
+    expect(screen.getByText('Publier')).toBeInTheDocument()
+  })
+
+  it('should not show action buttons when action is not allowed', async () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isShowcase: false,
+        allowedActions: [
+          CollectiveOfferAllowedAction.CAN_ARCHIVE, // keep one action to click on "Voir les actions"
+        ],
+      }),
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+
+    expect(screen.getByText('Archiver')).toBeInTheDocument()
+    expect(screen.queryByText('Dupliquer')).not.toBeInTheDocument()
+    expect(screen.queryByText('Modifier')).not.toBeInTheDocument()
+    expect(screen.queryByText('Annuler la réservation')).not.toBeInTheDocument()
+  })
+
+  it('should not show "Voir les actions" button when no action is allowed', () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isShowcase: true,
+        allowedActions: [],
+      }),
+    })
 
     expect(
-      screen.queryByText('Créer une offre réservable')
+      screen.queryByRole('button', { name: 'Voir les actions' })
     ).not.toBeInTheDocument()
-  })
-
-  it('should not display duplicate button for pending template offer', () => {
-    renderCollectiveActionsCell({
-      offer: collectiveOfferFactory({
-        isShowcase: true,
-        displayedStatus: CollectiveOfferDisplayedStatus.PENDING,
-      }),
-    })
-
-    expect(screen.queryByText('Voir les actions')).not.toBeInTheDocument()
-  })
-
-  it('should not display duplicate button for draft bookable offer', async () => {
-    renderCollectiveActionsCell({
-      offer: collectiveOfferFactory({
-        displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
-      }),
-    })
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
-
-    expect(screen.queryByText('Dupliquer')).not.toBeInTheDocument()
-  })
-
-  it('should display duplicate button for template offer', async () => {
-    renderCollectiveActionsCell({
-      offer: collectiveOfferFactory({
-        isShowcase: true,
-      }),
-    })
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
-
-    expect(screen.getByText('Créer une offre réservable')).toBeInTheDocument()
-  })
-
-  it('should display duplicate button for draft bookable offer', async () => {
-    renderCollectiveActionsCell()
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
-
-    expect(screen.getByText('Dupliquer')).toBeInTheDocument()
   })
 
   describe('CollectiveActionsCells:Duplicate', () => {
@@ -244,11 +262,12 @@ describe('CollectiveActionsCells', () => {
       })
     })
 
-    it('should try to duplicate a bookable with collective offer error', async () => {
+    it('should show an error when bookable offer duplication fails', async () => {
       vi.spyOn(api, 'getCollectiveOffer').mockRejectedValueOnce({})
       renderCollectiveActionsCell({
         offer: collectiveOfferFactory({
           id: 200,
+          allowedActions: [CollectiveOfferAllowedAction.CAN_DUPLICATE],
         }),
       })
 
@@ -275,6 +294,7 @@ describe('CollectiveActionsCells', () => {
       renderCollectiveActionsCell({
         offer: collectiveOfferFactory({
           id: 200,
+          allowedActions: [CollectiveOfferAllowedAction.CAN_DUPLICATE],
         }),
       })
 
@@ -308,6 +328,7 @@ describe('CollectiveActionsCells', () => {
       renderCollectiveActionsCell({
         offer: collectiveOfferFactory({
           id: 200,
+          allowedActions: [CollectiveOfferAllowedAction.CAN_DUPLICATE],
         }),
       })
 
@@ -344,6 +365,9 @@ describe('CollectiveActionsCells', () => {
         offer: collectiveOfferFactory({
           id: 200,
           isShowcase: true,
+          allowedActions: [
+            CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+          ],
         }),
       })
 
@@ -391,21 +415,6 @@ describe('CollectiveActionsCells', () => {
     })
   })
 
-  it('should allow template offer edition when details edition is allowed', async () => {
-    renderCollectiveActionsCell({
-      offer: collectiveOfferFactory({
-        isShowcase: true,
-        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS],
-      }),
-    })
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
-
-    expect(screen.getByText('Modifier')).toBeInTheDocument()
-  })
-
   it('should not allow template offer edition for a template offer when details edition is not allowed', async () => {
     renderCollectiveActionsCell({
       offer: collectiveOfferFactory({
@@ -446,7 +455,7 @@ describe('CollectiveActionsCells', () => {
       name: 'institution',
     },
   ])(
-    'should show edition the $name edition action is allowed',
+    'should show edition button when the $name edition action is allowed',
     async ({ actions }) => {
       renderCollectiveActionsCell({
         offer: collectiveOfferFactory({
@@ -481,21 +490,6 @@ describe('CollectiveActionsCells', () => {
     expect(screen.queryByText('Modifier')).not.toBeInTheDocument()
   })
 
-  it('should show cancel button when offer has CAN_CANCEL allowed action', async () => {
-    renderCollectiveActionsCell({
-      offer: collectiveOfferFactory({
-        isShowcase: false,
-        allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
-      }),
-    })
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
-
-    expect(screen.getByText('Annuler la réservation')).toBeInTheDocument()
-  })
-
   it('should hide template offer on hide button press', async () => {
     renderCollectiveActionsCell({
       offer: collectiveOfferFactory({
@@ -517,17 +511,6 @@ describe('CollectiveActionsCells', () => {
     expect(notifySuccess).toHaveBeenCalledWith(
       'Votre offre est mise en pause et n’est plus visible sur ADAGE'
     )
-  })
-
-  it('should not show cancel button when offer has not CAN_CANCEL allowed action', () => {
-    renderCollectiveActionsCell({
-      offer: collectiveOfferFactory({
-        isShowcase: false,
-        allowedActions: [],
-      }),
-    })
-
-    expect(screen.queryByText('Annuler la réservation')).not.toBeInTheDocument()
   })
 
   it('should publish template offer on publish button press', async () => {

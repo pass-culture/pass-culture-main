@@ -81,6 +81,10 @@ const renderVisibilityStep = (
 describe('CollectiveOfferVisibility', () => {
   let props: CollectiveOfferVisibilityProps
   const offerId = 1
+  const offer = getCollectiveOfferFactory({
+    id: offerId,
+    allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION],
+  })
   beforeEach(() => {
     props = {
       mode: Mode.CREATION,
@@ -88,7 +92,7 @@ describe('CollectiveOfferVisibility', () => {
       onSuccess: vi.fn(),
       institutions,
       isLoadingInstitutions: false,
-      offer: getCollectiveOfferFactory({ id: offerId }),
+      offer,
     }
   })
 
@@ -115,7 +119,7 @@ describe('CollectiveOfferVisibility', () => {
     renderVisibilityStep({
       ...props,
       mode: Mode.EDITION,
-      offer: offer,
+      offer,
     })
 
     const bookingLink = screen.getByRole('link', {
@@ -125,12 +129,12 @@ describe('CollectiveOfferVisibility', () => {
     expect(bookingLink).toBeInTheDocument()
   })
 
-  it('should disable visibility form if offer is not editable', async () => {
+  it('should disable visibility form if institution is not editable', async () => {
     props.initialValues = {
       ...props.initialValues,
       institution: '12',
     }
-    renderVisibilityStep({ ...props, mode: Mode.READ_ONLY })
+    renderVisibilityStep({ ...props, offer: { ...offer, allowedActions: [] } })
     expect(
       await screen.findByLabelText(
         /Nom de l’établissement scolaire ou code UAI/
@@ -503,10 +507,6 @@ describe('CollectiveOfferVisibility', () => {
     renderVisibilityStep({
       ...props,
       mode: Mode.READ_ONLY,
-      offer: {
-        ...props.offer,
-        allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION],
-      },
     })
     expect(
       await screen.findByLabelText(

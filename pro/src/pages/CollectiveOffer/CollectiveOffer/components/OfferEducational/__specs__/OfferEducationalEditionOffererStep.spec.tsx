@@ -1,6 +1,9 @@
 import { screen } from '@testing-library/react'
 
-import { CollectiveBookingStatus } from 'apiClient/v1'
+import {
+  CollectiveBookingStatus,
+  CollectiveOfferAllowedAction,
+} from 'apiClient/v1'
 import { Mode } from 'commons/core/OfferEducational/types'
 import * as hooks from 'commons/hooks/swr/useOfferer'
 import {
@@ -53,7 +56,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     props = defaultEditionProps
   })
 
-  it('should display venue selects as disabled (not editable) fields', async () => {
+  it('should enable venue select when CAN_EDIT_DETAILS action is allowed', async () => {
     props = {
       ...props,
       userOfferer: userOffererFactory({
@@ -65,6 +68,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
       }),
       offer: getCollectiveOfferFactory({
         id: thirdVenueId,
+        allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
         venue: {
           ...getCollectiveOfferVenueFactory({
             id: thirdVenueId,
@@ -91,7 +95,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     expect(venueSelect).not.toBeDisabled()
   })
 
-  it('should display venue select disabled', async () => {
+  it('should display venue select disabled when CAN_EDIT_DETAILS action is not allowed', async () => {
     props = {
       ...props,
       userOfferer: userOffererFactory({

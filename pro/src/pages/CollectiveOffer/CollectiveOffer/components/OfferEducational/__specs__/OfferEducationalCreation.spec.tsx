@@ -3,7 +3,10 @@ import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
+import {
+  CollectiveOfferAllowedAction,
+  GetCollectiveOfferResponseModel,
+} from 'apiClient/v1'
 import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import {
   sharedCurrentUserFactory,
@@ -49,7 +52,8 @@ function renderComponent(props: OfferEducationalProps, route?: string) {
   })
 }
 
-describe('screens | OfferEducational : event address step', () => {
+// TODO (ahello - 17/03/25) this test should really test offer creation (should not have an offer in its props)
+describe('screens | OfferEducational : creation', () => {
   let props: OfferEducationalProps
   let offer: GetCollectiveOfferResponseModel
   const mockNavigate = vi.fn()
@@ -58,6 +62,7 @@ describe('screens | OfferEducational : event address step', () => {
     offer = getCollectiveOfferFactory()
 
     offer.venue.managingOfferer.id = 1
+    offer.allowedActions = [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS]
 
     props = {
       ...defaultCreationProps,

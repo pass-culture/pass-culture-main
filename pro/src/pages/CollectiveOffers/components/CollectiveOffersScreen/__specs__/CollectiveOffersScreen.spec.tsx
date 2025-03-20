@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { expect } from 'vitest'
 
 import {
   CollectiveOfferResponseModel,
@@ -244,28 +245,7 @@ describe('CollectiveOffersScreen', () => {
     expect(eventPeriodSelect).toHaveLength(2)
   })
 
-  it('should not display status filters modal', () => {
-    renderOffers(props)
-
-    expect(
-      screen.getByRole('combobox', {
-        name: 'Statut',
-      })
-    ).toBeInTheDocument()
-    expect(screen.queryByText('Afficher les offres')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Tous')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Publiée')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Désactivée')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Épuisée')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Expirée')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Appliquer')).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Validation en attente')
-    ).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Refusée')).not.toBeInTheDocument()
-  })
-
-  it('should hide status filters when clicking outside the modal', async () => {
+  it('should display status checkboxes on press status filter', async () => {
     renderOffers(props)
     await userEvent.click(
       screen.getByRole('combobox', {
@@ -273,8 +253,20 @@ describe('CollectiveOffersScreen', () => {
       })
     )
 
-    await userEvent.click(document.body)
-    expect(screen.queryByText('Afficher les offres')).not.toBeInTheDocument()
+    expect(
+      await screen.findByLabelText('Publiée sur ADAGE')
+    ).toBeInTheDocument()
+    expect(await screen.findByLabelText('En pause')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Expirée')).toBeInTheDocument()
+    expect(await screen.findByLabelText('En instruction')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Non conforme')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Archivée')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Réservée')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Préréservée')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Terminée')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Brouillon')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Remboursée')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Annulée')).toBeInTheDocument()
   })
 
   it('should indicate that user has no offers yet', () => {
@@ -294,7 +286,7 @@ describe('CollectiveOffersScreen', () => {
 
     renderOffers({
       ...props,
-      offers: offers,
+      offers,
     })
 
     expect(await screen.findByLabelText('Tout sélectionner')).not.toBeChecked()
@@ -318,91 +310,53 @@ describe('CollectiveOffersScreen', () => {
     expect(actionBar).not.toBeInTheDocument()
   })
 
-  describe('on click on select all offers checkbox', () => {
-    it('should display error message when trying to activate collective offers with booking limit date passed', async () => {
-      const offers = [
-        collectiveOfferFactory({
-          isActive: false,
-          hasBookingLimitDatetimesPassed: true,
-          stocks: [
-            {
-              startDatetime: String(new Date()),
-              hasBookingLimitDatetimePassed: true,
-              remainingQuantity: 1,
-            },
-          ],
-        }),
-      ]
+  it('should check all validated offers checkboxes', async () => {
+    // Given
+    const offers = [
+      collectiveOfferFactory({ name: 'offer 1' }),
+      collectiveOfferFactory({ name: 'offer 2' }),
+      collectiveOfferFactory({
+        isActive: false,
+        status: CollectiveOfferStatus.REJECTED,
+        name: 'offer 3',
+      }),
+      collectiveOfferFactory({
+        status: CollectiveOfferStatus.PENDING,
+        name: 'offer 4',
+      }),
+    ]
 
-      renderOffers({
-        ...props,
-        offers: offers,
-      })
-
-      await userEvent.click(screen.getByLabelText('Tout sélectionner'))
-      await userEvent.click(screen.getByText('Publier'))
-
-      expect(mockNotifyError).toHaveBeenCalledWith(
-        'Vous ne pouvez pas publier des offres collectives dont la date de réservation est passée'
-      )
-    })
-
-    it('should check all validated offers checkboxes', async () => {
-      // Given
-      const offers = [
-        collectiveOfferFactory({ name: 'offer 1' }),
-        collectiveOfferFactory({ name: 'offer 2' }),
-        collectiveOfferFactory({
-          isActive: false,
-          status: CollectiveOfferStatus.REJECTED,
-          name: 'offer 3',
-        }),
-        collectiveOfferFactory({
-          status: CollectiveOfferStatus.PENDING,
-          name: 'offer 4',
-        }),
-      ]
-
-      renderOffers({
-        ...props,
-        offers: offers,
-      })
-
-      const firstOfferCheckbox = screen.getByLabelText(
-        `Sélectionner l'offre "${offers[0].name}"`
-      )
-      const secondOfferCheckbox = screen.getByLabelText(
-        `Sélectionner l'offre "${offers[1].name}"`
-      )
-      const thirdOfferCheckbox = screen.getByLabelText(
-        `Sélectionner l'offre "${offers[2].name}"`
-      )
-      const fourthOfferCheckbox = screen.getByLabelText(
-        `Sélectionner l'offre "${offers[3].name}"`
-      )
-
-      await userEvent.click(screen.getByLabelText('Tout sélectionner'))
-
-      expect(firstOfferCheckbox).toBeChecked()
-      expect(secondOfferCheckbox).toBeChecked()
-      expect(thirdOfferCheckbox).toBeChecked()
-      expect(fourthOfferCheckbox).toBeChecked()
-
-      await userEvent.click(screen.getByLabelText('Tout désélectionner'))
-
-      expect(firstOfferCheckbox).not.toBeChecked()
-      expect(secondOfferCheckbox).not.toBeChecked()
-      expect(thirdOfferCheckbox).not.toBeChecked()
-      expect(fourthOfferCheckbox).not.toBeChecked()
-    })
-  })
-
-  it('should display the collective offers format', async () => {
     renderOffers({
       ...props,
-      offers: [collectiveOfferFactory()],
+      offers,
     })
-    expect(await screen.findByRole('combobox', { name: 'Format' }))
+
+    const firstOfferCheckbox = screen.getByLabelText(
+      `Sélectionner l'offre "${offers[0].name}"`
+    )
+    const secondOfferCheckbox = screen.getByLabelText(
+      `Sélectionner l'offre "${offers[1].name}"`
+    )
+    const thirdOfferCheckbox = screen.getByLabelText(
+      `Sélectionner l'offre "${offers[2].name}"`
+    )
+    const fourthOfferCheckbox = screen.getByLabelText(
+      `Sélectionner l'offre "${offers[3].name}"`
+    )
+
+    await userEvent.click(screen.getByLabelText('Tout sélectionner'))
+
+    expect(firstOfferCheckbox).toBeChecked()
+    expect(secondOfferCheckbox).toBeChecked()
+    expect(thirdOfferCheckbox).toBeChecked()
+    expect(fourthOfferCheckbox).toBeChecked()
+
+    await userEvent.click(screen.getByLabelText('Tout désélectionner'))
+
+    expect(firstOfferCheckbox).not.toBeChecked()
+    expect(secondOfferCheckbox).not.toBeChecked()
+    expect(thirdOfferCheckbox).not.toBeChecked()
+    expect(fourthOfferCheckbox).not.toBeChecked()
   })
 
   it('should filter on the format', async () => {
@@ -427,15 +381,6 @@ describe('CollectiveOffersScreen', () => {
         format: 'Concert',
       })
     )
-  })
-
-  it('should display a new column "Date de l’évènement"', async () => {
-    renderOffers({
-      ...props,
-      offers: [collectiveOfferFactory()],
-    })
-
-    expect(await screen.findByText('Date de l’évènement'))
   })
 
   it('should filter new column "Date de l’évènement"', async () => {
@@ -501,22 +446,8 @@ describe('CollectiveOffersScreen', () => {
     )
 
     expect(
-      screen.queryByRole('option', { name: 'Masquée sur ADAGE' })
+      screen.queryByRole('option', { name: 'En pause' })
     ).not.toBeInTheDocument()
-  })
-
-  it('should show the reimbursed status option', async () => {
-    renderOffers(props)
-
-    await userEvent.click(
-      screen.getByRole('combobox', {
-        name: 'Statut',
-      })
-    )
-
-    expect(
-      screen.getByRole('option', { name: 'Remboursée' })
-    ).toBeInTheDocument()
   })
 
   it('should display "Structure"', () => {
@@ -533,17 +464,5 @@ describe('CollectiveOffersScreen', () => {
     expect(
       screen.getByRole('columnheader', { name: 'Structure' })
     ).toBeInTheDocument()
-  })
-
-  it('should show the cancelled status option ', async () => {
-    renderOffers(props)
-
-    await userEvent.click(
-      screen.getByRole('combobox', {
-        name: 'Statut',
-      })
-    )
-
-    expect(screen.getByRole('option', { name: 'Annulée' })).toBeInTheDocument()
   })
 })
