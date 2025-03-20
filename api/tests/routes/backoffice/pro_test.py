@@ -769,6 +769,13 @@ class SearchBankAccountTest:
         finance_factories.BankAccountFactory(label="Other")
         self._search_for_one(authenticated_client, search_query, bank_account.id)
 
+    def test_search_bank_account_by_invoice_reference(self, authenticated_client):
+        expected_invoice = finance_factories.InvoiceFactory(
+            bankAccount=finance_factories.BankAccountFactory(), reference="F250000550"
+        )
+        finance_factories.InvoiceFactory(bankAccount=finance_factories.BankAccountFactory(), reference="F250000551")
+        self._search_for_one(authenticated_client, "F250000550", expected_invoice.bankAccountId)
+
     def test_search_bank_account_by_id_not_available(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()
         search_query = bank_account.id
@@ -781,9 +788,10 @@ class SearchBankAccountTest:
 
         assert len(html_parser.extract_cards_text(response.data)) == 0
 
-    @pytest.mark.parametrize("search_query", ["123", "FR76123450000001234567890", "Mon compte"])
+    @pytest.mark.parametrize("search_query", ["123", "FR76123450000001234567890", "Mon compte", "F250000553"])
     def test_search_bank_account_no_result(self, authenticated_client, search_query):
-        finance_factories.BankAccountFactory(label="Mon compte", iban="FR7612345000000123456789008")
+        bank_account = finance_factories.BankAccountFactory(label="Mon compte", iban="FR7612345000000123456789008")
+        finance_factories.InvoiceFactory(bankAccount=bank_account, reference="F250000550")
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(

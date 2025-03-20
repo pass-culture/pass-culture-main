@@ -1756,6 +1756,10 @@ def search_bank_account(search_query: str, *_: typing.Any) -> BaseQuery:
     else:
         filters.append(finance_models.BankAccount.iban == iban.compact)
 
+    if re.match(r"^[AF]\d{9}$", search_query):
+        bank_accounts_query = bank_accounts_query.join(finance_models.Invoice)
+        filters.append(finance_models.Invoice.reference == search_query)
+
     if not filters:
         return bank_accounts_query.filter(False)
 
