@@ -549,7 +549,7 @@ class GetBoUserTest(GetEndpointHelper):
             [row["Permissions"] for row in rows]
         )
 
-    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.ProFactory])
+    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryFactory, users_factories.ProFactory])
     def test_get_non_bo_user(self, authenticated_client, user_factory):
         user = user_factory()
 
@@ -663,7 +663,7 @@ class UpdateBoUserTest(PostEndpointHelper):
 
         assert history_models.ActionHistory.query.count() == 0
 
-    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.ProFactory])
+    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryFactory, users_factories.ProFactory])
     def test_update_non_bo_user(self, authenticated_client, user_factory):
         user = user_factory()
 

@@ -1790,7 +1790,7 @@ class RejectOfferTest(PostEndpointHelper):
     def test_reject_offer(self, legit_user, authenticated_client):
         offer_to_reject = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.APPROVED)
         confirmed_booking = bookings_factories.BookingFactory(
-            user=users_factories.BeneficiaryGrant18Factory(),
+            user=users_factories.BeneficiaryFactory(),
             stock__offer=offer_to_reject,
             status=BookingStatus.CONFIRMED,
         )
@@ -1869,7 +1869,7 @@ class BatchOfferRejectTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_batch_reject_offers(self, legit_user, authenticated_client):
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        beneficiary = users_factories.BeneficiaryFactory()
         draft_offer = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.DRAFT)
         pending_offer = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.PENDING)
         confirmed_offer = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.APPROVED)

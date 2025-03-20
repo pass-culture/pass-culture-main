@@ -185,7 +185,7 @@ class GetChronicleDetailsTest(GetEndpointHelper):
             offers_factories.ProductFactory(extraData={"ean": "1235467890123"}),
             offers_factories.ProductFactory(),
         ]
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory()
         chronicle = chronicles_factories.ChronicleFactory(
             products=products,
             age=18,

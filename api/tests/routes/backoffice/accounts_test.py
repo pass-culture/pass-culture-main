@@ -45,6 +45,7 @@ from pcapi.routes.backoffice.accounts.blueprint import RegistrationStepStatus
 from pcapi.routes.backoffice.accounts.blueprint import TunnelType
 from pcapi.routes.backoffice.accounts.blueprint import _get_fraud_reviews_desc
 from pcapi.routes.backoffice.accounts.blueprint import _get_id_check_histories_desc
+from pcapi.routes.backoffice.accounts.blueprint import _get_latest_fraud_check
 from pcapi.routes.backoffice.accounts.blueprint import _get_progress
 from pcapi.routes.backoffice.accounts.blueprint import _get_status
 from pcapi.routes.backoffice.accounts.blueprint import _get_steps_for_tunnel
@@ -93,12 +94,13 @@ def storage_folder_fixture(settings):
 
 
 def create_bunch_of_accounts():
-    underage = users_factories.UnderageBeneficiaryFactory(
+    underage = users_factories.BeneficiaryFactory(
         firstName="Gédéon",
         lastName="Groidanlabénoir",
         email="gg@example.net",
         phoneNumber="+33123456789",
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        age=17,
     )
     old_grant_18 = users_factories.BeneficiaryGrant18Factory(
         firstName="Abdel Yves Akhim",
@@ -152,9 +154,15 @@ def assert_user_equals(result_card_text: str, expected_user: users_models.User):
     if birth_date := expected_user.validatedBirthDate or expected_user.dateOfBirth:
         assert f"Date de naissance : {birth_date.strftime('%d/%m/%Y')} " in result_card_text
     if users_models.UserRole.BENEFICIARY in expected_user.roles:
-        assert "Pass 18 " in result_card_text
+        if expected_user.deposit.type == finance_models.DepositType.GRANT_17_18:
+            assert "Pass 18 " in result_card_text
+        else:
+            assert "Ancien Pass 18 " in result_card_text
     if users_models.UserRole.UNDERAGE_BENEFICIARY in expected_user.roles:
-        assert "Pass 15-17 " in result_card_text
+        if expected_user.deposit.type == finance_models.DepositType.GRANT_17_18:
+            assert "Pass 17 " in result_card_text
+        else:
+            assert "Ancien Pass 15-17 " in result_card_text
     if not expected_user.isActive:
         assert "Suspendu" in result_card_text
         if expected_user.suspension_reason:
@@ -567,10 +575,10 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     @pytest.mark.parametrize(
         "search_filter,expected_user",
         [
-            (account_forms.AccountSearchFilter.PASS_17_V3.name, "underage_V3_user"),
-            (account_forms.AccountSearchFilter.PASS_18_V3.name, "beneficiary_v3_user"),
-            (account_forms.AccountSearchFilter.PASS_15_17.name, "underage_user"),
-            (account_forms.AccountSearchFilter.PASS_18.name, "beneficiary_user"),
+            (account_forms.AccountSearchFilter.PASS_17_V3.name, "underage_user"),
+            (account_forms.AccountSearchFilter.PASS_18_V3.name, "beneficiary_user"),
+            (account_forms.AccountSearchFilter.PASS_15_17.name, "old_underage_user"),
+            (account_forms.AccountSearchFilter.PASS_18.name, "old_beneficiary_user"),
             (account_forms.AccountSearchFilter.PUBLIC.name, "public_user"),
             (account_forms.AccountSearchFilter.SUSPENDED.name, "suspended_user"),
         ],
@@ -579,22 +587,21 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         self, authenticated_client, search_filter, expected_user
     ):  # pylint: disable=possibly-unused-variable
         common_name = "Last-Name"
-        underage_V3_user = users_factories.BeneficiaryFactory(
+        underage_user = users_factories.BeneficiaryFactory(
             lastName=common_name,
-            roles=[users_models.UserRole.UNDERAGE_BENEFICIARY],
+            age=17,
             deposit__type=finance_models.DepositType.GRANT_17_18,
         )
-        beneficiary_v3_user = users_factories.BeneficiaryFactory(
+        beneficiary_user = users_factories.BeneficiaryFactory(
             lastName=common_name,
-            roles=[users_models.UserRole.BENEFICIARY],
             deposit__type=finance_models.DepositType.GRANT_17_18,
         )
-        underage_user = users_factories.UnderageBeneficiaryFactory(lastName=common_name)
-        beneficiary_user = users_factories.BeneficiaryGrant18Factory(
+        old_underage_user = users_factories.UnderageBeneficiaryFactory(lastName=common_name)
+        old_beneficiary_user = users_factories.BeneficiaryGrant18Factory(
             lastName=common_name, deposit__type=finance_models.DepositType.GRANT_18
         )
         public_user = users_factories.UserFactory(lastName=common_name)
-        suspended_user = users_factories.BeneficiaryGrant18Factory(lastName=common_name, isActive=False)
+        suspended_user = users_factories.BeneficiaryFactory(lastName=common_name, isActive=False)
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=common_name, filter=search_filter))
@@ -605,10 +612,19 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
 
     def test_search_with_several_filters(self, authenticated_client):
         common_name = "First-Name"
-        underage_user = users_factories.UnderageBeneficiaryFactory(firstName=common_name)
-        users_factories.BeneficiaryGrant18Factory(firstName=common_name)
-        users_factories.UserFactory(firstName=common_name)
-        suspended_user = users_factories.BeneficiaryGrant18Factory(firstName=common_name, isActive=False)
+        common_last_name = "Last-Name"
+        underage_user = users_factories.BeneficiaryFactory(firstName=common_name, lastName=common_last_name, age=17)
+        users_factories.BeneficiaryFactory(
+            firstName=common_name,
+            lastName=common_last_name,
+        )
+        users_factories.UserFactory(
+            firstName=common_name,
+            lastName=common_last_name,
+        )
+        suspended_user = users_factories.BeneficiaryFactory(
+            firstName=common_name, lastName=common_last_name, isActive=False
+        )
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
@@ -616,7 +632,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
                     self.endpoint,
                     q=common_name,
                     filter=[
-                        account_forms.AccountSearchFilter.PASS_15_17.name,
+                        account_forms.AccountSearchFilter.PASS_17_V3.name,
                         account_forms.AccountSearchFilter.SUSPENDED.name,
                     ],
                 )
@@ -686,9 +702,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             user = users_factories.UserFactory()
             return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
 
-    @pytest.mark.parametrize(
-        "index,expected_badge", [(0, "Ancien Pass 15-17"), (1, "Ancien Pass 18"), (2, "Pass 18"), (3, None)]
-    )
+    @pytest.mark.parametrize("index,expected_badge", [(0, "Pass 17"), (1, "Ancien Pass 18"), (2, "Pass 18"), (3, None)])
     def test_get_public_account(self, authenticated_client, index, expected_badge):
         users = create_bunch_of_accounts()
         user = users[index]
@@ -885,12 +899,12 @@ class GetPublicAccountTest(GetEndpointHelper):
         "user_factory,expected_remaining_text,expected_digital_remaining_text",
         [
             (
-                users_factories.BeneficiaryGrant18Factory,
+                users_factories.BeneficiaryFactory,
                 "137,50 € Crédit restant 150,00 €",
                 "87,50 € Crédit digital restant 100,00 €",
             ),
             (
-                users_factories.CaledonianBeneficiaryGrant18Factory,
+                users_factories.CaledonianBeneficiaryFactory,
                 "137,50 € (16408 CFP) Crédit restant 150,00 € (17900 CFP)",
                 "87,50 € (10442 CFP) Crédit digital restant 100,00 € (11933 CFP)",
             ),
@@ -932,8 +946,8 @@ class GetPublicAccountTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "user_factory,expected_price_1,expected_price_2",
         [
-            (users_factories.BeneficiaryGrant18Factory, "20,00 €", "12,50 €"),
-            (users_factories.CaledonianBeneficiaryGrant18Factory, "20,00 € (2387 CFP)", "12,50 € (1492 CFP)"),
+            (users_factories.BeneficiaryFactory, "20,00 €", "12,50 €"),
+            (users_factories.CaledonianBeneficiaryFactory, "20,00 € (2387 CFP)", "12,50 € (1492 CFP)"),
         ],
     )
     def test_get_beneficiary_bookings(self, authenticated_client, user_factory, expected_price_1, expected_price_2):
@@ -990,7 +1004,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert "Notification pour cette offre : booking.offer@example.com" in extra_rows[1]
 
     def test_get_beneficiary_bookings_empty(self, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory()
         bookings_factories.UsedBookingFactory()
 
         user_id = user.id
@@ -1002,13 +1016,12 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert "Aucune réservation à ce jour" in response.data.decode("utf-8")
 
     def test_fraud_check_link(self, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory()
         # modifiy the date for clearer tests
-        user.beneficiaryFraudChecks[0].dateCreated = datetime.datetime.utcnow() - datetime.timedelta(days=5)
         old_dms = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.DMS,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=2),
         )
 
         user_id = user.id
@@ -1029,7 +1042,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         new_dms = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.DMS,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=3),
         )
 
         response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
@@ -1172,10 +1185,10 @@ class UpdatePublicAccountTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     def test_update_field(self, legit_user, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory(
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
-        )
+        user = users_factories.BeneficiaryFactory()
         old_email = user.email
+        old_phone_number = user.phoneNumber
+        old_postal_code = user.postalCode
 
         new_phone_number = "+33836656565"
         new_email = user.email + ".UPDATE  "
@@ -1227,8 +1240,8 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert action.offererId is None
         assert action.venueId is None
         assert action.extraData["modified_info"] == {
-            "phoneNumber": {"new_info": "+33836656565", "old_info": None},
-            "postalCode": {"new_info": expected_new_postal_code, "old_info": None},
+            "phoneNumber": {"new_info": "+33836656565", "old_info": old_phone_number},
+            "postalCode": {"new_info": expected_new_postal_code, "old_info": old_postal_code},
         }
 
         assert len(mails_testing.outbox) == 1
@@ -1242,17 +1255,15 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         }
 
     def test_update_all_fields(self, legit_user, authenticated_client):
-        date_of_birth = datetime.datetime.combine(
-            datetime.date.today() - relativedelta(years=18, months=5, days=3), datetime.time.min
-        )
-        user = users_factories.BeneficiaryGrant18Factory(
+        user = users_factories.BeneficiaryFactory(
             firstName="Edmond",
             lastName="Dantès",
             address="Château d'If",
             postalCode="13007",
             city="Marseille",
-            dateOfBirth=date_of_birth,
             email="ed@example.com",
+            id_piece_number="123456654321",
+            phoneNumber="+33601234567",
         )
 
         form_data = {
@@ -1280,7 +1291,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert user.firstName == form_data["first_name"].strip()
         assert user.lastName == form_data["last_name"].strip()
         assert user.email == form_data["email"]
-        assert user.dateOfBirth == date_of_birth
+        assert user.dateOfBirth.date() != form_data["birth_date"]
         assert user.validatedBirthDate == form_data["birth_date"]
         assert user.idPieceNumber == form_data["id_piece_number"].strip()
         assert user.address == form_data["street"]
@@ -1306,9 +1317,10 @@ class UpdatePublicAccountTest(PostEndpointHelper):
             "lastName": {"new_info": "de Monte-Cristo", "old_info": "Dantès"},
             "validatedBirthDate": {
                 "new_info": form_data["birth_date"].isoformat(),
-                "old_info": date_of_birth.date().isoformat(),
+                "old_info": user.dateOfBirth.date().isoformat(),
             },
-            "idPieceNumber": {"new_info": "A123B456C", "old_info": None},
+            "idPieceNumber": {"new_info": "A123B456C", "old_info": "123456654321"},
+            "phoneNumber": {"new_info": None, "old_info": "+33601234567"},
             "address": {"new_info": "Chemin du Haut des Ormes", "old_info": "Château d'If"},
             "postalCode": {"new_info": "78560", "old_info": "13007"},
             "city": {"new_info": "Port-Marly", "old_info": "Marseille"},
@@ -1351,7 +1363,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert len(mails_testing.outbox) == 0
 
     def test_unknown_field(self, authenticated_client):
-        user_to_edit = users_factories.BeneficiaryGrant18Factory()
+        user_to_edit = users_factories.BeneficiaryFactory()
         base_form = {
             "first_name": user_to_edit.firstName,
             "unknown": "field",
@@ -1392,8 +1404,8 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert "Le formulaire n'est pas valide" in html_parser.extract_alert(response.data)
 
     def test_email_already_exists(self, authenticated_client):
-        user_to_edit = users_factories.BeneficiaryGrant18Factory()
-        other_user = users_factories.BeneficiaryGrant18Factory()
+        user_to_edit = users_factories.BeneficiaryFactory()
+        other_user = users_factories.BeneficiaryFactory()
 
         base_form = {
             "first_name": user_to_edit.firstName,
@@ -1409,7 +1421,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert user_to_edit.email != other_user.email
 
     def test_invalid_postal_code(self, authenticated_client):
-        user_to_edit = users_factories.BeneficiaryGrant18Factory()
+        user_to_edit = users_factories.BeneficiaryFactory()
 
         base_form = {
             "first_name": user_to_edit.firstName,
@@ -1422,8 +1434,8 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert response.status_code == 400
 
     def test_id_piece_number_already_exists(self, legit_user, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory(idPieceNumber="123456")
-        other_user = users_factories.BeneficiaryGrant18Factory(idPieceNumber="ABCDEF")
+        user = users_factories.BeneficiaryFactory()
+        other_user = users_factories.BeneficiaryFactory()
 
         form_data = {
             "first_name": user.firstName,
@@ -1443,14 +1455,14 @@ class UpdatePublicAccountTest(PostEndpointHelper):
 
         assert (
             html_parser.extract_alert(response.data)
-            == "Le numéro de pièce d'identité ABCDEF est déja associé à un autre compte utilisateur."
+            == f"Le numéro de pièce d'identité {other_user.idPieceNumber} est déja associé à un autre compte utilisateur."
         )
 
-        assert user.idPieceNumber == "123456"
+        assert user.idPieceNumber != other_user.idPieceNumber
         assert history_models.ActionHistory.query.count() == 0
 
     def test_empty_id_piece_number(self, authenticated_client):
-        user_to_edit = users_factories.BeneficiaryGrant18Factory()
+        user_to_edit = users_factories.BeneficiaryFactory()
 
         base_form = {
             "first_name": user_to_edit.firstName,
@@ -1466,7 +1478,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert user_to_edit.idPieceNumber is None
 
     def test_invalid_phone_number(self, authenticated_client):
-        user_to_edit = users_factories.BeneficiaryGrant18Factory()
+        user_to_edit = users_factories.BeneficiaryFactory()
         old_phone_number = user_to_edit.phoneNumber
 
         base_form = {
@@ -1517,7 +1529,7 @@ class ResendValidationEmailTest(PostEndpointHelper):
         assert not mails_testing.outbox
 
     def test_no_email_sent_if_already_validated(self, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory(isEmailValidated=True)
+        user = users_factories.BeneficiaryFactory(isEmailValidated=True)
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
         assert response.status_code == 303
@@ -1612,7 +1624,7 @@ class SendValidationCodeTest(PostEndpointHelper):
         assert token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
     def test_nothing_sent_use_cases(self, authenticated_client):
-        other_user = users_factories.BeneficiaryGrant18Factory(
+        other_user = users_factories.BeneficiaryFactory(
             phoneNumber="+33601020304",
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
@@ -1625,7 +1637,7 @@ class SendValidationCodeTest(PostEndpointHelper):
                 phoneNumber="+33601020304", phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
             ),
             # user is already beneficiary
-            users_factories.BeneficiaryGrant18Factory(phoneNumber="+33601020304"),
+            users_factories.BeneficiaryFactory(phoneNumber="+33601020304"),
             # email has not been validated
             users_factories.UserFactory(phoneNumber="+33601020304", isEmailValidated=False),
             # phone number is already used
@@ -1723,7 +1735,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         assert not user.deposits
 
     def test_reason_not_compulsory(self, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory()
 
         base_form = {
             "status": fraud_models.FraudReviewStatus.KO.name,
@@ -4806,6 +4818,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
     @pytest.mark.parametrize(
         "factory",
         [
+            users_factories.BeneficiaryFactory,
             users_factories.BeneficiaryGrant18Factory,
             users_factories.UnderageBeneficiaryFactory,
             users_factories.UserFactory,

@@ -43,9 +43,6 @@ class UserEligibleAtIdentityCheckStepFactory(users_factories.UserFactory):
         if not create:
             return None
 
-        if extracted:
-            return extracted
-
         return BeneficiaryFraudCheckFactory(
             user=self, type=models.FraudCheckType.PROFILE_COMPLETION, status=models.FraudCheckStatus.OK
         )
@@ -59,9 +56,6 @@ class UserEligibleAtIdentityCheckStepFactory(users_factories.UserFactory):
     ) -> models.BeneficiaryFraudCheck | None:
         if not create:
             return None
-
-        if extracted:
-            return extracted
 
         return BeneficiaryFraudCheckFactory(
             user=self, type=models.FraudCheckType.PHONE_VALIDATION, status=models.FraudCheckStatus.OK

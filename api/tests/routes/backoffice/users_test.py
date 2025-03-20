@@ -69,7 +69,7 @@ class SuspendUserTest(PostEndpointHelper):
     }
 
     def test_suspend_beneficiary_user(self, client, beneficiary_fraud_admin):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory()
 
         response = self.post_to_endpoint(
             client.with_bo_session_auth(beneficiary_fraud_admin),
@@ -110,7 +110,7 @@ class SuspendUserTest(PostEndpointHelper):
         ],
     )
     def test_cancel_booking_on_suspend(self, client, beneficiary_fraud_admin, reason, cancel_bookings, cancel_event):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory()
         confirmed_booking = bookings_factories.BookingFactory(user=user)
         used_booking = bookings_factories.UsedBookingFactory(user=user)
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=user)
@@ -219,7 +219,7 @@ class SuspendUserTest(PostEndpointHelper):
         assert not user.isActive
 
     def test_suspend_beneficiary_user_as_support_n2(self, client, support_n2_admin):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory()
 
         response = self.post_to_endpoint(
             client.with_bo_session_auth(support_n2_admin),
@@ -235,7 +235,7 @@ class SuspendUserTest(PostEndpointHelper):
         assert not user.isActive
 
     def test_suspend_beneficiary_user_as_pro_fraud(self, client, pro_fraud_admin):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory()
 
         response = self.post_to_endpoint(
             client.with_bo_session_auth(pro_fraud_admin),
@@ -264,7 +264,7 @@ class SuspendUserTest(PostEndpointHelper):
         assert response.status_code == 403
 
     def test_suspend_without_reason(self, authenticated_client, legit_user):
-        user = users_factories.UnderageBeneficiaryFactory()
+        user = users_factories.BeneficiaryFactory()
 
         response = self.post_to_endpoint(
             authenticated_client,
@@ -389,7 +389,7 @@ class UnsuspendUserTest(PostEndpointHelper):
     }
 
     def test_unsuspend_beneficiary_user(self, authenticated_client, legit_user):
-        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+        user = users_factories.BeneficiaryFactory(isActive=False)
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form={"comment": ""})
 
@@ -408,7 +408,7 @@ class UnsuspendUserTest(PostEndpointHelper):
         assert user.action_history[0].comment is None
 
     def test_unsuspend_beneficiary_to_anonymize(self, authenticated_client, legit_user):
-        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+        user = users_factories.BeneficiaryFactory(isActive=False)
         users_factories.GdprUserAnonymizationFactory(user=user)
 
         response = self.post_to_endpoint(
@@ -462,7 +462,7 @@ class UnsuspendUserTest(PostEndpointHelper):
         assert user.isActive
 
     def test_unsuspend_beneficiary_user_as_support_n2(self, client, support_n2_admin):
-        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+        user = users_factories.BeneficiaryFactory(isActive=False)
 
         response = self.post_to_endpoint(
             client.with_bo_session_auth(support_n2_admin),
@@ -564,8 +564,8 @@ class BatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
     @pytest.mark.parametrize("separator", [",", ", ", "\n"])
     def test_batch_suspend_users(self, authenticated_client, separator):
         users = [
-            users_factories.UnderageBeneficiaryFactory(),
-            users_factories.BeneficiaryGrant18Factory(),
+            users_factories.BeneficiaryFactory(age=17),
+            users_factories.BeneficiaryFactory(),
             users_factories.UserFactory(),
         ]
 
@@ -584,7 +584,7 @@ class BatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
         assert "0 réservation sera annulée." in text
 
     def test_batch_suspend_users_with_bookings(self, authenticated_client):
-        users = users_factories.BeneficiaryGrant18Factory.create_batch(2)
+        users = users_factories.BeneficiaryFactory.create_batch(2)
         bookings_factories.UsedBookingFactory(user=users[0])
         bookings_factories.BookingFactory.create_batch(2, user=users[0])
         bookings_factories.ReimbursedBookingFactory(user=users[1])
@@ -611,8 +611,8 @@ class ConfirmBatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
 
     def test_confirm_batch_suspend_users(self, authenticated_client, legit_user):
         users = [
-            users_factories.UnderageBeneficiaryFactory(),
-            users_factories.BeneficiaryGrant18Factory(),
+            users_factories.BeneficiaryFactory(age=17),
+            users_factories.BeneficiaryFactory(),
             users_factories.UserFactory(),
         ]
 
@@ -648,7 +648,7 @@ class ConfirmBatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
         assert not users[1].action_history
 
     def test_confirm_batch_suspend_users_cancels_bookings(self, authenticated_client):
-        users = users_factories.BeneficiaryGrant18Factory.create_batch(2)
+        users = users_factories.BeneficiaryFactory.create_batch(2)
         non_cancellable_bookings = [
             bookings_factories.UsedBookingFactory(user=users[0]),
             bookings_factories.ReimbursedBookingFactory(user=users[1]),
@@ -687,7 +687,7 @@ class GetRedirectToBrevoUserPageTest(GetEndpointHelper):
         "pcapi.core.mails.backends.testing.TestingBackend.get_contact_url", return_value="https://url/to/contact/12345"
     )
     def test_beneficiary_in_brevo(self, mocked_get_contact_url, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory()
         user_id = user.id
         with assert_num_queries(3):  # session + current user + get_user
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
@@ -698,7 +698,7 @@ class GetRedirectToBrevoUserPageTest(GetEndpointHelper):
         mocked_get_contact_url.assert_called_once_with(user.email)
 
     def test_beneficiary_not_in_brevo(self, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory()
         user_id = user.id
         with assert_num_queries(3):  # session + current user + get_user
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))

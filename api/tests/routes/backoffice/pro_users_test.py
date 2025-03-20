@@ -151,7 +151,7 @@ class GetProUserTest(GetEndpointHelper):
         assert "Suspendu" not in badges
 
     def test_get_not_pro_user(self, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory()
         url = url_for(self.endpoint, user_id=user.id)
 
         with assert_num_queries(self.expected_num_queries):
@@ -250,7 +250,7 @@ class UpdateProUserTest(PostEndpointHelper):
             "modified_info": {"notificationSubscriptions.marketing_email": {"old_info": True, "new_info": False}}
         }
 
-    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.AdminFactory])
+    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryFactory, users_factories.AdminFactory])
     def test_update_non_pro_user(self, authenticated_client, user_factory):
         user = user_factory()
 
@@ -329,7 +329,7 @@ class GetProUserHistoryTest(GetEndpointHelper):
 
         assert html_parser.count_table_rows(response.data, parent_class="history-tab-pane") == 0
 
-    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.AdminFactory])
+    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryFactory, users_factories.AdminFactory])
     def test_non_pro_user_history(self, authenticated_client, user_factory):
         user = user_factory()
         response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
@@ -583,7 +583,7 @@ class DeleteProUserTest(PostEndpointHelper):
     @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
     @patch("pcapi.routes.backoffice.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
     @patch("pcapi.routes.backoffice.pro_users.blueprint.delete_user_attributes_task")
-    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.AdminFactory])
+    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryFactory, users_factories.AdminFactory])
     def test_delete_pro_user_with_wrong_role(
         self,
         delete_user_attributes_task,
@@ -630,7 +630,7 @@ class DeleteProUserTest(PostEndpointHelper):
     def test_delete_pro_user_with_beneficiary_dependencies(
         self, delete_user_attributes_task, DeleteBatchUserAttributesRequest, mails_api, authenticated_client
     ):
-        user = users_factories.BeneficiaryGrant18Factory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
+        user = users_factories.BeneficiaryFactory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
         history_factories.SuspendedUserActionHistoryFactory(user=user)
         user_id = user.id
         deposit_id = user.deposits[0].id

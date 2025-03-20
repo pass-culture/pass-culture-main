@@ -241,7 +241,7 @@ class SearchProUserTest:
             assert response.status_code == 400
 
     def test_can_search_pro_also_beneficiary(self, authenticated_client):
-        pro_beneficiary = users_factories.BeneficiaryGrant18Factory(
+        pro_beneficiary = users_factories.BeneficiaryFactory(
             firstName="Paul",
             lastName="Ochon",
             email="po@example.net",
