@@ -241,6 +241,7 @@ class AlgoliaSerializationMixin:
                 "isThing": offer.isThing,
                 "last30DaysBookings": last_30_days_bookings,
                 "last30DaysBookingsRange": get_last_30_days_bookings_range(last_30_days_bookings),
+                "likes": offer.product.likesCount if offer.product else offer.likesCount,
                 "movieGenres": extra_data.get("genres"),
                 "musicType": music_type_labels,
                 "name": offer.name,
