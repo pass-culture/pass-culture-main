@@ -54,7 +54,9 @@ describe('StatusToggleButton', () => {
     renderStatusToggleButton(props)
 
     // then
-    await userEvent.click(screen.getByRole('button', { name: /Désactiver/ }))
+    await userEvent.click(
+      screen.getByRole('button', { name: /Mettre en pause/ })
+    )
 
     expect(toggle).toHaveBeenCalledTimes(1)
     expect(toggle).toHaveBeenNthCalledWith(1, {
@@ -63,7 +65,7 @@ describe('StatusToggleButton', () => {
     })
     expect(notifySuccess).toHaveBeenNthCalledWith(
       1,
-      'L’offre a bien été désactivée.'
+      'L’offre a bien été mise en pause.'
     )
   })
 
@@ -125,7 +127,7 @@ describe('StatusToggleButton', () => {
     renderStatusToggleButton(props)
 
     // then
-    await userEvent.click(screen.getByText(/Désactiver/))
+    await userEvent.click(screen.getByText(/Mettre en pause/))
     expect(toggleFunction).toHaveBeenCalledTimes(1)
     expect(notifyError).toHaveBeenNthCalledWith(
       1,
@@ -176,7 +178,7 @@ describe('StatusToggleButton', () => {
 
     renderStatusToggleButton(props)
 
-    await userEvent.click(screen.getByText(/Désactiver/))
+    await userEvent.click(screen.getByText(/Mettre en pause/))
 
     expect(toggle).toHaveBeenCalledTimes(1)
   })

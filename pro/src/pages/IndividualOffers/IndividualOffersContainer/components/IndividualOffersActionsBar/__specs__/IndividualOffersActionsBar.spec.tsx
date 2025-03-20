@@ -88,7 +88,7 @@ describe('ActionsBar', () => {
       screen.queryByText('Publier', { selector: 'button' })
     ).toBeInTheDocument()
     expect(
-      screen.queryByText('Désactiver', { selector: 'button' })
+      screen.queryByText('Mettre en pause', { selector: 'button' })
     ).toBeInTheDocument()
     expect(
       screen.queryByText('Supprimer', { selector: 'button' })
@@ -182,8 +182,8 @@ describe('ActionsBar', () => {
       ],
     })
 
-    await userEvent.click(screen.getByText('Désactiver'))
-    const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
+    await userEvent.click(screen.getByText('Mettre en pause'))
+    const confirmDeactivateButton = screen.getAllByText('Mettre en pause')[1]
     await userEvent.click(confirmDeactivateButton)
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -202,7 +202,7 @@ describe('ActionsBar', () => {
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
 
     expect(
-      screen.getByText('3 offres ont bien été désactivées')
+      screen.getByText('3 offres ont bien été mises en pause')
     ).toBeInTheDocument()
   })
 
@@ -240,7 +240,7 @@ describe('ActionsBar', () => {
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
   })
 
-  it('should deactivate all offers on click on "Désactiver" button when all offers are selected', async () => {
+  it('should deactivate all offers on click on "Mettre en pause" button when all offers are selected', async () => {
     props.areAllOffersSelected = true
     renderActionsBar(props)
 
@@ -257,9 +257,9 @@ describe('ActionsBar', () => {
       venueId: null,
     }
 
-    const deactivateButton = screen.getByText('Désactiver')
+    const deactivateButton = screen.getByText('Mettre en pause')
     await userEvent.click(deactivateButton)
-    const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
+    const confirmDeactivateButton = screen.getAllByText('Mettre en pause')[1]
     await userEvent.click(confirmDeactivateButton)
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -280,7 +280,7 @@ describe('ActionsBar', () => {
   it('should track cancel all offers on click on "Annuler" button', async () => {
     props.areAllOffersSelected = true
     renderActionsBar(props)
-    const deactivateButton = screen.getByText('Désactiver')
+    const deactivateButton = screen.getByText('Mettre en pause')
 
     await userEvent.click(deactivateButton)
     const cancelDeactivateButton = screen.getAllByText('Annuler')[1]
@@ -300,7 +300,7 @@ describe('ActionsBar', () => {
   it('should track cancel offer on click on "Annuler" button', async () => {
     props.areAllOffersSelected = false
     renderActionsBar(props)
-    const deactivateButton = screen.getByText('Désactiver')
+    const deactivateButton = screen.getByText('Mettre en pause')
 
     await userEvent.click(deactivateButton)
     const cancelDeactivateButton = screen.getAllByText('Annuler')[1]
@@ -371,7 +371,7 @@ describe('ActionsBar', () => {
 
     expect(screen.queryByText('Supprimer')).not.toBeInTheDocument()
     expect(screen.queryByText('Publier')).not.toBeInTheDocument()
-    expect(screen.queryByText('Désactiver')).not.toBeInTheDocument()
+    expect(screen.queryByText('Mettre en pause')).not.toBeInTheDocument()
   })
 
   describe('OA feature flag', () => {
