@@ -5,18 +5,17 @@ from datetime import timezone
 import pytest
 import time_machine
 
-import pcapi.core.educational.factories as educational_factories
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import testing as adage_api_testing
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.schemas import EducationalBookingEdition
-import pcapi.core.educational.testing as adage_api_testing
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.providers.factories as providers_factories
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
-from pcapi.models import offer_mixin
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 
 
@@ -290,34 +289,6 @@ class Return200Test:
         assert booking.cancellationReason == None
         assert booking.cancellationDate == None
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_edit_collective_stock_update_booking_limit_date_with_expired_booking_no_ff(self, client):
-        now = datetime.utcnow()
-        stock = educational_factories.CollectiveStockFactory(
-            startDatetime=now + timedelta(days=5), bookingLimitDatetime=now - timedelta(days=2)
-        )
-        booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock,
-            status=CollectiveBookingStatus.CANCELLED,
-            cancellationReason=CollectiveBookingCancellationReasons.EXPIRED,
-            cancellationDate=now - timedelta(days=1),
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
-        )
-
-        new_limit = now + timedelta(days=1)
-        client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{stock.id}", json={"bookingLimitDatetime": new_limit.isoformat()})
-        assert response.status_code == 200
-
-        db.session.refresh(stock)
-        db.session.refresh(booking)
-        assert stock.bookingLimitDatetime == new_limit
-        assert booking.status == CollectiveBookingStatus.CANCELLED
-        assert booking.cancellationReason == CollectiveBookingCancellationReasons.EXPIRED
-        assert booking.cancellationDate == now - timedelta(days=1)
-
 
 class Return403Test:
     @time_machine.travel("2020-11-17 15:00:00")
@@ -344,23 +315,6 @@ class Return403Test:
         assert response.json == {
             "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
         }
-
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api(self, client):
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__provider=providers_factories.ProviderFactory()
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
-        )
-
-        stock_edition_payload = {"totalPrice": 1500}
-
-        client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
-
-        assert response.status_code == 403
-        assert response.json == {"global": ["Les stocks créés par l'api publique ne sont pas editables."]}
 
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api_with_new_satuses(
@@ -466,21 +420,6 @@ class Return400Test:
         assert response.status_code == 400
         edited_stock = CollectiveStock.query.get(stock.id)
         assert edited_stock.bookingLimitDatetime == stock.bookingLimitDatetime
-
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    @time_machine.travel("2020-11-17 15:00:00")
-    def should_edit_stock_when_event_expired(self, client):
-        stock = educational_factories.CollectiveStockFactory(startDatetime=datetime.utcnow() - timedelta(minutes=1))
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
-        )
-
-        stock_edition_payload = {"totalPrice": 1500}
-
-        client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
-
-        assert response.status_code == 200
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_stock_edition_when_numberOfTickets_has_been_set_to_none(self, client):
@@ -600,23 +539,6 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"startDatetime": ["L'évènement ne peut commencer dans le passé."]}
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    @time_machine.travel("2020-11-17 15:00:00")
-    def test_doesnot_edit_offer_if_rejected(self, client):
-        offer = educational_factories.CollectiveOfferFactory(validation=offer_mixin.OfferValidationStatus.REJECTED)
-        stock = educational_factories.CollectiveStockFactory(price=1200, collectiveOffer=offer)
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
-        )
-
-        stock_edition_payload = {"totalPrice": 111}
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/stocks/{stock.id}", json=stock_edition_payload
-        )
-
-        assert response.status_code == 400
-        assert response.json["global"][0] == "Les offres refusées ou en attente de validation ne sont pas modifiables"
-
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_startDatetime_after_endDatetime(self, client):
         # Given
@@ -683,12 +605,11 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(9):
+        with assert_num_queries(8):
             # query += 1 -> load session
             # query += 1 -> load user
             # query += 1 -> load existing stock
             # query += 1 -> ensure the offerer is VALIDATED
-            # query += 1 -> load FF
             # query += 1 -> check the number of existing stock for the offer id
             # query += 1 -> find education year for start date
             # query += 1 -> find education year for end date
@@ -731,11 +652,10 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(9):
+        with assert_num_queries(8):
             # query += 1 -> load session
             # query += 1 -> load user
             # query += 1 -> load existing stock
-            # query += 1 -> load FF
             # query += 1 -> ensure the offerer is VALIDATED
             # query += 1 -> check the number of existing stock for the offer id
             # query += 1 -> find education year for start date
@@ -781,11 +701,10 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(10):
+        with assert_num_queries(9):
             # query += 1 -> load session
             # query += 1 -> load user
             # query += 1 -> load existing stock
-            # query += 1 -> load FF
             # query += 1 -> ensure the offerer is VALIDATED
             # query += 1 -> check the number of existing stock for the offer id
             # query += 1 -> find education year for start date
