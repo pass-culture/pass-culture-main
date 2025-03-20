@@ -2306,6 +2306,27 @@ def test_generate_payments_file(clean_temp_files):
         customRule=factories.CustomReimbursementRuleFactory(rate=Decimal(0.5)),
     )
 
+    # Now the user gets a GRANT_17_18, and his used bookings are transfered to the new deposit
+    underage_user.deposits[0].expirationDate = datetime.datetime.utcnow() - datetime.timedelta(days=5)
+    db.session.add(underage_user.deposits[0])
+    db.session.commit()
+    users_factories.DepositGrantFactory(
+        user=underage_user, expirationDate=datetime.datetime.utcnow() + datetime.timedelta(days=5)
+    )
+
+    factories.PricingFactory(
+        amount=-500,  # rate = 50 %
+        booking__amount=10,
+        booking__user=underage_user,
+        booking__dateUsed=used_date,
+        booking__stock__offer__name="Une histoire plutôt bien en doublon",
+        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        booking__stock__offer__venue=venue2,
+        booking__usedRecreditType=None,
+        standardRule="",
+        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal(0.5)),
+    )
+
     # Pricings on different bank account but same venue
     factories.PricingFactory(
         amount=-700,  # rate = 100 %
@@ -2455,7 +2476,7 @@ def test_generate_payments_file(clean_temp_files):
         "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_3.offerer.name} - {bank_account_3.label}",
         "Type de réservation": "AR18-",
         "Ministère": "",
-        "Montant net offreur": 4 + 4,
+        "Montant net offreur": 4 + 4 + 5,
     } in rows
     assert {
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_3.id),
@@ -3039,20 +3060,20 @@ def test_generate_invoice_file(clean_temp_files):
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": pline31.category.value,
-        "Type de réservation": "PR18-",
+        "Type de ticket de facturation": pline11.category.value,
+        "Type de réservation": "AR18+",
         "Ministère": "",
-        "Somme des tickets de facturation": pline31.amount,
+        "Somme des tickets de facturation": pline11.amount + pline11_identical.amount + pline21.amount,
     }
     assert rows[1] == {
         "Identifiant des coordonnées bancaires": str(bank_account_1.id),
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": pline32.category.value,
-        "Type de réservation": "PR18-",
+        "Type de ticket de facturation": pline12.category.value,
+        "Type de réservation": "AR18+",
         "Ministère": "",
-        "Somme des tickets de facturation": pline32.amount,
+        "Somme des tickets de facturation": pline12.amount + pline12_identical.amount + pline22.amount,
     }
     assert rows[2] == {
         "Identifiant des coordonnées bancaires": str(bank_account_1.id),
@@ -3079,20 +3100,20 @@ def test_generate_invoice_file(clean_temp_files):
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": pline11.category.value,
-        "Type de réservation": "AR18+",
+        "Type de ticket de facturation": pline31.category.value,
+        "Type de réservation": "PR18-",
         "Ministère": "",
-        "Somme des tickets de facturation": pline11.amount + pline11_identical.amount + pline21.amount,
+        "Somme des tickets de facturation": pline31.amount,
     }
     assert rows[5] == {
         "Identifiant des coordonnées bancaires": str(bank_account_1.id),
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": pline12.category.value,
-        "Type de réservation": "AR18+",
+        "Type de ticket de facturation": pline32.category.value,
+        "Type de réservation": "PR18-",
         "Ministère": "",
-        "Somme des tickets de facturation": pline12.amount + pline12_identical.amount + pline22.amount,
+        "Somme des tickets de facturation": pline32.amount,
     }
     # New Caledonia
     assert rows[6] == {
