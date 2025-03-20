@@ -89,6 +89,11 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> None:
                         ",".join(email_utils.anonymize_email(recipient) for recipient in payload.recipients),
                         code,
                         data.get("message"),
+                        extra={
+                            "template_id": payload.template_id,
+                            "recipients": payload.recipients,
+                            "bcc_recipients": payload.bcc_recipients,
+                        },
                     )
                     return
             except json.JSONDecodeError:

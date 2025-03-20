@@ -82,7 +82,8 @@ class TransactionalEmailWithTemplateTest:
 
         payload = SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
-            recipients=["invalid@example"],
+            recipients=["invalid@example", "other@example.com"],
+            bcc_recipients=["bcc@example.com"],
             template_id=TransactionalEmail.EMAIL_CONFIRMATION.value.id,
             params={"name": "Avery"},
             reply_to={"email": "support@example.com", "name": "pass Culture"},
@@ -94,8 +95,13 @@ class TransactionalEmailWithTemplateTest:
         assert caplog.records[0].levelname == "ERROR"
         assert (
             caplog.records[0].message
-            == "Sendinblue can't send email to inv***@example: code=invalid_parameter, message=email is not valid in to"
+            == "Sendinblue can't send email to inv***@example,oth***@example.com: code=invalid_parameter, message=email is not valid in to"
         )
+        assert caplog.records[0].extra == {
+            "template_id": TransactionalEmail.EMAIL_CONFIRMATION.value.id,
+            "recipients": ["invalid@example", "other@example.com"],
+            "bcc_recipients": ["bcc@example.com"],
+        }
         assert len(caplog.records) == 1
 
     @patch(
