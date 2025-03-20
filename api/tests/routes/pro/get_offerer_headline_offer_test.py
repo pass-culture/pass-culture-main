@@ -5,7 +5,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.models import GcuCompatibilityType
-from pcapi.core.offers.models import TiteliveImageType
+from pcapi.core.offers.models import ImageType
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 
@@ -52,8 +52,8 @@ class Return200Test:
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )
-        offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.RECTO)
-        offers_factories.ProductMediationFactory(product=product, imageType=TiteliveImageType.VERSO)
+        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
+        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.VERSO)
 
         offer = offers_factories.OfferFactory(venue=venue, product=product)
         offers_factories.HeadlineOfferFactory(offer=offer, venue=venue, without_mediation=True)
