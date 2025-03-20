@@ -26,6 +26,7 @@ export const IndividualOfferWizard = () => {
             ? 'basic'
             : 'sticky-actions'
       }
+      areMainHeadingAndBackToNavLinkInChild
     >
       <IndividualOfferContextProvider>
         <div className={styles['offer-wizard-container']}>

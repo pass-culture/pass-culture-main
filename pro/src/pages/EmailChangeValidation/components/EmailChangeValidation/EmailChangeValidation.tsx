@@ -13,19 +13,17 @@ export const EmailChangeValidationScreen = ({
   return (
     <>
       {isSuccess && (
-        <section className={styles['content']}>
-          <h1 className={styles['title']}>Et voilà !</h1>
+        <>
           <p className={styles['subtitle']}>
             Merci d’avoir confirmé votre changement d’adresse email.
           </p>
           <ButtonLink variant={ButtonVariant.PRIMARY} to="/">
             Se connecter
           </ButtonLink>
-        </section>
+        </>
       )}
       {!isSuccess && (
-        <section className={styles['content']}>
-          <h1 className={styles['title']}>Votre lien a expiré !</h1>
+        <>
           <p className={styles['subtitle']}>
             Votre adresse email n’a pas été modifiée car le lien reçu par mail
             expire 24 heures après sa réception.
@@ -36,7 +34,7 @@ export const EmailChangeValidationScreen = ({
           <ButtonLink variant={ButtonVariant.PRIMARY} to="/">
             Se connecter
           </ButtonLink>
-        </section>
+        </>
       )}
     </>
   )

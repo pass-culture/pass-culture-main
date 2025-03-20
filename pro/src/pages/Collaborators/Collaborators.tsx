@@ -95,9 +95,7 @@ export const Collaborators = (): JSX.Element | null => {
   }
 
   return (
-    <Layout>
-      <h1 className={styles['title']}>Collaborateurs</h1>
-
+    <Layout mainHeading="Collaborateurs">
       <section className={styles['section']}>
         <h2 className={styles['main-list-title']}>Liste des collaborateurs</h2>
 

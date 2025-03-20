@@ -105,9 +105,6 @@ describe('OfferType', () => {
     renderOfferTypes()
 
     expect(
-      screen.getByRole('heading', { name: 'Créer une offre' })
-    ).toBeInTheDocument()
-    expect(
       screen.getByRole('radio', { name: 'Au grand public' })
     ).toBeInTheDocument()
     expect(

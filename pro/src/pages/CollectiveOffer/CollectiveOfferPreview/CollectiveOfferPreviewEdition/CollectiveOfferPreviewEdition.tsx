@@ -18,22 +18,19 @@ export const CollectiveOfferPreviewEdition = ({
     : `/offre/${offer.id}/collectif/recapitulatif`
 
   return (
-    <Layout layout={'sticky-actions'}>
-      <div>
-        <h1 className={styles['title']}>Aperçu de l’offre</h1>
-        <p className={styles['preview-info']}>
-          Voici à quoi ressemble votre offre une fois publiée sur la plateforme
-          ADAGE.
-        </p>
-        <AdagePreviewLayout offer={offer} />
-        <ActionsBarSticky>
-          <ActionsBarSticky.Left>
-            <ButtonLink variant={ButtonVariant.PRIMARY} to={backRedirectionUrl}>
-              Retour vers l’offre
-            </ButtonLink>
-          </ActionsBarSticky.Left>
-        </ActionsBarSticky>
-      </div>
+    <Layout layout={'sticky-actions'} mainHeading='Aperçu de l’offre'>
+      <p className={styles['preview-info']}>
+        Voici à quoi ressemble votre offre une fois publiée sur la plateforme
+        ADAGE.
+      </p>
+      <AdagePreviewLayout offer={offer} />
+      <ActionsBarSticky>
+        <ActionsBarSticky.Left>
+          <ButtonLink variant={ButtonVariant.PRIMARY} to={backRedirectionUrl}>
+            Retour vers l’offre
+          </ButtonLink>
+        </ActionsBarSticky.Left>
+      </ActionsBarSticky>
     </Layout>
   )
 }

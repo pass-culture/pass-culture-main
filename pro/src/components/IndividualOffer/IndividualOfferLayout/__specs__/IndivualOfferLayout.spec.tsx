@@ -16,12 +16,12 @@ import {
 import { Notification } from 'components/Notification/Notification'
 
 import {
-  IndivualOfferLayout,
-  IndivualOfferLayoutProps,
-} from '../IndivualOfferLayout'
+  IndividualOfferLayout,
+  IndividualOfferLayoutProps,
+} from '../IndividualOfferLayout'
 
-const renderIndivualOfferLayout = (
-  props: Partial<IndivualOfferLayoutProps>,
+const renderIndividualOfferLayout = (
+  props: Partial<IndividualOfferLayoutProps>,
   options: RenderWithProvidersOptions = {
     initialRouterEntries: ['/offre/creation'],
   }
@@ -33,7 +33,7 @@ const renderIndivualOfferLayout = (
         <Route
           path="/offre/creation"
           element={
-            <IndivualOfferLayout
+            <IndividualOfferLayout
               title="layout title"
               withStepper
               offer={getIndividualOfferFactory()}
@@ -41,13 +41,13 @@ const renderIndivualOfferLayout = (
               {...props}
             >
               <div>Template child</div>
-            </IndivualOfferLayout>
+            </IndividualOfferLayout>
           }
         />
         <Route
           path="/onboarding/offre/creation"
           element={
-            <IndivualOfferLayout
+            <IndividualOfferLayout
               title="layout title"
               withStepper
               offer={getIndividualOfferFactory()}
@@ -55,7 +55,7 @@ const renderIndivualOfferLayout = (
               {...props}
             >
               <div>Template child</div>
-            </IndivualOfferLayout>
+            </IndividualOfferLayout>
           }
         />
         <Route path="/accueil" element={<div>Accueil</div>} />
@@ -65,9 +65,9 @@ const renderIndivualOfferLayout = (
   )
 }
 
-describe('IndivualOfferLayout', () => {
+describe('IndividualOfferLayout', () => {
   it('should render when no offer is given', () => {
-    renderIndivualOfferLayout({ offer: null })
+    renderIndividualOfferLayout({ offer: null })
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
     expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
@@ -79,7 +79,7 @@ describe('IndivualOfferLayout', () => {
       name: 'offer name',
     })
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
     })
 
@@ -97,7 +97,7 @@ describe('IndivualOfferLayout', () => {
       status: OfferStatus.ACTIVE,
     })
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
       withStepper: false,
     })
@@ -113,7 +113,7 @@ describe('IndivualOfferLayout', () => {
       status: OfferStatus.ACTIVE,
     })
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
     })
 
@@ -127,7 +127,7 @@ describe('IndivualOfferLayout', () => {
       isActivable: false,
     })
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
     })
 
@@ -143,7 +143,7 @@ describe('IndivualOfferLayout', () => {
       status: OfferStatus.DRAFT,
     })
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
       mode: OFFER_WIZARD_MODE.CREATION,
     })
@@ -159,7 +159,7 @@ describe('IndivualOfferLayout', () => {
       lastProvider: { name: 'Boost' },
     })
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
     })
 
@@ -173,7 +173,7 @@ describe('IndivualOfferLayout', () => {
       lastProvider: { name: '' },
     })
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
     })
 
@@ -183,7 +183,7 @@ describe('IndivualOfferLayout', () => {
   it('should display publication date when it is in the future', () => {
     const future = addDays(new Date(), 3)
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer: getIndividualOfferFactory({
         publicationDate: future.toISOString(),
         status: OfferStatus.INACTIVE,
@@ -195,7 +195,7 @@ describe('IndivualOfferLayout', () => {
   })
 
   it('should not display publication date when it is passed', () => {
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer: getIndividualOfferFactory({
         publicationDate: '2021-01-01T00:00:00.000Z',
         status: OfferStatus.INACTIVE,
@@ -209,7 +209,7 @@ describe('IndivualOfferLayout', () => {
   it('should not display publication date in creation', () => {
     const future = addDays(new Date(), 3)
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer: getIndividualOfferFactory({
         publicationDate: future.toISOString(),
         status: OfferStatus.INACTIVE,
@@ -223,7 +223,7 @@ describe('IndivualOfferLayout', () => {
   it('should not display publication date if offer is published', () => {
     const future = addDays(new Date(), 3)
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer: getIndividualOfferFactory({
         publicationDate: future.toISOString(),
         status: OfferStatus.ACTIVE,
@@ -238,7 +238,7 @@ describe('IndivualOfferLayout', () => {
       isHeadlineOffer: true,
     })
 
-    renderIndivualOfferLayout(
+    renderIndividualOfferLayout(
       {
         offer,
       },
@@ -260,7 +260,7 @@ describe('IndivualOfferLayout', () => {
         'useHasAccessToDidacticOnboarding'
       ).mockReturnValue(false)
 
-      renderIndivualOfferLayout(
+      renderIndividualOfferLayout(
         {
           offer: getIndividualOfferFactory(),
         },
@@ -277,7 +277,7 @@ describe('IndivualOfferLayout', () => {
         'useHasAccessToDidacticOnboarding'
       ).mockReturnValue(true)
 
-      renderIndivualOfferLayout(
+      renderIndividualOfferLayout(
         {
           offer: getIndividualOfferFactory(),
         },
@@ -290,7 +290,7 @@ describe('IndivualOfferLayout', () => {
   })
 
   it('should display an error callout if another offer exists with the same EAN', () => {
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       venueHasPublishedOfferWithSameEan: true,
     })
 
@@ -304,7 +304,7 @@ describe('IndivualOfferLayout', () => {
 
     const spy = vi.spyOn(api, 'deleteDraftOffers').mockResolvedValueOnce()
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
       venueHasPublishedOfferWithSameEan: true,
     })
@@ -323,7 +323,7 @@ describe('IndivualOfferLayout', () => {
   it('should not remove the draft offer if the offer does not exist', async () => {
     const spy = vi.spyOn(api, 'deleteDraftOffers').mockResolvedValueOnce()
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer: null,
       venueHasPublishedOfferWithSameEan: true,
     })
@@ -337,7 +337,7 @@ describe('IndivualOfferLayout', () => {
   it('should show an error message if the deletion failed', async () => {
     vi.spyOn(api, 'deleteDraftOffers').mockRejectedValueOnce(new Error('error'))
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       venueHasPublishedOfferWithSameEan: true,
     })
 

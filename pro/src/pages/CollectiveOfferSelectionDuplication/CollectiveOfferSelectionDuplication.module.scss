@@ -12,12 +12,6 @@
   align-items: flex-start;
 }
 
-.title {
-  @include fonts.title1;
-
-  margin-bottom: rem.torem(32px);
-}
-
 .sub-title {
   @include fonts.title4;
 }

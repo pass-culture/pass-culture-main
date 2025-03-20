@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -10,12 +10,17 @@ import {
   GET_VENUE_TYPES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
+import fullBackIcon from 'icons/full-back.svg'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueSettingsScreen } from './VenueSettingsScreen'
 
 const VenueSettings = (): JSX.Element | null => {
+  const navigate = useNavigate()
+
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
@@ -70,7 +75,18 @@ const VenueSettings = (): JSX.Element | null => {
   }))
 
   return (
-    <Layout>
+    <Layout
+      mainHeading='Paramètres généraux'
+      mainTopElement={
+        <Button
+          variant={ButtonVariant.TERNARYPINK}
+          icon={fullBackIcon}
+          onClick={() => navigate(-1)}
+        >
+          Retour vers la page précédente
+        </Button>
+      }
+    >
       <VenueSettingsScreen
         initialValues={setInitialFormValues({ venue })}
         offerer={offerer}

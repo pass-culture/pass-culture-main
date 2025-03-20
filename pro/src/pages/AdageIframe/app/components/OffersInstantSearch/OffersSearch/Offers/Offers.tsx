@@ -68,7 +68,7 @@ export const Offers = ({
   const { nbHits } = useStats()
   const { scopedResults, results: nonScopedResult } = useInstantSearch()
 
-  const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
+  const isMobileScreen = useMediaQuery('(min-width: 64rem)')
 
   const location = useLocation()
 

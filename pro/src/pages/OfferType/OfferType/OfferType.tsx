@@ -17,7 +17,6 @@ import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/seriali
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
@@ -146,11 +145,7 @@ export const OfferTypeScreen = () => {
 
   return (
     <>
-      {!isOnboarding && offerer?.allowedOnAdage && (
-        <CollectiveBudgetCallout pageName="offer-creation-hub" />
-      )}
       <div className={styles['offer-type-container']}>
-        <h1 className={styles['offer-type-title']}>Créer une offre</h1>
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <FormLayout>

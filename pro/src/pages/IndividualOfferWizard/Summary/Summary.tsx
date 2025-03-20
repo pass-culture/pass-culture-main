@@ -3,8 +3,8 @@
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { IndivualOfferLayout } from 'components/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { getTitle } from 'components/IndividualOffer/IndivualOfferLayout/utils/getTitle'
+import { IndividualOfferLayout } from 'components/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
+import { getTitle } from 'components/IndividualOffer/IndividualOfferLayout/utils/getTitle'
 import { SummaryScreen } from 'components/IndividualOffer/SummaryScreen/SummaryScreen'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -27,14 +27,14 @@ const Summary = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout
+    <IndividualOfferLayout
       title={title}
       offer={offer}
       mode={mode}
       venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
     >
       <SummaryScreen />
-    </IndivualOfferLayout>
+    </IndividualOfferLayout>
   )
 }
 
