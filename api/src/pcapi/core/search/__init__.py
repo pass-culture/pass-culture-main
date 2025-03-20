@@ -480,6 +480,20 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
         .options(
             sa.orm.joinedload(offers_models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address)
         )
+        .options(
+            sa.orm.with_expression(
+                offers_models.Offer.likesCount, offers_repository.get_offer_reaction_count_subquery()
+            )
+        )
+        .options(
+            sa.orm.joinedload(offers_models.Offer.product)
+            .load_only(offers_models.Product.id)
+            .options(
+                sa.orm.with_expression(
+                    offers_models.Product.likesCount, offers_repository.get_product_reaction_count_subquery()
+                )
+            )
+        )
     )
 
 
