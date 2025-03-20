@@ -10,17 +10,16 @@ interface BackToNavLinkProps {
   className?: string
 }
 
-export const BackToNavLink = ({ className }: BackToNavLinkProps): JSX.Element => {
-  const isMobileScreen = useMediaQuery('(min-width: 64rem)')
+export const BackToNavLink = ({
+  className,
+}: BackToNavLinkProps): JSX.Element => {
+  const isMobileScreen = useMediaQuery('(max-width: 64rem)')
 
   return (
     <a
       id="back-to-nav-link"
       href={isMobileScreen ? '#header-nav-toggle' : '#lateral-panel'}
-      className={classnames(
-        className,
-        styles['back-to-nav-link']
-      )}
+      className={classnames(className, styles['back-to-nav-link'])}
     >
       <SvgIcon
         src={fullGoTop}
