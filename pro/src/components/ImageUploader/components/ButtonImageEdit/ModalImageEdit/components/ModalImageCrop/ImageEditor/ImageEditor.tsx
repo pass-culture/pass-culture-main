@@ -1,8 +1,6 @@
-import { useFormikContext } from 'formik'
 import { forwardRef, useCallback, useEffect, useState } from 'react'
 import AvatarEditor, { Position } from 'react-avatar-editor'
 
-import { ImageEditorFormValues } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ModalImageCrop'
 import { Slider } from 'ui-kit/form/Slider/Slider'
 
 import { CanvasTools } from './canvas'
@@ -38,6 +36,7 @@ export interface ImageEditorConfig {
 interface ImageEditorProps extends ImageEditorConfig {
   image: File
   initialPosition?: Position
+  initialScale?: number
   children?: never
 }
 
@@ -52,12 +51,14 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       cropBorderWidth,
       initialPosition = { x: 0.5, y: 0.5 },
       maxScale = 4,
+      initialScale = 1,
     },
     ref
   ) => {
     const [position, setPosition] = useState<Position>(initialPosition)
-    const formik = useFormikContext<ImageEditorFormValues>()
     const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+
+    const [scale, setScale] = useState<number>(initialScale)
 
     useEffect(() => {
       const handleResize = () => {
@@ -141,7 +142,7 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
           onPositionChange={onPositionChange}
           position={position}
           ref={ref}
-          scale={Number(formik.values.scale)}
+          scale={Number(scale)}
           width={responsiveCanvasWidth}
           aria-label="Editeur d'image"
         />
@@ -152,11 +153,13 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
           <span className={style['image-editor-scale-label']}>min</span>
           <span className={style['image-editor-scale-input']}>
             <Slider
-              fieldName="scale"
+              name="scale"
               step={0.01}
               max={maxScale > 1 ? maxScale.toFixed(2) : 1}
               min={1}
               displayMinMaxValues={false}
+              value={scale}
+              onChange={(e) => setScale(Number(e.target.value))}
             />
           </span>
           <span className={style['image-editor-scale-label']}>max</span>

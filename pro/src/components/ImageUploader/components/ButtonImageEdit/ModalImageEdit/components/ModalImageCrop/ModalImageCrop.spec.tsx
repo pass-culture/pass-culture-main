@@ -17,12 +17,13 @@ const defaultProps: ModalImageCropProps = {
   }),
   onReplaceImage: mockReplaceImage,
   onImageDelete: mockDeleteImage,
-  credit: '',
+  credit: 'Credits',
   onEditedImageSave: vi.fn(),
   saveInitialPosition: vi.fn(),
   onSetCredit: vi.fn(),
   mode: UploaderModeEnum.OFFER,
   showPreviewInModal: true,
+  initialScale: 1,
 }
 
 function renderModalImageCrop() {
@@ -59,5 +60,18 @@ describe('venue image edit', () => {
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'hasClickedAddImage', {
       imageCreationStage: 'reframe image',
     })
+  })
+
+  it('should change credit when typing', async () => {
+    const screen = renderModalImageCrop()
+    const input = screen.getByRole('textbox')
+
+    expect(input).toHaveValue('Credits')
+
+    await userEvent.clear(input)
+
+    await userEvent.type(input, 'New Credits')
+
+    expect(input).toHaveValue('New Credits')
   })
 })

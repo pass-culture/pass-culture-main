@@ -30,6 +30,6 @@ describe('Slider', () => {
       displayValue: true,
     })
 
-    expect(screen.getByText('0 km')).toBeInTheDocument()
+    expect(screen.getByText(/1 km/)).toBeInTheDocument()
   })
 })
