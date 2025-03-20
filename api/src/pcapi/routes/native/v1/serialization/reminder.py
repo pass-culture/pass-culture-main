@@ -9,6 +9,10 @@ class ReminderOfferResponse(ConfiguredBaseModel):
     id: int
 
 
-class PostReminderResponse(ConfiguredBaseModel):
+class ReminderResponse(ConfiguredBaseModel):
     id: int
     offer: ReminderOfferResponse
+
+
+class GetRemindersResponse(ConfiguredBaseModel):
+    reminders: list[ReminderResponse]
