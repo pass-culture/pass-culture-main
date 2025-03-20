@@ -35,6 +35,7 @@
         "PRODUCTION B"
     ],
     "attributesForFaceting": [
+        "filterOnly(artists.id)",
         "filterOnly(offer.allocineId)",
         "searchable(offer.artist)",
         "offer.bookMacroSection",
@@ -129,10 +130,10 @@
         ]
     ],
     "numericAttributesForFiltering": [
-            "offer.prices",
-            "offer.releaseDate",
-            "offer.dates",
-            "offer.times",
-            "offer.last30DaysBookings"
+        "offer.prices",
+        "offer.releaseDate",
+        "offer.dates",
+        "offer.times",
+        "offer.last30DaysBookings"
     ]
 }
