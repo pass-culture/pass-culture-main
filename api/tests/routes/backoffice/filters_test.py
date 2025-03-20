@@ -34,22 +34,22 @@ class FormatRoleTest:
         assert filters.format_role(role) == expected
 
     @pytest.mark.parametrize(
-        "factory, deposit_type, expected",
+        "age, deposit_type, expected",
         [
-            (users_factories.BeneficiaryFactory, finance_models.DepositType.GRANT_18, "Ancien Pass 18"),
-            (users_factories.UnderageBeneficiaryFactory, finance_models.DepositType.GRANT_15_17, "Ancien Pass 15-17"),
-            (users_factories.BeneficiaryFactory, finance_models.DepositType.GRANT_17_18, "Pass 18"),
-            (users_factories.UnderageBeneficiaryFactory, finance_models.DepositType.GRANT_17_18, "Pass 17"),
+            (18, finance_models.DepositType.GRANT_18, "Ancien Pass 18"),
+            (15, finance_models.DepositType.GRANT_15_17, "Ancien Pass 15-17"),
+            (18, finance_models.DepositType.GRANT_17_18, "Pass 18"),
+            (17, finance_models.DepositType.GRANT_17_18, "Pass 17"),
         ],
     )
-    def test_beneficiaries(self, factory, deposit_type, expected):
-        user = factory()
+    def test_beneficiaries(self, age, deposit_type, expected):
+        user = users_factories.BeneficiaryFactory(age=age)
         user.deposits[0].type = deposit_type
         result = filters.format_role(user.roles[0], user.deposits)
         assert result == expected
 
     def test_deposit_order(self):
-        user = users_factories.UnderageBeneficiaryFactory()
+        user = users_factories.BeneficiaryFactory(age=17)
         user.deposits[0].type = finance_models.DepositType.GRANT_17_18
         recredit = finance_factories.RecreditFactory(
             deposit__version=3,

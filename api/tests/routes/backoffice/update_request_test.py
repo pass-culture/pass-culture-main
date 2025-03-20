@@ -764,7 +764,7 @@ class GetAcceptFormTest(GetEndpointHelper):
         assert self.button_label in content
 
     def test_email_update_duplicate_with_beneficiary_role(self, authenticated_client):
-        duplicate_user = users_factories.BeneficiaryGrant18Factory(email="nouvel_email@example.com")
+        duplicate_user = users_factories.BeneficiaryFactory(email="nouvel_email@example.com")
         ds_application_id = 21268381
         update_request = users_factories.EmailUpdateRequestFactory(
             user__email="ancien_email@example.com",
@@ -1084,7 +1084,7 @@ class AcceptTest(PostEndpointHelper):
 
     @pytest.mark.parametrize(
         "duplicate_factory",
-        [users_factories.BeneficiaryGrant18Factory, users_factories.ProFactory, users_factories.AdminFactory],
+        [users_factories.BeneficiaryFactory, users_factories.ProFactory, users_factories.AdminFactory],
     )
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
     def test_do_not_accept_email_update_duplicate_with_role(

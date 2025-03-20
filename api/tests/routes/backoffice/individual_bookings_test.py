@@ -43,10 +43,10 @@ pytestmark = [
 
 @pytest.fixture(scope="function", name="bookings")
 def bookings_fixture() -> tuple:
-    user1 = users_factories.BeneficiaryGrant18Factory(firstName="Napoléon", lastName="Bonaparte", email="napo@leon.com")
-    user2 = users_factories.UnderageBeneficiaryFactory(firstName="Joséphine", lastName="de Beauharnais")
-    user3 = users_factories.UnderageBeneficiaryFactory(firstName="Marie-Louise", lastName="d'Autriche")
-    user4 = users_factories.UnderageBeneficiaryFactory(firstName="Marie-Louise", lastName="d'Autriche")
+    user1 = users_factories.BeneficiaryFactory(firstName="Napoléon", lastName="Bonaparte", email="napo@leon.com")
+    user2 = users_factories.BeneficiaryFactory(age=17, firstName="Joséphine", lastName="de Beauharnais")
+    user3 = users_factories.BeneficiaryFactory(age=17, firstName="Marie-Louise", lastName="d'Autriche")
+    user4 = users_factories.BeneficiaryFactory(age=17, firstName="Marie-Louise", lastName="d'Autriche")
     used = bookings_factories.UsedBookingFactory(
         id=1000001,  # Avoid flaky test because of same ids in bookings and offers
         user=user1,
@@ -159,7 +159,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert html_parser.extract_pagination_info(response.data) == (1, 1, 1)
 
     def test_list_bookings_with_expired_deposit(self, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory()
         booking = bookings_factories.UsedBookingFactory(
             user=user,
             token="WTRL00",
@@ -486,7 +486,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert rows[0]["Crédit actif"] == result_active
 
     def test_list_bookings_with_only_all_deposit_filter_considered_as_empty_form(self, authenticated_client):
-        old_user = users_factories.BeneficiaryGrant18Factory()
+        old_user = users_factories.BeneficiaryFactory()
         expired_deposit_booking = bookings_factories.UsedBookingFactory(
             user=old_user,
             token="EXPIRD",
@@ -497,7 +497,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
         )
 
-        new_user = users_factories.BeneficiaryGrant18Factory()
+        new_user = users_factories.BeneficiaryFactory()
         bookings_factories.UsedBookingFactory(
             user=new_user,
             token="ACTIVE",
@@ -625,7 +625,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
     def test_list_caledonian_booking_shows_xfp_amounts(self, authenticated_client):
         nc_booking = bookings_factories.ReimbursedBookingFactory(
-            user=users_factories.CaledonianBeneficiaryGrant18Factory(), token="NC988F", amount=150.0
+            user=users_factories.CaledonianBeneficiaryFactory(), token="NC988F", amount=150.0
         )
         bank_account = finance_factories.BankAccountFactory()
         offerers_factories.VenueBankAccountLinkFactory(venue=nc_booking.venue, bankAccount=bank_account)
@@ -755,7 +755,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         assert f"- 1 réservation dont le crédit associé est expiré ({booking.token})" in alert
 
     def test_uncancel_booking_insufficient_funds(self, authenticated_client, bookings):
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        beneficiary = users_factories.BeneficiaryFactory()
         booking_id = bookings_factories.CancelledBookingFactory(user=beneficiary, stock__price="250").id
         bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock__price="100")
 
@@ -772,7 +772,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         assert f"- 1 réservation dont le crédit associé est insuffisant ({booking.token})" in alert
 
     def test_uncancel_booking_no_stock(self, authenticated_client, bookings):
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        beneficiary = users_factories.BeneficiaryFactory()
         booking_id = bookings_factories.CancelledBookingFactory(user=beneficiary, quantity=2, stock__quantity=1).id
 
         response = self.post_to_endpoint(authenticated_client, booking_id=booking_id)
@@ -919,7 +919,7 @@ class CancelBookingTest(PostEndpointHelper):
     @pytest.mark.settings(EMS_SUPPORT_EMAIL_ADDRESS="ems.support@example.com")
     @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     def test_ems_cancel_external_booking_from_backoffice(self, authenticated_client, requests_mock):
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        beneficiary = users_factories.BeneficiaryFactory()
         ems_provider = get_provider_by_local_class("EMSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
         providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)

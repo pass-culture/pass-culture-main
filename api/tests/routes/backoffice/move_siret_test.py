@@ -44,7 +44,7 @@ class MoveSiretTestHelper(PostEndpointHelper):
         self.venue2 = offerers_factories.VenueWithoutSiretFactory(managingOfferer=self.offerer)
 
         if override_revenue_check:
-            rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=100_000)
+            rich_beneficiary = users_factories.BeneficiaryFactory(deposit__amount=100_000)
             bookings_factories.ReimbursedBookingFactory(
                 user=rich_beneficiary, stock__price=10800, stock__offer__venue=self.venue2
             )
@@ -144,7 +144,7 @@ class MoveSiretTestHelper(PostEndpointHelper):
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678900001")
         venue2 = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)
-        rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=100_000)
+        rich_beneficiary = users_factories.BeneficiaryFactory(deposit__amount=100_000)
         bookings_factories.ReimbursedBookingFactory(
             user=rich_beneficiary, stock__price=10200, stock__offer__venue=venue2
         )

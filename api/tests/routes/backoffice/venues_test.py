@@ -2844,7 +2844,7 @@ class GetRemovePricingPointFormTest(GetEndpointHelper):
         )
 
     def test_venue_with_high_yearly_revenue(self, authenticated_client, venue_with_no_siret):
-        rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=25_000)
+        rich_beneficiary = users_factories.BeneficiaryFactory(deposit__amount=25_000)
         bookings_factories.ReimbursedBookingFactory(
             user=rich_beneficiary, stock__price=10800, stock__offer__venue=venue_with_no_siret
         )
@@ -3064,7 +3064,7 @@ class RemovePricingPointTest(PostEndpointHelper):
         )
 
     def test_venue_with_high_yearly_revenue(self, authenticated_client, venue_with_no_siret):
-        rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=25_000)
+        rich_beneficiary = users_factories.BeneficiaryFactory(deposit__amount=25_000)
         bookings_factories.ReimbursedBookingFactory(
             user=rich_beneficiary, stock__price=10800, stock__offer__venue=venue_with_no_siret
         )
@@ -3085,7 +3085,7 @@ class RemovePricingPointTest(PostEndpointHelper):
         )
 
     def test_override_yearly_revenue(self, authenticated_client, venue_with_no_siret):
-        rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=25_000)
+        rich_beneficiary = users_factories.BeneficiaryFactory(deposit__amount=25_000)
         bookings_factories.ReimbursedBookingFactory(
             user=rich_beneficiary, stock__price=10800, stock__offer__venue=venue_with_no_siret
         )
@@ -3155,7 +3155,7 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
     def test_venue_with_high_yearly_revenue(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=25_000)
+        rich_beneficiary = users_factories.BeneficiaryFactory(deposit__amount=25_000)
         bookings_factories.ReimbursedBookingFactory(
             user=rich_beneficiary, stock__price=10800, stock__offer__venue=venue
         )
@@ -3311,7 +3311,7 @@ class RemoveSiretTest(PostEndpointHelper):
     def test_venue_with_high_yearly_revenue(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
         target_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=25_000)
+        rich_beneficiary = users_factories.BeneficiaryFactory(deposit__amount=25_000)
         bookings_factories.ReimbursedBookingFactory(
             user=rich_beneficiary, stock__price=10800, stock__offer__venue=venue
         )
@@ -3336,7 +3336,7 @@ class RemoveSiretTest(PostEndpointHelper):
         venue = offerers_factories.VenueFactory()
         offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=venue)
         target_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=25_000)
+        rich_beneficiary = users_factories.BeneficiaryFactory(deposit__amount=25_000)
         bookings_factories.ReimbursedBookingFactory(
             user=rich_beneficiary, stock__price=10800, stock__offer__venue=venue
         )

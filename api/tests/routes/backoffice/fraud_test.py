@@ -29,7 +29,7 @@ class ListBlacklistedDomainNamesTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
 
     def test_list_blacklisted_domain_names(self, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory(email="user@example.fr")
+        user = users_factories.BeneficiaryFactory(email="user@example.fr")
         domain = "example.fr"
 
         event_extra = {
@@ -62,7 +62,7 @@ class PrepareBlacklistDomainNamesTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
 
     def test_prepare_blacklist_domain_name(self, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory(email="user@example.fr")
+        user = users_factories.BeneficiaryFactory(email="user@example.fr")
         domain = "example.fr"
 
         url = url_for("backoffice_web.fraud.prepare_blacklist_domain_name", domain=domain)
@@ -154,7 +154,7 @@ class RemoveBlacklistedDomainNameTest(PostEndpointHelper):
 
 
 def test_blacklist_domain_name_excludes_pro_users(legit_user):
-    beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.fr")
+    beneficiary = users_factories.BeneficiaryFactory(email="user@example.fr")
     pro_user = users_factories.ProFactory(email="pro@example.fr")
 
     users, _ = _blacklist_domain_name("example.fr", legit_user)

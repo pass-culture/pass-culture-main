@@ -54,7 +54,7 @@ def _create_nc_beneficiaries() -> users_models.User:
         lastName="Calédonien",
     )
 
-    return users_factories.CaledonianBeneficiaryGrant18Factory(
+    return users_factories.CaledonianBeneficiaryFactory(
         email="beneficiaire.nc@example.com",
         firstName="Bénéficiaire",
         lastName="Calédonien",
@@ -314,7 +314,7 @@ def _create_nc_invoice() -> None:
     # This is a quick way to have a Venue reach the revenue threshold to reach the next ReimbursementRule,
     # without generating 60+ Bookings in bulk
     special_stock = offers_factories.StockFactory(offer=thing_offer2, price=19_950)
-    rich_user = users_factories.CaledonianBeneficiaryGrant18Factory(
+    rich_user = users_factories.CaledonianBeneficiaryFactory(
         firstName="Jeune avec un énorme crédit",
         lastName="Calédonien",
         email="riche.nc@example.com",

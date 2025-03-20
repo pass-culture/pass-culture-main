@@ -243,11 +243,6 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
     validatedBirthDate = LazyAttribute(lambda o: o.dateCreated - relativedelta(years=o.age))
 
     @classmethod
-    def set_custom_attributes(cls, obj: models.User, **kwargs: typing.Any) -> None:
-        super().set_custom_attributes(obj)
-        obj.idPieceNumber = f"{obj.id:012}"
-
-    @classmethod
     def beneficiary_fraud_checks(
         cls, obj: models.User, **kwargs: typing.Any
     ) -> list[fraud_models.BeneficiaryFraudCheck]:
@@ -273,6 +268,19 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
             return []
 
         return IdentityValidatedUserFactory.beneficiary_fraud_checks(obj, **kwargs)
+
+    @factory.post_generation
+    def id_piece_number(
+        self,
+        create: bool,
+        extracted: str | None,
+        **kwargs: typing.Any,
+    ) -> None:
+        if not create or not extracted:
+            self.idPieceNumber = f"{self.id:012}"
+
+        if extracted:
+            self.idPieceNumber = extracted
 
 
 class HonorStatementValidatedUserFactory(IdentityValidatedUserFactory):
@@ -350,6 +358,14 @@ class BeneficiaryFactory(HonorStatementValidatedUserFactory):
             kwargs["dateCreated"] = obj.dateCreated
 
         return DepositGrantFactory(user=obj, **kwargs)
+
+
+class CaledonianBeneficiaryFactory(BeneficiaryFactory):
+    address = factory.Sequence("{} place des Cocotiers".format)
+    city = "Nouméa"
+    postalCode = "98800"
+    departementCode = "988"
+    phoneNumber = factory.Sequence(lambda n: f"+68777{n%10000:04}")
 
 
 class Transition1718Factory(BeneficiaryFactory):
@@ -661,14 +677,6 @@ class BeneficiaryGrant18Factory(BaseFactory):
             kwargs["dateCreated"] = obj.dateCreated
 
         return DepositGrantFactory(user=obj, **kwargs)
-
-
-class CaledonianBeneficiaryGrant18Factory(BeneficiaryGrant18Factory):
-    address = factory.Sequence("{} place des Cocotiers".format)
-    city = "Nouméa"
-    postalCode = "98800"
-    departementCode = "988"
-    phoneNumber = factory.Sequence(lambda n: f"+68777{n%10000:04}")
 
 
 def RichBeneficiaryFactory() -> models.User:
