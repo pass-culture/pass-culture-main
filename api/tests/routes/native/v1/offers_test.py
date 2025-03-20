@@ -1887,6 +1887,15 @@ class OffersV2Test:
         assert response.status_code == 200
         assert response.json["isHeadline"] is True
 
+    def test_return_venue_public_name(self, client):
+        venue = VenueFactory(name="Legal name", publicName="Public name")
+        offer_id = offers_factories.OfferFactory(venue=venue).id
+
+        response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["venue"]["name"] == "Public name"
+
 
 class OffersStocksTest:
     def test_return_empty_on_empty_request(self, client):

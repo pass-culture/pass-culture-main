@@ -24,6 +24,8 @@ class VenuesTest:
                 "image_credit": "Wikimedia Commons CC By",
             },
             isOpenToPublic=True,
+            name="Legal name",
+            publicName="Public name",
         )
         offerers_factories.AccessibilityProviderFactory(
             venue=venue,
@@ -53,11 +55,11 @@ class VenuesTest:
 
         assert response.json == {
             "id": venue.id,
-            "name": venue.name,
+            "name": "Public name",
             "latitude": float(venue.latitude),
             "longitude": float(venue.longitude),
             "city": venue.city,
-            "publicName": venue.publicName,
+            "publicName": "Public name",
             "isVirtual": venue.isVirtual,
             "isOpenToPublic": venue.isOpenToPublic,
             "isPermanent": venue.isPermanent,

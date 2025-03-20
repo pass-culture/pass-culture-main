@@ -39,6 +39,9 @@ class BookingVenueResponseGetterDict(GetterDict):
         if key == "address":
             return self._obj.street
 
+        if key == "name":
+            return self._obj.common_name
+
         return super().get(key, default)
 
 

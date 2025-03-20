@@ -127,6 +127,9 @@ class OfferVenueResponseGetterDict(GetterDict):
             return postalCode
         if key == "timezone":
             return timezone
+        if key == "name":
+            return venue.common_name
+
         return super().get(key, default)
 
 
