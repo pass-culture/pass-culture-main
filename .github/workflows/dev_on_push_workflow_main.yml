@@ -116,6 +116,7 @@ jobs:
       - name: "Summary"
         run: |
           echo "[api] folder changed : ${{ steps.check-api-changes.outputs.any_modified }}"
+          echo "[algolia] folder changed : ${{ steps.check-algolia-config-changes.outputs.any_modified }}"
           echo "[pcapi] push-tags : ${{ steps.pcapi-tags.outputs.push-tags }}"
           echo "[pcapi] checksum-tag : ${{ steps.pcapi-tags.outputs.checksum-tag }}"
           echo "[pcapi] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-checksum-tag.outputs.tag-exists }}"
