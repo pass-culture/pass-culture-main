@@ -112,7 +112,7 @@ services:
     build: nginx
     container_name: pc-nginx
     ports:
-      - 80:80
+      - 80:5005
       - 443:443
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
