@@ -83,7 +83,6 @@ describe('CollectiveOfferFromRequest', () => {
       educationalOfferers: [],
     })
     vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
-    vi.spyOn(api, 'getNationalPrograms').mockResolvedValue([])
     vi.spyOn(api, 'createCollectiveOffer').mockResolvedValue({ id: 1 })
   })
 

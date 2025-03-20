@@ -83,9 +83,13 @@ describe('screens | OfferEducational : creation offer type step', () => {
       props = {
         ...props,
         domainsOptions: [
-          { label: 'Domain 1', id: '1' },
-          { label: 'Domain 2', id: '2' },
-          { label: 'Domain 3', id: '3' },
+          {
+            label: 'Domain 1',
+            id: '1',
+            nationalPrograms: [{ id: 1, name: 'nationalProgram1' }],
+          },
+          { label: 'Domain 2', id: '2', nationalPrograms: [] },
+          { label: 'Domain 3', id: '3', nationalPrograms: [] },
         ],
       }
     })
@@ -122,22 +126,22 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
   describe('national systems', () => {
     it('should allow user to select national systems', async () => {
-      const overridedProps = {
-        ...props,
-        nationalPrograms: [
-          { value: 1, label: 'Marseille en grand' },
-          { value: 4, label: 'Olympiades' },
-        ],
-      }
-      renderComponent(overridedProps)
+      renderComponent(props)
+
+      const domainsSelect = await screen.findByLabelText(
+        /Domaines artistiques */
+      )
+      await userEvent.click(domainsSelect)
+      await userEvent.click(await screen.findByText('domain1'))
+
       const nationalProgramsSelect = await screen.findByLabelText(
         /Dispositif national */
       )
       await userEvent.click(nationalProgramsSelect)
-      await userEvent.selectOptions(nationalProgramsSelect, '4')
+      await userEvent.selectOptions(nationalProgramsSelect, '1')
       await userEvent.tab()
 
-      expect(screen.getByText('Olympiades')).toBeInTheDocument()
+      expect(screen.getByText('nationalProgram1')).toBeInTheDocument()
     })
   })
 

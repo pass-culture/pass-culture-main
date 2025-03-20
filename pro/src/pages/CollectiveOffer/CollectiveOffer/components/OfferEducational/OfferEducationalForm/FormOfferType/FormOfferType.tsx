@@ -43,7 +43,6 @@ export const FormOfferType = ({
 
   const [selectedPrograms, setSelectedPrograms] = useState<SelectOption[]>([])
 
-
   const eacFormatOptions = Object.entries(EacFormat).map(([, value]) => ({
     id: value,
     label: String(value),
