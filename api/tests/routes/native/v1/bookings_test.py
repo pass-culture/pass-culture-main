@@ -1093,6 +1093,16 @@ class GetBookingsTest:
         assert response.status_code == 200
         assert response.json["hasBookingsAfter18"] is True
 
+    def test_return_venue_public_name(self, client):
+        venue = offerers_factories.VenueFactory(name="Legal name", publicName="Public name")
+        booking = booking_factories.BookingFactory(stock__offer__venue=venue)
+
+        client = client.with_token(booking.user.email)
+        response = client.get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        assert response.json["ongoing_bookings"][0]["stock"]["offer"]["venue"]["name"] == "Public name"
+
 
 class CancelBookingTest:
     identifier = "pascal.ture@example.com"

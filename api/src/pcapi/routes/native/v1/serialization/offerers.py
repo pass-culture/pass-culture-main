@@ -23,6 +23,9 @@ class VenueAccessibilityModel(BaseModel):
 
 class VenueResponseGetterDict(base.VenueResponseGetterDict):
     def get(self, key: str, default: typing.Any = None) -> typing.Any:
+        if key == "name":
+            return self._obj.common_name
+
         if key == "venueTypeCode":
             return self._obj.venueTypeCode.name
 
