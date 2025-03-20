@@ -34,7 +34,6 @@ describe('FormOfferType', () => {
   const formTypeProps: FormTypeProps = {
     disableForm: false,
     domainsOptions: [],
-    nationalPrograms: [],
     isTemplate: false,
   }
 
@@ -44,26 +43,66 @@ describe('FormOfferType', () => {
     }))
   })
 
-  it('should offer the national program oprtions filtered for the selected domains', async () => {
+  it('should offer the national program options filtered for the selected domains', async () => {
     renderFormOfferType({
       initialValues: DEFAULT_EAC_FORM_VALUES,
       props: {
         ...formTypeProps,
-        nationalPrograms: [
-          { value: 4, label: 'Program 1' }, //  Program with id 4 should be displayed whatever the domain selection is
-          { value: 11, label: 'Program 2' },
+        domainsOptions: [
+          {
+            label: 'Domain 1',
+            id: '1',
+            nationalPrograms: [{ id: 1, name: 'nationalProgram1' }],
+          },
+          {
+            label: 'Domain 2',
+            id: '2',
+            nationalPrograms: [{ id: 2, name: 'nationalProgram2' }],
+          },
         ],
-        domainsOptions: [],
+      },
+    })
+
+    const domainsSelect = await screen.findByLabelText(/Domaines artistiques */)
+    await userEvent.click(domainsSelect)
+    await userEvent.click(await screen.findByText('Domain 1'))
+
+    expect(
+      await screen.findByRole('option', { name: 'nationalProgram1' })
+    ).toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('option', { name: 'nationalProgram2' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should select the existing national program', async () => {
+    renderFormOfferType({
+      initialValues: {
+        ...DEFAULT_EAC_FORM_VALUES,
+        domains: ['1'],
+        nationalProgramId: '1',
+      },
+      props: {
+        ...formTypeProps,
+        domainsOptions: [
+          {
+            label: 'Domain 1',
+            id: '1',
+            nationalPrograms: [{ id: 1, name: 'nationalProgram1' }],
+          },
+          {
+            label: 'Domain 2',
+            id: '2',
+            nationalPrograms: [{ id: 2, name: 'nationalProgram2' }],
+          },
+        ],
       },
     })
 
     expect(
-      await screen.findByRole('option', { name: 'Program 1' })
+      await screen.findByRole('option', { name: 'nationalProgram1' })
     ).toBeInTheDocument()
-
-    expect(
-      screen.queryByRole('option', { name: 'Program 2' })
-    ).not.toBeInTheDocument()
   })
 
   it('should call tracker when clicking on template button', async () => {

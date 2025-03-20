@@ -48,7 +48,6 @@ import styles from './OfferEducationalForm.module.scss'
 export type OfferEducationalFormProps = {
   userOfferer: GetEducationalOffererResponseModel | null
   domainsOptions: DomainOption[]
-  nationalPrograms: SelectOption<number>[]
   isTemplate: boolean
   mode: Mode
   imageOffer: ImageUploaderOfferProps['imageOffer']
@@ -65,7 +64,6 @@ export const OfferEducationalForm = ({
   userOfferer,
   mode,
   domainsOptions,
-  nationalPrograms,
   isTemplate,
   imageOffer,
   onImageUpload,

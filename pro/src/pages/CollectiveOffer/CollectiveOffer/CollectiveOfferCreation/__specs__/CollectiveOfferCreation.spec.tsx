@@ -24,7 +24,6 @@ vi.mock('apiClient/api', () => ({
     listEducationalOfferers: vi.fn(),
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
-    getNationalPrograms: vi.fn(),
   },
 }))
 
@@ -74,7 +73,6 @@ describe('CollectiveOfferCreation', () => {
       subcategories: [],
     })
     vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
-    vi.spyOn(api, 'getNationalPrograms').mockResolvedValue([])
     vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
   })
   it('should render collective offer creation form', async () => {

@@ -213,7 +213,6 @@ export const OfferEducational = ({
             mode={mode}
             userOfferer={userOfferer}
             domainsOptions={domainsOptions}
-            nationalPrograms={nationalPrograms}
             isTemplate={isTemplate}
             imageOffer={imageOffer}
             onImageDelete={onImageDelete}
