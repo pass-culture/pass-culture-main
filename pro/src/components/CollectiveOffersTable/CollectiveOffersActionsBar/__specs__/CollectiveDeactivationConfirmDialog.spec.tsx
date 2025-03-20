@@ -43,7 +43,7 @@ describe('DeactivationConfirmDialog', () => {
       isDialogOpen: true,
     })
 
-    const onConfirmButton = screen.getByText('Masquer')
+    const onConfirmButton = screen.getByText('Mettre en pause')
     await userEvent.click(onConfirmButton)
     expect(onConfirmDialogMock).toHaveBeenCalled()
   })
@@ -59,7 +59,7 @@ describe('DeactivationConfirmDialog', () => {
       screen.getByText(/Vous avez sélectionné 1 offre/)
     ).toBeInTheDocument()
     expect(
-      screen.getByText(/êtes-vous sûr de vouloir la masquer ?/)
+      screen.getByText(/êtes-vous sûr de vouloir la mettre en pause ?/)
     ).toBeInTheDocument()
     expect(
       screen.getByText(
@@ -79,7 +79,7 @@ describe('DeactivationConfirmDialog', () => {
       screen.getByText(/Vous avez sélectionné 2 offres/)
     ).toBeInTheDocument()
     expect(
-      screen.getByText(/êtes-vous sûr de vouloir toutes les masquer ?/)
+      screen.getByText(/êtes-vous sûr de vouloir toutes les mettre en pause ?/)
     ).toBeInTheDocument()
     expect(
       screen.getByText(

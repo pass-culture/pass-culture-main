@@ -32,7 +32,9 @@ describe('OfferStats', () => {
     renderOfferStats()
 
     expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
-    expect(screen.queryByText('Vos offres en attente')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Vos offres en instruction')
+    ).not.toBeInTheDocument()
     const publishedIndividualOffers = await screen.findByText(
       'Voir les offres individuelles publiées'
     )
@@ -58,7 +60,9 @@ describe('OfferStats', () => {
     renderOfferStats()
 
     expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
-    expect(screen.queryByText('Vos offres en attente')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Vos offres en instruction')
+    ).not.toBeInTheDocument()
     const publishedIndividualOffers = await screen.findByText(
       'Voir les offres individuelles publiées'
     )
@@ -73,13 +77,13 @@ describe('OfferStats', () => {
     )
 
     const pendingIndividualOffers = await screen.findByText(
-      'Voir les offres individuelles en attente'
+      'Voir les offres individuelles en instruction'
     )
     expect(pendingIndividualOffers.parentElement?.textContent).toContain(
       '0 à destination du grand public'
     )
     const pendingCollectiveOffers = await screen.findByText(
-      'Voir les offres collectives en attente'
+      'Voir les offres collectives en instruction'
     )
     expect(pendingCollectiveOffers.parentElement?.textContent).toContain(
       '5 à destination de groupes scolaires'

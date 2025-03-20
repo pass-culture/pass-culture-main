@@ -181,7 +181,7 @@ describe('OfferEducationalActions', () => {
       'href',
       `/reservations/collectives?page=1&offerEventDate=${offer.collectiveStock?.startDatetime?.split('T')[0]}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=1`
     )
-    expect(screen.getByText('terminée')).toBeInTheDocument()
+    expect(screen.getByText('remboursée')).toBeInTheDocument()
   })
 
   it('should not display booking link for cancelled booking', () => {
@@ -258,7 +258,7 @@ describe('OfferEducationalActions', () => {
 
     expect(
       screen.queryByRole('button', {
-        name: 'Publier sur ADAGE',
+        name: 'Mettre en pause',
       })
     ).not.toBeInTheDocument()
   })

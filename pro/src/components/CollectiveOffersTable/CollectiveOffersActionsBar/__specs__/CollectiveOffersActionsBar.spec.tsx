@@ -90,7 +90,7 @@ describe('ActionsBar', () => {
       screen.queryByText('Publier', { selector: 'button' })
     ).toBeInTheDocument()
     expect(
-      screen.queryByText('Masquer', { selector: 'button' })
+      screen.queryByText('Mettre en pause', { selector: 'button' })
     ).toBeInTheDocument()
     expect(
       screen.queryByText('Annuler', { selector: 'button' })

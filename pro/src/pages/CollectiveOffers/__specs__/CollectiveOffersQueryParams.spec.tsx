@@ -236,7 +236,7 @@ describe('route CollectiveOffers', () => {
       )
       const list = screen.getByTestId('list')
       await userEvent.click(within(list).getByText('Réservée'))
-      await userEvent.click(within(list).getByText('Validation en attente'))
+      await userEvent.click(within(list).getByText('En instruction'))
       await userEvent.click(within(list).getByText('Archivée'))
 
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))

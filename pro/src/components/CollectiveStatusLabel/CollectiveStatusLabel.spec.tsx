@@ -54,7 +54,7 @@ describe('CollectiveStatusLabel', () => {
     },
     {
       displayedStatus: CollectiveOfferDisplayedStatus.REIMBURSED,
-      expectedLabel: 'terminée',
+      expectedLabel: 'remboursée',
     },
   ]
 

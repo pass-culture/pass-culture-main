@@ -118,7 +118,7 @@ describe('IndividualOfferLayout', () => {
     })
 
     expect(screen.getByTestId('status')).toBeInTheDocument()
-    expect(screen.getByText('Désactiver')).toBeInTheDocument()
+    expect(screen.getByText('Mettre en pause')).toBeInTheDocument()
     expect(screen.getByText('publiée')).toBeInTheDocument()
   })
 
@@ -133,7 +133,7 @@ describe('IndividualOfferLayout', () => {
 
     expect(screen.getByTestId('status')).toBeInTheDocument()
     expect(
-      screen.queryByRole('button', { name: 'Désactiver' })
+      screen.queryByRole('button', { name: 'Mettre en pause' })
     ).not.toBeInTheDocument()
   })
 
@@ -150,7 +150,7 @@ describe('IndividualOfferLayout', () => {
 
     expect(screen.queryByTestId('status')).not.toBeInTheDocument()
     expect(
-      screen.queryByRole('button', { name: 'Désactiver' })
+      screen.queryByRole('button', { name: 'Mettre en pause' })
     ).not.toBeInTheDocument()
   })
 
