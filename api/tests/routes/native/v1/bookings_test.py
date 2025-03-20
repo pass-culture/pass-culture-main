@@ -27,6 +27,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offer_models
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.exceptions import InactiveProvider
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_api
@@ -434,6 +435,43 @@ class PostBookingTest:
         assert stock.quantity == 10
         assert len(bookings_models.ExternalBooking.query.all()) == 0
         assert len(bookings_models.Booking.query.all()) == 0
+
+    @time_machine.travel("2022-10-12 17:09:25")
+    def test_book_sold_out_cinema_stock_does_not_book_anything(self, client):
+        users_factories.BeneficiaryGrant18Factory(email=self.identifier, dateOfBirth=datetime(2007, 1, 1))
+
+        id_at_provider = "test_id_at_provider"
+
+        provider = providers_models.Provider.query.filter_by(localClass="CGRStocks").first()
+        venue_provider = providers_factories.VenueProviderFactory(
+            provider=provider, venueIdAtOfferProvider=id_at_provider
+        )
+        pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue, provider=provider, idAtProvider=id_at_provider
+        )
+        providers_factories.CGRCinemaDetailsFactory(cinemaProviderPivot=pivot)
+
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories.SEANCE_CINE.id,
+            offer__lastProvider=provider,
+            offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
+            offer__venue=venue_provider.venue,
+            quantity=1,
+            idAtProviders="#1",
+        )
+
+        with patch("pcapi.core.external_bookings.cgr.client.CGRClientAPI.book_ticket") as mock_book_ticket:
+            mock_book_ticket.side_effect = RuntimeError("test")
+
+            response = client.with_token(self.identifier).post(
+                "/native/v1/bookings", json={"stockId": stock.id, "quantity": 1}
+            )
+
+        assert response.status_code == 400
+        assert response.json == {"code": "CINEMA_PROVIDER_BOOKING_FAILED"}
+        assert stock.quantity == 1
 
     @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_booking_not_enough_quantity(self, client, requests_mock):

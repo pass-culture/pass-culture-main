@@ -75,7 +75,13 @@ def book_cinema_ticket(
     if not show_id:
         raise exceptions.ExternalBookingConfigurationException("Could not retrieve show_id")
 
-    return client.book_ticket(show_id, booking, beneficiary)
+    try:
+        return client.book_ticket(show_id, booking, beneficiary)
+    except (exceptions.ExternalBookingSoldOutError, exceptions.ExternalBookingTimeoutException):
+        raise
+    except Exception as exc:
+        logger.warning("Could not book external ticket: %s", exc)
+        raise exceptions.ExternalBookingException
 
 
 def disable_external_bookings() -> None:
