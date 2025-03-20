@@ -1,19 +1,13 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { addDays, addMinutes, format, subDays } from 'date-fns'
+import { addDays, addMinutes, format } from 'date-fns'
 import * as router from 'react-router-dom'
 
-import {
-  CollectiveBookingStatus,
-  CollectiveOfferAllowedAction,
-} from 'apiClient/v1'
+import { CollectiveOfferAllowedAction } from 'apiClient/v1'
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import { Mode, EducationalOfferType } from 'commons/core/OfferEducational/types'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
-import {
-  getCollectiveOfferFactory,
-  getCollectiveOfferCollectiveStockFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
+import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { DETAILS_PRICE_LABEL } from '../constants/labels'
@@ -87,77 +81,12 @@ describe('OfferEducationalStock', () => {
     ).toBeInTheDocument()
   })
 
-  it.each([
-    getCollectiveOfferFactory({
-      lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
-    }),
-    getCollectiveOfferFactory({
-      lastBookingStatus: CollectiveBookingStatus.USED,
-      collectiveStock: getCollectiveOfferCollectiveStockFactory({
-        startDatetime: subDays(new Date(), 1).toDateString(),
-      }),
-    }),
-  ])(
-    'should not disable description, price and places when offer is $lastBookingStatus since less than 2 days',
-    (offer) => {
-      const testProps: OfferEducationalStockProps = {
-        ...defaultProps,
-        offer,
-        mode: Mode.READ_ONLY,
-      }
-      renderWithProviders(<OfferEducationalStock {...testProps} />)
-
-      const descriptionInput = screen.getByRole('textbox', {
-        name: `${DETAILS_PRICE_LABEL}`,
-      })
-      const priceInput = screen.getByLabelText('Prix total TTC')
-      const placeInput = screen.getByLabelText('Nombre de participants')
-
-      expect(descriptionInput).not.toBeDisabled()
-      expect(priceInput).not.toBeDisabled()
-      expect(placeInput).not.toBeDisabled()
-    }
-  )
-
-  it.each([
-    getCollectiveOfferFactory({
-      lastBookingStatus: CollectiveBookingStatus.REIMBURSED,
-    }),
-    getCollectiveOfferFactory({
-      lastBookingStatus: CollectiveBookingStatus.USED,
-      collectiveStock: getCollectiveOfferCollectiveStockFactory({
-        startDatetime: subDays(new Date(), 3).toDateString(),
-      }),
-    }),
-  ])(
-    'should disable save button, description, price and places when offer is reimbursed or is used since more than 2 days',
-    (offer) => {
-      const testProps: OfferEducationalStockProps = {
-        ...defaultProps,
-        offer,
-        mode: Mode.READ_ONLY,
-      }
-      renderWithProviders(<OfferEducationalStock {...testProps} />)
-
-      const descriptionInput = screen.getByRole('textbox', {
-        name: `${DETAILS_PRICE_LABEL}`,
-      })
-      const priceInput = screen.getByLabelText('Prix total TTC')
-      const placeInput = screen.getByLabelText('Nombre de participants')
-      const saveButton = screen.getByText('Enregistrer et continuer')
-
-      expect(descriptionInput).toBeDisabled()
-      expect(priceInput).toBeDisabled()
-      expect(placeInput).toBeDisabled()
-      expect(saveButton).toBeDisabled()
-    }
-  )
-
-  it('should call submit callback when clicking next step with valid form data', async () => {
-    const offer = getCollectiveOfferFactory({ isPublicApi: false })
+  it('should call submit callback when clicking next step with valid form data and edit action is allowed', async () => {
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
-      offer,
+      offer: getCollectiveOfferFactory({
+        allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
+      }),
       initialValues: initialValuesNotEmpty,
       mode: Mode.CREATION,
     }
@@ -215,11 +144,12 @@ it('should display saved information in the action bar', () => {
   expect(screen.getByText('Enregistrer et continuer')).toBeInTheDocument()
 })
 
-it('should not disable start datetime, end datetime and event time inputs when form access is edition', () => {
+it('should not disable start datetime, end datetime and event time inputs when date edition is allowed', () => {
   const testProps: OfferEducationalStockProps = {
     ...defaultProps,
-    mode: Mode.EDITION,
-    offer: getCollectiveOfferFactory(),
+    offer: getCollectiveOfferFactory({
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
+    }),
   }
 
   renderWithProviders(<OfferEducationalStock {...testProps} />)
@@ -233,7 +163,7 @@ it('should not disable start datetime, end datetime and event time inputs when f
   expect(eventTimeInput).not.toBeDisabled()
 })
 
-it('should not disable description, price and places when allowedAction CAN_EDIT_DISCOUNT exist and FF ENABLE_COLLECTIVE_NEW_STATUSES enable ', () => {
+it('should not disable description, price and places when action CAN_EDIT_DISCOUNT is allowed', () => {
   const testProps: OfferEducationalStockProps = {
     ...defaultProps,
     mode: Mode.EDITION,
@@ -242,9 +172,7 @@ it('should not disable description, price and places when allowedAction CAN_EDIT
     }),
   }
 
-  renderWithProviders(<OfferEducationalStock {...testProps} />, {
-    features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
-  })
+  renderWithProviders(<OfferEducationalStock {...testProps} />)
 
   const descriptionInput = screen.getByRole('textbox', {
     name: `${DETAILS_PRICE_LABEL}`,
@@ -257,7 +185,7 @@ it('should not disable description, price and places when allowedAction CAN_EDIT
   expect(placeInput).not.toBeDisabled()
 })
 
-it('should disable description, price and places when allowedAction CAN_EDIT_DISCOUNT doesnt exist and FF ENABLE_COLLECTIVE_NEW_STATUSES enable', () => {
+it('should disable description, price and places when allowed action CAN_EDIT_DISCOUNT doesnt exist', () => {
   const testProps: OfferEducationalStockProps = {
     ...defaultProps,
     mode: Mode.EDITION,
@@ -266,9 +194,7 @@ it('should disable description, price and places when allowedAction CAN_EDIT_DIS
     }),
   }
 
-  renderWithProviders(<OfferEducationalStock {...testProps} />, {
-    features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
-  })
+  renderWithProviders(<OfferEducationalStock {...testProps} />)
 
   const descriptionInput = screen.getByRole('textbox', {
     name: `${DETAILS_PRICE_LABEL}`,

@@ -2,6 +2,10 @@ import { screen } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import {
+  CollectiveOfferAllowedAction,
+  CollectiveOfferTemplateAllowedAction,
+} from 'apiClient/v1'
+import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
@@ -113,7 +117,17 @@ describe('CollectiveOfferSummaryCreation', () => {
   it('should render bookable offer summary creation with three edit links (details, stock, institution)', async () => {
     renderCollectiveOfferSummaryCreation(
       '/offre/A1/collectif/creation/recapitulatif',
-      defaultProps
+      {
+        ...defaultProps,
+        offer: getCollectiveOfferFactory({
+          allowedActions: [
+            CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+            CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+            CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+            CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
+          ],
+        }),
+      }
     )
 
     expect(await screen.findAllByText('Modifier')).toHaveLength(3)
@@ -121,7 +135,9 @@ describe('CollectiveOfferSummaryCreation', () => {
 
   it('should render template offer summary creation with one edit link', async () => {
     const templateProps = {
-      offer: getCollectiveOfferTemplateFactory(),
+      offer: getCollectiveOfferTemplateFactory({
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS],
+      }),
       isTemplate: true,
       offerer: undefined,
     }

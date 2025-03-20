@@ -283,34 +283,6 @@ describe('TemplateCollectiveOffersScreen', () => {
   })
 
   describe('on click on select all offers checkbox', () => {
-    it('should display error message when trying to activate collective offers with booking limit date passed', async () => {
-      const offers = [
-        collectiveOfferFactory({
-          isActive: false,
-          hasBookingLimitDatetimesPassed: true,
-          stocks: [
-            {
-              startDatetime: String(new Date()),
-              hasBookingLimitDatetimePassed: true,
-              remainingQuantity: 1,
-            },
-          ],
-        }),
-      ]
-
-      renderOffers({
-        ...props,
-        offers: offers,
-      })
-
-      await userEvent.click(screen.getByLabelText('Tout sélectionner'))
-      await userEvent.click(screen.getByText('Publier'))
-
-      expect(mockNotifyError).toHaveBeenCalledWith(
-        'Vous ne pouvez pas publier des offres collectives dont la date de réservation est passée'
-      )
-    })
-
     it('should check all validated offers checkboxes', async () => {
       // Given
       const offers = [
@@ -361,14 +333,6 @@ describe('TemplateCollectiveOffersScreen', () => {
     })
   })
 
-  it('should display the collective offers format', async () => {
-    renderOffers({
-      ...props,
-      offers: [collectiveOfferFactory()],
-    })
-    expect(await screen.findByRole('combobox', { name: 'Format' }))
-  })
-
   it('should filter on the format', async () => {
     renderOffers({
       ...props,
@@ -391,15 +355,6 @@ describe('TemplateCollectiveOffersScreen', () => {
         format: 'Concert',
       })
     )
-  })
-
-  it('should display a new column "Date de l’évènement"', async () => {
-    renderOffers({
-      ...props,
-      offers: [collectiveOfferFactory()],
-    })
-
-    expect(await screen.findByText('Date de l’évènement'))
   })
 
   it('should filter new column "Date de l’évènement"', async () => {

@@ -9,6 +9,7 @@ import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOffersStockResponseModel,
+  CollectiveOfferTemplateAllowedAction,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -115,45 +116,49 @@ describe('ollectiveOfferRow', () => {
     })
   })
 
-  it('should display the venue name when venue public name is not given', () => {
-    props.offer.venue = listOffersVenueFactory({
-      name: 'Paris',
-      isVirtual: false,
-      offererName: 'Offerer name',
+  describe('venue name', () => {
+    it('should display the venue name when venue public name is not given', () => {
+      props.offer.venue = listOffersVenueFactory({
+        name: 'Paris',
+        isVirtual: false,
+        offererName: 'Offerer name',
+      })
+
+      renderOfferItem(props)
+
+      expect(screen.queryByText(props.offer.venue.name)).toBeInTheDocument()
     })
 
-    renderOfferItem(props)
+    it('should display the venue public name when is given', () => {
+      props.offer.venue = listOffersVenueFactory({
+        name: 'Paris',
+        publicName: 'lieu de ouf',
+        isVirtual: false,
+        offererName: 'Offerer name',
+      })
 
-    expect(screen.queryByText(props.offer.venue.name)).toBeInTheDocument()
-  })
+      renderOfferItem(props)
 
-  it('should display the venue public name when is given', () => {
-    props.offer.venue = listOffersVenueFactory({
-      name: 'Paris',
-      publicName: 'lieu de ouf',
-      isVirtual: false,
-      offererName: 'Offerer name',
+      expect(screen.queryByText('lieu de ouf')).toBeInTheDocument()
     })
 
-    renderOfferItem(props)
+    it('should display the offerer name with "- Offre numérique" when venue is virtual', () => {
+      props.offer.venue = listOffersVenueFactory({
+        isVirtual: true,
+        name: 'Gaumont Montparnasse',
+        offererName: 'Gaumont',
+        publicName: 'Gaumontparnasse',
+      })
 
-    expect(screen.queryByText('lieu de ouf')).toBeInTheDocument()
-  })
+      renderOfferItem(props)
 
-  it('should display the offerer name with "- Offre numérique" when venue is virtual', () => {
-    props.offer.venue = listOffersVenueFactory({
-      isVirtual: true,
-      name: 'Gaumont Montparnasse',
-      offererName: 'Gaumont',
-      publicName: 'Gaumontparnasse',
+      expect(
+        screen.queryByText('Gaumont - Offre numérique')
+      ).toBeInTheDocument()
     })
-
-    renderOfferItem(props)
-
-    expect(screen.queryByText('Gaumont - Offre numérique')).toBeInTheDocument()
   })
 
-  describe('offer remaining quantity or institution', () => {
+  describe('offer institution', () => {
     it('should display "Tous les établissements" when offer is not assigned to a specific institution', () => {
       props.offer = collectiveOfferFactory({ booking: null, stocks })
 
@@ -162,7 +167,7 @@ describe('ollectiveOfferRow', () => {
       expect(screen.queryByText('Tous les établissements')).toBeInTheDocument()
     })
 
-    it('should display "Tous les établissements" when offer is assigned to a specific institution', () => {
+    it('should display institution name when offer is assigned to a specific institution', () => {
       props.offer = collectiveOfferFactory({
         educationalInstitution: {
           id: 1,
@@ -234,7 +239,13 @@ describe('ollectiveOfferRow', () => {
   })
 
   it('should display confirm dialog when clicking on duplicate button when user did not see the modal', async () => {
-    props.offer = collectiveOfferFactory({ isShowcase: true, stocks })
+    props.offer = collectiveOfferFactory({
+      isShowcase: true,
+      stocks,
+      allowedActions: [
+        CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+      ],
+    })
 
     renderOfferItem(props)
 
@@ -254,7 +265,13 @@ describe('ollectiveOfferRow', () => {
   })
 
   it('should not display confirm dialog when clicking on duplicate button when user did see the modal', async () => {
-    props.offer = collectiveOfferFactory({ isShowcase: true, stocks })
+    props.offer = collectiveOfferFactory({
+      isShowcase: true,
+      stocks,
+      allowedActions: [
+        CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+      ],
+    })
     Storage.prototype.getItem = vi.fn(() => 'true')
     renderOfferItem(props)
 
@@ -267,7 +284,9 @@ describe('ollectiveOfferRow', () => {
     })
     await userEvent.click(duplicateButton)
 
-    const modalTitle = screen.queryByLabelText('Dupliquer')
+    const modalTitle = screen.queryByLabelText(
+      'Créer une offre réservable pour un établissement scolaire'
+    )
     expect(modalTitle).not.toBeInTheDocument()
   })
 
@@ -431,100 +450,106 @@ describe('ollectiveOfferRow', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display a expiration row if the bookable offer is active', () => {
-    props.offer = collectiveOfferFactory({
-      displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
-      stocks: [
-        {
-          hasBookingLimitDatetimePassed: false,
-          remainingQuantity: 1,
-          bookingLimitDatetime: getToday().toISOString(),
-        },
-      ],
+  describe('expiration row', () => {
+    it('should display a expiration row if the bookable offer is active', () => {
+      props.offer = collectiveOfferFactory({
+        displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+        stocks: [
+          {
+            hasBookingLimitDatetimePassed: false,
+            remainingQuantity: 1,
+            bookingLimitDatetime: getToday().toISOString(),
+          },
+        ],
+      })
+
+      renderOfferItem(props)
+
+      expect(
+        screen.getByText('En attente de préréservation par l’enseignant')
+      ).toBeInTheDocument()
     })
 
-    renderOfferItem(props)
+    it('should display a expiration row if the bookable offer is pre-booked', () => {
+      props.offer = collectiveOfferFactory({
+        displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
+        stocks: [
+          {
+            hasBookingLimitDatetimePassed: false,
+            remainingQuantity: 1,
+            bookingLimitDatetime: getToday().toISOString(),
+          },
+        ],
+        booking: { id: 1, booking_status: 'PENDING' },
+      })
 
-    expect(
-      screen.getByText('En attente de préréservation par l’enseignant')
-    ).toBeInTheDocument()
-  })
+      renderOfferItem(props)
 
-  it('should display a expiration row if the bookable offer is pre-booked', () => {
-    props.offer = collectiveOfferFactory({
-      displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-      stocks: [
-        {
-          hasBookingLimitDatetimePassed: false,
-          remainingQuantity: 1,
-          bookingLimitDatetime: getToday().toISOString(),
-        },
-      ],
-      booking: { id: 1, booking_status: 'PENDING' },
+      expect(
+        screen.getByText(
+          'En attente de réservation par le chef d’établissement'
+        )
+      ).toBeInTheDocument()
     })
 
-    renderOfferItem(props)
+    it('should display a expiration row if the bookable offer is pre-booked', () => {
+      props.offer = collectiveOfferFactory({
+        displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
+        stocks: [
+          {
+            hasBookingLimitDatetimePassed: false,
+            remainingQuantity: 1,
+            bookingLimitDatetime: getToday().toISOString(),
+          },
+        ],
+        booking: { id: 1, booking_status: 'PENDING' },
+      })
 
-    expect(
-      screen.getByText('En attente de réservation par le chef d’établissement')
-    ).toBeInTheDocument()
-  })
+      renderOfferItem(props)
 
-  it('should display a expiration row if the bookable offer is pre-booked', () => {
-    props.offer = collectiveOfferFactory({
-      displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-      stocks: [
-        {
-          hasBookingLimitDatetimePassed: false,
-          remainingQuantity: 1,
-          bookingLimitDatetime: getToday().toISOString(),
-        },
-      ],
-      booking: { id: 1, booking_status: 'PENDING' },
+      expect(
+        screen.getByText(
+          'En attente de réservation par le chef d’établissement'
+        )
+      ).toBeInTheDocument()
     })
 
-    renderOfferItem(props)
+    it('should not display a expiration row if the offer has no booking limit', () => {
+      props.offer = collectiveOfferFactory({
+        displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+        stocks: [
+          {
+            hasBookingLimitDatetimePassed: false,
+            remainingQuantity: 1,
+            bookingLimitDatetime: undefined,
+          },
+        ],
+      })
 
-    expect(
-      screen.getByText('En attente de réservation par le chef d’établissement')
-    ).toBeInTheDocument()
-  })
+      renderOfferItem(props)
 
-  it('should not display a expiration row if the offer has no booking limit', () => {
-    props.offer = collectiveOfferFactory({
-      displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
-      stocks: [
-        {
-          hasBookingLimitDatetimePassed: false,
-          remainingQuantity: 1,
-          bookingLimitDatetime: undefined,
-        },
-      ],
+      expect(
+        screen.queryByText('En attente de préréservation par l’enseignant')
+      ).not.toBeInTheDocument()
     })
 
-    renderOfferItem(props)
+    it('should not display a expiration row if the offer was cancelled', () => {
+      props.offer = collectiveOfferFactory({
+        displayedStatus: CollectiveOfferDisplayedStatus.CANCELLED,
+        stocks: [
+          {
+            hasBookingLimitDatetimePassed: false,
+            remainingQuantity: 1,
+            bookingLimitDatetime: getToday().toISOString(),
+          },
+        ],
+      })
 
-    expect(
-      screen.queryByText('En attente de préréservation par l’enseignant')
-    ).not.toBeInTheDocument()
-  })
+      renderOfferItem(props)
 
-  it('should not display a expiration row if the offer was cancelled', () => {
-    props.offer = collectiveOfferFactory({
-      displayedStatus: CollectiveOfferDisplayedStatus.CANCELLED,
-      stocks: [
-        {
-          hasBookingLimitDatetimePassed: false,
-          remainingQuantity: 1,
-          bookingLimitDatetime: getToday().toISOString(),
-        },
-      ],
+      expect(
+        screen.queryByText('En attente de préréservation par l’enseignant')
+      ).not.toBeInTheDocument()
     })
-
-    renderOfferItem(props)
-
-    expect(
-      screen.queryByText('En attente de préréservation par l’enseignant')
-    ).not.toBeInTheDocument()
   })
 })

@@ -14,7 +14,6 @@ import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
 import { Mode } from 'commons/core/OfferEducational/types'
 import * as useNotification from 'commons/hooks/useNotification'
 import {
-  getCollectiveOfferCollectiveStockFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
@@ -83,13 +82,14 @@ describe('OfferEducationalActions', () => {
     const offer = getCollectiveOfferTemplateFactory({
       isActive: false,
       isTemplate: true,
+      allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
     })
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: offer,
+      offer,
     })
     const activateOffer = screen.getByRole('button', {
-      name: 'Publier sur ADAGE',
+      name: 'Publier',
     })
 
     await userEvent.click(activateOffer)
@@ -103,7 +103,7 @@ describe('OfferEducationalActions', () => {
     ])
   })
 
-  it('should failed active status value', async () => {
+  it('should show error notification when patchCollectiveOffersTemplateActiveStatus api call fails', async () => {
     vi.spyOn(
       api,
       'patchCollectiveOffersTemplateActiveStatus'
@@ -114,10 +114,11 @@ describe('OfferEducationalActions', () => {
       offer: getCollectiveOfferTemplateFactory({
         isActive: false,
         isTemplate: true,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
       }),
     })
     const activateOffer = screen.getByRole('button', {
-      name: 'Publier sur ADAGE',
+      name: 'Publier',
     })
 
     await userEvent.click(activateOffer)
@@ -129,9 +130,16 @@ describe('OfferEducationalActions', () => {
   })
 
   it('should display actions button and status tag by default', () => {
-    renderOfferEducationalActions({ ...defaultValues })
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: getCollectiveOfferTemplateFactory({
+        isActive: false,
+        isTemplate: true,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
+      }),
+    })
     expect(
-      screen.getByRole('button', { name: 'Masquer la publication sur ADAGE' })
+      screen.getByRole('button', { name: 'Mettre en pause' })
     ).toBeInTheDocument()
     expect(screen.getByText('publiée')).toBeInTheDocument()
   })
@@ -145,7 +153,7 @@ describe('OfferEducationalActions', () => {
     })
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: offer,
+      offer,
     })
     expect(
       screen.getByRole('link', { name: 'Voir la réservation' })
@@ -165,7 +173,7 @@ describe('OfferEducationalActions', () => {
     })
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: offer,
+      offer,
     })
     expect(
       screen.getByRole('link', { name: 'Voir la réservation' })
@@ -216,59 +224,34 @@ describe('OfferEducationalActions', () => {
       CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
       {
         from: '/offre/collectif/recapitulatif',
-        offerId: 7,
+        offerId: 8,
         offerType: 'collective',
         offererId: '1',
       }
     )
   })
 
-  it('should display error message when trying to activate offer with booking limit date time in the past', async () => {
+  it('should not display adage publish button when action is not allowed', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        isActive: false,
-        collectiveStock: getCollectiveOfferCollectiveStockFactory({
-          bookingLimitDatetime: '1900-10-15T00:00:00Z',
-        }),
+        isTemplate: true,
+        status: CollectiveOfferStatus.PENDING,
       }),
     })
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Publier sur ADAGE' })
-    )
-    expect(notifyError).toHaveBeenCalledWith(
-      'La date limite de réservation est dépassée. Pour publier l’offre, vous devez modifier la date limite de réservation.'
-    )
+
+    expect(
+      screen.queryByRole('button', {
+        name: 'Publier',
+      })
+    ).not.toBeInTheDocument()
   })
 
-  it('should activate offer with booking limit date time in the future', async () => {
-    const offerId = 12
-
-    const bookingLimitDateTomorrow = new Date()
-    bookingLimitDateTomorrow.setDate(bookingLimitDateTomorrow.getDate() + 1)
+  it('should not display adage deactivation button when action is not allowed', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        id: offerId,
-        isActive: false,
-        collectiveStock: getCollectiveOfferCollectiveStockFactory({
-          bookingLimitDatetime: bookingLimitDateTomorrow.toDateString(),
-        }),
-      }),
-    })
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Publier sur ADAGE' })
-    )
-    expect(api.patchCollectiveOffersActiveStatus).toHaveBeenCalledWith({
-      ids: [offerId],
-      isActive: true,
-    })
-  })
-
-  it('should not display adage publish button when offer is pending', () => {
-    renderOfferEducationalActions({
-      ...defaultValues,
-      offer: getCollectiveOfferFactory({
+        isTemplate: true,
         status: CollectiveOfferStatus.PENDING,
       }),
     })
@@ -280,7 +263,7 @@ describe('OfferEducationalActions', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should display adage publish button when action is allowed', async () => {
+  it('should show success notification when template publication succeeds', async () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferTemplateFactory({
@@ -301,7 +284,7 @@ describe('OfferEducationalActions', () => {
     )
   })
 
-  it('should display adage pause button when action is allowed', async () => {
+  it('should show success notification when template deactivation succeeds', async () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferTemplateFactory({

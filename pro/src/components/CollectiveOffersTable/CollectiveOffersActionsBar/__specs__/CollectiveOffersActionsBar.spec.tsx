@@ -3,10 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import {
-  CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferStatus,
   CollectiveOfferTemplateAllowedAction,
   CollectiveOffersStockResponseModel,
 } from 'apiClient/v1'
@@ -123,52 +121,26 @@ describe('ActionsBar', () => {
     expect(screen.queryByText('100+ offres sélectionnées')).toBeInTheDocument()
   })
 
-  it('should activate selected offers upon publication', async () => {
-    renderActionsBar(props)
-
-    await userEvent.click(screen.getByText('Publier'))
-
-    expect(api.patchCollectiveOffersActiveStatus).toHaveBeenLastCalledWith({
-      ids: [1, 2],
-      isActive: true,
-    })
-    expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-    expect(
-      screen.getByText('2 offres ont bien été publiées')
-    ).toBeInTheDocument()
-  })
-
-  it('should not activate offers when a draft is selected', async () => {
-    const patchSpy = vi.spyOn(api, 'patchCollectiveOffersActiveStatus')
-
+  it('should hide selected offers when CAN_HIDE action is allowed', async () => {
     renderActionsBar({
       ...props,
+      areAllOffersSelected: false,
       selectedOffers: [
-        collectiveOfferFactory({ isShowcase: false }),
         collectiveOfferFactory({
-          displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
-          isShowcase: false,
+          id: 1,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
+        }),
+        collectiveOfferFactory({
+          id: 2,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
         }),
       ],
     })
 
-    await userEvent.click(screen.getByText('Publier'))
-
-    expect(patchSpy).not.toHaveBeenCalled()
-    expect(props.clearSelectedOfferIds).not.toHaveBeenCalled()
-    expect(
-      screen.getByText(
-        'Vous ne pouvez pas publier des brouillons depuis cette liste'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should deactivate selected offers', async () => {
-    props.areAllOffersSelected = false
-    renderActionsBar(props)
-
-    await userEvent.click(screen.getByText('Masquer'))
-    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
+    await userEvent.click(screen.getByText('Mettre en pause'))
+    const confirmDeactivateButton = screen.getAllByText('Mettre en pause')[1]
     await userEvent.click(confirmDeactivateButton)
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -187,7 +159,7 @@ describe('ActionsBar', () => {
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
 
     expect(
-      screen.getByText('2 offres ont bien été masquées')
+      screen.getByText('2 offres ont bien été mises en pause')
     ).toBeInTheDocument()
   })
 
@@ -199,55 +171,23 @@ describe('ActionsBar', () => {
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
   })
 
-  it('should show an error message when an error occurs after clicking on "Publier" button when some offers are selected', async () => {
-    vi.spyOn(api, 'patchCollectiveOffersActiveStatus').mockRejectedValueOnce(
-      null
-    )
-    renderActionsBar(props)
-
-    const activateButton = screen.getByText('Publier')
-    await userEvent.click(activateButton)
-
-    expect(screen.getByText('Une erreur est survenue'))
-  })
-
-  it('should show an error message when an error occurs after clicking on "Masquer" button when some offers are selected', async () => {
-    vi.spyOn(api, 'patchCollectiveOffersActiveStatus').mockRejectedValueOnce(
-      null
-    )
-    renderActionsBar({
-      ...props,
-      selectedOffers: [
-        collectiveOfferFactory({ id: 1, status: CollectiveOfferStatus.ACTIVE }),
-      ],
-    })
-
-    const inactiveButton = screen.getByText('Masquer')
-    await userEvent.click(inactiveButton)
-
-    const modalInactiveButton = screen.getByTestId(
-      'confirm-dialog-button-confirm'
-    )
-    await userEvent.click(modalInactiveButton)
-
-    expect(screen.getByText('Une erreur est survenue'))
-  })
-
   it('should show an error message when an error occurs after clicking on "Archiver" button when some offers are selected', async () => {
     vi.spyOn(api, 'patchCollectiveOffersArchive').mockRejectedValueOnce(null)
     renderActionsBar({
       ...props,
       selectedOffers: [
-        collectiveOfferFactory({ id: 1, status: CollectiveOfferStatus.ACTIVE }),
+        collectiveOfferFactory({
+          id: 1,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
+        }),
       ],
     })
 
     const archiveButton = screen.getByText('Archiver')
     await userEvent.click(archiveButton)
 
-    const modalArchiveButton = screen.getByTestId(
-      'confirm-dialog-button-confirm'
-    )
+    const modalArchiveButton = screen.getByText('Archiver l’offre')
     await userEvent.click(modalArchiveButton)
 
     expect(
@@ -255,69 +195,24 @@ describe('ActionsBar', () => {
     )
   })
 
-  it('should not deactivate offers on click on "Masquer" when at least one offer is not published or expired', async () => {
-    renderActionsBar({
-      ...props,
-      selectedOffers: [
-        collectiveOfferFactory({ id: 1, status: CollectiveOfferStatus.ACTIVE }),
-        collectiveOfferFactory({
-          id: 2,
-          status: CollectiveOfferStatus.PENDING,
-        }),
-      ],
-    })
-
-    const deactivateButton = screen.getByText('Masquer')
-    await userEvent.click(deactivateButton)
-
-    expect(
-      screen.getByText(
-        'Seules les offres au statut publié ou expiré peuvent être masquées.'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should not deactivate offers on click on "Masquer" when at least one offer expired but with booking finished', async () => {
-    const expiredOffer = collectiveOfferFactory({
-      id: 1,
-      status: CollectiveOfferStatus.EXPIRED,
-    })
-    renderActionsBar({
-      ...props,
-      selectedOffers: [
-        {
-          ...expiredOffer,
-          booking: {
-            booking_status: CollectiveBookingStatus.REIMBURSED,
-            id: 3,
-          },
-        },
-        collectiveOfferFactory({ id: 2, status: CollectiveOfferStatus.ACTIVE }),
-      ],
-    })
-
-    const deactivateButton = screen.getByText('Masquer')
-    await userEvent.click(deactivateButton)
-
-    expect(
-      screen.getByText(
-        'Seules les offres au statut publié ou expiré peuvent être masquées.'
-      )
-    ).toBeInTheDocument()
-  })
-
   it('should only make one call if the ids all come from the bookable offer', async () => {
     renderActionsBar({
       ...props,
       areAllOffersSelected: false,
       selectedOffers: [
-        collectiveOfferFactory({ id: 1, status: CollectiveOfferStatus.ACTIVE }),
-        collectiveOfferFactory({ id: 2, status: CollectiveOfferStatus.ACTIVE }),
+        collectiveOfferFactory({
+          id: 1,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+        }),
+        collectiveOfferFactory({
+          id: 2,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+        }),
       ],
     })
 
-    await userEvent.click(screen.getByText('Masquer'))
-    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
+    await userEvent.click(screen.getByText('Mettre en pause'))
+    const confirmDeactivateButton = screen.getAllByText('Mettre en pause')[1]
     await userEvent.click(confirmDeactivateButton)
 
     expect(api.patchCollectiveOffersActiveStatus).toHaveBeenLastCalledWith({
@@ -337,19 +232,19 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          status: CollectiveOfferStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
           isShowcase: true,
         }),
         collectiveOfferFactory({
           id: 2,
-          status: CollectiveOfferStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
           isShowcase: true,
         }),
       ],
     })
 
-    await userEvent.click(screen.getByText('Masquer'))
-    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
+    await userEvent.click(screen.getByText('Mettre en pause'))
+    const confirmDeactivateButton = screen.getAllByText('Mettre en pause')[1]
     await userEvent.click(confirmDeactivateButton)
 
     expect(
@@ -369,23 +264,23 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          status: CollectiveOfferStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
           isShowcase: true,
         }),
         collectiveOfferFactory({
           id: 2,
-          status: CollectiveOfferStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
           isShowcase: true,
         }),
         collectiveOfferFactory({
           id: 3,
-          status: CollectiveOfferStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
         }),
       ],
     })
 
-    await userEvent.click(screen.getByText('Masquer'))
-    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
+    await userEvent.click(screen.getByText('Mettre en pause'))
+    const confirmDeactivateButton = screen.getAllByText('Mettre en pause')[1]
     await userEvent.click(confirmDeactivateButton)
 
     expect(
@@ -407,12 +302,14 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          status: CollectiveOfferStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
           stocks,
         }),
         collectiveOfferFactory({
           id: 2,
-          status: CollectiveOfferStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
           stocks,
           isShowcase: true,
         }),
@@ -440,20 +337,22 @@ describe('ActionsBar', () => {
     )
   })
 
-  it('should archive offers on click on "Archiver"', async () => {
+  it('should archive offers on click on "Archiver" when CAN_ARCHIVE is allowed', async () => {
     renderActionsBar({
       ...props,
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          status: CollectiveOfferStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
           stocks,
+          allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         }),
         collectiveOfferFactory({
           id: 2,
-          status: CollectiveOfferStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
           stocks,
           isShowcase: true,
+          allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         }),
       ],
     })
@@ -484,41 +383,13 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          status: CollectiveOfferStatus.ACTIVE,
-          stocks,
-        }),
-        collectiveOfferFactory({
-          id: 2,
-          status: CollectiveOfferStatus.PENDING,
-          stocks,
-        }),
-      ],
-    })
-
-    const archivingButton = screen.getByText('Archiver')
-    await userEvent.click(archivingButton)
-
-    expect(
-      screen.getByText(
-        'Les offres déjà archivées ou liées à des réservations ne peuvent pas être archivées'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should not archive offers on click on "Archiver" when at least one offer cannot be archived', async () => {
-    renderActionsBar({
-      ...props,
-
-      selectedOffers: [
-        collectiveOfferFactory({
-          id: 1,
-          status: CollectiveOfferStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
           stocks,
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         }),
         collectiveOfferFactory({
           id: 2,
-          status: CollectiveOfferStatus.PENDING,
+          displayedStatus: CollectiveOfferDisplayedStatus.PENDING,
           stocks,
           allowedActions: [],
         }),
@@ -541,38 +412,19 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           isShowcase: false,
-          status: CollectiveOfferStatus.INACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
           hasBookingLimitDatetimesPassed: false,
+          allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         }),
       ],
     })
 
-    await userEvent.click(screen.getByText('Publier'))
+    await userEvent.click(screen.getByText('Archiver'))
+    const confirmArchivingButton = screen.getByText('Archiver l’offre')
+    await userEvent.click(confirmArchivingButton)
 
     expect(mockMutate).toHaveBeenCalledWith(
       expect.arrayContaining(['getCollectiveOffers'])
-    )
-  })
-
-  it('should refresh the offers list when the offer status is modified and the FF WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is enabled', async () => {
-    renderActionsBar(
-      {
-        ...props,
-        selectedOffers: [
-          collectiveOfferFactory({
-            isShowcase: false,
-            status: CollectiveOfferStatus.INACTIVE,
-            hasBookingLimitDatetimesPassed: false,
-          }),
-        ],
-      },
-      ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE']
-    )
-
-    await userEvent.click(screen.getByText('Publier'))
-
-    expect(mockMutate).toHaveBeenCalledWith(
-      expect.arrayContaining(['getCollectiveOffersBookable'])
     )
   })
 
@@ -584,8 +436,9 @@ describe('ActionsBar', () => {
         selectedOffers: [
           collectiveOfferFactory({
             isShowcase: true,
-            status: CollectiveOfferStatus.INACTIVE,
+            displayedStatus: CollectiveOfferDisplayedStatus.INACTIVE,
             hasBookingLimitDatetimesPassed: false,
+            allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
           }),
         ],
       },
@@ -606,7 +459,7 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           isShowcase: true,
-          status: CollectiveOfferStatus.INACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.INACTIVE,
           hasBookingLimitDatetimesPassed: false,
           allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
         }),
@@ -622,14 +475,14 @@ describe('ActionsBar', () => {
     expect(screen.getByText('1 offre a bien été publiée')).toBeInTheDocument()
   })
 
-  it('should display error message when trying to publish bookable offer', async () => {
+  it('should display error message when trying to publish offer and CAN_PUBLISH action is not allowed', async () => {
     renderActionsBar({
       ...props,
       areTemplateOffers: true,
       selectedOffers: [
         collectiveOfferFactory({
           isShowcase: false,
-          status: CollectiveOfferStatus.INACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.INACTIVE,
           hasBookingLimitDatetimesPassed: false,
           allowedActions: [],
         }),

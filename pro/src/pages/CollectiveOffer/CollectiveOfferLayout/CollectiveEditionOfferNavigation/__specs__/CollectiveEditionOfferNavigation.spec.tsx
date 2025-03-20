@@ -124,6 +124,9 @@ describe('CollectiveEditionOfferNavigation', () => {
   it('should log event when clicking "Dupliquer" button', async () => {
     renderCollectiveEditingOfferNavigation({
       ...props,
+      offer: getCollectiveOfferFactory({
+        allowedActions: [CollectiveOfferAllowedAction.CAN_DUPLICATE],
+      }),
     })
 
     const duplicateOffer = screen.getByRole('button', {
@@ -148,6 +151,12 @@ describe('CollectiveEditionOfferNavigation', () => {
     renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: true,
+      offer: {
+        ...offer,
+        allowedActions: [
+          CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+        ],
+      },
     })
 
     const duplicateOfferButton = screen.getByRole('button', {
@@ -198,6 +207,12 @@ describe('CollectiveEditionOfferNavigation', () => {
     renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: true,
+      offer: {
+        ...offer,
+        allowedActions: [
+          CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+        ],
+      },
     })
 
     const duplicateOffer = screen.getByRole('button', {
@@ -210,7 +225,7 @@ describe('CollectiveEditionOfferNavigation', () => {
     )
   })
 
-  it('should return an error when the duplication failed', async () => {
+  it('should show an error notification when the duplication failed', async () => {
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
       getCollectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
     )
@@ -221,6 +236,12 @@ describe('CollectiveEditionOfferNavigation', () => {
     renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: true,
+      offer: {
+        ...offer,
+        allowedActions: [
+          CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+        ],
+      },
     })
 
     const duplicateOffer = screen.getByRole('button', {
@@ -239,6 +260,12 @@ describe('CollectiveEditionOfferNavigation', () => {
     renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: true,
+      offer: {
+        ...offer,
+        allowedActions: [
+          CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+        ],
+      },
     })
 
     const duplicateOffer = screen.getByRole('button', {
@@ -250,11 +277,14 @@ describe('CollectiveEditionOfferNavigation', () => {
     expect(notifyError).toHaveBeenCalledWith('Impossible de dupliquer l’image')
   })
 
-  it('should archive an offer template', async () => {
+  it('should show a success notification when archiving a template offer succeeds', async () => {
     renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: true,
-      offer,
+      offer: {
+        ...offer,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
+      },
     })
 
     const archiveButton = screen.getByRole('button', {
@@ -273,11 +303,13 @@ describe('CollectiveEditionOfferNavigation', () => {
     )
   })
 
-  it('should archive an offer bookable', async () => {
+  it('should show a success notification when archiving a bookable offer succeeds', async () => {
     renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: false,
-      offer,
+      offer: getCollectiveOfferFactory({
+        allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
+      }),
     })
 
     const archiveButton = screen.getByRole('button', {
@@ -294,20 +326,6 @@ describe('CollectiveEditionOfferNavigation', () => {
         duration: 8000,
       }
     )
-  })
-
-  it('should not see archive button when offer is not archivable', () => {
-    renderCollectiveEditingOfferNavigation({
-      ...props,
-      isTemplate: true,
-      offer: { ...offer, status: CollectiveOfferStatus.ARCHIVED },
-    })
-
-    const archiveButton = screen.queryByRole('button', {
-      name: 'Archiver',
-    })
-
-    expect(archiveButton).not.toBeInTheDocument()
   })
 
   it('should not see archive button archive action is not possible', () => {
@@ -327,45 +345,15 @@ describe('CollectiveEditionOfferNavigation', () => {
     expect(archiveButton).not.to.toBeInTheDocument()
   })
 
-  it('should see archive button when archive action is allowed', () => {
-    renderCollectiveEditingOfferNavigation({
-      ...props,
-      isTemplate: true,
-      offer: {
-        ...offer,
-        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
-      },
-    })
-
-    const archiveButton = screen.getByRole('button', {
-      name: 'Archiver',
-    })
-
-    expect(archiveButton).toBeInTheDocument()
-  })
-
-  it('should see archive button on bookable offer archive action is allowed', () => {
-    renderCollectiveEditingOfferNavigation({
-      ...props,
-      isTemplate: false,
-      offer: getCollectiveOfferFactory({
-        allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
-      }),
-    })
-
-    const archiveButton = screen.getByRole('button', {
-      name: 'Archiver',
-    })
-
-    expect(archiveButton).toBeInTheDocument()
-  })
-
   it('should return an error on offer archiving when the offer id is not valid', async () => {
     renderCollectiveEditingOfferNavigation({
       ...props,
       offerId: undefined,
       isTemplate: true,
-      offer,
+      offer: {
+        ...offer,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
+      },
     })
 
     const archiveButton = screen.getByRole('button', {
@@ -382,11 +370,14 @@ describe('CollectiveEditionOfferNavigation', () => {
     )
   })
 
-  it('should return an error on offer archiving when there is an api error', async () => {
+  it('should show an error notification when archive api call fails', async () => {
     renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: true,
-      offer,
+      offer: {
+        ...offer,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
+      },
     })
 
     vi.spyOn(api, 'patchCollectiveOffersTemplateArchive').mockRejectedValueOnce(
@@ -407,33 +398,5 @@ describe('CollectiveEditionOfferNavigation', () => {
         duration: 8000,
       }
     )
-  })
-
-  it('should not display the edition button for archived collective offers', () => {
-    renderCollectiveEditingOfferNavigation({
-      ...props,
-      offerId: 1,
-      isTemplate: false,
-      offer: getCollectiveOfferFactory({
-        status: CollectiveOfferStatus.ARCHIVED,
-      }),
-    })
-
-    expect(
-      screen.queryByRole('link', { name: 'Modifier l’offre' })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should not display the navigation for archived collective offers', () => {
-    renderCollectiveEditingOfferNavigation({
-      ...props,
-      offerId: 1,
-      isTemplate: false,
-      offer: getCollectiveOfferFactory({
-        status: CollectiveOfferStatus.ARCHIVED,
-      }),
-    })
-
-    expect(screen.queryByTestId('stepper')).not.toBeInTheDocument()
   })
 })

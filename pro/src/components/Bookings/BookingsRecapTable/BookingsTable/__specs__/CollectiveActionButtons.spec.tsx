@@ -152,7 +152,7 @@ describe('collectiveActionButton api call', () => {
 
     expect(notifySuccess).toHaveBeenNthCalledWith(
       1,
-      'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.',
+      'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.',
       { duration: NOTIFICATION_LONG_SHOW_DURATION }
     )
 
