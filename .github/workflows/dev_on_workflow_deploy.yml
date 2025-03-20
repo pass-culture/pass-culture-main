@@ -260,7 +260,7 @@ jobs:
     name: "apply Algolia settings"
     needs: [deploy-api]
     if: |
-      (inputs.apply_algolia_config == 'true') &&
+      inputs.apply_algolia_config &&
       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped')
     environment: ${{ inputs.environment }}
     permissions:
