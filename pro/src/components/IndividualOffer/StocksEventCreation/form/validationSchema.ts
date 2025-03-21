@@ -5,7 +5,7 @@ import { SelectOption } from 'commons/custom_types/form'
 import { getToday, isDateValid, removeTime } from 'commons/utils/date'
 import { MAX_STOCKS_QUANTITY } from 'components/IndividualOffer/StocksThing/validationSchema'
 
-import { RecurrenceType } from './types'
+import { DurationTypeOption, RecurrenceType, TimeSlotTypeOption } from './types'
 
 export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
   yup.object().shape({
@@ -149,3 +149,71 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
         then: (schema) => schema.required('Veuillez choisir une option'),
       }),
   })
+
+export const validationSchema = yup.object().shape({
+  durationType: yup.string<DurationTypeOption>().required(),
+  timeSlotType: yup.string<TimeSlotTypeOption>().required(),
+  oneDayDate: yup
+    .string()
+    .required('La date de l’évènement est obligatoire')
+    .test(
+      'is-future',
+      'L’évènement doit être à venir',
+      (value) => isDateValid(value) && new Date(value) > removeTime(getToday())
+    ),
+  specificTimeSlots: yup
+    .array()
+    .required()
+    .of(
+      yup.object().shape({
+        slot: yup.string().required('Veuillez renseigner un horaire'),
+      })
+    )
+    .test('areSlotsUnique', function (list) {
+      const slots = list.map((a) => a.slot)
+      const duplicateSlotsErrors = slots
+        .map((slot, i, self) => (self.indexOf(slot) !== i ? i : null))
+        .filter((i) => i === 0 || Boolean(i))
+        .map((index) => {
+          return new yup.ValidationError(
+            'Veuillez renseigner des tarifs différents',
+            null,
+            `specificTimeSlots[${index}].slot`
+          )
+        })
+
+      if (duplicateSlotsErrors.length > 0) {
+        return new yup.ValidationError(duplicateSlotsErrors)
+      }
+
+      return true
+    }),
+  pricingCategoriesQuantities: yup
+    .array()
+    .required()
+    .of(
+      yup.object().shape({
+        priceCategory: yup.string().required('Veuillez renseigner un tarif'),
+        isUnlimited: yup.bool(),
+        quantity: yup
+          .number()
+          .transform((value) => (Number.isNaN(value) ? undefined : value))
+          .min(1, 'Veuillez indiquer un nombre supérieur à 0')
+          .max(
+            MAX_STOCKS_QUANTITY,
+            'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
+          )
+          .when('isUnlimited', {
+            is: false,
+            then: (schema) =>
+              schema.required(
+                'Veuillez indiquer un nombre de places, ou bien cocher la case "Illimité"'
+              ),
+          }),
+      })
+    ),
+  bookingLimitDateInterval: yup
+    .number()
+    .transform((value) => (Number.isNaN(value) ? undefined : value))
+    .min(0, 'Le nombre de jours doit être supérieur à 0'),
+})

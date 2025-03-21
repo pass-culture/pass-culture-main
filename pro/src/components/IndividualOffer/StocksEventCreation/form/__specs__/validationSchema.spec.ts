@@ -1,8 +1,16 @@
+import { addDays } from 'date-fns'
+
 import { SelectOption } from 'commons/custom_types/form'
 import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
 
-import { RecurrenceFormValues, RecurrenceType } from '../types'
-import { getValidationSchema } from '../validationSchema'
+import {
+  DurationTypeOption,
+  RecurrenceFormValues,
+  RecurrenceType,
+  StocksCalendarFormValues,
+  TimeSlotTypeOption,
+} from '../types'
+import { getValidationSchema, validationSchema } from '../validationSchema'
 
 const priceCategoriesOptions: SelectOption[] = [
   { label: 'Tarif 1', value: '1' },
@@ -125,6 +133,107 @@ describe('validationSchema', () => {
     it(`should validate the form for case: ${description}`, async () => {
       const errors = await getYupValidationSchemaErrors(
         getValidationSchema(priceCategoriesOptions),
+        formValues
+      )
+      expect(errors).toEqual(expectedErrors)
+    })
+  })
+})
+
+describe('validationSchema with FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR', () => {
+  const defaultValues: StocksCalendarFormValues = {
+    durationType: DurationTypeOption.ONE_DAY,
+    oneDayDate: addDays(new Date(), 1).toISOString().split('T')[0],
+    pricingCategoriesQuantities: [{ priceCategory: '1', isUnlimited: true }],
+    specificTimeSlots: [{ slot: '00:00' }],
+    timeSlotType: TimeSlotTypeOption.SPECIFIC_TIME,
+  }
+
+  const cases: {
+    description: string
+    formValues: StocksCalendarFormValues
+    expectedErrors: string[]
+  }[] = [
+    {
+      description: 'valid form for unique date',
+      formValues: defaultValues,
+      expectedErrors: [],
+    },
+    {
+      description: 'invalid form for missing single day date',
+      formValues: { ...defaultValues, oneDayDate: '' },
+      expectedErrors: [
+        'La date de l’évènement est obligatoire',
+        'L’évènement doit être à venir',
+      ],
+    },
+    {
+      description: 'invalid form for missing time slot',
+      formValues: { ...defaultValues, specificTimeSlots: [{ slot: '' }] },
+      expectedErrors: ['Veuillez renseigner un horaire'],
+    },
+    {
+      description: 'invalid form for similar time slot',
+      formValues: {
+        ...defaultValues,
+        specificTimeSlots: [{ slot: '00:00' }, { slot: '00:00' }],
+      },
+      expectedErrors: ['Veuillez renseigner des tarifs différents'],
+    },
+    {
+      description: 'invalid form for invalid days before booking limit',
+      formValues: {
+        ...defaultValues,
+        bookingLimitDateInterval: -1,
+      },
+      expectedErrors: ['Le nombre de jours doit être supérieur à 0'],
+    },
+    {
+      description: 'invalid form for missing price category',
+      formValues: {
+        ...defaultValues,
+        pricingCategoriesQuantities: [{ isUnlimited: true, priceCategory: '' }],
+      },
+      expectedErrors: ['Veuillez renseigner un tarif'],
+    },
+    {
+      description: 'invalid form for negative quantity',
+      formValues: {
+        ...defaultValues,
+        pricingCategoriesQuantities: [{ quantity: -1, priceCategory: '1' }],
+      },
+      expectedErrors: ['Veuillez indiquer un nombre supérieur à 0'],
+    },
+    {
+      description: 'invalid form for quantity too high',
+      formValues: {
+        ...defaultValues,
+        pricingCategoriesQuantities: [
+          { quantity: 1_000_001, priceCategory: '1' },
+        ],
+      },
+      expectedErrors: [
+        'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million',
+      ],
+    },
+    {
+      description: 'invalid form for missing quantity',
+      formValues: {
+        ...defaultValues,
+        pricingCategoriesQuantities: [
+          { quantity: undefined, isUnlimited: false, priceCategory: '1' },
+        ],
+      },
+      expectedErrors: [
+        'Veuillez indiquer un nombre de places, ou bien cocher la case "Illimité"',
+      ],
+    },
+  ]
+
+  cases.forEach(({ description, formValues, expectedErrors }) => {
+    it(`should validate the form for case: ${description}`, async () => {
+      const errors = await getYupValidationSchemaErrors(
+        validationSchema,
         formValues
       )
       expect(errors).toEqual(expectedErrors)
