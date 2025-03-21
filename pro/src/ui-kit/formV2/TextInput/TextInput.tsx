@@ -149,12 +149,15 @@ export const TextInput = React.forwardRef(
             <div className={styles['text-input']}>
               {input}
               <div className={styles['input-layout-footer']}>
-                <div
-                  role="alert"
-                  className={styles['input-layout-error']}
-                  id={`error-details-${name}`}
-                >
-                  {error && <FieldError name={name}>{error}</FieldError>}
+                <div role="alert" id={`error-details-${name}`}>
+                  {error && (
+                    <FieldError
+                      name={name}
+                      className={styles['input-layout-error']}
+                    >
+                      {error}
+                    </FieldError>
+                  )}
                 </div>
 
                 {count !== undefined && (

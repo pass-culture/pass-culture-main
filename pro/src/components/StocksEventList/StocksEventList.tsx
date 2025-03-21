@@ -83,7 +83,7 @@ export const StocksEventList = ({
   readonly = false,
   onStocksLoad,
   canAddStocks = false,
-}: StocksEventListProps): JSX.Element => {
+}: StocksEventListProps) => {
   // utilities
   const { logEvent } = useAnalytics()
   const notify = useNotification()
