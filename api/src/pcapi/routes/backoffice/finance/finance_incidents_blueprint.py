@@ -13,6 +13,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
+from pcapi.core.external_bookings.exceptions import ExternalBookingException
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
@@ -23,6 +24,7 @@ from pcapi.core.mails.transactional.finance_incidents.finance_incident_notificat
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers.exceptions import ProviderException
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import mark_transaction_as_invalid
@@ -895,12 +897,20 @@ def validate_finance_overpayment_incident(finance_incident_id: int) -> utils.Bac
     elif finance_incident.status != finance_models.IncidentStatus.CREATED:
         flash("L'incident ne peut être validé que s'il est au statut 'créé'.", "warning")
     else:
-        finance_api.validate_finance_overpayment_incident(
-            finance_incident=finance_incident,
-            force_debit_note=form.compensation_mode.data == forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name,
-            author=current_user,
-        )
-        flash("L'incident a été validé.", "success")
+        try:
+            finance_api.validate_finance_overpayment_incident(
+                finance_incident=finance_incident,
+                force_debit_note=form.compensation_mode.data == forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name,
+                author=current_user,
+            )
+        except (ExternalBookingException, ProviderException) as err:
+            mark_transaction_as_invalid()
+            flash(
+                Markup("Une erreur s'est produite : {message}").format(message=str(err) or err.__class__.__name__),
+                "warning",
+            )
+        else:
+            flash("L'incident a été validé.", "success")
 
     return redirect(
         url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident_id), 303
