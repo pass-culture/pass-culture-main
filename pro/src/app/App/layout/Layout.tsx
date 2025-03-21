@@ -27,6 +27,11 @@ export interface LayoutProps {
    */
   mainHeading?: React.ReactNode
   /**
+   * Complementary name of the page to display in the main heading,
+   * as a subheading.
+   */
+  mainSubHeading?: string
+  /**
    * Any content to display above the main heading.
    */
   mainTopElement?: React.ReactNode
@@ -49,6 +54,7 @@ export interface LayoutProps {
 export const Layout = ({
   children,
   mainHeading,
+  mainSubHeading,
   mainTopElement,
   layout = 'basic',
   showFooter = layout !== 'funnel',
@@ -65,10 +71,31 @@ export const Layout = ({
   const isBackToNavLinkDisplayed = areMainHeadingAndBackToNavLinkInChild || (mainHeading && isConnected)
 
   const mainHeadingWrapper = mainHeading ? (
-    <div className={styles['main-heading-wrapper']}>
-      <h1 className={styles['main-heading-title']}>{mainHeading}</h1>
+    <div
+      className={cn(
+        styles['main-heading-wrapper'],
+        {
+          [styles['main-heading-wrapper-with-subtitle']]: mainSubHeading,
+        }
+      )}
+    >
+      <h1 className={styles['main-heading-title']}>
+        {mainHeading}
+        {mainSubHeading &&
+          <span className={styles['main-heading-subtitle']}>
+            {mainSubHeading}
+          </span>
+        }
+      </h1>
       {isConnected && (
-        <BackToNavLink className={styles['main-heading-back-to-nav-link']} />
+        <BackToNavLink
+          className={cn(
+            styles['main-heading-back-to-nav-link'],
+            {
+              [styles['main-heading-back-to-nav-link-with-subtitle']]: mainSubHeading,
+            }
+          )}
+        />
       )}
     </div>
   ) : null
