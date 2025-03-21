@@ -11,12 +11,9 @@ import sentry_sdk
 
 from pcapi import settings
 from pcapi.connectors.serialization import ems_serializers
+from pcapi.core.external_bookings.ems.exceptions import EMSAPIException
 from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
 from pcapi.utils import requests
-
-
-class EMSAPIException(Exception):
-    pass
 
 
 class AbstractEMSConnector:

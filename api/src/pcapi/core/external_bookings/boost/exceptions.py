@@ -1,4 +1,7 @@
-class BoostAPIException(Exception):
+from pcapi.core.external_bookings.exceptions import ExternalBookingException
+
+
+class BoostAPIException(ExternalBookingException):
     pass
 
 
