@@ -4,26 +4,24 @@
   <ul {% if field.max_entries %}data-max-entries="{{ field.max_entries }}"{% endif %}
       {% if field.min_entries %}data-min-entries="{{ field.min_entries }}"{% endif %}
       data-field-name="{{ field.name }}"
-      class="field-list list-unstyled flex-grow">
+      class="field-list list-unstyled flex-grow mb-4">
     {% for subfield in field %}
       <li class="d-flex align-items-start justify-content-between pt-2"
           data-field-number="{{ subfield.name|field_list_get_number_from_name }}">
         {{ subfield }}
-        <button class="btn btn-outline-primary field-list-rm-btn align-self-center ms-2"
+        <button class="btn field-list-rm-btn align-self-center ms-2"
                 type="button">
-          <i class="bi bi-trash3 pe-none"></i>
+          <i class="bi bi-trash3 pe-none btn-outline-primary-subtle-bg"></i>
         </button>
       </li>
     {% endfor %}
   </ul>
-  <button class="btn btn-outline-primary field-list-add-btn"
+  <button class="btn btn-outline-primary field-list-add-btn btn-outline-primary-subtle-bg"
           type="button">
-    Filtre
-    <i class="bi bi-plus"></i>
+    Filtre<i class="bi bi-plus-lg ms-2"></i>
   </button>
-  <button class="btn btn-outline-primary field-list-rm-all-btn mx-3"
+  <button class="btn btn-outline-primary field-list-rm-all-btn mx-3 btn-outline-primary-subtle-bg"
           type="button">
-    Tout effacer
-    <i class="bi bi-trash3"></i>
+    Tout effacer<i class="bi bi-trash3 ms-2"></i>
   </button>
 </div>

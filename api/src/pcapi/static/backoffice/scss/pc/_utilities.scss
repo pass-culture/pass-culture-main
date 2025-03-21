@@ -20,3 +20,35 @@
 .ml-auto{
   margin-left: auto;
 }
+
+.pc-search-block{
+  background-color: $gray-100;
+  .pc-display-selector{
+    label{
+      background-color:$white;
+      &.pc-display-selector-checked{
+        background-color: $purple-200;
+      }
+    }
+    label:hover{
+      background-color:$purple-200;
+    }
+
+  }
+}
+
+.pc-batch-action{
+  color: $white;
+  bottom:80px;
+  .counter-container{
+    padding: 10px 80px 10px 8px;
+  }
+  .btn {
+    color: $white;
+    padding: 10px 8px;
+  }
+}
+
+tr:has( input:checked) {
+  background-color: rgba(0,0,0, 0.075);
+}

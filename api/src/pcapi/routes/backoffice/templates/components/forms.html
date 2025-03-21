@@ -95,3 +95,31 @@
     {% endfor %}
   </div>
 {% endmacro %}
+{% macro build_advanced_filters_form_ng(form, action, id) %}
+  <form {% if id %}id="{{ id }}"{% endif %}
+        action="{{ action }}"
+        name="{{ action }}"
+        method="get"
+        class="mt-3">
+    <div class="w-100 my-4">
+      {% for form_field in form %}
+        {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
+      {% endfor %}
+    </div>
+    <div class="row">
+      <div>
+        {{ form.sort }}
+        {{ form.order }}
+        {% if form.algolia_search %}{{ form.algolia_search }}{% endif %}
+        <div class="input-group mb-3 w-100">{{ form.search }}</div>
+        <div class="text-center d-flex  justify-content-between">
+          {{ form.limit }}
+          <button type="submit"
+                  class="btn btn-primary py-2 px-3 btn-outline-primary-subtle-bg">
+            Rechercher<i class="bi bi-search ms-2"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}

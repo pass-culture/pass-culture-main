@@ -1,0 +1,56 @@
+{% extends "layouts/connected.html" %}
+{% set table_name = "list-table" %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <div class="d-flex justify-content-between">
+      <div class="p-2">
+        <h1>
+          {% block title %}{% endblock %}
+        </h1>
+      </div>
+    </div>
+    <div class="pc-search-block rounded p-4">
+      {% block search_block %}{% endblock %}
+    </div>
+    <div class="vstack gap-4">
+      {% if rows_count %}
+        <div class="d-flex justify-content-between mt-5">
+          <p class="num-results hstack text-secondary my-auto gap-2">
+            {{ rows_count }}
+            résultat{{ rows_count | pluralize }} affiché{{ rows_count | pluralize }}<i class="bi bi-info-circle"
+   data-bs-toggle="tooltip"
+   data-bs-placement="top"
+   data-bs-title="Pour afficher davantage de résultats, changer le filtre de résultats maximum dans la barre de recherche."></i>
+          </p>
+          {% block before_table %}{% endblock %}
+          <div id="{{ table_name }}-menu"
+               class="me-4"></div>
+        </div>
+        <table class="table table-hover {{ table_class }}"
+               data-pc-table-manager-id="{{ table_name }}"
+               data-pc-table-menu-container-id="{{ table_name }}-menu"
+               data-table-multi-select-id="{{ table_name }}">
+          <thead>
+            <tr class="bg-light fs-7 ">
+              {% block table_header %}{% endblock %}
+            </tr>
+          </thead>
+          <tbody>
+            {% block table_body %}{% endblock %}
+          </tbody>
+        </table>
+      {% endif %}
+      <div>
+        <div data-table-multiselect-menu-for="{{ table_name }}"
+             class="pc-batch-action d-none p-0 position-fixed start-50 translate-middle-x">
+          <div class="d-inline-block rounded bg-primary px-3 py-2">
+            <div class="d-flex">
+              {% block multi_select_menu %}{% endblock %}
+            </div>
+          </div>
+        </div>
+        {% block after_table %}{% endblock %}
+      </div>
+    </div>
+  </div>
+{% endblock page %}

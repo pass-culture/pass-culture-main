@@ -4,20 +4,14 @@
     {% if short == long %}
       <div>{{ short | nl2br }}</div>
     {% else %}
-      <input class="form-check-input d-none"
-             type="radio"
-             name="collapsable-text-{{ id }}"
-             id="id-{{ id }}-long"
-             value="label-{{ id }}-long">
-      <input class="form-check-input d-none"
-             type="radio"
-             name="collapsable-text-{{ id }}"
-             id="id-{{ id }}-short"
-             value="label-{{ id }}-short"
-             checked>
       <label class="form-check-label w-100"
              for="id-{{ id }}-short"
              id="label-{{ id }}-long">
+        <input class="form-check-input d-none"
+               type="radio"
+               name="collapsable-text-{{ id }}"
+               id="id-{{ id }}-long"
+               value="label-{{ id }}-long">
         <div class="d-flex">
           <div>{{ long | nl2br }}</div>
           <div class="link-primary ml-auto">
@@ -28,6 +22,12 @@
       <label class="form-check-label w-100"
              for="id-{{ id }}-long"
              id="label-{{ id }}-short">
+        <input class="form-check-input d-none"
+               type="radio"
+               name="collapsable-text-{{ id }}"
+               id="id-{{ id }}-short"
+               value="label-{{ id }}-short"
+               checked>
         <div class="d-flex">
           <div>{{ short | nl2br }}…</div>
           <div class="link-primary ml-auto">
