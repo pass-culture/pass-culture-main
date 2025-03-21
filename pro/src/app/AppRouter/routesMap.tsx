@@ -105,13 +105,23 @@ export const routes: RouteConfig[] = [
   },
   {
     lazy: () => import('pages/VenueEdition/VenueEdition'),
-    path: '/structures/:offererId/lieux/:venueId',
+    path: '/structures/:offererId/lieux/:venueId/partner-page',
     title: 'Gérer ma page sur l’application',
   },
   {
     lazy: () => import('pages/VenueEdition/VenueEdition'),
-    path: '/structures/:offererId/lieux/:venueId/edition',
+    path: '/structures/:offererId/lieux/:venueId/partner-page/edition',
     title: 'Gérer ma page sur l’application',
+  },
+  {
+    lazy: () => import('pages/VenueEdition/VenueEdition'),
+    path: '/structures/:offererId/lieux/:venueId',
+    title: 'Gérer ma page adresse',
+  },
+  {
+    lazy: () => import('pages/VenueEdition/VenueEdition'),
+    path: '/structures/:offererId/lieux/:venueId/edition',
+    title: 'Gérer ma page adresse',
   },
   {
     lazy: () => import('pages/VenueEdition/VenueEdition'),
