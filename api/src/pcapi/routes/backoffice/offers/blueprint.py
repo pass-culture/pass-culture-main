@@ -392,6 +392,37 @@ def _get_offers_by_ids(
         rules_subquery = sa.null()
         min_max_prices_subquery = sa.null()
 
+    # retrieve one product mediation
+    product_mediation_uuid_subquery = (
+        sa.select(offers_models.ProductMediation.uuid)
+        .select_from(offers_models.ProductMediation)
+        .filter(offers_models.ProductMediation.productId == offers_models.Offer.productId)
+        .order_by(offers_models.ProductMediation.imageType)  # retrieves the RECTO first
+        .correlate(offers_models.Offer)
+        .limit(1)
+        .scalar_subquery()
+    )
+
+    offer_mediation_subquery = (
+        sa.select(
+            sa.func.jsonb_build_object(
+                "id",
+                offers_models.Mediation.id,
+                "thumbCount",
+                offers_models.Mediation.thumbCount,
+            )
+        )
+        .select_from(offers_models.Mediation)
+        .filter(
+            offers_models.Mediation.isActive.is_(True),
+            offers_models.Mediation.offerId == offers_models.Offer.id,
+        )
+        .order_by(offers_models.Mediation.dateCreated.desc())  # only takes the last one
+        .correlate(offers_models.Offer)
+        .limit(1)
+        .scalar_subquery()
+    )
+
     offer_event_dates = (
         sa.select(
             sa.case(
@@ -444,6 +475,8 @@ def _get_offers_by_ids(
             tags_subquery.label("tags"),
             rules_subquery.label("rules"),
             min_max_prices_subquery.label("prices"),
+            offer_mediation_subquery.label("offer_mediation"),
+            product_mediation_uuid_subquery.label("product_mediation"),
         )
         .filter(offers_models.Offer.id.in_(offer_ids))
         # 1-1 relationships so join will not increase the number of SQL rows
