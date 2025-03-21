@@ -453,6 +453,9 @@ def validate_passwordless_token(token: str) -> dict:
         )
     except jwt.ExpiredSignatureError as exc:
         # Authentic but expired token
+        raise users_exceptions.ExpiredToken() from exc
+    except jwt.InvalidAlgorithmError as exc:
+        # Not a JWT token because wrong algo
         raise exc
     except jwt.PyJWTError as exc:
         # Base exception for all others case we might be interested on
