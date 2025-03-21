@@ -759,6 +759,7 @@ def get_offerers_venues_with_pricing_point(
     venue: models.Venue,
     include_without_pricing_points: bool = False,
     check_pricing_points: bool = False,
+    filter_same_bank_account: bool = False,
 ) -> list[models.Venue]:
     """
     Returns the venues of an offerer - excluding provided venue - and their associated active pricing points.
@@ -796,6 +797,23 @@ def get_offerers_venues_with_pricing_point(
         venues_choices_query = venues_choices_query.filter(
             models.VenuePricingPointLink.pricingPointId == venue.current_pricing_point_link.pricingPointId
         )
+
+    if filter_same_bank_account:
+        venues_choices_query = venues_choices_query.outerjoin(
+            models.VenueBankAccountLink,
+            sqla.and_(
+                models.VenueBankAccountLink.venueId == models.Venue.id,
+                models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+            ),
+        ).options(
+            sqla.orm.contains_eager(models.Venue.bankAccountLinks).load_only(
+                models.VenueBankAccountLink.bankAccountId, models.VenueBankAccountLink.timespan
+            )
+        )
+        if venue.current_bank_account_link:
+            venues_choices_query = venues_choices_query.filter(
+                models.VenueBankAccountLink.bankAccountId == venue.current_bank_account_link.bankAccountId
+            )
     venues_choices = venues_choices_query.all()
     return venues_choices
 

@@ -1345,7 +1345,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             ),
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1371,7 +1371,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1384,7 +1384,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1397,7 +1397,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
         app.redis_client.set(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", 600)
         try:
-            with assert_num_queries(3):
+            with assert_num_queries(4):
                 response = authenticated_client.get(url)
                 assert response.status_code == 200
         finally:
@@ -1415,7 +1415,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
 
         content_as_text = html_parser.content_as_text(response.data)
@@ -1448,7 +1448,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         collective_offer = educational_factories.CollectiveOfferFactory(venue__managingOfferer=rule.offerer)
 
         url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
-        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
+        with assert_num_queries(self.expected_num_queries_with_ff - 1):  # no _is_collective_offer_price_editable
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1460,7 +1460,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         collective_offer = educational_factories.CollectiveOfferFactory(venue=rule.venue)
 
         url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
-        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
+        with assert_num_queries(self.expected_num_queries_with_ff - 1):  # no _is_collective_offer_price_editable
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1477,7 +1477,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
-        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
+        with assert_num_queries(self.expected_num_queries_with_ff - 1):  # no _is_collective_offer_price_editable
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
