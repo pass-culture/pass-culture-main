@@ -1,6 +1,7 @@
 import datetime
 import decimal
 from secrets import compare_digest
+from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from flask import url_for
@@ -12,6 +13,7 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.external_bookings.cgr import exceptions as cgr_exceptions
 from pcapi.core.finance import api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -23,6 +25,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers import exceptions as providers_exceptions
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -685,6 +688,37 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
         )
         finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
         assert finance_incident.status == initial_status
+        assert finance_models.FinanceEvent.query.count() == 0
+        assert len(mails_testing.outbox) == 0
+
+    @pytest.mark.parametrize(
+        "exception_type,expected_error_msg",
+        [
+            (cgr_exceptions.CGRAPIException, "Une erreur s'est produite : Test"),
+            (providers_exceptions.ProviderException, "Une erreur s'est produite : ProviderException"),
+        ],
+    )
+    def test_validate_incident_external_provider_api_failed(
+        self, authenticated_client, exception_type, expected_error_msg
+    ):
+        finance_incident = finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.CREATED)
+
+        with patch(
+            "pcapi.core.finance.api.validate_finance_overpayment_incident",
+            side_effect=exception_type("Test"),
+        ):
+            response = self.post_to_endpoint(
+                authenticated_client,
+                finance_incident_id=finance_incident.id,
+                form={"compensation_mode": finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name},
+                follow_redirects=True,
+            )
+
+        assert response.status_code == 200
+        assert html_parser.extract_alert(response.data) == expected_error_msg
+
+        db.session.refresh(finance_incident)
+        assert finance_incident.status == finance_models.IncidentStatus.CREATED
         assert finance_models.FinanceEvent.query.count() == 0
         assert len(mails_testing.outbox) == 0
 
