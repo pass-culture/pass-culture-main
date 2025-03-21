@@ -12,6 +12,7 @@
     height: rem.torem(16px);
     margin-right: rem.torem(4px);
     width: rem.torem(16px);
+    min-width: 1rem;
   }
 
   &-text {

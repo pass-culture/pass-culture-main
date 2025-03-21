@@ -36,3 +36,27 @@ export type RecurrenceFormValues = {
   bookingLimitDateInterval: number | ''
   monthlyOption: MonthlyOption | null
 }
+
+//  Under WIP_ENABLE_EVENT_WITH_OPENING_HOUR FF
+export enum DurationTypeOption {
+  ONE_DAY = 'ONE_DAY',
+  MULTIPLE_DAYS_WEEKS = 'MULTIPLE_DAYS_WEEKS',
+}
+
+export enum TimeSlotTypeOption {
+  SPECIFIC_TIME = 'SPECIFIC_TIME',
+  OPENING_HOURS = 'OPENING_HOURS',
+}
+
+export type StocksCalendarFormValues = {
+  durationType: DurationTypeOption
+  oneDayDate: string
+  timeSlotType: TimeSlotTypeOption
+  specificTimeSlots: { slot: string }[]
+  pricingCategoriesQuantities: {
+    quantity?: number
+    isUnlimited?: boolean
+    priceCategory: string
+  }[]
+  bookingLimitDateInterval?: number
+}

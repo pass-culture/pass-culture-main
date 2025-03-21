@@ -25,6 +25,7 @@ export interface StocksEventCreationProps {
 export const StocksEventCreation = ({
   offer,
 }: StocksEventCreationProps): JSX.Element => {
+  //  TODO in OHO epic : rework the fetching of data so that stocks are retrieved from here
   const isEventWithOpeningHoursEnabled = useActiveFeature(
     'WIP_ENABLE_EVENT_WITH_OPENING_HOUR'
   )
@@ -73,7 +74,7 @@ export const StocksEventCreation = ({
     <>
       <div className={styles['container']}>
         {isEventWithOpeningHoursEnabled ? (
-          <StocksCalendar />
+          <StocksCalendar offer={offer} />
         ) : (
           <>
             {hasStocks === false && (
