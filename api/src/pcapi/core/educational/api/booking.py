@@ -282,10 +282,9 @@ def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_
     if collective_offer is None:
         raise exceptions.CollectiveOfferNotFound()
 
-    if FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-        validation.check_collective_offer_action_is_allowed(
-            collective_offer, educational_models.CollectiveOfferAllowedAction.CAN_CANCEL
-        )
+    validation.check_collective_offer_action_is_allowed(
+        collective_offer, educational_models.CollectiveOfferAllowedAction.CAN_CANCEL
+    )
 
     if collective_offer.collectiveStock is None:
         raise exceptions.CollectiveStockNotFound()

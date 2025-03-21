@@ -5,7 +5,6 @@ import pytest
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing as adage_api_testing
-from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.offerers import factories as offerers_factories
 
 
@@ -20,82 +19,6 @@ STATUSES_NOT_ALLOWING_EDIT_INSTITUTION = tuple(
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
 class Returns200Test:
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_create_offer_institution_link(self, client: Any) -> None:
-        institution = factories.EducationalInstitutionFactory()
-        stock = factories.CollectiveStockFactory()
-        offer = stock.collectiveOffer
-        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
-
-        client = client.with_session_auth("pro@example.com")
-        data = {"educationalInstitutionId": institution.id}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
-
-        assert response.status_code == 200
-        offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
-        assert offer_db.institution == institution
-
-        expected_payload = serialize_collective_offer(offer)
-        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
-        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/offre-assoc"
-
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_create_offer_institution_link_to_teacher(self, client) -> None:
-        institution = factories.EducationalInstitutionFactory(institutionId="0470009E")
-        stock = factories.CollectiveStockFactory()
-        offer = stock.collectiveOffer
-        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
-
-        client = client.with_session_auth("pro@example.com")
-        data = {"educationalInstitutionId": institution.id, "teacherEmail": "maria.sklodowska@example.com"}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
-
-        assert response.status_code == 200
-        offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
-        assert offer_db.institution == institution
-        assert offer_db.teacher.email == "maria.sklodowska@example.com"
-
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_change_offer_institution_link(self, client: Any) -> None:
-        institution1 = factories.EducationalInstitutionFactory()
-        stock = factories.CollectiveStockFactory(
-            collectiveOffer__institution=institution1,
-            collectiveOffer__teacher=factories.EducationalRedactorFactory(),
-        )
-        offer = stock.collectiveOffer
-        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
-        institution2 = factories.EducationalInstitutionFactory()
-
-        client = client.with_session_auth("pro@example.com")
-        data = {"educationalInstitutionId": institution2.id}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
-
-        assert response.status_code == 200
-        offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
-        assert offer_db.institution == institution2
-        assert offer_db.teacher is None
-
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_delete_offer_institution_link(self, client: Any) -> None:
-        institution = factories.EducationalInstitutionFactory()
-        stock = factories.CollectiveStockFactory(
-            collectiveOffer__institution=institution,
-            collectiveOffer__teacher=factories.EducationalRedactorFactory(),
-        )
-        offer = stock.collectiveOffer
-        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
-
-        client = client.with_session_auth("pro@example.com")
-        data = {"educationalInstitutionId": None}
-        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
-
-        assert response.status_code == 200
-        offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
-        assert offer_db.institution is None
-        assert offer_db.teacher is None
-
-        assert len(adage_api_testing.adage_requests) == 0
-
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_EDIT_INSTITUTION)
     def test_change_institution_allowed_action(self, client, status) -> None:
@@ -134,17 +57,14 @@ class Returns404Test:
         assert offer_db.institution is None
 
     def test_institution_not_found(self, client: Any) -> None:
-        # Given
-        stock = factories.CollectiveStockFactory()
-        offer = stock.collectiveOffer
+        offer = factories.DraftCollectiveOfferFactory()
+        offer.institution = None
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
-        # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": 0}
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
-        # Then
         assert response.status_code == 404
         offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution is None

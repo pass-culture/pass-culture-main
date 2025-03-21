@@ -11,7 +11,6 @@ from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
@@ -616,25 +615,6 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
-
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_non_approved_offer_fails(self, client):
-        offer_ctx = build_offer_context()
-
-        pro_client = build_pro_client(client, offer_ctx.user)
-
-        offer = educational_factories.CollectiveOfferTemplateFactory(validation=OfferValidationStatus.PENDING)
-        offerers_factories.UserOffererFactory(user=offer_ctx.user, offerer=offer.venue.managingOfferer)
-
-        data = {"visualDisabilityCompliant": True}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
-
-            assert response.status_code == 400
-
-            assert response.json["global"] == [
-                "Les offres refusées ou en attente de validation ne sont pas modifiables"
-            ]
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_cannot_receive_offer_venue(self, client):

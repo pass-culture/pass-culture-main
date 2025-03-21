@@ -6,8 +6,6 @@ from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
-from pcapi.core.offers import exceptions as offers_exceptions
-from pcapi.core.offers import validation as offers_validation
 from pcapi.models import api_errors
 
 
@@ -89,19 +87,6 @@ def check_confirmation_limit_date_has_not_passed(booking: models.CollectiveBooki
         raise booking_exceptions.ConfirmationLimitDateHasPassed()
 
 
-def check_collective_stock_is_editable(stock: models.CollectiveStock) -> None:
-    offers_validation.check_validation_status(stock.collectiveOffer)
-    for booking in stock.collectiveBookings:
-        if booking.status is not models.CollectiveBookingStatus.CANCELLED:
-            offers_validation.check_event_expiration(stock)
-            break
-
-
-def check_if_edition_lower_price_possible(stock: models.CollectiveStock, price: float) -> None:
-    if price > float(stock.price):
-        raise exceptions.PriceRequesteCantBedHigherThanActualPrice()
-
-
 def check_collective_booking_status_pending(booking: models.CollectiveBooking) -> None:
     if booking.status is not models.CollectiveBookingStatus.PENDING:
         raise exceptions.CollectiveOfferStockBookedAndBookingNotPending(booking.status, booking.id)
@@ -112,11 +97,6 @@ def check_collective_offer_number_of_collective_stocks(
 ) -> None:
     if collective_offer.collectiveStock:
         raise exceptions.CollectiveStockAlreadyExists()
-
-
-def check_if_offer_is_not_public_api(offer: models.CollectiveOffer) -> None:
-    if offer.providerId:
-        raise exceptions.CollectiveOfferIsPublicApi()
 
 
 def check_user_can_prebook_collective_stock(uai: str, stock: models.CollectiveStock) -> None:
@@ -130,16 +110,6 @@ def check_institution_id_exists(institution_id: int) -> models.EducationalInstit
     if not institution:
         raise exceptions.EducationalInstitutionNotFound()
     return institution
-
-
-def check_if_offer_not_used_or_reimbursed(offer: models.CollectiveOffer) -> None:
-    if offer.collectiveStock:
-        for booking in offer.collectiveStock.collectiveBookings:
-            if (
-                booking.status is models.CollectiveBookingStatus.USED
-                or booking.status is models.CollectiveBookingStatus.REIMBURSED
-            ):
-                raise offers_exceptions.OfferUsedOrReimbursedCantBeEdit()
 
 
 def check_collective_offer_action_is_allowed(

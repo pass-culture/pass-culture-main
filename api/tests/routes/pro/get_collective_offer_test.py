@@ -24,8 +24,7 @@ class Returns200Test:
     # user_offerer
     # collective_offer
     # google_places_info
-    # feature toggle
-    num_queries = 7
+    num_queries = 6
 
     def test_filtering(self, client):
         offer = educational_factories.PendingCollectiveBookingFactory().collectiveStock.collectiveOffer
@@ -35,7 +34,7 @@ class Returns200Test:
 
         dst = url_for("Private API.get_collective_offers", status=CollectiveOfferDisplayedStatus.PREBOOKED.value)
 
-        with assert_num_queries(5):  #  session + user + collective_offer + collective_offer_template + feature flag
+        with assert_num_queries(4):  #  session + user + collective_offer + collective_offer_template
             response = client.get(dst)
             assert response.status_code == 200
 
@@ -110,8 +109,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        expected_num_queries = self.num_queries - 1  # feature toggle
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -135,8 +133,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        expected_num_queries = self.num_queries - 1  # feature toggle
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -161,8 +158,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        expected_num_queries = self.num_queries - 1  # feature toggle
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -187,8 +183,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        expected_num_queries = self.num_queries - 1  # feature toggle
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -310,9 +305,7 @@ class Returns200Test:
 
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        num_queries = self.num_queries
-        num_queries -= 1  # feature toggle
-        with assert_num_queries(num_queries):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 

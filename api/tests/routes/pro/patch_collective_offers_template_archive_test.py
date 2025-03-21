@@ -28,11 +28,10 @@ class Returns204Test:
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             # 1. authentication
             # 2. load current_user
-            # 3. feature flag
-            # 4. retrieve all collective_order_template to ensure archive is allowed
-            # 5. retrieve all collective_order.ids to batch them in pool for update
-            # 6. update dateArchive on collective_offer
-            with assert_num_queries(6):
+            # 3. retrieve all collective_order_template to ensure archive is allowed
+            # 4. retrieve all collective_order.ids to batch them in pool for update
+            # 5. update dateArchive on collective_offer
+            with assert_num_queries(5):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
@@ -89,11 +88,10 @@ class Returns204Test:
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             # 1. authentication
             # 2. load current_user
-            # 3. feature flag
+            # 3. retrieve all collective_order.ids to batch them in pool for update
             # 4. retrieve all collective_order.ids to batch them in pool for update
-            # 5. retrieve all collective_order.ids to batch them in pool for update
-            # 6. update dateArchive on collective_offer
-            with assert_num_queries(6):
+            # 5. update dateArchive on collective_offer
+            with assert_num_queries(5):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
@@ -118,12 +116,11 @@ class Returns204Test:
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             # 1. authentication
             # 2. load current_user
-            # 3. feature flag
+            # 3. retrieve all collective_order.ids to batch them in pool for update
             # 4. retrieve all collective_order.ids to batch them in pool for update
-            # 5. retrieve all collective_order.ids to batch them in pool for update
+            # 5. update dateArchive on collective_offer
             # 6. update dateArchive on collective_offer
-            # 7. update dateArchive on collective_offer
-            with assert_num_queries(7):
+            with assert_num_queries(6):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 

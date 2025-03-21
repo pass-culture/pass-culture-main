@@ -90,13 +90,6 @@ class CollectiveStockIsBookableTest:
         collective_stock = factories.CollectiveStockFactory()
         assert collective_stock.isBookable
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_bookable_if_booking_is_cancelled(self) -> None:
-        collective_stock = factories.CollectiveStockFactory()
-        factories.CollectiveBookingFactory(collectiveStock=collective_stock, status=CollectiveBookingStatus.CANCELLED)
-
-        assert collective_stock.isBookable
-
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_bookable_if_booking_is_cancelled_with_new_statuses(self) -> None:
         collective_stock = factories.CollectiveStockFactory()
@@ -653,30 +646,15 @@ class CollectiveOfferDisplayedStatusTest:
         offer = factories.CancelledWithoutBookingCollectiveOfferFactory()
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.CANCELLED
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_get_offer_displayed_status_cancelled_without_new_statuses(self):
-        offer = factories.CancelledWithoutBookingCollectiveOfferFactory()
-        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.EXPIRED
-
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_offer_displayed_status_cancelled_with_booking_with_new_statuses(self):
         offer = factories.CancelledWithBookingCollectiveOfferFactory()
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.CANCELLED
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_get_offer_displayed_status_cancelled_with_booking_without_new_statuses(self):
-        offer = factories.CancelledWithBookingCollectiveOfferFactory()
-        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.EXPIRED
-
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_offer_displayed_status_reimbursed_with_new_statuses(self):
         offer = factories.ReimbursedCollectiveOfferFactory()
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.REIMBURSED
-
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_get_offer_displayed_status_reimbursed_without_new_statuses(self):
-        offer = factories.ReimbursedCollectiveOfferFactory()
-        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
 
     def test_get_displayed_status_for_expired_offer_due_to_booking_date_passed(self):
         offer = factories.ExpiredWithBookingCollectiveOfferFactory()
@@ -717,34 +695,11 @@ class CollectiveOfferDisplayedStatusTest:
 
 
 class CollectiveOfferTemplateDisplayedStatusTest:
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    @pytest.mark.parametrize("status", set(COLLECTIVE_OFFER_TEMPLATE_STATUSES) - {CollectiveOfferDisplayedStatus.ENDED})
-    def test_get_offer_displayed_status(self, status):
-        offer = factories.create_collective_offer_template_by_status(status)
-        assert offer.displayedStatus == status
-
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_get_offer_displayed_status_ended(self):
-        # when ENABLE_COLLECTIVE_NEW_STATUSES FF is off, and ended offer is INACTIVE
-        offer = factories.create_collective_offer_template_by_status(CollectiveOfferDisplayedStatus.ENDED)
-        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.INACTIVE
-
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", COLLECTIVE_OFFER_TEMPLATE_STATUSES)
     def test_get_offer_displayed_status_new_statuses(self, status):
         offer = factories.create_collective_offer_template_by_status(status)
         assert offer.displayedStatus == status
-
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_get_displayed_status_for_inactive_offer_due_to_end_date_passed(self):
-        offer = factories.CollectiveOfferTemplateFactory(
-            validation=OfferValidationStatus.APPROVED,
-            dateRange=db_utils.make_timerange(
-                start=datetime.datetime.utcnow() - datetime.timedelta(days=4),
-                end=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
-            ),
-        )
-        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.INACTIVE
 
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_displayed_status_for_inactive_offer_with_end_date_passed(self):

@@ -11,11 +11,11 @@ import typing
 import psycopg2.extras
 import sqlalchemy as sa
 from sqlalchemy import UniqueConstraint
+from sqlalchemy import orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
-import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import declared_attr
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BinaryExpression
@@ -33,12 +33,11 @@ from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
-import pcapi.core.finance.models as finance_models
+from pcapi.core.finance import models as finance_models
 from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 from pcapi.models import Base
 from pcapi.models import Model
-from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.pc_object import PcObject
@@ -889,7 +888,7 @@ class CollectiveOffer(
                 match last_booking_status:
                     case None:
                         # pylint: disable=using-constant-test
-                        if has_started and feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+                        if has_started:
                             return CollectiveOfferDisplayedStatus.CANCELLED
 
                         if has_booking_limit_passed:
@@ -913,25 +912,18 @@ class CollectiveOffer(
                         return CollectiveOfferDisplayedStatus.ENDED
 
                     case CollectiveBookingStatus.REIMBURSED:
-                        if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-                            return CollectiveOfferDisplayedStatus.REIMBURSED
-                        return CollectiveOfferDisplayedStatus.ENDED
+                        return CollectiveOfferDisplayedStatus.REIMBURSED
 
                     case CollectiveBookingStatus.CANCELLED:
-                        if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-                            if (
-                                self.lastBookingCancellationReason == CollectiveBookingCancellationReasons.EXPIRED
-                                and not has_started
-                            ):
-                                # There is a script that set the booking status to CANCELLED with cancellation reason EXPIRED when the booking is expired.
-                                # We need to distinguish between an expired booking and a cancelled booking.
-                                return CollectiveOfferDisplayedStatus.EXPIRED
-                            return CollectiveOfferDisplayedStatus.CANCELLED
-
-                        # pylint: disable=using-constant-test
-                        if has_booking_limit_passed:
+                        if (
+                            self.lastBookingCancellationReason == CollectiveBookingCancellationReasons.EXPIRED
+                            and not has_started
+                        ):
+                            # There is a script that set the booking status to CANCELLED with cancellation reason EXPIRED when the booking is expired.
+                            # We need to distinguish between an expired booking and a cancelled booking.
                             return CollectiveOfferDisplayedStatus.EXPIRED
-                        return CollectiveOfferDisplayedStatus.ACTIVE
+
+                        return CollectiveOfferDisplayedStatus.CANCELLED
 
         logger.error("Incorrect status: %s %s", self.validation, last_booking_status)
         return CollectiveOfferDisplayedStatus.ACTIVE
@@ -1227,9 +1219,7 @@ class CollectiveOfferTemplate(
             return CollectiveOfferDisplayedStatus.DRAFT
 
         if self.hasEndDatePassed:  # pylint: disable=using-constant-test
-            if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-                return CollectiveOfferDisplayedStatus.ENDED
-            return CollectiveOfferDisplayedStatus.INACTIVE
+            return CollectiveOfferDisplayedStatus.ENDED
 
         if not self.isActive:
             return CollectiveOfferDisplayedStatus.INACTIVE
@@ -1238,11 +1228,6 @@ class CollectiveOfferTemplate(
 
     @displayedStatus.expression  # type: ignore[no-redef]
     def displayedStatus(cls) -> sa.sql.elements.Case:  # pylint: disable=no-self-argument
-        has_ended_value = (
-            CollectiveOfferDisplayedStatus.ENDED.name
-            if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active()
-            else CollectiveOfferDisplayedStatus.INACTIVE.name
-        )
         return sa.case(
             (
                 cls.isArchived.is_(True),
@@ -1260,7 +1245,7 @@ class CollectiveOfferTemplate(
                 cls.validation == offer_mixin.OfferValidationStatus.DRAFT.name,
                 CollectiveOfferDisplayedStatus.DRAFT.name,
             ),
-            (cls.hasEndDatePassed, has_ended_value),
+            (cls.hasEndDatePassed, CollectiveOfferDisplayedStatus.ENDED.name),
             (cls.isActive.is_(False), CollectiveOfferDisplayedStatus.INACTIVE.name),
             else_=CollectiveOfferDisplayedStatus.ACTIVE.name,
         )
@@ -1510,11 +1495,9 @@ class CollectiveStock(PcObject, Base, Model):
 
     @property
     def isBookable(self) -> bool:
-        if (
-            feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active()
-            and self.lastBookingStatus == CollectiveBookingStatus.CANCELLED
-        ):
+        if self.lastBookingStatus == CollectiveBookingStatus.CANCELLED:
             return False
+
         return not self.isExpired and self.collectiveOffer.isReleased and not self.isSoldOut
 
     @property

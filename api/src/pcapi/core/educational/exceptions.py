@@ -203,10 +203,6 @@ class EducationalRedactorNotFound(Exception):
     pass
 
 
-class ValidationFailedOnCollectiveOffer(Exception):
-    pass
-
-
 class OffererNotAllowedToDuplicate(Exception):
     pass
 

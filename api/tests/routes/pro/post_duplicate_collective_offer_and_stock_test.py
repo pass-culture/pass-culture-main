@@ -12,7 +12,6 @@ from pcapi.core.educational.exceptions import CantGetImageFromUrl
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import factories as user_factories
-from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils.date import format_into_utc_date
@@ -194,23 +193,6 @@ class Returns200Test:
         # Then
         assert response.status_code == 201
         assert response.json.get("formats") == ["Concert"]
-
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_duplicate_collective_offer_draft_offer(self, client):
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = educational_factories.CollectiveOfferFactory(
-            venue=venue,
-            validation=offer_mixin.OfferValidationStatus.DRAFT,
-        )
-        offer_id = offer.id
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
-
-        assert response.status_code == 403
-        assert response.json == {"validation": ["l'offre ne passe pas la validation"]}
 
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_DUPLIATE)

@@ -392,7 +392,7 @@ def create_collective_offer(
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
 
-    if offer_data.template_id is not None and feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+    if offer_data.template_id is not None:
         template = educational_repository.get_collective_offer_template_by_id(offer_data.template_id)
         validation.check_collective_offer_template_action_is_allowed(
             template, educational_models.CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
@@ -532,16 +532,13 @@ def update_collective_offer_educational_institution(
 ) -> educational_models.CollectiveOffer:
     offer = educational_repository.get_collective_offer_by_id(offer_id)
 
+    validation.check_collective_offer_action_is_allowed(
+        offer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION
+    )
+
     new_institution = None
     if educational_institution_id is not None:
         new_institution = validation.check_institution_id_exists(educational_institution_id)
-
-    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-        validation.check_collective_offer_action_is_allowed(
-            offer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION
-        )
-    elif offer.collectiveStock and not offer.collectiveStock.isEditable:
-        raise exceptions.CollectiveOfferNotEditable()
 
     offer.institution = new_institution
     offer.teacher = None
@@ -886,12 +883,9 @@ def _get_expired_or_archived_collective_offer_template_ids(
 def duplicate_offer_and_stock(
     original_offer: educational_models.CollectiveOffer,
 ) -> educational_models.CollectiveOffer:
-    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-        validation.check_collective_offer_action_is_allowed(
-            original_offer, educational_models.CollectiveOfferAllowedAction.CAN_DUPLICATE
-        )
-    elif original_offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
-        raise exceptions.ValidationFailedOnCollectiveOffer()
+    validation.check_collective_offer_action_is_allowed(
+        original_offer, educational_models.CollectiveOfferAllowedAction.CAN_DUPLICATE
+    )
 
     offerer = original_offer.venue.managingOfferer
     if offerer.validationStatus != validation_status_mixin.ValidationStatus.VALIDATED:
@@ -1043,10 +1037,6 @@ def get_offer_coordinates(offer: AnyCollectiveOffer) -> tuple[float | Decimal, f
         return (None, None)
 
     return latitude, longitude
-
-
-def query_has_any_archived(collective_query: BaseQuery) -> bool:
-    return collective_query.filter(educational_models.CollectiveOffer.isArchived).count() > 0
 
 
 def archive_collective_offers(
@@ -1270,13 +1260,9 @@ def update_collective_offer(
         educational_models.CollectiveOffer.id == offer_id
     ).first()
 
-    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-        validation.check_collective_offer_action_is_allowed(
-            offer_to_update, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
-        )
-    else:
-        validation.check_if_offer_is_not_public_api(offer_to_update)
-        validation.check_if_offer_not_used_or_reimbursed(offer_to_update)
+    validation.check_collective_offer_action_is_allowed(
+        offer_to_update, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+    )
 
     new_venue = None
     if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
@@ -1314,10 +1300,9 @@ def update_collective_offer_template(
         ).one()
     )
 
-    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-        validation.check_collective_offer_template_action_is_allowed(
-            offer_to_update, educational_models.CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
-        )
+    validation.check_collective_offer_template_action_is_allowed(
+        offer_to_update, educational_models.CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
+    )
 
     if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
         new_venue = offerers_api.get_venue_by_id(new_values["venueId"])
@@ -1420,7 +1405,7 @@ def _update_collective_offer(
 
 
 def toggle_publish_collective_offers_template(
-    collective_offers_template: list[educational_models.CollectiveOfferTemplate],
+    collective_offers_templates: list[educational_models.CollectiveOfferTemplate],
     is_active: bool,
 ) -> None:
     action = (
@@ -1428,7 +1413,7 @@ def toggle_publish_collective_offers_template(
         if is_active
         else educational_models.CollectiveOfferTemplateAllowedAction.CAN_HIDE
     )
-    for offer_template in collective_offers_template:
+    for offer_template in collective_offers_templates:
         validation.check_collective_offer_template_action_is_allowed(offer_template, action)
         offer_template.isActive = is_active
 
@@ -1437,7 +1422,7 @@ def toggle_publish_collective_offers_template(
     on_commit(
         partial(
             search.async_index_collective_offer_template_ids,
-            [offer.id for offer in collective_offers_template],
+            [offer.id for offer in collective_offers_templates],
             reason=search.IndexationReason.OFFER_BATCH_UPDATE,
             log_extra={"changes": {"isActive"}},
         )

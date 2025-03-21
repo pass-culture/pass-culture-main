@@ -9,10 +9,8 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
 from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.api.offer import notify_educational_redactor_on_collective_offer_or_stock_edit
-from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offers import validation as offer_validation
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.repository import on_commit
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.serialization import utils as serialization_utils
@@ -72,14 +70,10 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> edu
 def edit_collective_stock(
     stock: educational_models.CollectiveStock, stock_data: dict
 ) -> educational_models.CollectiveStock:
-    if not feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-        # with FF ON this is included in the allowed actions
-        validation.check_if_offer_is_not_public_api(stock.collectiveOffer)
-
     date_fields = ("startDatetime", "endDatetime", "bookingLimitDatetime")
     is_editing_dates = any(field in stock_data for field in date_fields)
 
-    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active() and is_editing_dates:
+    if is_editing_dates:
         validation.check_collective_offer_action_is_allowed(
             stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DATES
         )
@@ -135,36 +129,21 @@ def edit_collective_stock(
 
     current_booking = stock.get_unique_non_cancelled_booking()
 
-    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-        price = updatable_fields["price"]
-        if price is not None:
-            if price > stock.price:
-                validation.check_collective_offer_action_is_allowed(
-                    stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
-                )
-            else:
-                validation.check_collective_offer_action_is_allowed(
-                    stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
-                )
-
-        if "numberOfTickets" in stock_data or "educationalPriceDetail" in stock_data:
+    price = updatable_fields["price"]
+    if price is not None:
+        if price > stock.price:
+            validation.check_collective_offer_action_is_allowed(
+                stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+            )
+        else:
             validation.check_collective_offer_action_is_allowed(
                 stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
             )
-    else:
-        if "startDatetime" not in stock_data and "bookingLimitDatetime" not in stock_data:
-            price = updatable_fields.get("price")
-            if current_booking and current_booking.status == CollectiveBookingStatus.CONFIRMED:
-                if price is not None:
-                    validation.check_if_edition_lower_price_possible(stock, price)
-            else:
-                if current_booking:
-                    validation.check_collective_booking_status_pending(current_booking)
-                validation.check_collective_stock_is_editable(stock)
-        else:
-            validation.check_collective_stock_is_editable(stock)
-            if current_booking:
-                validation.check_collective_booking_status_pending(current_booking)
+
+    if "numberOfTickets" in stock_data or "educationalPriceDetail" in stock_data:
+        validation.check_collective_offer_action_is_allowed(
+            stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
+        )
 
     if is_editing_dates and not should_bypass_check_booking_limit_datetime:
         offer_validation.check_booking_limit_datetime(stock, check_start, check_booking_limit_datetime)

@@ -19,7 +19,6 @@ class Returns204Test:
     num_queries += 1  # venue_already_has_validated_offer
     num_queries += 1  # offer_validation_rules
     num_queries += 1  # google_places_info
-    num_queries += 1  # feature toggle
     num_queries += 1  # update offer
 
     def expect_offer_to_be_approved(self, client):

@@ -1315,18 +1315,6 @@ def admin_user_fixture():
 
 @pytest.mark.usefixtures("db_session")
 class GetCollectiveOffersTemplateByFiltersTest:
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_status_filter_active(self, admin_user):
-        template = educational_factories.CollectiveOfferTemplateFactory()
-        educational_factories.CollectiveOfferTemplateFactory(validation=offer_mixin.OfferValidationStatus.REJECTED)
-
-        result = repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id,
-            user_is_admin=True,
-            statuses=[educational_models.CollectiveOfferDisplayedStatus.ACTIVE],
-        ).one()
-        assert result.id == template.id
-
     @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("offer_status", educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES)
     def test_filter_each_status_with_new_statuses(self, admin_user, offer_status):
@@ -1338,48 +1326,6 @@ class GetCollectiveOffersTemplateByFiltersTest:
         assert result.one() == template
 
         statuses_no_result = set(educational_models.CollectiveOfferDisplayedStatus) - {offer_status}
-        result = repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
-        )
-        assert result.count() == 0
-
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    @pytest.mark.parametrize(
-        "offer_status",
-        set(educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES)
-        - {educational_models.CollectiveOfferDisplayedStatus.ENDED},
-    )
-    def test_filter_each_status(self, admin_user, offer_status):
-        template = educational_factories.create_collective_offer_template_by_status(offer_status)
-
-        result = repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id, user_is_admin=True, statuses=[offer_status]
-        )
-        assert result.one() == template
-
-        statuses_no_result = set(educational_models.CollectiveOfferDisplayedStatus) - {offer_status}
-        result = repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
-        )
-        assert result.count() == 0
-
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    def test_filter_ended(self, admin_user):
-        template = educational_factories.create_collective_offer_template_by_status(
-            educational_models.CollectiveOfferDisplayedStatus.ENDED
-        )
-
-        # when ENABLE_COLLECTIVE_NEW_STATUSES FF is off, and ended offer is INACTIVE
-        result = repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id,
-            user_is_admin=True,
-            statuses=[educational_models.CollectiveOfferDisplayedStatus.INACTIVE],
-        )
-        assert result.one() == template
-
-        statuses_no_result = set(educational_models.CollectiveOfferDisplayedStatus) - {
-            educational_models.CollectiveOfferDisplayedStatus.INACTIVE
-        }
         result = repository.get_collective_offers_template_by_filters(
             user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
         )
@@ -1641,29 +1587,6 @@ class GetFilteredCollectiveOffersTest:
             user_id=admin_user.id,
             user_is_admin=True,
             statuses=[educational_models.CollectiveOfferDisplayedStatus.INACTIVE],
-        )
-        assert result.count() == 0
-
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
-    @pytest.mark.parametrize(
-        "offer_status",
-        set(educational_models.CollectiveOfferDisplayedStatus)
-        - {
-            educational_models.CollectiveOfferDisplayedStatus.CANCELLED,
-            educational_models.CollectiveOfferDisplayedStatus.REIMBURSED,
-        },
-    )
-    def test_filter_each_status(self, admin_user, offer_status):
-        offer = educational_factories.create_collective_offer_by_status(offer_status)
-
-        result = repository.get_collective_offers_by_filters(
-            user_id=admin_user.id, user_is_admin=True, statuses=[offer_status]
-        )
-        assert result.one() == offer
-
-        statuses_no_result = set(educational_models.CollectiveOfferDisplayedStatus) - {offer_status}
-        result = repository.get_collective_offers_by_filters(
-            user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
         )
         assert result.count() == 0
 

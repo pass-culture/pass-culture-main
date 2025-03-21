@@ -293,7 +293,6 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
     # - fetch user (1 query)
     # - fetch CollectiveOfferTemplate including joinedload of venue and offerer
     expected_num_queries = 3
-    expected_num_queries_with_ff = expected_num_queries + 1
 
     def test_nominal(self, authenticated_client):
         collectiveOfferTemplate = educational_factories.CollectiveOfferTemplateFactory(
@@ -328,7 +327,7 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
             rejectionReason=educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION,
         )
         url = url_for(self.endpoint, collective_offer_template_id=collectiveOfferTemplate.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

@@ -146,7 +146,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries - 1 + 1):  # - national_program + feature flag assertion
+        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
             response = client.get("/collective/offers?status=EXPIRED")
             assert response.status_code == 200
 
@@ -348,7 +348,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries - 1 + 1):  # - national_program + feature flag assertion
+        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
             response = client.get("/collective/offers?periodBeginningDate=2022-10-10&periodEndingDate=2022-10-11")
             assert response.status_code == 200
 
@@ -394,7 +394,6 @@ class Returns200Test:
         client = client.with_session_auth(user.email)
 
         expected_num_queries = self.expected_num_queries - 1  # - national_program
-        expected_num_queries = expected_num_queries + 1  # feature flag assertion
         with assert_num_queries(expected_num_queries):
             response_booked = client.get("/collective/offers?status=BOOKED")
 
@@ -455,7 +454,6 @@ class Returns200Test:
         client = client.with_session_auth(user.email)
 
         expected_num_queries = self.expected_num_queries - 1  # - national_program
-        expected_num_queries = expected_num_queries + 1  # feature flag assertion
         with assert_num_queries(expected_num_queries):
             response = client.get("/collective/offers?status=BOOKED&status=PREBOOKED")
 
