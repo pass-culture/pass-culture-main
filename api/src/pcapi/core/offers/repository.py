@@ -1556,3 +1556,12 @@ def venues_have_individual_and_collective_offers(venue_ids: list[int]) -> tuple[
 
 def get_offer_existing_stocks_count(offer_id: int) -> int:
     return models.Stock.query.filter_by(offerId=offer_id).filter(models.Stock.isSoftDeleted == False).count()
+
+
+def get_offer_from_future_offer(future_offer_id: int) -> offers_model.Offer | None:
+    return (
+        db.session.query(offers_model.Offer)
+        .join(offers_model.FutureOffer)
+        .filter(offers_model.FutureOffer.id == future_offer_id)
+        .one_or_none()
+    )

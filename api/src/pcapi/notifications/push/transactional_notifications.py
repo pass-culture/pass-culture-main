@@ -19,6 +19,7 @@ class GroupId(Enum):
     OFFER_LINK = "Offer_link"
     SOON_EXPIRING_BOOKINGS = "Soon_expiring_bookings"
     FAVORITES_NOT_BOOKED = "Favorites_not_booked"
+    FUTURE_OFFER_ACTIVATED = "Future_offer_activated"
 
 
 class TransactionalNotificationMessage(BaseModel):
@@ -108,5 +109,20 @@ def get_favorites_not_booked_notification_data(
         group_id=GroupId.FAVORITES_NOT_BOOKED.value,
         user_ids=user_ids,
         message=TransactionalNotificationMessage(title=msg_title, body=msg_body),
+        extra={"deeplink": offer_app_link(offer_id, utm=utm)},
+    )
+
+
+def get_future_offer_activated_notification_data(
+    user_ids: list[int], offer_id: int, offer_name: str
+) -> TransactionalNotificationData:
+    title = "Ton offre est réservable"
+    body = f"{offer_name} t’attend sur le pass Culture !"
+    utm = "utm_campaign=rappelsj%2B3&utm_source=transac&utm_medium=push"
+
+    return TransactionalNotificationData(
+        group_id=GroupId.FUTURE_OFFER_ACTIVATED.value,
+        user_ids=user_ids,
+        message=TransactionalNotificationMessage(title=title, body=body),
         extra={"deeplink": offer_app_link(offer_id, utm=utm)},
     )
