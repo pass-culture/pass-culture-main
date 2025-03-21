@@ -11,7 +11,6 @@ import {
   getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
-import { managedVenueFactory, userOffererFactory } from 'commons/utils/factories/userOfferersFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -29,14 +28,6 @@ vi.mock('react-router-dom', async () => ({
   }),
   useNavigate: () => vi.fn(),
   default: vi.fn(),
-}))
-
-vi.mock('apiClient/api', () => ({
-  api: {
-    listEducationalOfferers: vi.fn(),
-    getVenue: vi.fn(),
-    patchCollectiveOfferPublication: vi.fn()
-  },
 }))
 
 const renderCollectiveOfferPreviewCreation = (
@@ -64,19 +55,8 @@ const defaultProps = {
 const mockLogEvent = vi.fn()
 
 describe('CollectiveOfferPreviewCreation', () => {
-    const venue = managedVenueFactory({ id: 1 })
-    const offerer = userOffererFactory({
-      id: 1,
-      name: 'Ma super structure',
-      managedVenues: [venue],
-    })
-    
   beforeEach(() => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
-
-    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
-      educationalOfferers: [offerer],
-    })
 
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,

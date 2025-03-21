@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
+import { Layout } from 'app/App/layout/Layout'
 import { Mode } from 'commons/core/OfferEducational/types'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { queryParamsFromOfferer } from 'commons/utils/queryParamsFromOfferer'
@@ -10,6 +11,7 @@ import {
 } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { useOfferEducationalFormData } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useOfferEducationalFormData'
 import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { OfferEducational } from '../components/OfferEducational/OfferEducational'
 
@@ -21,29 +23,36 @@ export const CollectiveOfferCreation = ({
   const { requete: requestId } = queryParamsFromOfferer(location)
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const offererId = selectedOffererId?.toString()
-  const { ...offerEducationalFormData } = useOfferEducationalFormData(
+  const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
     Number(offererId),
     offer
   )
 
   return (
-    <CollectiveOfferLayout
-      subTitle={offer?.name}
-      isCreation
-      isTemplate={isTemplate}
-      isFromTemplate={location.pathname.includes('vitrine')}
-      requestId={requestId}
-      offer={offer}
-    >
-      <OfferEducational
-        userOfferer={offerEducationalFormData.offerer}
-        domainsOptions={offerEducationalFormData.domains}
-        nationalPrograms={offerEducationalFormData.nationalPrograms}
-        offer={offer}
-        mode={Mode.CREATION}
-        isTemplate={isTemplate}
-      />
-    </CollectiveOfferLayout>
+    <Layout layout={'sticky-actions'}>
+      {!isReady ? (
+        <Spinner />
+      ) : (
+        <CollectiveOfferLayout
+          subTitle={offer?.name}
+          isCreation
+          isTemplate={isTemplate}
+          isFromTemplate={location.pathname.includes('vitrine')}
+          requestId={requestId}
+          offer={offer}
+          userOfferer={offerEducationalFormData.offerer}
+        >
+          <OfferEducational
+            userOfferer={offerEducationalFormData.offerer}
+            domainsOptions={offerEducationalFormData.domains}
+            nationalPrograms={offerEducationalFormData.nationalPrograms}
+            offer={offer}
+            mode={Mode.CREATION}
+            isTemplate={isTemplate}
+          />
+        </CollectiveOfferLayout>
+      )}
+    </Layout>
   )
 }
 
