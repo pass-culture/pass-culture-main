@@ -35,6 +35,7 @@ export type { CategoriesResponseModel } from './models/CategoriesResponseModel';
 export type { CategoryResponseModel } from './models/CategoryResponseModel';
 export type { ChangePasswordBodyModel } from './models/ChangePasswordBodyModel';
 export type { ChangeProEmailBody } from './models/ChangeProEmailBody';
+export type { CheckTokenBodyModel } from './models/CheckTokenBodyModel';
 export { CollectiveBookingBankAccountStatus } from './models/CollectiveBookingBankAccountStatus';
 export type { CollectiveBookingByIdResponseModel } from './models/CollectiveBookingByIdResponseModel';
 export { CollectiveBookingCancellationReasons } from './models/CollectiveBookingCancellationReasons';

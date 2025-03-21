@@ -1,44 +1,88 @@
-import { FormikProvider, useFormik } from 'formik'
-import { useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useCallback, useEffect, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { Layout } from 'app/App/layout/Layout'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useNotification } from 'commons/hooks/useNotification'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import { parse } from 'commons/utils/query-string'
 import { Hero } from 'ui-kit/Hero/Hero'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { ChangePasswordForm } from './ChangePasswordForm/ChangePasswordForm'
 import styles from './ResetPassword.module.scss'
 import { validationSchema } from './validationSchema'
 
+export type ResetPasswordValues = {
+  newPassword: string
+  newConfirmationPassword?: string
+}
+
 export const ResetPassword = (): JSX.Element => {
   const [passwordChanged, setPasswordChanged] = useState(false)
   const [isBadToken, setIsBadToken] = useState(false)
+  const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
+  const [isLoading, setIsLoading] = useState(is2025SignUpEnabled ? true : false)
   const location = useLocation()
   const { search } = location
   const { token } = parse(search)
+  const notify = useNotification()
+  const navigate = useNavigate()
 
   useRedirectLoggedUser()
 
-  const submitChangePassword = async (values: Record<string, string>) => {
-    const { newPasswordValue } = values
+  const invalidTokenHandler = useCallback(() => {
+    notify.error('Le lien a expiré. Veuillez recommencer.')
+    navigate('/demande-mot-de-passe')
+  }, [navigate, notify])
+
+  // If the FF WIP_2025_SIGN_UP is enabled, we check token validity on page load
+  useEffect(() => {
+    if (token && is2025SignUpEnabled) {
+      api.postCheckToken({ token }).then(() => {
+        setIsLoading(false)
+      }, invalidTokenHandler)
+    }
+  }, [token, invalidTokenHandler, is2025SignUpEnabled])
+
+  const submitChangePassword = async (values: ResetPasswordValues) => {
+    const { newPassword } = values
     try {
-      await api.postNewPassword({ newPassword: newPasswordValue, token })
-      setPasswordChanged(true)
+      await api.postNewPassword({ newPassword, token })
+
+      if (is2025SignUpEnabled) {
+        notify.success('Mot de passe modifié.')
+        navigate('/connexion')
+      } else {
+        setPasswordChanged(true)
+      }
     } catch {
-      setIsBadToken(true)
+      if (is2025SignUpEnabled) {
+        invalidTokenHandler()
+      } else {
+        setIsBadToken(true)
+      }
     }
   }
 
-  const formik = useFormik({
-    initialValues: { newPasswordValue: '' },
-    onSubmit: submitChangePassword,
-    validationSchema: validationSchema,
+  const hookForm = useForm<ResetPasswordValues>({
+    defaultValues: {
+      newPassword: '',
+      ...(is2025SignUpEnabled ? { newConfirmationPassword: '' } : {}),
+    },
+    resolver: yupResolver(validationSchema(is2025SignUpEnabled)),
+    mode: 'onTouched',
   })
 
+  if (isLoading) {
+    return <Spinner />
+  }
+
   return (
-    <Layout layout="logged-out">
+    <Layout layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}>
       <div>
         {passwordChanged && !isBadToken && (
           <Hero
@@ -59,11 +103,17 @@ export const ResetPassword = (): JSX.Element => {
         {token && !passwordChanged && !isBadToken && (
           <section>
             <h1 className={styles['change-password-title']}>
-              Définir un nouveau mot de passe
+              {is2025SignUpEnabled
+                ? 'Réinitialisation de mot de passe'
+                : 'Définir un nouveau mot de passe'}
             </h1>
-            <FormikProvider value={formik}>
-              <ChangePasswordForm />
-            </FormikProvider>
+            <p className={styles['mandatory-info']}>
+              Veuillez définir votre nouveau mot de passe afin d’accéder à la
+              plateforme.
+            </p>
+            <FormProvider {...hookForm}>
+              <ChangePasswordForm onSubmit={submitChangePassword} />
+            </FormProvider>
           </section>
         )}
       </div>
