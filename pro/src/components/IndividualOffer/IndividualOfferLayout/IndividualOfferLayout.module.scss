@@ -31,6 +31,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: rem.torem(16px);
+  justify-content: space-between;
 }
 
 .title-and-back-to-nav-link {

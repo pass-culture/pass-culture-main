@@ -73,12 +73,8 @@ export const CollectiveOfferLayout = ({
   return (
     <Layout
       layout={'sticky-actions'}
-      mainHeading={
-        <>
-          {title}
-          <span className={styles['eac-layout-sub-heading']}>{subTitle}</span>
-        </>
-      }
+      mainHeading={title}
+      mainSubHeading={subTitle}
       mainTopElement={isTemplate && (
           <Tag
             variant={TagVariant.SMALL_OUTLINE}
