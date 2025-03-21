@@ -40,7 +40,6 @@ const CollectiveOfferEdition = ({
       <OfferEducational
         userOfferer={offerEducationalFormData.offerer}
         domainsOptions={offerEducationalFormData.domains}
-        nationalPrograms={offerEducationalFormData.nationalPrograms}
         offer={offer}
         isOfferActive={offer.isActive}
         isOfferBooked={

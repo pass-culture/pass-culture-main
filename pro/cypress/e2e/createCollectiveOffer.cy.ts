@@ -24,8 +24,8 @@ describe('Create collective offers', () => {
       'http://localhost:5001/collective/educational-domains',
       {
         body: [
-          { id: 2, name: 'Danse' },
-          { id: 3, name: 'Architecture' },
+          { id: 2, name: 'Danse', nationalPrograms: [] },
+          { id: 3, name: 'Architecture', nationalPrograms: [] },
         ],
       }
     ).as('getDomains')

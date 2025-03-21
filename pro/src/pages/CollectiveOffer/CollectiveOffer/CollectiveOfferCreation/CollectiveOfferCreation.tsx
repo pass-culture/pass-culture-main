@@ -45,7 +45,6 @@ export const CollectiveOfferCreation = ({
       <OfferEducational
         userOfferer={offerEducationalFormData.offerer}
         domainsOptions={offerEducationalFormData.domains}
-        nationalPrograms={offerEducationalFormData.nationalPrograms}
         offer={offer}
         mode={Mode.CREATION}
         isTemplate={isTemplate}
