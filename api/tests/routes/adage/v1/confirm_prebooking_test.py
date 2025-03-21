@@ -12,8 +12,10 @@ from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.educational.factories import PendingCollectiveBookingFactory
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import Ministry
 from pcapi.routes.adage.v1.serialization import constants
 
@@ -76,6 +78,36 @@ class Returns200Test:
             CollectiveBooking.query.filter(CollectiveBooking.id == booking.id).one().status
             == CollectiveBookingStatus.CONFIRMED
         )
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_confirm_collective_prebooking_with_oa(self, client) -> None:
+        educational_institution = EducationalInstitutionFactory()
+        educational_year = EducationalYearFactory()
+        booking = PendingCollectiveBookingFactory(
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
+            collectiveStock__collectiveOffer__locationType=CollectiveLocationType.ADDRESS,
+            collectiveStock__collectiveOffer__offererAddress=None,
+            collectiveStock__collectiveOffer__locationComment=None,
+        )
+        offer = booking.collectiveStock.collectiveOffer
+        offer.offererAddress = offer.venue.offererAddress
+        EducationalDepositFactory(
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
+            amount=Decimal(1400.00),
+            isFinal=True,
+        )
+
+        booking_id = booking.id
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = client.with_eac_token().post(f"/adage/v1/prebookings/{booking_id}/confirm")
+
+        assert response.status_code == 200
+        assert response.json == {
+            **expected_serialized_prebooking(booking),
+            "address": "1 boulevard Poissonnière 75002 Paris",
+        }
 
     @time_machine.travel("2021-10-15 09:00:00")
     @pytest.mark.features(ENABLE_EAC_FINANCIAL_PROTECTION=True)

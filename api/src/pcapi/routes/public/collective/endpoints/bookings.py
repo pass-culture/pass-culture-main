@@ -1,13 +1,13 @@
 from functools import partial
 
-import sqlalchemy as sa
+from sqlalchemy import orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational.api import booking as educational_api_booking
-import pcapi.core.offerers.models as offerers_models
-import pcapi.core.providers.models as providers_models
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.providers import models as providers_models
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.repository import on_commit
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
@@ -77,10 +77,10 @@ def _get_booking(booking_id: int) -> models.CollectiveBooking | None:
         .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
         .filter(providers_models.VenueProvider.isActive == True)
         .options(
-            sa.orm.joinedload(models.CollectiveBooking.collectiveStock)
-            .load_only(models.CollectiveStock.id)
+            sa_orm.joinedload(models.CollectiveBooking.collectiveStock)
             .joinedload(models.CollectiveStock.collectiveOffer)
-            .load_only(models.CollectiveOffer.id),
+            .joinedload(models.CollectiveOffer.offererAddress)
+            .joinedload(offerers_models.OffererAddress.address)
         )
         .one_or_none()
     )

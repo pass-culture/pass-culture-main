@@ -1,14 +1,11 @@
-from typing import Any
-
 import pytest
 
+from pcapi.core.educational import models
 from pcapi.core.educational.factories import CancelledCollectiveBookingFactory
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
-from pcapi.core.educational.models import CollectiveBookingCancellationReasons
-from pcapi.core.educational.models import StudentLevels
 from pcapi.core.testing import assert_num_queries
 
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking
@@ -16,7 +13,10 @@ from tests.routes.adage.v1.conftest import expected_serialized_prebooking
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_get_prebookings_without_query_params(self, client: Any) -> None:
+    num_queries = 1  # fetch bookings
+    num_queries += 1  # fetch FF (WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE)
+
+    def test_get_prebookings_without_query_params(self, client):
         redactor = EducationalRedactorFactory(
             civility="M.",
             firstName="Jean",
@@ -31,10 +31,10 @@ class Returns200Test:
             educationalRedactor=redactor,
             collectiveStock__collectiveOffer__description=None,
             collectiveStock__collectiveOffer__students=[
-                StudentLevels.CAP1,
-                StudentLevels.CAP2,
-                StudentLevels.GENERAL2,
-                StudentLevels.GENERAL1,
+                models.StudentLevels.CAP1,
+                models.StudentLevels.CAP2,
+                models.StudentLevels.GENERAL2,
+                models.StudentLevels.GENERAL1,
             ],
             collectiveStock__collectiveOffer__offerVenue={
                 "addressType": "other",
@@ -54,7 +54,7 @@ class Returns200Test:
 
         dst = f"/adage/v1/years/{booking.educationalYear.adageId}/educational_institution/{booking.educationalInstitution.institutionId}/prebookings"
 
-        with assert_num_queries(1):
+        with assert_num_queries(self.num_queries):
             response = client.with_eac_token().get(dst)
 
         assert response.status_code == 200
@@ -62,7 +62,7 @@ class Returns200Test:
         assert len(response.json["prebookings"]) == 1
         assert response.json["prebookings"][0] == expected_serialized_prebooking(booking)
 
-    def test_get_prebookings_with_query_params(self, client: Any) -> None:
+    def test_get_prebookings_with_query_params(self, client):
         redactor = EducationalRedactorFactory(
             civility="M.",
             firstName="Jean",
@@ -93,13 +93,13 @@ class Returns200Test:
 
         dst = f"/adage/v1/years/{booking.educationalYear.adageId}/educational_institution/{booking.educationalInstitution.institutionId}/prebookings?redactorEmail={redactor.email}"
 
-        with assert_num_queries(1):
+        with assert_num_queries(self.num_queries):
             response = client.with_eac_token().get(dst)
 
         assert response.status_code == 200
         assert response.json == {"prebookings": [expected_serialized_prebooking(booking)]}
 
-    def test_get_prebookings_with_cancellation_reason(self, client: Any) -> None:
+    def test_get_prebookings_with_cancellation_reason(self, client):
         redactor = EducationalRedactorFactory(
             civility="M.",
             firstName="Jean",
@@ -109,7 +109,7 @@ class Returns200Test:
         educationalYear = EducationalYearFactory()
         educationalInstitution = EducationalInstitutionFactory()
         booking = CancelledCollectiveBookingFactory(
-            cancellationReason=CollectiveBookingCancellationReasons.BACKOFFICE,
+            cancellationReason=models.CollectiveBookingCancellationReasons.BACKOFFICE,
             educationalYear=educationalYear,
             educationalInstitution=educationalInstitution,
             educationalRedactor=redactor,
@@ -117,9 +117,32 @@ class Returns200Test:
 
         dst = f"/adage/v1/years/{booking.educationalYear.adageId}/educational_institution/{booking.educationalInstitution.institutionId}/prebookings"
 
-        with assert_num_queries(1):
+        with assert_num_queries(self.num_queries):
             response = client.with_eac_token().get(dst)
 
         assert response.status_code == 200
         assert len(response.json["prebookings"]) == 1
         assert response.json["prebookings"][0]["cancellationReason"] == "BACKOFFICE"
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_get_prebookings_with_oa(self, client):
+        booking = CollectiveBookingFactory(
+            educationalYear=EducationalYearFactory(),
+            educationalInstitution=EducationalInstitutionFactory(),
+            collectiveStock__collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
+            collectiveStock__collectiveOffer__offererAddress=None,
+            collectiveStock__collectiveOffer__locationComment=None,
+        )
+        offer = booking.collectiveStock.collectiveOffer
+        offer.offererAddress = offer.venue.offererAddress
+
+        dst = f"/adage/v1/years/{booking.educationalYear.adageId}/educational_institution/{booking.educationalInstitution.institutionId}/prebookings"
+        with assert_num_queries(self.num_queries):
+            response = client.with_eac_token().get(dst)
+
+        assert response.status_code == 200
+        assert response.json == {
+            "prebookings": [
+                {**expected_serialized_prebooking(booking), "address": "1 boulevard Poissonnière 75002 Paris"}
+            ]
+        }

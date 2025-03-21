@@ -1,6 +1,8 @@
 import pytest
 
+from pcapi.core.educational import models
 from pcapi.core.educational.factories import CollectiveBookingFactory
+from pcapi.core.educational.factories import ConfirmedCollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -36,6 +38,32 @@ class Returns200Test:
             "prebookings": [
                 expected_serialized_prebooking(booking1),
                 expected_serialized_prebooking(booking2),
+            ]
+        }
+
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_get_collective_bookings_with_oa(self, client):
+        educational_year = EducationalYearFactory()
+        educational_institution = EducationalInstitutionFactory()
+        booking = ConfirmedCollectiveBookingFactory(
+            educationalYear=educational_year,
+            educationalInstitution=educational_institution,
+            collectiveStock__collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
+            collectiveStock__collectiveOffer__offererAddress=None,
+            collectiveStock__collectiveOffer__locationComment=None,
+        )
+        offer = booking.collectiveStock.collectiveOffer
+        offer.offererAddress = offer.venue.offererAddress
+
+        with assert_no_duplicated_queries():
+            response = client.with_eac_token().get(
+                f"/adage/v1/years/{educational_year.adageId}/educational_institution/{educational_institution.institutionId}/prebookings"
+            )
+
+        assert response.status_code == 200
+        assert response.json == {
+            "prebookings": [
+                {**expected_serialized_prebooking(booking), "address": "1 boulevard Poissonnière 75002 Paris"}
             ]
         }
 
