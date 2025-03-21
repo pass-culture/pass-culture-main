@@ -10,10 +10,7 @@ export const validationSchema = {
         'Veuillez sélectionner une adresse parmi les suggestions'
       ),
   }),
-  street: yup
-    .string()
-    .trim()
-    .required('Veuillez renseigner une adresse postale'),
+  street: yup.string().nullable().trim(),
   postalCode: yup
     .string()
     .trim()

@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
+import { expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
@@ -79,11 +80,9 @@ fetchMock.mockResponse(
 const renderOffererAuthenticationForm = (
   {
     initialValues,
-    onSubmit = vi.fn(),
     contextValue,
   }: {
     initialValues: Partial<OffererAuthenticationFormValues>
-    onSubmit?: () => void
     contextValue: SignupJourneyContextValues
   },
   options: RenderWithProvidersOptions = {}
@@ -92,7 +91,7 @@ const renderOffererAuthenticationForm = (
     <SignupJourneyContext.Provider value={contextValue}>
       <Formik
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={vi.fn()}
         validationSchema={validationSchema}
       >
         <Form>
