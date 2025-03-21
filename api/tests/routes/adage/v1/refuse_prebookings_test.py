@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Any
 
 import pytest
 import time_machine
@@ -11,18 +10,16 @@ from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import CollectiveStock
-import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.testing import assert_num_queries
 
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_refuse_collective_booking(
-        self,
-        client: Any,
-    ) -> None:
+    def test_refuse_collective_booking(self, client):
         redactor = EducationalRedactorFactory(
             civility="M.",
             firstName="Jean",
@@ -42,9 +39,10 @@ class Returns200Test:
         client = client.with_eac_token()
         booking_id = collective_booking.id
 
-        # 1. re-fetch collective booking with related data (1 query)
-        # 2. update booking (1 query)
-        with assert_num_queries(2):
+        num_queries = 1  # re-fetch collective booking with related data
+        num_queries += 1  # update booking
+        num_queries += 1  # fetch FF (WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE)
+        with assert_num_queries(num_queries):
             response = client.post(f"/adage/v1/prebookings/{booking_id}/refuse")
 
         refused_collective_booking = CollectiveBooking.query.filter(
@@ -79,7 +77,23 @@ class Returns200Test:
             "BOOKING_ID": collective_booking.id,
         }
 
-    def test_refuse_collective_booking_when_pending(self, client: Any) -> None:
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_refuse_collective_booking_with_oa(self, client):
+        collective_booking = CollectiveBookingFactory(
+            status=CollectiveBookingStatus.PENDING,
+            collectiveStock__collectiveOffer__locationType=CollectiveLocationType.ADDRESS,
+            collectiveStock__collectiveOffer__offererAddress=None,
+            collectiveStock__collectiveOffer__locationComment=None,
+        )
+        offer = collective_booking.collectiveStock.collectiveOffer
+        offer.offererAddress = offer.venue.offererAddress
+
+        response = client.with_eac_token().post(f"/adage/v1/prebookings/{collective_booking.id}/refuse")
+
+        assert response.status_code == 200
+        assert response.json["address"] == "1 boulevard Poissonnière 75002 Paris"
+
+    def test_refuse_collective_booking_when_pending(self, client):
         collective_booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.PENDING,
             cancellationLimitDate=datetime(2020, 1, 1),
@@ -101,7 +115,7 @@ class Returns200Test:
         assert len(mails_testing.outbox) == 1
 
     @time_machine.travel("2022-11-17 15:00:00")
-    def test_refuse_collective_booking_when_confirmed(self, client: Any) -> None:
+    def test_refuse_collective_booking_when_confirmed(self, client):
         collective_booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.CONFIRMED,
             cancellationLimitDate=datetime(2022, 11, 18),
@@ -123,7 +137,7 @@ class Returns200Test:
         assert len(mails_testing.outbox) == 1
 
     @time_machine.travel("2022-05-05 10:00:00")
-    def test_returns_no_error_when_already_cancelled(self, client: Any) -> None:
+    def test_returns_no_error_when_already_cancelled(self, client):
         booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.CANCELLED, cancellationLimitDate=datetime(2022, 10, 10)
         )
@@ -137,7 +151,7 @@ class Returns200Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-    def test_returns_error_when_not_refusable(self, client: Any) -> None:
+    def test_returns_error_when_not_refusable(self, client):
         booking = UsedCollectiveBookingFactory()
 
         client = client.with_eac_token()
@@ -147,7 +161,7 @@ class Returns400Test:
         assert response.json == {"code": "EDUCATIONAL_BOOKING_NOT_REFUSABLE"}
         assert len(mails_testing.outbox) == 0
 
-    def test_returns_error_when_no_educational_booking_found(self, client: Any) -> None:
+    def test_returns_error_when_no_educational_booking_found(self, client):
         client = client.with_eac_token()
         response = client.post("/adage/v1/prebookings/123/refuse")
 
@@ -155,7 +169,7 @@ class Returns400Test:
         assert response.json == {"code": "EDUCATIONAL_BOOKING_NOT_FOUND"}
         assert len(mails_testing.outbox) == 0
 
-    def test_returns_error_when_cancellation_limit_date_is_passed(self, client: Any) -> None:
+    def test_returns_error_when_cancellation_limit_date_is_passed(self, client):
         booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.CONFIRMED,
             cancellationLimitDate=datetime(2020, 1, 1),

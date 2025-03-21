@@ -211,7 +211,7 @@ def get_educational_year_beginning_at_given_year(year: int) -> educational_model
 def _get_bookings_for_adage_base_query() -> BaseQuery:
     query = educational_models.CollectiveBooking.query
     query = query.options(
-        sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
+        sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
         .load_only(
             educational_models.CollectiveStock.startDatetime,
             educational_models.CollectiveStock.endDatetime,
@@ -240,12 +240,14 @@ def _get_bookings_for_adage_base_query() -> BaseQuery:
             educational_models.CollectiveOffer.imageId,
             educational_models.CollectiveOffer.bookingEmails,
             educational_models.CollectiveOffer.formats,
+            educational_models.CollectiveOffer.locationType,
+            educational_models.CollectiveOffer.locationComment,
         )
         .options(
-            sa.orm.joinedload(educational_models.CollectiveOffer.domains).load_only(
+            sa_orm.joinedload(educational_models.CollectiveOffer.domains).load_only(
                 educational_models.EducationalDomain.id
             ),
-            sa.orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
             .load_only(
                 offerers_models.Venue.city,
                 offerers_models.Venue.postalCode,
@@ -259,11 +261,14 @@ def _get_bookings_for_adage_base_query() -> BaseQuery:
             )
             .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True)
             .load_only(offerers_models.Offerer.name, offerers_models.Offerer.siren, offerers_models.Offerer.postalCode),
+            sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).joinedload(
+                offerers_models.OffererAddress.address
+            ),
         )
     )
 
-    query = query.options(sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution))
-    query = query.options(sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor))
+    query = query.options(sa_orm.joinedload(educational_models.CollectiveBooking.educationalInstitution))
+    query = query.options(sa_orm.joinedload(educational_models.CollectiveBooking.educationalRedactor))
 
     return query
 
@@ -327,12 +332,17 @@ def find_active_collective_booking_by_offer_id(
             educational_models.CollectiveStock.collectiveOfferId == collective_offer_id,
         )
         .options(
-            sa.orm.contains_eager(educational_models.CollectiveBooking.collectiveStock)
+            sa_orm.contains_eager(educational_models.CollectiveBooking.collectiveStock)
             .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
-            .joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
+            .options(
+                sa_orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True),
+                sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).joinedload(
+                    offerers_models.OffererAddress.address
+                ),
+            )
         )
-        .options(sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution, innerjoin=True))
-        .options(sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor, innerjoin=True))
+        .options(sa_orm.joinedload(educational_models.CollectiveBooking.educationalInstitution, innerjoin=True))
+        .options(sa_orm.joinedload(educational_models.CollectiveBooking.educationalRedactor, innerjoin=True))
         .one_or_none()
     )
 
