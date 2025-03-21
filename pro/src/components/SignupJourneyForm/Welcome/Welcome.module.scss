@@ -23,5 +23,5 @@ $welcome-gap: rem.torem(32px);
 .caption-informations {
   @include fonts.body-accent-xs;
 
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
 }

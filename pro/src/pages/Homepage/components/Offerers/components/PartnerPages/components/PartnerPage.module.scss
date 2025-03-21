@@ -26,7 +26,7 @@
   flex-direction: column;
 
   &-type {
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
     text-transform: uppercase;
   }
 
@@ -55,7 +55,7 @@
 
 .details-normal {
   margin-right: rem.torem(8px);
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
 }
 
 .details-description {

@@ -88,10 +88,4 @@ $text-padding-left: calc(
       fill: var(--color-input-text-color-disabled);
     }
   }
-
-  &-placeholder {
-    @include fonts.body-italic;
-
-    color: var(--color-grey-dark);
-  }
 }

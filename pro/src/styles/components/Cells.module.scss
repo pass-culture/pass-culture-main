@@ -120,13 +120,13 @@
 .isbn {
   @include fonts.body-accent-xs;
 
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
 }
 
 .stocks {
   @include fonts.body-accent-xs;
 
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
   display: flex;
   align-items: center;
   position: relative;
@@ -208,7 +208,7 @@
   outline: none;
   border: none;
   background-color: var(--color-background-default);
-  color: var(--color-black);
+  color: var(--color-text-default);
   height: rem.torem(32px);
 
   &[data-state="open"] {
@@ -255,7 +255,7 @@
 }
 
 .button-cancel-booking {
-  color: var(--color-error);
+  color: var(--color-text-error);
 }
 
 .status-filter-label {

@@ -78,7 +78,7 @@
       &-text {
         @include fonts.body-accent-xs;
 
-        color: var(--color-grey-dark);
+        color: var(--color-text-subtle);
         display: flex;
         align-items: center;
         margin-top: rem.torem(16px);

@@ -15,7 +15,7 @@
   border-radius: rem.torem(forms.$input-border-radius);
   background-color: var(--color-background-default);
   padding: 0 rem.torem(16px);
-  color: var(--color-input-text-color);
+  color: var(--color-text-default);
   box-shadow: 0 0 0 0 var(--color-black);
   transition:
     background 150ms ease,
@@ -36,7 +36,7 @@
   &:disabled {
     cursor: unset;
     background-color: var(--color-background-disabled);
-    color: var(--color-input-text-color-disabled);
+    color: var(--color-text-disabled);
     opacity: 1;
     border-color: var(--color-input-border-color-disabled);
 
@@ -48,14 +48,14 @@
   &::placeholder {
     @include fonts.body-italic;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
     opacity: 1;
   }
 
   &:-webkit-autofill,
   &:-internal-autofill-selected {
     background-color: var(--color-background-default) !important;
-    color: var(--color-input-text-color) !important;
+    color: var(--color-text-default) !important;
   }
 }
 
@@ -85,7 +85,7 @@
   }
 
   :disabled + & {
-    color: var(--color-input-text-color-disabled);
+    color: var(--color-text-disabled);
   }
 }
 

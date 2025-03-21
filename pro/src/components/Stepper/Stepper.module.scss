@@ -29,7 +29,7 @@ $number-size: rem.torem(30px);
     .step {
       display: flex;
       position: relative;
-      color: var(--color-grey-dark);
+      color: var(--color-text-subtle);
       align-items: center;
     }
 
@@ -52,7 +52,7 @@ $number-size: rem.torem(30px);
 
     &.selectionnable {
       .step {
-        color: var(--color-black);
+        color: var(--color-text-default);
 
         .number {
           .inner {

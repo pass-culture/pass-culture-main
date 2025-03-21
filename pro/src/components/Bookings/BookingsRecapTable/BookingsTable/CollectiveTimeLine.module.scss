@@ -9,13 +9,13 @@
   &-step-title-passed {
     @include fonts.body-accent;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-subtle);
   }
 
   &-step-title-disabled {
     @include fonts.body-accent;
 
-    color: var(--color-grey-dark);
+    color: var(--color-text-disabled);
   }
 
   &-step-decription-with-link {
@@ -47,11 +47,10 @@
 .contact-link {
   @include fonts.button;
 
-  color: var(--color-black);
+  color: var(--color-text-default);
 
   &:hover,
   &:focus {
-    color: var(--color-black);
     cursor: pointer;
     text-decoration: underline;
   }

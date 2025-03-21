@@ -17,6 +17,7 @@
   height: rem.torem(40px);
   white-space: nowrap;
   cursor: pointer;
+  color: var(--color-text-default);
 
   &-is-active {
     @include fonts.button;
@@ -39,7 +40,7 @@
   &:disabled {
     cursor: not-allowed;
     border: none;
-    color: var(--color-grey-dark);
+    color: var(--color-text-disabled);
     background-color: var(--color-background-disabled);
   }
 

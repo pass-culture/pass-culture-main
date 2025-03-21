@@ -15,6 +15,7 @@
   border: 0;
   padding: 0;
   background-color: transparent;
+  color: var(--color-text-default);
 }
 
 .toggle:active:not([disabled]) {
@@ -75,7 +76,7 @@
 }
 
 .toggle[disabled] {
-  color: var(--color-black);
+  color: var(--color-text-disabled);
   cursor: not-allowed;
 }
 

@@ -9,7 +9,7 @@
   gap: rem.torem(16px);
   border: none;
   background-color: var(--color-background-subtle);
-  color: var(--color-black);
+  color: var(--color-text-default);
   box-shadow: 0 rem.torem(1px) rem.torem(8px)
     rgb(from var(--color-large-shadow) r g b / 15%);
   border-radius: rem.torem(8px);

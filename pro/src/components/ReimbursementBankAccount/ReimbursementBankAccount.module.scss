@@ -68,7 +68,7 @@
   .issue-text {
     @include fonts.body-accent-xs;
 
-    color: var(--color-error);
+    color: var(--color-text-error);
     margin-bottom: rem.torem(16px);
   }
 
