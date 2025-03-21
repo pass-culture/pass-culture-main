@@ -689,6 +689,142 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
         assert len(mails_testing.outbox) == 0
 
 
+class GetBatchFinanceIncidentValidationFormTest(PostEndpointHelper):
+
+    endpoint = "backoffice_web.finance_incidents.get_batch_finance_incidents_validation_form"
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_validate_finance_incidents_form(
+        self,
+        authenticated_client,
+        incidents,
+    ):
+        finance_factories.CollectiveBookingFinanceIncidentFactory(
+            incident__id=39,
+            incident__status=finance_models.IncidentStatus.CREATED,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": "36,39"},
+        )
+
+        assert response.status_code == 200
+        response_text = html_parser.content_as_text(response.data)
+        assert "Voulez-vous valider les incidents sélectionnés ?" in response_text
+        assert "Vous allez valider 2 incidents. Voulez vous continuer ?" in response_text
+        assert "Générer une note de débit à la prochaine échéance" in response_text
+        assert "Récupérer l'argent sur les prochaines réservations Mode de compensation" in response_text
+
+    def test_validate_finance_incidents_with_other_status_then_created(
+        self,
+        authenticated_client,
+        incidents,
+    ):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": "36,37,38",
+            },
+        )
+
+        assert response.status_code == 200
+        assert (
+            """Seules les incidents avec le statut "Créé" peuvent faire l'objet d'une validation/annulation"""
+            in html_parser.extract_alert(response.data)
+        )
+
+    def test_validate_finance_incidents_with_different_type(
+        self,
+        authenticated_client,
+        incidents,
+    ):
+        finance_factories.CollectiveBookingFinanceIncidentFactory(
+            incident__id=40,
+            incident__status=finance_models.IncidentStatus.CREATED,
+            incident__kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": "36,40",
+            },
+        )
+
+        assert response.status_code == 200
+        assert (
+            "Votre sélection inclut des incidents de type Trop Percu et Geste Commercial. "
+            "La validation ou le rejet en masse est donc impossible" in html_parser.extract_alert(response.data)
+        )
+
+
+class GetBatchFinanceIncidentCancellationFormTest(PostEndpointHelper):
+
+    endpoint = "backoffice_web.finance_incidents.get_batch_finance_incidents_cancellation_form"
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_cancel_finance_incidents_form(
+        self,
+        authenticated_client,
+        incidents,
+    ):
+        finance_factories.CollectiveBookingFinanceIncidentFactory(
+            incident__id=39,
+            incident__status=finance_models.IncidentStatus.CREATED,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": "36,39"},
+        )
+
+        assert response.status_code == 200
+        response_text = html_parser.content_as_text(response.data)
+        assert "Voulez-vous annuler les incidents sélectionnés ?" in response_text
+        assert "Vous allez annuler 2 incidents. Voulez vous continuer ?" in response_text
+
+    def test_validate_finance_incidents_with_other_status_then_created(
+        self,
+        authenticated_client,
+        incidents,
+    ):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": "36,37,38",
+            },
+        )
+
+        assert response.status_code == 200
+        assert (
+            """Seules les incidents avec le statut "Créé" peuvent faire l'objet d'une validation/annulation"""
+            in html_parser.extract_alert(response.data)
+        )
+
+    def test_cancel_finance_incidents_with_different_type(
+        self,
+        authenticated_client,
+        incidents,
+    ):
+        finance_factories.CollectiveBookingFinanceIncidentFactory(
+            incident__id=40,
+            incident__status=finance_models.IncidentStatus.CREATED,
+            incident__kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": "36,40"},
+        )
+
+        assert response.status_code == 200
+        assert (
+            "Votre sélection inclut des incidents de type Trop Percu et Geste Commercial. "
+            "La validation ou le rejet en masse est donc impossible" in html_parser.extract_alert(response.data)
+        )
+
+
 class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.validate_finance_commercial_gesture"
     endpoint_kwargs = {"finance_incident_id": 1}

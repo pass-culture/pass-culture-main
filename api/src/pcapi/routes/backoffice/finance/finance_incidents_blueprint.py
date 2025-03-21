@@ -881,6 +881,128 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
     return _get_finance_overpayment_incident_validation_form(finance_incident)
 
 
+@finance_incidents_blueprint.route("/batch/validate_form", methods=["GET", "POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_batch_finance_incidents_validation_form() -> utils.BackofficeResponse:
+    form = forms.BatchIncidentValidationForm()
+    if form.object_ids.data:
+
+        finance_incidents = finance_models.FinanceIncident.query.filter(
+            finance_models.FinanceIncident.id.in_(form.object_ids_list),
+        ).all()
+
+        if finance_incidents[0].kind == finance_models.IncidentType.COMMERCIAL_GESTURE:
+            form = empty_forms.BatchForm()
+
+        if not (valid := validation.check_validate_or_cancel_finance_incidents(finance_incidents)):
+            mark_transaction_as_invalid()
+            return render_template(
+                "components/turbo/modal_empty_form.html",
+                form=empty_forms.BatchForm(),
+                messages=valid.messages,
+            )
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.finance_incidents.batch_finance_incidents_validation"),
+        div_id="batch-validate-modal",
+        title="Voulez-vous valider les incidents sélectionnés ?",
+        button_text="Valider",
+        information=Markup("Vous allez valider {number_of_incidents} incidents. Voulez vous continuer ?").format(
+            number_of_incidents=len(form.object_ids_list)
+        ),
+    )
+
+
+@finance_incidents_blueprint.route("/batch/validate_overpayment", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def batch_finance_incidents_validation() -> utils.BackofficeResponse:
+    form = forms.BatchIncidentValidationForm()
+
+    finance_incidents = finance_models.FinanceIncident.query.filter(
+        finance_models.FinanceIncident.id.in_(form.object_ids_list)
+    ).all()
+
+    if finance_incidents[0].kind == finance_models.IncidentType.COMMERCIAL_GESTURE:
+        form = empty_forms.BatchForm()
+
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        mark_transaction_as_invalid()
+        return redirect(request.referrer or url_for("backoffice_web.finance_incidents.list_finance_incidents"), 303)
+
+    if finance_incidents[0].kind == finance_models.IncidentType.OVERPAYMENT:
+        for incident in finance_incidents:
+            finance_api.validate_finance_overpayment_incident(
+                incident,
+                force_debit_note=form.compensation_mode.data == forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name,
+                author=current_user,
+            )
+    elif finance_incidents[0].kind == finance_models.IncidentType.COMMERCIAL_GESTURE:
+        for incident in finance_incidents:
+            finance_api.validate_finance_commercial_gesture(
+                incident,
+                author=current_user,
+            )
+
+    return redirect(request.referrer or url_for("backoffice_web.finance_incidents.list_finance_incidents"), 303)
+
+
+@finance_incidents_blueprint.route("/batch/cancel_form", methods=["GET", "POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_batch_finance_incidents_cancellation_form() -> utils.BackofficeResponse:
+    form = forms.BatchIncidentCancellationForm()
+    if form.object_ids.data:
+
+        finance_incidents = finance_models.FinanceIncident.query.filter(
+            finance_models.FinanceIncident.id.in_(form.object_ids_list),
+        ).all()
+
+        if not (valid := validation.check_validate_or_cancel_finance_incidents(finance_incidents)):
+            mark_transaction_as_invalid()
+            return render_template(
+                "components/turbo/modal_empty_form.html",
+                form=empty_forms.BatchForm(),
+                messages=valid.messages,
+            )
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=forms.BatchIncidentCancellationForm(),
+        dst=url_for("backoffice_web.finance_incidents.batch_finance_incidents_cancellation"),
+        div_id="batch-reject-modal",
+        title="Voulez-vous annuler les incidents sélectionnés ?",
+        button_text="Confirmer l'annulation",
+        information=Markup("Vous allez annuler {number_of_incidents} incidents. Voulez vous continuer ?").format(
+            number_of_incidents=len(form.object_ids_list)
+        ),
+    )
+
+
+@finance_incidents_blueprint.route("/batch/cancel", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def batch_finance_incidents_cancellation() -> utils.BackofficeResponse:
+    form = forms.BatchIncidentCancellationForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        mark_transaction_as_invalid()
+        return redirect(request.referrer or url_for("backoffice_web.finance_incidents.list_finance_incidents"), 303)
+
+    finance_incidents = finance_models.FinanceIncident.query.filter(
+        finance_models.FinanceIncident.id.in_(form.object_ids_list),
+    ).all()
+
+    for incident in finance_incidents:
+        finance_api.cancel_finance_incident(
+            incident,
+            comment=form.comment.data,
+            author=current_user,
+        )
+
+    return redirect(request.referrer or url_for("backoffice_web.finance_incidents.list_finance_incidents"), 303)
+
+
 @finance_incidents_blueprint.route("/overpayment/<int:finance_incident_id>/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def validate_finance_overpayment_incident(finance_incident_id: int) -> utils.BackofficeResponse:

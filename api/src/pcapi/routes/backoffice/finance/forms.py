@@ -10,6 +10,7 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
+from pcapi.routes.backoffice.offerers import forms as offerer_forms
 
 
 not_implemented_incident_types = [
@@ -78,6 +79,14 @@ class IncidentValidationForm(FlaskForm):
     compensation_mode = fields.PCSelectField(
         "Mode de compensation", choices=forms_utils.choices_from_enum(IncidentCompensationModes)
     )
+
+
+class BatchIncidentValidationForm(empty_forms.BatchForm, IncidentValidationForm):
+    pass
+
+
+class BatchIncidentCancellationForm(empty_forms.BatchForm, offerer_forms.CommentForm):
+    pass
 
 
 class GetIncidentsSearchForm(forms_utils.PCForm):

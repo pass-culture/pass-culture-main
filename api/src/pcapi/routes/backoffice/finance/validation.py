@@ -181,3 +181,19 @@ def check_commercial_gesture_total_amount(
                 message="Au moins un des jeunes ayant fait une réservation a encore du crédit pour payer la réservation.",
             )
     return Valid(True)
+
+
+def check_validate_or_cancel_finance_incidents(finance_incidents: list[finance_models.FinanceIncident]) -> Valid:
+    if len({incident.kind for incident in finance_incidents}) != 1:
+        return Valid(
+            is_valid=False,
+            message="Votre sélection inclut des incidents de type Trop Percu et Geste Commercial. "
+            "La validation ou le rejet en masse est donc impossible",
+        )
+
+    if {incident.status for incident in finance_incidents} != set([finance_models.IncidentStatus.CREATED]):
+        return Valid(
+            is_valid=False,
+            message="""Seules les incidents avec le statut "Créé" peuvent faire l'objet d'une validation/annulation""",
+        )
+    return Valid(True)
