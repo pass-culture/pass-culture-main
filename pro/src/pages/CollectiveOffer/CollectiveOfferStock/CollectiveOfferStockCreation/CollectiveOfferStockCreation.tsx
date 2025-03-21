@@ -7,6 +7,7 @@ import {
   CollectiveStockResponseModel,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
+import { Layout } from 'app/App/layout/Layout'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -168,21 +169,24 @@ export const CollectiveOfferStockCreation = ({
   }
 
   return (
-    <CollectiveOfferLayout
-      subTitle={offer.name}
-      isTemplate={isTemplate}
-      isCreation={isCreation}
-      requestId={requestId}
-      offer={offer}
-    >
-      <OfferEducationalStock
-        initialValues={initialValues}
-        mode={Mode.CREATION}
-        offer={offer}
-        onSubmit={handleSubmitStock}
+    <Layout layout={'sticky-actions'}>
+      <CollectiveOfferLayout
+        subTitle={offer.name}
+        isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+        isTemplate={isTemplate}
+        isCreation={isCreation}
         requestId={requestId}
-      />
-    </CollectiveOfferLayout>
+        offer={offer}
+      >
+        <OfferEducationalStock
+          initialValues={initialValues}
+          mode={Mode.CREATION}
+          offer={offer}
+          onSubmit={handleSubmitStock}
+          requestId={requestId}
+        />
+      </CollectiveOfferLayout>
+    </Layout>
   )
 }
 

@@ -25,6 +25,7 @@ export interface CollectiveOfferLayoutProps {
   subTitle?: string
   isCreation?: boolean
   isTemplate?: boolean
+  isFromTemplate?: boolean
   requestId?: string | null
   offer?:
     | GetCollectiveOfferResponseModel
@@ -34,6 +35,7 @@ export interface CollectiveOfferLayoutProps {
 export const CollectiveOfferLayout = ({
   children,
   subTitle,
+  isFromTemplate = false,
   isCreation = false,
   isTemplate = false,
   requestId = null,
@@ -54,7 +56,7 @@ export const CollectiveOfferLayout = ({
     offerId: string
   }>()
   let title = isCreation
-    ? isTemplate
+    ? isFromTemplate
       ? 'Créer une offre vitrine'
       : 'Créer une offre réservable'
     : isSummaryPage

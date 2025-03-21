@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
-import { Mode } from 'commons/core/OfferEducational/types'
+import { Layout } from 'app/App/layout/Layout'
+import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
@@ -32,42 +33,45 @@ export const CollectiveOfferSummaryCreation = ({
       }`
 
   return (
-    <CollectiveOfferLayout
-      subTitle={offer.name}
-      isTemplate={isTemplate}
-      isCreation={true}
-      offer={offer}
-    >
-      <div className={styles['summary']}>
-        <CollectiveOfferSummary
-          offer={offer}
-          offerEditLink={`/offre/collectif${
-            offer.isTemplate ? '/vitrine' : ''
-          }/${offer.id}/creation`}
-          stockEditLink={`/offre/${offer.id}/collectif/stocks`}
-          visibilityEditLink={`/offre/${offer.id}/collectif/visibilite`}
-        />
-        <ActionsBarSticky>
-          <ActionsBarSticky.Left>
-            <ButtonLink
-              variant={ButtonVariant.SECONDARY}
-              to={backRedirectionUrl}
-            >
-              Retour
-            </ButtonLink>
-          </ActionsBarSticky.Left>
-          <ActionsBarSticky.Right dirtyForm={false} mode={Mode.CREATION}>
-            <ButtonLink
-              variant={ButtonVariant.PRIMARY}
-              to={nextRedirectionUrl}
-            >
-              Enregistrer et continuer
-            </ButtonLink>
-          </ActionsBarSticky.Right>
-        </ActionsBarSticky>
-      </div>
-      <RouteLeavingGuardCollectiveOfferCreation when={false} />
-    </CollectiveOfferLayout>
+    <Layout layout={'sticky-actions'}>
+      <CollectiveOfferLayout
+        subTitle={offer.name}
+        isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+        isTemplate={isTemplate}
+        isCreation={true}
+        offer={offer}
+      >
+        <div className={styles['summary']}>
+          <CollectiveOfferSummary
+            offer={offer}
+            offerEditLink={`/offre/collectif${
+              offer.isTemplate ? '/vitrine' : ''
+            }/${offer.id}/creation`}
+            stockEditLink={`/offre/${offer.id}/collectif/stocks`}
+            visibilityEditLink={`/offre/${offer.id}/collectif/visibilite`}
+          />
+          <ActionsBarSticky>
+            <ActionsBarSticky.Left>
+              <ButtonLink
+                variant={ButtonVariant.SECONDARY}
+                to={backRedirectionUrl}
+              >
+                Retour
+              </ButtonLink>
+            </ActionsBarSticky.Left>
+            <ActionsBarSticky.Right dirtyForm={false} mode={Mode.CREATION}>
+              <ButtonLink
+                variant={ButtonVariant.PRIMARY}
+                to={nextRedirectionUrl}
+              >
+                Enregistrer et continuer
+              </ButtonLink>
+            </ActionsBarSticky.Right>
+          </ActionsBarSticky>
+        </div>
+        <RouteLeavingGuardCollectiveOfferCreation when={false} />
+      </CollectiveOfferLayout>
+    </Layout>
   )
 }
 
