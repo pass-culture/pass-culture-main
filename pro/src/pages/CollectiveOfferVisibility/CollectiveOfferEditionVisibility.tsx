@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
+import { Layout } from 'app/App/layout/Layout'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY,
@@ -65,19 +66,21 @@ const CollectiveOfferVisibility = ({
   }
 
   return (
-    <CollectiveOfferLayout offer={offer} subTitle={offer.name} isTemplate={isTemplate}>
-      <CollectiveOfferVisibilityScreen
-        mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
-        initialValues={extractInitialVisibilityValues(
-          offer.institution,
-          offer.teacher
-        )}
-        onSuccess={onSuccess}
-        institutions={educationalInstitutionsQuery.data}
-        isLoadingInstitutions={educationalInstitutionsQuery.isLoading}
-        offer={offer}
-      />
-    </CollectiveOfferLayout>
+    <Layout layout={'sticky-actions'}>
+      <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
+        <CollectiveOfferVisibilityScreen
+          mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
+          initialValues={extractInitialVisibilityValues(
+            offer.institution,
+            offer.teacher
+          )}
+          onSuccess={onSuccess}
+          institutions={educationalInstitutionsQuery.data}
+          isLoadingInstitutions={educationalInstitutionsQuery.isLoading}
+          offer={offer}
+        />
+      </CollectiveOfferLayout>
+    </Layout>
   )
 }
 
