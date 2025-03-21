@@ -231,6 +231,7 @@ $connect-as-header-height: rem.torem(52px);
 }
 
 .content {
+  position: relative;
   max-width: 100%;
   border: none;
   margin: 0;
@@ -297,14 +298,29 @@ $connect-as-header-height: rem.torem(52px);
     flex-direction: row;
     align-items: center;
     margin-bottom: rem.torem(32px);
+
+    &-with-subtitle {
+      align-items: flex-end;
+    }
   }
 
   &-title {
     @include fonts.title1;
   }
 
+  &-subtitle {
+    @include fonts.title2;
+  
+    max-width: rem.torem(588px);
+    display: block;
+  }
+
   &-back-to-nav-link {
     margin-left: rem.torem(16px);
+
+    &-with-subtitle {
+      margin-bottom: rem.torem(4px);
+    }
   }
 }
 

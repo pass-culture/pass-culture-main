@@ -73,20 +73,20 @@ export const CollectiveOfferLayout = ({
   return (
     <Layout
       layout={'sticky-actions'}
-      mainHeading={
-        <>
+      mainHeading={(
+        <div className={styles['eac-layout-heading-wrapper']}>
+          {isTemplate && (
+            <Tag
+              variant={TagVariant.SMALL_OUTLINE}
+              className={styles['eac-layout-tag']}
+            >
+              Offre vitrine
+            </Tag>
+          )}
           {title}
-          <span className={styles['eac-layout-sub-heading']}>{subTitle}</span>
-        </>
-      }
-      mainTopElement={isTemplate && (
-          <Tag
-            variant={TagVariant.SMALL_OUTLINE}
-            className={styles['eac-layout-tag']}
-          >
-            Offre vitrine
-          </Tag>
+        </div>
       )}
+      mainSubHeading={subTitle}
     >
       {isCreation && (
         <CollectiveBudgetCallout
