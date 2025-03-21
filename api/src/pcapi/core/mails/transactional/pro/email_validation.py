@@ -1,20 +1,19 @@
 from pcapi import settings
 from pcapi.core import mails
-from pcapi.core import token as token_utils
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.models import User
 
 
-def get_email_validation_to_pro_email_data(token: token_utils.Token) -> models.TransactionalEmailData:
+def get_email_validation_to_pro_email_data(token: str) -> models.TransactionalEmailData:
     return models.TransactionalEmailData(
         template=TransactionalEmail.SIGNUP_EMAIL_CONFIRMATION_TO_PRO.value,
         params={
-            "EMAIL_VALIDATION_LINK": f"{settings.PRO_URL}/inscription/validation/{token.encoded_token}",
+            "EMAIL_VALIDATION_LINK": f"{settings.PRO_URL}/inscription/validation/{token}",
         },
     )
 
 
-def send_signup_email_confirmation_to_pro(user: User, token: token_utils.Token) -> None:
+def send_signup_email_confirmation_to_pro(user: User, token: str) -> None:
     data = get_email_validation_to_pro_email_data(token)
     mails.send(recipients=[user.email], data=data)
