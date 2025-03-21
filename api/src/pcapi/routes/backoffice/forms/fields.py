@@ -344,6 +344,10 @@ class PCSelectField(wtforms.SelectField):
         self.default_text = default_text
 
 
+class PCLimitField(PCSelectField):
+    widget = partial(widget, template="components/forms/limit_field.html")
+
+
 class PCSelectWithPlaceholderValueField(wtforms.SelectField):
     widget = partial(widget, template="components/forms/select_with_placeholder_value_field.html")
     validators = [validators.InputRequired("Information obligatoire")]

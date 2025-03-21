@@ -61,6 +61,8 @@
 class PcBatchActionForm extends PcAddOn {
   static BATCH_CONFIRM_BTN_GROUP_SELECTOR = '[data-toggle="pc-batch-confirm-btn-group"]'
   static BATCH_CONFIRM_BTN_SELECTOR = 'button[data-use-confirmation-modal]'
+  static BATCH_ACTION_BUTTON_CONTAINER = '[data-table-multiselect-menu-for="%s"]'
+  static BATCH_ACTION_BUTTON_CONTAINER_ITEM_COUNTER = '.counter'
 
   state = {}
 
@@ -70,6 +72,14 @@ class PcBatchActionForm extends PcAddOn {
 
   getBatchConfirmButtons($batchConfirmBtnGroup) {
     return $batchConfirmBtnGroup.querySelectorAll(PcBatchActionForm.BATCH_CONFIRM_BTN_SELECTOR)
+  }
+
+  getBatchActionButtonContainer = (tableId) => {
+    return document.querySelector(PcBatchActionForm.BATCH_ACTION_BUTTON_CONTAINER.replace('%s', tableId))
+  }
+
+  getCounterElement = ($menuContainer) => {
+    return $menuContainer.querySelector(PcBatchActionForm.BATCH_ACTION_BUTTON_CONTAINER_ITEM_COUNTER)
   }
 
   initialize = () => {
@@ -106,6 +116,7 @@ class PcBatchActionForm extends PcAddOn {
 
   #onBatchSelectionChange = ({ detail }) => {
     const { selectedRowsIds, tableMultiSelectId } = detail
+    const $menuContainer = this.getBatchActionButtonContainer(tableMultiSelectId)
     this.state[tableMultiSelectId] = { selectedRowsIds }
     this.$batchConfirmBtnGroups.forEach(($batchConfirmBtnGroup) => {
       const { pcTableMultiSelectId } = $batchConfirmBtnGroup.dataset
@@ -117,6 +128,15 @@ class PcBatchActionForm extends PcAddOn {
         $button.disabled = selectedRowsIds.size === 0
       })
     })
+    if($menuContainer !== null) {
+      if (selectedRowsIds.size === 0) {
+        $menuContainer.classList.add('d-none')
+      } else {
+        $menuContainer.classList.remove('d-none')
+        const $counterElement = this.getCounterElement($menuContainer)
+        $counterElement.innerText = selectedRowsIds.size
+      }
+    }
   }
 
   #onBatchButtonClick = async (event) => {

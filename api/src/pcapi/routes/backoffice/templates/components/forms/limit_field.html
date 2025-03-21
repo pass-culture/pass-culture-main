@@ -1,0 +1,18 @@
+<div class="form-floating dropdown pc-field-{{ field.name }}">
+  {% set select_field_id = random_hash() %}
+  <select class="pc-limit-field {% if field.flags.required %}pc-required{% endif %}"
+          id="{{ select_field_id }}"
+          name="{{ field.name }}"
+          data-original-name="{{ field.name }}"
+          aria-label="{{ field.name }}"
+          {% if field.flags.required %}required {% endif +%}
+          data-default-value="{{ field.default }}">
+    {% if not field.default %}<option value="">{{ field.default_text }}</option>{% endif %}
+    {% for choice_value, choice_label in field.choices %}
+      <option value="{{ choice_value }}"
+              {{ 'selected' if field.data==choice_value else '' }}>
+        {{ choice_label }}
+      </option>
+    {% endfor %}
+  </select>
+</div>

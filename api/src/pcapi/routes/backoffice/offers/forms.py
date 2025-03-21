@@ -123,9 +123,14 @@ class GetOffersBaseFields(forms_utils.PCForm):
     order = wtforms.HiddenField(
         "order", default="asc", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("asc", "desc")))
     )
-    limit = fields.PCSelectField(
+    limit = fields.PCLimitField(
         "Nombre maximum de résultats",
-        choices=((100, "100"), (500, "500"), (1000, "1000"), (3000, "3000")),
+        choices=(
+            (100, "Afficher 100 résultats maximum"),
+            (500, "Afficher 500 résultats maximum"),
+            (1000, "Afficher 1000 résultats maximum"),
+            (3000, "Afficher 3000 résultats maximum"),
+        ),
         default="100",
         coerce=int,
         validators=(wtforms.validators.Optional(),),

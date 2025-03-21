@@ -34,7 +34,7 @@ $dark:      #c10046;
 // scss-docs-end theme-color-variables
 
 // scss-docs-start border-radius-variables
-$border-radius:               1rem;
+$border-radius:               0.5rem;
 $border-radius-sm:            $border-radius;
 $border-radius-lg:            1.5rem;
 $border-radius-xl:            $border-radius;
@@ -112,3 +112,15 @@ $zindex-levels: map-merge($zindex-levels, (
   4: 4,
   5: 5
 ));
+
+// scss-docs-start font-sizes
+$font-sizes: (
+  1: $h1-font-size,
+  2: $h2-font-size,
+  3: $h3-font-size,
+  4: $h4-font-size,
+  5: $h5-font-size,
+  6: $h6-font-size,
+  7: $font-size-base * 0.75
+);
+// scss-docs-end font-sizes

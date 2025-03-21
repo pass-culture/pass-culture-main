@@ -88,7 +88,7 @@
   <a href="{{ url_for(endpoint) }}?search-0-search_field=VENUE&search-0-operator=IN&search-0-venue={{ venue.id }}"
      class="link-primary"
      target="_blank"
-     title="{{ hint }} associées au partenaire culturel"><i class="bi bi-eye h5"></i></a>
+     title="{{ hint }} associées au partenaire culturel">Voir toutes les offres</a>
 {% endmacro %}
 {% macro build_offer_details_link(offer) %}
   <a href="{{ url_for('backoffice_web.offer.get_offer_details', offer_id=offer.id) }}"

@@ -1,27 +1,23 @@
 {% macro display_selector(name, options, class) %}
-  <div class="pc-display-selector {{ class }}"
+  <div class="pc-display-selector d-flex {{ class }}"
        data-pc-input-name="{{ name }}"
        data-pc-save-state="true"
+       data-pc-selected-classes="border border-primary"
        data-pc-ignore-if-query-args="true">
     {% for text, tooltip, value, checked in options %}
-      <div class="form-check form-check-inline">
-        <input class="form-check-input"
+      <label class="form-check-label p-3 rounded d-flex {% if not loop.first %}ms-4{% endif %}{% if checked %} pc-display-selector-checked border border-primary {% else %} {% endif %}"
+             for="{{ name }}-{{ loop.index }}">
+        <input class="form-check-input me-3"
                type="radio"
                name="{{ name }}"
                id="{{ name }}-{{ loop.index }}"
                value="{{ value }}"
                {% if checked %}checked{% endif %}>
-        <label class="form-check-label"
-               for="{{ name }}-{{ loop.index }}">
-          {{ text }}
-          {% if tooltip %}
-            <i class="bi bi-question-diamond-fill"
-               data-bs-toggle="tooltip"
-               data-bs-placement="top"
-               data-bs-title="{{ tooltip }}"></i>
-          {% endif %}
-        </label>
-      </div>
+        <div>
+          <p class="mb-1">{{ text }}</p>
+          {% if tooltip %}<span class="fs-7 d-inline-block">{{ tooltip  | nl2br }}</span>{% endif %}
+        </div>
+      </label>
     {% endfor %}
   </div>
 {% endmacro %}

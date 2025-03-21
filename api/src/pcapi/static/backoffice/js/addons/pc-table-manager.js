@@ -123,7 +123,7 @@ class PcTableManager extends PcAddOn {
           <i class="bi bi-layout-three-columns"></i>
           Colonnes
         </button>
-      <div class="dropdown-menu pc-table-manager-dropdown"  data-pc-target-table-id="${configuration.id}">
+      <div class="dropdown-menu dropdown-menu-end mt-2 pc-table-manager-dropdown"  data-pc-target-table-id="${configuration.id}">
         <div class="pc-drop-down-header">
           <span>
             Affichez et ordonnez les<br/>colonnes de votre choix.
@@ -165,9 +165,8 @@ class PcTableManager extends PcAddOn {
   }
 
   #onCloseMenuClick = (event) => {
-    const tableId = event.target.dataset.pcTargetTableId
-    const $container = document.querySelector(`#pc-table-manager-menu-container-${tableId}`)
-    const $menu = $container.querySelector('.pc-table-manager-dropdown')
+    const configurationId = event.target.dataset.pcTargetTableId
+    const $menu = document.querySelector(`#pc-table-manager-menu-container-${configurationId}`).closest('.show')
     $menu.classList.remove('show')
   }
 
@@ -280,6 +279,7 @@ class PcTableManager extends PcAddOn {
           const rawPadding = window.getComputedStyle($target, null).getPropertyValue('margin-top')
           let margin = parseInt(rawPadding.replace(/[^0-9]/g, ''))
           margin += parseInt($target.parentElement.dataset.pcTableManagerDraggableHeight)
+          margin += 8 // old margin
           $target.style.marginTop = margin + 'px'
           $target.style.marginBottom = ''
         }
@@ -291,6 +291,7 @@ class PcTableManager extends PcAddOn {
           const rawPadding = window.getComputedStyle($target, null).getPropertyValue('margin-bottom')
           let margin = parseInt(rawPadding.replace(/[^0-9]/g, ''))
           margin += parseInt($target.parentElement.dataset.pcTableManagerDraggableHeight)
+          margin += 8 // old margin
           $target.style.marginBottom = margin + 'px'
           $target.style.marginTop = ''
         }

@@ -36,10 +36,22 @@ class PcDisplaySelector extends PcAddOn {
   #manageDisplay = ($selector) => {
     this.#inputInSelector($selector).forEach(($input) => {
         const $target = document.getElementById($input.value)
+        const $container = $input.closest("LABEL")
+        const selectedClasses =  this.#getSelectorFromInput($input).dataset.pcSelectedClasses
+        const classes = selectedClasses ? selectedClasses.split(' ') : []
+
         if($input.checked === true){
+          $container.classList.add('pc-display-selector-checked')
+          classes.forEach( (klass) => {
+            $container.classList.add(klass)
+          })
           $target.classList.remove('d-none')
         } else {
           $target.classList.add('d-none')
+          $container.classList.remove('pc-display-selector-checked')
+          classes.forEach( (klass) => {
+            $container.classList.remove(klass)
+          })
         }
       })
   }
