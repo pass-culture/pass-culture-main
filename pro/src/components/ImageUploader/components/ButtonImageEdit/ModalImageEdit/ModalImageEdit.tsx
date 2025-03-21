@@ -81,6 +81,7 @@ export const ModalImageEdit = ({
     heightCropPercent: initalHeightCropPercent,
     widthCropPercent: initalWidthCropPercent,
   } = initialCropParams || {}
+
   const [editorInitialPosition, setEditorInitialPosition] = useState({
     x:
       initalXCropPercent && initalWidthCropPercent

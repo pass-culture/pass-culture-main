@@ -308,12 +308,14 @@ export const OfferFilters = ({
                   >
                     <div className={styles['geoloc-slider']}>
                       <Slider
-                        fieldName="geolocRadius"
+                        name="geolocRadius"
                         label="Dans un rayon de"
                         scale="km"
                         min={1}
                         max={100}
                         displayValue={true}
+                        onChange={formik.handleChange}
+                        value={formik.values.geolocRadius}
                       />
                     </div>
                   </ModalFilterLayout>
