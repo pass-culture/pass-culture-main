@@ -15,12 +15,29 @@ vi.mock('apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     postNewPassword: vi.fn(),
+    postCheckToken: vi.fn(),
   },
 }))
 
-const renderLostPassword = (url: string) => {
+const mockUseNavigate = vi.fn()
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  useNavigate: () => mockUseNavigate,
+}))
+
+const mockUseNotification = {
+  error: vi.fn(),
+  success: vi.fn(),
+}
+vi.mock('commons/hooks/useNotification', async () => ({
+  ...(await vi.importActual('commons/hooks/useNotification')),
+  useNotification: () => mockUseNotification,
+}))
+
+const renderLostPassword = (url: string, features: string[] = []) => {
   renderWithProviders(<ResetPassword />, {
     initialRouterEntries: [url],
+    features,
   })
 }
 
@@ -53,5 +70,47 @@ describe('ResetPassword', () => {
     await userEvent.click(screen.getByText(/Valider/))
 
     expect(screen.getByText('Ce lien a expiré !')).toBeInTheDocument()
+  })
+
+  describe('with FF WIP_2025_SIGN_UP', () => {
+    it('should be able to reset the password when token is ok', async () => {
+      const url = '/mot-de-passe-perdu?token=ABC'
+
+      vi.spyOn(api, 'postCheckToken').mockResolvedValue()
+
+      renderLostPassword(url, ['WIP_2025_SIGN_UP'])
+
+      await userEvent.type(
+        await screen.findByLabelText(/Nouveau mot de passe/),
+        'MyN3wP4$$w0rd'
+      )
+      await userEvent.type(
+        await screen.findByLabelText(/Confirmation mot de passe/),
+        'MyN3wP4$$w0rd'
+      )
+      await userEvent.click(screen.getByText(/Confirmer/))
+
+      expect(mockUseNotification.success).toHaveBeenCalledWith(
+        'Mot de passe modifié.'
+      )
+      expect(mockUseNavigate).toHaveBeenCalledWith('/connexion')
+    })
+
+    it('should immediately redirect to login page if token is invalid', async () => {
+      const url = '/mot-de-passe-perdu?token=ABC'
+
+      vi.spyOn(api, 'postCheckToken').mockRejectedValue({
+        token: ['Votre lien de changement de mot de passe est invalide.'],
+      })
+
+      renderLostPassword(url, ['WIP_2025_SIGN_UP'])
+
+      await vi.waitFor(() => {
+        expect(mockUseNotification.error).toHaveBeenCalledWith(
+          'Le lien a expiré. Veuillez recommencer.'
+        )
+        expect(mockUseNavigate).toHaveBeenCalledWith('/demande-mot-de-passe')
+      })
+    })
   })
 })

@@ -25,3 +25,9 @@ class NewPasswordBodyModel(BaseModel):
 
     _validate_token = validate_not_empty_string_when_provided("token")
     _validate_newPassword = validate_not_empty_string_when_provided("newPassword")
+
+
+class CheckTokenBodyModel(BaseModel):
+    token: str
+
+    _validate_token = validate_not_empty_string_when_provided("token")

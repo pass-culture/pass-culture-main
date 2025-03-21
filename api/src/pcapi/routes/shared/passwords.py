@@ -1,5 +1,6 @@
 import logging
 
+from flask import jsonify
 import sqlalchemy as sa
 
 from pcapi import settings
@@ -17,6 +18,7 @@ from pcapi.domain.password import check_password_strength
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
+from pcapi.routes.serialization.password_serialize import CheckTokenBodyModel
 from pcapi.routes.serialization.password_serialize import NewPasswordBodyModel
 from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -69,3 +71,19 @@ def post_new_password(body: NewPasswordBodyModel) -> None:
         raise errors
 
     update_password_and_external_user(user, new_password)
+
+
+@private_api.route("/users/check-token", methods=["POST"])
+@spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
+def post_check_token(body: CheckTokenBodyModel) -> None:
+    token_value = body.token
+
+    try:
+        token = token_utils.Token.load_and_check(token_value, token_utils.TokenType.RESET_PASSWORD)
+
+    except users_exceptions.InvalidToken:
+        errors = ApiErrors()
+        errors.add_error("token", "Votre lien de changement de mot de passe est invalide.")
+        raise errors
+
+    return jsonify({"success": True}), 200

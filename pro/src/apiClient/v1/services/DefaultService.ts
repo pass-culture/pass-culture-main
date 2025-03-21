@@ -11,6 +11,7 @@ import type { BookingStatusFilter } from '../models/BookingStatusFilter';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
 import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
+import type { CheckTokenBodyModel } from '../models/CheckTokenBodyModel';
 import type { CollectiveBookingByIdResponseModel } from '../models/CollectiveBookingByIdResponseModel';
 import type { CollectiveBookingStatusFilter } from '../models/CollectiveBookingStatusFilter';
 import type { CollectiveOfferDisplayedStatus } from '../models/CollectiveOfferDisplayedStatus';
@@ -2264,6 +2265,27 @@ export class DefaultService {
         'stock_id': stockId,
       },
       errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * post_check_token <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public postCheckToken(
+    requestBody?: CheckTokenBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/users/check-token',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: `Bad Request`,
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
