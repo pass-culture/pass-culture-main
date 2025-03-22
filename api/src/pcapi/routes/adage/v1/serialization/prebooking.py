@@ -9,11 +9,11 @@ from pydantic.v1.fields import Field
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import schemas as educational_schemas
+from pcapi.core.educational.adage_backends import serialize as adage_serialize
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import EducationalBookingStatus
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.routes.serialization import BaseModel
 
@@ -111,25 +111,20 @@ def serialize_collective_bookings(
 def serialize_collective_booking(
     collective_booking: CollectiveBooking,
 ) -> educational_schemas.EducationalBookingResponse:
-    stock: educational_models.CollectiveStock = collective_booking.collectiveStock
-    offer: educational_models.CollectiveOffer = stock.collectiveOffer
+    stock = collective_booking.collectiveStock
+    offer = stock.collectiveOffer
     domains = offer.domains
-    venue: offerers_models.Venue = offer.venue
+    venue = offer.venue
     return educational_schemas.EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
-        address=_get_collective_offer_address(offer),
+        address=adage_serialize.get_collective_offer_address(offer),
         startDatetime=stock.startDatetime,
         endDatetime=stock.endDatetime,
         cancellationDate=collective_booking.cancellationDate,
         cancellationLimitDate=collective_booking.cancellationLimitDate,
-        city=venue.city,
         confirmationDate=collective_booking.confirmationDate,
         confirmationLimitDate=collective_booking.confirmationLimitDate,
         contact=_get_collective_offer_contact(offer),
-        coordinates={  # type: ignore[arg-type]
-            "latitude": venue.latitude,
-            "longitude": venue.longitude,
-        },
         creationDate=collective_booking.dateCreated,
         description=offer.description,
         durationMinutes=offer.durationMinutes,
@@ -141,7 +136,6 @@ def serialize_collective_booking(
         numberOfTickets=stock.numberOfTickets,
         participants=[student.value for student in offer.students],
         priceDetail=stock.priceDetail,
-        postalCode=venue.postalCode,
         price=stock.price,
         quantity=1,
         redactor={  # type: ignore[arg-type]
@@ -195,26 +189,6 @@ def _get_collective_offer_contact(offer: educational_models.CollectiveOffer) -> 
     )
 
 
-def _get_collective_offer_address(offer: educational_models.CollectiveOffer) -> str:
-    default_address = f"{offer.venue.street}, {offer.venue.postalCode} {offer.venue.city}"
-
-    if offer.offerVenue is None:
-        return default_address
-
-    address_type = offer.offerVenue["addressType"]
-
-    if address_type == "offererVenue":
-        return default_address
-
-    if address_type == "other":
-        return offer.offerVenue["otherAddress"]
-
-    if address_type == "school":
-        return "Dans l’établissement scolaire"
-
-    return default_address
-
-
 def _get_educational_offer_accessibility(offer: educational_models.CollectiveOffer) -> str:
     disability_compliance = []
     if offer.audioDisabilityCompliant:
@@ -232,26 +206,21 @@ def _get_educational_offer_accessibility(offer: educational_models.CollectiveOff
 def serialize_reimbursement_notification(
     collective_booking: CollectiveBooking, reason: str, value: decimal.Decimal, details: str
 ) -> educational_schemas.AdageReimbursementNotification:
-    stock: educational_models.CollectiveStock = collective_booking.collectiveStock
-    offer: educational_models.CollectiveOffer = stock.collectiveOffer
+    stock = collective_booking.collectiveStock
+    offer = stock.collectiveOffer
     domains = offer.domains
-    venue: offerers_models.Venue = offer.venue
+    venue = offer.venue
     return educational_schemas.AdageReimbursementNotification(
         accessibility=_get_educational_offer_accessibility(offer),
-        address=_get_collective_offer_address(offer),
+        address=adage_serialize.get_collective_offer_address(offer),
         startDatetime=stock.startDatetime,
         endDatetime=stock.endDatetime,
         cancellationDate=collective_booking.cancellationDate,
         cancellationLimitDate=collective_booking.cancellationLimitDate,
         cancellationReason=collective_booking.cancellationReason,
-        city=venue.city,
         confirmationDate=collective_booking.confirmationDate,
         confirmationLimitDate=collective_booking.confirmationLimitDate,
         contact=_get_collective_offer_contact(offer),
-        coordinates={  # type: ignore[arg-type]
-            "latitude": venue.latitude,
-            "longitude": venue.longitude,
-        },
         creationDate=collective_booking.dateCreated,
         description=offer.description,
         durationMinutes=offer.durationMinutes,
@@ -263,7 +232,6 @@ def serialize_reimbursement_notification(
         numberOfTickets=stock.numberOfTickets,
         participants=[student.value for student in offer.students],
         priceDetail=stock.priceDetail,
-        postalCode=venue.postalCode,
         price=stock.price,
         quantity=1,
         redactor={  # type: ignore[arg-type]

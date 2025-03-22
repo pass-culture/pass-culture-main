@@ -3,7 +3,8 @@ from datetime import datetime
 import decimal
 
 from pcapi.core.educational import models
-import pcapi.core.educational.schemas as educational_schemas
+from pcapi.core.educational import schemas as educational_schemas
+from pcapi.models import feature
 
 
 class CollectiveOfferNotAssociatedToInstitution(Exception):
@@ -27,16 +28,13 @@ class AdageCollectiveOffer(educational_schemas.AdageBaseResponseModel):
     address: str
     startDatetime: datetime
     endDatetime: datetime
-    city: str
     contact: AdageCollectiveOfferContact
-    coordinates: educational_schemas.Coordinates
     description: str | None
     durationMinutes: float | None
     id: int
     name: str
     numberOfTickets: int
     participants: list[models.StudentLevels]
-    postalCode: str
     price: decimal.Decimal
     priceDetail: str | None
     quantity: int
@@ -59,19 +57,16 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
 
     return AdageCollectiveOffer(
         UAICode=institution.institutionId,
-        address=_get_collective_offer_address(collective_offer),
+        address=get_collective_offer_address(collective_offer),
         startDatetime=stock.startDatetime,
         endDatetime=stock.endDatetime,
-        city=venue.city,  # type: ignore[arg-type]  # TODO: check that it cannot be None
         contact=AdageCollectiveOfferContact(phone=collective_offer.contactPhone, email=collective_offer.contactEmail),
-        coordinates=educational_schemas.Coordinates(latitude=venue.latitude, longitude=venue.longitude),
         description=collective_offer.description,
         durationMinutes=collective_offer.durationMinutes,
         id=collective_offer.id,
         name=collective_offer.name,
         numberOfTickets=stock.numberOfTickets,
         participants=collective_offer.students,
-        postalCode=venue.postalCode,  # type: ignore[arg-type]  # TODO: check that it cannot be None
         price=stock.price,
         priceDetail=stock.priceDetail,
         quantity=1,
@@ -91,7 +86,28 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
     )
 
 
-def _get_collective_offer_address(offer: models.CollectiveOffer) -> str:
+def _get_collective_offer_address_with_oa(offer: models.CollectiveOffer) -> str:
+    match offer.locationType:
+        case models.CollectiveLocationType.SCHOOL:
+            return "Dans l’établissement scolaire"
+
+        case models.CollectiveLocationType.ADDRESS:
+            if offer.offererAddress is None:
+                return ""
+
+            return offer.offererAddress.address.fullAddress
+
+        case models.CollectiveLocationType.TO_BE_DEFINED:
+            return offer.locationComment or ""
+
+        case _:
+            return ""
+
+
+def get_collective_offer_address(offer: models.CollectiveOffer) -> str:
+    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active():
+        return _get_collective_offer_address_with_oa(offer)
+
     default_address = f"{offer.venue.street}, {offer.venue.postalCode} {offer.venue.city}"
 
     if offer.offerVenue is None:
