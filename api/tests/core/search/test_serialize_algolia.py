@@ -23,8 +23,8 @@ from pcapi.core.providers.constants import BookFormat
 from pcapi.core.reactions import factories as reactions_factories
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.search import get_base_query_for_offer_indexation
+from pcapi.core.search import serialization
 from pcapi.core.search.backends import algolia
-from pcapi.core.search.backends import serialization
 from pcapi.models import db
 from pcapi.utils.human_ids import humanize
 
