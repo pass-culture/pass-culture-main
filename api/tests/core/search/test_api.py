@@ -12,8 +12,8 @@ from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.search.backends import redis_queues
-from pcapi.core.search.backends import serialization
+from pcapi.core.search import redis_queues
+from pcapi.core.search import serialization
 import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
