@@ -1,12 +1,8 @@
-from datetime import datetime
-from decimal import Decimal
+import datetime
+import decimal
 
-from sqlalchemy import and_
-from sqlalchemy import exc
-from sqlalchemy import func
-from sqlalchemy import not_
-from sqlalchemy.orm import Load
-from sqlalchemy.orm import joinedload
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.core.external.attributes.api import update_external_user
@@ -35,8 +31,8 @@ from .serialization import favorites as serializers
 
 def _fill_offer_price(
     offer: Offer,
-    min_price: Decimal,
-    max_price: Decimal,
+    min_price: decimal.Decimal,
+    max_price: decimal.Decimal,
 ) -> None:
     offer.price = None
     offer.startPrice = None
@@ -46,7 +42,9 @@ def _fill_offer_price(
         offer.startPrice = min_price
 
 
-def _fill_offer_date(offer: Offer, min_beginning_datetime: datetime, max_beginning_datetime: datetime) -> None:
+def _fill_offer_date(
+    offer: Offer, min_beginning_datetime: datetime.datetime, max_beginning_datetime: datetime.datetime
+) -> None:
     offer.date = None
     offer.startDate = None
     if min_beginning_datetime == max_beginning_datetime:
@@ -65,10 +63,10 @@ def _fill_offer_expired(offer: Offer, non_expired_count: int, active_count: int)
 def _fill_favorite_offer(
     *,
     favorite: Favorite,
-    min_price: Decimal,
-    max_price: Decimal,
-    min_beginning_datetime: datetime,
-    max_beginning_datetime: datetime,
+    min_price: decimal.Decimal,
+    max_price: decimal.Decimal,
+    min_beginning_datetime: datetime.datetime,
+    max_beginning_datetime: datetime.datetime,
     non_expired_count: int,
     active_count: int,
 ) -> None:
@@ -86,32 +84,38 @@ def get_favorites_count(user: User) -> serializers.FavoritesCountResponse:
 
 
 def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favorite]:
-    active_stock_filters = and_(Offer.isActive.is_(True), Stock.isSoftDeleted.is_(False))
-    stock_filters = and_(
-        not_(Stock.isEventExpired),
-        not_(Stock.hasBookingLimitDatetimePassed),
+    active_stock_filters = sa.and_(Offer.isActive.is_(True), Stock.isSoftDeleted.is_(False))
+    stock_filters = sa.and_(
+        sa.not_(Stock.isEventExpired),
+        sa.not_(Stock.hasBookingLimitDatetimePassed),
         active_stock_filters,
     )
     query = (
         db.session.query(
             Favorite,
-            func.min(Stock.price).filter(stock_filters).over(partition_by=Stock.offerId).label("min_price"),
-            func.max(Stock.price).filter(stock_filters).over(partition_by=Stock.offerId).label("max_price"),
-            func.min(Stock.beginningDatetime).filter(stock_filters).over(partition_by=Stock.offerId).label("min_begin"),
-            func.max(Stock.beginningDatetime).filter(stock_filters).over(partition_by=Stock.offerId).label("max_begin"),
+            sa.func.min(Stock.price).filter(stock_filters).over(partition_by=Stock.offerId).label("min_price"),
+            sa.func.max(Stock.price).filter(stock_filters).over(partition_by=Stock.offerId).label("max_price"),
+            sa.func.min(Stock.beginningDatetime)
+            .filter(stock_filters)
+            .over(partition_by=Stock.offerId)
+            .label("min_begin"),
+            sa.func.max(Stock.beginningDatetime)
+            .filter(stock_filters)
+            .over(partition_by=Stock.offerId)
+            .label("max_begin"),
             # count future active
-            func.count(Stock.id).filter(stock_filters).over(partition_by=Stock.offerId).label("non_expired_count"),
+            sa.func.count(Stock.id).filter(stock_filters).over(partition_by=Stock.offerId).label("non_expired_count"),
             # count all active
-            func.count(Stock.id).filter(active_stock_filters).over(partition_by=Stock.offerId).label("active_count"),
+            sa.func.count(Stock.id).filter(active_stock_filters).over(partition_by=Stock.offerId).label("active_count"),
         )
-        .options(Load(Favorite).load_only(Favorite.id))
+        .options(sa_orm.Load(Favorite).load_only(Favorite.id))
         .join(Favorite.offer)
         .join(Offer.venue)
         .outerjoin(Offer.stocks)
         .filter(Favorite.userId == user.id)
         .distinct(Favorite.id)
         .options(
-            joinedload(Favorite.offer).load_only(
+            sa_orm.joinedload(Favorite.offer).load_only(
                 Offer.name,
                 Offer.externalTicketOfficeUrl,
                 Offer.url,
@@ -121,29 +125,29 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
             )
         )
         .options(
-            joinedload(Favorite.offer)
+            sa_orm.joinedload(Favorite.offer)
             .joinedload(Offer.venue)
             .load_only(Venue.latitude, Venue.longitude, Venue.publicName, Venue.name)
         )
         .options(
-            joinedload(Favorite.offer)
+            sa_orm.joinedload(Favorite.offer)
             .joinedload(Offer.venue)
             .joinedload(Venue.managingOfferer)
             .load_only(Offerer.validationStatus, Offerer.isActive, Offerer.name)
         )
         .options(
-            joinedload(Favorite.offer)
+            sa_orm.joinedload(Favorite.offer)
             .joinedload(Offer.mediations)
             .load_only(Mediation.dateCreated, Mediation.isActive, Mediation.thumbCount, Mediation.credit)
         )
         .options(
-            joinedload(Favorite.offer)
+            sa_orm.joinedload(Favorite.offer)
             .joinedload(Offer.product)
             .load_only(Product.id, Product.thumbCount)
             .joinedload(Product.productMediations)
         )
-        .options(joinedload(Favorite.offer).joinedload(Offer.stocks))
-        .options(joinedload(Favorite.offer).joinedload(Offer.offererAddress).joinedload(OffererAddress.address))
+        .options(sa_orm.joinedload(Favorite.offer).joinedload(Offer.stocks))
+        .options(sa_orm.joinedload(Favorite.offer).joinedload(Offer.offererAddress).joinedload(OffererAddress.address))
         .order_by(Favorite.id.desc())
     )
 
@@ -205,7 +209,7 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
             db.session.add(favorite)
     except OfferNotFound as exception:
         raise ResourceNotFoundError() from exception
-    except exc.IntegrityError as exception:
+    except sa.exc.IntegrityError as exception:
         favorite = Favorite.query.filter_by(offerId=body.offerId, userId=user.id).one_or_none()
         if not favorite:
             raise exception

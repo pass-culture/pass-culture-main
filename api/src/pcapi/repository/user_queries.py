@@ -1,5 +1,4 @@
-from sqlalchemy import Boolean
-from sqlalchemy import func
+import sqlalchemy as sa
 from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.functions import Function
 
@@ -11,18 +10,18 @@ def find_pro_users_by_email_provider(email_provider: str) -> list[User]:
     return (
         User.query.filter_by(is_beneficiary=False, isActive=True)
         .filter(User.UserOfferers.any())
-        .filter(func.lower(User.email).like(func.lower(formatted_email_provider)))
+        .filter(sa.func.lower(User.email).like(sa.func.lower(formatted_email_provider)))
         .all()
     )
 
 
-def matching(column: str, search_value: str) -> ColumnElement[Boolean]:
+def matching(column: str, search_value: str) -> ColumnElement[sa.Boolean]:
     return _sanitized_string(column) == _sanitized_string(search_value)
 
 
 def _sanitized_string(value: str) -> Function:
-    sanitized = func.replace(value, "-", "")
-    sanitized = func.replace(sanitized, " ", "")
-    sanitized = func.unaccent(sanitized)
-    sanitized = func.lower(sanitized)
+    sanitized = sa.func.replace(value, "-", "")
+    sanitized = sa.func.replace(sanitized, " ", "")
+    sanitized = sa.func.unaccent(sanitized)
+    sanitized = sa.func.lower(sanitized)
     return sanitized

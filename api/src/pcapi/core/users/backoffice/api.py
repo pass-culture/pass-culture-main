@@ -1,6 +1,6 @@
 import typing
 
-from sqlalchemy import orm
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import models as perm_models
@@ -26,12 +26,12 @@ def fetch_user_with_profile(user_id: int) -> models.User | None:
     return (
         models.User.query.filter_by(id=user_id)
         .options(
-            orm.joinedload(models.User.backoffice_profile)
+            sa_orm.joinedload(models.User.backoffice_profile)
             .joinedload(perm_models.BackOfficeUserProfile.roles)
             .joinedload(perm_models.Role.permissions)
         )
         .options(
-            orm.load_only(
+            sa_orm.load_only(
                 models.User.id, models.User.email, models.User.firstName, models.User.lastName, models.User.roles
             )
         )

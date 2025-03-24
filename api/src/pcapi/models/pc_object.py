@@ -4,10 +4,9 @@ import re
 import typing
 
 from flask_sqlalchemy import BaseQuery as FlaskSQLAlchemyBaseQuery
-from sqlalchemy import BigInteger
+import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
-from sqlalchemy.sql.schema import Column
 from werkzeug.exceptions import NotFound
 
 from pcapi.models import db
@@ -41,7 +40,7 @@ class DeletedRecordException(Exception):
 class PcObject:
     query_class = BaseQuery
 
-    id: sa_orm.Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: sa_orm.Mapped[int] = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     def __init__(self, **kwargs: typing.Any) -> None:
         from_dict = kwargs.pop("from_dict", None)

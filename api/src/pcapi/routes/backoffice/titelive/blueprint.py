@@ -10,7 +10,7 @@ from flask_login import current_user
 from markupsafe import Markup
 import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
-from sqlalchemy import orm
+import sqlalchemy.orm as sa_orm
 
 from pcapi.connectors.serialization import titelive_serializers
 from pcapi.connectors.titelive import GtlIdError
@@ -78,13 +78,13 @@ def search_titelive() -> utils.BackofficeResponse:
     product_whitelist = (
         fraud_models.ProductWhitelist.query.filter(fraud_models.ProductWhitelist.ean == ean)
         .options(
-            orm.load_only(
+            sa_orm.load_only(
                 fraud_models.ProductWhitelist.ean,
                 fraud_models.ProductWhitelist.dateCreated,
                 fraud_models.ProductWhitelist.comment,
                 fraud_models.ProductWhitelist.authorId,
             ),
-            orm.joinedload(fraud_models.ProductWhitelist.author).load_only(
+            sa_orm.joinedload(fraud_models.ProductWhitelist.author).load_only(
                 users_models.User.firstName, users_models.User.lastName
             ),
         )

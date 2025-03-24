@@ -2,9 +2,8 @@ import logging
 
 from flask_login import current_user
 from flask_login import login_required
-from sqlalchemy import and_
-from sqlalchemy import or_
-import sqlalchemy.orm as sqla_orm
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -51,7 +50,7 @@ def _get_existing_stocks_by_fields(
     stock_payload: list[stock_serialize.StockCreationBodyModel | stock_serialize.StockEditionBodyModel],
 ) -> list[offers_models.Stock]:
     combinaisons_to_check = [
-        and_(
+        sa.and_(
             offers_models.Stock.offerId == offer_id,
             offers_models.Stock.isSoftDeleted == False,
             offers_models.Stock.beginningDatetime == stock.beginning_datetime,
@@ -59,7 +58,7 @@ def _get_existing_stocks_by_fields(
         )
         for stock in stock_payload
     ]
-    return offers_models.Stock.query.filter(or_(*combinaisons_to_check)).all()
+    return offers_models.Stock.query.filter(sa.or_(*combinaisons_to_check)).all()
 
 
 def _get_existing_stocks_by_id(
@@ -92,7 +91,7 @@ def upsert_stocks(body: stock_serialize.StocksUpsertBodyModel) -> stock_serializ
 
     offer = (
         offers_models.Offer.query.options(
-            sqla_orm.joinedload(offers_models.Offer.priceCategories),
+            sa_orm.joinedload(offers_models.Offer.priceCategories),
         )
         .filter_by(id=body.offer_id)
         .one()

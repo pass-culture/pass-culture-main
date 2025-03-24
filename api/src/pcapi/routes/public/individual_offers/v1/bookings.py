@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import orm as sqla_orm
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.achievements import models as achievements_models
 from pcapi.core.bookings import api as bookings_api
@@ -25,7 +25,7 @@ from pcapi.validation.routes.users_authentifications import provider_api_key_req
 from . import bookings_serialization as serialization
 
 
-def _get_base_booking_query() -> sqla_orm.Query:
+def _get_base_booking_query() -> sa_orm.Query:
     return (
         booking_models.Booking.query.join(offerers_models.Venue)
         .join(offerers_models.Venue.managingOfferer)
@@ -37,7 +37,7 @@ def _get_base_booking_query() -> sqla_orm.Query:
         .join(offers_models.Stock)
         .join(offers_models.Offer)
         .options(
-            sqla_orm.contains_eager(booking_models.Booking.venue)
+            sa_orm.contains_eager(booking_models.Booking.venue)
             .load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
@@ -45,17 +45,17 @@ def _get_base_booking_query() -> sqla_orm.Query:
                 offerers_models.Venue.departementCode,
             )
             .options(
-                sqla_orm.contains_eager(offerers_models.Venue.managingOfferer).load_only(
+                sa_orm.contains_eager(offerers_models.Venue.managingOfferer).load_only(
                     offerers_models.Offerer.validationStatus
                 ),
-                sqla_orm.contains_eager(offerers_models.Venue.offererAddress)
+                sa_orm.contains_eager(offerers_models.Venue.offererAddress)
                 .load_only(offerers_models.OffererAddress.id)
                 .contains_eager(offerers_models.OffererAddress.address)
                 .load_only(geography_models.Address.street, geography_models.Address.departmentCode),
             )
         )
         .options(
-            sqla_orm.contains_eager(booking_models.Booking.stock)
+            sa_orm.contains_eager(booking_models.Booking.stock)
             .load_only(
                 offers_models.Stock.id, offers_models.Stock.beginningDatetime, offers_models.Stock.priceCategoryId
             )
@@ -79,7 +79,7 @@ def _get_paginated_and_filtered_bookings(
     beginning_datetime: datetime | None,
     firstIndex: int,
     limit: int,
-) -> sqla_orm.Query:
+) -> sa_orm.Query:
     bookings_query = _get_base_booking_query().filter(offers_models.Offer.id == offer_id)
 
     if price_category_id:
@@ -152,7 +152,7 @@ def get_bookings_by_offer(
     )
 
 
-def _get_booking_by_token_query(token: str) -> sqla_orm.Query:
+def _get_booking_by_token_query(token: str) -> sa_orm.Query:
     return _get_base_booking_query().filter(booking_models.Booking.token == token.upper())
 
 
@@ -228,7 +228,7 @@ def validate_booking_by_token(token: str) -> None:
     booking = (
         _get_booking_by_token_query(token)
         .options(
-            sqla_orm.joinedload(booking_models.Booking.user)
+            sa_orm.joinedload(booking_models.Booking.user)
             .selectinload(users_models.User.achievements)
             .load_only(achievements_models.Achievement.name)
         )

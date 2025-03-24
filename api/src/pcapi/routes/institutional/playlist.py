@@ -1,4 +1,4 @@
-from sqlalchemy import orm as sqla_orm
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.offerers import models as offerers_models
@@ -23,9 +23,9 @@ def get_offers_by_tag(tag_name: str) -> serializers.OffersResponse:
             offers_models.Offer.is_released_and_bookable,
         )
         .options(
-            sqla_orm.joinedload(offers_models.Offer.stocks),
-            sqla_orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
-            sqla_orm.joinedload(offers_models.Offer.mediations),
+            sa_orm.joinedload(offers_models.Offer.stocks),
+            sa_orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
+            sa_orm.joinedload(offers_models.Offer.mediations),
         )
         .limit(PLAYLIST_MAX_SIZE)
         .all()

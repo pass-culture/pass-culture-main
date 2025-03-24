@@ -18,7 +18,7 @@ import prometheus_flask_exporter.multiprocess
 import redis
 import sentry_sdk
 import sqlalchemy as sa
-from sqlalchemy import orm
+import sqlalchemy.orm as sa_orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -174,7 +174,7 @@ app.config["GOOGLE_CLIENT_SECRET"] = settings.GOOGLE_CLIENT_SECRET  # for authli
 
 install_models()
 db.init_app(app)
-orm.configure_mappers()
+sa_orm.configure_mappers()
 login_manager.init_app(app)
 install_commands(app)
 finance_utils.install_template_filters(app)

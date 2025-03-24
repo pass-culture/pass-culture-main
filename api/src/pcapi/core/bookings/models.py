@@ -5,28 +5,10 @@ import enum
 from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
-from sqlalchemy import BigInteger
-from sqlalchemy import Boolean
-from sqlalchemy import Column
-from sqlalchemy import DDL
-from sqlalchemy import DateTime
-from sqlalchemy import Enum
-from sqlalchemy import ForeignKey
-from sqlalchemy import Index
-from sqlalchemy import Integer
-from sqlalchemy import Numeric
-from sqlalchemy import String
-from sqlalchemy import Text
-from sqlalchemy import and_
-from sqlalchemy import case
-from sqlalchemy import event
-from sqlalchemy import exists
-from sqlalchemy import select
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import relationship
+import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import Label
@@ -116,92 +98,104 @@ class BookingRecreditType(enum.Enum):
 
 
 class ExternalBooking(PcObject, Base, Model):
-    bookingId: int = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
+    bookingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=False)
 
-    booking: Mapped["Booking"] = relationship("Booking", foreign_keys=[bookingId], backref="externalBookings")
+    booking: sa_orm.Mapped["Booking"] = sa_orm.relationship(
+        "Booking", foreign_keys=[bookingId], backref="externalBookings"
+    )
 
-    barcode: str = Column(String, nullable=False)
+    barcode: str = sa.Column(sa.String, nullable=False)
 
-    seat = Column(String)
+    seat = sa.Column(sa.String)
 
-    additional_information: dict | None = Column(postgresql.JSONB)
+    additional_information: dict | None = sa.Column(postgresql.JSONB)
 
 
 class Booking(PcObject, Base, Model):
     __tablename__ = "booking"
 
-    dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
-    Index("ix_booking_date_created", dateCreated)
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    sa.Index("ix_booking_date_created", dateCreated)
 
-    dateUsed: datetime | None = Column(DateTime, nullable=True, index=True)
+    dateUsed: datetime | None = sa.Column(sa.DateTime, nullable=True, index=True)
 
-    stockId: int = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
+    stockId: int = sa.Column(sa.BigInteger, sa.ForeignKey("stock.id"), index=True, nullable=False)
 
-    stock: Mapped["offers_models.Stock"] = relationship("Stock", foreign_keys=[stockId], backref="bookings")
+    stock: sa_orm.Mapped["offers_models.Stock"] = sa_orm.relationship(
+        "Stock", foreign_keys=[stockId], backref="bookings"
+    )
 
-    venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
+    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
 
-    venue: Mapped["offerers_models.Venue"] = relationship("Venue", foreign_keys=[venueId], backref="bookings")
+    venue: sa_orm.Mapped["offerers_models.Venue"] = sa_orm.relationship(
+        "Venue", foreign_keys=[venueId], backref="bookings"
+    )
 
-    offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
+    offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer: Mapped["offerers_models.Offerer"] = relationship("Offerer", foreign_keys=[offererId], backref="bookings")
+    offerer: sa_orm.Mapped["offerers_models.Offerer"] = sa_orm.relationship(
+        "Offerer", foreign_keys=[offererId], backref="bookings"
+    )
 
-    quantity: int = Column(Integer, nullable=False, default=1)
+    quantity: int = sa.Column(sa.Integer, nullable=False, default=1)
 
-    token: str = Column(String(6), unique=True, nullable=False)
+    token: str = sa.Column(sa.String(6), unique=True, nullable=False)
 
-    userId: int = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    activationCode: Mapped["offers_models.ActivationCode"] = relationship(
+    activationCode: sa_orm.Mapped["offers_models.ActivationCode"] = sa_orm.relationship(
         "ActivationCode", uselist=False, back_populates="booking"
     )
 
-    user: Mapped["users_models.User"] = relationship("User", foreign_keys=[userId], backref="userBookings")
+    user: sa_orm.Mapped["users_models.User"] = sa_orm.relationship(
+        "User", foreign_keys=[userId], backref="userBookings"
+    )
 
-    amount: Decimal = Column(Numeric(10, 2), nullable=False)
+    amount: Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
 
-    priceCategoryLabel: str | None = Column(Text, nullable=True)
+    priceCategoryLabel: str | None = sa.Column(sa.Text, nullable=True)
 
-    cancellationDate: datetime | None = Column(DateTime, nullable=True)
+    cancellationDate: datetime | None = sa.Column(sa.DateTime, nullable=True)
 
-    displayAsEnded = Column(Boolean, nullable=True)
+    displayAsEnded = sa.Column(sa.Boolean, nullable=True)
 
-    cancellationLimitDate = Column(DateTime, nullable=True)
+    cancellationLimitDate = sa.Column(sa.DateTime, nullable=True)
 
-    cancellationReason = Column(
+    cancellationReason = sa.Column(
         "cancellationReason",
-        Enum(
+        sa.Enum(
             BookingCancellationReasons,
             values_callable=lambda x: [reason.value for reason in BookingCancellationReasons],
         ),
         nullable=True,
     )
-    Index(
+    sa.Index(
         "ix_booking_cancellation_reason",
         cancellationReason,
         postgresql_where=cancellationReason.is_not(None),
     )
 
-    cancellationUserId: int | None = Column(BigInteger, ForeignKey("user.id"), nullable=True)
-    cancellationUser: Mapped["users_models.User | None"] = relationship("User", foreign_keys=[cancellationUserId])
-    # Index avoids timeout when any user is deleted (because of foreign key)
-    Index("ix_booking_cancellationUserId", cancellationUserId, postgresql_where=cancellationUserId.is_not(None))
+    cancellationUserId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    cancellationUser: sa_orm.Mapped["users_models.User | None"] = sa_orm.relationship(
+        "User", foreign_keys=[cancellationUserId]
+    )
+    # sa.Index avoids timeout when any user is deleted (because of foreign key)
+    sa.Index("ix_booking_cancellationUserId", cancellationUserId, postgresql_where=cancellationUserId.is_not(None))
 
-    status: BookingStatus = Column(Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
-    Index("ix_booking_status", status)
+    status: BookingStatus = sa.Column(sa.Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
+    sa.Index("ix_booking_status", status)
 
-    validationAuthorType: BookingValidationAuthorType = Column(Enum(BookingValidationAuthorType), nullable=True)
+    validationAuthorType: BookingValidationAuthorType = sa.Column(sa.Enum(BookingValidationAuthorType), nullable=True)
 
-    reimbursementDate = Column(DateTime, nullable=True)
+    reimbursementDate = sa.Column(sa.DateTime, nullable=True)
 
-    depositId = Column(BigInteger, ForeignKey("deposit.id"), index=True, nullable=True)
+    depositId = sa.Column(sa.BigInteger, sa.ForeignKey("deposit.id"), index=True, nullable=True)
 
-    deposit: Mapped["finance_models.Deposit | None"] = relationship(
+    deposit: sa_orm.Mapped["finance_models.Deposit | None"] = sa_orm.relationship(
         "Deposit", foreign_keys=[depositId], back_populates="bookings"
     )
 
-    usedRecreditType: BookingRecreditType = Column(MagicEnum(BookingRecreditType), nullable=True)
+    usedRecreditType: BookingRecreditType = sa.Column(MagicEnum(BookingRecreditType), nullable=True)
 
     def mark_as_used(self, validation_author_type: BookingValidationAuthorType) -> None:
         if self.is_used_or_reimbursed:
@@ -288,7 +282,7 @@ class Booking(PcObject, Base, Model):
 
     @isConfirmed.expression  # type: ignore[no-redef]
     def isConfirmed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
-        return and_(cls.cancellationLimitDate.is_not(None), cls.cancellationLimitDate <= sa.func.now())
+        return sa.and_(cls.cancellationLimitDate.is_not(None), cls.cancellationLimitDate <= sa.func.now())
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
@@ -336,9 +330,9 @@ class Booking(PcObject, Base, Model):
 
     @isExternal.expression  # type: ignore[no-redef]
     def isExternal(cls) -> Label:  # pylint: disable=no-self-argument
-        return select(
-            case(
-                (exists().where(ExternalBooking.bookingId == cls.id).correlate(cls), True),
+        return sa.select(
+            sa.case(
+                (sa.exists().where(ExternalBooking.bookingId == cls.id).correlate(cls), True),
                 else_=False,
             ).label("isExternal")
         ).label("number_of_externalBookings")
@@ -353,11 +347,11 @@ class Booking(PcObject, Base, Model):
     @validated_incident_id.expression  # type: ignore[no-redef]
     def validated_incident_id(cls) -> int | None:  # pylint: disable=no-self-argument
         return (
-            select(finance_models.FinanceIncident.id)
+            sa.select(finance_models.FinanceIncident.id)
             .select_from(finance_models.FinanceIncident)
             .join(finance_models.BookingFinanceIncident)
             .where(
-                and_(
+                sa.and_(
                     finance_models.BookingFinanceIncident.bookingId == Booking.id,
                     finance_models.FinanceIncident.status == finance_models.IncidentStatus.VALIDATED,
                 )
@@ -428,7 +422,7 @@ class Booking(PcObject, Base, Model):
 
     @display_even_if_used.expression  # type: ignore[no-redef]
     def display_even_if_used(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
-        return and_(
+        return sa.and_(
             offers_models.Offer.subcategoryId.in_(offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES),
             cls.amount == 0,
         )
@@ -563,7 +557,7 @@ Booking.trig_ddl = f"""
     WHEN (NEW.status <> '{BookingStatus.REIMBURSED.value}')
     EXECUTE PROCEDURE check_booking()
     """
-event.listen(Booking.__table__, "after_create", DDL(Booking.trig_ddl))
+sa.event.listen(Booking.__table__, "after_create", sa.DDL(Booking.trig_ddl))
 
 Booking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
     CREATE OR REPLACE FUNCTION save_cancellation_date()
@@ -586,4 +580,4 @@ Booking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
     EXECUTE PROCEDURE save_cancellation_date()
     """
 
-event.listen(Booking.__table__, "after_create", DDL(Booking.trig_update_cancellationDate_on_isCancelled_ddl))
+sa.event.listen(Booking.__table__, "after_create", sa.DDL(Booking.trig_update_cancellationDate_on_isCancelled_ddl))
