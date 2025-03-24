@@ -18,7 +18,7 @@ class DeleteVenuesWithoutOffersTest:
 
         should_be_deleted_virtual_venue_id = should_be_deleted_virtual_venue.id
 
-        delete_venues_without_offers(dry_run=False)
+        delete_venues_without_offers()
 
         assert not offerers_models.Venue.query.filter(
             offerers_models.Venue.id == should_be_deleted_virtual_venue_id
@@ -26,19 +26,3 @@ class DeleteVenuesWithoutOffersTest:
         assert offerers_models.Venue.query.filter(offerers_models.Venue.id == virtual_venue_2.id).one_or_none()
         assert offerers_models.Venue.query.filter(offerers_models.Venue.id == virtual_venue_3.id).one_or_none()
         assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue.id).one_or_none()
-
-    def test_delete_venues_without_offers_dry_run(self):
-        should_be_deleted_virtual_venue = offerers_factories.VirtualVenueFactory()
-        virtual_venue_2 = offerers_factories.VirtualVenueFactory()
-        virtual_venue_3 = offerers_factories.VirtualVenueFactory()
-        offers_factories.OfferFactory(venue=virtual_venue_2)
-        educational_factories.CollectiveOfferFactory(venue=virtual_venue_3)
-
-        should_be_deleted_virtual_venue_id = should_be_deleted_virtual_venue.id
-
-        delete_venues_without_offers(dry_run=True)
-        db.session.rollback()
-
-        assert offerers_models.Venue.query.filter(
-            offerers_models.Venue.id == should_be_deleted_virtual_venue_id
-        ).one_or_none()
