@@ -45,6 +45,7 @@ export const SignupContainer = (): JSX.Element => {
     handleSubmit,
     formState: { errors, touchedFields },
     setError,
+    getValues,
   } = hookForm
 
   const onSubmit = async (values: ProUserCreationBodyV2Model) => {
@@ -68,7 +69,10 @@ export const SignupContainer = (): JSX.Element => {
 
   const onHandleSuccess = () => {
     logEvent(Events.SIGNUP_FORM_SUCCESS, {})
-    navigate('/inscription/confirmation', { replace: true })
+    navigate('/inscription/confirmation', {
+      replace: true,
+      state: { email: getValues('email') },
+    })
   }
 
   const onHandleFail = (errors: Partial<ProUserCreationBodyV2Model>) => {
