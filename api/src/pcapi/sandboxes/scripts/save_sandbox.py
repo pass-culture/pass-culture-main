@@ -6,16 +6,19 @@ from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.repository.clean_database import clean_all_database
 from pcapi.sandboxes import scripts
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import clean_industrial_mediations_bucket
 
 
 logger = logging.getLogger(__name__)
 
 
-def save_sandbox(name: str, with_clean: bool = True) -> None:
+def save_sandbox(name: str, with_clean: bool = True, with_clean_bucket: bool = False) -> None:
     if with_clean:
         logger.info("Cleaning database")
         clean_all_database(reset_ids=True)
         logger.info("All databases cleaned")
+    if with_clean_bucket:
+        clean_industrial_mediations_bucket()
 
     script_name = "sandbox_" + name
     sandbox_module = getattr(scripts, script_name)
