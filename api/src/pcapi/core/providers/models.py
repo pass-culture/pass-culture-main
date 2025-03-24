@@ -19,7 +19,6 @@ from pcapi.models.pc_object import PcObject
 
 if typing.TYPE_CHECKING:
     from pcapi.core.educational.models import CollectiveOffer
-    from pcapi.core.educational.models import CollectiveOfferTemplate
     import pcapi.core.offerers.models as offerers_models
 
 
@@ -43,10 +42,6 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
 
     collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = sa_orm.relationship(
         "CollectiveOffer", back_populates="provider"
-    )
-
-    collectiveOfferTemplates: sa_orm.Mapped["CollectiveOfferTemplate"] = sa_orm.relationship(
-        "CollectiveOfferTemplate", back_populates="provider"
     )
 
     offererProvider: sa_orm.Mapped["offerers_models.OffererProvider"] = sa_orm.relationship(

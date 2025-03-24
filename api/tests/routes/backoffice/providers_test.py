@@ -443,9 +443,6 @@ class UpdateProviderTest(PostEndpointHelper):
         collective_offer_2_1 = collective_offers_factories.CollectiveOfferFactory(
             venue=venue_provider_2.venue, provider=provider, isActive=True
         )
-        collective_offer_template_2_1 = collective_offers_factories.CollectiveOfferTemplateFactory(
-            venue=venue_provider_2.venue, provider=provider, isActive=True
-        )
 
         form_data = {
             "name": "Individual Offer API consumer",
@@ -468,4 +465,3 @@ class UpdateProviderTest(PostEndpointHelper):
         assert collective_offer_1_1.isActive == False
         assert collective_offer_1_2.isActive == False
         assert collective_offer_2_1.isActive == False
-        assert collective_offer_template_2_1.isActive == False

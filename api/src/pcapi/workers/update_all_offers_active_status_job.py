@@ -38,22 +38,7 @@ def update_all_collective_offers_active_status_job(filters: dict, is_active: boo
         period_beginning_date=filters["period_beginning_date"],
         period_ending_date=filters["period_ending_date"],
     )
-    collective_offer_template_query = offers_repository.get_collective_offers_template_by_filters(
-        user_id=filters["user_id"],
-        user_is_admin=filters["is_user_admin"],
-        offerer_id=filters["offerer_id"],
-        statuses=[filters["status"]] if filters["status"] else None,
-        venue_id=filters["venue_id"],
-        provider_id=filters["provider_id"],
-        category_id=filters["category_id"],
-        name_keywords=filters["name_or_isbn"],
-        period_beginning_date=filters["period_beginning_date"],
-        period_ending_date=filters["period_ending_date"],
-    )
     educational_api_offer.batch_update_collective_offers(collective_offer_query, {"isActive": is_active})
-    educational_api_offer.batch_update_collective_offers_template(
-        collective_offer_template_query, {"isActive": is_active}
-    )
 
 
 @job(worker.low_queue)

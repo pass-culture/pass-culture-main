@@ -519,7 +519,6 @@ def get_collective_offers_template_by_filters(
     offerer_id: int | None = None,
     statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
     venue_id: int | None = None,
-    provider_id: int | None = None,
     category_id: str | None = None,
     name_keywords: str | None = None,
     period_beginning_date: datetime.date | None = None,
@@ -544,8 +543,6 @@ def get_collective_offers_template_by_filters(
         query = query.filter(offerers_models.Venue.managingOffererId == offerer_id)
     if venue_id is not None:
         query = query.filter(educational_models.CollectiveOfferTemplate.venueId == venue_id)
-    if provider_id is not None:
-        query = query.filter(educational_models.CollectiveOfferTemplate.providerId == provider_id)
     if category_id is not None:
         requested_subcategories = [
             subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id == category_id
