@@ -396,12 +396,12 @@ class HasImageMixinTest:
         assert image._get_image_storage_id() == "image/123654789654.jpg"
         assert image._get_image_storage_id(original=True) == "image/123654789654_original.jpg"
 
-    @mock.patch("pcapi.core.educational.models.store_public_object")
-    @mock.patch("pcapi.core.educational.models.delete_public_object")
+    @mock.patch("pcapi.core.object_storage.store_public_object")
+    @mock.patch("pcapi.core.object_storage.delete_public_object")
     @mock.patch(
-        "pcapi.core.educational.models.process_original_image", return_value=b"processed original image contents"
+        "pcapi.utils.image_conversion.process_original_image", return_value=b"processed original image contents"
     )
-    @mock.patch("pcapi.core.educational.models.standardize_image", return_value=b"standardized image contents")
+    @mock.patch("pcapi.utils.image_conversion.standardize_image", return_value=b"standardized image contents")
     def test_set_new_image(self, standardize_image, process_original_image, delete_public_object, store_public_object):
         class Image(HasImageMixin):
             pass
@@ -441,12 +441,12 @@ class HasImageMixinTest:
         )
         delete_public_object.assert_not_called()
 
-    @mock.patch("pcapi.core.educational.models.store_public_object")
-    @mock.patch("pcapi.core.educational.models.delete_public_object")
+    @mock.patch("pcapi.core.object_storage.store_public_object")
+    @mock.patch("pcapi.core.object_storage.delete_public_object")
     @mock.patch(
-        "pcapi.core.educational.models.process_original_image", return_value=b"processed original image contents"
+        "pcapi.utils.image_conversion.process_original_image", return_value=b"processed original image contents"
     )
-    @mock.patch("pcapi.core.educational.models.standardize_image", return_value=b"standardized image contents")
+    @mock.patch("pcapi.utils.image_conversion.standardize_image", return_value=b"standardized image contents")
     def test_set_replace_image(
         self, standardize_image, process_original_image, delete_public_object, store_public_object
     ):
@@ -498,12 +498,12 @@ class HasImageMixinTest:
         delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/123456.jpg")
         delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/123456_original.jpg")
 
-    @mock.patch("pcapi.core.educational.models.store_public_object")
-    @mock.patch("pcapi.core.educational.models.delete_public_object")
+    @mock.patch("pcapi.core.object_storage.store_public_object")
+    @mock.patch("pcapi.core.object_storage.delete_public_object")
     @mock.patch(
-        "pcapi.core.educational.models.process_original_image", return_value=b"processed original image contents"
+        "pcapi.utils.image_conversion.process_original_image", return_value=b"processed original image contents"
     )
-    @mock.patch("pcapi.core.educational.models.standardize_image", return_value=b"standardized image contents")
+    @mock.patch("pcapi.utils.image_conversion.standardize_image", return_value=b"standardized image contents")
     def test_set_new_image_keep_original(
         self, standardize_image, process_original_image, delete_public_object, store_public_object
     ):
@@ -552,7 +552,7 @@ class HasImageMixinTest:
 
         delete_public_object.assert_not_called()
 
-    @mock.patch("pcapi.core.educational.models.delete_public_object")
+    @mock.patch("pcapi.core.object_storage.delete_public_object")
     def test_delete_image(self, delete_public_object):
         class Image(HasImageMixin):
             pass
@@ -569,7 +569,7 @@ class HasImageMixinTest:
         assert image.imageId is None
         delete_public_object.assert_called_once_with(folder=image.FOLDER, object_id="image/456789.jpg")
 
-    @mock.patch("pcapi.core.educational.models.delete_public_object")
+    @mock.patch("pcapi.core.object_storage.delete_public_object")
     def test_delete_image_with_original(self, delete_public_object):
         class Image(HasImageMixin):
             pass
