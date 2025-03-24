@@ -67,6 +67,7 @@ jobs:
           secrets: |-
             FIREBASE_TOKEN:passculture-metier-ehp/pc_pro_${{ inputs.ENV }}_firebase_json
             SENTRY_TOKEN:passculture-metier-ehp/passculture-app-pro-sentry-token
+            SAAS_SENTRY_TOKEN:passculture-metier-ehp/passculture-app-pro-saas-sentry-token
       - if: inputs.resource_label != ''
         run: |
           sed -i 's/https:\/\/backend.testing.passculture.team/https:\/\/backend-${{ inputs.resource_label }}.testing.passculture.team/g' src/.env.testing
@@ -99,6 +100,18 @@ jobs:
           SENTRY_ORG: sentry
           SENTRY_PROJECT: pro
           SENTRY_URL: https://sentry.passculture.team/
+        with:
+          sourcemaps: ./build
+          working_directory: pro
+          version: ${{ inputs.CHANNEL }}
+          url_prefix: "~"
+      - name: "Create SaaS Sentry release"
+        if: ${{ inputs.PUSH_RELEASE_TO_SENTRY }}
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ steps.secrets.outputs.SAAS_SENTRY_TOKEN }}
+          SENTRY_ORG: pass-culture
+          SENTRY_PROJECT: pro
         with:
           sourcemaps: ./build
           working_directory: pro
