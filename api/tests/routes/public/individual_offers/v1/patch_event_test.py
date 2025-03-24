@@ -163,6 +163,50 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
             "stageDirector": "Robert",
         }
 
+    def test_should_update_extra_data_even_if_extra_data_has_an_empty_ean(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue_provider.venue,
+            subcategoryId="FESTIVAL_ART_VISUEL",
+            extraData={
+                "author": "Maurice",
+                "stageDirector": "Robert",
+                "performer": "Pink Pâtisserie",
+                "ean": "",  # faulty ean
+            },
+            lastProvider=venue_provider.provider,
+            withdrawalDelay=86400,
+            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
+            bookingContact="contact@example.com",
+            bookingEmail="notify@example.com",
+        )
+
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=event_offer.id),
+            json={
+                "categoryRelatedFields": {
+                    "category": "FESTIVAL_ART_VISUEL",
+                    "author": "Maurice",
+                    "stageDirector": "Robert",
+                    "performer": "Pink Pâtisserie",
+                }
+            },
+        )
+
+        assert response.status_code == 200
+        assert response.json["categoryRelatedFields"] == {
+            "author": "Maurice",
+            "category": "FESTIVAL_ART_VISUEL",
+            "performer": "Pink Pâtisserie",
+        }
+        assert event_offer.extraData == {
+            "author": "Maurice",
+            "ean": "",
+            "performer": "Pink Pâtisserie",
+            "stageDirector": "Robert",
+        }
+        assert not event_offer.ean
+
     def test_patch_all_fields(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
         event_offer = offers_factories.EventOfferFactory(

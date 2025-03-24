@@ -383,7 +383,9 @@ def update_offer(
             offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api, offer=offer
         )
         # TODO: (pcharlet, 2025-02-04): Delete next line when body schemas contains specific EAN field outside extraData
-        updates.update({"ean": updates["extraData"].get("ean", None)})
+        ean = updates["extraData"].get("ean", None)
+        if ean != "":
+            updates.update({"ean": ean})
     if "isDuo" in updates:
         is_duo = get_field(offer, updates, "isDuo", aliases=aliases)
         validation.check_is_duo_compliance(is_duo, offer.subcategory)
