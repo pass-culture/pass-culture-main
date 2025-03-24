@@ -7,6 +7,7 @@ from flask import _request_ctx_stack
 from flask import g
 from flask import request
 from flask_login import current_user
+import sentry_sdk
 from werkzeug.local import LocalProxy
 
 from pcapi import settings
@@ -88,6 +89,8 @@ def provider_api_key_required(route_function: typing.Callable) -> typing.Callabl
             raise api_errors.UnauthorizedError(
                 errors={"auth": "Deprecated API key. Please contact provider support to get a new API key"}
             )
+        sentry_sdk.set_tag("provider-name", g.current_api_key.provider.name)
+        sentry_sdk.set_tag("provider-id", g.current_api_key.provider.id)
 
         _check_active_offerer(g.current_api_key)
         _check_active_provider(g.current_api_key)
