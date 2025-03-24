@@ -70,6 +70,26 @@ class GCPBackend(BaseBackend):
             )
             raise exc
 
+    def delete_public_object_recursively(self, storage_path: str) -> None:
+        try:
+            bucket = self.get_gcp_storage_client_bucket()
+            gcp_cloud_blobs = bucket.list_blobs(prefix=storage_path)
+            for blob in gcp_cloud_blobs:
+                blob.delete(timeout=TIMEOUT, retry=RETRY_STRATEGY)
+        except NotFound:
+            logger.info("Folder not found on deletion on GCP bucket: %s", storage_path)
+        except Exception as exc:
+            logger.exception(
+                "An error has occurred while trying to delete file on GCP bucket",
+                extra={
+                    "exc": exc,
+                    "project_id": self.project_id,
+                    "bucket_name": self.bucket_name,
+                    "storage_path": storage_path,
+                },
+            )
+            raise exc
+
     def delete_public_object(self, folder: str, object_id: str) -> None:
         storage_path = folder + "/" + object_id
         try:

@@ -2,7 +2,9 @@ import logging
 from pathlib import Path
 from shutil import copyfile
 
+from pcapi import settings
 from pcapi.core.categories import subcategories
+from pcapi.core.object_storage import delete_public_object_recursively
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.repository import repository
@@ -61,3 +63,9 @@ def create_industrial_mediations(offers_by_name: dict[str, Offer]) -> None:
     repository.save(*mediations_with_asset.values())
 
     logger.info("created %d mediations", len(mediations_by_name))
+
+
+def clean_industrial_mediations_bucket() -> None:
+    logger.info("Cleaning mediation bucket")
+    delete_public_object_recursively(storage_path="thumbs/mediations", bucket=settings.GCP_BUCKET_NAME)
+    logger.info("Mediation bucket cleaned")
