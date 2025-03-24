@@ -1,0 +1,10 @@
+import{V as d}from"./index-Bhe8xfDy.js";import{j as n}from"./jsx-runtime-CfatFE5O.js";import{c as m}from"./index-DeARc5FM.js";import{s as l}from"./stroke-pass-CALgybTM.js";import{S as u}from"./SvgIcon-CUWb-Ez8.js";import"./index-ClcD9ViR.js";import"./_commonjsHelpers-Cpj98o6Y.js";import"./index-CAA0Yhbi.js";import"./index-NlA48SPU.js";import"./index-C3LhMar3.js";const g="_rotation_1uzho_1",_="_content_1uzho_18",h="_dots_1uzho_1",s={"loading-spinner":"_loading-spinner_1uzho_1","loading-spinner-icon":"_loading-spinner-icon_1uzho_5",rotation:g,content:_,dots:h},t=({message:o="Chargement en cours",className:p,testId:c="spinner"})=>n.jsxs("div",{className:m(s["loading-spinner"],p),"data-testid":c,children:[n.jsx(u,{src:l,alt:"",className:s["loading-spinner-icon"]}),n.jsx("div",{className:s.content,children:o})]});try{t.displayName="Spinner",t.__docgenInfo={description:`The Spinner component is used to indicate that a process is currently in progress.
+It displays a loading icon and an optional message.
+
+---
+**Important: Use the \`message\` prop to provide context to users on what is being loaded.**
+---`,displayName:"Spinner",props:{message:{defaultValue:{value:"Chargement en cours"},description:"A message to display below the spinner.",name:"message",required:!1,type:{name:"string"}},className:{defaultValue:null,description:"Custom CSS class for additional styling of the spinner.",name:"className",required:!1,type:{name:"string"}},testId:{defaultValue:{value:"spinner"},description:"A custom test id to target the component when running tests.",name:"testId",required:!1,type:{name:"string"}}}}}catch{}const V={title:"ui-kit/Spinner",decorators:[d],component:t},e={args:{message:"Chargement en cours"}};var r,a,i;e.parameters={...e.parameters,docs:{...(r=e.parameters)==null?void 0:r.docs,source:{originalSource:`{
+  args: {
+    message: 'Chargement en cours'
+  }
+}`,...(i=(a=e.parameters)==null?void 0:a.docs)==null?void 0:i.source}}};const q=["Default"];export{e as Default,q as __namedExportsOrder,V as default};
