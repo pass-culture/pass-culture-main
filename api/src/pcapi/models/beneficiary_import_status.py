@@ -2,13 +2,7 @@ from datetime import datetime
 import enum
 import typing
 
-from sqlalchemy import BigInteger
-from sqlalchemy import Column
-from sqlalchemy import DateTime
-from sqlalchemy import Enum
-from sqlalchemy import ForeignKey
-from sqlalchemy import String
-from sqlalchemy import func
+import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import relationship
 
@@ -46,18 +40,20 @@ class BeneficiaryImportStatus(PcObject, Base, Model):
         updated_at = datetime.strftime(self.date, "%d/%m/%Y")
         return f"{self.status.value}, le {updated_at} par {author}"
 
-    status: ImportStatus = Column(Enum(ImportStatus, create_constraint=False), nullable=False)
+    status: ImportStatus = sa.Column(sa.Enum(ImportStatus, create_constraint=False), nullable=False)
 
-    date: datetime = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+    date: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now())
 
-    detail = Column(String(255), nullable=True)
+    detail = sa.Column(sa.String(255), nullable=True)
 
-    beneficiaryImportId: int = Column(BigInteger, ForeignKey("beneficiary_import.id"), index=True, nullable=False)
+    beneficiaryImportId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("beneficiary_import.id"), index=True, nullable=False
+    )
 
     beneficiaryImport: sa_orm.Mapped["BeneficiaryImport"] = relationship(
         "BeneficiaryImport", foreign_keys=[beneficiaryImportId], backref="statuses"
     )
 
-    authorId = Column(BigInteger, ForeignKey("user.id"), nullable=True)
+    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
     author: sa_orm.Mapped["users_models.User | None"] = relationship("User", foreign_keys=[authorId])

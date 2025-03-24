@@ -11,39 +11,19 @@ import typing
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
-from sqlalchemy import Date
-from sqlalchemy import case
-from sqlalchemy import cast
-from sqlalchemy import func
-from sqlalchemy import or_
-from sqlalchemy import text
-from sqlalchemy.orm import aliased
-from sqlalchemy.orm import contains_eager
-from sqlalchemy.orm import joinedload
-from sqlalchemy.orm.attributes import InstrumentedAttribute
-from sqlalchemy.sql.elements import not_
+import sqlalchemy.orm as sa_orm
 import xlsxwriter
 from xlsxwriter.format import Format
 from xlsxwriter.worksheet import Worksheet
 
 from pcapi.core.bookings import constants
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingCancellationReasons
-from pcapi.core.bookings.models import BookingExportType
-from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.models import BookingStatusFilter
-from pcapi.core.bookings.models import ExternalBooking
-from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
-from pcapi.core.bookings.utils import convert_date_period_to_utc_datetime_period
+from pcapi.core.bookings import models
+from pcapi.core.bookings import utils
 from pcapi.core.categories import subcategories
 from pcapi.core.finance.models import BookingFinanceIncident
 from pcapi.core.geography.models import Address
-from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import OffererAddress
-from pcapi.core.offerers.models import UserOfferer
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
@@ -55,17 +35,17 @@ DUO_QUANTITY = 2
 
 
 BOOKING_STATUS_LABELS = {
-    BookingStatus.CONFIRMED: "réservé",
-    BookingStatus.CANCELLED: "annulé",
-    BookingStatus.USED: "validé",
-    BookingStatus.REIMBURSED: "remboursé",
+    models.BookingStatus.CONFIRMED: "réservé",
+    models.BookingStatus.CANCELLED: "annulé",
+    models.BookingStatus.USED: "validé",
+    models.BookingStatus.REIMBURSED: "remboursé",
     "confirmed": "confirmé",
 }
 
-BOOKING_DATE_STATUS_MAPPING: dict[BookingStatusFilter, InstrumentedAttribute] = {
-    BookingStatusFilter.BOOKED: Booking.dateCreated,
-    BookingStatusFilter.VALIDATED: Booking.dateUsed,
-    BookingStatusFilter.REIMBURSED: Booking.reimbursementDate,
+BOOKING_DATE_STATUS_MAPPING: dict[models.BookingStatusFilter, sa_orm.InstrumentedAttribute] = {
+    models.BookingStatusFilter.BOOKED: models.Booking.dateCreated,
+    models.BookingStatusFilter.VALIDATED: models.Booking.dateUsed,
+    models.BookingStatusFilter.REIMBURSED: models.Booking.reimbursementDate,
 }
 
 BOOKING_EXPORT_HEADER = [
@@ -101,7 +81,7 @@ def find_by_pro_user(
     user: User,
     *,
     booking_period: tuple[date, date] | None = None,
-    status_filter: BookingStatusFilter | None = None,
+    status_filter: models.BookingStatusFilter | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
@@ -133,48 +113,50 @@ def find_by_pro_user(
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     bookings_query = (
-        bookings_query.order_by(text('"bookedAt" DESC')).offset((page - 1) * per_page_limit).limit(per_page_limit)
+        bookings_query.order_by(sa.text('"bookedAt" DESC')).offset((page - 1) * per_page_limit).limit(per_page_limit)
     )
 
     return bookings_query, total_bookings_recap
 
 
-def find_ongoing_bookings_by_stock(stock_id: int) -> list[Booking]:
-    return Booking.query.filter(
-        Booking.stockId == stock_id,
-        Booking.status == BookingStatus.CONFIRMED,
+def find_ongoing_bookings_by_stock(stock_id: int) -> list[models.Booking]:
+    return models.Booking.query.filter(
+        models.Booking.stockId == stock_id,
+        models.Booking.status == models.BookingStatus.CONFIRMED,
     ).all()
 
 
-def find_not_cancelled_bookings_by_stock(stock: Stock) -> list[Booking]:
-    return Booking.query.filter(Booking.stockId == stock.id, Booking.status != BookingStatus.CANCELLED).all()
+def find_not_cancelled_bookings_by_stock(stock: offers_models.Stock) -> list[models.Booking]:
+    return models.Booking.query.filter(
+        models.Booking.stockId == stock.id, models.Booking.status != models.BookingStatus.CANCELLED
+    ).all()
 
 
 def token_exists(token: str) -> bool:
-    return db.session.query(Booking.query.filter_by(token=token.upper()).exists()).scalar()
+    return db.session.query(models.Booking.query.filter_by(token=token.upper()).exists()).scalar()
 
 
-def get_booking_by_token(token: str, load_options: BOOKING_LOAD_OPTIONS = ()) -> Booking | None:
-    query = Booking.query.filter_by(token=token.upper())
+def get_booking_by_token(token: str, load_options: BOOKING_LOAD_OPTIONS = ()) -> models.Booking | None:
+    query = models.Booking.query.filter_by(token=token.upper())
     if "offerer" in load_options:
-        query = query.options(sa.orm.joinedload(Booking.offerer))
+        query = query.options(sa.orm.joinedload(models.Booking.offerer))
     return query.one_or_none()
 
 
 def find_expiring_individual_bookings_query() -> BaseQuery:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
     return (
-        Booking.query.join(Stock)
-        .join(Offer)
+        models.Booking.query.join(offers_models.Stock)
+        .join(offers_models.Offer)
         .filter(
-            Booking.status == BookingStatus.CONFIRMED,
-            Offer.canExpire,
-            case(
+            models.Booking.status == models.BookingStatus.CONFIRMED,
+            offers_models.Offer.canExpire,
+            sa.case(
                 (
-                    Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
-                    (Booking.dateCreated + constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight,
+                    offers_models.Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
+                    (models.Booking.dateCreated + constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight,
                 ),
-                else_=((Booking.dateCreated + constants.BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight),
+                else_=((models.Booking.dateCreated + constants.BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight),
             ),
         )
     )
@@ -194,20 +176,20 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
     )
 
     return (
-        Booking.query.join(Stock)
-        .join(Offer)
+        models.Booking.query.join(offers_models.Stock)
+        .join(offers_models.Offer)
         .filter(
-            Booking.status == BookingStatus.CONFIRMED,
-            Offer.canExpire,
-            case(
+            models.Booking.status == models.BookingStatus.CONFIRMED,
+            offers_models.Offer.canExpire,
+            sa.case(
                 (
-                    Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
-                    ((Booking.dateCreated + constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY).between(*books_window)),
+                    offers_models.Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
+                    ((models.Booking.dateCreated + constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY).between(*books_window)),
                 ),
-                else_=(Booking.dateCreated + constants.BOOKINGS_AUTO_EXPIRY_DELAY).between(*rest_window),
+                else_=(models.Booking.dateCreated + constants.BOOKINGS_AUTO_EXPIRY_DELAY).between(*rest_window),
             ),
         )
-        .order_by(Booking.userId)
+        .order_by(models.Booking.userId)
     )
 
 
@@ -225,148 +207,150 @@ def find_user_ids_with_expired_individual_bookings(expired_on: date | None = Non
         user_id
         for user_id, in (
             db.session.query(User.id)
-            .join(Booking, User.userBookings)
+            .join(models.Booking, User.userBookings)
             .filter(
-                Booking.status == BookingStatus.CANCELLED,
-                Booking.cancellationDate >= expired_on,
-                Booking.cancellationDate < (expired_on + timedelta(days=1)),
-                Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
+                models.Booking.status == models.BookingStatus.CANCELLED,
+                models.Booking.cancellationDate >= expired_on,
+                models.Booking.cancellationDate < (expired_on + timedelta(days=1)),
+                models.Booking.cancellationReason == models.BookingCancellationReasons.EXPIRED,
             )
             .all()
         )
     ]
 
 
-def get_expired_individual_bookings_for_user(user: User, expired_on: date | None = None) -> list[Booking]:
+def get_expired_individual_bookings_for_user(user: User, expired_on: date | None = None) -> list[models.Booking]:
     expired_on = expired_on or date.today()
-    return Booking.query.filter(
-        Booking.user == user,
-        Booking.status == BookingStatus.CANCELLED,
-        Booking.cancellationDate >= expired_on,
-        Booking.cancellationDate < (expired_on + timedelta(days=1)),
-        Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
+    return models.Booking.query.filter(
+        models.Booking.user == user,
+        models.Booking.status == models.BookingStatus.CANCELLED,
+        models.Booking.cancellationDate >= expired_on,
+        models.Booking.cancellationDate < (expired_on + timedelta(days=1)),
+        models.Booking.cancellationReason == models.BookingCancellationReasons.EXPIRED,
     ).all()
 
 
-def find_expired_individual_bookings_ordered_by_offerer(expired_on: date | None = None) -> list[Booking]:
+def find_expired_individual_bookings_ordered_by_offerer(expired_on: date | None = None) -> list[models.Booking]:
     expired_on = expired_on or date.today()
     return (
-        Booking.query.filter(Booking.status == BookingStatus.CANCELLED)
-        .filter(cast(Booking.cancellationDate, Date) == expired_on)
-        .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
-        .order_by(Booking.offererId)
+        models.Booking.query.filter(models.Booking.status == models.BookingStatus.CANCELLED)
+        .filter(sa.cast(models.Booking.cancellationDate, sa.Date) == expired_on)
+        .filter(models.Booking.cancellationReason == models.BookingCancellationReasons.EXPIRED)
+        .order_by(models.Booking.offererId)
         .all()
     )
 
 
-def find_cancellable_bookings_by_offerer(offerer_id: int) -> list[Booking]:
-    return Booking.query.filter(
-        Booking.offererId == offerer_id,
-        Booking.status == BookingStatus.CONFIRMED,
+def find_cancellable_bookings_by_offerer(offerer_id: int) -> list[models.Booking]:
+    return models.Booking.query.filter(
+        models.Booking.offererId == offerer_id,
+        models.Booking.status == models.BookingStatus.CONFIRMED,
     ).all()
 
 
-def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
+def get_bookings_from_deposit(deposit_id: int) -> list[models.Booking]:
     return (
-        Booking.query.filter(
-            Booking.depositId == deposit_id,
-            Booking.status != BookingStatus.CANCELLED,
+        models.Booking.query.filter(
+            models.Booking.depositId == deposit_id,
+            models.Booking.status != models.BookingStatus.CANCELLED,
         )
         .options(
-            joinedload(Booking.stock).joinedload(Stock.offer),
-            joinedload(Booking.incidents).joinedload(BookingFinanceIncident.incident),
+            sa_orm.joinedload(models.Booking.stock).joinedload(offers_models.Stock.offer),
+            sa_orm.joinedload(models.Booking.incidents).joinedload(BookingFinanceIncident.incident),
         )
         .all()
     )
 
 
 def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery:
-    VenueOffererAddress = aliased(OffererAddress)
-    VenueAddress = aliased(Address)
+    VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
+    VenueAddress = sa_orm.aliased(Address)
 
     with_entities: tuple[typing.Any, ...] = (
-        Booking.id.label("id"),
-        Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-        Offerer.postalCode.label("offererPostalCode"),
-        Offer.name.label("offerName"),
-        Stock.beginningDatetime.label("stockBeginningDatetime"),
-        Stock.offerId,
-        Offer.extraData["ean"].label("ean"),
+        models.Booking.id.label("id"),
+        offerers_models.Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
+        offerers_models.Offerer.postalCode.label("offererPostalCode"),
+        offers_models.Offer.name.label("offerName"),
+        offers_models.Stock.beginningDatetime.label("stockBeginningDatetime"),
+        offers_models.Stock.offerId,
+        offers_models.Offer.extraData["ean"].label("ean"),
         User.firstName.label("beneficiaryFirstName"),
         User.lastName.label("beneficiaryLastName"),
         User.email.label("beneficiaryEmail"),
         User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
         User.postalCode.label("beneficiaryPostalCode"),
-        Booking.token,
-        Booking.priceCategoryLabel,
-        Booking.amount,
-        Booking.quantity,
-        Booking.status,
-        Booking.dateCreated.label("bookedAt"),
-        Booking.dateUsed.label("usedAt"),
-        Booking.reimbursementDate.label("reimbursedAt"),
-        Booking.cancellationDate.label("cancelledAt"),
-        Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-        Booking.isConfirmed,
+        models.Booking.token,
+        models.Booking.priceCategoryLabel,
+        models.Booking.amount,
+        models.Booking.quantity,
+        models.Booking.status,
+        models.Booking.dateCreated.label("bookedAt"),
+        models.Booking.dateUsed.label("usedAt"),
+        models.Booking.reimbursementDate.label("reimbursedAt"),
+        models.Booking.cancellationDate.label("cancelledAt"),
+        models.Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+        models.Booking.isConfirmed,
         # `get_batch` function needs a field called exactly `id` to work,
         # the label prevents SA from using a bad (prefixed) label for this field
-        Booking.userId,
+        models.Booking.userId,
         Address.departmentCode.label("offerDepartmentCode"),
         VenueAddress.departmentCode.label("venueDepartmentCode"),
-        func.coalesce(func.nullif(OffererAddress.label, ""), Venue.common_name).label("locationName"),
+        sa.func.coalesce(
+            sa.func.nullif(offerers_models.OffererAddress.label, ""), offerers_models.Venue.common_name
+        ).label("locationName"),
         Address.street.label("locationStreet"),
         Address.postalCode.label("locationPostalCode"),
         Address.city.label("locationCity"),
     )
 
     query = (
-        Booking.query.join(Booking.offerer)
-        .join(Booking.user)
-        .join(Offerer.UserOfferers)
-        .join(Booking.venue)
-        .join(Booking.stock)
-        .join(Stock.offer)
-        .outerjoin(Offer.offererAddress)
-        .outerjoin(OffererAddress.address)
-        .join(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
+        models.Booking.query.join(models.Booking.offerer)
+        .join(models.Booking.user)
+        .join(offerers_models.Offerer.UserOfferers)
+        .join(models.Booking.venue)
+        .join(models.Booking.stock)
+        .join(offers_models.Stock.offer)
+        .outerjoin(offers_models.Offer.offererAddress)
+        .outerjoin(offerers_models.OffererAddress.address)
+        .join(VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id)
         .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
     )
-    # NB: unfortunatly, we still have to use Venue.timezone for digital offers
+    # NB: unfortunatly, we still have to use offerers_models.Venue.timezone for digital offers
     # as they are still on virtual venues that don't have assocaited OA.
-    # Venue.timezone removal here requires that all venues have their OA
-    timezone_column = func.coalesce(Address.timezone, VenueAddress.timezone, Venue.timezone)
+    # offerers_models.Venue.timezone removal here requires that all venues have their OA
+    timezone_column = sa.func.coalesce(Address.timezone, VenueAddress.timezone, offerers_models.Venue.timezone)
 
     query = (
         query.filter(
-            Stock.offerId == offer_id,
-            field_to_venue_timezone(Stock.beginningDatetime, timezone_column) == event_beginning_date,
+            offers_models.Stock.offerId == offer_id,
+            field_to_venue_timezone(offers_models.Stock.beginningDatetime, timezone_column) == event_beginning_date,
         )
-        .order_by(Booking.id)
+        .order_by(models.Booking.id)
         .with_entities(*with_entities)
     )
-    return query.distinct(Booking.id)
+    return query.distinct(models.Booking.id)
 
 
 def export_validated_bookings_by_offer_id(
-    offer_id: int, event_beginning_date: date, export_type: BookingExportType
+    offer_id: int, event_beginning_date: date, export_type: models.BookingExportType
 ) -> str | bytes:
     offer_validated_bookings_query = _create_export_query(offer_id, event_beginning_date)
     offer_validated_bookings_query = offer_validated_bookings_query.filter(
-        or_(
-            and_(Booking.isConfirmed, Booking.status != BookingStatus.CANCELLED),
-            Booking.status == BookingStatus.USED,
+        sa.or_(
+            and_(models.Booking.isConfirmed, models.Booking.status != models.BookingStatus.CANCELLED),
+            models.Booking.status == models.BookingStatus.USED,
         )
     )
-    if export_type == BookingExportType.EXCEL:
+    if export_type == models.BookingExportType.EXCEL:
         return _write_bookings_to_excel(offer_validated_bookings_query)
     return _write_bookings_to_csv(offer_validated_bookings_query)
 
 
 def export_bookings_by_offer_id(
-    offer_id: int, event_beginning_date: date, export_type: BookingExportType
+    offer_id: int, event_beginning_date: date, export_type: models.BookingExportType
 ) -> str | bytes:
     offer_bookings_query = _create_export_query(offer_id, event_beginning_date)
-    if export_type == BookingExportType.EXCEL:
+    if export_type == models.BookingExportType.EXCEL:
         return _write_bookings_to_excel(offer_bookings_query)
     return _write_bookings_to_csv(offer_bookings_query)
 
@@ -375,13 +359,13 @@ def get_export(
     user: User,
     *,
     booking_period: tuple[date, date] | None = None,
-    status_filter: BookingStatusFilter | None = BookingStatusFilter.BOOKED,
+    status_filter: models.BookingStatusFilter | None = models.BookingStatusFilter.BOOKED,
     event_date: date | None = None,
     offerer_id: int | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
-    export_type: BookingExportType | None = BookingExportType.CSV,
+    export_type: models.BookingExportType | None = models.BookingExportType.CSV,
 ) -> str | bytes:
     bookings_query = _get_filtered_booking_report(
         pro_user=user,
@@ -394,7 +378,7 @@ def get_export(
         offerer_address_id=offerer_address_id,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
-    if export_type == BookingExportType.EXCEL:
+    if export_type == models.BookingExportType.EXCEL:
         return _serialize_excel_report(bookings_query)
     return _serialize_csv_report(bookings_query)
 
@@ -403,19 +387,19 @@ def get_pro_user_timezones(user: User) -> set[str]:
     # Timezones based on offerer addresses
     addresses_timezones_query = (
         Address.query.with_entities(Address.timezone)
-        .join(OffererAddress, OffererAddress.addressId == Address.id)
-        .join(Offerer, OffererAddress.offererId == Offerer.id)
-        .join(UserOfferer, UserOfferer.offererId == Offerer.id)
-        .filter(UserOfferer.userId == user.id)
+        .join(offerers_models.OffererAddress, offerers_models.OffererAddress.addressId == Address.id)
+        .join(offerers_models.Offerer, offerers_models.OffererAddress.offererId == offerers_models.Offerer.id)
+        .join(offerers_models.UserOfferer, offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
+        .filter(offerers_models.UserOfferer.userId == user.id)
         .distinct()
     )
     # Timezones based on offerer venues
     # For digital offers that do not have an address
     venues_timezones_query = (
-        Venue.query.with_entities(Venue.timezone)
-        .join(Offerer, Venue.managingOffererId == Offerer.id)
-        .join(UserOfferer, UserOfferer.offererId == Offerer.id)
-        .filter(UserOfferer.userId == user.id)
+        offerers_models.Venue.query.with_entities(offerers_models.Venue.timezone)
+        .join(offerers_models.Offerer, offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
+        .join(offerers_models.UserOfferer, offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
+        .filter(offerers_models.UserOfferer.userId == user.id)
         .distinct()
     )
     query = addresses_timezones_query.union_all(venues_timezones_query)
@@ -424,9 +408,9 @@ def get_pro_user_timezones(user: User) -> set[str]:
 
 
 def field_to_venue_timezone(
-    field: InstrumentedAttribute, column: sa.orm.Mapped[typing.Any] | sa.sql.functions.Function
-) -> cast:
-    return cast(func.timezone(column, func.timezone("UTC", field)), Date)
+    field: sa_orm.InstrumentedAttribute, column: sa.orm.Mapped[typing.Any] | sa.sql.functions.Function
+) -> sa.cast:
+    return sa.cast(sa.func.timezone(column, sa.func.timezone("UTC", field)), sa.Date)
 
 
 def serialize_offer_type_educational_or_individual(offer_is_educational: bool) -> str:
@@ -437,7 +421,7 @@ def _get_filtered_bookings_query(
     pro_user: User,
     *,
     period: tuple[date, date] | None = None,
-    status_filter: BookingStatusFilter | None = None,
+    status_filter: models.BookingStatusFilter | None = None,
     event_date: date | None = None,
     offerer_id: int | None = None,
     venue_id: int | None = None,
@@ -445,24 +429,24 @@ def _get_filtered_bookings_query(
     offerer_address_id: int | None = None,
     extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
 ) -> BaseQuery:
-    VenueOffererAddress = aliased(OffererAddress)
-    VenueAddress = aliased(Address)
+    VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
+    VenueAddress = sa_orm.aliased(Address)
     bookings_query = (
-        Booking.query.join(Booking.offerer)
-        .join(Offerer.UserOfferers)
-        .join(Booking.stock)
-        .join(Stock.offer)
-        .join(Booking.externalBookings, isouter=True)
-        .join(Booking.venue, isouter=True)
-        .outerjoin(Offer.offererAddress)
-        .outerjoin(OffererAddress.address)
-        .outerjoin(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
+        models.Booking.query.join(models.Booking.offerer)
+        .join(offerers_models.Offerer.UserOfferers)
+        .join(models.Booking.stock)
+        .join(offers_models.Stock.offer)
+        .join(models.Booking.externalBookings, isouter=True)
+        .join(models.Booking.venue, isouter=True)
+        .outerjoin(offers_models.Offer.offererAddress)
+        .outerjoin(offerers_models.OffererAddress.address)
+        .outerjoin(VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id)
         .outerjoin(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
     )
-    # NB: unfortunatly, we still have to use Venue.timezone for digital offers
+    # NB: unfortunatly, we still have to use offerers_models.Venue.timezone for digital offers
     # as they are still on virtual venues that don't have assocaited OA.
-    # Venue.timezone removal here requires that all venues have their OA
-    timezone_column = func.coalesce(Address.timezone, VenueAddress.timezone, Venue.timezone)
+    # offerers_models.Venue.timezone removal here requires that all venues have their OA
+    timezone_column = sa.func.coalesce(Address.timezone, VenueAddress.timezone, offerers_models.Venue.timezone)
     for join_key, *join_conditions in extra_joins:
         if join_conditions:
             bookings_query = bookings_query.join(join_key, *join_conditions, isouter=True)
@@ -470,12 +454,12 @@ def _get_filtered_bookings_query(
             bookings_query = bookings_query.join(join_key, isouter=True)
 
     if not pro_user.has_admin_role:
-        bookings_query = bookings_query.filter(UserOfferer.user == pro_user)
+        bookings_query = bookings_query.filter(offerers_models.UserOfferer.user == pro_user)
 
-    bookings_query = bookings_query.filter(UserOfferer.isValidated)
+    bookings_query = bookings_query.filter(offerers_models.UserOfferer.isValidated)
 
     if period:
-        date_column_to_filter_on = BOOKING_DATE_STATUS_MAPPING[status_filter or BookingStatusFilter.BOOKED]
+        date_column_to_filter_on = BOOKING_DATE_STATUS_MAPPING[status_filter or models.BookingStatusFilter.BOOKED]
 
         datetime_period_by_timezones = _convert_date_period_to_datetime_period_for_timezones(
             period,
@@ -500,31 +484,31 @@ def _get_filtered_bookings_query(
                 )
             )
     if offerer_id is not None:
-        bookings_query = bookings_query.filter(Booking.offererId == offerer_id)
+        bookings_query = bookings_query.filter(models.Booking.offererId == offerer_id)
 
     if venue_id is not None:
-        bookings_query = bookings_query.filter(Booking.venueId == venue_id)
+        bookings_query = bookings_query.filter(models.Booking.venueId == venue_id)
 
     if offer_id is not None:
-        bookings_query = bookings_query.filter(Stock.offerId == offer_id)
+        bookings_query = bookings_query.filter(offers_models.Stock.offerId == offer_id)
 
     if offerer_address_id:
-        bookings_query = bookings_query.filter(Offer.offererAddressId == offerer_address_id)
+        bookings_query = bookings_query.filter(offers_models.Offer.offererAddressId == offerer_address_id)
 
     if event_date:
         bookings_query = bookings_query.filter(
-            field_to_venue_timezone(Stock.beginningDatetime, timezone_column) == event_date
+            field_to_venue_timezone(offers_models.Stock.beginningDatetime, timezone_column) == event_date
         )
     if offerer_address_id:
-        bookings_query = bookings_query.filter(OffererAddress.id == offerer_address_id)
+        bookings_query = bookings_query.filter(offerers_models.OffererAddress.id == offerer_address_id)
     return bookings_query
 
 
 def _get_offerer_address_timezone(offerer_address_id: int) -> str:
     return (
         Address.query.with_entities(Address.timezone)
-        .join(OffererAddress, OffererAddress.addressId == Address.id)
-        .filter(OffererAddress.id == offerer_address_id)
+        .join(offerers_models.OffererAddress, offerers_models.OffererAddress.addressId == Address.id)
+        .filter(offerers_models.OffererAddress.id == offerer_address_id)
         .scalar()
     )
 
@@ -549,22 +533,22 @@ def _get_offer_timezone(offer_id: int) -> str:
     Returns:
         str: The timezone associated with the offer.
     """
-    VenueAddress = aliased(Address)
-    VenueOffererAddress = aliased(OffererAddress)
+    VenueAddress = sa_orm.aliased(Address)
+    VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     return (
-        Offer.query.with_entities(
+        offers_models.Offer.query.with_entities(
             # TODO: Simplify when the virtual venues are removed
-            # Unfortunately, we still have to use Venue.timezone for digital offers
+            # Unfortunately, we still have to use offerers_models.Venue.timezone for digital offers
             # as they are still on virtual venues that don't have associated OA.
-            # Venue.timezone removal here requires that all venues have their OA
-            func.coalesce(Address.timezone, VenueAddress.timezone, Venue.timezone)
+            # offerers_models.Venue.timezone removal here requires that all venues have their OA
+            sa.func.coalesce(Address.timezone, VenueAddress.timezone, offerers_models.Venue.timezone)
         )
-        .join(Offer.venue)
-        .outerjoin(Offer.offererAddress)
-        .outerjoin(OffererAddress.address)
-        .outerjoin(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
+        .join(offers_models.Offer.venue)
+        .outerjoin(offers_models.Offer.offererAddress)
+        .outerjoin(offerers_models.OffererAddress.address)
+        .outerjoin(VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id)
         .outerjoin(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
-        .filter(Offer.id == offer_id)
+        .filter(offers_models.Offer.id == offer_id)
         .scalar()
     )
 
@@ -591,22 +575,22 @@ def _convert_date_period_to_datetime_period_for_timezones(
     """
     if offerer_address_id:
         timezone = _get_offerer_address_timezone(offerer_address_id)
-        return {timezone: convert_date_period_to_utc_datetime_period(period, timezone)}
+        return {timezone: utils.convert_date_period_to_utc_datetime_period(period, timezone)}
 
     if offer_id:
         timezone = _get_offer_timezone(offer_id)
-        return {timezone: convert_date_period_to_utc_datetime_period(period, timezone)}
+        return {timezone: utils.convert_date_period_to_utc_datetime_period(period, timezone)}
 
     timezones = get_pro_user_timezones(pro_user)
 
-    return {timezone: convert_date_period_to_utc_datetime_period(period, timezone) for timezone in timezones}
+    return {timezone: utils.convert_date_period_to_utc_datetime_period(period, timezone) for timezone in timezones}
 
 
 def _get_filtered_bookings_count(
     pro_user: User,
     *,
     period: tuple[date, date] | None = None,
-    status_filter: BookingStatusFilter | None = None,
+    status_filter: models.BookingStatusFilter | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
@@ -624,12 +608,12 @@ def _get_filtered_bookings_count(
             offerer_id=offerer_id,
             offerer_address_id=offerer_address_id,
         )
-        .with_entities(Booking.id, Booking.quantity)
-        .distinct(Booking.id)
+        .with_entities(models.Booking.id, models.Booking.quantity)
+        .distinct(models.Booking.id)
     ).cte()
     # We really want total quantities here (and not the number of bookings),
     # since we'll build two rows for each "duo" bookings later.
-    bookings_count = db.session.query(func.coalesce(func.sum(bookings.c.quantity), 0))
+    bookings_count = db.session.query(sa.func.coalesce(sa.func.sum(bookings.c.quantity), 0))
     return bookings_count.scalar()
 
 
@@ -637,47 +621,49 @@ def _get_filtered_booking_report(
     pro_user: User,
     *,
     period: tuple[date, date] | None,
-    status_filter: BookingStatusFilter | None,
+    status_filter: models.BookingStatusFilter | None,
     event_date: date | None = None,
     offerer_id: int | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
 ) -> BaseQuery:
-    VenueOffererAddress = aliased(OffererAddress)
-    VenueAddress = aliased(Address)
+    VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
+    VenueAddress = sa_orm.aliased(Address)
 
     with_entities: tuple[typing.Any, ...] = (
-        Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-        Offerer.postalCode.label("offererPostalCode"),
-        Offer.name.label("offerName"),
-        Stock.beginningDatetime.label("stockBeginningDatetime"),
-        Stock.offerId,
-        Offer.extraData["ean"].label("ean"),
+        offerers_models.Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
+        offerers_models.Offerer.postalCode.label("offererPostalCode"),
+        offers_models.Offer.name.label("offerName"),
+        offers_models.Stock.beginningDatetime.label("stockBeginningDatetime"),
+        offers_models.Stock.offerId,
+        offers_models.Offer.extraData["ean"].label("ean"),
         User.firstName.label("beneficiaryFirstName"),
         User.lastName.label("beneficiaryLastName"),
         User.email.label("beneficiaryEmail"),
         User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
         User.postalCode.label("beneficiaryPostalCode"),
-        Booking.id,
-        Booking.token,
-        Booking.priceCategoryLabel,
-        Booking.amount,
-        Booking.quantity,
-        Booking.status,
-        Booking.dateCreated.label("bookedAt"),
-        Booking.dateUsed.label("usedAt"),
-        Booking.reimbursementDate.label("reimbursedAt"),
-        Booking.cancellationDate.label("cancelledAt"),
-        Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-        Booking.isConfirmed,
+        models.Booking.id,
+        models.Booking.token,
+        models.Booking.priceCategoryLabel,
+        models.Booking.amount,
+        models.Booking.quantity,
+        models.Booking.status,
+        models.Booking.dateCreated.label("bookedAt"),
+        models.Booking.dateUsed.label("usedAt"),
+        models.Booking.reimbursementDate.label("reimbursedAt"),
+        models.Booking.cancellationDate.label("cancelledAt"),
+        models.Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+        models.Booking.isConfirmed,
         # `get_batch` function needs a field called exactly `id` to work,
         # the label prevents SA from using a bad (prefixed) label for this field
-        Booking.id.label("id"),
-        Booking.userId,
+        models.Booking.id.label("id"),
+        models.Booking.userId,
         Address.departmentCode.label("offerDepartmentCode"),
         VenueAddress.departmentCode.label("venueDepartmentCode"),
-        func.coalesce(func.nullif(OffererAddress.label, ""), Venue.common_name).label("locationName"),
+        sa.func.coalesce(
+            sa.func.nullif(offerers_models.OffererAddress.label, ""), offerers_models.Venue.common_name
+        ).label("locationName"),
         Address.street.label("locationStreet"),
         Address.postalCode.label("locationPostalCode"),
         Address.city.label("locationCity"),
@@ -694,16 +680,16 @@ def _get_filtered_booking_report(
             offer_id=offer_id,
             offerer_address_id=offerer_address_id,
             extra_joins=(
-                (Stock.offer,),
-                (Booking.user,),
-                (Offer.offererAddress,),
-                (OffererAddress.address,),
-                (VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id),
+                (offers_models.Stock.offer,),
+                (models.Booking.user,),
+                (offers_models.Offer.offererAddress,),
+                (offerers_models.OffererAddress.address,),
+                (VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id),
                 (VenueAddress, VenueOffererAddress.addressId == VenueAddress.id),
             ),
         )
         .with_entities(*with_entities)
-        .distinct(Booking.id)
+        .distinct(models.Booking.id)
     )
 
     return bookings_query
@@ -713,39 +699,39 @@ def _get_filtered_booking_pro(
     pro_user: User,
     *,
     period: tuple[date, date] | None = None,
-    status_filter: BookingStatusFilter | None = None,
+    status_filter: models.BookingStatusFilter | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_id: int | None = None,
     offerer_address_id: int | None = None,
 ) -> BaseQuery:
-    VenueOffererAddress = aliased(OffererAddress)
-    VenueAddress = aliased(Address)
+    VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
+    VenueAddress = sa_orm.aliased(Address)
 
     with_entities: tuple[typing.Any, ...] = (
-        Booking.token.label("bookingToken"),
-        Booking.dateCreated.label("bookedAt"),
-        Booking.quantity,
-        Booking.amount.label("bookingAmount"),
-        Booking.priceCategoryLabel,
-        Booking.dateUsed.label("usedAt"),
-        Booking.cancellationDate.label("cancelledAt"),
-        Booking.cancellationLimitDate,
-        Booking.status,
-        Booking.reimbursementDate.label("reimbursedAt"),
-        Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-        Booking.isConfirmed,
-        Offer.name.label("offerName"),
-        Offer.id.label("offerId"),
-        Offer.extraData["ean"].label("offerEan"),
+        models.Booking.token.label("bookingToken"),
+        models.Booking.dateCreated.label("bookedAt"),
+        models.Booking.quantity,
+        models.Booking.amount.label("bookingAmount"),
+        models.Booking.priceCategoryLabel,
+        models.Booking.dateUsed.label("usedAt"),
+        models.Booking.cancellationDate.label("cancelledAt"),
+        models.Booking.cancellationLimitDate,
+        models.Booking.status,
+        models.Booking.reimbursementDate.label("reimbursedAt"),
+        models.Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+        models.Booking.isConfirmed,
+        offers_models.Offer.name.label("offerName"),
+        offers_models.Offer.id.label("offerId"),
+        offers_models.Offer.extraData["ean"].label("offerEan"),
         User.firstName.label("beneficiaryFirstname"),
         User.lastName.label("beneficiaryLastname"),
         User.email.label("beneficiaryEmail"),
         User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
-        Stock.beginningDatetime.label("stockBeginningDatetime"),
-        Booking.stockId,
-        Offerer.postalCode.label("offererPostalCode"),
+        offers_models.Stock.beginningDatetime.label("stockBeginningDatetime"),
+        models.Booking.stockId,
+        offerers_models.Offerer.postalCode.label("offererPostalCode"),
         Address.departmentCode.label("offerDepartmentCode"),
         VenueAddress.departmentCode.label("venueDepartmentCode"),
     )
@@ -761,28 +747,28 @@ def _get_filtered_booking_pro(
             offerer_id=offerer_id,
             offerer_address_id=offerer_address_id,
             extra_joins=(
-                (Stock.offer,),
-                (Booking.user,),
-                (Offer.offererAddress,),
-                (OffererAddress.address,),
-                (VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id),
+                (offers_models.Stock.offer,),
+                (models.Booking.user,),
+                (offers_models.Offer.offererAddress,),
+                (offerers_models.OffererAddress.address,),
+                (VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id),
                 (VenueAddress, VenueOffererAddress.addressId == VenueAddress.id),
             ),
         )
         .with_entities(*with_entities)
-        .distinct(Booking.id)
+        .distinct(models.Booking.id)
     )
 
     return bookings_query
 
 
 def _duplicate_booking_when_quantity_is_two(bookings_recap_query: BaseQuery) -> BaseQuery:
-    return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == DUO_QUANTITY))
+    return bookings_recap_query.union_all(bookings_recap_query.filter(models.Booking.quantity == DUO_QUANTITY))
 
 
-def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
+def _get_booking_status(status: models.BookingStatus, is_confirmed: bool) -> str:
     cancellation_limit_date_exists_and_past = is_confirmed
-    if cancellation_limit_date_exists_and_past and status == BookingStatus.CONFIRMED:
+    if cancellation_limit_date_exists_and_past and status == models.BookingStatus.CONFIRMED:
         return BOOKING_STATUS_LABELS["confirmed"]
     return BOOKING_STATUS_LABELS[status]
 
@@ -801,19 +787,19 @@ def _write_bookings_to_csv(query: BaseQuery) -> str:
     return output.getvalue()
 
 
-def _write_csv_row(csv_writer: typing.Any, booking: Booking, booking_duo_column: str) -> None:
+def _write_csv_row(csv_writer: typing.Any, booking: models.Booking, booking_duo_column: str) -> None:
     row: tuple[typing.Any, ...] = (
         booking.venueName,
         booking.offerName,
         f"{booking.locationName} - {booking.locationStreet} {booking.locationPostalCode} {booking.locationCity}",
-        convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
+        utils.convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
         booking.ean,
         booking.beneficiaryFirstName,
         booking.beneficiaryLastName,
         booking.beneficiaryEmail,
         booking.beneficiaryPhoneNumber,
-        convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
-        convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
+        utils.convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
+        utils.convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
         booking_recap_utils.get_booking_token(
             booking.token,
             booking.status,
@@ -823,7 +809,7 @@ def _write_csv_row(csv_writer: typing.Any, booking: Booking, booking_duo_column:
         booking.priceCategoryLabel or "",
         booking.amount,
         _get_booking_status(booking.status, booking.isConfirmed),
-        convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
+        utils.convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
         serialize_offer_type_educational_or_individual(offer_is_educational=False),
         booking.beneficiaryPostalCode or "",
         booking_duo_column,
@@ -860,18 +846,20 @@ def _write_bookings_to_excel(query: BaseQuery) -> bytes:
 
 
 def _write_excel_row(
-    worksheet: Worksheet, row: int, booking: Booking, currency_format: Format, duo_column: str
+    worksheet: Worksheet, row: int, booking: models.Booking, currency_format: Format, duo_column: str
 ) -> None:
     worksheet.write(row, 0, booking.venueName)
     worksheet.write(row, 1, booking.offerName)
-    worksheet.write(row, 2, str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking)))
+    worksheet.write(
+        row, 2, str(utils.convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking))
+    )
     worksheet.write(row, 3, booking.ean)
     worksheet.write(row, 4, booking.beneficiaryFirstName)
     worksheet.write(row, 5, booking.beneficiaryLastName)
     worksheet.write(row, 6, booking.beneficiaryEmail)
     worksheet.write(row, 7, booking.beneficiaryPhoneNumber)
-    worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
-    worksheet.write(row, 9, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
+    worksheet.write(row, 8, str(utils.convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
+    worksheet.write(row, 9, str(utils.convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
     worksheet.write(
         row,
         10,
@@ -885,7 +873,7 @@ def _write_excel_row(
     worksheet.write(row, 11, booking.priceCategoryLabel)
     worksheet.write(row, 12, booking.amount, currency_format)
     worksheet.write(row, 13, _get_booking_status(booking.status, booking.isConfirmed))
-    worksheet.write(row, 14, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
+    worksheet.write(row, 14, str(utils.convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
     worksheet.write(row, 15, serialize_offer_type_educational_or_individual(offer_is_educational=False))
     worksheet.write(row, 16, booking.beneficiaryPostalCode)
     worksheet.write(
@@ -904,14 +892,14 @@ def _serialize_csv_report(query: BaseQuery) -> str:
             booking.venueName,
             booking.offerName,
             f"{booking.locationName} - {booking.locationStreet} {booking.locationPostalCode} {booking.locationCity}",
-            convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
+            utils.convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
             booking.ean,
             booking.beneficiaryFirstName,
             booking.beneficiaryLastName,
             booking.beneficiaryEmail,
             booking.beneficiaryPhoneNumber,
-            convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
-            convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
+            utils.convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
+            utils.convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
             booking_recap_utils.get_booking_token(
                 booking.token,
                 booking.status,
@@ -921,7 +909,7 @@ def _serialize_csv_report(query: BaseQuery) -> str:
             booking.priceCategoryLabel or "",
             booking.amount,
             _get_booking_status(booking.status, booking.isConfirmed),
-            convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
+            utils.convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
             # This method is still used in the old Payment model
             serialize_offer_type_educational_or_individual(offer_is_educational=False),
             booking.beneficiaryPostalCode or "",
@@ -953,21 +941,21 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
             booking.venueName,
             booking.offerName,
             f"{booking.locationName} - {booking.locationStreet} {booking.locationPostalCode} {booking.locationCity}",
-            str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking)),
+            str(utils.convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking)),
             booking.ean,
             booking.beneficiaryFirstName,
             booking.beneficiaryLastName,
             booking.beneficiaryEmail,
             booking.beneficiaryPhoneNumber,
-            str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)),
-            str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)),
+            str(utils.convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)),
+            str(utils.convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)),
             booking_recap_utils.get_booking_token(
                 booking.token, booking.status, booking.isExternal, booking.stockBeginningDatetime
             ),
             booking.priceCategoryLabel,
             booking.amount,
             _get_booking_status(booking.status, booking.isConfirmed),
-            str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)),
+            str(utils.convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)),
             serialize_offer_type_educational_or_individual(offer_is_educational=False),
             booking.beneficiaryPostalCode,
             "Oui" if booking.quantity == DUO_QUANTITY else "Non",
@@ -980,16 +968,19 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
     return output.getvalue()
 
 
-def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[Booking, None, None]:
+def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[models.Booking, None, None]:
     """Find bookings expiring in exactly `expiration_days_delta` days"""
     query = (
-        Booking.query.options(
-            contains_eager(Booking.stock).load_only(Stock.id).contains_eager(Stock.offer).load_only(Offer.subcategoryId)
+        models.Booking.query.options(
+            sa_orm.contains_eager(models.Booking.stock)
+            .load_only(offers_models.Stock.id)
+            .contains_eager(offers_models.Stock.offer)
+            .load_only(offers_models.Offer.subcategoryId)
         )
-        .join(Booking.stock)
-        .join(Stock.offer)
+        .join(models.Booking.stock)
+        .join(offers_models.Stock.offer)
         .filter_by(canExpire=True)
-        .filter(Booking.status == BookingStatus.CONFIRMED)
+        .filter(models.Booking.status == models.BookingStatus.CONFIRMED)
         .yield_per(1_000)
     )
 
@@ -1000,56 +991,61 @@ def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[B
             yield booking
 
 
-def venues_have_bookings(*venues: Venue) -> bool:
+def venues_have_bookings(*venues: offerers_models.Venue) -> bool:
     """At least one venue which has email as bookingEmail has at least one non-cancelled booking"""
     return db.session.query(
-        Booking.query.filter(
-            Booking.venueId.in_([venue.id for venue in venues]), Booking.status != BookingStatus.CANCELLED
+        models.Booking.query.filter(
+            models.Booking.venueId.in_([venue.id for venue in venues]),
+            models.Booking.status != models.BookingStatus.CANCELLED,
         ).exists()
     ).scalar()
 
 
 def user_has_bookings(user: User) -> bool:
-    bookings_query = Booking.query.join(Booking.offerer).join(Offerer.UserOfferers)
-    return db.session.query(bookings_query.filter(UserOfferer.userId == user.id).exists()).scalar()
+    bookings_query = models.Booking.query.join(models.Booking.offerer).join(offerers_models.Offerer.UserOfferers)
+    return db.session.query(bookings_query.filter(offerers_models.UserOfferer.userId == user.id).exists()).scalar()
 
 
 def offerer_has_ongoing_bookings(offerer_id: int) -> bool:
     return db.session.query(
-        Booking.query.filter(
-            Booking.offererId == offerer_id,
-            Booking.status == BookingStatus.CONFIRMED,
+        models.Booking.query.filter(
+            models.Booking.offererId == offerer_id,
+            models.Booking.status == models.BookingStatus.CONFIRMED,
         ).exists()
     ).scalar()
 
 
-def find_individual_bookings_event_happening_tomorrow_query() -> list[Booking]:
+def find_individual_bookings_event_happening_tomorrow_query() -> list[models.Booking]:
     tomorrow = datetime.utcnow() + timedelta(days=1)
     tomorrow_min = datetime.combine(tomorrow, time.min)
     tomorrow_max = datetime.combine(tomorrow, time.max)
 
     return (
-        Booking.query.join(
-            Booking.user,
+        models.Booking.query.join(
+            models.Booking.user,
         )
-        .join(Booking.stock)
-        .join(Stock.offer)
-        .join(Offer.venue)
-        .outerjoin(Booking.activationCode)
-        .outerjoin(Offer.criteria)
-        .filter(Stock.beginningDatetime >= tomorrow_min, Stock.beginningDatetime <= tomorrow_max)
-        .filter(Offer.isEvent)
-        .filter(not_(Offer.isDigital))
-        .filter(Booking.status != BookingStatus.CANCELLED)
-        .options(contains_eager(Booking.user))
-        .options(contains_eager(Booking.activationCode))
+        .join(models.Booking.stock)
+        .join(offers_models.Stock.offer)
+        .join(offers_models.Offer.venue)
+        .outerjoin(models.Booking.activationCode)
+        .outerjoin(offers_models.Offer.criteria)
+        .filter(
+            offers_models.Stock.beginningDatetime >= tomorrow_min, offers_models.Stock.beginningDatetime <= tomorrow_max
+        )
+        .filter(offers_models.Offer.isEvent)
+        .filter(sa.not_(offers_models.Offer.isDigital))
+        .filter(models.Booking.status != models.BookingStatus.CANCELLED)
+        .options(sa_orm.contains_eager(models.Booking.user))
+        .options(sa_orm.contains_eager(models.Booking.activationCode))
         .options(
-            contains_eager(Booking.stock)
-            .contains_eager(Stock.offer)
+            sa_orm.contains_eager(models.Booking.stock)
+            .contains_eager(offers_models.Stock.offer)
             .options(
-                contains_eager(Offer.venue),
-                contains_eager(Offer.criteria),
-                joinedload(Offer.offererAddress).load_only(OffererAddress.label).joinedload(OffererAddress.address),
+                sa_orm.contains_eager(offers_models.Offer.venue),
+                sa_orm.contains_eager(offers_models.Offer.criteria),
+                sa_orm.joinedload(offers_models.Offer.offererAddress)
+                .load_only(offerers_models.OffererAddress.label)
+                .joinedload(offerers_models.OffererAddress.address),
             )
         )
         .all()
@@ -1058,11 +1054,11 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Booking]:
 
 def get_external_bookings_by_cinema_id_and_barcodes(
     venueIdAtOfferProvider: str, barcodes: list[str]
-) -> list[ExternalBooking]:
+) -> list[models.ExternalBooking]:
     return (
-        ExternalBooking.query.join(Booking)
-        .join(VenueProvider, Booking.venueId == VenueProvider.venueId)
+        models.ExternalBooking.query.join(models.Booking)
+        .join(VenueProvider, models.Booking.venueId == VenueProvider.venueId)
         .filter(VenueProvider.venueIdAtOfferProvider == venueIdAtOfferProvider)
-        .filter(ExternalBooking.barcode.in_(barcodes))
+        .filter(models.ExternalBooking.barcode.in_(barcodes))
         .all()
     )

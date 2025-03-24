@@ -3,8 +3,6 @@ import typing
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
-from sqlalchemy import and_
-from sqlalchemy import or_
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
@@ -86,14 +84,14 @@ def get_bookings(
             for status in form.status.data:
                 if status == BookingStatus.CONFIRMED.name:
                     status_filters.append(
-                        and_(  # type: ignore[type-var]
+                        sa.and_(  # type: ignore[type-var]
                             booking_class.isConfirmed,
                             booking_class.status == BookingStatus.CONFIRMED.name,
                         )
                     )
                 elif status == BookingStatus.BOOKED.name:
                     status_filters.append(
-                        and_(
+                        sa.and_(
                             ~booking_class.isConfirmed,  # type: ignore[operator]
                             booking_class.status == BookingStatus.CONFIRMED.name,
                         )
@@ -105,7 +103,7 @@ def get_bookings(
                 status_filters.append(booking_class.status.in_(status_in))  # type: ignore[arg-type]
 
             if len(status_filters) > 1:
-                base_query = base_query.filter(or_(*status_filters))
+                base_query = base_query.filter(sa.or_(*status_filters))
             else:
                 base_query = base_query.filter(status_filters[0])
         else:

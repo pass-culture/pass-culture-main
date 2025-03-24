@@ -1,5 +1,5 @@
-import sqlalchemy as sqla
-from sqlalchemy import orm as sqla_orm
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import api as offerers_api
@@ -32,17 +32,17 @@ def get_address_or_raise_404(address_id: int) -> geography_models.Address:
 def get_venue_with_offerer_address(venue_id: int) -> offerers_models.Venue:
     return (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
-        .options(sqla.orm.joinedload(offerers_models.Venue.offererAddress))
+        .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
         .one()
     )
 
 
-def retrieve_offer_relations_query(query: sqla_orm.Query) -> sqla_orm.Query:
+def retrieve_offer_relations_query(query: sa_orm.Query) -> sa_orm.Query:
     return (
-        query.options(sqla_orm.joinedload(offers_models.Offer.stocks))
-        .options(sqla_orm.joinedload(offers_models.Offer.mediations))
+        query.options(sa_orm.joinedload(offers_models.Offer.stocks))
+        .options(sa_orm.joinedload(offers_models.Offer.mediations))
         .options(
-            sqla_orm.joinedload(offers_models.Offer.product)
+            sa_orm.joinedload(offers_models.Offer.product)
             .load_only(
                 offers_models.Product.id,
                 offers_models.Product.thumbCount,
@@ -52,7 +52,7 @@ def retrieve_offer_relations_query(query: sqla_orm.Query) -> sqla_orm.Query:
             .joinedload(offers_models.Product.productMediations)
         )
         .options(
-            sqla_orm.joinedload(offers_models.Offer.priceCategories).joinedload(
+            sa_orm.joinedload(offers_models.Offer.priceCategories).joinedload(
                 offers_models.PriceCategory.priceCategoryLabel
             )
         )
@@ -83,25 +83,25 @@ def check_offer_subcategory(
         raise api_errors.ApiErrors({"categoryRelatedFields.category": ["The category cannot be changed"]})
 
 
-def retrieve_offer_query(offer_id: int) -> sqla_orm.Query:
+def retrieve_offer_query(offer_id: int) -> sa_orm.Query:
     return _retrieve_offer_tied_to_user_query().filter(offers_models.Offer.id == offer_id)
 
 
-def _retrieve_offer_tied_to_user_query() -> sqla_orm.Query:
+def _retrieve_offer_tied_to_user_query() -> sa_orm.Query:
     return (
         offers_models.Offer.query.join(offerers_models.Venue)
         .join(offerers_models.Venue.venueProviders)
         .join(providers_models.VenueProvider.provider)
         .filter(providers_models.VenueProvider.provider == current_api_key.provider)
         .filter(providers_models.VenueProvider.isActive)
-        .options(sqla_orm.joinedload(offers_models.Offer.venue))
+        .options(sa_orm.joinedload(offers_models.Offer.venue))
     )
 
 
 def get_filtered_offers_linked_to_provider(
     query_filters: serialization.GetOffersQueryParams,
     is_event: bool,
-) -> sqla_orm.Query:
+) -> sa_orm.Query:
     offers_query = (
         offers_models.Offer.query.outerjoin(offers_models.Offer.futureOffer)
         .join(offerers_models.Venue)
@@ -110,8 +110,8 @@ def get_filtered_offers_linked_to_provider(
         .filter(offers_models.Offer.isEvent == is_event)
         .filter(offers_models.Offer.id >= query_filters.firstIndex)
         .order_by(offers_models.Offer.id)
-        .options(sqla.orm.contains_eager(offers_models.Offer.futureOffer))
-        .options(sqla_orm.joinedload(offers_models.Offer.venue))
+        .options(sa_orm.contains_eager(offers_models.Offer.futureOffer))
+        .options(sa_orm.joinedload(offers_models.Offer.venue))
     )
 
     if query_filters.venue_id:
@@ -172,10 +172,10 @@ def get_event_with_details(event_id: int) -> offers_models.Offer | None:
     return (
         retrieve_offer_query(event_id)
         .filter(offers_models.Offer.isEvent)
-        .outerjoin(offers_models.Offer.stocks.and_(sqla.not_(offers_models.Stock.isEventExpired)))
-        .options(sqla.orm.contains_eager(offers_models.Offer.stocks))
+        .outerjoin(offers_models.Offer.stocks.and_(sa.not_(offers_models.Stock.isEventExpired)))
+        .options(sa_orm.contains_eager(offers_models.Offer.stocks))
         .options(
-            sqla.orm.joinedload(offers_models.Offer.priceCategories).joinedload(
+            sa_orm.joinedload(offers_models.Offer.priceCategories).joinedload(
                 offers_models.PriceCategory.priceCategoryLabel
             )
         )
@@ -192,10 +192,10 @@ def get_price_category_from_event(
         return None
 
 
-def load_venue_and_provider_query(query: sqla_orm.Query) -> sqla_orm.Query:
+def load_venue_and_provider_query(query: sa_orm.Query) -> sa_orm.Query:
     return query.options(
-        sqla_orm.joinedload(offers_models.Offer.lastProvider).joinedload(providers_models.Provider.offererProvider),
-        sqla_orm.joinedload(offers_models.Offer.venue).load_only(offerers_models.Venue.isVirtual),
+        sa_orm.joinedload(offers_models.Offer.lastProvider).joinedload(providers_models.Provider.offererProvider),
+        sa_orm.joinedload(offers_models.Offer.venue).load_only(offerers_models.Venue.isVirtual),
     )
 
 

@@ -1,10 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger
-from sqlalchemy import Column
-from sqlalchemy import DateTime
-from sqlalchemy import Float
-from sqlalchemy import Integer
+import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import UUID
 
 from pcapi.models import Base
@@ -13,17 +9,17 @@ from pcapi.models.pc_object import PcObject
 
 
 class TimeInterval(PcObject, Base, Model):
-    start = Column(DateTime)
-    end = Column(DateTime)
+    start = sa.Column(sa.DateTime)
+    end = sa.Column(sa.DateTime)
 
 
 class TestPcObject(PcObject, Base, Model):
-    date_attribute = Column(DateTime, nullable=True)
-    entityId = Column(BigInteger, nullable=True)
-    float_attribute = Column(Float, nullable=True)
-    integer_attribute = Column(Integer, nullable=True)
-    uuid_attribute = Column(UUID(as_uuid=True), nullable=True)
-    uuidId = Column(UUID(as_uuid=True), nullable=True)
+    date_attribute = sa.Column(sa.DateTime, nullable=True)
+    entityId = sa.Column(sa.BigInteger, nullable=True)
+    float_attribute = sa.Column(sa.Float, nullable=True)
+    integer_attribute = sa.Column(sa.Integer, nullable=True)
+    uuid_attribute = sa.Column(UUID(as_uuid=True), nullable=True)
+    uuidId = sa.Column(UUID(as_uuid=True), nullable=True)
 
 
 time_interval = TimeInterval()

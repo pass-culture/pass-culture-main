@@ -1,7 +1,7 @@
 from operator import or_
 
 import sqlalchemy as sa
-from sqlalchemy import orm as sa_orm
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models

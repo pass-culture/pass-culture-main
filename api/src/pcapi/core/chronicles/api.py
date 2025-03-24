@@ -4,7 +4,7 @@ from re import search
 
 from dateutil.relativedelta import relativedelta
 import sqlalchemy as sa
-from sqlalchemy import orm as sa_orm
+import sqlalchemy.orm as sa_orm
 
 from pcapi.connectors import typeform
 from pcapi.core.offers import models as offers_models
