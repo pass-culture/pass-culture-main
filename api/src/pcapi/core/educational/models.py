@@ -1,51 +1,32 @@
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
+import datetime
 import decimal
-from decimal import Decimal
 import enum
 import logging
 import random
 import typing
 
-import psycopg2.extras
+from psycopg2.extras import DateTimeRange
 import sqlalchemy as sa
-from sqlalchemy import UniqueConstraint
 from sqlalchemy import orm as sa_orm
 from sqlalchemy.dialects import postgresql
+from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.ext.mutable import MutableDict
-from sqlalchemy.ext.mutable import MutableList
-from sqlalchemy.orm import declared_attr
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql.elements import BinaryExpression
-from sqlalchemy.sql.elements import BooleanClauseList
-from sqlalchemy.sql.elements import False_
-from sqlalchemy.sql.elements import UnaryExpression
-from sqlalchemy.sql.functions import func
-from sqlalchemy.sql.schema import Index
-from sqlalchemy.sql.selectable import Exists
-from sqlalchemy.sql.sqltypes import Boolean
-from sqlalchemy.sql.sqltypes import Numeric
+from sqlalchemy.sql import elements as sa_elements
+from sqlalchemy.sql import selectable as sa_selectable
 
+from pcapi import models
 from pcapi import settings
+from pcapi.core import object_storage
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.finance import models as finance_models
-from pcapi.core.object_storage import delete_public_object
-from pcapi.core.object_storage import store_public_object
-from pcapi.models import Base
-from pcapi.models import Model
 from pcapi.models import offer_mixin
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import image_conversion
 from pcapi.utils.db import MagicEnum
-from pcapi.utils.image_conversion import CropParams
-from pcapi.utils.image_conversion import ImageRatio
-from pcapi.utils.image_conversion import process_original_image
-from pcapi.utils.image_conversion import standardize_image
 from pcapi.utils.phone_number import ParsedPhoneNumber
 
 
@@ -322,14 +303,14 @@ class CollectiveLocationType(enum.Enum):
     TO_BE_DEFINED = "TO_BE_DEFINED"
 
 
-@sa.orm.declarative_mixin
+@sa_orm.declarative_mixin
 class HasImageMixin:
     BASE_URL = f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}"
     FOLDER = settings.THUMBS_FOLDER_NAME
 
-    id: sa.orm.Mapped[int]
+    id: sa_orm.Mapped[int]
     imageId = sa.Column(sa.Text, nullable=True)
-    imageCrop: dict | None = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True)
+    imageCrop: dict | None = sa.Column(sa_mutable.MutableDict.as_mutable(postgresql.json.JSONB), nullable=True)
     imageCredit = sa.Column(sa.Text, nullable=True)
     # Whether or not we also stored the original image in the storage bucket.
     imageHasOriginal = sa.Column(sa.Boolean, nullable=True)
@@ -339,7 +320,7 @@ class HasImageMixin:
         return self.imageId is not None
 
     @hasImage.expression  # type: ignore[no-redef]
-    def hasImage(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def hasImage(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
         return cls.imageId is not None
 
     def _get_image_storage_id(self, original: bool = False) -> str:
@@ -379,8 +360,8 @@ class HasImageMixin:
         *,
         image: bytes,
         credit: str,
-        crop_params: CropParams,
-        ratio: ImageRatio = ImageRatio.PORTRAIT,
+        crop_params: image_conversion.CropParams,
+        ratio: image_conversion.ImageRatio = image_conversion.ImageRatio.PORTRAIT,
         keep_original: bool = False,
     ) -> None:
         old_id = self.imageId
@@ -392,27 +373,27 @@ class HasImageMixin:
         self.imageCredit = credit
         self.imageHasOriginal = keep_original
 
-        store_public_object(
+        object_storage.store_public_object(
             folder=self.FOLDER,
             object_id=self._get_image_storage_id(),
-            blob=standardize_image(content=image, ratio=ratio, crop_params=crop_params),
+            blob=image_conversion.standardize_image(content=image, ratio=ratio, crop_params=crop_params),
             content_type="image/jpeg",
         )
         if keep_original:
-            store_public_object(
+            object_storage.store_public_object(
                 folder=self.FOLDER,
                 object_id=self._get_image_storage_id(original=True),
-                blob=process_original_image(content=image, resize=False),
+                blob=image_conversion.process_original_image(content=image, resize=False),
                 content_type="image/jpeg",
             )
 
     def delete_image(self) -> None:
-        delete_public_object(
+        object_storage.delete_public_object(
             folder=self.FOLDER,
             object_id=self._get_image_storage_id(),
         )
         if self.imageHasOriginal:
-            delete_public_object(
+            object_storage.delete_public_object(
                 folder=self.FOLDER,
                 object_id=self._get_image_storage_id(original=True),
             )
@@ -422,7 +403,7 @@ class HasImageMixin:
         self.imageId = None
 
 
-@sa.orm.declarative_mixin
+@sa_orm.declarative_mixin
 class CollectiveStatusMixin:
     @hybrid_property
     def status(self) -> offer_mixin.CollectiveOfferStatus:
@@ -505,7 +486,13 @@ class CollectiveOfferRejectionReason(enum.Enum):
 
 
 class CollectiveOffer(
-    PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, CollectiveStatusMixin, HasImageMixin, Model
+    PcObject,
+    models.Base,
+    offer_mixin.ValidationMixin,
+    AccessibilityMixin,
+    CollectiveStatusMixin,
+    HasImageMixin,
+    models.Model,
 ):
     __tablename__ = "collective_offer"
 
@@ -513,20 +500,20 @@ class CollectiveOffer(
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
-    author: sa_orm.Mapped["User"] | None = relationship("User", foreign_keys=[authorId], uselist=False)
+    author: sa_orm.Mapped["User"] | None = sa_orm.relationship("User", foreign_keys=[authorId], uselist=False)
 
     # the venueId is the billing address.
     # To find where the offer takes place, check offerVenue.
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
-    venue: sa_orm.Mapped["Venue"] = sa.orm.relationship(
+    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="collectiveOffers"
     )
 
     name: str = sa.Column(sa.String(140), nullable=False)
 
     bookingEmails: list[str] = sa.Column(
-        MutableList.as_mutable(postgresql.ARRAY(sa.String)),
+        sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.String)),
         nullable=False,
         server_default="{}",
     )
@@ -535,21 +522,23 @@ class CollectiveOffer(
 
     durationMinutes = sa.Column(sa.Integer, nullable=True)
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
 
-    dateArchived: datetime | None = sa.Column(sa.DateTime, nullable=True)
+    dateArchived: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
 
     subcategoryId: str | None = sa.Column(sa.Text, nullable=True)
 
-    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
+    dateUpdated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
 
     students: list[StudentLevels] = sa.Column(
-        MutableList.as_mutable(postgresql.ARRAY(sa.Enum(StudentLevels))),
+        sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.Enum(StudentLevels))),
         nullable=False,
         server_default="{}",
     )
 
-    collectiveStock: sa_orm.Mapped["CollectiveStock"] = relationship(
+    collectiveStock: sa_orm.Mapped["CollectiveStock"] = sa_orm.relationship(
         "CollectiveStock", back_populates="collectiveOffer", uselist=False
     )
 
@@ -566,20 +555,20 @@ class CollectiveOffer(
     # type, one for the venueId (filled when 1.) and one for the random
     # place (filled when 3.)
     offerVenue: sa_orm.Mapped[OfferVenueDictStr] = sa.Column(
-        MutableDict.as_mutable(postgresql.json.JSONB), nullable=False
+        sa_mutable.MutableDict.as_mutable(postgresql.json.JSONB), nullable=False
     )
 
     interventionArea: list[str] = sa.Column(
-        MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
+        sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
     )
 
-    domains: list["EducationalDomain"] = relationship(
+    domains: list["EducationalDomain"] = sa_orm.relationship(
         "EducationalDomain", secondary="collective_offer_domain", back_populates="collectiveOffers"
     )
 
     institutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=True)
 
-    institution: sa_orm.Mapped["EducationalInstitution | None"] = relationship(
+    institution: sa_orm.Mapped["EducationalInstitution | None"] = sa_orm.relationship(
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collectiveOffers"
     )
 
@@ -587,7 +576,7 @@ class CollectiveOffer(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=True
     )
 
-    template: sa_orm.Mapped["CollectiveOfferTemplate | None"] = sa.orm.relationship(
+    template: sa_orm.Mapped["CollectiveOfferTemplate | None"] = sa_orm.relationship(
         "CollectiveOfferTemplate", foreign_keys=[templateId], back_populates="collectiveOffers"
     )
 
@@ -598,7 +587,7 @@ class CollectiveOffer(
         index=True,
     )
 
-    teacher: sa_orm.Mapped["EducationalRedactor"] = relationship(
+    teacher: sa_orm.Mapped["EducationalRedactor"] = sa_orm.relationship(
         "EducationalRedactor",
         back_populates="collectiveOffers",
         uselist=False,
@@ -611,11 +600,11 @@ class CollectiveOffer(
         index=True,
     )
 
-    provider: sa_orm.Mapped["Provider"] = relationship(
+    provider: sa_orm.Mapped["Provider"] = sa_orm.relationship(
         "Provider", foreign_keys=providerId, back_populates="collectiveOffers"
     )
 
-    flaggingValidationRules: list["OfferValidationRule"] = sa.orm.relationship(
+    flaggingValidationRules: list["OfferValidationRule"] = sa_orm.relationship(
         "OfferValidationRule", secondary="validation_rule_collective_offer_link", back_populates="collectiveOffers"
     )
 
@@ -627,12 +616,12 @@ class CollectiveOffer(
         MagicEnum(CollectiveOfferRejectionReason), default=None
     )
 
-    isNonFreeOffer: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
+    isNonFreeOffer: sa_orm.Mapped["bool | None"] = sa_orm.query_expression()
 
     offererAddressId: sa_orm.Mapped[int | None] = sa.Column(
         sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True
     )
-    offererAddress: sa_orm.Mapped["OffererAddress | None"] = relationship(
+    offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(
         "OffererAddress", foreign_keys=offererAddressId, uselist=False
     )
 
@@ -641,7 +630,7 @@ class CollectiveOffer(
     )
     locationComment: sa_orm.Mapped[str | None] = sa.Column(sa.Text(), nullable=True)
 
-    @declared_attr
+    @sa_orm.declared_attr
     def __table_args__(self):
         parent_args = []
         # Retrieves indexes from parent mixins defined in __table_args__
@@ -678,7 +667,9 @@ class CollectiveOffer(
         index=True,
     )
 
-    nationalProgram: sa_orm.Mapped["NationalProgram"] = relationship("NationalProgram", foreign_keys=nationalProgramId)
+    nationalProgram: sa_orm.Mapped["NationalProgram"] = sa_orm.relationship(
+        "NationalProgram", foreign_keys=nationalProgramId
+    )
 
     @property
     def isEditable(self) -> bool:
@@ -704,7 +695,7 @@ class CollectiveOffer(
         return False
 
     @hasEndDatePassed.expression  # type: ignore[no-redef]
-    def hasEndDatePassed(cls) -> False_:  # pylint: disable=no-self-argument
+    def hasEndDatePassed(cls) -> sa_elements.False_:  # pylint: disable=no-self-argument
         return sa.sql.expression.false()
 
     @hybrid_property
@@ -714,9 +705,9 @@ class CollectiveOffer(
         return True
 
     @isSoldOut.expression  # type: ignore[no-redef]
-    def isSoldOut(cls) -> Exists:  # pylint: disable=no-self-argument
-        aliased_collective_stock = sa.orm.aliased(CollectiveStock)
-        aliased_collective_booking = sa.orm.aliased(CollectiveBooking)
+    def isSoldOut(cls) -> sa_selectable.Exists:  # pylint: disable=no-self-argument
+        aliased_collective_stock = sa_orm.aliased(CollectiveStock)
+        aliased_collective_booking = sa_orm.aliased(CollectiveBooking)
         return (
             sa.exists()
             .where(aliased_collective_stock.collectiveOfferId == cls.id)
@@ -729,7 +720,7 @@ class CollectiveOffer(
         return self.dateArchived is not None
 
     @isArchived.expression  # type: ignore[no-redef]
-    def isArchived(cls) -> Boolean:  # pylint: disable=no-self-argument
+    def isArchived(cls) -> sa.Boolean:  # pylint: disable=no-self-argument
         return cls.dateArchived.is_not(sa.null())
 
     @property
@@ -748,14 +739,14 @@ class CollectiveOffer(
         )
 
     @property
-    def start(self) -> datetime | None:
+    def start(self) -> datetime.datetime | None:
         if not self.collectiveStock:
             return None
 
         return self.collectiveStock.startDatetime
 
     @property
-    def end(self) -> datetime | None:
+    def end(self) -> datetime.datetime | None:
         if not self.collectiveStock:
             return None
 
@@ -774,8 +765,8 @@ class CollectiveOffer(
         return self.collectiveStock.hasStartDatetimePassed
 
     @hasStartDatetimePassed.expression  # type: ignore[no-redef]
-    def hasStartDatetimePassed(cls) -> Exists:  # pylint: disable=no-self-argument
-        aliased_collective_stock = sa.orm.aliased(CollectiveStock)
+    def hasStartDatetimePassed(cls) -> sa_selectable.Exists:  # pylint: disable=no-self-argument
+        aliased_collective_stock = sa_orm.aliased(CollectiveStock)
         return (
             sa.exists()
             .where(aliased_collective_stock.collectiveOfferId == cls.id)
@@ -795,8 +786,8 @@ class CollectiveOffer(
         return self.collectiveStock.hasBookingLimitDatetimePassed
 
     @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimesPassed(cls) -> Exists:  # pylint: disable=no-self-argument
-        aliased_collective_stock = sa.orm.aliased(CollectiveStock)
+    def hasBookingLimitDatetimesPassed(cls) -> sa_selectable.Exists:  # pylint: disable=no-self-argument
+        aliased_collective_stock = sa_orm.aliased(CollectiveStock)
         return (
             sa.exists()
             .where(aliased_collective_stock.collectiveOfferId == cls.id)
@@ -810,8 +801,8 @@ class CollectiveOffer(
         return self.collectiveStock.hasEndDatetimePassed
 
     @hasEndDatetimePassed.expression  # type: ignore[no-redef]
-    def hasEndDatetimePassed(cls) -> Exists:  # pylint: disable=no-self-argument
-        aliased_collective_stock = sa.orm.aliased(CollectiveStock)
+    def hasEndDatetimePassed(cls) -> sa_selectable.Exists:  # pylint: disable=no-self-argument
+        aliased_collective_stock = sa_orm.aliased(CollectiveStock)
         return (
             sa.exists()
             .where(aliased_collective_stock.collectiveOfferId == cls.id)
@@ -823,7 +814,7 @@ class CollectiveOffer(
         if not self.collectiveStock:
             return None
 
-        delta = self.collectiveStock.bookingLimitDatetime - datetime.utcnow()
+        delta = self.collectiveStock.bookingLimitDatetime - datetime.datetime.utcnow()
         return delta.days
 
     @property
@@ -842,7 +833,7 @@ class CollectiveOffer(
         return False
 
     @property
-    def sort_criterion(self) -> typing.Tuple[bool, int, datetime]:
+    def sort_criterion(self) -> typing.Tuple[bool, int, datetime.datetime]:
         """
         This is used to sort offers with the following criterium.
 
@@ -866,7 +857,7 @@ class CollectiveOffer(
 
     @property
     def displayedStatus(self) -> CollectiveOfferDisplayedStatus:
-        if self.isArchived:
+        if self.isArchived:  # pylint: disable=using-constant-test
             return CollectiveOfferDisplayedStatus.ARCHIVED
 
         match self.validation:
@@ -986,7 +977,7 @@ class CollectiveOffer(
         return self.subcategory.is_event
 
     @isEvent.expression  # type: ignore[no-redef]
-    def isEvent(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def isEvent(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
 
     @property
@@ -1023,7 +1014,7 @@ class CollectiveOffer(
         return self.hasStartDatetimePassed
 
     @is_expired.expression  # type: ignore[no-redef]
-    def is_expired(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
+    def is_expired(cls) -> sa_elements.UnaryExpression:  # pylint: disable=no-self-argument
         return cls.hasStartDatetimePassed
 
     def is_two_days_past_end(self) -> bool:
@@ -1034,7 +1025,13 @@ class CollectiveOffer(
 
 
 class CollectiveOfferTemplate(
-    PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, CollectiveStatusMixin, HasImageMixin, Base, Model
+    PcObject,
+    offer_mixin.ValidationMixin,
+    AccessibilityMixin,
+    CollectiveStatusMixin,
+    HasImageMixin,
+    models.Base,
+    models.Model,
 ):
     __tablename__ = "collective_offer_template"
 
@@ -1042,11 +1039,11 @@ class CollectiveOfferTemplate(
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
-    author: sa_orm.Mapped["User"] | None = relationship("User", foreign_keys=[authorId], uselist=False)
+    author: sa_orm.Mapped["User"] | None = sa_orm.relationship("User", foreign_keys=[authorId], uselist=False)
 
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
-    venue: sa_orm.Mapped["Venue"] = sa.orm.relationship(
+    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="collectiveOfferTemplates"
     )
 
@@ -1056,14 +1053,16 @@ class CollectiveOfferTemplate(
 
     durationMinutes = sa.Column(sa.Integer, nullable=True)
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     subcategoryId: str | None = sa.Column(sa.Text, nullable=True)
 
-    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
+    dateUpdated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
 
     students: list[StudentLevels] = sa.Column(
-        MutableList.as_mutable(postgresql.ARRAY(sa.Enum(StudentLevels))),
+        sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.Enum(StudentLevels))),
         nullable=False,
         server_default="{}",
     )
@@ -1071,30 +1070,32 @@ class CollectiveOfferTemplate(
     priceDetail = sa.Column(sa.Text, nullable=True)
 
     bookingEmails: list[str] = sa.Column(
-        MutableList.as_mutable(postgresql.ARRAY(sa.String)),
+        sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.String)),
         nullable=False,
         server_default="{}",
     )
 
     offerVenue: sa_orm.Mapped[OfferVenueDictStr] = sa.Column(
-        MutableDict.as_mutable(postgresql.json.JSONB), nullable=False
+        sa_mutable.MutableDict.as_mutable(postgresql.json.JSONB), nullable=False
     )
 
     interventionArea: list[str] = sa.Column(
-        MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
+        sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
     )
 
-    domains: list["EducationalDomain"] = relationship(
+    domains: list["EducationalDomain"] = sa_orm.relationship(
         "EducationalDomain", secondary="collective_offer_template_domain", back_populates="collectiveOfferTemplates"
     )
 
-    collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="template")
+    collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = sa_orm.relationship(
+        "CollectiveOffer", back_populates="template"
+    )
 
-    collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = relationship(
+    collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = sa_orm.relationship(
         "CollectiveOfferRequest", back_populates="collectiveOfferTemplate"
     )
 
-    flaggingValidationRules: list["OfferValidationRule"] = sa.orm.relationship(
+    flaggingValidationRules: list["OfferValidationRule"] = sa_orm.relationship(
         "OfferValidationRule",
         secondary="validation_rule_collective_offer_template_link",
         back_populates="collectiveOfferTemplates",
@@ -1108,21 +1109,23 @@ class CollectiveOfferTemplate(
         index=True,
     )
 
-    nationalProgram: sa_orm.Mapped["NationalProgram"] = relationship("NationalProgram", foreign_keys=nationalProgramId)
+    nationalProgram: sa_orm.Mapped["NationalProgram"] = sa_orm.relationship(
+        "NationalProgram", foreign_keys=nationalProgramId
+    )
 
-    educationalRedactorsFavorite: sa_orm.Mapped[list["EducationalRedactor"]] = relationship(
+    educationalRedactorsFavorite: sa_orm.Mapped[list["EducationalRedactor"]] = sa_orm.relationship(
         "EducationalRedactor",
         secondary="collective_offer_template_educational_redactor",
         back_populates="favoriteCollectiveOfferTemplates",
     )
 
-    dateRange: psycopg2.extras.DateTimeRange = sa.Column(postgresql.TSRANGE)
+    dateRange: DateTimeRange = sa.Column(postgresql.TSRANGE)
 
     formats: list[subcategories.EacFormat] | None = sa.Column(
         postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=True
     )
 
-    collective_playlists: list[sa_orm.Mapped["CollectivePlaylist"]] = relationship(
+    collective_playlists: list[sa_orm.Mapped["CollectivePlaylist"]] = sa_orm.relationship(
         "CollectivePlaylist", back_populates="collective_offer_template"
     )
 
@@ -1143,7 +1146,7 @@ class CollectiveOfferTemplate(
     offererAddressId: sa_orm.Mapped[int | None] = sa.Column(
         sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True
     )
-    offererAddress: sa_orm.Mapped["OffererAddress | None"] = relationship(
+    offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
     )
 
@@ -1152,9 +1155,9 @@ class CollectiveOfferTemplate(
     )
     locationComment: sa_orm.Mapped[str | None] = sa.Column(sa.Text(), nullable=True)
 
-    dateArchived: datetime | None = sa.Column(sa.DateTime, nullable=True)
+    dateArchived: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
 
-    @declared_attr
+    @sa_orm.declared_attr
     def __table_args__(self):
         parent_args = []
         # Retrieves indexes from parent mixins defined in __table_args__
@@ -1195,7 +1198,7 @@ class CollectiveOfferTemplate(
 
     @hybrid_property
     def displayedStatus(self) -> CollectiveOfferDisplayedStatus:
-        if self.isArchived:
+        if self.isArchived:  # pylint: disable=using-constant-test
             return CollectiveOfferDisplayedStatus.ARCHIVED
 
         if self.validation == offer_mixin.OfferValidationStatus.REJECTED:
@@ -1244,13 +1247,13 @@ class CollectiveOfferTemplate(
         return list(TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[self.displayedStatus])
 
     @property
-    def start(self) -> datetime | None:
+    def start(self) -> datetime.datetime | None:
         if not self.dateRange:
             return None
         return self.dateRange.lower
 
     @property
-    def end(self) -> datetime | None:
+    def end(self) -> datetime.datetime | None:
         if not self.dateRange:
             return None
         return self.dateRange.upper
@@ -1276,10 +1279,10 @@ class CollectiveOfferTemplate(
     def hasEndDatePassed(self) -> bool:
         if not self.end:
             return False
-        return self.end < datetime.utcnow()
+        return self.end < datetime.datetime.utcnow()
 
     @hasEndDatePassed.expression  # type: ignore[no-redef]
-    def hasEndDatePassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    def hasEndDatePassed(cls) -> sa_elements.BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(
             cls.dateRange.is_not(None),
             sa.func.upper(cls.dateRange) < sa.func.now(),
@@ -1291,7 +1294,7 @@ class CollectiveOfferTemplate(
         return False
 
     @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimesPassed(cls) -> False_:  # pylint: disable=no-self-argument
+    def hasBookingLimitDatetimesPassed(cls) -> sa_elements.False_:  # pylint: disable=no-self-argument
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -1301,7 +1304,7 @@ class CollectiveOfferTemplate(
         return False
 
     @hasStartDatetimePassed.expression  # type: ignore[no-redef]
-    def hasStartDatetimePassed(cls) -> False_:  # pylint: disable=no-self-argument
+    def hasStartDatetimePassed(cls) -> sa_elements.False_:  # pylint: disable=no-self-argument
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -1311,7 +1314,7 @@ class CollectiveOfferTemplate(
         return False
 
     @hasEndDatetimePassed.expression  # type: ignore[no-redef]
-    def hasEndDatetimePassed(cls) -> False_:  # pylint: disable=no-self-argument
+    def hasEndDatetimePassed(cls) -> sa_elements.False_:  # pylint: disable=no-self-argument
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -1320,7 +1323,7 @@ class CollectiveOfferTemplate(
         return self.dateArchived is not None
 
     @isArchived.expression  # type: ignore[no-redef]
-    def isArchived(cls) -> Boolean:  # pylint: disable=no-self-argument
+    def isArchived(cls) -> sa.Boolean:  # pylint: disable=no-self-argument
         return cls.dateArchived.is_not(sa.null())
 
     @hybrid_property
@@ -1329,7 +1332,7 @@ class CollectiveOfferTemplate(
         return False
 
     @isSoldOut.expression  # type: ignore[no-redef]
-    def isSoldOut(cls) -> False_:  # pylint: disable=no-self-argument
+    def isSoldOut(cls) -> sa_elements.False_:  # pylint: disable=no-self-argument
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -1347,7 +1350,7 @@ class CollectiveOfferTemplate(
         return bool(self.isReleased and not self.venue.isVirtual)
 
     @property
-    def sort_criterion(self) -> typing.Tuple[bool, int, datetime]:
+    def sort_criterion(self) -> typing.Tuple[bool, int, datetime.datetime]:
         """
         This is is used to compare offers.
 
@@ -1384,7 +1387,7 @@ class CollectiveOfferTemplate(
         return self.subcategory.is_event
 
     @isEvent.expression  # type: ignore[no-redef]
-    def isEvent(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def isEvent(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
 
     @property
@@ -1432,32 +1435,36 @@ class CollectiveOfferTemplate(
         return self.hasStartDatetimePassed
 
     @is_expired.expression  # type: ignore[no-redef]
-    def is_expired(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
+    def is_expired(cls) -> sa_elements.UnaryExpression:  # pylint: disable=no-self-argument
         return cls.hasStartDatetimePassed
 
 
-class CollectiveStock(PcObject, Base, Model):
+class CollectiveStock(PcObject, models.Base, models.Model):
     __tablename__ = "collective_stock"
 
-    dateCreated: datetime = sa.Column(
-        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
+    dateCreated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )
 
-    dateModified: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    dateModified: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
 
-    startDatetime: datetime = sa.Column(sa.DateTime, nullable=False)
-    endDatetime: datetime = sa.Column(sa.DateTime, nullable=False)
+    startDatetime: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
+    endDatetime: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
     sa.Index("ix_collective_stock_startDatetime_endDatetime", startDatetime, endDatetime)
 
     collectiveOfferId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False, unique=True
     )
 
-    collectiveOffer: sa_orm.Mapped["CollectiveOffer"] = sa.orm.relationship(
+    collectiveOffer: sa_orm.Mapped["CollectiveOffer"] = sa_orm.relationship(
         "CollectiveOffer", foreign_keys=[collectiveOfferId], uselist=False, back_populates="collectiveStock"
     )
 
-    collectiveBookings: list["CollectiveBooking"] = relationship("CollectiveBooking", back_populates="collectiveStock")
+    collectiveBookings: list["CollectiveBooking"] = sa_orm.relationship(
+        "CollectiveBooking", back_populates="collectiveStock"
+    )
 
     price: decimal.Decimal = sa.Column(
         sa.Numeric(10, 2),
@@ -1466,7 +1473,7 @@ class CollectiveStock(PcObject, Base, Model):
         nullable=False,
     )
 
-    bookingLimitDatetime: datetime = sa.Column(sa.DateTime, nullable=False)
+    bookingLimitDatetime: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
 
     numberOfTickets: int = sa.Column(sa.Integer, nullable=False)
 
@@ -1503,31 +1510,31 @@ class CollectiveStock(PcObject, Base, Model):
 
     @hybrid_property
     def hasBookingLimitDatetimePassed(self) -> bool:
-        return self.bookingLimitDatetime <= datetime.utcnow()
+        return self.bookingLimitDatetime <= datetime.datetime.utcnow()
 
     @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def hasBookingLimitDatetimePassed(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
         return cls.bookingLimitDatetime <= sa.func.now()
 
     @hybrid_property
     def hasStartDatetimePassed(self) -> bool:
-        return self.startDatetime <= datetime.utcnow()
+        return self.startDatetime <= datetime.datetime.utcnow()
 
     @hasStartDatetimePassed.expression  # type: ignore[no-redef]
-    def hasStartDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def hasStartDatetimePassed(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
         return cls.startDatetime <= sa.func.now()
 
     @hybrid_property
     def hasEndDatetimePassed(self) -> bool:
-        return self.endDatetime <= datetime.utcnow()
+        return self.endDatetime <= datetime.datetime.utcnow()
 
     @hasEndDatetimePassed.expression  # type: ignore[no-redef]
-    def hasEndDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def hasEndDatetimePassed(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
         return cls.endDatetime <= sa.func.now()
 
     @hybrid_property
     def isEventExpired(self) -> bool:  # todo rewrite
-        return self.startDatetime <= datetime.utcnow()
+        return self.startDatetime <= datetime.datetime.utcnow()
 
     @isEventExpired.expression  # type: ignore[no-redef]
     def isEventExpired(cls):  # pylint: disable=no-self-argument
@@ -1547,7 +1554,7 @@ class CollectiveStock(PcObject, Base, Model):
         return non_cancelled_bookings[0] if non_cancelled_bookings else None
 
     def is_two_days_past_end(self) -> bool:
-        return self.endDatetime + timedelta(days=2) < datetime.utcnow()
+        return self.endDatetime + datetime.timedelta(days=2) < datetime.datetime.utcnow()
 
     @property
     def isSoldOut(self) -> bool:
@@ -1562,7 +1569,7 @@ class CollectiveStock(PcObject, Base, Model):
         return False
 
 
-class EducationalInstitution(PcObject, Base, Model):
+class EducationalInstitution(PcObject, models.Base, models.Model):
     __tablename__ = "educational_institution"
 
     id: sa_orm.Mapped[int] = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
@@ -1582,15 +1589,15 @@ class EducationalInstitution(PcObject, Base, Model):
 
     phoneNumber: str = sa.Column(sa.String(30), nullable=False)
 
-    collectiveOffers: list["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="institution")
+    collectiveOffers: list["CollectiveOffer"] = sa_orm.relationship("CollectiveOffer", back_populates="institution")
 
     isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
 
-    collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = relationship(
+    collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = sa_orm.relationship(
         "CollectiveOfferRequest", back_populates="educationalInstitution"
     )
 
-    programs: list["EducationalInstitutionProgram"] = relationship(
+    programs: list["EducationalInstitutionProgram"] = sa_orm.relationship(
         "EducationalInstitutionProgram",
         secondary="educational_institution_program_association",
         back_populates="institutions",
@@ -1598,7 +1605,7 @@ class EducationalInstitution(PcObject, Base, Model):
 
     ruralLevel: InstitutionRuralLevel = sa.Column(MagicEnum(InstitutionRuralLevel), nullable=True, default=None)
 
-    collective_playlists: list[sa_orm.Mapped["CollectivePlaylist"]] = relationship(
+    collective_playlists: list[sa_orm.Mapped["CollectivePlaylist"]] = sa_orm.relationship(
         "CollectivePlaylist", back_populates="institution"
     )
 
@@ -1609,7 +1616,9 @@ class EducationalInstitution(PcObject, Base, Model):
     __table_args__ = (
         sa.Index("ix_educational_institution_type_name_city", institutionType + " " + name + " " + city),
         sa.Index(
-            "ix_educational_institution_department_code", sa.func.postal_code_to_department_code(postalCode), "id"
+            "ix_educational_institution_department_code",
+            sa.func.postal_code_to_department_code(postalCode),
+            "id",
         ),
     )
 
@@ -1618,17 +1627,17 @@ class EducationalInstitution(PcObject, Base, Model):
         return f"{self.institutionType} {self.name}".strip()
 
 
-class EducationalYear(PcObject, Base, Model):
+class EducationalYear(PcObject, models.Base, models.Model):
     __tablename__ = "educational_year"
 
     adageId: str = sa.Column(sa.String(30), unique=True, nullable=False)
 
-    beginningDate: datetime = sa.Column(sa.DateTime, nullable=False)
+    beginningDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
 
-    expirationDate: datetime = sa.Column(sa.DateTime, nullable=False)
+    expirationDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
 
 
-class EducationalDeposit(PcObject, Base, Model):
+class EducationalDeposit(PcObject, models.Base, models.Model):
     __tablename__ = "educational_deposit"
 
     TEMPORARY_FUND_AVAILABLE_RATIO = 0.8
@@ -1637,7 +1646,7 @@ class EducationalDeposit(PcObject, Base, Model):
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False
     )
 
-    educationalInstitution: EducationalInstitution = relationship(
+    educationalInstitution: EducationalInstitution = sa_orm.relationship(
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="deposits"
     )
 
@@ -1645,22 +1654,24 @@ class EducationalDeposit(PcObject, Base, Model):
         sa.String(30), sa.ForeignKey("educational_year.adageId"), index=True, nullable=False
     )
 
-    educationalYear: sa_orm.Mapped["EducationalYear"] = relationship(
+    educationalYear: sa_orm.Mapped["EducationalYear"] = sa_orm.relationship(
         EducationalYear, foreign_keys=[educationalYearId], backref="deposits"
     )
 
-    amount: Decimal = sa.Column(Numeric(10, 2), nullable=False)
+    amount: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+    dateCreated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
+    )
 
-    isFinal: bool = sa.Column(Boolean, nullable=False, default=True)
+    isFinal: bool = sa.Column(sa.Boolean, nullable=False, default=True)
 
     ministry = sa.Column(
         sa.Enum(Ministry),
         nullable=True,
     )
 
-    def check_has_enough_fund(self, total_amount_after_booking: Decimal) -> None:
+    def check_has_enough_fund(self, total_amount_after_booking: decimal.Decimal) -> None:
         """Check that the total amount of bookings won't exceed the
         deposit's amount.
 
@@ -1672,14 +1683,14 @@ class EducationalDeposit(PcObject, Base, Model):
             if self.amount < total_amount_after_booking:
                 raise educational_exceptions.InsufficientFund()
         else:
-            ratio = Decimal(self.TEMPORARY_FUND_AVAILABLE_RATIO)
+            ratio = decimal.Decimal(self.TEMPORARY_FUND_AVAILABLE_RATIO)
             temporary_fund = round(self.amount * ratio, 2)
 
             if temporary_fund < total_amount_after_booking:
                 raise educational_exceptions.InsufficientTemporaryFund()
 
 
-class EducationalRedactor(PcObject, Base, Model):
+class EducationalRedactor(PcObject, models.Base, models.Model):
     __tablename__ = "educational_redactor"
 
     email: str = sa.Column(sa.String(120), nullable=False, unique=True, index=True)
@@ -1690,21 +1701,19 @@ class EducationalRedactor(PcObject, Base, Model):
 
     civility = sa.Column(sa.String(20), nullable=True)
 
-    preferences: sa.orm.Mapped[dict] = sa.Column(
-        sa.dialects.postgresql.JSONB(), server_default="{}", default={}, nullable=False
-    )
+    preferences: sa_orm.Mapped[dict] = sa.Column(postgresql.JSONB(), server_default="{}", default={}, nullable=False)
 
-    collectiveBookings: list["CollectiveBooking"] = relationship(
+    collectiveBookings: list["CollectiveBooking"] = sa_orm.relationship(
         "CollectiveBooking", back_populates="educationalRedactor"
     )
 
-    collectiveOffers: list["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="teacher")
+    collectiveOffers: list["CollectiveOffer"] = sa_orm.relationship("CollectiveOffer", back_populates="teacher")
 
-    collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = relationship(
+    collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = sa_orm.relationship(
         "CollectiveOfferRequest", back_populates="educationalRedactor"
     )
 
-    favoriteCollectiveOfferTemplates: sa_orm.Mapped[list["CollectiveOfferTemplate"]] = relationship(
+    favoriteCollectiveOfferTemplates: sa_orm.Mapped[list["CollectiveOfferTemplate"]] = sa_orm.relationship(
         "CollectiveOfferTemplate",
         secondary="collective_offer_template_educational_redactor",
         back_populates="educationalRedactorsFavorite",
@@ -1717,35 +1726,37 @@ class EducationalRedactor(PcObject, Base, Model):
         return (f"{self.firstName or ''} {self.lastName or ''}".strip()) or self.email
 
 
-class CollectiveBooking(PcObject, Base, Model):
+class CollectiveBooking(PcObject, models.Base, models.Model):
     __tablename__ = "collective_booking"
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
-    Index("ix_collective_booking_date_created", dateCreated)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    sa.Index("ix_collective_booking_date_created", dateCreated)
 
     dateUsed = sa.Column(sa.DateTime, nullable=True, index=True)
 
     collectiveStockId: int = sa.Column(sa.BigInteger, sa.ForeignKey("collective_stock.id"), index=True, nullable=False)
 
-    collectiveStock: sa_orm.Mapped["CollectiveStock"] = relationship(
+    collectiveStock: sa_orm.Mapped["CollectiveStock"] = sa_orm.relationship(
         "CollectiveStock", foreign_keys=[collectiveStockId], back_populates="collectiveBookings"
     )
 
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
 
-    venue: sa_orm.Mapped["Venue"] = relationship("Venue", foreign_keys=[venueId], backref="collectiveBookings")
+    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId], backref="collectiveBookings")
 
     offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer: sa_orm.Mapped["Offerer"] = relationship("Offerer", foreign_keys=[offererId], backref="collectiveBookings")
+    offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship(
+        "Offerer", foreign_keys=[offererId], backref="collectiveBookings"
+    )
 
     cancellationDate = sa.Column(sa.DateTime, nullable=True)
 
     cancellationUserId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
-    cancellationUser: sa_orm.Mapped["User | None"] = relationship("User", foreign_keys=[cancellationUserId])
+    cancellationUser: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", foreign_keys=[cancellationUserId])
 
-    cancellationLimitDate: datetime = sa.Column(sa.DateTime, nullable=False)
+    cancellationLimitDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
 
     cancellationReason = sa.Column(
         "cancellationReason",
@@ -1760,24 +1771,26 @@ class CollectiveBooking(PcObject, Base, Model):
         sa.Enum(CollectiveBookingStatus), nullable=False, default=CollectiveBookingStatus.CONFIRMED
     )
 
-    Index("ix_collective_booking_status", status)
+    sa.Index("ix_collective_booking_status", status)
 
     reimbursementDate = sa.Column(sa.DateTime, nullable=True)
 
     educationalInstitutionId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False
     )
-    educationalInstitution: sa_orm.Mapped["EducationalInstitution"] = relationship(
+    educationalInstitution: sa_orm.Mapped["EducationalInstitution"] = sa_orm.relationship(
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="collectiveBookings"
     )
 
     educationalYearId: str = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False)
-    educationalYear: sa_orm.Mapped["EducationalYear"] = relationship(EducationalYear, foreign_keys=[educationalYearId])
+    educationalYear: sa_orm.Mapped["EducationalYear"] = sa_orm.relationship(
+        EducationalYear, foreign_keys=[educationalYearId]
+    )
 
-    Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
+    sa.Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
     confirmationDate = sa.Column(sa.DateTime, nullable=True)
-    confirmationLimitDate: datetime = sa.Column(sa.DateTime, nullable=False)
+    confirmationLimitDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
 
     educationalRedactorId: int = sa.Column(
         sa.BigInteger,
@@ -1785,7 +1798,7 @@ class CollectiveBooking(PcObject, Base, Model):
         nullable=False,
         index=True,
     )
-    educationalRedactor: sa_orm.Mapped["EducationalRedactor"] = relationship(
+    educationalRedactor: sa_orm.Mapped["EducationalRedactor"] = sa_orm.relationship(
         EducationalRedactor,
         back_populates="collectiveBookings",
         uselist=False,
@@ -1805,7 +1818,7 @@ class CollectiveBooking(PcObject, Base, Model):
         if self.status is CollectiveBookingStatus.USED and not cancel_even_if_used:
             raise educational_exceptions.CollectiveBookingIsAlreadyUsed
         self.status = CollectiveBookingStatus.CANCELLED
-        self.cancellationDate = datetime.utcnow()
+        self.cancellationDate = datetime.datetime.utcnow()
         self.cancellationReason = reason
         self.cancellationUserId = author_id
         self.dateUsed = None
@@ -1821,7 +1834,7 @@ class CollectiveBooking(PcObject, Base, Model):
         if self.confirmationDate:
             if self.collectiveStock.is_two_days_past_end():
                 self.status = CollectiveBookingStatus.USED
-                self.dateUsed = datetime.utcnow()
+                self.dateUsed = datetime.datetime.utcnow()
             else:
                 self.status = CollectiveBookingStatus.CONFIRMED
         else:
@@ -1832,22 +1845,22 @@ class CollectiveBooking(PcObject, Base, Model):
             raise booking_exceptions.ConfirmationLimitDateHasPassed()
 
         self.status = CollectiveBookingStatus.CONFIRMED
-        self.confirmationDate = datetime.utcnow()
+        self.confirmationDate = datetime.datetime.utcnow()
 
     @hybrid_property
     def isConfirmed(self) -> bool:
-        return self.cancellationLimitDate <= datetime.utcnow()
+        return self.cancellationLimitDate <= datetime.datetime.utcnow()
 
     @isConfirmed.expression  # type: ignore[no-redef]
-    def isConfirmed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
-        return cls.cancellationLimitDate <= datetime.utcnow()
+    def isConfirmed(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
+        return cls.cancellationLimitDate <= datetime.datetime.utcnow()
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
         return self.status in [CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED]
 
     @is_used_or_reimbursed.expression  # type: ignore[no-redef]
-    def is_used_or_reimbursed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def is_used_or_reimbursed(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
         return cls.status.in_([CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED])
 
     @hybrid_property
@@ -1855,7 +1868,7 @@ class CollectiveBooking(PcObject, Base, Model):
         return self.status == CollectiveBookingStatus.REIMBURSED
 
     @isReimbursed.expression  # type: ignore[no-redef]
-    def isReimbursed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def isReimbursed(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
         return cls.status == CollectiveBookingStatus.REIMBURSED
 
     @hybrid_property
@@ -1863,7 +1876,7 @@ class CollectiveBooking(PcObject, Base, Model):
         return self.status == CollectiveBookingStatus.CANCELLED
 
     @isCancelled.expression  # type: ignore[no-redef]
-    def isCancelled(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def isCancelled(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
         return cls.status == CollectiveBookingStatus.CANCELLED
 
     @property
@@ -1875,10 +1888,10 @@ class CollectiveBooking(PcObject, Base, Model):
         return f"{self.educationalRedactor.firstName} {self.educationalRedactor.lastName}"
 
     def has_confirmation_limit_date_passed(self) -> bool:
-        return self.confirmationLimitDate <= datetime.utcnow()
+        return self.confirmationLimitDate <= datetime.datetime.utcnow()
 
     def mark_as_refused(self) -> None:
-        if self.status != CollectiveBookingStatus.PENDING and self.cancellationLimitDate <= datetime.utcnow():
+        if self.status != CollectiveBookingStatus.PENDING and self.cancellationLimitDate <= datetime.datetime.utcnow():
             raise educational_exceptions.EducationalBookingNotRefusable()
         cancellation_reason = (
             CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
@@ -1978,11 +1991,11 @@ class CollectiveBooking(PcObject, Base, Model):
             return None
 
     @property
-    def total_amount(self) -> Decimal:
+    def total_amount(self) -> decimal.Decimal:
         return self.collectiveStock.price
 
 
-class CollectiveOfferTemplateDomain(Base, Model):
+class CollectiveOfferTemplateDomain(models.Base, models.Model):
     """An association table between CollectiveOfferTemplate and
     EducationalDomain for their many-to-many relationship.
     """
@@ -1997,7 +2010,7 @@ class CollectiveOfferTemplateDomain(Base, Model):
     )
 
 
-class CollectiveOfferDomain(Base, Model):
+class CollectiveOfferDomain(models.Base, models.Model):
     """An association table between CollectiveOffer and
     EducationalDomain for their many-to-many relationship.
     """
@@ -2012,7 +2025,7 @@ class CollectiveOfferDomain(Base, Model):
     )
 
 
-class EducationalDomainVenue(Base, Model):
+class EducationalDomainVenue(models.Base, models.Model):
     __tablename__ = "educational_domain_venue"
     id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
     educationalDomainId: int = sa.Column(
@@ -2029,18 +2042,18 @@ class EducationalDomainVenue(Base, Model):
     )
 
 
-class EducationalDomain(PcObject, Base, Model):
+class EducationalDomain(PcObject, models.Base, models.Model):
     __tablename__ = "educational_domain"
 
     name: str = sa.Column(sa.Text, nullable=False)
-    venues: sa_orm.Mapped[list["Venue"]] = sa.orm.relationship(
+    venues: sa_orm.Mapped[list["Venue"]] = sa_orm.relationship(
         "Venue", back_populates="collectiveDomains", secondary="educational_domain_venue"
     )
-    collectiveOffers: list["CollectiveOffer"] = relationship(
+    collectiveOffers: list["CollectiveOffer"] = sa_orm.relationship(
         "CollectiveOffer", secondary="collective_offer_domain", back_populates="domains"
     )
 
-    collectiveOfferTemplates: list["CollectiveOfferTemplate"] = relationship(
+    collectiveOfferTemplates: list["CollectiveOfferTemplate"] = sa_orm.relationship(
         "CollectiveOfferTemplate", secondary="collective_offer_template_domain", back_populates="domains"
     )
     nationalPrograms: sa_orm.Mapped[list["NationalProgram"]] = sa_orm.relationship(
@@ -2051,13 +2064,13 @@ class EducationalDomain(PcObject, Base, Model):
     )
 
 
-class CollectiveDmsApplication(PcObject, Base, Model):
+class CollectiveDmsApplication(PcObject, models.Base, models.Model):
     __tablename__ = "collective_dms_application"
     state: str = sa.Column(sa.String(30), nullable=False)
     procedure: int = sa.Column(sa.BigInteger, nullable=False)
     application: int = sa.Column(sa.BigInteger, nullable=False, index=True)
     siret: str = sa.Column(sa.String(14), nullable=False, index=True)
-    lastChangeDate: datetime = sa.Column(sa.DateTime, nullable=False)
+    lastChangeDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
     depositDate = sa.Column(sa.DateTime, nullable=False)
     expirationDate = sa.Column(sa.DateTime, nullable=True)
     buildDate = sa.Column(sa.DateTime, nullable=True)
@@ -2094,10 +2107,10 @@ sa.event.listen(
 )
 
 
-class CollectiveOfferRequest(PcObject, Base, Model):
+class CollectiveOfferRequest(PcObject, models.Base, models.Model):
     _phoneNumber: str | None = sa.Column(sa.String(30), nullable=True, name="phoneNumber")
 
-    requestedDate: date | None = sa.Column(sa.Date, nullable=True)
+    requestedDate: datetime.date | None = sa.Column(sa.Date, nullable=True)
 
     totalStudents: int | None = sa.Column(sa.Integer, nullable=True)
 
@@ -2105,11 +2118,11 @@ class CollectiveOfferRequest(PcObject, Base, Model):
 
     comment: str = sa.Column(sa.Text, nullable=False)
 
-    dateCreated: date = sa.Column(sa.Date, nullable=False, server_default=sa.func.current_date())
+    dateCreated: datetime.date = sa.Column(sa.Date, nullable=False, server_default=sa.func.current_date())
 
     educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
 
-    educationalRedactor: sa_orm.Mapped["EducationalRedactor"] = relationship(
+    educationalRedactor: sa_orm.Mapped["EducationalRedactor"] = sa_orm.relationship(
         "EducationalRedactor", foreign_keys=educationalRedactorId, back_populates="collectiveOfferRequest"
     )
 
@@ -2117,7 +2130,7 @@ class CollectiveOfferRequest(PcObject, Base, Model):
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=False
     )
 
-    collectiveOfferTemplate: sa_orm.Mapped["CollectiveOfferTemplate"] = relationship(
+    collectiveOfferTemplate: sa_orm.Mapped["CollectiveOfferTemplate"] = sa_orm.relationship(
         "CollectiveOfferTemplate", foreign_keys=collectiveOfferTemplateId, back_populates="collectiveOfferRequest"
     )
 
@@ -2125,7 +2138,7 @@ class CollectiveOfferRequest(PcObject, Base, Model):
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False
     )
 
-    educationalInstitution: sa_orm.Mapped["EducationalInstitution"] = relationship(
+    educationalInstitution: sa_orm.Mapped["EducationalInstitution"] = sa_orm.relationship(
         "EducationalInstitution", foreign_keys=educationalInstitutionId, back_populates="collectiveOfferRequest"
     )
 
@@ -2145,7 +2158,7 @@ class CollectiveOfferRequest(PcObject, Base, Model):
         return cls._phoneNumber
 
 
-class ValidationRuleCollectiveOfferLink(PcObject, Base, Model):
+class ValidationRuleCollectiveOfferLink(PcObject, models.Base, models.Model):
     __tablename__ = "validation_rule_collective_offer_link"
     ruleId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
@@ -2155,7 +2168,7 @@ class ValidationRuleCollectiveOfferLink(PcObject, Base, Model):
     )
 
 
-class ValidationRuleCollectiveOfferTemplateLink(PcObject, Base, Model):
+class ValidationRuleCollectiveOfferTemplateLink(PcObject, models.Base, models.Model):
     __tablename__ = "validation_rule_collective_offer_template_link"
     ruleId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
@@ -2165,15 +2178,15 @@ class ValidationRuleCollectiveOfferTemplateLink(PcObject, Base, Model):
     )
 
 
-class NationalProgram(PcObject, Base, Model):
+class NationalProgram(PcObject, models.Base, models.Model):
     """
     Keep a track of existing national program that are used to highlight
     collective offers (templates) within a coherent frame.
     """
 
     name: str = sa.Column(sa.Text, unique=True)
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
-    domains: sa_orm.Mapped[list["EducationalDomain"]] = sa.orm.relationship(
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    domains: sa_orm.Mapped[list["EducationalDomain"]] = sa_orm.relationship(
         "EducationalDomain", back_populates="nationalPrograms", secondary="domain_to_national_program"
     )
     isActive: sa_orm.Mapped[bool] = sa.Column(
@@ -2181,14 +2194,14 @@ class NationalProgram(PcObject, Base, Model):
     )
 
 
-class NationalProgramOfferLinkHistory(PcObject, Base, Model):
+class NationalProgramOfferLinkHistory(PcObject, models.Base, models.Model):
     """
     Keep a track on national program and collective offer links.
     It might be useful to find if an offer has been part of a given
     program or not.
     """
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     collectiveOfferId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), nullable=False
     )
@@ -2197,14 +2210,14 @@ class NationalProgramOfferLinkHistory(PcObject, Base, Model):
     )
 
 
-class NationalProgramOfferTemplateLinkHistory(PcObject, Base, Model):
+class NationalProgramOfferTemplateLinkHistory(PcObject, models.Base, models.Model):
     """
     Keep a track on national program and collective offer template links.
     It might be useful to find if an offer has been part of a given
     program or not.
     """
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     collectiveOfferTemplateId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), nullable=False
     )
@@ -2213,7 +2226,7 @@ class NationalProgramOfferTemplateLinkHistory(PcObject, Base, Model):
     )
 
 
-class CollectiveOfferTemplateEducationalRedactor(PcObject, Base, Model):
+class CollectiveOfferTemplateEducationalRedactor(PcObject, models.Base, models.Model):
     """Allow adding to favorite the offer template for adage user"""
 
     __tablename__ = "collective_offer_template_educational_redactor"
@@ -2222,18 +2235,18 @@ class CollectiveOfferTemplateEducationalRedactor(PcObject, Base, Model):
     collectiveOfferTemplateId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), nullable=False
     )
-    collectiveOfferTemplate: sa_orm.Mapped["CollectiveOfferTemplate"] = sa.orm.relationship(
+    collectiveOfferTemplate: sa_orm.Mapped["CollectiveOfferTemplate"] = sa_orm.relationship(
         "CollectiveOfferTemplate", foreign_keys=[collectiveOfferTemplateId], viewonly=True
     )
     __table_args__ = (
-        UniqueConstraint("educationalRedactorId", "collectiveOfferTemplateId", name="unique_redactorId_template"),
+        sa.UniqueConstraint("educationalRedactorId", "collectiveOfferTemplateId", name="unique_redactorId_template"),
     )
 
 
 PROGRAM_MARSEILLE_EN_GRAND = "marseille_en_grand"
 
 
-class EducationalInstitutionProgramAssociation(Base, Model):
+class EducationalInstitutionProgramAssociation(models.Base, models.Model):
     """Association model between EducationalInstitution and
     EducationalInstitutionProgram (many-to-many)
     """
@@ -2258,52 +2271,54 @@ class EducationalInstitutionProgramAssociation(Base, Model):
     )
 
 
-class EducationalInstitutionProgram(PcObject, Base, Model):
+class EducationalInstitutionProgram(PcObject, models.Base, models.Model):
     # technical name
     name: str = sa.Column(sa.Text, nullable=False, unique=True)
     # public (printable) name - if something different from name is needed
     label: str | None = sa.Column(sa.Text, nullable=True)
     description: str | None = sa.Column(sa.Text, nullable=True)
 
-    institutions: list["EducationalInstitution"] = relationship(
+    institutions: list["EducationalInstitution"] = sa_orm.relationship(
         "EducationalInstitution", secondary="educational_institution_program_association", back_populates="programs"
     )
 
 
-class CollectivePlaylist(PcObject, Base, Model):
+class CollectivePlaylist(PcObject, models.Base, models.Model):
     type: str = sa.Column(MagicEnum(PlaylistType), nullable=False)
     distanceInKm: float = sa.Column(sa.Float, nullable=True)
 
     institutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False)
-    institution: sa_orm.Mapped["EducationalInstitution"] = relationship(
+    institution: sa_orm.Mapped["EducationalInstitution"] = sa_orm.relationship(
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collective_playlists"
     )
 
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=True)
-    venue: sa_orm.Mapped["Venue"] = relationship("Venue", foreign_keys=[venueId], back_populates="collective_playlists")
+    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
+        "Venue", foreign_keys=[venueId], back_populates="collective_playlists"
+    )
 
     collectiveOfferTemplateId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=True
     )
-    collective_offer_template: sa_orm.Mapped["CollectiveOfferTemplate"] = relationship(
+    collective_offer_template: sa_orm.Mapped["CollectiveOfferTemplate"] = sa_orm.relationship(
         "CollectiveOfferTemplate", foreign_keys=[collectiveOfferTemplateId], back_populates="collective_playlists"
     )
 
-    Index("ix_collective_playlist_type_institutionId", type, institutionId)
+    sa.Index("ix_collective_playlist_type_institutionId", type, institutionId)
 
 
-class AdageVenueAddress(PcObject, Base, Model):
+class AdageVenueAddress(PcObject, models.Base, models.Model):
     adageId: str | None = sa.Column(sa.Text, nullable=True, unique=True)
-    adageInscriptionDate: datetime | None = sa.Column(sa.DateTime, nullable=True)
+    adageInscriptionDate: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
     venueId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=True
     )
-    venue: sa_orm.Mapped["Venue"] = sa.orm.relationship(
+    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="adage_addresses"
     )
 
 
-class DomainToNationalProgram(PcObject, Base, Model):
+class DomainToNationalProgram(PcObject, models.Base, models.Model):
     """Intermediate table that links `EducationalDomain`
     to `NationalProgram`. Links are unique: a domain can be linked to many
     programs but not twice the same.
