@@ -1098,17 +1098,6 @@ class CollectiveOfferTemplate(
 
     collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="template")
 
-    providerId: int | None = sa.Column(
-        sa.BigInteger,
-        sa.ForeignKey("provider.id"),
-        nullable=True,
-        index=True,
-    )
-
-    provider: sa_orm.Mapped["Provider"] = relationship(
-        "Provider", foreign_keys=providerId, back_populates="collectiveOfferTemplates"
-    )
-
     collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = relationship(
         "CollectiveOfferRequest", back_populates="collectiveOfferTemplate"
     )
