@@ -1,5 +1,4 @@
 from datetime import datetime
-from functools import partial
 import typing
 
 from flask import flash
@@ -27,7 +26,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import mark_transaction_as_invalid
-from pcapi.repository import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
@@ -1035,9 +1033,7 @@ def cancel_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
 
     db.session.flush()
 
-    on_commit(
-        partial(send_finance_incident_emails, finance_incident=finance_incident),
-    )
+    send_finance_incident_emails(finance_incident=finance_incident)
 
     flash("Vous avez fait le choix de récupérer l'argent sur les prochaines réservations de l'acteur.", "success")
     return redirect(

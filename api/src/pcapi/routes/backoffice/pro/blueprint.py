@@ -28,7 +28,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import mark_transaction_as_invalid
-from pcapi.repository import on_commit
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -276,7 +275,7 @@ def create_offerer() -> utils.BackofficeResponse:
     venue = offerers_api.create_venue(venue_creation_info, current_user)
     offerers_api.create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
-    on_commit(partial(transactional_mails.send_welcome_to_pro_email, pro_user, venue))
+    transactional_mails.send_welcome_to_pro_email(pro_user, venue)
 
     flash(
         Markup("L'entité juridique et le partenaire culturel <b>{name}</b> ont été créés").format(

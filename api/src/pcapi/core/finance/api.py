@@ -4028,12 +4028,7 @@ def validate_finance_overpayment_incident(
     db.session.flush()
 
     # send mail to pro
-    on_commit(
-        functools.partial(
-            send_finance_incident_emails,
-            finance_incident=finance_incident,
-        ),
-    )
+    send_finance_incident_emails(finance_incident=finance_incident)
     # send mail to beneficiaries or educational redactor
     for booking_incident in finance_incident.booking_finance_incidents:
         if not booking_incident.is_partial:
@@ -4046,10 +4041,8 @@ def validate_finance_overpayment_incident(
                     ),
                 )
             else:
-                on_commit(
-                    functools.partial(
-                        send_booking_cancellation_by_pro_to_beneficiary_email, booking=booking_incident.booking
-                    )
+                send_booking_cancellation_by_pro_to_beneficiary_email(
+                    booking=booking_incident.booking,
                 )
 
 
@@ -4095,12 +4088,7 @@ def validate_finance_commercial_gesture(
     db.session.flush()
 
     # send mail to pro
-    on_commit(
-        functools.partial(
-            send_commercial_gesture_email,
-            finance_incident=finance_incident,
-        ),
-    )
+    send_commercial_gesture_email(finance_incident=finance_incident)
 
 
 def cancel_finance_incident(

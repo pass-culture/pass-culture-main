@@ -901,13 +901,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
                 else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
             )
             offer_data = transactional_mails.get_email_data_from_offer(offer, old_validation, new_validation)
-            on_commit(
-                functools.partial(
-                    transactional_mails.send_offer_validation_status_update_email,
-                    offer_data,
-                    recipients,
-                )
-            )
+            transactional_mails.send_offer_validation_status_update_email(offer_data, recipients)
 
     db.session.flush()
 
@@ -939,12 +933,9 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
 
             cancelled_bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
             for booking in cancelled_bookings:
-                on_commit(
-                    functools.partial(
-                        transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email,
-                        booking,
-                        rejected_by_fraud_action=True,
-                    )
+                transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(
+                    booking,
+                    rejected_by_fraud_action=True,
                 )
 
             repository.save(offer)
@@ -955,13 +946,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
                 else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
             )
             offer_data = transactional_mails.get_email_data_from_offer(offer, old_validation, new_validation)
-            on_commit(
-                functools.partial(
-                    transactional_mails.send_offer_validation_status_update_email,
-                    offer_data,
-                    recipients,
-                )
-            )
+            transactional_mails.send_offer_validation_status_update_email(offer_data, recipients)
 
     if len(offer_ids) > 0:
         favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
