@@ -29,12 +29,14 @@ export type AdageOfferHeaderProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
   adageUser?: AuthenticatedResponse
   isPreview?: boolean
+  playlistId?: number
 }
 
 export function AdageOfferHeader({
   offer,
   adageUser,
   isPreview,
+  playlistId,
 }: AdageOfferHeaderProps) {
   const isOfferBookable = isCollectiveOfferBookable(offer)
 
@@ -81,6 +83,7 @@ export function AdageOfferHeader({
                   offer={offer}
                   className={styles['offer-header-action']}
                   queryId={''}
+                  playlistId={playlistId}
                 />
               )}
               <OfferShareLink

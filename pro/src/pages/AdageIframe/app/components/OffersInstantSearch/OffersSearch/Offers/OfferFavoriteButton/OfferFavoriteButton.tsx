@@ -22,6 +22,7 @@ export interface OfferFavoriteButtonProps {
   isInSuggestions?: boolean
   className?: string
   viewType?: 'grid' | 'list'
+  playlistId?: number
 }
 
 export const OfferFavoriteButton = ({
@@ -31,8 +32,11 @@ export const OfferFavoriteButton = ({
   isInSuggestions,
   className,
   viewType,
+  playlistId,
 }: OfferFavoriteButtonProps): JSX.Element => {
-  const [isFavorite, setIsFavorite] = useState(isCollectiveOfferTemplate(offer) ? offer.isFavorite : false)
+  const [isFavorite, setIsFavorite] = useState(
+    isCollectiveOfferTemplate(offer) ? offer.isFavorite : false
+  )
   const [isLoading, setIsLoading] = useState(false)
   const { setFavoriteCount } = useAdageUser()
 
@@ -49,11 +53,12 @@ export const OfferFavoriteButton = ({
 
       apiAdage.logFavOfferButtonClick({
         offerId: offer.id,
-        queryId: queryId,
+        queryId,
         iframeFrom: location.pathname,
         isFavorite: false,
         isFromNoResult: isInSuggestions,
         vueType: viewType,
+        playlistId,
       })
 
       afterFavoriteChange?.(false)
@@ -75,11 +80,12 @@ export const OfferFavoriteButton = ({
 
       apiAdage.logFavOfferButtonClick({
         offerId: offer.id,
-        queryId: queryId,
+        queryId,
         iframeFrom: location.pathname,
         isFavorite: true,
         isFromNoResult: isInSuggestions,
         vueType: viewType,
+        playlistId,
       })
 
       afterFavoriteChange?.(true)

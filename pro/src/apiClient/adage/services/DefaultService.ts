@@ -22,6 +22,7 @@ import type { ListCollectiveOffersResponseModel } from '../models/ListCollective
 import type { ListCollectiveOfferTemplateResponseModel } from '../models/ListCollectiveOfferTemplateResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
 import type { LocalOfferersPlaylist } from '../models/LocalOfferersPlaylist';
+import type { OfferBody } from '../models/OfferBody';
 import type { OfferFavoriteBody } from '../models/OfferFavoriteBody';
 import type { OfferIdBody } from '../models/OfferIdBody';
 import type { OfferListSwitch } from '../models/OfferListSwitch';
@@ -355,7 +356,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logContactModalButtonClick(
-    requestBody?: OfferIdBody,
+    requestBody?: OfferBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',

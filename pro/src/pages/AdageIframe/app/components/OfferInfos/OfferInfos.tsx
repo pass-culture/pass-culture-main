@@ -125,6 +125,7 @@ export const OfferInfos = () => {
             adageUser={adageUser}
             setInstitutionOfferCount={setInstitutionOfferCount}
             institutionOfferCount={institutionOfferCount}
+            playlistId={state?.playlistId}
           />
         </>
       ) : (

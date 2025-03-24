@@ -20,12 +20,14 @@ export type AdageOfferPartnerPanelProps = {
   offer: CollectiveOfferTemplateResponseModel
   adageUser?: AuthenticatedResponse
   isPreview?: boolean
+  playlistId?: number
 }
 
 export function AdageOfferPartnerPanel({
   offer,
   adageUser,
   isPreview = false,
+  playlistId,
 }: AdageOfferPartnerPanelProps) {
   const venue = offer.venue
 
@@ -113,6 +115,7 @@ export function AdageOfferPartnerPanel({
           userEmail={adageUser?.email}
           userRole={adageUser?.role}
           isPreview={isPreview}
+          playlistId={playlistId}
         >
           <SvgIcon
             src={fullMailIcon}

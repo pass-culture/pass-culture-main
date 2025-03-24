@@ -90,7 +90,7 @@ export const RequestFormDialog = ({
   const logContactUrl = () => {
     apiAdage.logContactUrlClick({
       iframeFrom: location.pathname,
-      offerId: offerId,
+      offerId,
     })
   }
 

@@ -143,13 +143,14 @@ def log_booking_modal_button_click(
 @adage_jwt_required
 def log_contact_modal_button_click(
     authenticated_information: AuthenticatedInformation,
-    body: serialization.OfferIdBody,
+    body: serialization.OfferBody,
 ) -> None:
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="ContactModalButtonClick",
         extra_data={
             "offerId": body.offerId,
+            "playlistId": body.playlistId,
             "from": body.iframeFrom,
             "queryId": body.queryId,
             "isFromNoResult": body.isFromNoResult,
@@ -204,6 +205,7 @@ def log_fav_offer_button_click(
             "isFavorite": body.isFavorite,
             "isFromNoResult": body.isFromNoResult,
             "vueType": body.vueType,
+            "playlistId": body.playlistId,
         },
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
