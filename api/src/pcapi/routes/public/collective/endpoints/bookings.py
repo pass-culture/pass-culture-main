@@ -1,3 +1,5 @@
+from functools import partial
+
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -7,6 +9,8 @@ from pcapi.core.educational.api import booking as educational_api_booking
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.providers.models as providers_models
 from pcapi.models.api_errors import ForbiddenError
+from pcapi.repository import on_commit
+from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -54,7 +58,12 @@ def cancel_collective_booking(booking_id: int) -> None:
             {"booking": "Cette réservation est en train d’être remboursée, il est impossible de l’invalider"}
         )
 
-    educational_api_booking.notify_redactor_that_booking_has_been_cancelled(booking)
+    on_commit(
+        partial(
+            educational_api_booking.notify_redactor_that_booking_has_been_cancelled,
+            serialize_collective_booking(booking),
+        ),
+    )
     educational_api_booking.notify_pro_that_booking_has_been_cancelled(booking)
 
 

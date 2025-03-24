@@ -1,8 +1,21 @@
+from datetime import datetime
+from functools import partial
 from unittest.mock import MagicMock
 
+import pytest
+
+from pcapi.core.operations import models as operations_models
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
+
+
+# no need to send it in db, we just need it to be an instance of pcapi.db.Model
+MODEL_INSTANCE = operations_models.SpecialEvent(
+    externalId="azerty123",
+    title="some_title",
+    eventDate=datetime.utcnow(),
+)
 
 
 class AtomicTest:
@@ -85,3 +98,25 @@ class AtomicTest:
 
         first_callback.assert_called_once()
         second_callback.assert_called_once()
+
+    @pytest.mark.parametrize(
+        "args,kwargs",
+        [
+            ([MODEL_INSTANCE], {}),
+            ([], {"a": MODEL_INSTANCE}),
+            ([MODEL_INSTANCE], {"a": MODEL_INSTANCE}),
+            ([[MODEL_INSTANCE]], {}),
+            ([], {"a": [MODEL_INSTANCE]}),
+            ([{"a": MODEL_INSTANCE}], {}),
+            ([], {"a": {"a": MODEL_INSTANCE}}),
+        ],
+    )
+    def test_raise_on_models(self, args, kwargs):
+        with pytest.raises(ValueError) as exception:
+            on_commit(
+                partial(
+                    lambda a: a,
+                    *args,
+                    **kwargs,
+                ),
+            )

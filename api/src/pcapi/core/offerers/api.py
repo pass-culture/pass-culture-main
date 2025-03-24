@@ -505,7 +505,7 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
         functools.partial(search.async_index_venue_ids, [venue.id], reason=search.IndexationReason.VENUE_CREATION)
     )
     external_attributes_api.update_external_pro(venue.bookingEmail)
-    on_commit(functools.partial(zendesk_sell.create_venue, venue))
+    zendesk_sell.create_venue(venue)
 
     return venue
 
@@ -1035,7 +1035,7 @@ def create_offerer(
         )
 
     external_attributes_api.update_external_pro(user.email)
-    on_commit(functools.partial(zendesk_sell.create_offerer, offerer))
+    zendesk_sell.create_offerer(offerer)
 
     return user_offerer
 
@@ -2118,7 +2118,7 @@ def _update_external_offerer(
     for email in offerers_repository.get_emails_by_offerer(offerer):
         external_attributes_api.update_external_pro(email)
 
-    on_commit(functools.partial(zendesk_sell.update_offerer, offerer))
+    zendesk_sell.update_offerer(offerer)
 
     if not index_with_reason:
         return
@@ -2332,7 +2332,7 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
         else:
             db.session.commit()
         external_attributes_api.update_external_pro(user.email)
-        on_commit(functools.partial(zendesk_sell.create_offerer, user_offerer.offerer))
+        zendesk_sell.create_offerer(user_offerer.offerer)
         logger.info(
             "UserOfferer created from invitation",
             extra={"offerer": user_offerer.offerer, "invitedUserId": user.id, "inviterUserId": inviter_user.id},

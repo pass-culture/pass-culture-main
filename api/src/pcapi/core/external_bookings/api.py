@@ -1,4 +1,5 @@
 import datetime
+import functools
 import json
 import logging
 
@@ -24,6 +25,7 @@ import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import on_commit
 import pcapi.tasks.external_api_booking_notification_tasks as external_api_booking_notification
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import ExternalApiBookingNotificationRequest
@@ -340,7 +342,12 @@ def send_booking_notification_to_external_service(booking: bookings_models.Booki
             notificationUrl=notification_url,  # type: ignore[arg-type]
             signature=signature,
         )
-        external_api_booking_notification.external_api_booking_notification_task.delay(payload)
+        on_commit(
+            functools.partial(
+                external_api_booking_notification.external_api_booking_notification_task.delay,
+                payload,
+            ),
+        )
     except Exception as err:  # pylint: disable=broad-except
         logger.exception(
             "Error: %s. Could not send external booking notification for: booking: %s, action %s",

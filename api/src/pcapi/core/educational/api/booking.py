@@ -297,7 +297,12 @@ def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_
         extra={"collective_stock": collective_stock.id, "collective_booking": cancelled_booking.id},
     )
 
-    on_commit(partial(notify_redactor_that_booking_has_been_cancelled, cancelled_booking))
+    on_commit(
+        partial(
+            notify_redactor_that_booking_has_been_cancelled,
+            serialize_collective_booking(cancelled_booking),
+        ),
+    )
     notify_pro_that_booking_has_been_cancelled(cancelled_booking)
 
 
@@ -440,12 +445,15 @@ def notify_reimburse_collective_booking(
         raise ValueError(
             f"Collective booking {collective_booking.id} is priced at {price}. We cannot reimburse more than that."
         )
-    adage_client.notify_reimburse_collective_booking(
-        data=serialize_reimbursement_notification(
-            collective_booking=collective_booking,
-            reason=reason,
-            value=value,
-            details=details,
+    on_commit(
+        partial(
+            adage_client.notify_reimburse_collective_booking,
+            data=serialize_reimbursement_notification(
+                collective_booking=collective_booking,
+                reason=reason,
+                value=value,
+                details=details,
+            ),
         ),
     )
 
@@ -474,9 +482,9 @@ def update_collective_bookings_for_new_institution(
     db.session.flush()
 
 
-def notify_redactor_that_booking_has_been_cancelled(booking: educational_models.CollectiveBooking) -> None:
+def notify_redactor_that_booking_has_been_cancelled(booking: educational_schemas.EducationalBookingResponse) -> None:
     try:
-        adage_client.notify_booking_cancellation_by_offerer(data=serialize_collective_booking(booking))
+        adage_client.notify_booking_cancellation_by_offerer(data=booking)
     except exceptions.AdageException as adage_error:
         logger.error(
             "%s Could not notify adage of collective booking cancellation by offerer. Educational institution won't be notified.",

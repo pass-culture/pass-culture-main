@@ -34,7 +34,6 @@ from pcapi.core.users.email import update as email_update
 from pcapi.models import db
 from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import mark_transaction_as_invalid
-from pcapi.repository import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
@@ -413,16 +412,13 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
         email_update.full_email_update_by_admin(user, update_request.newEmail)
         db.session.flush()
 
-    on_commit(partial(external_attributes_api.update_external_user, user))
-    on_commit(
-        partial(
-            send_beneficiary_personal_data_updated,
-            user,
-            is_first_name_updated=update_request.has_first_name_update,
-            is_last_name_updated=update_request.has_last_name_update,
-            is_email_updated=update_request.has_email_update,
-            is_phone_number_updated=update_request.has_phone_number_update,
-        ),
+    external_attributes_api.update_external_user(user)
+    send_beneficiary_personal_data_updated(
+        user,
+        is_first_name_updated=update_request.has_first_name_update,
+        is_last_name_updated=update_request.has_last_name_update,
+        is_email_updated=update_request.has_email_update,
+        is_phone_number_updated=update_request.has_phone_number_update,
     )
 
     try:

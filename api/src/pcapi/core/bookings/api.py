@@ -438,9 +438,7 @@ def cancel_booking_for_finance_incident(booking: Booking) -> None:
         },
         technical_message_id="booking.cancelled",
     )
-    on_commit(
-        partial(external_bookings_api.send_booking_notification_to_external_service, booking, BookingAction.CANCEL)
-    )
+    external_bookings_api.send_booking_notification_to_external_service(booking, BookingAction.CANCEL)
     on_commit(
         partial(
             search.async_index_offer_ids,
