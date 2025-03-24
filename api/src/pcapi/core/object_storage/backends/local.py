@@ -68,6 +68,9 @@ class LocalBackend(BaseBackend):
             logger.exception("An error has occurred while trying to delete file on local file storage: %s", exc)
             raise exc
 
+    def delete_public_object_recursively(self, storage_path: str) -> None:
+        pass
+
     def list_files(self, folder: str, *, max_results: int = 1000) -> list[str]:
         results = []
         local_dir_len = len(str(self.local_dir("", ""))) + 1

@@ -15,5 +15,8 @@ class BaseBackend:
     def delete_public_object(self, folder: str, object_id: str) -> None:
         raise NotImplementedError()
 
+    def delete_public_object_recursively(self, storage_path: str) -> None:
+        raise NotImplementedError()
+
     def list_files(self, folder: str, *, max_results: int = 1000) -> list[str]:
         raise NotImplementedError()
