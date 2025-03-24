@@ -1723,6 +1723,37 @@ class UpdateOfferTest:
         assert offer.name == "Offer linked to a provider"
         assert offer.idAtProvider == "some_id_at_provider"
 
+    def test_success_should_duplicate_ean(self):
+        provider = providers_factories.PublicApiProviderFactory()
+        offerer = offerers_factories.OffererFactory()
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+        offer = factories.OfferFactory(
+            lastProvider=provider,
+            name="Offer linked to a provider",
+            extraData={"ean": "1234567890124"},
+        )
+        body = offers_schemas.UpdateOffer(extraData={"ean": "1234567890125"})
+        api.update_offer(offer, body)
+
+        offer = models.Offer.query.one()
+        assert offer.ean == "1234567890125"
+        assert offer.extraData["ean"] == "1234567890125"
+
+    def test_success_should_not_duplicate_ean_when_it_is_an_empty_string(self):
+        provider = providers_factories.PublicApiProviderFactory()
+        offerer = offerers_factories.OffererFactory()
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+        offer = factories.EventOfferFactory(
+            lastProvider=provider,
+            name="Offer linked to a provider",
+            extraData={"ean": ""},
+        )
+        body = offers_schemas.UpdateOffer(extraData={"ean": ""})
+        api.update_offer(offer, body)
+
+        offer = models.Offer.query.one()
+        assert offer.ean == None
+
     def test_raise_error_on_updating_id_at_provider(self):
         offer = factories.OfferFactory(
             lastProvider=None,
