@@ -35,7 +35,7 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 @pytest.mark.usefixtures("db_session")
 class UbbleV2EndToEndTest:
     @pytest.mark.features(WIP_UBBLE_V2=True)
-    def test_beneficiary_activation_with_ubble_mocked_response(self, client, ubble_client, requests_mock):
+    def test_beneficiary_activation_with_ubble_mocked_response(self, client, ubble_client):
         seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17, months=1)
         user = users_factories.UserFactory(
             dateOfBirth=seventeen_years_ago,
@@ -61,32 +61,39 @@ class UbbleV2EndToEndTest:
             ).dict(exclude_none=True),
         )
 
-        self._start_ubble_workflow(user, client, requests_mock)
-        self._receive_and_ignore_verification_pending_webhook_notification(user, ubble_client)
-        self._receive_and_ignore_capture_in_progress_webhook_notification(user, ubble_client)
-        self._receive_and_handle_verification_refused_webhook_notification(user, client, ubble_client, requests_mock)
+        with requests_mock.Mocker() as requests_mocker:
+            self._start_ubble_workflow(user, client, requests_mocker)
+            self._receive_and_ignore_verification_pending_webhook_notification(user, ubble_client)
+            self._receive_and_ignore_capture_in_progress_webhook_notification(user, ubble_client)
+            self._receive_and_handle_verification_refused_webhook_notification(
+                user, client, ubble_client, requests_mocker
+            )
 
-        assert user.eligibility == users_models.EligibilityType.AGE17_18
-        assert user.age < 18
+            assert user.eligibility == users_models.EligibilityType.AGE17_18
+            assert user.age < 18
 
-        self._retry_ubble_workflow(user, client, requests_mock)
-        self._receive_and_ignore_capture_in_progress_webhook_notification(user, ubble_client)
-        self._receive_and_handle_checks_in_progress_webhook_notification(user, client, ubble_client, requests_mock)
-        self._receive_and_handle_verification_approved_webhook_notification(user, client, ubble_client, requests_mock)
+            self._retry_ubble_workflow(user, client, requests_mocker)
+            self._receive_and_ignore_capture_in_progress_webhook_notification(user, ubble_client)
+            self._receive_and_handle_checks_in_progress_webhook_notification(
+                user, client, ubble_client, requests_mocker
+            )
+            self._receive_and_handle_verification_approved_webhook_notification(
+                user, client, ubble_client, requests_mocker
+            )
 
-        assert user.eligibility == users_models.EligibilityType.AGE17_18
-        assert user.age >= 18
+            assert user.eligibility == users_models.EligibilityType.AGE17_18
+            assert user.age >= 18
 
-        self._create_honor_statement_fraud_check(user, client)
+            self._create_honor_statement_fraud_check(user, client)
 
-        assert user.is_beneficiary
+            assert user.is_beneficiary
 
-    def _start_ubble_workflow(self, user, client, requests_mock) -> None:
-        requests_mock.post(f"{settings.UBBLE_API_URL}/v2/applicants", json=fixtures.APPLICANT_CREATION_RESPONSE)
-        requests_mock.post(
+    def _start_ubble_workflow(self, user, client, requests_mocker) -> None:
+        requests_mocker.post(f"{settings.UBBLE_API_URL}/v2/applicants", json=fixtures.APPLICANT_CREATION_RESPONSE)
+        requests_mocker.post(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications", json=fixtures.ID_VERIFICATION_CREATION_RESPONSE
         )
-        requests_mock.post(
+        requests_mocker.post(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fixtures.ID_VERIFICATION_CREATION_RESPONSE['id']}/attempts",
             json=fixtures.ID_VERIFICATION_ATTEMPT_RESPONSE,
         )
@@ -120,9 +127,9 @@ class UbbleV2EndToEndTest:
             mocked_update.assert_not_called()
 
     def _receive_and_handle_verification_refused_webhook_notification(
-        self, user, client, ubble_client, requests_mock
+        self, user, client, ubble_client, requests_mocker
     ) -> None:
-        requests_mock.get(
+        requests_mocker.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fixtures.ID_VERIFICATION_CREATION_RESPONSE['id']}",
             json=fixtures.ID_VERIFICATION_REFUSED_RESPONSE,
         )
@@ -139,8 +146,8 @@ class UbbleV2EndToEndTest:
         ]
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
 
-    def _retry_ubble_workflow(self, user, client, requests_mock) -> None:
-        requests_mock.post(
+    def _retry_ubble_workflow(self, user, client, requests_mocker) -> None:
+        requests_mocker.post(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fixtures.ID_VERIFICATION_CREATION_RESPONSE['id']}/attempts",
             json=fixtures.ID_VERIFICATION_ATTEMPT_RESPONSE,
         )
@@ -152,9 +159,9 @@ class UbbleV2EndToEndTest:
         assert response.status_code == 200, response.json
 
     def _receive_and_handle_checks_in_progress_webhook_notification(
-        self, user, client, ubble_client, requests_mock
+        self, user, client, ubble_client, requests_mocker
     ) -> None:
-        requests_mock.get(
+        requests_mocker.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fixtures.ID_VERIFICATION_CREATION_RESPONSE['id']}",
             json=fixtures.ID_CHECKS_IN_PROGRESS_RESPONSE,
         )
@@ -172,9 +179,9 @@ class UbbleV2EndToEndTest:
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.PENDING
 
     def _receive_and_handle_verification_approved_webhook_notification(
-        self, user, client, ubble_client, requests_mock
+        self, user, client, ubble_client, requests_mocker
     ) -> None:
-        requests_mock.get(
+        requests_mocker.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fixtures.ID_VERIFICATION_CREATION_RESPONSE['id']}",
             json=fixtures.ID_VERIFICATION_APPROVED_RESPONSE,
         )
@@ -251,17 +258,17 @@ class UbbleEndToEndTest:
             )
             assert response.status_code == 200, response.json
 
-        assert requests_mocker.last_request.json() == {
-            "data": {
-                "attributes": {
-                    "identification-form": {"external-user-id": user.id, "phone-number": None},
-                    "redirect_url": "https://passculture.app/verification-identite/fin",
-                    "reference-data": {"first-name": "Raoul", "last-name": "de Toulouz"},
-                    "webhook": flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
-                },
-                "type": "identifications",
+            assert requests_mocker.last_request.json() == {
+                "data": {
+                    "attributes": {
+                        "identification-form": {"external-user-id": user.id, "phone-number": None},
+                        "redirect_url": "https://passculture.app/verification-identite/fin",
+                        "reference-data": {"first-name": "Raoul", "last-name": "de Toulouz"},
+                        "webhook": flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
+                    },
+                    "type": "identifications",
+                }
             }
-        }
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
             userId=user.id, type=fraud_models.FraudCheckType.UBBLE

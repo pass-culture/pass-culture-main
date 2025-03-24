@@ -13,7 +13,7 @@ import pytest
 import pytz
 import time_machine
 
-from pcapi import settings
+from pcapi import settings as pcapi_settings
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
@@ -4534,7 +4534,7 @@ class CreateDepositV3Test:
         assert deposit.amount == 300
 
     def test_upsert_deposit_age_18_expires_underage_deposit(self):
-        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         user = users_factories.BeneficiaryFactory(age=17, dateCreated=before_decree)
 
         deposit = api.upsert_deposit(user, "created by test", users_models.EligibilityType.AGE18)
@@ -5240,7 +5240,7 @@ class UserRecreditAfterDecreeTest:
 
     @pytest.mark.parametrize("age", [15, 16, 17, 18])
     def test_user_already_recredited(self, age):
-        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         users_factories.BeneficiaryFactory(age=age, dateCreated=before_decree)
 
         before_recredit_number = db.session.query(models.Recredit.id).count()
@@ -5317,7 +5317,7 @@ class UserRecreditAfterDecreeTest:
         assert len(user.deposit.recredits) == 2
 
     def test_create_new_deposit_when_recrediting_underage_deposit(self):
-        one_year_before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
+        one_year_before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
         next_week = datetime.datetime.utcnow() + relativedelta(weeks=1)
         with time_machine.travel(one_year_before_decree):
             user_1 = users_factories.BeneficiaryFactory(
@@ -5348,7 +5348,7 @@ class UserRecreditAfterDecreeTest:
         assert user_2.deposit.amount == 30 + 150  #  30 (credit 17 before decree) + 150 (for 18 year old after decree)
 
     def test_booking_transfer_when_recrediting_underage_deposit(self):
-        one_year_before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
+        one_year_before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
         next_week = datetime.datetime.utcnow() + relativedelta(weeks=1)
         with time_machine.travel(one_year_before_decree):
             user = users_factories.BeneficiaryFactory(
@@ -5399,7 +5399,7 @@ class UserRecreditAfterDecreeTest:
         reason="This test is very long and must be executed in a flask shell, outside of db_session fixture"
     )
     def test_recredit_users_does_not_crash_on_big_pages(self):
-        one_year_before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
+        one_year_before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
         next_week = datetime.datetime.utcnow() + relativedelta(weeks=1)
         with time_machine.travel(one_year_before_decree):
             users_factories.BeneficiaryFactory.create_batch(
@@ -5454,7 +5454,7 @@ class CanBeRecreditedTest:
 
     @pytest.mark.parametrize("age", [17, 18])
     def test_beneficiary_can_be_recredited_with_v2_deposit(self, age):
-        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         with time_machine.travel(before_decree):
             user = users_factories.BeneficiaryFactory(age=age - 1)
 
@@ -5472,7 +5472,7 @@ class CanBeRecreditedTest:
         assert not api._can_be_recredited(user)
 
     def test_user_17_yo_cannot_be_recredited_twice(self):
-        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         with time_machine.travel(before_decree):
             user = users_factories.BaseUserFactory(
                 dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=16, months=1)
@@ -5481,21 +5481,21 @@ class CanBeRecreditedTest:
             # user already received the 17 year old pre-decree recredit
             factories.RecreditFactory(deposit=deposit, recreditType=models.RecreditType.RECREDIT_17)
 
-        after_decree = settings.CREDIT_V3_DECREE_DATETIME + relativedelta(years=1)
+        after_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME + relativedelta(years=1)
         with time_machine.travel(after_decree):
             assert user.age == 17
             # user can not receive the 17 year old post-decree recredit
             assert not api._can_be_recredited(user)
 
     def test_user_16_yo_can_be_recredited_if_started_before_decree(self):
-        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         with time_machine.travel(before_decree - relativedelta(years=1)):
             user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
         with time_machine.travel(before_decree):
             assert api._can_be_recredited(user)
 
     def test_user_16_yo_cannot_be_recredited_if_started_after_decree(self):
-        after_decree = settings.CREDIT_V3_DECREE_DATETIME + relativedelta(days=1)
+        after_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME + relativedelta(days=1)
         with time_machine.travel(after_decree):
             user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
 
@@ -5525,7 +5525,7 @@ class LastAgeRelatedRecreditTest:
         assert last_recredit.recreditType == models.RecreditType.RECREDIT_18
 
     def test_last_recredit_15_17_deposit(self):
-        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         user = users_factories.BeneficiaryFactory(age=17, dateCreated=before_decree)
         factories.RecreditFactory(
             deposit=user.deposit,

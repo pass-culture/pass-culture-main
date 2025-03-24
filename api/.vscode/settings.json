@@ -1,6 +1,5 @@
 {
   "pylint.importStrategy": "fromEnvironment",
-  "pylint.ignorePatterns": ["**/tests/**"],
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit"
   },

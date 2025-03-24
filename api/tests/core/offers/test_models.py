@@ -1,8 +1,6 @@
 import datetime
-from unittest.mock import patch
 
 import pytest
-import sqlalchemy as sa
 from sqlalchemy import exc as sa_exc
 import time_machine
 

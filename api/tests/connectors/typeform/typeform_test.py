@@ -18,8 +18,8 @@ pytestmark = [
 
 class SearchFormTest:
     def test_search_forms(self):
-        with requests_mock.Mocker() as mock:
-            mock.get("https://api.typeform.com/forms?search=concours", json=fixtures.RESPONSE_SEARCH_FORMS)
+        with requests_mock.Mocker() as mocker:
+            mocker.get("https://api.typeform.com/forms?search=concours", json=fixtures.RESPONSE_SEARCH_FORMS)
             forms = typeform.search_forms("concours")
 
         assert len(forms) == 3
@@ -40,8 +40,8 @@ class SearchFormTest:
 class GetFormTest:
     def test_get_form(self):
         form_id = "aBCdEF12"
-        with requests_mock.Mocker() as mock:
-            mock.get(f"https://api.typeform.com/forms/{form_id}", json=fixtures.RESPONSE_SINGLE_FORM)
+        with requests_mock.Mocker() as mocker:
+            mocker.get(f"https://api.typeform.com/forms/{form_id}", json=fixtures.RESPONSE_SINGLE_FORM)
             form = typeform.get_form(form_id)
 
         assert form.form_id == form_id
@@ -77,8 +77,8 @@ class GetFormTest:
 
     def test_get_form_with_all_types(self):
         form_id = "AllTypes"
-        with requests_mock.Mocker() as mock:
-            mock.get(f"https://api.typeform.com/forms/{form_id}", json=fixtures.RESPONSE_FORM_WITH_ALL_TYPES)
+        with requests_mock.Mocker() as mocker:
+            mocker.get(f"https://api.typeform.com/forms/{form_id}", json=fixtures.RESPONSE_FORM_WITH_ALL_TYPES)
             form = typeform.get_form(form_id)
 
         assert form.form_id == form_id
@@ -86,8 +86,8 @@ class GetFormTest:
 
     def test_get_form_not_found(self):
         form_id = "AaAaAa"
-        with requests_mock.Mocker() as mock:
-            mock.get(
+        with requests_mock.Mocker() as mocker:
+            mocker.get(
                 f"https://api.typeform.com/forms/{form_id}", status_code=404, json=fixtures.RESPONSE_FORM_404_NOT_FOUND
             )
             with pytest.raises(typeform.NotFoundException):
@@ -97,8 +97,8 @@ class GetFormTest:
 class GetResponsesTest:
     def test_get_all_responses(self):
         form_id = "aBCdEF12"
-        with requests_mock.Mocker() as mock:
-            mock.get(f"https://api.typeform.com/forms/{form_id}/responses", json=fixtures.RESPONSE_FORM_RESPONSES)
+        with requests_mock.Mocker() as mocker:
+            mocker.get(f"https://api.typeform.com/forms/{form_id}/responses", json=fixtures.RESPONSE_FORM_RESPONSES)
             responses = typeform.get_responses(form_id)
 
         # Responses without contact info are ignored (form not completed)
@@ -154,8 +154,8 @@ class GetResponsesTest:
 
     def test_get_response_with_many_types(self):
         form_id = "AllTypes"
-        with requests_mock.Mocker() as mock:
-            mock.get(
+        with requests_mock.Mocker() as mocker:
+            mocker.get(
                 f"https://api.typeform.com/forms/{form_id}/responses",
                 json=fixtures.RESPONSE_FORM_RESPONSE_WITH_ALL_TYPES,
             )
@@ -193,8 +193,8 @@ choice B"""
 
     def test_get_choices_response_without_labels(self):
         form_id = "AllTypes"
-        with requests_mock.Mocker() as mock:
-            mock.get(
+        with requests_mock.Mocker() as mocker:
+            mocker.get(
                 f"https://api.typeform.com/forms/{form_id}/responses",
                 json=fixtures.RESPONSE_FORM_RESPONSE_WITHOUT_LABELS,
             )
@@ -208,8 +208,8 @@ choice B"""
 
     def test_get_responses_not_found(self):
         form_id = "AaAaAa"
-        with requests_mock.Mocker() as mock:
-            mock.get(
+        with requests_mock.Mocker() as mocker:
+            mocker.get(
                 f"https://api.typeform.com/forms/{form_id}/responses",
                 status_code=404,
                 json=fixtures.RESPONSE_FORM_RESPONSES_404_NOT_FOUND,

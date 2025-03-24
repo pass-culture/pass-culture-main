@@ -1,5 +1,3 @@
-import datetime
-
 import pytest
 
 from pcapi.utils import lock as lock_utils

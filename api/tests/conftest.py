@@ -57,10 +57,10 @@ if typing.TYPE_CHECKING:
 
 
 def run_migrations():
-    from pcapi import settings
+    from pcapi import settings as pcapi_settings
 
     alembic_cfg = Config("alembic.ini")
-    alembic_cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+    alembic_cfg.set_main_option("sqlalchemy.url", pcapi_settings.DATABASE_URL)
     command.upgrade(alembic_cfg, "pre@head")
     command.upgrade(alembic_cfg, "post@head")
 
@@ -186,7 +186,7 @@ def faker():
 
 
 @pytest.fixture()
-def clear_tests_assets_bucket(settings):
+def clear_tests_assets_bucket(settings):  # pylint: disable=redefined-outer-name
     try:
         Path(settings.LOCAL_STORAGE_DIR / "thumbs" / "mediations").mkdir(parents=True, exist_ok=True)
         yield
@@ -195,7 +195,7 @@ def clear_tests_assets_bucket(settings):
 
 
 @pytest.fixture()
-def clear_tests_invoices_bucket(settings):
+def clear_tests_invoices_bucket(settings):  # pylint: disable=redefined-outer-name
     try:
         Path(settings.LOCAL_STORAGE_DIR / "invoices").mkdir(parents=True, exist_ok=True)
         yield
@@ -296,7 +296,7 @@ def ubble_mock_http_error_status(requests_mock, settings):  # pylint: disable=re
 
 
 @pytest.fixture
-def ubble_mocker(settings) -> typing.Callable:
+def ubble_mocker(settings) -> typing.Callable:  # pylint: disable=redefined-outer-name
     @contextlib.contextmanager
     def ubble_mock(  # pylint: disable=redefined-outer-name
         identification_id: str, response: str, method="get", mocker: requests_mock.Mocker = None
@@ -316,7 +316,7 @@ def ubble_mocker(settings) -> typing.Callable:
 
 
 @pytest.fixture(name="ubble_client")
-def ubble_client(app: Flask, settings):
+def ubble_client(app: Flask, settings):  # pylint: disable=redefined-outer-name
     signing_key = ecdsa.SigningKey.generate()
 
     public_key = signing_key.verifying_key
@@ -417,11 +417,11 @@ class TestClient:
         self.auth_header = {}
 
     def with_session_auth(self, email: str) -> "TestClient":
-        from pcapi import settings
+        from pcapi import settings as pcapi_settings
 
         response = self.post(
             "/users/signin",
-            {"identifier": email, "password": settings.TEST_DEFAULT_PASSWORD, "captchaToken": "test_token"},
+            {"identifier": email, "password": pcapi_settings.TEST_DEFAULT_PASSWORD, "captchaToken": "test_token"},
         )
         assert response.status_code == 200
 
@@ -434,10 +434,10 @@ class TestClient:
         return self
 
     def with_basic_auth(self, email: str) -> "TestClient":
-        from pcapi import settings
+        from pcapi import settings as pcapi_settings
 
         self.auth_header = {
-            "Authorization": _basic_auth_str(email, settings.TEST_DEFAULT_PASSWORD),
+            "Authorization": _basic_auth_str(email, pcapi_settings.TEST_DEFAULT_PASSWORD),
         }
         return self
 
@@ -448,10 +448,10 @@ class TestClient:
         return self
 
     def with_eac_token(self) -> "TestClient":
-        from pcapi import settings
+        from pcapi import settings as pcapi_settings
 
         self.auth_header = {
-            "Authorization": f"Bearer {settings.EAC_API_KEY}",
+            "Authorization": f"Bearer {pcapi_settings.EAC_API_KEY}",
         }
         return self
 
@@ -700,7 +700,7 @@ def _settings_marker(request: pytest.FixtureRequest) -> None:
 
 
 @pytest.fixture
-def run_command(app, clean_database):
+def run_command(app, clean_database):  # pylint: disable=redefined-outer-name
     from tests.test_utils import run_command as _run_command
 
     return functools.partial(_run_command, app)

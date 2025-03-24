@@ -420,7 +420,9 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
 
         price_category = offers_factories.PriceCategoryFactory(offer=event)
 
-        start = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
+        start = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(  # pylint: disable=datetime-now
+            days=10
+        )
         stock = offers_factories.EventStockFactory(
             offer=event,
             priceCategory=price_category,

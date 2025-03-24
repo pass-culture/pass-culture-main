@@ -6,11 +6,9 @@ import pathlib
 from unittest import mock
 import zipfile
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
 
-from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
