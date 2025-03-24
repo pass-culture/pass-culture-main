@@ -1,10 +1,10 @@
-import asyncio
 from collections import abc
 import logging
 import typing
 
 import algoliasearch.search.client as search_client
 from algoliasearch.search.models.batch_response import BatchResponse
+from algoliasearch.search.models.index_settings import IndexSettings
 from algoliasearch.search.models.search_response import SearchResponse
 from algoliasearch.search.models.updated_at_response import UpdatedAtResponse
 
@@ -24,41 +24,34 @@ logger = logging.getLogger(__name__)
 
 MAX_SEARCH_QUERY_COUNT = 1000
 
-T = typing.TypeVar("T")
-
-
-def async_to_sync(awaitable: abc.Awaitable[T]) -> T:
-    loop = asyncio.get_event_loop()
-    return loop.run_until_complete(awaitable)
-
 
 class AlgoliaBackend(
     serialization.AlgoliaSerializationMixin, redis_queues.AlgoliaIndexingQueuesMixin, base.SearchBackend
 ):
-    # Methods to deal with sync/async operations
     def save_objects(self, index: str | None, serialized_object: list[dict]) -> typing.List[BatchResponse]:
         assert index
-        return async_to_sync(self._async_save_objects(index, serialized_object))
-
-    async def _async_save_objects(self, index: str, serialized_object: list[dict]) -> typing.List[BatchResponse]:
-        async with search_client.SearchClient(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
-            return await client.save_objects(index, serialized_object)
+        with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
+            return client.save_objects(index, serialized_object)
 
     def delete_objects(self, index: str | None, object_ids: abc.Collection[str]) -> list[BatchResponse]:
         assert index
-        return async_to_sync(self._async_delete_objects(index, object_ids))
-
-    async def _async_delete_objects(self, index: str, object_ids: abc.Collection[str]) -> typing.List[BatchResponse]:
-        async with search_client.SearchClient(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
-            return await client.delete_objects(index, list(object_ids))
+        with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
+            return client.delete_objects(index, list(object_ids))
 
     def clear_objects(self, index: str | None) -> UpdatedAtResponse:
         assert index
-        return async_to_sync(self._async_clear_objects(index))
+        with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
+            return client.clear_objects(index)
 
-    async def _async_clear_objects(self, index: str) -> UpdatedAtResponse:
-        async with search_client.SearchClient(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
-            return await client.clear_objects(index)
+    def set_settings(self, index: str | None, algolia_settings: dict) -> None:
+        assert index
+        with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
+            client.set_settings(index, IndexSettings.from_dict(algolia_settings) or {})
+
+    def get_settings(self, index: str | None) -> dict:
+        assert index
+        with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
+            return client.get_settings(index).to_dict()
 
     def search(
         self,
@@ -67,13 +60,9 @@ class AlgoliaBackend(
         params: dict[str, typing.Any],
     ) -> SearchResponse:
         assert index
-        return async_to_sync(self._async_search(index, query, params))
+        with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
+            return client.search_single_index(index, {"query": query}.update(**params))
 
-    async def _async_search(self, index: str, query: str, params: dict[str, typing.Any]) -> SearchResponse:
-        async with search_client.SearchClient(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
-            return await client.search_single_index(index, {"query": query}.update(**params))
-
-    # "real" methods from here
     def index_offers(self, offers: abc.Collection[offers_models.Offer], last_30_days_bookings: dict[int, int]) -> None:
         # Warning: if you ever need to alter the DB, please make sure you take into account that
         # the calling function index_offers_in_queue does a rollback to remove any reading lock
