@@ -5,7 +5,6 @@ import json
 import logging
 import re
 from unittest import mock
-from unittest.mock import ANY
 from unittest.mock import patch
 
 import pytest
@@ -1156,9 +1155,9 @@ class BookOfferTest:
         beneficiary = users_factories.BeneficiaryFactory(externalIds=apps_flyer_data)
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
 
-        api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
-        mocked_apps_flyer_job.assert_called_once_with(beneficiary.id, stock.offerId, ANY)
+        mocked_apps_flyer_job.assert_called_once_with(booking.id)
 
     def test_apps_flyer_not_called_when_booking_offer_without_apps_flyer_id(self):
         beneficiary = users_factories.BeneficiaryFactory(externalIds={})

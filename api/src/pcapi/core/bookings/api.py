@@ -375,7 +375,7 @@ def book_offer(
         raise
 
     if "apps_flyer" in beneficiary.externalIds:
-        apps_flyer_job.log_user_booked_offer_event_job.delay(beneficiary.id, stock.offerId, booking.id)
+        apps_flyer_job.log_user_booked_offer_event_job.delay(booking.id)
 
     logger.info(
         "Beneficiary booked an offer",

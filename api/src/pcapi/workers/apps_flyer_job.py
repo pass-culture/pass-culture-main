@@ -1,3 +1,5 @@
+import sqlalchemy as sa
+
 from pcapi.connectors.apps_flyer import log_offer_event
 from pcapi.connectors.apps_flyer import log_user_event
 from pcapi.core.bookings.models import Booking
@@ -30,5 +32,7 @@ def log_user_registration_event_job(user_id: int) -> None:
 
 @job(worker.default_queue)
 def log_user_booked_offer_event_job(booking_id: int) -> None:
-    booking = Booking.query.get(booking_id).joinedload(Booking.user).joinedload(Booking.stock).joinedload(Stock.offer)
+    booking = Booking.query.options(
+        sa.orm.joinedload(Booking.user), sa.orm.joinedload(Booking.stock).joinedload(Stock.offer)
+    ).get(booking_id)
     log_offer_event(booking, "af_complete_book_offer")
