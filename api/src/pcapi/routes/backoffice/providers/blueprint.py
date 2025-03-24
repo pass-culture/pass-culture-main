@@ -1,4 +1,3 @@
-from functools import partial
 from secrets import token_urlsafe
 
 from flask import flash
@@ -23,7 +22,6 @@ from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import mark_transaction_as_invalid
-from pcapi.repository import on_commit
 
 from . import forms
 from .. import utils
@@ -141,7 +139,7 @@ def create_provider() -> utils.BackofficeResponse:
         flash("Ce partenaire existe déjà", "warning")
     else:
         if is_offerer_new:
-            on_commit(partial(zendesk_sell.create_offerer, offerer))
+            zendesk_sell.create_offerer(offerer)
         flash(
             Markup(
                 "Le nouveau partenaire <b>{name}</b> a été créé. "

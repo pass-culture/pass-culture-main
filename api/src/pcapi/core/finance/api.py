@@ -27,7 +27,6 @@ from collections import defaultdict
 import csv
 import datetime
 import decimal
-import functools
 import itertools
 import logging
 import math
@@ -74,7 +73,6 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
-from pcapi.repository import on_commit
 from pcapi.repository import transaction
 from pcapi.utils import human_ids
 from pcapi.utils.chunks import get_chunks
@@ -4033,12 +4031,9 @@ def validate_finance_overpayment_incident(
     for booking_incident in finance_incident.booking_finance_incidents:
         if not booking_incident.is_partial:
             if booking_incident.collectiveBooking:
-                on_commit(
-                    functools.partial(
-                        educational_api_booking.notify_reimburse_collective_booking,
-                        collective_booking=booking_incident.collectiveBooking,
-                        reason="NO_EVENT",
-                    ),
+                educational_api_booking.notify_reimburse_collective_booking(
+                    collective_booking=booking_incident.collectiveBooking,
+                    reason="NO_EVENT",
                 )
             else:
                 send_booking_cancellation_by_pro_to_beneficiary_email(

@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from dataclasses import dataclass
 import functools
+import itertools
 import logging
 from types import TracebackType
 import typing
@@ -9,6 +10,7 @@ from flask import g
 from sqlalchemy.exc import InternalError
 
 from pcapi import settings
+from pcapi.models import Model
 from pcapi.models import db
 
 
@@ -207,6 +209,15 @@ def on_commit(func: typing.Callable[[], typing.Any], *, robust: bool = False) ->
     )
     ```
     """
+    for args in itertools.chain(getattr(func, "args", []), getattr(func, "keywords", {}).values()):
+        if isinstance(args, dict):
+            args = args.values()
+        elif not isinstance(args, list):
+            args = [args]
+        for arg in args:
+            if isinstance(arg, Model):
+                raise ValueError("on_commit cannot be called with a db model")
+
     if not _is_managed_session():
         func()
     else:
