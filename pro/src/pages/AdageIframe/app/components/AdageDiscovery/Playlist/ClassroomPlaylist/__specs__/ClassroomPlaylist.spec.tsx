@@ -84,6 +84,11 @@ describe('AdageDiscover classRoomPlaylist', () => {
     })
     await userEvent.click(classRoomPlaylistElement)
 
-    expect(mockTrackPlaylistElementClicked).toHaveBeenCalledTimes(1)
+    expect(mockTrackPlaylistElementClicked).toHaveBeenNthCalledWith(1, {
+      index: 0,
+      offerId: 479,
+      playlistId: 2,
+      playlistType: 'offer',
+    })
   })
 })

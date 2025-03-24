@@ -97,6 +97,11 @@ describe('AdageDiscovery', () => {
     })
     await userEvent.click(newOfferPlaylistElement)
 
-    expect(mockTrackPlaylistElementClicked).toHaveBeenCalledTimes(1)
+    expect(mockTrackPlaylistElementClicked).toHaveBeenNthCalledWith(1, {
+      index: 0,
+      offerId: 1,
+      playlistId: 0,
+      playlistType: 'offer',
+    })
   })
 })

@@ -10,18 +10,18 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { Carousel } from '../../Carousel/Carousel'
 import { NEW_OFFER_PLAYLIST } from '../../constant'
 import { OfferCardComponent } from '../../OfferCard/OfferCard'
-import { TrackerElementArg } from '../../types'
+import { OfferPlaylistTracker, PlaylistTracker } from '../../types'
 
 import styles from './NewOfferPlaylist.module.scss'
 
 type NewOfferPlaylistProps = {
-  onWholePlaylistSeen: ({ playlistId, playlistType }: TrackerElementArg) => void
+  onWholePlaylistSeen: ({ playlistId, playlistType }: PlaylistTracker) => void
   trackPlaylistElementClicked: ({
     playlistId,
     playlistType,
-    elementId,
+    offerId,
     index,
-  }: TrackerElementArg) => void
+  }: OfferPlaylistTracker) => void
   observableRef?: React.RefObject<HTMLDivElement>
 }
 
@@ -79,7 +79,7 @@ export const NewOfferPlaylist = ({
               playlistId: NEW_OFFER_PLAYLIST,
               playlistType: AdagePlaylistType.OFFER,
               index,
-              elementId: offer.id,
+              offerId: offer.id,
             })
           }
           key={offer.id}

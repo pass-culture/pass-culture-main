@@ -7,19 +7,19 @@ import { GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY } from 'commons/config/swrQueryKe
 
 import { Carousel } from '../../Carousel/Carousel'
 import { VENUE_PLAYLIST } from '../../constant'
-import { TrackerElementArg } from '../../types'
+import { PlaylistTracker, VenuePlaylistTracker } from '../../types'
 import { VenueCard } from '../../VenueCard/VenueCard'
 
 import styles from './VenuePlaylist.module.scss'
 
 type VenuePlaylistProps = {
-  onWholePlaylistSeen: ({ playlistId, playlistType }: TrackerElementArg) => void
+  onWholePlaylistSeen: ({ playlistId, playlistType }: PlaylistTracker) => void
   trackPlaylistElementClicked: ({
     playlistId,
     playlistType,
-    elementId,
+    venueId,
     index,
-  }: TrackerElementArg) => void
+  }: VenuePlaylistTracker) => void
   observableRef?: React.RefObject<HTMLDivElement>
 }
 
@@ -76,7 +76,7 @@ export const VenuePlaylist = ({
               playlistId: VENUE_PLAYLIST,
               playlistType: AdagePlaylistType.VENUE,
               index,
-              elementId: venue.id,
+              venueId: venue.id,
             })
           }
           venue={venue}
