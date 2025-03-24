@@ -10,7 +10,6 @@ const config: StorybookConfig = {
     '@storybook/addon-a11y',
     '@storybook/addon-controls',
     '@storybook/addon-docs',
-    '@storybook/preset-scss',
     'storybook-addon-remix-react-router',
   ],
   typescript: {
