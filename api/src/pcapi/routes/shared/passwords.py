@@ -1,6 +1,5 @@
 import logging
 
-from flask import jsonify
 import sqlalchemy as sa
 
 from pcapi import settings
@@ -79,11 +78,9 @@ def post_check_token(body: CheckTokenBodyModel) -> None:
     token_value = body.token
 
     try:
-        token = token_utils.Token.load_and_check(token_value, token_utils.TokenType.RESET_PASSWORD)
+        token_utils.Token.load_and_check(token_value, token_utils.TokenType.RESET_PASSWORD)
 
     except users_exceptions.InvalidToken:
         errors = ApiErrors()
         errors.add_error("token", "Votre lien de changement de mot de passe est invalide.")
         raise errors
-
-    return jsonify({"success": True}), 200
