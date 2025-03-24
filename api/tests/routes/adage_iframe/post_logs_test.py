@@ -227,6 +227,7 @@ class LogsTest:
                 json={
                     "offerId": 1,
                     "iframeFrom": "contact_modal",
+                    "playlistId": 0,
                 },
             )
 
@@ -235,6 +236,7 @@ class LogsTest:
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "offerId": 1,
+            "playlistId": 0,
             "queryId": None,
             "from": "contact_modal",
             "userId": get_hashed_user_id(EMAIL),
@@ -247,7 +249,13 @@ class LogsTest:
         with caplog.at_level(logging.INFO):
             response = test_client.post(
                 url_for("adage_iframe.log_fav_offer_button_click"),
-                json={"offerId": 1, "iframeFrom": "for_my_institution", "isFavorite": True, "vueType": "vt"},
+                json={
+                    "offerId": 1,
+                    "iframeFrom": "for_my_institution",
+                    "isFavorite": True,
+                    "vueType": "vt",
+                    "playlistId": 0,
+                },
             )
 
         assert response.status_code == 204
@@ -255,6 +263,7 @@ class LogsTest:
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "offerId": 1,
+            "playlistId": 0,
             "queryId": None,
             "isFavorite": True,
             "from": "for_my_institution",

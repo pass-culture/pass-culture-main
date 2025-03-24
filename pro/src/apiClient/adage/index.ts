@@ -47,6 +47,7 @@ export type { LocalOfferersPlaylist } from './models/LocalOfferersPlaylist';
 export type { LocalOfferersPlaylistOffer } from './models/LocalOfferersPlaylistOffer';
 export type { NationalProgramModel } from './models/NationalProgramModel';
 export { OfferAddressType } from './models/OfferAddressType';
+export type { OfferBody } from './models/OfferBody';
 export { OfferContactFormEnum } from './models/OfferContactFormEnum';
 export type { OfferDomain } from './models/OfferDomain';
 export type { OfferFavoriteBody } from './models/OfferFavoriteBody';

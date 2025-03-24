@@ -19,6 +19,7 @@ export interface ContactButtonProps {
   isInSuggestions?: boolean
   children?: React.ReactNode
   isPreview?: boolean
+  playlistId?: number
 }
 
 export const ContactButton = ({
@@ -34,6 +35,7 @@ export const ContactButton = ({
   isInSuggestions,
   children,
   isPreview = false,
+  playlistId,
 }: ContactButtonProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -44,8 +46,9 @@ export const ContactButton = ({
       apiAdage.logContactModalButtonClick({
         iframeFrom: location.pathname,
         offerId,
-        queryId: queryId,
+        queryId,
         isFromNoResult: isInSuggestions,
+        playlistId,
       })
     }
   }

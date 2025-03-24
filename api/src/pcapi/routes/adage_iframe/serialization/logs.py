@@ -36,9 +36,15 @@ class OfferIdBody(AdageBaseModel, VueTypeMixin):
     offerId: int
 
 
-class OfferFavoriteBody(AdageBaseModel, VueTypeMixin):
+class OfferBody(AdageBaseModel, VueTypeMixin):
     offerId: int
+    playlistId: int | None
+
+
+class OfferFavoriteBody(AdageBaseModel, VueTypeMixin):
     isFavorite: bool
+    offerId: int
+    playlistId: int | None
 
 
 class PlaylistBody(AdageBaseModel):

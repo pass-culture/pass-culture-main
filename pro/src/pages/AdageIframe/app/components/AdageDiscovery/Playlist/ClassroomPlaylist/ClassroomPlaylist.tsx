@@ -65,6 +65,7 @@ export const ClassroomPlaylist = ({
             }
             key={`card-offer-class-${offerElement.id}`}
             offer={offerElement}
+            playlistId={CLASSROOM_PLAYLIST}
           />
         )
       )}

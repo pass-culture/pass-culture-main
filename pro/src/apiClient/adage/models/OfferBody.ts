@@ -2,9 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type OfferFavoriteBody = {
+export type OfferBody = {
   iframeFrom: string;
-  isFavorite: boolean;
   isFromNoResult?: boolean | null;
   offerId: number;
   playlistId?: number | null;

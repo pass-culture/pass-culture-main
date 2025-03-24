@@ -21,12 +21,14 @@ export interface CardComponentProps {
   offer: CollectiveOfferTemplateResponseModel
   onCardClicked: () => void
   viewType?: 'grid' | 'list'
+  playlistId?: number
 }
 
 export const OfferCardComponent = ({
   offer,
   onCardClicked,
   viewType,
+  playlistId,
 }: CardComponentProps) => {
   const location = useLocation()
 
@@ -49,7 +51,7 @@ export const OfferCardComponent = ({
           if (!e.metaKey) {
             e.preventDefault()
             navigate(`offre/${offer.id}?token=${adageAuthToken}`, {
-              state: { offer },
+              state: { offer, playlistId },
             })
           }
         }}
@@ -121,6 +123,7 @@ export const OfferCardComponent = ({
           offer={{ ...offer, isTemplate: true }}
           className={styles['offer-favorite-button']}
           viewType={viewType}
+          playlistId={playlistId}
         />
       </div>
     </div>

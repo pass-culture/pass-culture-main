@@ -84,6 +84,7 @@ export const NewOfferPlaylist = ({
           }
           key={offer.id}
           offer={offer}
+          playlistId={NEW_OFFER_PLAYLIST}
         />
       ))}
     />

@@ -27,6 +27,7 @@ type AdageOfferProps = {
   isPreview?: boolean
   setInstitutionOfferCount?: (value: number) => void
   institutionOfferCount?: number
+  playlistId?: number
 }
 
 export const AdageOffer = ({
@@ -35,6 +36,7 @@ export const AdageOffer = ({
   isPreview = false,
   setInstitutionOfferCount,
   institutionOfferCount,
+  playlistId,
 }: AdageOfferProps) => {
   const isOfferBookable = isCollectiveOfferBookable(offer)
 
@@ -50,6 +52,7 @@ export const AdageOffer = ({
           offer={offer}
           adageUser={adageUser}
           isPreview={isPreview}
+          playlistId={playlistId}
         />
       </div>
       <div className={styles['offer-body']}>
@@ -122,6 +125,7 @@ export const AdageOffer = ({
               offer={offer}
               adageUser={adageUser}
               isPreview={isPreview}
+              playlistId={playlistId}
             />
           )}
         </div>
