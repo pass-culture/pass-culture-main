@@ -1,7 +1,7 @@
 import pytest
-from requests import HTTPError
 
 from pcapi.connectors import harvestr
+from pcapi.utils import requests
 
 
 @pytest.mark.settings(ENV="pro", PRO_URL="https://passculture.pro")
@@ -34,7 +34,7 @@ class HarvestrConnectorTest:
     def test_create_message_error(self, requests_mock):
         requests_mock.post("https://rest.harvestr.io/v1/message", status_code=501)
 
-        with pytest.raises(HTTPError):
+        with pytest.raises(requests.exceptions.HTTPError):
             harvestr.create_message(
                 title="Test",
                 content="J'aimerais un petit miracle !",

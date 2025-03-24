@@ -543,7 +543,7 @@ def test_serialize_future_offer():
     assert "publicationDate" not in serialized["offer"]
     assert serialized["offer"]["prices"] == [decimal.Decimal("8.50")]
     assert serialized["offer"]["dates"] == []
-    assert serialized["offer"]["times"] == []
+    assert serialized["offer"]["times"] == []  # pylint: disable=use-implicit-booleaness-not-comparison
     assert "_tags" not in serialized
 
 

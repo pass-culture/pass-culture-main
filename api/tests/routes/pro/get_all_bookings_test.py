@@ -267,7 +267,7 @@ class Returns200Test:
         booked_date = datetime.utcnow()
 
         booking1 = bookings_factories.BookingFactory(dateCreated=booked_date, stock__offer__venue=venue1)
-        booking2 = bookings_factories.BookingFactory(dateCreated=booked_date, stock__offer__venue=venue2)
+        bookings_factories.BookingFactory(dateCreated=booked_date, stock__offer__venue=venue2)
 
         client = client.with_session_auth(pro_user.email)
 

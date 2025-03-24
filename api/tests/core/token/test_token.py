@@ -459,7 +459,7 @@ class PasswordLessLoginTokenTest:
         mocked_pipeline_execute.return_value = [f'{{"user_id": "{wrong_user_id}", "jti": "{expected_jti}"}}', 1]
 
         with pytest.raises(InvalidToken), caplog.at_level(logging.ERROR):
-            payload = token_tools.validate_passwordless_token(token)
+            token_tools.validate_passwordless_token(token)
 
         mocked_pipeline_get.assert_called_once_with(redis_key)
         mocked_pipeline_del.assert_called_once_with(redis_key)

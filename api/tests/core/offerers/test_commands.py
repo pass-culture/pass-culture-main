@@ -17,7 +17,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class CheckActiveOfferersTest:
     @patch("pcapi.connectors.entreprise.sirene.get_siren")
     def test_check_active_offerers(self, mock_get_siren, app):
-        tag = offerers_factories.OffererTagFactory(name="siren-caduc")
+        offerers_factories.OffererTagFactory(name="siren-caduc")
 
         offerers_factories.OffererFactory(id=23 + 27)  # not checked today
         offerer = offerers_factories.OffererFactory(id=23 + 28)

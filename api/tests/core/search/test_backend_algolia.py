@@ -141,8 +141,8 @@ def test_check_offer_id_is_indexed(app):
 def test_index_offers(app):
     backend = get_backend()
     offer = offers_factories.StockFactory().offer
-    with requests_mock.Mocker() as mock:
-        posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/offers/batch", json={})
+    with requests_mock.Mocker() as mocker:
+        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/offers/batch", json={})
         backend.index_offers([offer], {offer.id: 0})
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "updateObject"
@@ -153,8 +153,8 @@ def test_index_offers(app):
 def test_unindex_offer_ids(app):
     backend = get_backend()
     app.redis_client.hset("indexed_offers", "1", "")
-    with requests_mock.Mocker() as mock:
-        posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/offers/batch", json={})
+    with requests_mock.Mocker() as mocker:
+        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/offers/batch", json={})
         backend.unindex_offer_ids([1])
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "deleteObject"
@@ -165,8 +165,8 @@ def test_unindex_offer_ids(app):
 def test_unindex_all_offers(app):
     backend = get_backend()
     app.redis_client.hset("indexed_offers", "1", "")
-    with requests_mock.Mocker() as mock:
-        posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/offers/clear", json={})
+    with requests_mock.Mocker() as mocker:
+        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/offers/clear", json={})
         backend.unindex_all_offers()
         assert posted.called
     assert not backend.check_offer_id_is_indexed(1)
@@ -175,8 +175,8 @@ def test_unindex_all_offers(app):
 def test_index_venues(app):
     backend = get_backend()
     venue = offerers_factories.VenueFactory()
-    with requests_mock.Mocker() as mock:
-        posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/venues/batch", json={})
+    with requests_mock.Mocker() as mocker:
+        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/venues/batch", json={})
         backend.index_venues([venue])
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "updateObject"
@@ -185,8 +185,8 @@ def test_index_venues(app):
 
 def test_unindex_venue_ids(app):
     backend = get_backend()
-    with requests_mock.Mocker() as mock:
-        posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/venues/batch", json={})
+    with requests_mock.Mocker() as mocker:
+        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/venues/batch", json={})
         backend.unindex_venue_ids([1])
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "deleteObject"
@@ -195,8 +195,8 @@ def test_unindex_venue_ids(app):
 
 def test_unindex_all_collective_offer_templates():
     backend = get_backend()
-    with requests_mock.Mocker() as mock:
-        posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/clear", json={})
+    with requests_mock.Mocker() as mocker:
+        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/clear", json={})
         backend.unindex_all_collective_offer_templates()
         assert posted.called
 
@@ -225,8 +225,8 @@ def test_index_collective_offers_templates():
         venue__offererAddress=offerer_address_south_corsica,
     )
 
-    with requests_mock.Mocker() as mock:
-        posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/batch", json={})
+    with requests_mock.Mocker() as mocker:
+        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/batch", json={})
         backend.index_collective_offer_templates(
             [
                 collective_offer_template,
@@ -247,8 +247,8 @@ def test_index_collective_offers_templates():
 
 def test_unindex_collective_offer_templates_ids():
     backend = get_backend()
-    with requests_mock.Mocker() as mock:
-        posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/batch", json={})
+    with requests_mock.Mocker() as mocker:
+        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/batch", json={})
         backend.unindex_collective_offer_template_ids([1])
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "deleteObject"

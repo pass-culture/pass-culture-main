@@ -2198,7 +2198,7 @@ class GetActiveOfferByVenueIdAndEanTest:
 
     def test_most_recent_offer_is_returned_if_many_amongst_venue_shares_same_ean(self, caplog):
         def past_date(delta):
-            today = datetime.datetime.now(datetime.timezone.utc)
+            today = datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
             return today - datetime.timedelta(days=delta)
 
         venue = offerers_factories.VenueFactory()
@@ -2211,7 +2211,7 @@ class GetActiveOfferByVenueIdAndEanTest:
         with caplog.at_level(logging.WARNING):
             res = repository.get_active_offer_by_venue_id_and_ean(venue.id, self.EAN)
 
-        assert any([log.message == "EAN shared by more than one offer across a venue" for log in caplog.records])
+        assert any(log.message == "EAN shared by more than one offer across a venue" for log in caplog.records)
 
         assert res == offers[0]
 

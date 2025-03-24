@@ -9,7 +9,7 @@ from flask import url_for
 import pytest
 import pytz
 
-from pcapi import settings
+from pcapi import settings as pcapi_settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
@@ -45,7 +45,6 @@ from pcapi.routes.backoffice.accounts.blueprint import RegistrationStepStatus
 from pcapi.routes.backoffice.accounts.blueprint import TunnelType
 from pcapi.routes.backoffice.accounts.blueprint import _get_fraud_reviews_desc
 from pcapi.routes.backoffice.accounts.blueprint import _get_id_check_histories_desc
-from pcapi.routes.backoffice.accounts.blueprint import _get_latest_fraud_check
 from pcapi.routes.backoffice.accounts.blueprint import _get_progress
 from pcapi.routes.backoffice.accounts.blueprint import _get_status
 from pcapi.routes.backoffice.accounts.blueprint import _get_steps_for_tunnel
@@ -108,7 +107,7 @@ def create_bunch_of_accounts():
         email="ayaf@example.net",
         phoneNumber="+33756273849",
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-        deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1),
+        deposit__dateCreated=pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1),
     )
     new_grant_18 = users_factories.BeneficiaryFactory(
         firstName="Vincent",

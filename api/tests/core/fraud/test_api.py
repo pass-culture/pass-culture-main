@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
 
-from pcapi import settings
+from pcapi import settings as pcapi_settings
 from pcapi.connectors.serialization import ubble_serializers
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.factories as fraud_factories
@@ -44,19 +44,19 @@ class CommonTest:
     @pytest.mark.parametrize(
         "id_piece_number,procedure_number,result",
         [
-            ("123456789012", settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
-            ("12345678901", settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.SUSPICIOUS),
-            (" -_1;,@&2:34=56789012", settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
-            ("12AB12345", settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
-            ("*12AB1234?5./", settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
+            ("123456789012", pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
+            ("12345678901", pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.SUSPICIOUS),
+            (" -_1;,@&2:34=56789012", pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
+            ("12AB12345", pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
+            ("*12AB1234?5./", pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
             (
                 "this is the wrong format (too long)",
-                settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
+                pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
                 fraud_models.FraudStatus.SUSPICIOUS,
             ),
             (
                 "this is the wrong format (too long)",
-                settings.DMS_ENROLLMENT_PROCEDURE_ID_ET,
+                pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_ET,
                 fraud_models.FraudStatus.OK,
             ),
         ],
@@ -343,13 +343,13 @@ class FindDuplicateUserTest:
         assert len(mails_testing.outbox) == 2
         sent_mail2 = mails_testing.outbox[0]
         sent_mail3 = mails_testing.outbox[1]
-        assert sent_mail2["To"] == sent_mail3["To"] == settings.FRAUD_EMAIL_ADDRESS
+        assert sent_mail2["To"] == sent_mail3["To"] == pcapi_settings.FRAUD_EMAIL_ADDRESS
 
         link = '<a href="{url}/public-accounts/{id}">{id}</a>'
-        assert link.format(id=user1.id, url=settings.BACKOFFICE_URL) in sent_mail2["html_content"]
-        assert link.format(id=user2.id, url=settings.BACKOFFICE_URL) in sent_mail2["html_content"]
-        assert link.format(id=user1.id, url=settings.BACKOFFICE_URL) in sent_mail3["html_content"]
-        assert link.format(id=user3.id, url=settings.BACKOFFICE_URL) in sent_mail3["html_content"]
+        assert link.format(id=user1.id, url=pcapi_settings.BACKOFFICE_URL) in sent_mail2["html_content"]
+        assert link.format(id=user2.id, url=pcapi_settings.BACKOFFICE_URL) in sent_mail2["html_content"]
+        assert link.format(id=user1.id, url=pcapi_settings.BACKOFFICE_URL) in sent_mail3["html_content"]
+        assert link.format(id=user3.id, url=pcapi_settings.BACKOFFICE_URL) in sent_mail3["html_content"]
 
 
 @pytest.mark.usefixtures("db_session")
@@ -576,7 +576,7 @@ class HasUserPerformedIdentityCheckTest:
         ],
     )
     def test_has_user_performed_identity_check_at_17_now_turned_18(self, decree_month_offset):
-        with time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME + relativedelta(months=decree_month_offset)):
+        with time_machine.travel(pcapi_settings.CREDIT_V3_DECREE_DATETIME + relativedelta(months=decree_month_offset)):
             user = build_user_at_id_check(18)
             year_when_user_was_underage = datetime.datetime.utcnow() - relativedelta(years=1)
             fraud_factories.BeneficiaryFraudCheckFactory(

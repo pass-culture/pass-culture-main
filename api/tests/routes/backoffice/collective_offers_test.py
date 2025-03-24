@@ -5,7 +5,6 @@ from unittest.mock import patch
 
 from flask import url_for
 import pytest
-import requests.exceptions
 
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
@@ -29,6 +28,7 @@ from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_date
+from pcapi.utils.requests import exceptions as requests_exceptions
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -1007,7 +1007,7 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
     ):
         collective_offer = educational_factories.PendingCollectiveOfferFactory()
 
-        endpoint = requests_mock.post("https://adage_base_url/v1/offre-assoc", exc=requests.exceptions.ReadTimeout)
+        endpoint = requests_mock.post("https://adage_base_url/v1/offre-assoc", exc=requests_exceptions.ReadTimeout)
 
         response = self.post_to_endpoint(
             authenticated_client, collective_offer_id=collective_offer.id, follow_redirects=True
