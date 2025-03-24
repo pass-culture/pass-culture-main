@@ -13,8 +13,8 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
-from pcapi.core.search.backends import redis_queues
-from pcapi.core.search.backends import serialization
+from pcapi.core.search import redis_queues
+from pcapi.core.search import serialization
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 
