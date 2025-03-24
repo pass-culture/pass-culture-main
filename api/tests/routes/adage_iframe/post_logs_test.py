@@ -59,15 +59,15 @@ class LogsTest:
         }
 
     @pytest.mark.parametrize(
-        "playlist_type,element_id,index,offer_id,venue_id,domain_id",
+        "playlist_type,index,offer_id,venue_id,domain_id",
         [
-            ("offer", 34, 1, 34, None, None),
-            ("venue", 45, 2, None, 45, None),
-            ("domain", 56, None, None, None, 56),
+            ("offer", 1, 34, None, None),
+            ("venue", 2, None, 45, None),
+            ("domain", 3, None, None, 56),
         ],
     )
     def test_log_consult_playlist_element(
-        self, test_client, caplog, playlist_type, element_id, index, offer_id, venue_id, domain_id
+        self, test_client, caplog, playlist_type, index, offer_id, venue_id, domain_id
     ):
         with caplog.at_level(logging.INFO):
             response = test_client.post(
@@ -76,10 +76,12 @@ class LogsTest:
                     "source": "partnersMap",
                     "iframeFrom": "for_my_institution",
                     "queryId": "1234a",
-                    "elementId": element_id,
                     "index": index,
                     "playlistId": 99,
                     "playlistType": playlist_type,
+                    "offerId": offer_id,
+                    "venueId": venue_id,
+                    "domainId": domain_id,
                 },
             )
 

@@ -81,7 +81,12 @@ describe('VenuePlaylist', () => {
 
     await userEvent.click(venuePlaylistElement)
 
-    expect(mockTrackPlaylistElementClicked).toHaveBeenCalledTimes(1)
+    expect(mockTrackPlaylistElementClicked).toHaveBeenNthCalledWith(1, {
+      index: 0,
+      venueId: 1,
+      playlistId: 3,
+      playlistType: 'venue',
+    })
   })
 
   it.each([

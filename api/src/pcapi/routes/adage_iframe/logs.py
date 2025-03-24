@@ -172,9 +172,9 @@ def log_consult_playlist_element(
     educational_utils.log_information_for_data_purpose(
         event_name="ConsultPlaylistElement",
         extra_data={
-            "offerId": body.elementId if body.playlistType == serialization.AdagePlaylistType.OFFER else None,
-            "venueId": body.elementId if body.playlistType == serialization.AdagePlaylistType.VENUE else None,
-            "domainId": body.elementId if body.playlistType == serialization.AdagePlaylistType.DOMAIN else None,
+            "offerId": body.offerId if body.playlistType == serialization.AdagePlaylistType.OFFER else None,
+            "venueId": body.venueId if body.playlistType == serialization.AdagePlaylistType.VENUE else None,
+            "domainId": body.domainId if body.playlistType == serialization.AdagePlaylistType.DOMAIN else None,
             "index": body.index,
             "playlistId": body.playlistId,
             "from": body.iframeFrom,

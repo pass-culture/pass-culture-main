@@ -7,19 +7,19 @@ import { GET_NEW_OFFERERS_PLAYLIST_QUERY_KEY } from 'commons/config/swrQueryKeys
 
 import { Carousel } from '../../Carousel/Carousel'
 import { NEW_VENUE_PLAYLIST } from '../../constant'
-import { TrackerElementArg } from '../../types'
+import { PlaylistTracker, VenuePlaylistTracker } from '../../types'
 import { VenueCard } from '../../VenueCard/VenueCard'
 
 import styles from './NewOffererPlaylist.module.scss'
 
 type NewOffererPlaylistProps = {
-  onWholePlaylistSeen: ({ playlistId, playlistType }: TrackerElementArg) => void
+  onWholePlaylistSeen: ({ playlistId, playlistType }: PlaylistTracker) => void
   trackPlaylistElementClicked: ({
     playlistId,
     playlistType,
-    elementId,
+    venueId,
     index,
-  }: TrackerElementArg) => void
+  }: VenuePlaylistTracker) => void
   observableRef?: React.RefObject<HTMLDivElement>
 }
 
@@ -60,7 +60,7 @@ export const NewOffererPlaylist = ({
               playlistId: NEW_VENUE_PLAYLIST,
               playlistType: AdagePlaylistType.VENUE,
               index,
-              elementId: venue.id,
+              venueId: venue.id,
             })
           }
           venue={venue}

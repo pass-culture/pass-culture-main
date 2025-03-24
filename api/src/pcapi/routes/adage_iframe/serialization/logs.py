@@ -44,7 +44,9 @@ class OfferFavoriteBody(AdageBaseModel, VueTypeMixin):
 class PlaylistBody(AdageBaseModel):
     playlistType: AdagePlaylistType
     playlistId: int
-    elementId: int | None
+    offerId: int | None
+    venueId: int | None
+    domainId: int | None
     index: int | None
 
 

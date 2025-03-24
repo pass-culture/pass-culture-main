@@ -23,7 +23,7 @@ export const DomainsCard = ({
       data-testid="card-domain-link"
       className={cn(styles['container'], styles[`container-${color}`])}
       to={href}
-      onClick={() => handlePlaylistElementTracking()}
+      onClick={handlePlaylistElementTracking}
     >
       <img src={src} alt="" className={styles['container-img']} />
       <div className={styles['container-title']}>{title}</div>

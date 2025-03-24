@@ -22,7 +22,7 @@ import { ClassroomPlaylist } from './Playlist/ClassroomPlaylist/ClassroomPlaylis
 import { NewOffererPlaylist } from './Playlist/NewOffererPlaylist/NewOffererPlaylist'
 import { NewOfferPlaylist } from './Playlist/NewOfferPlaylist/NewOfferPlaylist'
 import { VenuePlaylist } from './Playlist/VenuePlaylist/VenuePlaylist'
-import { TrackerElementArg } from './types'
+import { PlaylistTracker } from './types'
 
 export const AdageDiscovery = () => {
   const hasSeenAllPlaylist = useRef<boolean>(false)
@@ -53,10 +53,7 @@ export const AdageDiscovery = () => {
     label: name,
   }))
 
-  function onWholePlaylistSeen({
-    playlistId,
-    playlistType,
-  }: TrackerElementArg) {
+  function onWholePlaylistSeen({ playlistId, playlistType }: PlaylistTracker) {
     apiAdage.logHasSeenWholePlaylist({
       iframeFrom: location.pathname,
       playlistId,
@@ -73,23 +70,12 @@ export const AdageDiscovery = () => {
     { color: 'blue', src: circles },
   ]
 
-  const trackPlaylistElementClicked = ({
-    playlistId,
-    playlistType,
-    elementId,
-    index,
-  }: {
-    playlistId: number
-    playlistType: AdagePlaylistType
-    elementId?: number
-    index?: number
-  }) => {
+  const trackPlaylistElementClicked = (
+    playlistTrackerParameters: PlaylistTracker
+  ) => {
     apiAdage.logConsultPlaylistElement({
       iframeFrom: location.pathname,
-      playlistId,
-      playlistType,
-      elementId,
-      index,
+      ...playlistTrackerParameters,
     })
   }
 
@@ -129,7 +115,7 @@ export const AdageDiscovery = () => {
                     trackPlaylistElementClicked({
                       playlistId: DOMAINS_PLAYLIST,
                       playlistType: AdagePlaylistType.DOMAIN,
-                      elementId: elm.value,
+                      domainId: elm.value,
                       index,
                     })
                   }

@@ -8,18 +8,18 @@ import { GET_CLASSROOM_PLAYLIST_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Carousel } from '../../Carousel/Carousel'
 import { CLASSROOM_PLAYLIST } from '../../constant'
 import { OfferCardComponent } from '../../OfferCard/OfferCard'
-import { TrackerElementArg } from '../../types'
+import { OfferPlaylistTracker, PlaylistTracker } from '../../types'
 
 import styles from './ClassroomPlaylist.module.scss'
 
 type ClassroomPlaylistProps = {
-  onWholePlaylistSeen: ({ playlistId, playlistType }: TrackerElementArg) => void
+  onWholePlaylistSeen: ({ playlistId, playlistType }: PlaylistTracker) => void
   trackPlaylistElementClicked: ({
     playlistId,
     playlistType,
-    elementId,
+    offerId,
     index,
-  }: TrackerElementArg) => void
+  }: OfferPlaylistTracker) => void
   observableRef?: React.RefObject<HTMLDivElement>
 }
 
@@ -60,7 +60,7 @@ export const ClassroomPlaylist = ({
                 playlistId: CLASSROOM_PLAYLIST,
                 playlistType: AdagePlaylistType.OFFER,
                 index,
-                elementId: offerElement.id,
+                offerId: offerElement.id,
               })
             }
             key={`card-offer-class-${offerElement.id}`}

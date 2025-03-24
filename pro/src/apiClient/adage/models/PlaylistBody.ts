@@ -4,12 +4,14 @@
 /* eslint-disable */
 import type { AdagePlaylistType } from './AdagePlaylistType';
 export type PlaylistBody = {
-  elementId?: number | null;
+  domainId?: number | null;
   iframeFrom: string;
   index?: number | null;
   isFromNoResult?: boolean | null;
+  offerId?: number | null;
   playlistId: number;
   playlistType: AdagePlaylistType;
   queryId?: string | null;
+  venueId?: number | null;
 };
 
