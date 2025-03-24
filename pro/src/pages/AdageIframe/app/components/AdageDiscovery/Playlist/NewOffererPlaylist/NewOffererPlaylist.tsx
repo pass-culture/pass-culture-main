@@ -6,7 +6,7 @@ import { apiAdage } from 'apiClient/api'
 import { GET_NEW_OFFERERS_PLAYLIST_QUERY_KEY } from 'commons/config/swrQueryKeys'
 
 import { Carousel } from '../../Carousel/Carousel'
-import { VENUE_PLAYLIST } from '../../constant'
+import { NEW_VENUE_PLAYLIST } from '../../constant'
 import { TrackerElementArg } from '../../types'
 import { VenueCard } from '../../VenueCard/VenueCard'
 
@@ -47,7 +47,7 @@ export const NewOffererPlaylist = ({
       observableRef={observableRef}
       onLastCarouselElementVisible={() =>
         onWholePlaylistSeen({
-          playlistId: VENUE_PLAYLIST,
+          playlistId: NEW_VENUE_PLAYLIST,
           playlistType: AdagePlaylistType.VENUE,
         })
       }
@@ -57,7 +57,7 @@ export const NewOffererPlaylist = ({
           key={venue.id}
           handlePlaylistElementTracking={() =>
             trackPlaylistElementClicked({
-              playlistId: VENUE_PLAYLIST,
+              playlistId: NEW_VENUE_PLAYLIST,
               playlistType: AdagePlaylistType.VENUE,
               index,
               elementId: venue.id,
