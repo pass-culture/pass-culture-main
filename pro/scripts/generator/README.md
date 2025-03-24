@@ -1,10 +1,16 @@
+# Générateur de fichiers
+
+Si vous avez besoin de créer de nouveaux composants React ou fichiers utilitaires qui respectent les normes de code et d'architecture du projet, vous pouvez utiliser ce script de génération.
+
+![](../../docs/generator.gif)
+
 **Sommaire**
 
-- [Générer un composant](#générer-un-composant)
-- [Générer un fichier d'utilitaire](#générer-un-fichier-dutilitaire)
-- [Créer votre commande pour générer des fichiers ✨](#créer-votre-commande-pour-générer-des-fichiers)
+- [Générer un composant React](#générer-un-composant-react)
+- [Générer un fichier utilitaire](#générer-un-fichier-utilitaire)
+- [(Bonus) Créer votre commande pour générer des fichiers ✨](#bonus-créer-votre-commande-pour-générer-des-fichiers)
 
-# Générer un composant
+# Générer un composant React
 
 Générer un composant du nom de **MyComponent** :
 
@@ -74,7 +80,7 @@ Si tout s'est bien passé, une confirmation des fichiers générés apparaît :
  - /Users/jm-culture/Work/pass-culture-main/pro/src/components/MyComponent/MyComponent.stories.tsx
 ```
 
-# Générer un fichier d'utilitaire
+# Générer un fichier utilitaire
 
 Générer un utilitaire du nom de **myUtil** :
 
@@ -131,7 +137,7 @@ Si tout s'est bien passé, une confirmation des fichiers générés apparaît :
  - /Users/jm-culture/Work/pass-culture-main/pro/src/utils/myUtil.spec.ts
 ```
 
-# Créer votre commande pour générer des fichiers
+# (Bonus) Créer votre commande pour générer des fichiers
 
 Il est tout à fait possible de créer vos propres commandes pour générer des fichiers à partir de modèles.
 
