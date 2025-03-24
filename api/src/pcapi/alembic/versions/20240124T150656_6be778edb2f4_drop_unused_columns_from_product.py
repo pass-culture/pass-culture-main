@@ -24,7 +24,7 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.execute(
-        """ALTER TABLE product 
+        """ALTER TABLE product
         ADD COLUMN IF NOT EXISTS "isSynchronizationCompatible" BOOLEAN DEFAULT true NOT NULL,
         ADD COLUMN IF NOT EXISTS "owningOffererId" INTEGER,
         ADD COLUMN IF NOT EXISTS url VARCHAR(255),

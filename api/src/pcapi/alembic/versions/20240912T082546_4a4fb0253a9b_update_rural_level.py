@@ -16,7 +16,7 @@ def upgrade() -> None:
     op.execute(
         """
 UPDATE educational_institution
-SET "ruralLevel" = CASE 
+SET "ruralLevel" = CASE
     WHEN "ruralLevel" = 'urbain dense' THEN 'Grands centres urbains'
     WHEN "ruralLevel" = 'urbain densité intermédiaire' THEN 'Centres urbains intermédiaires'
     WHEN "ruralLevel" = 'rural sous forte influence d''un pôle' THEN 'Petites villes'
@@ -33,7 +33,7 @@ def downgrade() -> None:
     op.execute(
         """
 UPDATE educational_institution
-SET "ruralLevel" = CASE 
+SET "ruralLevel" = CASE
     WHEN "ruralLevel" = 'Grands centres urbains' THEN 'urbain dense'
     WHEN "ruralLevel" = 'Centres urbains intermédiaires' THEN 'urbain densité intermédiaire'
     WHEN "ruralLevel" = 'Petites villes' THEN 'rural sous forte influence d''un pôle'

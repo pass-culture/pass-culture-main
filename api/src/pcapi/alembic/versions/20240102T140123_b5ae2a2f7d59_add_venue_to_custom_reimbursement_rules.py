@@ -38,7 +38,7 @@ def upgrade() -> None:
            FROM venue
             WHERE "id"=NEW."venueId"
           ) IS NULL
-         ) 
+         )
         THEN
         RAISE EXCEPTION 'venueHasNoSiret'
         USING HINT = 'the venue must have a siret';
