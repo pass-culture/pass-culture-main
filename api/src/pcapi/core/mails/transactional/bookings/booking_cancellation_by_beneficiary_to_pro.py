@@ -1,4 +1,3 @@
-from functools import partial
 import logging
 
 from pcapi.core import mails
@@ -6,7 +5,6 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.utils import format_price
-from pcapi.repository import on_commit
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
@@ -76,10 +74,4 @@ def send_booking_cancellation_by_beneficiary_to_pro_email(
     if not offer_booking_email:
         return
     data = get_booking_cancellation_by_beneficiary_to_pro_email_data(booking, one_side_cancellation)
-    on_commit(
-        partial(
-            mails.send,
-            recipients=[offer_booking_email],
-            data=data,
-        )
-    )
+    mails.send(recipients=[offer_booking_email], data=data)

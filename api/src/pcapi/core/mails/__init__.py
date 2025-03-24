@@ -1,7 +1,9 @@
+from functools import partial
 from typing import Iterable
 
 from pcapi import settings
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import on_commit
 from pcapi.tasks.serialization import sendinblue_tasks
 from pcapi.utils.module_loading import import_string
 
@@ -23,7 +25,14 @@ def send(
         recipients = [recipients]
     backend = _get_backend(data)
     use_pro_subaccount = data.template.use_pro_subaccount if isinstance(data, models.TransactionalEmailData) else False
-    backend(use_pro_subaccount).send_mail(recipients=recipients, bcc_recipients=bcc_recipients, data=data)
+    on_commit(
+        partial(
+            backend(use_pro_subaccount).send_mail,
+            recipients=recipients,
+            bcc_recipients=bcc_recipients,
+            data=data,
+        )
+    )
 
 
 def create_contact(payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
