@@ -955,7 +955,7 @@ def _update_permanent_venues(venues: list[offerers_models.Venue], is_permanent: 
         )
         venue.isPermanent = is_permanent
         if is_permanent and venue.thumbCount == 0:
-            on_commit(partial(transactional_mails.send_permanent_venue_needs_picture, venue))
+            transactional_mails.send_permanent_venue_needs_picture(venue)
 
     return venues_to_update
 

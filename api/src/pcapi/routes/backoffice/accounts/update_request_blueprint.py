@@ -497,12 +497,7 @@ def ask_for_correction(ds_application_id: int) -> utils.BackofficeResponse:
     if not update_request:
         raise NotFound()
 
-    on_commit(
-        partial(
-            send_beneficiary_update_request_ask_for_correction,
-            update_request,
-        ),
-    )
+    send_beneficiary_update_request_ask_for_correction(update_request)
 
     try:
         users_ds.send_user_message_with_correction(update_request, current_user)

@@ -299,7 +299,7 @@ def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_
     )
 
     on_commit(partial(notify_redactor_that_booking_has_been_cancelled, cancelled_booking))
-    on_commit(partial(notify_pro_that_booking_has_been_cancelled, cancelled_booking))
+    notify_pro_that_booking_has_been_cancelled(cancelled_booking)
 
 
 def notify_pro_users_one_day_before() -> None:

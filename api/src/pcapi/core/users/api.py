@@ -2,7 +2,6 @@ from dataclasses import asdict
 import datetime
 from decimal import Decimal
 import enum
-from functools import partial
 from io import BytesIO
 import itertools
 import logging
@@ -69,7 +68,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
 from pcapi.repository import is_managed_transaction
-from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.serialization import users as users_serialization
@@ -325,7 +323,7 @@ def request_email_confirmation(user: models.User) -> None:
         constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
         user.id,
     )
-    on_commit(partial(transactional_mails.send_email_confirmation_email, user.email, token=token))
+    transactional_mails.send_email_confirmation_email(user.email, token=token)
 
 
 def _email_validation_resends_key(user: models.User) -> str:

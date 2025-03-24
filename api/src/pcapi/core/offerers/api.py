@@ -1158,12 +1158,7 @@ def validate_offerer_attachment(
         ),
     )
 
-    on_commit(
-        functools.partial(
-            transactional_mails.send_offerer_attachment_validation_email_to_pro,
-            user_offerer,
-        ),
-    )
+    transactional_mails.send_offerer_attachment_validation_email_to_pro(user_offerer)
 
     offerer_invitation = (
         models.OffererInvitation.query.filter_by(offererId=user_offerer.offererId)
@@ -1171,12 +1166,9 @@ def validate_offerer_attachment(
         .one_or_none()
     )
     if offerer_invitation:
-        on_commit(
-            functools.partial(
-                transactional_mails.send_offerer_attachment_invitation_accepted,
-                user_offerer.user,
-                offerer_invitation.user.email,
-            ),
+        transactional_mails.send_offerer_attachment_invitation_accepted(
+            user_offerer.user,
+            offerer_invitation.user.email,
         )
 
 
@@ -1214,12 +1206,7 @@ def reject_offerer_attachment(
     )
 
     if send_email:
-        on_commit(
-            functools.partial(
-                transactional_mails.send_offerer_attachment_rejection_email_to_pro,
-                user_offerer,
-            ),
-        )
+        transactional_mails.send_offerer_attachment_rejection_email_to_pro(user_offerer)
 
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
     db.session.flush()
@@ -1271,22 +1258,11 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
     _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_VALIDATION)
 
     if applicants:
-        on_commit(
-            functools.partial(
-                transactional_mails.send_new_offerer_validation_email_to_pro,
-                offerer,
-            ),
-        )
+        transactional_mails.send_new_offerer_validation_email_to_pro(offerer)
     for managed_venue in offerer.managedVenues:
         if managed_venue.adageId:
             emails = offerers_repository.get_emails_by_venue(managed_venue)
-            on_commit(
-                functools.partial(
-                    transactional_mails.send_eac_offerer_activation_email,
-                    managed_venue,
-                    list(emails),
-                ),
-            )
+            transactional_mails.send_eac_offerer_activation_email(managed_venue, list(emails))
             break
 
 
@@ -1313,12 +1289,9 @@ def reject_offerer(
     )
 
     if applicants:
-        on_commit(
-            functools.partial(
-                transactional_mails.send_new_offerer_rejection_email_to_pro,
-                offerer,
-                action_args.get("rejection_reason"),
-            ),
+        transactional_mails.send_new_offerer_rejection_email_to_pro(
+            offerer,
+            action_args.get("rejection_reason"),
         )
 
     users_offerer = offerers_models.UserOfferer.query.filter_by(offererId=offerer.id).all()
@@ -1369,7 +1342,7 @@ def close_offerer(
     remove_pro_role_and_add_non_attached_pro_role(applicants)
 
     if applicants:
-        transactional_mails.send_offerer_closed_email_to_pro(offerer, closure_date)  # on_commit inside
+        transactional_mails.send_offerer_closed_email_to_pro(offerer, closure_date)
 
     db.session.flush()
 
@@ -2151,7 +2124,7 @@ def _update_external_offerer(
     offerer: models.Offerer, *, index_with_reason: search.IndexationReason | None = None
 ) -> None:
     for email in offerers_repository.get_emails_by_offerer(offerer):
-        external_attributes_api.update_external_pro(email)  # uses on_commit
+        external_attributes_api.update_external_pro(email)
 
     on_commit(functools.partial(zendesk_sell.update_offerer, offerer))
 
@@ -2308,9 +2281,7 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
             extra={"offerer": offerer.id, "invited_user": email, "invited_by": current_user.id},
         )
 
-    on_commit(
-        functools.partial(transactional_mails.send_offerer_attachment_invitation, [email], offerer, existing_user)
-    )
+    transactional_mails.send_offerer_attachment_invitation([email], offerer, existing_user)
 
 
 def get_offerer_members(offerer: models.Offerer) -> list[tuple[str, OffererMemberStatus]]:

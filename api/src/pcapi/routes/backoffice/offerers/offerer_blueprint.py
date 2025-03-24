@@ -1108,10 +1108,7 @@ def create_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
         offerer.individualSubscription.dateEmailSent = datetime.datetime.utcnow()
         db.session.add(offerer.individualSubscription)
 
-    callback = partial(
-        transactional_mails.send_offerer_individual_subscription_reminder, offerer.UserOfferers[0].user.email
-    )
-    on_commit(callback)
+    transactional_mails.send_offerer_individual_subscription_reminder(offerer.UserOfferers[0].user.email)
 
     return _self_redirect(offerer_id, active_tab="subscription")
 

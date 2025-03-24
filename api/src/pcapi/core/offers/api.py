@@ -894,7 +894,7 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
         and not venue_already_has_validated_offer
         and isinstance(offer, models.Offer)
     ):
-        on_commit(partial(transactional_mails.send_first_venue_approved_offer_email_to_pro, offer))
+        transactional_mails.send_first_venue_approved_offer_email_to_pro(offer)
 
 
 def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookings_models.Booking]:
@@ -1159,13 +1159,10 @@ def reject_inappropriate_products(
 
         if send_booking_cancellation_emails:
             for booking in bookings:
-                on_commit(
-                    partial(
-                        transactional_mails.send_booking_cancellation_emails_to_user_and_offerer,
-                        booking,
-                        reason=BookingCancellationReasons.FRAUD_INAPPROPRIATE,
-                        rejected_by_fraud_action=rejected_by_fraud_action,
-                    ),
+                transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
+                    booking,
+                    reason=BookingCancellationReasons.FRAUD_INAPPROPRIATE,
+                    rejected_by_fraud_action=rejected_by_fraud_action,
                 )
 
     logger.info(
@@ -1953,7 +1950,7 @@ def move_event_offer(
     )
 
     if notify_beneficiary:
-        on_commit(partial(transactional_mails.send_email_for_each_ongoing_booking, offer))
+        transactional_mails.send_email_for_each_ongoing_booking(offer)
 
 
 def update_used_stock_price(

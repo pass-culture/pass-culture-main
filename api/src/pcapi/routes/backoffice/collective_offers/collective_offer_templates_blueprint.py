@@ -295,13 +295,7 @@ def _batch_validate_or_reject_collective_offer_templates(
             offer_data = transactional_mails.get_email_data_from_offer(
                 collective_offer_template, old_validation_status, new_validation_status
             )
-            on_commit(
-                functools.partial(
-                    transactional_mails.send_offer_validation_status_update_email,
-                    offer_data,
-                    recipients,
-                )
-            )
+            transactional_mails.send_offer_validation_status_update_email(offer_data, recipients)
 
     on_commit(
         functools.partial(
