@@ -33,7 +33,7 @@ describe('Navigation', () => {
     })
 
     cy.stepLog({ message: 'I want to update that venue' })
-    cy.get('a[aria-label^="Gérer la page Mon Lieu"]').click()
+    cy.get('a[aria-label^="Gérer la page pour les enseignants"]').click()
 
     cy.stepLog({ message: 'I should be at the top of the page' })
     cy.get('[id=unaccessible-top-page]').should('have.focus', { timeout: 1000 })
