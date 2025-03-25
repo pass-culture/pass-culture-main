@@ -125,6 +125,11 @@
                   </p>
                 {% endif %}
                 {% if extra_data.genres %}<span class="fw-bold">Genres :</span> {{ extra_data.genres | format_string_list }}{% endif %}
+                {% if offer.product %}
+                    <p class="mb-1">
+                        <span class="fw-bold">Produit : </span> {{ offer.product.name }} ({{ offer.productId }})
+                    </p>
+                {% endif %}
                 <p class="mb-1 mt-4">
                   <span class="fw-bold">Voir dans l'app :</span>
                   {{ links.build_offer_webapp_link(offer) }}
