@@ -50,7 +50,15 @@ export enum TimeSlotTypeOption {
 
 export type StocksCalendarFormValues = {
   durationType: DurationTypeOption
-  oneDayDate: string
+  oneDayDate?: string
+  multipleDaysStartDate?: string
+  multipleDaysEndDate?: string
+  multipleDaysHasNoEndDate: boolean
+  multipleDaysWeekDays: {
+    label: string
+    value: RecurrenceDays
+    checked: boolean
+  }[]
   timeSlotType: TimeSlotTypeOption
   specificTimeSlots: { slot: string }[]
   pricingCategoriesQuantities: {

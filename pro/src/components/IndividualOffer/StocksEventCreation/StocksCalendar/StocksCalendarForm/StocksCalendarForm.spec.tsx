@@ -71,6 +71,40 @@ describe('StocksCalendarForm', () => {
     expect(afterValidate).toHaveBeenCalled()
   })
 
+  it('should sumbit the form whith multiple dates when clicking on "Valider"', async () => {
+    const afterValidate = vi.fn()
+    const upsertStocksSpy = vi
+      .spyOn(api, 'upsertStocks')
+      .mockResolvedValueOnce({ stocks_count: 0 })
+
+    renderStocksCalendarForm({
+      offer: getIndividualOfferFactory({
+        priceCategories: [{ id: 1, price: 10, label: 'Price category' }],
+      }),
+      onAfterValidate: afterValidate,
+    })
+
+    await userEvent.click(screen.getByLabelText(/Plusieurs jours, semaines/))
+
+    await userEvent.type(
+      screen.getByLabelText('Date de début *'),
+      addDays(new Date(), 1).toISOString().split('T')[0]
+    )
+
+    await userEvent.type(
+      screen.getByLabelText('Date de fin *'),
+      addDays(new Date(), 3).toISOString().split('T')[0]
+    )
+
+    await userEvent.type(screen.getByLabelText('Horaire 1 *'), '11:11')
+
+    await userEvent.selectOptions(screen.getByLabelText('Tarif *'), '1')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
+
+    expect(upsertStocksSpy).toHaveBeenCalled()
+  })
+
   it('should show an error messages if the stocks cound not be created', async () => {
     const afterValidate = vi.fn()
     const upsertStocksSpy = vi

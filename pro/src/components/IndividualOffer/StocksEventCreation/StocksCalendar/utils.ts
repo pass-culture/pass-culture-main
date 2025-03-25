@@ -1,4 +1,4 @@
-import { format, sub } from 'date-fns'
+import { addDays, format, getISODay, isAfter, isSameDay, sub } from 'date-fns'
 
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -7,17 +7,41 @@ import {
 import { serializeDateTimeToUTCFromLocalDepartment } from 'components/IndividualOffer/StocksEventEdition/serializers'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 
+import { weekDays } from '../form/constants'
 import { StocksCalendarFormValues } from '../form/types'
 
-export function getStocksForOneDay(
+export function getStocksForMultipleDays(
   formValues: StocksCalendarFormValues,
   departmentCode: string
 ): Partial<StocksEvent>[] {
-  const date = formValues.oneDayDate
+  const startDate = formValues.multipleDaysStartDate
+  const endDate = formValues.multipleDaysEndDate
+
+  if (!startDate || !endDate) {
+    throw new Error('Selected dates are invalid')
+  }
+
+  const checkedWeekDays = formValues.multipleDaysWeekDays
+    .filter((wd) => wd.checked)
+    .map((wd) => wd.value)
+
+  return getDayDatesInBetweenDates(new Date(startDate), new Date(endDate))
+    .filter((d) =>
+      //  Only keep the days of the week that are checked
+      checkedWeekDays.includes(weekDays[getISODay(d) - 1].value)
+    )
+    .flatMap((d) => getStocksForOneDay(d, formValues, departmentCode))
+}
+
+export function getStocksForOneDay(
+  date: Date,
+  formValues: StocksCalendarFormValues,
+  departmentCode: string
+): Partial<StocksEvent>[] {
   const times = formValues.specificTimeSlots.map((s) => s.slot)
 
-  if (!date || times.length === 0) {
-    throw new Error('Selected date is invalid')
+  if (times.length === 0) {
+    throw new Error('Selected times are invalid')
   }
 
   const formattedDate = format(date, FORMAT_ISO_DATE_ONLY)
@@ -46,4 +70,31 @@ export function getStocksForOneDay(
       }
     )
   })
+}
+
+export function getWeekDaysInBetweenDates(
+  date1: Date,
+  date2: Date
+): typeof weekDays {
+  const recurrencedays = []
+
+  let date = date1
+  while (isAfter(date2, date) || isSameDay(date2, date)) {
+    recurrencedays.push(weekDays[getISODay(date) - 1])
+    date = addDays(date, 1)
+  }
+
+  return recurrencedays
+}
+
+function getDayDatesInBetweenDates(date1: Date, date2: Date): Date[] {
+  const dates = []
+
+  let date = date1
+  while (isAfter(date2, date) || isSameDay(date2, date)) {
+    dates.push(date)
+    date = addDays(date, 1)
+  }
+
+  return dates
 }
