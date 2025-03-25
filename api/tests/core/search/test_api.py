@@ -26,6 +26,14 @@ def make_bookable_offer(venue: offerers_models.Venue | None = None) -> offers_mo
     return offers_factories.StockFactory(offer__venue=venue or offerers_factories.VenueFactory()).offer
 
 
+def make_fully_featured_offer(venue: offerers_models.Venue | None = None) -> offers_models.Offer:
+    product = offers_factories.ProductFactory()
+    offers_factories.ProductMediationFactory(product=product)
+    offer = offers_factories.OfferFactory(product=product, venue=venue or offerers_factories.VenueFactory())
+    offers_factories.StockFactory(offer=offer)
+    return offer
+
+
 def make_future_offer() -> offers_models.Offer:
     offer = offers_factories.OfferFactory(isActive=False)
     publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
@@ -180,7 +188,7 @@ class ReindexOfferIdsTest:
         # all offers and related data that is expected by
         # `reindex_offer_ids()`.
         unbookable = make_unbookable_offer()
-        bookable = make_bookable_offer()
+        bookable = make_fully_featured_offer()
         future_offer = make_future_offer()
         past = datetime.datetime.utcnow() - datetime.timedelta(days=10)
         future = datetime.datetime.utcnow() + datetime.timedelta(days=10)
@@ -192,8 +200,13 @@ class ReindexOfferIdsTest:
             search_testing.search_store["offers"][offer_id] = "dummy"
             app.redis_client.hset(redis_queues.REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer_id, "")
 
-        with assert_no_duplicated_queries():
-            search.reindex_offer_ids(offer_ids)
+        num_queries = 1  # base query for indexation
+        num_queries += 1  # FF
+        num_queries += 1  # last30DaysBookings
+        num_queries += 1  # venues from offers
+        with assert_num_queries(num_queries):
+            with assert_no_duplicated_queries():
+                search.reindex_offer_ids(offer_ids)
 
         assert set(search_testing.search_store["offers"]) == {bookable.id, future_offer.id, multi_dates_bookable.id}
 
