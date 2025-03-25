@@ -112,7 +112,7 @@ class AtomicTest:
         ],
     )
     def test_raise_on_models(self, args, kwargs):
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(ValueError):
             on_commit(
                 partial(
                     lambda a: a,
