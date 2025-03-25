@@ -10,8 +10,10 @@ import sqlalchemy as sa
 from pcapi import settings
 from pcapi.connectors.big_query import queries as big_query_queries
 from pcapi.connectors.big_query.queries.last_30_days_booking import Last30DaysBookingsModel
+from pcapi.core.artist import models as artist_models
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
+from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -469,13 +471,68 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
             (offers_models.FutureOffer.offerId == offers_models.Offer.id)
             & offers_models.FutureOffer.isWaitingForPublication,
         )
-        .options(sa.orm.contains_eager(offers_models.Offer.stocks))
+        .options(
+            sa.orm.contains_eager(offers_models.Offer.stocks).load_only(
+                offers_models.Stock.id,
+                offers_models.Stock.beginningDatetime,
+                offers_models.Stock.bookingLimitDatetime,
+                offers_models.Stock.dnBookedQuantity,
+                offers_models.Stock.isSoftDeleted,
+                offers_models.Stock.offerId,
+                offers_models.Stock.price,
+                offers_models.Stock.quantity,
+            )
+        )
         .options(sa.orm.contains_eager(offers_models.Offer.futureOffer))
-        .options(sa.orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer))
-        .options(sa.orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.googlePlacesInfo))
-        .options(sa.orm.joinedload(offers_models.Offer.criteria))
-        .options(sa.orm.joinedload(offers_models.Offer.mediations))
-        .options(sa.orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.artists))
+        .options(
+            sa.orm.joinedload(offers_models.Offer.venue)
+            .load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.bannerUrl,
+                offerers_models.Venue.isPermanent,
+                offerers_models.Venue.name,
+                offerers_models.Venue.audioDisabilityCompliant,
+                offerers_models.Venue.mentalDisabilityCompliant,
+                offerers_models.Venue.motorDisabilityCompliant,
+                offerers_models.Venue.visualDisabilityCompliant,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.venueTypeCode,
+            )
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(
+                offerers_models.Offerer.name,
+                offerers_models.Offerer.isActive,
+                offerers_models.Offerer.validationStatus,
+            )
+        )
+        .options(
+            sa.orm.joinedload(offers_models.Offer.venue)
+            .joinedload(offerers_models.Venue.googlePlacesInfo)
+            .load_only(offerers_models.GooglePlacesInfo.bannerUrl)
+        )
+        .options(sa.orm.joinedload(offers_models.Offer.criteria).load_only(criteria_models.Criterion.id))
+        .options(sa.orm.joinedload(offers_models.Offer.mediations).load_only(offers_models.Mediation.id))
+        .options(
+            sa.orm.joinedload(offers_models.Offer.product)
+            .joinedload(offers_models.Product.productMediations)
+            .load_only(
+                offers_models.ProductMediation.id,
+                offers_models.ProductMediation.imageType,
+                offers_models.ProductMediation.uuid,
+            )
+        )
+        .options(
+            sa.orm.joinedload(offers_models.Offer.product)
+            .load_only(
+                offers_models.Product.id,
+                offers_models.Product.last_30_days_booking,
+                offers_models.Product.extraData,
+                offers_models.Product.description,
+                offers_models.Product.thumbCount,
+            )
+            .joinedload(offers_models.Product.artists)
+            .load_only(artist_models.Artist.id, artist_models.Artist.name, artist_models.Artist.image)
+        )
         .options(sa.orm.joinedload(offers_models.Offer.headlineOffers))
         .options(
             sa.orm.joinedload(offers_models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address)
@@ -486,9 +543,7 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
             )
         )
         .options(
-            sa.orm.joinedload(offers_models.Offer.product)
-            .load_only(offers_models.Product.id)
-            .options(
+            sa.orm.joinedload(offers_models.Offer.product).options(
                 sa.orm.with_expression(
                     offers_models.Product.likesCount, offers_repository.get_product_reaction_count_subquery()
                 )
