@@ -68,7 +68,7 @@
     "react-instantsearch": "^7.15.4",
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.28.2",
-    "swr": "^2.3.2",
+    "swr": "^2.3.3",
     "use-debounce": "^10.0.4",
     "uuidv4": "^6.2.13",
     "yup": "^1.6.1"
