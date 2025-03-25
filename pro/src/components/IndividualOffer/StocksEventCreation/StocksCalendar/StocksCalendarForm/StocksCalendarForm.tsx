@@ -17,10 +17,11 @@ import {
   TimeSlotTypeOption,
 } from '../../form/types'
 import { validationSchema } from '../../form/validationSchema'
-import { getStocksForOneDay } from '../utils'
+import { getStocksForMultipleDays, getStocksForOneDay } from '../utils'
 
 import styles from './StocksCalendarForm.module.scss'
 import { StocksCalendarFormFooter } from './StocksCalendarFormFooter/StocksCalendarFormFooter'
+import { StocksCalendarFormMultipleDays } from './StocksCalendarFormMultipleDays/StocksCalendarFormMultipleDays'
 import { StocksCalendarFormOneDay } from './StocksCalendarFormOneDay/StocksCalendarFormOneDay'
 
 export type StocksCalendarFormProps = {
@@ -40,15 +41,25 @@ export function StocksCalendarForm({
       specificTimeSlots: [{ slot: '' }],
       pricingCategoriesQuantities: [{ isUnlimited: true, priceCategory: '' }],
       oneDayDate: '',
+      multipleDaysStartDate: '',
+      multipleDaysHasNoEndDate: false,
+      multipleDaysWeekDays: [],
     },
-    mode: 'onSubmit',
+    mode: 'onTouched',
     resolver: yupResolver(validationSchema),
   })
 
   const onSubmit = async () => {
     const departmentCode = getDepartmentCode(offer)
-
-    const stocks = getStocksForOneDay(form.getValues(), departmentCode)
+    const formValues = form.getValues()
+    const stocks =
+      formValues.durationType === DurationTypeOption.ONE_DAY
+        ? getStocksForOneDay(
+            new Date(formValues.oneDayDate || ''),
+            formValues,
+            departmentCode
+          )
+        : getStocksForMultipleDays(formValues, departmentCode)
 
     try {
       const { stocks_count } = await api.upsertStocks({
@@ -112,6 +123,10 @@ export function StocksCalendarForm({
           />
           {form.watch('durationType') === DurationTypeOption.ONE_DAY && (
             <StocksCalendarFormOneDay form={form} offer={offer} />
+          )}
+          {form.watch('durationType') ===
+            DurationTypeOption.MULTIPLE_DAYS_WEEKS && (
+            <StocksCalendarFormMultipleDays form={form} offer={offer} />
           )}
         </div>
         <DialogBuilder.Footer>

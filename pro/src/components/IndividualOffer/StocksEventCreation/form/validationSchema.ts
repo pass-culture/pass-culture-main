@@ -1,3 +1,4 @@
+import { addMonths, isAfter, isBefore, isSameDay } from 'date-fns'
 import * as yup from 'yup'
 
 import { oneOfSelectOption } from 'commons/core/shared/utils/validation'
@@ -5,7 +6,12 @@ import { SelectOption } from 'commons/custom_types/form'
 import { getToday, isDateValid, removeTime } from 'commons/utils/date'
 import { MAX_STOCKS_QUANTITY } from 'components/IndividualOffer/StocksThing/validationSchema'
 
-import { DurationTypeOption, RecurrenceType, TimeSlotTypeOption } from './types'
+import {
+  DurationTypeOption,
+  RecurrenceDays,
+  RecurrenceType,
+  TimeSlotTypeOption,
+} from './types'
 
 export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
   yup.object().shape({
@@ -153,14 +159,72 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
 export const validationSchema = yup.object().shape({
   durationType: yup.string<DurationTypeOption>().required(),
   timeSlotType: yup.string<TimeSlotTypeOption>().required(),
-  oneDayDate: yup
-    .string()
-    .required('La date de l’évènement est obligatoire')
-    .test(
-      'is-future',
-      'L’évènement doit être à venir',
-      (value) => isDateValid(value) && new Date(value) > removeTime(getToday())
-    ),
+  oneDayDate: yup.string().when('durationType', {
+    is: DurationTypeOption.ONE_DAY,
+    then: (schema) =>
+      schema
+        .required('La date de l’évènement est obligatoire')
+        .test(
+          'is-future',
+          'L’évènement doit être à venir',
+          (value) =>
+            isDateValid(value) && new Date(value) > removeTime(getToday())
+        ),
+  }),
+  multipleDaysStartDate: yup.string().when('durationType', {
+    is: DurationTypeOption.MULTIPLE_DAYS_WEEKS,
+    then: (schema) => schema.required('La date de début est obligatoire'),
+  }),
+  multipleDaysEndDate: yup.string().when('durationType', {
+    is: DurationTypeOption.MULTIPLE_DAYS_WEEKS,
+    then: (schema) =>
+      schema.when('multipleDaysHasNoEndDate', {
+        is: false,
+        then: (schema) =>
+          schema
+            .required('La date de fin est obligatoire')
+            .test(
+              'is-after-start-date',
+              'La date de fin doit être postérieure à la date de début',
+              function (endDate) {
+                return (
+                  isAfter(endDate, this.parent.multipleDaysStartDate) ||
+                  isSameDay(endDate, this.parent.multipleDaysStartDate)
+                )
+              }
+            )
+            .test(
+              'is-less-than-a-year-after-start-date',
+              "La date de fin ne peut pas être plus d'un an après la date de début",
+              function (endDate) {
+                return isBefore(
+                  endDate,
+                  addMonths(this.parent.multipleDaysStartDate, 12)
+                )
+              }
+            ),
+      }),
+  }),
+  multipleDaysHasNoEndDate: yup.boolean().required(),
+  multipleDaysWeekDays: yup
+    .array()
+    .of(
+      yup.object().shape({
+        checked: yup.boolean().required(),
+        label: yup.string().required(),
+        value: yup.string<RecurrenceDays>().required(),
+      })
+    )
+    .when('durationType', {
+      is: DurationTypeOption.MULTIPLE_DAYS_WEEKS,
+      then: (schema) =>
+        schema.test(
+          'at-least-one-checked',
+          'Sélectionnez au moins un jour de la semaine',
+          (list) => list?.some((d) => d.checked)
+        ),
+    })
+    .required(),
   specificTimeSlots: yup
     .array()
     .required()
