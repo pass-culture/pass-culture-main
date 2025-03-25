@@ -1,7 +1,8 @@
+import { screen } from '@testing-library/react'
+import { expect } from 'vitest'
+
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { SignupConfirmation } from 'pages/Signup/SignupConfirmation/SignupConfirmation'
-import { expect } from 'vitest'
-import { screen } from '@testing-library/react'
 
 vi.mock('apiClient/api', () => ({
   api: {
