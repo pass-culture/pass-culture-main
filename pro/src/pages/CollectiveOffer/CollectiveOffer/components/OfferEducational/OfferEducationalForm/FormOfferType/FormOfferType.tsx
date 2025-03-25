@@ -41,7 +41,7 @@ export const FormOfferType = ({
     useFormikContext<OfferEducationalFormValues>()
   const { logEvent } = useAnalytics()
 
-  const [selectedPrograms, setSelectedPrograms] = useState<SelectOption[]>([])
+  const [programsOptions, setProgramsOptions] = useState<SelectOption[]>([])
 
   const eacFormatOptions = Object.entries(EacFormat).map(([, value]) => ({
     id: value,
@@ -70,7 +70,7 @@ export const FormOfferType = ({
             index === self.findIndex((p) => p.value === program.value)
         )
 
-      setSelectedPrograms(associatedPrograms)
+        setProgramsOptions(associatedPrograms)
     }
   }, [values.domains, domainsOptions])
 
@@ -113,7 +113,6 @@ export const FormOfferType = ({
               )}
               buttonLabel="Domaines artistiques"
               onSelectedOptionsChanged={async (selectedOptions) => {
-                // Pour les domains
                 await setFieldValue(
                   'domains',
                   selectedOptions.map((elm) => Number(elm.id))
@@ -148,7 +147,7 @@ export const FormOfferType = ({
                   await setFieldValue('nationalProgramId', '')
                 }
 
-                setSelectedPrograms(newAssociatedPrograms)
+                setProgramsOptions(newAssociatedPrograms)
               }}
               onBlur={() => setFieldTouched('domains', true)}
               disabled={disableForm}
@@ -189,7 +188,7 @@ export const FormOfferType = ({
           />
         </FormLayout.Row>
 
-        {selectedPrograms.length > 0 && (
+        {programsOptions.length > 0 && (
           <FormLayout.Row
             sideComponent={
               <InfoBox>
@@ -205,7 +204,7 @@ export const FormOfferType = ({
                   label: 'Sélectionnez un dispositif national',
                   value: '',
                 },
-                ...selectedPrograms,
+                ...programsOptions,
               ]}
               label="Dispositif national"
               name="nationalProgramId"
