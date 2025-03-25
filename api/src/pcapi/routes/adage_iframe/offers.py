@@ -5,10 +5,8 @@ from typing import Mapping
 from sqlalchemy import exc as sa_exc
 from sqlalchemy.orm import exc as orm_exc
 
-from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational.api.categories import get_educational_categories
 import pcapi.core.educational.api.institution as educational_institution_api
 import pcapi.core.educational.api.offer as educational_api_offer
 from pcapi.core.educational.models import AdageFrontRoles
@@ -33,36 +31,6 @@ from pcapi.serialization.decorator import spectree_serialize
 
 
 logger = logging.getLogger(__name__)
-
-
-@blueprint.adage_iframe.route("/offers/categories", methods=["GET"])
-@atomic()
-@spectree_serialize(response_model=serializers.CategoriesResponseModel, api=blueprint.api)
-@adage_jwt_required
-def get_educational_offers_categories(
-    authenticated_information: AuthenticatedInformation,
-) -> serializers.CategoriesResponseModel:
-    educational_categories = get_educational_categories()
-
-    return serializers.CategoriesResponseModel(
-        categories=[
-            serializers.CategoryResponseModel.from_orm(category) for category in educational_categories["categories"]
-        ],
-        subcategories=[
-            serializers.SubcategoryResponseModel.from_orm(subcategory)
-            for subcategory in educational_categories["subcategories"]
-        ],
-    )
-
-
-@blueprint.adage_iframe.route("/offers/formats", methods=["GET"])
-@atomic()
-@spectree_serialize(response_model=serializers.EacFormatsResponseModel, api=blueprint.api)
-@adage_jwt_required
-def get_educational_offers_formats(
-    authenticated_information: AuthenticatedInformation,
-) -> serializers.EacFormatsResponseModel:
-    return serializers.EacFormatsResponseModel(formats=list(subcategories.EacFormat))
 
 
 @blueprint.adage_iframe.route("/collective/offers/<int:offer_id>", methods=["GET"])

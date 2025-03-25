@@ -67,7 +67,6 @@ const venue = {
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {
-    getEducationalOffersCategories: vi.fn(),
     getVenueById: vi.fn(() => {
       return venue
     }),

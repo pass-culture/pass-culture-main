@@ -9,12 +9,10 @@ import type { AuthenticatedResponse } from '../models/AuthenticatedResponse';
 import type { BookCollectiveOfferRequest } from '../models/BookCollectiveOfferRequest';
 import type { BookCollectiveOfferResponse } from '../models/BookCollectiveOfferResponse';
 import type { CatalogViewBody } from '../models/CatalogViewBody';
-import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { CollectiveOfferResponseModel } from '../models/CollectiveOfferResponseModel';
 import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveOfferTemplateResponseModel';
 import type { CollectiveRequestBody } from '../models/CollectiveRequestBody';
 import type { CollectiveRequestResponseModel } from '../models/CollectiveRequestResponseModel';
-import type { EacFormatsResponseModel } from '../models/EacFormatsResponseModel';
 import type { EducationalInstitutionWithBudgetResponseModel } from '../models/EducationalInstitutionWithBudgetResponseModel';
 import type { FavoritesResponseModel } from '../models/FavoritesResponseModel';
 import type { HighlightBannerBody } from '../models/HighlightBannerBody';
@@ -723,36 +721,6 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * get_educational_offers_categories <GET>
-   * @returns CategoriesResponseModel OK
-   * @throws ApiError
-   */
-  public getEducationalOffersCategories(): CancelablePromise<CategoriesResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/adage-iframe/offers/categories',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * get_educational_offers_formats <GET>
-   * @returns EacFormatsResponseModel OK
-   * @throws ApiError
-   */
-  public getEducationalOffersFormats(): CancelablePromise<EacFormatsResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/adage-iframe/offers/formats',
-      errors: {
-        403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
     });
