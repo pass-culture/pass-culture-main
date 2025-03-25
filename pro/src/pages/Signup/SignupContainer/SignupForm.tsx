@@ -80,7 +80,7 @@ export const SignupForm = (): JSX.Element => {
                 asterisk={!isNewSignupEnabled}
               />
             </FormLayout.Row>,
-          ].toSorted(() => (isNewSignupEnabled ? -1 : 1))}
+          ].sort(() => (isNewSignupEnabled ? -1 : 1))}
           {/* This is to display fields "PRÉNOM" <> "NOM" in the correct DOM order depending on the FF */}
         </div>
         <FormLayout.Row>
