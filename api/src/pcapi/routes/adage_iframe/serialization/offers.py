@@ -8,7 +8,6 @@ from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1.class_validators import validator
 
-from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import OfferAddressType
@@ -77,41 +76,6 @@ class OfferVenueResponse(BaseModel):
         venue.address = venue.street
         result = super().from_orm(venue)
         return result
-
-
-class CategoryResponseModel(BaseModel):
-    id: str
-    pro_label: str
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
-
-
-class SubcategoryResponseModel(BaseModel):
-    id: str
-    category_id: str
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
-
-
-class CategoriesResponseModel(BaseModel):
-    categories: list[CategoryResponseModel]
-    subcategories: list[SubcategoryResponseModel]
-
-    class Config:
-        orm_mode = True
-
-
-class EacFormatsResponseModel(BaseModel):
-    formats: typing.Sequence[subcategories.EacFormat]
-
-    class Config:
-        use_enum_values = True
 
 
 class CollectiveOfferOfferVenue(BaseModel):
