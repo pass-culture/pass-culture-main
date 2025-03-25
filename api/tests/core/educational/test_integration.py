@@ -10,6 +10,7 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -58,7 +59,7 @@ class EducationalWorkflowTest:
             finance_api.price_event(finance_event)
             batch = finance_api.generate_cashflows(now)
             finance_api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
-            cashflow_ids = [c.id for c in finance_models.Cashflow.query]
+            cashflow_ids = [c.id for c in db.session.query(finance_models.Cashflow)]
 
             bank_account_id = bank_account.id
             finance_api._generate_invoice_legacy(
