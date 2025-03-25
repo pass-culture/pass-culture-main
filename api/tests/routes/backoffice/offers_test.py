@@ -2061,6 +2061,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert f"Offer ID : {offer.id}" in card_text
         assert "Catégorie : Cinéma" in card_text
         assert "Sous-catégorie : Séance de cinéma " in card_text
+        assert f"Produit : good movie ({product.id})" in card_text
         assert "Genres : ADVENTURE, ANIMATION, DRAMA " in card_text
         assert "Statut : Épuisée" in card_text
         assert "État : Validée" in card_text
