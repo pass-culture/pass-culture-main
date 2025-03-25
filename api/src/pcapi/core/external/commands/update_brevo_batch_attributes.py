@@ -19,9 +19,24 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.backends.batch import UserUpdateData
+from flask import current_app
 
 
 logger = logging.getLogger(__name__)
+
+
+RESUME_KEY = "update_brevo_and_batch_users:resume:user_id"
+RESUME_TTL = 86400 * 5
+
+def _store_resume_id(user_id: int) -> None:
+    current_app.redis_client.set(RESUME_KEY, user_id, ex=RESUME_TTL)
+
+
+def _get_resume_id() -> int | None:
+    value = current_app.redis_client.get(RESUME_KEY)
+    if value:
+        return int(value)
+    return None
 
 
 @dataclass
@@ -43,6 +58,7 @@ def _collect_users_attributes(users: list[User]) -> list[CollectedAttributes]:
                 str(exc),
                 extra={"user_id": user.id},
             )
+            db.session.rollback()
         else:
             results.append(CollectedAttributes(email=user.email, attributes=attributes))
 
@@ -91,6 +107,7 @@ def _run_iteration(min_user_id: int, max_user_id: int, synchronize_batch: bool, 
                 User.is_beneficiary,
             ),
         )
+        .order_by(User.id.desc())
         .all()
     )
 
