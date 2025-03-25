@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { EacFormat } from 'apiClient/adage'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -41,7 +41,28 @@ export const FormOfferType = ({
     useFormikContext<OfferEducationalFormValues>()
   const { logEvent } = useAnalytics()
 
-  const [programsOptions, setProgramsOptions] = useState<SelectOption[]>([])
+  const getAssociatedPrograms = (selectedDomainIds: string[]) => {
+    const selectedDomains = domainsOptions.filter((domain) =>
+      selectedDomainIds.includes(domain.id)
+    )
+
+    return selectedDomains
+      .flatMap((domain) => domain.nationalPrograms)
+      .map((program) => ({
+        value: program.id,
+        label: program.name,
+      }))
+      .filter(
+        (program, index, self) =>
+          index === self.findIndex((p) => p.value === program.value)
+      )
+  }
+
+  const [programsOptions, setProgramsOptions] = useState<SelectOption[]>(() =>
+    values.domains.length
+      ? getAssociatedPrograms(values.domains.map(String))
+      : []
+  )
 
   const eacFormatOptions = Object.entries(EacFormat).map(([, value]) => ({
     id: value,
@@ -52,27 +73,6 @@ export const FormOfferType = ({
     id: domain.id,
     label: domain.label,
   }))
-
-  useEffect(() => {
-    if (values.domains.length) {
-      const selectedDomains = domainsOptions.filter((domain) =>
-        values.domains.includes(domain.id)
-      )
-
-      const associatedPrograms = selectedDomains
-        .flatMap((domain) => domain.nationalPrograms)
-        .map((program) => ({
-          value: program.id,
-          label: program.name,
-        }))
-        .filter(
-          (program, index, self) =>
-            index === self.findIndex((p) => p.value === program.value)
-        )
-
-        setProgramsOptions(associatedPrograms)
-    }
-  }, [values.domains, domainsOptions])
 
   const logHasClickedGenerateTemplateDescription = useFunctionOnce(() => {
     logEvent(Events.CLICKED_GENERATE_TEMPLATE_DESCRIPTION, {
@@ -113,31 +113,15 @@ export const FormOfferType = ({
               )}
               buttonLabel="Domaines artistiques"
               onSelectedOptionsChanged={async (selectedOptions) => {
-                await setFieldValue(
-                  'domains',
-                  selectedOptions.map((elm) => Number(elm.id))
-                )
-                await setFieldTouched('domains', true)
-
                 const newDomainIds = selectedOptions.map((option) => option.id)
 
-                const selectedDomains = domainsOptions.filter((domain) =>
-                  newDomainIds.includes(domain.id)
-                )
+                await setFieldValue('domains', newDomainIds.map(Number))
+                await setFieldTouched('domains', true)
 
-                const newAssociatedPrograms = selectedDomains
-                  .flatMap((domain) => domain.nationalPrograms)
-                  .map((program) => ({
-                    value: program.id,
-                    label: program.name,
-                  }))
-                  .filter(
-                    (program, index, self) =>
-                      index === self.findIndex((p) => p.value === program.value)
-                  )
+                const newAssociatedPrograms =
+                  getAssociatedPrograms(newDomainIds)
 
                 const currentSelectedProgramId = values.nationalProgramId
-
                 const selectedProgramStillExists = newAssociatedPrograms.some(
                   (program) =>
                     program.value.toString() === currentSelectedProgramId
