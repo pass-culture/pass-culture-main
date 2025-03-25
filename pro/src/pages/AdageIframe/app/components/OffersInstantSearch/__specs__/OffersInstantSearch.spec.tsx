@@ -66,7 +66,7 @@ describe('OffersInstantSearch', () => {
       ...window.location,
       search: '?venue=1436',
     }
-    window.location = mockLocation
+    window.location = mockLocation as string & Location
 
     vi.spyOn(apiAdage, 'getVenueById').mockRejectedValueOnce(null)
 
@@ -82,7 +82,7 @@ describe('OffersInstantSearch', () => {
       ...window.location,
       search: '?siret=1436',
     }
-    window.location = mockLocation
+    window.location = mockLocation as string & Location
 
     vi.spyOn(apiAdage, 'getVenueBySiret').mockRejectedValueOnce(null)
 
@@ -98,7 +98,7 @@ describe('OffersInstantSearch', () => {
       ...window.location,
       search: '?venue=1436',
     }
-    window.location = mockLocation
+    window.location = mockLocation as string & Location
 
     const setFiltersSpy = vi
       .spyOn(utils, 'adageFiltersToFacetFilters')
