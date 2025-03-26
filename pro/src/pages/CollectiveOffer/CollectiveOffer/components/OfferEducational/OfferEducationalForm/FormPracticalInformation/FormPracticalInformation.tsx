@@ -220,16 +220,16 @@ export const FormPracticalInformation = ({
   }, [currentOfferer, values.eventAddress])
 
   return (
-    <FormLayout.Section title="Où se déroule votre offre ?">
-      <FormLayout.Row>
-        <RadioGroup
-          group={adressTypeRadios}
-          legend="Adresse où se déroulera l’évènement : *"
-          name="eventAddress.addressType"
-          variant={RadioVariant.BOX}
-          disabled={disableForm}
-        />
-      </FormLayout.Row>
-    </FormLayout.Section>
+    <FormLayout.Row>
+      <RadioGroup
+        group={adressTypeRadios}
+        legend={
+          <h2 className={styles['subtitle']}>Où se déroule votre offre ?</h2>
+        }
+        name="eventAddress.addressType"
+        variant={RadioVariant.BOX}
+        disabled={disableForm}
+      />
+    </FormLayout.Row>
   )
 }

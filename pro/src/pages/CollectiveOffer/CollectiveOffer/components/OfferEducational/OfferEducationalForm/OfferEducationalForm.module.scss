@@ -45,3 +45,9 @@
 .event-other-address {
   margin-top: rem.torem(16px);
 }
+
+.subtitle {
+  @include fonts.title2;
+
+  margin-bottom: rem.torem(16px);
+}
