@@ -30,7 +30,7 @@
     "target": "es6",
     "types": ["node", "vite/client", "vitest/globals"]
   },
-  "include": ["./src/**/*.ts", "./src/**/*.tsx", "vite.config.ts"],
+  "include": ["./src/**/*.ts", "./src/**/*.tsx"],
   "exclude": [
     "node_modules",
     "__mocks__/**",
@@ -38,6 +38,7 @@
     "**/*.js",
     "**/*.jsx",
     "./cypress/**/*.ts",
-    "cypress.config.ts"
+    "cypress.config.ts",
+    "vite.config.ts"
   ]
 }

@@ -1,12 +1,13 @@
-import { fileURLToPath, URL } from 'url'
+import { fileURLToPath, URL } from 'url';
 
-import react from '@vitejs/plugin-react'
-import * as preloads from 'design-system/dist/build/global/font-preloads'
-import { visualizer } from 'rollup-plugin-visualizer'
-import { defineConfig, PluginOption } from 'vite'
-import { createHtmlPlugin } from 'vite-plugin-html'
-import tsconfigPaths from 'vite-tsconfig-paths'
-import { configDefaults, coverageConfigDefaults } from 'vitest/config'
+import react from '@vitejs/plugin-react';
+import * as preloads from 'design-system/dist/build/global/font-preloads';
+import { visualizer } from 'rollup-plugin-visualizer';
+import { defineConfig, PluginOption } from 'vite';
+import { compression } from 'vite-plugin-compression2';
+import { createHtmlPlugin } from 'vite-plugin-html';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { configDefaults, coverageConfigDefaults } from 'vitest/config';
 
 // ts-unused-exports:disable-next-line
 export default defineConfig(({ mode }) => {
@@ -17,6 +18,28 @@ export default defineConfig(({ mode }) => {
       sourcemap: true,
       emptyOutDir: true,
       assetsInlineLimit: 0,
+      rollupOptions: {
+        onwarn(warning) {
+          if (warning.message.includes('"use client"')) return
+        },
+        output: {
+          manualChunks(id: string) {
+            // creating a chunk to @open-ish deps. Reducing the vendor chunk size
+            if (id.includes('chart.js')) {
+              return 'charjs';
+            }
+            // creating a chunk to react routes deps. Reducing the vendor chunk size
+            if (
+              id.includes('react-router-dom') ||
+              id.includes('@remix-run') ||
+              id.includes('react-router')
+            ) {
+              return '@react-router';
+            }
+          },
+        },
+        chunkSizeWarningLimit: 500
+      },
     },
     resolve: {
       alias: {
@@ -32,6 +55,7 @@ export default defineConfig(({ mode }) => {
       }),
       visualizer({ filename: 'bundleStats.html' }) as PluginOption,
       htmlPlugin(),
+      compression(),
     ],
     server: { port: 3001 },
     preview: { port: 3001 },
