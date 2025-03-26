@@ -97,7 +97,6 @@ class Returns204Test:
         assert collective_booking.status == models.CollectiveBookingStatus.CANCELLED
         assert collective_booking.cancellationUser == admin
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_CANCEL)
     def test_cancel_allowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -109,7 +108,6 @@ class Returns204Test:
         assert response.status_code == 204
         assert offer.collectiveStock.collectiveBookings[0].status == models.CollectiveBookingStatus.CANCELLED
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_cancel_ended(self, client):
         offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
@@ -155,7 +153,6 @@ class Returns403Test:
         }
         assert len(adage_api_testing.adage_requests) == 0
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_CANCEL)
     def test_cancel_unallowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)

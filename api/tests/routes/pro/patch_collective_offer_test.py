@@ -44,7 +44,6 @@ def auth_client_fixture(client, user_offerer):
 
 
 class Returns200Test:
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @time_machine.travel("2019-01-01 12:00:00")
     @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_patch_collective_offer(self, client):
@@ -138,7 +137,6 @@ class Returns200Test:
         assert adage_request["url"] == "https://adage_base_url/v1/prereservation-edit"
 
     @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_patch_collective_offer_do_not_notify_educational_redactor_when_no_booking(self, client):
         offer = educational_factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -195,8 +193,7 @@ class Returns200Test:
         assert len(offer.students) == 1
         assert offer.students[0].value == "Collège - 6e"
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
-    def test_update_venue_both_offer_and_booking_with_new_statuses(self, auth_client, venue, other_related_venue):
+    def test_update_venue_both_offer_and_booking(self, auth_client, venue, other_related_venue):
         offer = educational_factories.CollectiveOfferFactory(venue=other_related_venue)
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
@@ -214,7 +211,6 @@ class Returns200Test:
         assert offer.venueId == venue.id
         assert booking.venueId == venue.id
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_EDIT_DETAILS)
     def test_patch_collective_offer_allowed_action(self, client, status):
         offer = educational_factories.create_collective_offer_by_status(status)
@@ -1063,7 +1059,6 @@ class Returns403Test:
         assert booking.venueId == other_related_venue.id
         assert finance_event.venueId == other_related_venue.id
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS)
     def test_patch_collective_offer_unallowed_action(self, client, status):
         offer = educational_factories.create_collective_offer_by_status(status)
@@ -1083,7 +1078,6 @@ class Returns403Test:
         assert offer.name == previous_name
         assert offer.description == previous_description
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_patch_collective_offer_ended(self, client):
         offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -1117,8 +1111,7 @@ class Returns403Test:
             "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
         }
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
-    def test_update_venue_from_past_stock_with_new_statuses(self, auth_client, venue, other_related_venue):
+    def test_update_venue_from_past_stock(self, auth_client, venue, other_related_venue):
         offer = educational_factories.CollectiveOfferFactory(venue=other_related_venue)
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, startDatetime=datetime(2024, 1, 1))
 

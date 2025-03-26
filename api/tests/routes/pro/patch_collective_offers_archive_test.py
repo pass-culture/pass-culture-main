@@ -59,7 +59,6 @@ class Returns204Test:
         assert not other_offer.isArchived
         assert other_offer.isActive
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_ARCHIVE)
     def test_archive_offer_allowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -79,7 +78,6 @@ class Returns204Test:
         assert offer.isArchived
         assert not offer.isActive
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_ARCHIVE)
     def test_archive_offer_unallowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -100,7 +98,6 @@ class Returns204Test:
         assert offer.isArchived == offer_was_archived
         assert offer.isActive == offer_was_active
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_archive_offer_ended(self, client):
         offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
         venue = offer.venue
@@ -118,7 +115,6 @@ class Returns204Test:
         assert offer.isArchived == False
         assert offer.isActive == True
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_archive_offer_unallowed_action_on_one_offer(self, client):
         allowed_offer = factories.DraftCollectiveOfferFactory()
         venue = allowed_offer.venue

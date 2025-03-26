@@ -252,7 +252,6 @@ class EditCollectiveOfferStocksTest:
         booking_updated = CollectiveBooking.query.filter_by(id=booking.id).one()
         assert booking_updated.cancellationLimitDate == datetime.datetime.utcnow()
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_should_update_expired_booking(self) -> None:
         now = datetime.datetime.utcnow()
         limit = now - datetime.timedelta(days=2)
@@ -277,7 +276,6 @@ class EditCollectiveOfferStocksTest:
         assert booking.cancellationDate == None
         assert booking.confirmationLimitDate == new_limit
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_EDIT_DETAILS)
     def test_can_increase_price(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)
@@ -295,7 +293,6 @@ class EditCollectiveOfferStocksTest:
         assert offer.collectiveStock.price == price + 100
 
     @time_machine.travel("2020-11-17 15:00:00", tick=False)
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_EDIT_DATES)
     def test_can_edit_dates(self, status):
         educational_factories.EducationalYearFactory(
@@ -306,7 +303,9 @@ class EditCollectiveOfferStocksTest:
         if offer.collectiveStock is None:
             educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        new_limit = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
+        new_limit = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(  # pylint: disable=datetime-now
+            days=10
+        )
         new_start = new_limit + datetime.timedelta(days=5)
         new_end = new_limit + datetime.timedelta(days=7)
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
@@ -324,7 +323,6 @@ class EditCollectiveOfferStocksTest:
         if booking:
             assert booking.confirmationLimitDate == new_limit.replace(tzinfo=None)
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_EDIT_DISCOUNT)
     def test_can_lower_price_and_edit_price_details(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)
@@ -344,7 +342,6 @@ class EditCollectiveOfferStocksTest:
         assert offer.collectiveStock.priceDetail == "yes"
         assert offer.collectiveStock.numberOfTickets == 1200
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_can_lower_price_and_edit_price_details_ended(self):
         offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
 
@@ -411,7 +408,6 @@ class ReturnErrorTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.startDatetime == datetime.datetime(2021, 12, 10)
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS)
     def test_cannot_increase_price(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)
@@ -427,7 +423,6 @@ class ReturnErrorTest:
                 stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
             )
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_cannot_increase_price_ended(self):
         offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
         price = offer.collectiveStock.price
@@ -438,7 +433,6 @@ class ReturnErrorTest:
                 stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
             )
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_EDIT_DATES)
     def test_cannot_edit_dates(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)
@@ -446,7 +440,9 @@ class ReturnErrorTest:
         if offer.collectiveStock is None:
             educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        new_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5)
+        new_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(  # pylint: disable=datetime-now
+            days=5
+        )
         for date_field in ("bookingLimitDatetime", "startDatetime", "endDatetime"):
             kwargs = {date_field: new_date}
             new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(**kwargs)
@@ -456,11 +452,12 @@ class ReturnErrorTest:
                     stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
                 )
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_cannot_edit_dates_ended(self):
         offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
 
-        new_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5)
+        new_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(  # pylint: disable=datetime-now
+            days=5
+        )
         for date_field in ("bookingLimitDatetime", "startDatetime", "endDatetime"):
             kwargs = {date_field: new_date}
             new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(**kwargs)
@@ -470,7 +467,6 @@ class ReturnErrorTest:
                     stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
                 )
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_EDIT_DISCOUNT)
     def test_cannot_lower_price_and_edit_price_details(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)
@@ -493,7 +489,9 @@ class ReturnErrorTest:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_cannot_set_end_before_stock_start(self):
-        start = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
+        start = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(  # pylint: disable=datetime-now
+            days=10
+        )
         educational_factories.create_educational_year(date_time=start)
         stock = educational_factories.CollectiveStockFactory(startDatetime=start)
 

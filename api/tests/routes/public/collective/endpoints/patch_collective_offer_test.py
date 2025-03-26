@@ -918,7 +918,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 200
         assert offer.nationalProgramId is None
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_should_update_expired_booking(self, client):
         now = datetime.utcnow()
         limit = now - timedelta(days=2)

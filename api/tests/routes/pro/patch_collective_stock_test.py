@@ -117,7 +117,6 @@ class Return200Test:
             "educationalPriceDetail": "Détail du prix",
         }
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock_partially(self, client):
         _educational_year_2021_2022 = educational_factories.EducationalYearFactory(
@@ -261,7 +260,6 @@ class Return200Test:
         edited_collective_booking = CollectiveBooking.query.get(collective_booking.id)
         assert edited_collective_booking.educationalYearId == educational_year_2022_2023.adageId
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_edit_collective_stock_update_booking_limit_date_with_expired_booking(self, client):
         now = datetime.utcnow()
         stock = educational_factories.CollectiveStockFactory(
@@ -316,10 +314,7 @@ class Return403Test:
             "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
         }
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
-    def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api_with_new_satuses(
-        self, client
-    ):
+    def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api(self, client):
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__provider=providers_factories.ProviderFactory()
         )

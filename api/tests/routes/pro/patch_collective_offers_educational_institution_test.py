@@ -19,7 +19,6 @@ STATUSES_NOT_ALLOWING_EDIT_INSTITUTION = tuple(
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
 class Returns200Test:
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_EDIT_INSTITUTION)
     def test_change_institution_allowed_action(self, client, status) -> None:
         institution1 = factories.EducationalInstitutionFactory()
@@ -133,7 +132,6 @@ class Returns403Test:
         offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution1
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_EDIT_INSTITUTION)
     def test_change_institution_unallowed_action(self, client, status) -> None:
         institution1 = factories.EducationalInstitutionFactory()
@@ -150,7 +148,6 @@ class Returns403Test:
         offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.institution == institution1
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_change_institution_ended(self, client) -> None:
         institution1 = factories.EducationalInstitutionFactory()
         offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True, institution=institution1)
