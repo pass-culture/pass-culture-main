@@ -1,7 +1,9 @@
 import datetime
 import logging
+from unittest.mock import patch
 
 import pytest
+import sqlalchemy.exc as sa_exc
 import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -2233,3 +2235,15 @@ class GetActiveOfferByVenueIdAndEanTest:
 
         with pytest.raises(exceptions.OfferNotFound):
             repository.get_active_offer_by_venue_id_and_ean(offer.venueId, offer.ean)
+
+
+@pytest.mark.usefixtures("db_session")
+@patch("pcapi.models.db.session.delete", side_effect=(sa_exc.IntegrityError(None, None, None), None))
+def test_handles_offer_creation_while_product_merging(delete_mock):
+    to_keep = factories.ProductFactory()
+    to_delete = factories.ProductFactory()
+
+    kept_product = repository.merge_products(to_keep, to_delete)
+
+    assert delete_mock.call_count == 2
+    assert kept_product == to_keep
