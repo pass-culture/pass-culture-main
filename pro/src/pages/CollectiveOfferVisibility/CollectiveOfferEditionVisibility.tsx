@@ -60,23 +60,27 @@ const CollectiveOfferVisibility = ({
     notify.success(message)
   }
 
-  if (educationalInstitutionsQuery.isLoading) {
-    return <Spinner />
-  }
-
   return (
-    <CollectiveOfferLayout offer={offer} subTitle={offer.name} isTemplate={isTemplate}>
-      <CollectiveOfferVisibilityScreen
-        mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
-        initialValues={extractInitialVisibilityValues(
-          offer.institution,
-          offer.teacher
-        )}
-        onSuccess={onSuccess}
-        institutions={educationalInstitutionsQuery.data}
-        isLoadingInstitutions={educationalInstitutionsQuery.isLoading}
-        offer={offer}
-      />
+    <CollectiveOfferLayout
+      offer={offer}
+      subTitle={offer.name}
+      isTemplate={isTemplate}
+    >
+      {educationalInstitutionsQuery.isLoading ? (
+        <Spinner />
+      ) : (
+        <CollectiveOfferVisibilityScreen
+          mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
+          initialValues={extractInitialVisibilityValues(
+            offer.institution,
+            offer.teacher
+          )}
+          onSuccess={onSuccess}
+          institutions={educationalInstitutionsQuery.data}
+          isLoadingInstitutions={educationalInstitutionsQuery.isLoading}
+          offer={offer}
+        />
+      )}
     </CollectiveOfferLayout>
   )
 }

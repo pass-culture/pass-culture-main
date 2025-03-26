@@ -1,7 +1,6 @@
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
-import { Layout } from 'app/App/layout/Layout'
 import { Mode } from 'commons/core/OfferEducational/types'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { queryParamsFromOfferer } from 'commons/utils/queryParamsFromOfferer'
@@ -28,12 +27,6 @@ export const CollectiveOfferCreation = ({
     offer
   )
 
-  if (!isReady) {
-    return <Layout layout={'sticky-actions'}>
-      <Spinner />
-    </Layout>
-  }
-
   return (
     <CollectiveOfferLayout
       subTitle={offer?.name}
@@ -42,13 +35,17 @@ export const CollectiveOfferCreation = ({
       requestId={requestId}
       offer={offer}
     >
-      <OfferEducational
-        userOfferer={offerEducationalFormData.offerer}
-        domainsOptions={offerEducationalFormData.domains}
-        offer={offer}
-        mode={Mode.CREATION}
-        isTemplate={isTemplate}
-      />
+      {!isReady ? (
+        <Spinner />
+      ) : (
+        <OfferEducational
+          userOfferer={offerEducationalFormData.offerer}
+          domainsOptions={offerEducationalFormData.domains}
+          offer={offer}
+          mode={Mode.CREATION}
+          isTemplate={isTemplate}
+        />
+      )}
     </CollectiveOfferLayout>
   )
 }

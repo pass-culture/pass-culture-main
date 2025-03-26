@@ -17,8 +17,20 @@ export const Stocks = (): JSX.Element | null => {
   // propagated yet so there is a quick moment where the offer is null.
   // This is a temporary fix until we use a better pattern than the IndividualOfferWizard
   // to share the offer context
-  if (offer === null || !offer.priceCategories) {
-    return <Spinner />
+  const isLoading = offer === null || !offer.priceCategories
+
+  let children = <Spinner />
+  if (!isLoading) {
+    if (offer.isEvent) {
+      children =
+        mode === OFFER_WIZARD_MODE.CREATION ? (
+          <StocksEventCreation offer={offer} />
+        ) : (
+          <StocksEventEdition offer={offer} />
+        )
+    } else {
+      children = <StocksThing offer={offer} />
+    }
   }
 
   return (
@@ -28,15 +40,7 @@ export const Stocks = (): JSX.Element | null => {
       mode={mode}
       venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
     >
-      {offer.isEvent ? (
-        mode === OFFER_WIZARD_MODE.CREATION ? (
-          <StocksEventCreation offer={offer} />
-        ) : (
-          <StocksEventEdition offer={offer} />
-        )
-      ) : (
-        <StocksThing offer={offer} />
-      )}
+      {children}
     </IndividualOfferLayout>
   )
 }

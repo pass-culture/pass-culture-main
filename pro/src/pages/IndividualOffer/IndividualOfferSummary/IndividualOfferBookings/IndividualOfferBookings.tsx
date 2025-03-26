@@ -13,14 +13,16 @@ const IndividualOfferBookings = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { offer } = useIndividualOfferContext()
 
-  if (offer === null) {
-    return <Spinner />
-  }
-
   return (
     <IndividualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
-      <IndividualOfferBookingsSummaryScreen offer={offer} />
-      <ActionBar step={OFFER_WIZARD_STEP_IDS.SUMMARY} isDisabled={false} />
+      {offer === null ? (
+        <Spinner />
+      ) : (
+        <>
+          <IndividualOfferBookingsSummaryScreen offer={offer} />
+          <ActionBar step={OFFER_WIZARD_STEP_IDS.SUMMARY} isDisabled={false} />
+        </>
+      )}
     </IndividualOfferLayout>
   )
 }
