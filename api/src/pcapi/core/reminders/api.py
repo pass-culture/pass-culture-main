@@ -27,7 +27,9 @@ def create_reminder(user: User, reminder_body: PostReminderRequest) -> FutureOff
     future_offer = query.first_or_404()
 
     existing_reminder = (
-        db.session.query(FutureOfferReminder).filter(FutureOfferReminder.futureOfferId == future_offer.id).one_or_none()
+        db.session.query(FutureOfferReminder)
+        .filter(FutureOfferReminder.futureOfferId == future_offer.id, FutureOfferReminder.userId == user.id)
+        .one_or_none()
     )
 
     if existing_reminder:
