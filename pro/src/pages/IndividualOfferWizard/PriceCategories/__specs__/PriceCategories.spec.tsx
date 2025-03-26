@@ -37,8 +37,8 @@ describe('PriceCategories', () => {
     expect(screen.getByText('Modifier l’offre')).toBeInTheDocument()
   })
 
-  it('should not render when the offer is not set', () => {
+  it('should render a spinner when the offer is not set', () => {
     renderOffer({ offer: null })
-    expect(screen.queryByText('Modifier l’offre')).not.toBeInTheDocument()
+    expect(screen.getByTestId('spinner')).toBeInTheDocument()
   })
 })

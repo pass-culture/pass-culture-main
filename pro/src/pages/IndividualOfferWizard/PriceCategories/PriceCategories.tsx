@@ -13,13 +13,9 @@ export const PriceCategories = (): JSX.Element | null => {
   // submited payload. Due to React 18 render batching behavior and react-router
   // implementation, this component can be rendered before the offer is set in the
   // offer individual context
-  if (offer === null) {
-    return <Spinner />
-  }
-
   return (
     <IndividualOfferLayout offer={offer} title={getTitle(mode)} mode={mode}>
-      <PriceCategoriesScreen offer={offer} />
+      {offer === null ? <Spinner /> : <PriceCategoriesScreen offer={offer} />}
     </IndividualOfferLayout>
   )
 }

@@ -67,18 +67,11 @@ export const Homepage = (): JSX.Element => {
     return physicalVenues.length === 0 && !virtualVenue
   }, [selectedOfferer])
 
-  if (
+  const isPageLoading =
     offererNamesQuery.isLoading ||
     venueTypesQuery.isLoading ||
     !offererNames ||
     !venueTypes
-  ) {
-    return (
-      <Layout>
-        <Spinner />
-      </Layout>
-    )
-  }
 
   const LOCAL_STORAGE_HAS_SEEN_COLLECTIVE_BUDGET_INFO_KEY =
     'COLLECTIVE_BUDGET_INFORMATION_DIALOG'
@@ -102,50 +95,54 @@ export const Homepage = (): JSX.Element => {
   return (
     <>
       <Layout mainHeading="Bienvenue sur votre espace partenaire">
-        <div className={styles['reimbursements-banners']}>
-          <AddBankAccountCallout offerer={selectedOfferer} />
-          <LinkVenueCallout offerer={selectedOfferer} />
-          <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
-        </div>
-        {!isOffererValidating && (selectedOfferer || offererApiError) && (
-          <OffererBanners
-            isUserOffererValidated={isUserOffererValidated}
-            offerer={selectedOfferer}
-          />
-        )}
-
-        {selectedOfferer?.isValidated && selectedOfferer.isActive && (
-          <section className={styles['section']}>
-            <StatisticsDashboard offerer={selectedOfferer} />
-          </section>
-        )}
-
-        <section className={styles['section']} ref={offerersRef}>
-          <Offerers
-            selectedOfferer={selectedOfferer}
-            isLoading={isOffererLoading}
-            offererOptions={offererOptions}
-            isUserOffererValidated={isUserOffererValidated}
-            venueTypes={venueTypes}
-          />
-        </section>
-
-        {isUserOffererValidated &&
-          hasNoVenueVisible &&
-          selectedOfferer !== null && (
-            <section className={styles['step-section']}>
-              <VenueOfferSteps
-                hasVenue={!hasNoVenueVisible}
+        {isPageLoading ? (
+          <Spinner />
+        ) : (
+          <>
+            <div className={styles['reimbursements-banners']}>
+              <AddBankAccountCallout offerer={selectedOfferer} />
+              <LinkVenueCallout offerer={selectedOfferer} />
+              <BankAccountHasPendingCorrectionCallout
                 offerer={selectedOfferer}
               />
+            </div>
+            {!isOffererValidating && (selectedOfferer || offererApiError) && (
+              <OffererBanners
+                isUserOffererValidated={isUserOffererValidated}
+                offerer={selectedOfferer}
+              />
+            )}
+            {selectedOfferer?.isValidated && selectedOfferer.isActive && (
+              <section className={styles['section']}>
+                <StatisticsDashboard offerer={selectedOfferer} />
+              </section>
+            )}
+            <section className={styles['section']} ref={offerersRef}>
+              <Offerers
+                selectedOfferer={selectedOfferer}
+                isLoading={isOffererLoading}
+                offererOptions={offererOptions}
+                isUserOffererValidated={isUserOffererValidated}
+                venueTypes={venueTypes}
+              />
             </section>
-          )}
-
-        <section className={styles['section']} ref={profileRef}>
-          <div className={styles['newsletter']}>
-            <Newsletter />
-          </div>
-        </section>
+            {isUserOffererValidated &&
+              hasNoVenueVisible &&
+              selectedOfferer !== null && (
+                <section className={styles['step-section']}>
+                  <VenueOfferSteps
+                    hasVenue={!hasNoVenueVisible}
+                    offerer={selectedOfferer}
+                  />
+                </section>
+              )}
+            <section className={styles['section']} ref={profileRef}>
+              <div className={styles['newsletter']}>
+                <Newsletter />
+              </div>
+            </section>
+          </>
+        )}
       </Layout>
       <CollectiveBudgetDialog
         open={isCollectiveDialogOpen && shouldShowCollectiveBudgetDialog}

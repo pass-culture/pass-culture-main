@@ -51,7 +51,7 @@ const VenueSettings = (): JSX.Element | null => {
   )
   const venueProviders = venueProvidersQuery.data?.venue_providers
 
-  if (
+  const isPageLoading =
     isOffererLoading ||
     venueQuery.isLoading ||
     venueLabelsQuery.isLoading ||
@@ -61,13 +61,6 @@ const VenueSettings = (): JSX.Element | null => {
     !venue ||
     !venueTypes ||
     !venueProviders
-  ) {
-    return (
-      <Layout>
-        <Spinner />
-      </Layout>
-    )
-  }
 
   const venueLabels = venueLabelsQuery.data.map((type) => ({
     value: type.id.toString(),
@@ -76,7 +69,7 @@ const VenueSettings = (): JSX.Element | null => {
 
   return (
     <Layout
-      mainHeading='Paramètres généraux'
+      mainHeading="Paramètres généraux"
       mainTopElement={
         <Button
           variant={ButtonVariant.TERNARYPINK}
@@ -87,14 +80,18 @@ const VenueSettings = (): JSX.Element | null => {
         </Button>
       }
     >
-      <VenueSettingsScreen
-        initialValues={setInitialFormValues({ venue })}
-        offerer={offerer}
-        venueLabels={venueLabels}
-        venueTypes={venueTypes}
-        venue={venue}
-        venueProviders={venueProviders}
-      />
+      {isPageLoading ? (
+        <Spinner />
+      ) : (
+        <VenueSettingsScreen
+          initialValues={setInitialFormValues({ venue })}
+          offerer={offerer}
+          venueLabels={venueLabels}
+          venueTypes={venueTypes}
+          venue={venue}
+          venueProviders={venueProviders}
+        />
+      )}
     </Layout>
   )
 }
