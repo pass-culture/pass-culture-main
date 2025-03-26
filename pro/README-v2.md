@@ -48,9 +48,9 @@ git config --global pull.rebase true
 
 La convention des messages de commit suit la norme [Conventional Commits](https://www.conventionalcommits.org/).
 
-Pour s’assurer que les messages de commit respectent cette convention, il est également recommandé d’installer **Commitizen**
+Pour s’assurer que les messages de commit respectent cette convention, il est également conseillé d’installer **Commitizen** qui vous guidera dans la rédaction de messages de commit conformes à la convention.
 
-> **[Installer Commitizen](https://commitizen-tools.github.io/commitizen/#installation)** (facultatif)
+> **[Installer Commitizen](https://commitizen-tools.github.io/commitizen/#installation)** (conseillé)
 
 ## <img src="docs/nodejs-icon-alt.svg" height="20" /> Node.js (via nvm)
 
@@ -238,7 +238,7 @@ Il s’agit d’une application web pour les rédacteurs de projets scolaires, l
 # Ouvrir la console bash
 pc bash
 
-#Générer un token
+# Générer un token
 flask generate_fake_adage_token
 ```
 
@@ -267,7 +267,7 @@ SEARCH_BACKEND=pcapi.core.search.backends.algolia.AlgoliaBackend
 - Ouvrir la console bash
 
 ```
-$ pc bash
+pc bash
 ```
 
 - Réindexer vos offres collectives
