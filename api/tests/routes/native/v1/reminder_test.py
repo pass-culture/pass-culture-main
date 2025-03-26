@@ -26,31 +26,35 @@ class GetRemindersTest:
 
         offer_1 = offers_factories.OfferFactory(isActive=False)
         offer_2 = offers_factories.OfferFactory(isActive=False)
-        offer_3 = offers_factories.OfferFactory(isActive=False)
 
         future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
 
         future_offer_1 = offers_factories.FutureOfferFactory(offer=offer_1, publicationDate=future_publication_date)
         future_offer_2 = offers_factories.FutureOfferFactory(offer=offer_2, publicationDate=future_publication_date)
-        future_offer_3 = offers_factories.FutureOfferFactory(offer=offer_3, publicationDate=future_publication_date)
 
         reminder_1 = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_1, user=user_1)
         reminder_2 = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_2, user=user_1)
-        _ = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_3, user=user_2)
+        reminder_3 = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_2, user=user_2)
 
-        expected_reminders = {
+        expected_reminders_1 = {
             "reminders": [
                 {"id": reminder_1.id, "offer": {"id": offer_1.id}},
                 {"id": reminder_2.id, "offer": {"id": offer_2.id}},
             ]
         }
+        expected_reminders_2 = {
+            "reminders": [
+                {"id": reminder_3.id, "offer": {"id": offer_2.id}},
+            ]
+        }
 
-        user_email = user_1.email
-        with assert_num_queries(self.num_queries_success):
-            response = response = client.with_token(user_email).get("/native/v1/me/reminders")
-            assert response.status_code == 200
+        for user, expected_reminders in [(user_1, expected_reminders_1), (user_2, expected_reminders_2)]:
+            user_email = user.email
+            with assert_num_queries(self.num_queries_success):
+                response = response = client.with_token(user_email).get("/native/v1/me/reminders")
+                assert response.status_code == 200
 
-        assert response.json == expected_reminders
+            assert response.json == expected_reminders
 
 
 class PostReminderTest:
@@ -76,22 +80,22 @@ class PostReminderTest:
             assert response.status_code == 404
 
     def test_create_reminder(self, client):
-        user = users_factories.BeneficiaryFactory()
+        user_1 = users_factories.BeneficiaryFactory()
+        user_2 = users_factories.BeneficiaryFactory()
+
         offer = offers_factories.OfferFactory(isActive=False)
         future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
         future_offer = offers_factories.FutureOfferFactory(offer=offer, publicationDate=future_publication_date)
 
-        client.with_token(user.email)
-
-        offer_id = offer.id
-        with assert_num_queries(self.num_queries_success):
-            response = client.post("/native/v1/me/reminders", json={"offerId": offer_id})
-            assert response.status_code == 201
-
-        reminder = user.future_offer_reminders[0]
-
-        assert reminder.futureOffer.id == future_offer.id
-        assert response.json == {"id": reminder.id, "offer": {"id": offer_id}}
+        for user in [user_1, user_2]:
+            client.with_token(user.email)
+            offer_id = offer.id
+            with assert_num_queries(self.num_queries_success):
+                response = client.post("/native/v1/me/reminders", json={"offerId": offer_id})
+                assert response.status_code == 201
+            reminder = user.future_offer_reminders[0]
+            assert reminder.futureOffer.id == future_offer.id
+            assert response.json == {"id": reminder.id, "offer": {"id": offer_id}}
 
     def test_already_existing_reminder(self, client):
         user = users_factories.BeneficiaryFactory()
