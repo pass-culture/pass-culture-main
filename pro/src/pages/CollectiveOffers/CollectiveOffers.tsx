@@ -98,7 +98,6 @@ export const CollectiveOffers = (): JSX.Element => {
         nameOrIsbn,
         offererId,
         venueId,
-        categoryId,
         status,
         creationMode,
         periodBeginningDate,
@@ -112,7 +111,7 @@ export const CollectiveOffers = (): JSX.Element => {
         offererId,
         status,
         venueId,
-        categoryId,
+        undefined,
         creationMode,
         periodBeginningDate,
         periodEndingDate,
@@ -130,9 +129,9 @@ export const CollectiveOffers = (): JSX.Element => {
       {/* When the venues are cached for a given offerer, we still need to reset the Screen component.
       SWR isLoading is only true when the data is not cached, while isValidating is always set to true when the key is updated */}
       {isOffererLoading ||
-      isOffererValidating ||
-      isVenuesLoading ||
-      isVenuesValidating ? (
+        isOffererValidating ||
+        isVenuesLoading ||
+        isVenuesValidating ? (
         <Spinner />
       ) : (
         <CollectiveOffersScreen

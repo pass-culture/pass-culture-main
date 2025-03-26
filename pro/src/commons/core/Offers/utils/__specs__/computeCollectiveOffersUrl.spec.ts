@@ -1,4 +1,4 @@
-import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
+import { CollectiveOfferDisplayedStatus, EacFormat } from 'apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
 
 import { computeCollectiveOffersUrl } from '../computeCollectiveOffersUrl'
@@ -9,7 +9,7 @@ describe('computeCollectiveOffersUrl', () => {
       name: 'test',
       offererId: 'AY',
       venueId: 'EQ',
-      categoryId: 'CINEMA',
+      format: EacFormat.CONCERT,
       status: [
         CollectiveOfferDisplayedStatus.ACTIVE,
         CollectiveOfferDisplayedStatus.EXPIRED,
@@ -23,7 +23,7 @@ describe('computeCollectiveOffersUrl', () => {
     const value = computeCollectiveOffersUrl(offersSearchFilters)
 
     expect(value).toBe(
-      '/offres/collectives?page=2&nom=test&structure=AY&lieu=EQ&categorie=CINEMA&statut=active&statut=expiree&creation=manuelle&periode-evenement-debut=2020-11-30T00%3A00%3A00%2B01%3A00&periode-evenement-fin=2021-01-07T23%3A59%3A59%2B01%3A00'
+      '/offres/collectives?page=2&nom=test&structure=AY&lieu=EQ&format=Concert&statut=active&statut=expiree&creation=manuelle&periode-evenement-debut=2020-11-30T00%3A00%3A00%2B01%3A00&periode-evenement-fin=2021-01-07T23%3A59%3A59%2B01%3A00'
     )
   })
 
@@ -32,7 +32,7 @@ describe('computeCollectiveOffersUrl', () => {
       name: 'test',
       offererId: 'AY',
       venueId: 'EQ',
-      categoryId: 'CINEMA',
+      format: EacFormat.CONCERT,
       status: [CollectiveOfferDisplayedStatus.ACTIVE],
       creationMode: 'manual',
       periodBeginningDate: '2020-11-30T00:00:00+01:00',
@@ -47,7 +47,7 @@ describe('computeCollectiveOffersUrl', () => {
     )
 
     expect(value).toBe(
-      '/offres/vitrines?page=2&nom=test&structure=AY&lieu=EQ&categorie=CINEMA&statut=active&creation=manuelle&periode-evenement-debut=2020-11-30T00%3A00%3A00%2B01%3A00&periode-evenement-fin=2021-01-07T23%3A59%3A59%2B01%3A00'
+      '/offres/vitrines?page=2&nom=test&structure=AY&lieu=EQ&format=Concert&statut=active&creation=manuelle&periode-evenement-debut=2020-11-30T00%3A00%3A00%2B01%3A00&periode-evenement-fin=2021-01-07T23%3A59%3A59%2B01%3A00'
     )
   })
 })

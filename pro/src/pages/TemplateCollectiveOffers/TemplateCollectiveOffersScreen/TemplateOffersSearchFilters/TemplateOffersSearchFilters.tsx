@@ -29,7 +29,6 @@ interface TemplateOffersSearchFiltersProps {
   disableAllFilters: boolean
   resetFilters: () => void
   venues: SelectOption[]
-  categories?: SelectOption[]
 }
 
 const collectiveFilterStatus = [

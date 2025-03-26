@@ -34,7 +34,6 @@ interface CollectiveOffersSearchFiltersProps {
   disableAllFilters: boolean
   resetFilters: () => void
   venues: SelectOption[]
-  categories?: SelectOption[]
 }
 
 const collectiveFilterStatus = [
