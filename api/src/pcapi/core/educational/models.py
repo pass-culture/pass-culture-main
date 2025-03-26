@@ -960,12 +960,6 @@ class CollectiveOffer(
         return self.subcategory.category
 
     @property
-    def categoryId(self) -> str:  # used in validation rule, do not remove
-        if not self.subcategory:
-            return ""
-        return self.subcategory.category.id
-
-    @property
     def visibleText(self) -> str:  # used in validation rule, do not remove
         text_data: list[str] = [self.name, self.description]
         if self.collectiveStock and self.collectiveStock.priceDetail:
@@ -1371,12 +1365,6 @@ class CollectiveOfferTemplate(
         if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
             return None
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
-
-    @property
-    def categoryId(self) -> str:  # used in validation rule, do not remove
-        if not self.subcategory:
-            return ""
-        return self.subcategory.category.id
 
     @property
     def visibleText(self) -> str:  # used in validation rule, do not remove
