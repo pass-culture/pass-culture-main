@@ -5,12 +5,10 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 import pytest
 
-from pcapi import settings
 from pcapi.core import token as token_utils
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.users import constants
 from pcapi.core.users.models import User
 
 
@@ -278,11 +276,11 @@ class Returns400Test:
     def test_passwordlesslogin_token_is_sent_with_ff_on(
         self, mocked_send_signup_email, mocked_create_password_less_login_token, client
     ):
-        response = client.post("/users/signup", json=BASE_DATA_PRO)
+        client.post("/users/signup", json=BASE_DATA_PRO)
         mocked_create_password_less_login_token.assert_called_once()
         mocked_send_signup_email.assert_called_once()
 
-        args, kwargs = mocked_send_signup_email.call_args
+        args, _ = mocked_send_signup_email.call_args
 
         assert "fake_passwordless_login_token" in args
 
@@ -314,13 +312,13 @@ class Returns400Test:
         mocked_signup_confirmation_email,
         client,
     ):
-        response = client.post("/users/signup", json=BASE_DATA_PRO)
+        client.post("/users/signup", json=BASE_DATA_PRO)
 
         mocked_create_password_less_login_token.assert_not_called()
         mocked_signup_confirmation_email.assert_called_once()
         mocked_send_signup_email.assert_called_once()
 
-        args, kwargs = mocked_signup_confirmation_email.call_args
+        args, _ = mocked_signup_confirmation_email.call_args
 
         assert token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION in args
 
