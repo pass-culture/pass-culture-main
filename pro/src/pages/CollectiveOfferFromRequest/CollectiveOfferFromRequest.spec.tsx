@@ -21,7 +21,6 @@ vi.mock('apiClient/api', () => ({
   api: {
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOfferRequest: vi.fn(),
-    getCategories: vi.fn(),
     listEducationalDomains: vi.fn(),
     listEducationalOfferers: vi.fn(),
     getNationalPrograms: vi.fn(),
@@ -75,10 +74,6 @@ describe('CollectiveOfferFromRequest', () => {
         },
       })
     )
-    vi.spyOn(api, 'getCategories').mockResolvedValue({
-      categories: [],
-      subcategories: [],
-    })
     vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [],
     })
