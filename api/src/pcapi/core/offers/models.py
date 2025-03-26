@@ -524,6 +524,7 @@ class EventOpeningHours(PcObject, Base, Model, SoftDeletableMixin):
     __tablename__ = "event_opening_hours"
 
     offerId: sa_orm.Mapped[int] = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), nullable=False, index=True)
+    offer: sa_orm.Mapped["Offer"] = relationship("Offer", foreign_keys=[offerId], back_populates="eventOpeningHours")
 
     # To track
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa.Column(
