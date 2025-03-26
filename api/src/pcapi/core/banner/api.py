@@ -1,12 +1,12 @@
 import decimal
 
+from pcapi.core.banner import schemas as banner_schemas
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.users import eligibility_api
 import pcapi.core.users.models as users_models
-import pcapi.routes.native.v1.serialization.banner as serializers
 from pcapi.utils.string import u_nbsp
 
 
@@ -17,10 +17,10 @@ ACTIVATION_BANNER_NEXT_STEPS = [
     subscription_models.SubscriptionStep.HONOR_STATEMENT,
 ]
 
-GEOLOCATION_BANNER = serializers.Banner(
-    name=serializers.BannerName.GEOLOCATION_BANNER,
-    title=serializers.BannerTitle.GEOLOCATION_BANNER.value,
-    text=serializers.BannerText.GEOLOCATION_BANNER.value,
+GEOLOCATION_BANNER = banner_schemas.Banner(
+    name=banner_schemas.BannerName.GEOLOCATION_BANNER,
+    title=banner_schemas.BannerTitle.GEOLOCATION_BANNER.value,
+    text=banner_schemas.BannerText.GEOLOCATION_BANNER.value,
 )
 
 
@@ -28,7 +28,7 @@ def get_banner(
     user_subscription_state: subscription_models.UserSubscriptionState,
     user: users_models.User,
     is_geolocated: bool,
-) -> serializers.Banner | None:
+) -> banner_schemas.Banner | None:
     banner = None
     if user_subscription_state.next_step in ACTIVATION_BANNER_NEXT_STEPS:
         banner = _get_activation_banner(user, user_subscription_state)
@@ -58,26 +58,26 @@ def _get_17_18_transition_banner_information_text(
     user: users_models.User,
 ) -> str:
     if _has_completed_id_check(user):
-        return serializers.BannerText.TRANSITION_17_18_BANNER_ID_CHECK_DONE.value
+        return banner_schemas.BannerText.TRANSITION_17_18_BANNER_ID_CHECK_DONE.value
 
-    return serializers.BannerText.TRANSITION_17_18_BANNER_ID_CHECK_TODO.value
+    return banner_schemas.BannerText.TRANSITION_17_18_BANNER_ID_CHECK_TODO.value
 
 
 def _get_17_18_transition_banner_information(
     user: users_models.User,
     amount_to_display: decimal.Decimal,
-) -> serializers.Banner | None:
+) -> banner_schemas.Banner | None:
     banner_text = _get_17_18_transition_banner_information_text(user)
-    return serializers.Banner(
-        name=serializers.BannerName.TRANSITION_17_18_BANNER,
-        title=serializers.BannerTitle.TRANSITION_17_18_BANNER.value.format(f"{amount_to_display}{u_nbsp}"),
+    return banner_schemas.Banner(
+        name=banner_schemas.BannerName.TRANSITION_17_18_BANNER,
+        title=banner_schemas.BannerTitle.TRANSITION_17_18_BANNER.value.format(f"{amount_to_display}{u_nbsp}"),
         text=banner_text,
     )
 
 
 def _get_activation_banner(
     user: users_models.User, user_subscription_state: subscription_models.UserSubscriptionState
-) -> serializers.Banner | None:
+) -> banner_schemas.Banner | None:
     """
     Return the activation banner
     Business rules:
@@ -91,10 +91,10 @@ def _get_activation_banner(
         return None
 
     if subscription_api.should_retry_identity_check(user_subscription_state):
-        return serializers.Banner(
-            name=serializers.BannerName.RETRY_IDENTITY_CHECK_BANNER,
-            title=serializers.BannerTitle.RETRY_IDENTITY_CHECK_BANNER.value,
-            text=serializers.BannerText.RETRY_IDENTITY_CHECK_BANNER.value,
+        return banner_schemas.Banner(
+            name=banner_schemas.BannerName.RETRY_IDENTITY_CHECK_BANNER,
+            title=banner_schemas.BannerTitle.RETRY_IDENTITY_CHECK_BANNER.value,
+            text=banner_schemas.BannerText.RETRY_IDENTITY_CHECK_BANNER.value,
         )
 
     eligibility_to_activate = eligibility_api.get_pre_decree_or_current_eligibility(user)
@@ -105,8 +105,8 @@ def _get_activation_banner(
     if _is_17_18_transition(user):
         return _get_17_18_transition_banner_information(user, amount_to_display)
 
-    return serializers.Banner(
-        name=serializers.BannerName.ACTIVATION_BANNER,
-        title=serializers.BannerTitle.ACTIVATION_BANNER.value.format(f"{amount_to_display}{u_nbsp}"),
-        text=serializers.BannerText.ACTIVATION_BANNER.value,
+    return banner_schemas.Banner(
+        name=banner_schemas.BannerName.ACTIVATION_BANNER,
+        title=banner_schemas.BannerTitle.ACTIVATION_BANNER.value.format(f"{amount_to_display}{u_nbsp}"),
+        text=banner_schemas.BannerText.ACTIVATION_BANNER.value,
     )

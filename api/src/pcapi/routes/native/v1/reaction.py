@@ -1,6 +1,7 @@
 import logging
 
 import pcapi.core.reactions.api as reactions_api
+import pcapi.core.reactions.schemas as reactions_schemas
 import pcapi.core.users.models as users_models
 from pcapi.repository import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_and_active_user_required
 @atomic()
-def post_reaction(user: users_models.User, body: serialization.PostReactionRequest) -> None:
+def post_reaction(user: users_models.User, body: reactions_schemas.PostReactionRequest) -> None:
     reactions_api.bulk_update_or_create_reaction(user, body.reactions)
 
 
