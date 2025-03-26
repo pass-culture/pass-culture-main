@@ -87,3 +87,4 @@ from .users.update_request_ask_for_correction import send_beneficiary_update_req
 from .users.update_request_set_to_without_continuation import (
     send_beneficiary_update_request_set_to_without_continuation,
 )
+from .users.update_request_user_account_not_found import send_update_request_user_account_not_found
