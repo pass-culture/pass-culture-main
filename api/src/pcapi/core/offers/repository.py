@@ -8,6 +8,7 @@ from flask_sqlalchemy import BaseQuery
 import pytz
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql import and_
 from sqlalchemy.sql import or_
@@ -27,6 +28,7 @@ from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import custom_keys
 from pcapi.utils import string as string_utils
+from pcapi.utils.decorators import retry
 
 from . import exceptions
 from . import models
@@ -1483,13 +1485,24 @@ def get_movie_product_by_visa(visa: str) -> models.Product | None:
     return models.Product.query.filter(models.Product.extraData["visa"].astext == visa).one_or_none()
 
 
+def _log_deletion_error(_to_keep: models.Product, to_delete: models.Product) -> None:
+    logger.info("Failed to delete product %d", to_delete.id)
+
+
+@retry(exception=sa_exc.IntegrityError, exception_handler=_log_deletion_error, logger=logger, max_attempts=3)
 def merge_products(to_keep: models.Product, to_delete: models.Product) -> models.Product:
+    # It has already happened that an offer is created by another SQL session
+    # in between the transfer of the offers and the product deletion.
+    # This causes the product deletion to fail with an IntegrityError
+    # `update or delete on table "product" violates foreign key constraint "offer_productId_fkey" on table "offer"`
+    # To fix this race condition requires to force taking an Access Exclusive lock on the product to delete.
+    # Because this situation is rare, we use a `retry` instead. That should be sufficient.
+
     models.Offer.query.filter(models.Offer.productId == to_delete.id).update({"productId": to_keep.id})
     reactions_models.Reaction.query.filter(reactions_models.Reaction.productId == to_delete.id).update(
         {"productId": to_keep.id}
     )
     db.session.delete(to_delete)
-
     db.session.flush()
 
     return to_keep
