@@ -182,6 +182,7 @@ def notify_reimburse_collective_booking(booking_id: int, reason: str, value: Dec
     )
 
 
+@blueprint.cli.command("synchronise_institutions_geolocation")
 @click.option(
     "--adage-year-id",
     type=str,
@@ -189,10 +190,12 @@ def notify_reimburse_collective_booking(booking_id: int, reason: str, value: Dec
     help="The adage year id. If not provided, the current year will be used.",
     required=False,
 )
-@blueprint.cli.command("synchronise_institutions_geolocation")
-@log_cron_with_transaction
-def synchronise_institutions_geolocation(adage_year_id: str | None = None) -> None:
+@click.option("--dry-run", type=bool, default=True, help="Do not commit the changes.")
+def synchronise_institutions_geolocation(adage_year_id: str | None, dry_run: bool) -> None:
     institution_api.synchronise_institutions_geolocation(adage_year_id=adage_year_id)
+
+    if not dry_run:
+        db.session.commit()
 
 
 @blueprint.cli.command("synchronise_rurality_level")
