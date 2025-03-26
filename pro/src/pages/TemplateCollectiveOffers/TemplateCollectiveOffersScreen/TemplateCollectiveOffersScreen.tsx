@@ -40,7 +40,6 @@ export type TemplateCollectiveOffersScreenProps = {
   ) => void
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   venues: SelectOption[]
-  categories?: SelectOption[]
   offers: CollectiveOfferResponseModel[]
 }
 
@@ -52,7 +51,6 @@ export const TemplateCollectiveOffersScreen = ({
   redirectWithUrlFilters,
   urlSearchFilters,
   venues,
-  categories,
   offers,
 }: TemplateCollectiveOffersScreenProps): JSX.Element => {
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('template')
@@ -158,7 +156,6 @@ export const TemplateCollectiveOffersScreen = ({
       <TemplateOffersSearchFilters
         hasFilters={hasFilters}
         applyFilters={applyFilters}
-        categories={categories}
         disableAllFilters={userHasNoOffers}
         offerer={offerer}
         resetFilters={() => resetFilters(!isCollapsedMemorizedFiltersEnabled)}

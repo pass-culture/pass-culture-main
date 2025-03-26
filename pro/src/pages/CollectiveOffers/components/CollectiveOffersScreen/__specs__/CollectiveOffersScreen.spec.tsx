@@ -45,14 +45,6 @@ const renderOffers = (
   })
 }
 
-const categoriesAndSubcategories = {
-  categories: [
-    { id: 'CINEMA', proLabel: 'Cinéma', isSelectable: true },
-    { id: 'JEU', proLabel: 'Jeux', isSelectable: true },
-    { id: 'TECHNIQUE', proLabel: 'Technique', isSelectable: false },
-  ],
-  subcategories: [],
-}
 
 const proVenues = [
   {
@@ -112,9 +104,6 @@ describe('CollectiveOffersScreen', () => {
       initialSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
       redirectWithUrlFilters: vi.fn(),
       venues: proVenuesOptions,
-      categories: categoriesAndSubcategories.categories.map(
-        ({ id, proLabel }) => ({ value: id, label: proLabel })
-      ),
     }
 
     const notifsImport = (await vi.importActual(
