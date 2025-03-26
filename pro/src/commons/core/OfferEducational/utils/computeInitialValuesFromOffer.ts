@@ -1,8 +1,10 @@
 import {
+  CollectiveLocationType,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
   StudentLevels,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import {
   formatShortDateForInput,
@@ -79,7 +81,8 @@ export const computeInitialValuesFromOffer = (
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel,
   venueIdQueryParam?: string | null,
-  isMarseilleEnabled?: boolean
+  isMarseilleEnabled?: boolean,
+  venues?: VenueListItemResponseModel[]
 ): OfferEducationalFormValues => {
   const initialOffererId = getInitialOffererId(offerer, offer)
   const initialVenueId = getInitialVenueId(
@@ -89,12 +92,28 @@ export const computeInitialValuesFromOffer = (
     venueIdQueryParam
   )
 
+  const defaultVenue = venues?.find((v) => v.id.toString() === initialVenueId)
+
   if (offer === undefined) {
     const today = formatShortDateForInput(getToday())
     return {
       ...DEFAULT_EAC_FORM_VALUES,
       offererId: initialOffererId,
       venueId: initialVenueId,
+      location: defaultVenue
+        ? {
+            locationType: CollectiveLocationType.ADDRESS,
+            address: {
+              isVenueAddress: true,
+              city: defaultVenue.address?.city ?? '',
+              latitude: defaultVenue.address?.latitude ?? '',
+              longitude: defaultVenue.address?.longitude ?? '',
+              postalCode: defaultVenue.address?.postalCode ?? '',
+              street: defaultVenue.address?.street ?? '',
+            },
+            id_oa: defaultVenue.address?.id_oa.toString() ?? '',
+          }
+        : undefined,
       isTemplate,
       beginningDate: isTemplate
         ? today
@@ -148,6 +167,16 @@ export const computeInitialValuesFromOffer = (
     interventionArea: offer.interventionArea,
     venueId: initialVenueId,
     offererId: initialOffererId,
+    location: {
+      locationType: CollectiveLocationType.ADDRESS,
+      // If the venue's OA selected at step 1 is the same than the one we have saved in offer draft,
+      // then set this OA id in formik field (so it will be checked by default)
+      // Else, we can assume it's an "other" address
+      id_oa:
+        offer.location?.address?.id_oa === defaultVenue?.address?.id_oa
+          ? defaultVenue?.address?.id_oa.toString()
+          : '',
+    },
     priceDetail:
       isCollectiveOfferTemplate(offer) && offer.educationalPriceDetail
         ? offer.educationalPriceDetail

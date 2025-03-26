@@ -1,0 +1,7 @@
+- récupérer les venues avec la route getVenues pour avoir les infos d'OA ✅
+- mettre les bonnes données dans formik quand on choisit l'adresse de la structure pour envoyer les bonnes données au PATCH/POST ✅
+- mettre une valeur par défaut dans le formulaire / récupérer la bonne valeur lors de la modification de l'offre => computeInitialValuesFromOffer ✅
+- mettre à jour le schéma de validation du formulaire
+- vérifier que tout est bien conditionné au FF ✅
+- tests
+- définir les bonnes valeurs par défaut du formulaire dans la constante DEFAULT_EAC_FORM_VALUES

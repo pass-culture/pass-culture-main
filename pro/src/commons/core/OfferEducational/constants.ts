@@ -1,4 +1,4 @@
-import { OfferAddressType } from 'apiClient/v1'
+import { CollectiveLocationType, OfferAddressType } from 'apiClient/v1'
 
 import {
   EducationalOfferType,
@@ -18,6 +18,9 @@ export const DEFAULT_EAC_FORM_VALUES: OfferEducationalFormValues = {
     addressType: OfferAddressType.OFFERER_VENUE,
     otherAddress: '',
     venueId: 0,
+  },
+  location: {
+    locationType: CollectiveLocationType.ADDRESS, // pas sûre de cette valeur par défaut
   },
   interventionArea: [],
   participants: {

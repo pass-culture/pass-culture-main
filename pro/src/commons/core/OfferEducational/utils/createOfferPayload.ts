@@ -53,7 +53,8 @@ export const serializeDates = (
 }
 
 function getCommonOfferPayload(
-  offer: OfferEducationalFormValues
+  offer: OfferEducationalFormValues,
+  isCollectiveOaActive: boolean
 ): PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel {
   return {
     venueId: Number(offer.venueId),
@@ -64,10 +65,14 @@ function getCommonOfferPayload(
     durationMinutes: parseDuration(offer.duration),
     ...disabilityCompliances(offer.accessibility),
     students: serializeParticipants(offer.participants),
-    offerVenue: {
-      ...offer.eventAddress,
-      venueId: Number(offer.eventAddress.venueId),
-    },
+    ...(isCollectiveOaActive
+      ? { location: offer.location }
+      : {
+          offerVenue: {
+            ...offer.eventAddress,
+            venueId: Number(offer.eventAddress.venueId),
+          },
+        }),
     domains: offer.domains.map((domainIdString) => Number(domainIdString)),
     interventionArea:
       offer.eventAddress.addressType === OfferAddressType.OFFERER_VENUE
@@ -79,10 +84,11 @@ function getCommonOfferPayload(
 }
 
 export const createCollectiveOfferTemplatePayload = (
-  offer: OfferEducationalFormValues
+  offer: OfferEducationalFormValues,
+  isCollectiveOaActive: boolean
 ): PostCollectiveOfferTemplateBodyModel => {
   return {
-    ...getCommonOfferPayload(offer),
+    ...getCommonOfferPayload(offer, isCollectiveOaActive),
     dates:
       offer.datesType === 'specific_dates' &&
       offer.beginningDate &&
@@ -105,10 +111,11 @@ export const createCollectiveOfferTemplatePayload = (
 
 export const createCollectiveOfferPayload = (
   offer: OfferEducationalFormValues,
+  isCollectiveOaActive: boolean,
   offerTemplateId?: number
 ): PostCollectiveOfferBodyModel => {
   return {
-    ...getCommonOfferPayload(offer),
+    ...getCommonOfferPayload(offer, isCollectiveOaActive),
     templateId: offerTemplateId,
     contactEmail: offer.email,
     contactPhone: offer.phone,
