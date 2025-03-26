@@ -9,7 +9,7 @@ from . import models
 some_artist_images = [
     "https://upload.wikimedia.org/wikipedia/commons/f/fa/Colleen_Hoover_Video_Call.png",
     "https://upload.wikimedia.org/wikipedia/commons/e/e9/FIBD2023HajimeIsayama_01.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/6/60/Vincent_Willem_van_Gogh_107.jpg"
+    "https://upload.wikimedia.org/wikipedia/commons/6/60/Vincent_Willem_van_Gogh_107.jpg",
     "https://upload.wikimedia.org/wikipedia/commons/0/08/JUL_-_Julien_Mari_2018.jpg",
     "https://upload.wikimedia.org/wikipedia/commons/6/62/Madsen_Niko_Maurer_2008_01.jpg",
 ]
