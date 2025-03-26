@@ -19,7 +19,6 @@ import { CollectiveOfferCreation } from '../CollectiveOfferCreation'
 
 vi.mock('apiClient/api', () => ({
   api: {
-    getCategories: vi.fn(),
     listEducationalDomains: vi.fn(),
     listEducationalOfferers: vi.fn(),
     getCollectiveOffer: vi.fn(),
@@ -67,10 +66,6 @@ describe('CollectiveOfferCreation', () => {
   beforeEach(() => {
     vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [offerer],
-    })
-    vi.spyOn(api, 'getCategories').mockResolvedValue({
-      categories: [],
-      subcategories: [],
     })
     vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
     vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)

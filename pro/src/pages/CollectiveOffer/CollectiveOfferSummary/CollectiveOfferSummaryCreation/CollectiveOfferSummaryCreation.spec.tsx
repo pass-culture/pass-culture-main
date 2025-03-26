@@ -31,7 +31,6 @@ vi.mock('react-router-dom', async () => ({
 vi.mock('apiClient/api', () => ({
   api: {
     listEducationalOfferers: vi.fn(),
-    getCategories: vi.fn(),
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
   },
@@ -63,10 +62,6 @@ describe('CollectiveOfferSummaryCreation', () => {
   })
 
   beforeEach(() => {
-    vi.spyOn(api, 'getCategories').mockResolvedValue({
-      categories: [],
-      subcategories: [],
-    })
     vi.spyOn(api, 'getCollectiveOffer')
     vi.spyOn(api, 'getCollectiveOfferTemplate')
     vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
