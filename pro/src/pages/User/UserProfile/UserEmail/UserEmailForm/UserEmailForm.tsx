@@ -82,7 +82,7 @@ export const UserEmailForm = ({
       <BoxFormLayout.Fields>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormLayout>
-            <FormLayout.Row>
+            <div className={styles['text-input']}>
               <TextInput
                 label="Nouvelle adresse email"
                 description="Format : email@exemple.com"
@@ -91,8 +91,8 @@ export const UserEmailForm = ({
                 {...register('email')}
                 asterisk={false}
               />
-            </FormLayout.Row>
-            <FormLayout.Row>
+            </div>
+            <div className={styles['text-input']}>
               <PasswordInput
                 label="Mot de passe (requis pour modifier votre email)"
                 error={errors.password?.message}
@@ -100,7 +100,7 @@ export const UserEmailForm = ({
                 {...register('password')}
                 asterisk={false}
               />
-            </FormLayout.Row>
+            </div>
           </FormLayout>
 
           <div className={styles['buttons-field']}>

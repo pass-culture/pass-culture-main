@@ -83,7 +83,7 @@ export const SignupForm = (): JSX.Element => {
           ].sort(() => (isNewSignupEnabled ? -1 : 1))}
           {/* This is to display fields "PRÉNOM" <> "NOM" in the correct DOM order depending on the FF */}
         </div>
-        <FormLayout.Row>
+        <div className={styles['text-input']}>
           <EmailSpellCheckInput
             {...register('email')}
             error={errors.email?.message}
@@ -95,8 +95,8 @@ export const SignupForm = (): JSX.Element => {
             required
             asterisk={!isNewSignupEnabled}
           />
-        </FormLayout.Row>
-        <FormLayout.Row className={styles['signup-form-row-password']}>
+        </div>
+        <div className={styles['text-input']}>
           <PasswordInput
             {...register('password')}
             label="Mot de passe"
@@ -108,7 +108,8 @@ export const SignupForm = (): JSX.Element => {
             passwordValue={newPassword}
             hasError={!!errors.password}
           />
-        </FormLayout.Row>
+        </div>
+
         {!isNewSignupEnabled && (
           <FormLayout.Row>
             <PhoneNumberInput

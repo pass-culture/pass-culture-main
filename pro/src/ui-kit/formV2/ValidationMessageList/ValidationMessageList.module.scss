@@ -6,7 +6,6 @@
   @include forms.field-layout-footer;
 
   min-height: initial;
-  margin-top: rem.torem(-20px);
   flex-flow: row wrap;
   justify-content: flex-start;
   gap: rem.torem(8px) rem.torem(12px);

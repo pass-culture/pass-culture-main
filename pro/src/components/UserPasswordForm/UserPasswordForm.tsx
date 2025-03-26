@@ -104,14 +104,14 @@ export const UserPasswordForm = ({
       <BoxFormLayout.Fields>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormLayout>
-            <FormLayout.Row>
+            <div className={styles['text-input']}>
               <PasswordInput
                 {...register('oldPassword')}
                 error={errors.oldPassword?.message}
                 label="Mot de passe actuel"
               />
-            </FormLayout.Row>
-            <FormLayout.Row className={styles['form-row-password']}>
+            </div>
+            <div className={styles['text-input']}>
               <PasswordInput
                 {...register('newPassword', {
                   onChange: () => trigger('newPassword'),
@@ -129,14 +129,14 @@ export const UserPasswordForm = ({
                 passwordValue={newPassword}
                 hasError={!!errors.newPassword}
               />
-            </FormLayout.Row>
-            <FormLayout.Row>
+            </div>
+            <div className={styles['text-input']}>
               <PasswordInput
                 {...register('newConfirmationPassword')}
                 error={errors.newConfirmationPassword?.message}
                 label="Confirmer votre nouveau mot de passe"
               />
-            </FormLayout.Row>
+            </div>
           </FormLayout>
 
           <div className={styles['buttons-field']}>
