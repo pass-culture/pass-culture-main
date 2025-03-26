@@ -8,7 +8,9 @@ from pcapi.core.external.attributes import models as attributes_models
 import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offers.models as offers_models
-import pcapi.notifications.push as push_notifications
+from pcapi.notifications.push.trigger_events import BatchEvent
+from pcapi.notifications.push.trigger_events import TrackBatchEventRequest
+from pcapi.notifications.push.trigger_events import TrackBatchEventsRequest
 from pcapi.tasks import batch_tasks
 
 
@@ -103,77 +105,7 @@ def _format_date(date: datetime | None) -> str | None:
     return date.strftime(BATCH_DATETIME_FORMAT) if date else None
 
 
-def track_deposit_activated_event(user_id: int, deposit: finance_models.Deposit) -> None:
-    event_name = push_notifications.BatchEvent.USER_DEPOSIT_ACTIVATED
-    event_payload = {"deposit_type": deposit.type.value, "deposit_amount": round(deposit.amount)}
-    payload = batch_tasks.TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user_id)
-    batch_tasks.track_event_task.delay(payload)
-
-
-def track_account_recredited(user_id: int, deposit: finance_models.Deposit, deposit_count: int) -> None:
-    event_name = push_notifications.BatchEvent.RECREDITED_ACCOUNT
-    event_payload = {
-        "deposit_amount": round(deposit.amount),
-        "deposit_type": deposit.type.value,
-        "deposits_count": deposit_count,
-        "deposit_expiration_date": _format_date(deposit.expirationDate),
-    }
-    payload = batch_tasks.TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user_id)
-    batch_tasks.track_event_task.delay(payload)
-
-
-def track_identity_check_started_event(user_id: int, fraud_check_type: fraud_models.FraudCheckType) -> None:
-    event_name = push_notifications.BatchEvent.USER_IDENTITY_CHECK_STARTED
-    payload = batch_tasks.TrackBatchEventRequest(
-        event_name=event_name, event_payload={"type": fraud_check_type.value}, user_id=user_id
-    )
-    batch_tasks.track_event_task.delay(payload)
-
-
-def track_ubble_ko_event(user_id: int, reason_code: fraud_models.FraudReasonCode) -> None:
-    event_name = push_notifications.BatchEvent.HAS_UBBLE_KO_STATUS
-    payload = batch_tasks.TrackBatchEventRequest(
-        event_name=event_name, event_payload={"error_code": reason_code.value}, user_id=user_id
-    )
-    batch_tasks.track_event_task.delay(payload)
-
-
-def track_offer_added_to_favorites_event(user_id: int, offer: offers_models.Offer) -> None:
-    event_name = push_notifications.BatchEvent.HAS_ADDED_OFFER_TO_FAVORITES
-    formatted_offer_attributes = format_offer_attributes(offer)
-    payload = batch_tasks.TrackBatchEventRequest(
-        event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
-    )
-    batch_tasks.track_event_task.delay(payload)
-
-
-def track_offer_booked_event(user_id: int, offer: offers_models.Offer) -> None:
-    event_name = push_notifications.BatchEvent.HAS_BOOKED_OFFER
-    formatted_offer_attributes = format_offer_attributes(offer)
-    payload = batch_tasks.TrackBatchEventRequest(
-        event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
-    )
-    batch_tasks.track_event_task.delay(payload)
-
-
-def track_booking_cancellation(booking: bookings_models.Booking) -> None:
-    from pcapi.core.users.api import get_domains_credit
-
-    event_name = push_notifications.BatchEvent.RECREDIT_ACCOUNT_CANCELLATION
-    user = booking.user
-    offer = booking.stock.offer
-    domains_credit = get_domains_credit(user)
-    event_payload = {
-        "credit": domains_credit.all.remaining,  # type: ignore[union-attr]
-        "offer_id": offer.id,
-        "offer_name": textwrap.shorten(offer.name, width=64, placeholder="..."),
-        "offer_price": booking.total_amount,
-    }
-    payload = batch_tasks.TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user.id)
-    batch_tasks.track_event_task.delay(payload)
-
-
-def format_offer_attributes(offer: offers_models.Offer) -> dict:
+def _format_offer_attributes(offer: offers_models.Offer) -> dict:
     stock = min(
         offer.bookableStocks,
         default=None,
@@ -199,3 +131,84 @@ def format_offer_attributes(offer: offers_models.Offer) -> dict:
         "expiry_date": expiry_date,
     }
     return {key: value for key, value in offer_attributes.items() if value is not None}
+
+
+def track_deposit_activated_event(user_id: int, deposit: finance_models.Deposit) -> None:
+    event_name = BatchEvent.USER_DEPOSIT_ACTIVATED
+    event_payload = {"deposit_type": deposit.type.value, "deposit_amount": round(deposit.amount)}
+    payload = TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user_id)
+    batch_tasks.track_event_task.delay(payload)
+
+
+def track_account_recredited(user_id: int, deposit: finance_models.Deposit, deposit_count: int) -> None:
+    event_name = BatchEvent.RECREDITED_ACCOUNT
+    event_payload = {
+        "deposit_amount": round(deposit.amount),
+        "deposit_type": deposit.type.value,
+        "deposits_count": deposit_count,
+        "deposit_expiration_date": _format_date(deposit.expirationDate),
+    }
+    payload = TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user_id)
+    batch_tasks.track_event_task.delay(payload)
+
+
+def track_identity_check_started_event(user_id: int, fraud_check_type: fraud_models.FraudCheckType) -> None:
+    event_name = BatchEvent.USER_IDENTITY_CHECK_STARTED
+    payload = TrackBatchEventRequest(
+        event_name=event_name, event_payload={"type": fraud_check_type.value}, user_id=user_id
+    )
+    batch_tasks.track_event_task.delay(payload)
+
+
+def track_ubble_ko_event(user_id: int, reason_code: fraud_models.FraudReasonCode) -> None:
+    event_name = BatchEvent.HAS_UBBLE_KO_STATUS
+    payload = TrackBatchEventRequest(
+        event_name=event_name, event_payload={"error_code": reason_code.value}, user_id=user_id
+    )
+    batch_tasks.track_event_task.delay(payload)
+
+
+def track_offer_added_to_favorites_event(user_id: int, offer: offers_models.Offer) -> None:
+    event_name = BatchEvent.HAS_ADDED_OFFER_TO_FAVORITES
+    formatted_offer_attributes = _format_offer_attributes(offer)
+    payload = TrackBatchEventRequest(event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id)
+    batch_tasks.track_event_task.delay(payload)
+
+
+def track_offer_booked_event(user_id: int, offer: offers_models.Offer) -> None:
+    event_name = BatchEvent.HAS_BOOKED_OFFER
+    formatted_offer_attributes = _format_offer_attributes(offer)
+    payload = TrackBatchEventRequest(event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id)
+    batch_tasks.track_event_task.delay(payload)
+
+
+def track_booking_cancellation(booking: bookings_models.Booking) -> None:
+    from pcapi.core.users.api import get_domains_credit
+
+    event_name = BatchEvent.RECREDIT_ACCOUNT_CANCELLATION
+    user = booking.user
+    offer = booking.stock.offer
+    domains_credit = get_domains_credit(user)
+    event_payload = {
+        "credit": domains_credit.all.remaining,  # type: ignore[union-attr]
+        "offer_id": offer.id,
+        "offer_name": textwrap.shorten(offer.name, width=64, placeholder="..."),
+        "offer_price": booking.total_amount,
+    }
+    payload = TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user.id)
+    batch_tasks.track_event_task.delay(payload)
+
+
+def track_offer_added_to_reminders_event(user_ids: list[int], offer: offers_models.Offer) -> None:
+
+    event_name = BatchEvent.FUTURE_OFFER_ACTIVATED
+    formatted_offer_attributes = _format_offer_attributes(offer)
+
+    trigger_events: list[TrackBatchEventRequest] = []
+    for user_id in user_ids:
+        trigger_events.append(
+            TrackBatchEventRequest(event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id)
+        )
+
+    payload = TrackBatchEventsRequest(trigger_events=trigger_events)
+    batch_tasks.track_event_bulk_task.delay(payload)
