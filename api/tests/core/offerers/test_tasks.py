@@ -1,5 +1,6 @@
 from dataclasses import asdict
 import datetime
+import json
 from unittest.mock import patch
 
 import pytest
@@ -43,12 +44,31 @@ class CheckOffererTest:
 
         mock_append_to_spreadsheet.assert_not_called()
 
+    @pytest.mark.parametrize(
+        "already_in_redis,expected_set_in_redis",
+        [
+            (None, json.dumps(["111222337"])),
+            (json.dumps(["999999999"]), json.dumps(["999999999", "111222337"])),
+        ],
+    )
     @patch("time.sleep")
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet")
+    @patch("flask.current_app.redis_client.set")
+    @patch("flask.current_app.redis_client.get")
     def test_still_active_offerer_closed_in_the_future(
-        self, mock_append_to_spreadsheet, mock_sleep, client, siren_caduc_tag
+        self,
+        mock_redis_client_get,
+        mock_redis_client_set,
+        mock_append_to_spreadsheet,
+        mock_sleep,
+        client,
+        siren_caduc_tag,
+        already_in_redis,
+        expected_set_in_redis,
     ):
-        offerer = offerers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory(siren="111222337")
+        closure_date = datetime.date.today() + datetime.timedelta(days=7)
+        mock_redis_client_get.return_value = already_in_redis
 
         with patch(
             "pcapi.connectors.entreprise.sirene.get_siren",
@@ -63,7 +83,7 @@ class CheckOffererTest:
                 active=True,
                 diffusible=True,
                 creation_date=datetime.date(2024, 1, 1),
-                closure_date=datetime.date.today() + datetime.timedelta(days=7),
+                closure_date=closure_date,
             ),
         ):
             response = client.post(
@@ -75,6 +95,14 @@ class CheckOffererTest:
         assert response.status_code == 204
         assert not offerer.tags
 
+        mock_redis_client_get.assert_called_once_with(
+            f"check_closed_offerers:scheduled:{closure_date.isoformat()}",
+        )
+        mock_redis_client_set.assert_called_once_with(
+            f"check_closed_offerers:scheduled:{closure_date.isoformat()}",
+            expected_set_in_redis,
+            ex=86400 * (7 + 30),
+        )
         mock_append_to_spreadsheet.assert_not_called()
 
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)

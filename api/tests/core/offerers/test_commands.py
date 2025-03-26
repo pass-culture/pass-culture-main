@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 from unittest.mock import patch
 
@@ -6,6 +7,7 @@ import pytest
 import time_machine
 
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import tasks as offerers_tasks
 from pcapi.utils import siren as siren_utils
 
 from tests.test_utils import run_command
@@ -37,12 +39,12 @@ class CheckActiveOfferersTest:
 
 
 class CheckClosedOfferersTest:
+    @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
     @patch(
         "pcapi.connectors.entreprise.sirene.get_siren_closed_at_date",
         return_value=["222222226", "333333334", "444444442", "666666664"],
     )
-    @patch("pcapi.connectors.entreprise.sirene.get_siren")
-    def test_check_closed_offerers(self, mock_get_siren, mock_get_siren_closed_at_date, app):
+    def test_check_closed_offerers(self, mock_get_siren_closed_at_date, mock_check_offerer_siren_task, app):
         offerers_factories.OffererFactory(siren="111111118")
         offerers_factories.OffererFactory(siren="222222226")
         offerers_factories.OffererFactory(siren="333333334", isActive=False)
@@ -53,21 +55,52 @@ class CheckClosedOfferersTest:
 
         mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
 
-        # Only check that the task is called; its behavior is tested in offerers/test_task.py
-        mock_get_siren.assert_called()
-        assert mock_get_siren.call_count == 2
-        assert {item.args[0] for item in mock_get_siren.call_args_list} == {"222222226", "666666664"}
-        assert mock_get_siren.call_args.kwargs == {"raise_if_non_public": False, "with_address": False}
+        # Only check that the task is called; its behavior is tested in offerers/test_tasks.py
+        mock_check_offerer_siren_task.delay.assert_called()
+        assert mock_check_offerer_siren_task.delay.call_count == 2
+        assert sorted(
+            [item.args[0] for item in mock_check_offerer_siren_task.delay.call_args_list], key=lambda r: r.siren
+        ) == [
+            offerers_tasks.CheckOffererSirenRequest(
+                siren="222222226", close_or_tag_when_inactive=True, fill_in_codir_report=False
+            ),
+            offerers_tasks.CheckOffererSirenRequest(
+                siren="666666664", close_or_tag_when_inactive=True, fill_in_codir_report=False
+            ),
+        ]
 
+    @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
     @patch(
         "pcapi.connectors.entreprise.sirene.get_siren_closed_at_date",
         return_value=["222222226", "333333334"],
     )
-    @patch("pcapi.connectors.entreprise.sirene.get_siren")
-    def test_no_known_siren(self, mock_get_siren, mock_get_siren_closed_at_date, app):
+    def test_no_known_siren(self, mock_get_siren_closed_at_date, mock_check_offerer_siren_task, app):
         run_command(app, "check_closed_offerers")
         mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
-        mock_get_siren.assert_not_called()
+        mock_check_offerer_siren_task.assert_not_called()
+
+    @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
+    @patch("flask.current_app.redis_client.get", return_value=json.dumps(["111222337"]))
+    @patch("pcapi.connectors.entreprise.sirene.get_siren_closed_at_date", return_value=[])
+    def test_check_scheduled_offerers(
+        self, mock_get_siren_closed_at_date, mock_redis_client_get, mock_check_offerer_siren_task, app
+    ):
+        offerers_factories.OffererFactory(siren="111222337")
+
+        run_command(app, "check_closed_offerers")
+
+        mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
+        mock_redis_client_get.assert_called_once_with(
+            f"check_closed_offerers:scheduled:{datetime.date.today().isoformat()}"
+        )
+
+        # Only check that the task is called; its behavior is tested in offerers/test_tasks.py
+        mock_check_offerer_siren_task.delay.assert_called_once()
+        assert mock_check_offerer_siren_task.delay.call_args.args == (
+            offerers_tasks.CheckOffererSirenRequest(
+                siren="111222337", close_or_tag_when_inactive=True, fill_in_codir_report=False
+            ),
+        )
 
 
 class SynchronizeVenuesBannerWithGooglePlacesTest:

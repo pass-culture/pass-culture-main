@@ -49,6 +49,10 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
 
     logger.info("check_active_offerers will check %s offerers in cloud tasks today", len(offerers))
 
+    _create_check_offerer_tasks(
+        [offerer.siren for offerer in offerers], dry_run=dry_run, fill_in_codir_report=codir_report_is_enabled
+    )
+
     for offerer in offerers:
         # Do not flood Sirene API (max. 30 per minute for the whole product)
         offerers_tasks.check_offerer_siren_task.delay(
@@ -58,6 +62,17 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
                 fill_in_codir_report=codir_report_is_enabled,
             )
         )
+
+
+def _create_check_offerer_tasks(siren_list: list[str], *, dry_run: bool, fill_in_codir_report: bool = False) -> None:
+    # Do not flood Sirene API (max. 30 per minute for the whole product)
+    for siren in siren_list:
+        payload = offerers_tasks.CheckOffererSirenRequest(
+            siren=siren,
+            close_or_tag_when_inactive=not dry_run,
+            fill_in_codir_report=fill_in_codir_report,
+        )
+        offerers_tasks.check_offerer_siren_task.delay(payload)
 
 
 @blueprint.cli.command("check_closed_offerers")
@@ -74,34 +89,39 @@ def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None)
         siren_list = sirene.get_siren_closed_at_date(query_date)
     except entreprise_exceptions.SireneException as exc:
         logger.error("Could not fetch closed SIREN from Sirene API", extra={"date": query_date.isoformat(), "exc": exc})
-        return
-
-    known_siren_list = [
-        siren
-        for siren, in offerers_models.Offerer.query.filter(
-            offerers_models.Offerer.siren.in_(siren_list),
-            offerers_models.Offerer.isActive,
-            sa.not_(offerers_models.Offerer.isRejected),
-        )
-        .with_entities(offerers_models.Offerer.siren)
-        .all()
-    ]
-
-    logger.info(
-        "check_closed_offerers found %s active offerers which SIREN closed on %s",
-        len(known_siren_list),
-        query_date,
-        extra={"siren": known_siren_list},
-    )
-
-    for siren in known_siren_list:
-        # Do not flood Sirene API (max. 30 per minute for the whole product)
-        offerers_tasks.check_offerer_siren_task.delay(
-            offerers_tasks.CheckOffererSirenRequest(
-                siren=siren,
-                close_or_tag_when_inactive=not dry_run,
+    else:
+        known_siren_list = [
+            siren
+            for siren, in offerers_models.Offerer.query.filter(
+                offerers_models.Offerer.siren.in_(siren_list),
+                offerers_models.Offerer.isActive,
+                sa.not_(offerers_models.Offerer.isRejected),
             )
+            .with_entities(offerers_models.Offerer.siren)
+            .all()
+        ]
+
+        logger.info(
+            "check_closed_offerers found %s active SIREN which active/closed status has been updated on %s",
+            len(known_siren_list),
+            query_date.isoformat(),
+            extra={"siren": known_siren_list},
         )
+
+        _create_check_offerer_tasks(known_siren_list, dry_run=dry_run)
+
+    # Scheduled SIREN
+    scheduled_siren_list = offerers_tasks.get_scheduled_siren_to_check(
+        query_date if date_closed else datetime.date.today()
+    )
+    if scheduled_siren_list:
+        logger.info(
+            "check_closed_offerers found %s scheduled SIREN to check on %s",
+            len(scheduled_siren_list),
+            query_date.isoformat(),
+            extra={"siren": scheduled_siren_list},
+        )
+        _create_check_offerer_tasks(scheduled_siren_list, dry_run=dry_run)
 
 
 @log_cron_with_transaction

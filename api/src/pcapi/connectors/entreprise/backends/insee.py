@@ -214,6 +214,6 @@ class InseeBackend(BaseBackend):
             total = data["header"]["total"]
             for item in data["unitesLegales"]:
                 closure_date = self._get_closure_date_from_siren_data(item)
-                if closure_date is not None and closure_date <= datetime.date.today():
+                if closure_date is not None:
                     results.append(item["siren"])
         return results

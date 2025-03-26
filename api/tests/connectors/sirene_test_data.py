@@ -1061,7 +1061,8 @@ RESPONSE_CLOSED_SIREN_PAGE2 = {
             "siren": "444444442",
             "dateDernierTraitementUniteLegale": "2025-01-26T12:34:56.789",
             "periodesUniteLegale": [
-                {"dateFin": None, "dateDebut": "2025-02-17", "etatAdministratifUniteLegale": "C"},
+                {"dateFin": None, "dateDebut": "2033-01-01", "etatAdministratifUniteLegale": "A"},
+                {"dateFin": "2032-12-31", "dateDebut": "2025-02-17", "etatAdministratifUniteLegale": "C"},
                 {"dateFin": "2025-02-16", "dateDebut": "2024-01-01", "etatAdministratifUniteLegale": "C"},
                 {"dateFin": "2024-12-30", "dateDebut": "2024-01-01", "etatAdministratifUniteLegale": "A"},
             ],

@@ -1,8 +1,10 @@
 import datetime
+import json
 import logging
 import time
 import typing
 
+from flask import current_app
 import sqlalchemy as sa
 
 from pcapi import settings
@@ -33,6 +35,27 @@ logger = logging.getLogger(__name__)
 CLOSED_OFFERER_TAG_NAME = "siren-caduc"
 
 
+def _get_scheduled_siren_redis_key(at_date: datetime.date) -> str:
+    return f"check_closed_offerers:scheduled:{at_date.isoformat()}"
+
+
+def get_scheduled_siren_to_check(at_date: datetime.date) -> list[str]:
+    key = _get_scheduled_siren_redis_key(at_date)
+    data = current_app.redis_client.get(key)
+    if not data:
+        return []
+    return json.loads(data)
+
+
+def add_scheduled_siren_to_check(siren: str, at_date: datetime.date) -> None:
+    siren_list = get_scheduled_siren_to_check(at_date)
+    if siren not in siren_list:
+        siren_list.append(siren)
+        key = _get_scheduled_siren_redis_key(at_date)
+        ttl = int((at_date - datetime.date.today() + datetime.timedelta(days=30)).total_seconds())
+        current_app.redis_client.set(key, json.dumps(siren_list), ex=ttl)
+
+
 class CheckOffererSirenRequest(BaseModel):
     siren: str
     close_or_tag_when_inactive: bool
@@ -56,14 +79,12 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
 
     if siren_info.active:
         if siren_info.closure_date:
-            # TODO (prouzet, 2025-01-28) When siren_info.closure_date is set in the future (still active), we may want
-            # to run a scheduled task on the day after to tag as 'SIREN caduc'. Let's check this when new async tasks
-            # have been designed. Waiting for this implementation, consider that this offerer will be checked monthly
-            # and marked at least one month after closure.
+            # When siren_info.closure_date is set in the future (still active), schedule a new check on closure date
             logger.warning(
                 "Sirene API reports an offerer closed in the future",
                 extra={"siren": siren_info.siren, "closure_date": siren_info.closure_date},
             )
+            add_scheduled_siren_to_check(siren_info.siren, siren_info.closure_date)
         if not payload.fill_in_codir_report:
             # Nothing to do
             return
@@ -74,7 +95,8 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
         .one_or_none()
     )
     if not offerer:
-        # This should not happen, unless offerer has been deleted between cron task and this task
+        # This should not happen, unless has been deleted or its SIREN updated between cron task and this task,
+        # or between the day it was set in redis and today.
         return
 
     if not siren_info.active:
