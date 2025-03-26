@@ -390,8 +390,9 @@ def _create_or_update_ean_offers(
     offer_to_update_by_ean = {}
     ean_list_to_update = set()
     for offer in offers_to_update:
-        ean_list_to_update.add(offer.extraData["ean"])  # type: ignore[index]
-        offer_to_update_by_ean[offer.extraData["ean"]] = offer  # type: ignore[index]
+        offer_ean = offer.ean if offer.ean else offer.extraData["ean"]  # type: ignore[index]
+        ean_list_to_update.add(offer_ean)
+        offer_to_update_by_ean[offer_ean] = offer
 
     ean_list_to_create = ean_to_create_or_update - ean_list_to_update
     offers_to_index = []
@@ -478,7 +479,7 @@ def _create_or_update_ean_offers(
                 offer.lastProvider = provider
                 offer.isActive = True
 
-                ean = offer.extraData["ean"]  # type: ignore[index]
+                ean = offer.ean if offer.ean else offer.extraData["ean"]  # type: ignore[index]
                 stock_data = serialized_products_stocks[ean]
                 # FIXME (mageoffray, 2023-05-26): stock upserting optimisation
                 # Stocks are edited one by one for now, we need to improve edit_stock to remove the repository.session.add()
@@ -536,8 +537,19 @@ def _get_existing_offers(
         )
         .filter(offers_models.Offer.isEvent == False)
         .filter(offers_models.Offer.venue == venue)
-        .filter(offers_models.Offer.extraData["ean"].astext.in_(ean_to_create_or_update))
-        .group_by(offers_models.Offer.extraData["ean"], offers_models.Offer.venueId)
+        .filter(
+            sqla.or_(
+                # TODO: remove extraData["ean"] when migration is done
+                offers_models.Offer.extraData["ean"].astext.in_(ean_to_create_or_update),
+                offers_models.Offer.ean.in_(ean_to_create_or_update),
+            )
+        )
+        .group_by(
+            # TODO: remove extraData["ean"] when migration is done
+            offers_models.Offer.extraData["ean"],
+            offers_models.Offer.ean,
+            offers_models.Offer.venueId,
+        )
         .subquery()
     )
 
