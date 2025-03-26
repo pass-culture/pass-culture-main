@@ -262,14 +262,6 @@
                   {{ venue_provider.lastSyncDate | format_date_time }}
                 </p>
               {% endfor %}
-              {% if has_permission("CONNECT_AS_PRO") %}
-                <p class="mb-1">
-                  {{ links.build_connect_as_pseudo_link(venue.id, "venue", "/reservations?offerVenueId="~venue.id~"", "Réservations " , "fw-bold link-primary") }}
-                </p>
-                <p class="mb-1">
-                  {{ links.build_connect_as_pseudo_link(venue.id, "venue", "/offres?lieu="~venue.id~"", "Offres associées " , "fw-bold link-primary") }}
-                </p>
-              {% endif %}
               {% set search_params = {
                               "search-0-search_field": "VENUE",
                               "search-0-operator": "IN",
