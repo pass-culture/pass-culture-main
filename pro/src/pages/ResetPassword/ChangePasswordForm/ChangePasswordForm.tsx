@@ -42,7 +42,7 @@ export const ChangePasswordForm = ({
       <ScrollToFirstHookFormErrorAfterSubmit />
 
       <FormLayout>
-        <FormLayout.Row>
+        <div className={styles['text-input']}>
           <PasswordInput
             label="Nouveau mot de passe"
             {...register('newPassword')}
@@ -51,16 +51,16 @@ export const ChangePasswordForm = ({
             passwordValue={newPassword}
             hasError={!!errors.newPassword}
           />
-        </FormLayout.Row>
+        </div>
         {is2025SignUpEnabled ? (
           <>
-            <FormLayout.Row>
+            <div className={styles['text-input']}>
               <PasswordInput
                 label="Confirmation mot de passe"
                 error={errors.newConfirmationPassword?.message}
                 {...register('newConfirmationPassword')}
               />
-            </FormLayout.Row>
+            </div>
 
             <div className={styles['buttons-field']}>
               <Button

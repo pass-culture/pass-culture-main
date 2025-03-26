@@ -72,7 +72,7 @@ export const UserIdentityForm = ({
       <BoxFormLayout.Fields>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormLayout>
-            <FormLayout.Row>
+            <div className={styles['text-input']}>
               <TextInput
                 label="Prénom"
                 error={errors.firstName?.message}
@@ -80,8 +80,8 @@ export const UserIdentityForm = ({
                 asterisk={false}
                 {...register('firstName')}
               />
-            </FormLayout.Row>
-            <FormLayout.Row>
+            </div>
+            <div className={styles['text-input']}>
               <TextInput
                 label="Nom"
                 error={errors.lastName?.message}
@@ -89,7 +89,7 @@ export const UserIdentityForm = ({
                 asterisk={false}
                 {...register('lastName')}
               />
-            </FormLayout.Row>
+            </div>
           </FormLayout>
           <div className={styles['buttons-field']}>
             <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>

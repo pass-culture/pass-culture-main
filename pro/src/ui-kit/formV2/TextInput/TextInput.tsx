@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { ForwardedRef } from 'react'
+import React, { ForwardedRef, useId } from 'react'
 
 import {
   BaseInput,
@@ -96,6 +96,11 @@ export const TextInput = React.forwardRef(
     }: TextInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ) => {
+    const errorId = useId()
+    const descriptionId = useId()
+
+    const describedBy = `${error ? errorId : ''}${description ? ` ${descriptionId}` : ''}`
+
     const input = (
       <BaseInput
         name={name}
@@ -108,7 +113,7 @@ export const TextInput = React.forwardRef(
         rightIcon={rightIcon}
         leftIcon={leftIcon}
         aria-required={required}
-        aria-describedby={description ? `description-${name}` : undefined}
+        aria-describedby={describedBy}
         onKeyDown={(event) => {
           // If the number input should have no decimal, prevent the user from typing "," or "."
           if (type === 'number' && !hasDecimal && /[,.]/.test(event.key)) {
@@ -121,7 +126,11 @@ export const TextInput = React.forwardRef(
 
     return (
       <div
-        className={cn(styles['input-layout'], className)}
+        className={cn(
+          styles['input-layout'],
+          { [styles['has-description']]: Boolean(description) },
+          className
+        )}
         data-testid={`wrapper-${name}`}
       >
         <div
@@ -149,7 +158,7 @@ export const TextInput = React.forwardRef(
             <div className={styles['text-input']}>
               {input}
               <div className={styles['input-layout-footer']}>
-                <div role="alert" id={`error-details-${name}`}>
+                <div role="alert" id={errorId}>
                   {error && (
                     <FieldError
                       name={name}

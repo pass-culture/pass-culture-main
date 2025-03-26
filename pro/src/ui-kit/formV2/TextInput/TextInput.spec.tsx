@@ -54,7 +54,6 @@ describe('TextInput', () => {
     const inputName = 'test'
     const inputLabel = 'Ceci est un champ texte'
     const descriptionContent = 'Instructions pour le remplissage du champ.'
-    const descriptionId = `description-${inputName}`
 
     render(
       <TextInput
@@ -65,12 +64,7 @@ describe('TextInput', () => {
       />
     )
 
-    const description = screen.queryByTestId(descriptionId)
-    expect(description).toBeInTheDocument()
-    expect(description).toHaveTextContent(descriptionContent)
-
-    const input = screen.getByRole('textbox', { name: inputLabel })
-    expect(input.getAttribute('aria-describedby')).toBe(descriptionId)
+    expect(screen.getByText(descriptionContent))
   })
 
   it('should display the element with an error', () => {

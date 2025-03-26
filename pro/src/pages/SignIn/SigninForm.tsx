@@ -43,7 +43,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
       <ScrollToFirstHookFormErrorAfterSubmit />
 
       <FormLayout>
-        <FormLayout.Row>
+        <div className={styles['text-input']}>
           <TextInput
             label="Adresse email"
             required={true}
@@ -51,9 +51,10 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             description="Format : email@exemple.com"
             {...register('email')}
             asterisk={false}
+            className={styles['text-input']}
           />
-        </FormLayout.Row>
-        <FormLayout.Row>
+        </div>
+        <div className={styles['text-input']}>
           <PasswordInput
             label="Mot de passe"
             required={true}
@@ -61,7 +62,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             {...register('password')}
             asterisk={false}
           />
-        </FormLayout.Row>
+        </div>
         <ButtonLink
           icon={fullKeyIcon}
           variant={ButtonVariant.TERNARY}

@@ -14,10 +14,6 @@
   }
 }
 
-.form-row-password {
-  // Only way to target inner form layout’s error message
-  // Needed to space with password indications that are below
-  [id="error-details-newPassword"] {
-    margin-bottom: 0.75rem;
-  }
+.text-input {
+  margin-bottom: rem.torem(24px);
 }

@@ -29,6 +29,7 @@ export const ReadOnly: Story = {
 export const WithExternalError: Story = {
   args: {
     ...Default.args,
+    count: 100,
     error: 'This field is required',
   },
 }
