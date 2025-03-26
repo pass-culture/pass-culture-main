@@ -6,22 +6,16 @@
     "version": 2,
     "searchableAttributes": [
         "offer.name",
-        "unordered(venue.publicName)",
         "unordered(offer.artist)",
         "unordered(offer.subcategoryId)",
-        "unordered(venue.name)",
         "unordered(offerer.name)",
-        "unordered(offer.description)",
         "unordered(distinct)"
     ],
     "attributesToRetrieve": null,
     "ignorePlurals": [
         "fr"
     ],
-    "removeStopWords": [
-        "fr",
-        "en"
-    ],
+    "removeStopWords": false,
     "distinct": true,
     "unretrievableAttributes": [
         "offer.last30DaysBookings"
