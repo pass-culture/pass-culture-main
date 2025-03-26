@@ -4,6 +4,7 @@ import logging
 
 from pcapi import settings
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
+from pcapi.notifications.push.trigger_events import TrackBatchEventRequest
 from pcapi.utils import requests
 
 
@@ -159,6 +160,36 @@ class BatchBackend:
                         }
                     ]
                 },
+                can_be_asynchronously_retried=can_be_asynchronously_retried,
+            )
+
+        make_post_request(BatchAPI.ANDROID)
+        make_post_request(BatchAPI.IOS)
+
+    def track_event_bulk(
+        self, track_event_data: list[TrackBatchEventRequest], can_be_asynchronously_retried: bool = False
+    ) -> None:
+        """https://doc.batch.com/api/trigger-events-api/track-events/"""
+
+        payload = [
+            {
+                "user_id": track_event.user_id,
+                "events": [
+                    {
+                        "name": f"ue.{track_event.event_name.value}",
+                        "attributes": track_event.event_payload,
+                    }
+                ],
+            }
+            for track_event in track_event_data
+        ]
+
+        def make_post_request(api: BatchAPI) -> None:
+            self.handle_request(
+                "POST",
+                f"{API_URL}/1.0/{api.value}/events/users",
+                api_name="track_event",
+                payload=payload,
                 can_be_asynchronously_retried=can_be_asynchronously_retried,
             )
 

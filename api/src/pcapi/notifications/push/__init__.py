@@ -1,20 +1,10 @@
-import enum
-
 from pcapi import settings
 from pcapi.notifications.push.backends.batch import BatchAPI
 from pcapi.notifications.push.backends.batch import UserUpdateData
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
+from pcapi.notifications.push.trigger_events import BatchEvent
+from pcapi.notifications.push.trigger_events import TrackBatchEventRequest
 from pcapi.utils.module_loading import import_string
-
-
-class BatchEvent(enum.Enum):
-    RECREDITED_ACCOUNT = "recredited_account"
-    USER_DEPOSIT_ACTIVATED = "user_deposit_activated"
-    USER_IDENTITY_CHECK_STARTED = "user_identity_check_started"
-    HAS_ADDED_OFFER_TO_FAVORITES = "has_added_offer_to_favorites"
-    HAS_UBBLE_KO_STATUS = "has_ubble_ko_status"
-    HAS_BOOKED_OFFER = "has_booked_offer"
-    RECREDIT_ACCOUNT_CANCELLATION = "recredit_account_cancellation"
 
 
 def update_user_attributes(
@@ -52,3 +42,10 @@ def track_event(
     backend().track_event(
         user_id, event.value, event_payload, can_be_asynchronously_retried=can_be_asynchronously_retried
     )
+
+
+def track_event_bulk(
+    track_event_data: list[TrackBatchEventRequest], can_be_asynchronously_retried: bool = False
+) -> None:
+    backend = import_string(settings.PUSH_NOTIFICATION_BACKEND)
+    backend().track_event_bulk(track_event_data, can_be_asynchronously_retried=can_be_asynchronously_retried)

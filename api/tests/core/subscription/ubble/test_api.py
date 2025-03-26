@@ -28,7 +28,7 @@ from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.notifications import push as push_notifications
+from pcapi.notifications.push import trigger_events
 import pcapi.notifications.push.testing as push_testing
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.date import DATE_ISO_FORMAT
@@ -993,7 +993,7 @@ class HandleValidationErrorsTest:
         assert push_testing.requests[0] == {
             "can_be_asynchronously_retried": True,
             "user_id": user.id,
-            "event_name": push_notifications.BatchEvent.HAS_UBBLE_KO_STATUS.value,
+            "event_name": trigger_events.BatchEvent.HAS_UBBLE_KO_STATUS.value,
             "event_payload": {"error_code": reason_code.value},
         }
 
