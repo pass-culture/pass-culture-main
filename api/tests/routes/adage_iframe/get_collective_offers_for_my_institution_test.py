@@ -36,8 +36,7 @@ class CollectiveOfferTest:
     # 3. fetch the offerVenue's details (Venue)
     num_queries = 3
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
-    def test_get_collective_offer_for_my_institution_with_feature_toggle(self, eac_client, redactor):
+    def test_get_collective_offer_for_my_institution(self, eac_client, redactor):
         START_DATE = datetime.today() + timedelta(days=3)
         venue = offerers_factories.VenueFactory()
         institution = educational_factories.EducationalInstitutionFactory(institutionId=UAI)

@@ -124,7 +124,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE = "Activer l'association des offres collectives à des adresses."
     WIP_EAN_CREATION = "Activer la création d'offre par EAN"
     WIP_COLLAPSED_MEMORIZED_FILTERS = "Activer la fonction de masquage et de mémorisation des filtres en sessionStorage"
-    ENABLE_COLLECTIVE_NEW_STATUSES = "Activer les nouveaux statuts des offres collectives"
     WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = "Utiliser les OffererAddress comme source de données"
     WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE = (
         "Activer la nouvelle structure des offres et réservations collectives"

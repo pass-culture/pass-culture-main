@@ -9,7 +9,6 @@ from pcapi.core.offerers import factories as offerers_factories
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_patch_active_status(self, client):
         offer = CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)

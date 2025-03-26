@@ -15,7 +15,6 @@ from pcapi.models import db
 
 @pytest.mark.usefixtures("db_session")
 class EducationalWorkflowTest:
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_collective_workflow(self, db_session):
         now = datetime.datetime.utcnow()
         start_datetime = now + datetime.timedelta(days=1)

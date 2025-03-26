@@ -46,7 +46,6 @@ class AttachCollectiveOfferImageTest:
         assert offer.imageCredit is not None
         assert offer.imageHasOriginal is not None
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_EDIT_DETAILS)
     def test_attach_image_allowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -58,7 +57,6 @@ class AttachCollectiveOfferImageTest:
         assert response.status_code == 200
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists() is True
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS)
     def test_attach_image_unallowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -71,7 +69,6 @@ class AttachCollectiveOfferImageTest:
         assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists() is False
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_attach_image_ended(self, client):
         offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)

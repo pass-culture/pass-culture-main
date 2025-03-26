@@ -1017,7 +1017,6 @@ class InvalidDatesTest:
 
 
 class Returns403Test:
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS_TEMPLATE)
     def test_patch_collective_offer_unallowed_action(self, client, status):
         offer = educational_factories.create_collective_offer_template_by_status(status)

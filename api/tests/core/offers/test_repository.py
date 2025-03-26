@@ -1315,9 +1315,8 @@ def admin_user_fixture():
 
 @pytest.mark.usefixtures("db_session")
 class GetCollectiveOffersTemplateByFiltersTest:
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("offer_status", educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES)
-    def test_filter_each_status_with_new_statuses(self, admin_user, offer_status):
+    def test_filter_each_status(self, admin_user, offer_status):
         template = educational_factories.create_collective_offer_template_by_status(offer_status)
 
         result = repository.get_collective_offers_template_by_filters(
@@ -1516,7 +1515,6 @@ class GetFilteredCollectiveOffersTest:
         with assert_num_queries(1):
             assert offers.one() == collective_offer_draft
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_collective_offers_expired(self):
         user_offerer = offerers_factories.UserOffererFactory()
         now = datetime.datetime.utcnow()
@@ -1557,13 +1555,12 @@ class GetFilteredCollectiveOffersTest:
         assert len(offers_list) == 2
         assert set(offers_list) == {collective_offer_expired, collective_offer_prebooked_expired}
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize(
         "offer_status",
         set(educational_models.CollectiveOfferDisplayedStatus)
         - {educational_models.CollectiveOfferDisplayedStatus.INACTIVE},
     )
-    def test_filter_each_status_with_new_statuses(self, admin_user, offer_status):
+    def test_filter_each_status(self, admin_user, offer_status):
         offer = educational_factories.create_collective_offer_by_status(offer_status)
 
         result = repository.get_collective_offers_by_filters(
@@ -1577,12 +1574,11 @@ class GetFilteredCollectiveOffersTest:
         )
         assert result.count() == 0
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
-    def test_filter_inactive_with_new_statuses(self, admin_user):
+    def test_filter_inactive(self, admin_user):
         for status in educational_models.CollectiveOfferDisplayedStatus:
             educational_factories.create_collective_offer_by_status(status)
 
-        # when ENABLE_COLLECTIVE_NEW_STATUSES FF is off, the INACTIVE filter does not correspond to any offer
+        # The INACTIVE filter does not correspond to any collective offer (only templates)
         result = repository.get_collective_offers_by_filters(
             user_id=admin_user.id,
             user_is_admin=True,

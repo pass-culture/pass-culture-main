@@ -194,7 +194,6 @@ class Returns200Test:
         assert response.status_code == 201
         assert response.json.get("formats") == ["Concert"]
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_DUPLIATE)
     def test_duplicate_allowed_action(self, client, status):
         offerer = offerers_factories.OffererFactory()
@@ -208,7 +207,6 @@ class Returns200Test:
         duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
         assert duplicate.name == offer.name
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_duplicate_ended(self, client):
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
@@ -221,7 +219,6 @@ class Returns200Test:
         duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
         assert duplicate.name == offer.name
 
-    @pytest.mark.features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_DUPLIATE)
     def test_duplicate_unallowed_action(self, client, status):
         offerer = offerers_factories.OffererFactory()
