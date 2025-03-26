@@ -56,36 +56,29 @@ export const VenueEdition = (): JSX.Element | null => {
     }
   }, [selectedOffererId, offererId])
 
-  if (
+  const isPageLoading =
     venueQuery.isLoading ||
     venueTypesQuery.isLoading ||
     isOffererLoading ||
     !venue ||
     !offerer ||
     !venueTypes
-  ) {
-    return (
-      <Layout>
-        <Spinner />
-      </Layout>
-    )
-  }
 
   const tabs: Tab[] = [
     {
       key: 'individual',
       label: 'Pour le grand public',
       url: generatePath('/structures/:offererId/lieux/:venueId', {
-        offererId: String(venue.managingOfferer.id),
-        venueId: String(venue.id),
+        offererId: String(venue?.managingOfferer.id),
+        venueId: String(venue?.id),
       }),
     },
     {
       key: 'collective',
       label: 'Pour les enseignants',
       url: generatePath('/structures/:offererId/lieux/:venueId/collectif', {
-        offererId: String(venue.managingOfferer.id),
-        venueId: String(venue.id),
+        offererId: String(venue?.managingOfferer.id),
+        venueId: String(venue?.id),
       }),
     },
   ]
@@ -95,69 +88,73 @@ export const VenueEdition = (): JSX.Element | null => {
     : 'individual'
 
   const permanentVenues =
-    offerer.managedVenues?.filter((venue) => venue.isPermanent) ?? []
+    offerer?.managedVenues?.filter((venue) => venue.isPermanent) ?? []
 
   const venuesOptions: SelectOption[] = permanentVenues.map((venue) => ({
     label: venue.publicName || venue.name,
     value: venue.id.toString(),
   }))
 
-  const titleText =
-    activeStep === 'collective'
-      ? 'Page dans ADAGE'
-      : !venue.isPermanent
-        ? 'Page adresse'
-        : 'Page sur l’application'
+  let titleText = 'Page adresse'
+  if (activeStep === 'collective') {
+    titleText = 'Page dans ADAGE'
+  } else if (venue?.isPermanent) {
+    titleText = 'Page sur l’application'
+  }
 
   return (
     <Layout mainHeading={titleText}>
-      <div>
-        <FormLayout>
-          {venuesOptions.length > 1 && venue.isPermanent && (
-            <>
-              <FormLayout.Row>
-                <FieldLayout
-                  label={`Sélectionnez votre page ${activeStep === 'individual' ? 'partenaire' : 'dans ADAGE'}`}
-                  name="venues"
-                  isOptional
-                  className={styles['select-partner-page']}
-                >
-                  <SelectInput
+      {isPageLoading ? (
+        <Spinner />
+      ) : (
+        <div>
+          <FormLayout>
+            {venuesOptions.length > 1 && venue.isPermanent && (
+              <>
+                <FormLayout.Row>
+                  <FieldLayout
+                    label={`Sélectionnez votre page ${activeStep === 'individual' ? 'partenaire' : 'dans ADAGE'}`}
                     name="venues"
-                    options={venuesOptions}
-                    value={venueId ?? ''}
-                    onChange={(e) => {
-                      navigate(
-                        `/structures/${offererId}/lieux/${e.target.value}`
-                      )
-                    }}
-                  />
-                </FieldLayout>
-              </FormLayout.Row>
-              <hr className={styles['separator']} />
-            </>
-          )}
-        </FormLayout>
-        <VenueEditionHeader
-          venue={venue}
-          offerer={offerer}
-          venueTypes={venueTypes}
-          key={venueId}
-        />
-
-        {!venue.isPermanent && (
-          <Tabs
-            tabs={tabs}
-            selectedKey={activeStep}
-            className={styles['tabs']}
+                    isOptional
+                    className={styles['select-partner-page']}
+                  >
+                    <SelectInput
+                      name="venues"
+                      options={venuesOptions}
+                      value={venueId ?? ''}
+                      onChange={(e) => {
+                        navigate(
+                          `/structures/${offererId}/lieux/${e.target.value}`
+                        )
+                      }}
+                    />
+                  </FieldLayout>
+                </FormLayout.Row>
+                <hr className={styles['separator']} />
+              </>
+            )}
+          </FormLayout>
+          <VenueEditionHeader
+            venue={venue}
+            offerer={offerer}
+            venueTypes={venueTypes}
+            key={venueId}
           />
-        )}
-
-        {activeStep === 'collective' && <CollectiveDataEdition venue={venue} />}
-        {activeStep === 'individual' && (
-          <VenueEditionFormScreen venue={venue} />
-        )}
-      </div>
+          {!venue.isPermanent && (
+            <Tabs
+              tabs={tabs}
+              selectedKey={activeStep}
+              className={styles['tabs']}
+            />
+          )}
+          {activeStep === 'collective' && (
+            <CollectiveDataEdition venue={venue} />
+          )}
+          {activeStep === 'individual' && (
+            <VenueEditionFormScreen venue={venue} />
+          )}
+        </div>
+      )}
     </Layout>
   )
 }
