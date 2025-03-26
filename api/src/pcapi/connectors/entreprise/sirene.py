@@ -39,7 +39,9 @@ def siret_is_active(siret: str, raise_if_non_public: bool = True) -> bool:
 
 
 def get_siren_closed_at_date(date_closed: datetime.date) -> list[str]:
-    """Returns the list of SIREN which have been closed exactly on the given date."""
+    """Returns the list of SIREN which closure has been declared on the given date.
+    Closure date may be the same day, in the past or in the future.
+    """
     return get_backend(settings.SIRENE_BACKEND).get_siren_closed_at_date(date_closed)
 
 

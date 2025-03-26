@@ -308,4 +308,4 @@ def test_get_siren_closed_at_date():
         )
         siren_list = sirene.get_siren_closed_at_date(datetime.date(2025, 1, 21))
 
-    assert siren_list == ["111111118", "222222226", "444444442", "555555556"]
+    assert siren_list == ["111111118", "222222226", "333333334", "555555556"]
