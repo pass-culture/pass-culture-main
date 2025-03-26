@@ -274,6 +274,52 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert offer.lastProvider == api_key.provider
         assert offer.isActive == True
 
+    # TODO: remove when migration is done and no more ean are stored inside extraData
+    @pytest.mark.parametrize("offer_ean, offer_extra_data", [(None, {"ean": "1234567890123"}), ("1234567890123", {})])
+    def test_no_new_offer_created_if_ean_exists(self, client, offer_ean, offer_extra_data):
+        """Test that no new offer is created if the ean exists either
+        inside offer.ean or offer.extraData["ean"]
+        """
+        venue_data = {
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": False,
+        }
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(venue_data)
+
+        ean = "1234567890123"
+        product = offers_factories.ThingProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": ean}
+        )
+
+        offer = offers_factories.ThingOfferFactory(
+            # use productId and not product, otherwise factory will fill
+            # offer.extraData with product.extraData
+            productId=product.id,
+            venue=venue,
+            lastProvider=api_key.provider,
+            extraData=offer_extra_data,
+            ean=offer_ean,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "location": {"type": "physical", "venueId": venue.id},
+                "products": [{"ean": ean, "stock": {"price": 1234, "quantity": 2}}],
+            },
+        )
+
+        assert response.status_code == 204
+
+        offer = offers_models.Offer.query.one()
+        assert len(offer.stocks) == 1
+
+        stock = offer.stocks[0]
+        assert stock.quantity == 2
+        assert stock.price == decimal.Decimal("12.34")
+
     def test_update_stock_quantity_0_with_previous_bookings(self, client):
         venue_data = {
             "audioDisabilityCompliant": True,
