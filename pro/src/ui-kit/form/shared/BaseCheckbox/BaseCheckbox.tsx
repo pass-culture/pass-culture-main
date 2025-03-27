@@ -75,7 +75,7 @@ export const BaseCheckbox = forwardRef(
       <div className={containerClasses}>
         <div className={styles['base-checkbox-row']}>
           <span className={styles['base-checkbox-label-row']}>
-            <label className={labelClasses}>
+            <label className={labelClasses} htmlFor={id}>
               <input
                 aria-invalid={hasError}
                 {...(ariaDescribedBy && {
