@@ -38,11 +38,11 @@
     }
 
     &.has-value {
-      border: solid size.$input-border-width var(--color-black);
+      border: solid size.$input-border-width var(--color-border-selected);
     }
 
     &:disabled {
-      border: rem.torem(1px) solid var(--color-input-border-color-disabled);
+      border: rem.torem(1px) solid var(--color-border-disabled);
       color: var(--color-text-disabled);
       cursor: auto;
     }

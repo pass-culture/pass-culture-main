@@ -43,11 +43,11 @@
 .image {
   margin-top: rem.torem(32px);
   max-width: rem.torem(532px);
-  width: 100%
+  width: 100%;
 }
 
 .options-icon {
-  border: var(--color-black) solid 1px;
+  border: var(--color-border-default) solid 1px;
   border-radius: 50%;
   padding: rem.torem(2px);
   max-height: rem.torem(20px);

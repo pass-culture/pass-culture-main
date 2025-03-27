@@ -3,7 +3,7 @@
 
 .offers-suggestions-header {
   padding: rem.torem(32px) 0;
-  border-top: rem.torem(1px) solid var(--color-grey-medium);
+  border-top: rem.torem(1px) solid var(--color-border-subtle);
 
   &-text {
     @include fonts.title3;

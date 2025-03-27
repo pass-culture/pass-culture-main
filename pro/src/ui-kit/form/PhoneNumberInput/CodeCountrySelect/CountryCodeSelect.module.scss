@@ -25,11 +25,11 @@ $text-padding-left: calc(
 
   &:focus,
   &:focus-within {
-    border: solid var(--color-input-border-color-focus) $base-border-width;
+    border: solid var(--color-border-focused) $base-border-width;
     border-radius: rem.torem(forms.$input-border-radius) 0 0
       rem.torem(forms.$input-border-radius);
     background-color: transparent;
-    box-shadow: inset 0 0 0 rem.torem(1px) var(--color-input-border-color-focus);
+    box-shadow: inset 0 0 0 rem.torem(1px) var(--color-border-focused);
 
     .select-input {
       height: calc(#{$input-height} - #{$focus-border-width});
@@ -85,7 +85,7 @@ $text-padding-left: calc(
     pointer-events: none;
 
     &-disabled {
-      fill: var(--color-input-text-color-disabled);
+      fill: var(--color-grey-dark);
     }
   }
 }

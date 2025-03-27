@@ -83,7 +83,7 @@ $vertical-offset-icon-from-step: calc(
 
 .line-error::after {
   border-style: solid;
-  border-color: var(--color-grey-semi-dark);
+  border-color: var(--color-border-subtle);
 }
 
 .line-waiting::after {
@@ -93,5 +93,5 @@ $vertical-offset-icon-from-step: calc(
 
 .line-disabled::after {
   border-style: dashed;
-  border-color: var(--color-grey-medium);
+  border-color: var(--color-border-disabled);
 }

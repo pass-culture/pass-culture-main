@@ -54,13 +54,13 @@ $checkbox-size: rem.torem(40px);
   }
 
   &:checked {
-    border: rem.torem(2px) solid var(--color-secondary-light);
+    border: rem.torem(2px) solid var(--color-border-brand-primary);
     background-color: var(--color-background-info);
 
     @include fonts.button;
 
     &:focus {
-      border: rem.torem(2px) solid var(--color-secondary-light);
+      border: rem.torem(2px) solid var(--color-border-brand-primary);
       border-radius: 50%;
       background-color: var(--color-background-info);
     }

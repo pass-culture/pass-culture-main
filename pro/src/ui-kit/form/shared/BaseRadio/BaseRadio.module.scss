@@ -58,17 +58,17 @@
 
     &:disabled {
       cursor: default;
-      border-color: var(--color-input-border-color-disabled);
+      border-color: var(--color-border-disabled);
       background-color: transparent;
     }
 
     &.has-error {
-      border-color: var(--color-input-border-color-error);
+      border-color: var(--color-border-error);
     }
 
     &:checked {
       box-shadow: inset 0 0 0 rem.torem(3px) var(--color-white);
-      border-color: var(--color-secondary-light);
+      border-color: var(--color-border-brand-primary);
       background-color: var(--color-secondary-light);
 
       &:disabled {
@@ -79,8 +79,8 @@
 
       &.has-error {
         box-shadow: inset 0 0 0 rem.torem(3px) var(--color-white);
-        border-color: var(--color-input-border-color-error);
-        background-color: var(--color-input-border-color-error);
+        border-color: var(--color-border-error);
+        background-color: var(--color-error);
       }
     }
   }
@@ -122,17 +122,17 @@
   }
 
   &.is-checked {
-    border-color: var(--color-secondary-light);
+    border-color: var(--color-border-brand-primary);
     background-color: var(--color-background-info);
   }
 
   &.has-error {
-    border-color: var(--color-input-border-color-error);
+    border-color: var(--color-border-error);
     background-color: var(--color-background-error);
   }
 
   &.is-disabled {
-    border-color: var(--color-input-border-color-disabled);
+    border-color: var(--color-border-disabled);
     background-color: var(--color-background-disabled);
     color: var(--color-text-disabled);
 

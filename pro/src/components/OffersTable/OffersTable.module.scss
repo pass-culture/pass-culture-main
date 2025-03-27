@@ -27,7 +27,7 @@
     width: 100%;
     display: block;
     border-radius: rem.torem(8px) rem.torem(8px) 0 0;
-    border-bottom: rem.torem(1px) solid var(--color-grey-medium);
+    border-bottom: rem.torem(1px) solid var(--color-border-subtle);
 
     @media (min-width: size.$tablet) {
       display: table;

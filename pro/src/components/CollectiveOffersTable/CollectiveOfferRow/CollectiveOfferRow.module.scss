@@ -13,7 +13,7 @@
     ". stock-or-institution stock-or-institution"
     ". status actions";
   grid-gap: rem.torem(8px) rem.torem(16px);
-  border-bottom: rem.torem(1px) solid var(--color-grey-medium);
+  border-bottom: rem.torem(1px) solid var(--color-border-subtle);
 
   &:last-child {
     border-bottom: none;
@@ -30,7 +30,10 @@
     padding-top: rem.torem(16px);
   }
 
-  &-name, &-venue, &-event-date, &-institution {
+  &-name,
+  &-venue,
+  &-event-date,
+  &-institution {
     display: block;
     overflow-wrap: anywhere;
   }
@@ -58,7 +61,10 @@
       padding-left: rem.torem(16px);
     }
 
-    &-name, &-venue, &-event-date, &-institution {
+    &-name,
+    &-venue,
+    &-event-date,
+    &-institution {
       display: table-cell;
     }
   }

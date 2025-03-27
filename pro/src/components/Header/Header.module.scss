@@ -5,7 +5,7 @@
 
 .top-menu {
   z-index: zIndex.$top-header-z-index;
-  border-bottom: size.$top-menu-border-size solid var(--color-grey-medium);
+  border-bottom: size.$top-menu-border-size solid var(--color-border-subtle);
   background: var(--color-background-default);
   padding: 0 rem.torem(16px) 0 0;
   min-height: rem.torem(size.$top-menu-height);

@@ -60,12 +60,12 @@
 
   &-button {
     background-color: var(--color-secondary-light);
-    border-color: var(--color-secondary-light);
+    border-color: var(--color-border-brand-primary);
 
     &:hover,
     &:focus {
       background-color: var(--color-secondary-light);
-      border-color: var(--color-secondary-light);
+      border-color: var(--color-border-brand-primary);
     }
   }
 

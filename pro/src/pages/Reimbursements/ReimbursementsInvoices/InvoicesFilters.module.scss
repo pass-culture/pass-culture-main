@@ -24,7 +24,7 @@
   position: relative;
 
   &-separator {
-    border-bottom: rem.torem(1px) solid var(--color-grey-medium);
+    border-bottom: rem.torem(1px) solid var(--color-border-subtle);
     position: absolute;
     top: 50%;
     width: 100%;
@@ -48,7 +48,7 @@
     position: relative;
 
     &-separator {
-      border-bottom: rem.torem(1px) solid var(--color-grey-medium);
+      border-bottom: rem.torem(1px) solid var(--color-border-subtle);
       position: absolute;
       top: 50%;
       width: 100%;

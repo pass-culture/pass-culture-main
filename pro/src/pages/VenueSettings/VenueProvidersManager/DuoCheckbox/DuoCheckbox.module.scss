@@ -24,7 +24,7 @@
   &-selected {
     @include fonts.body-accent;
 
-    border: rem.torem(2px) solid var(--color-secondary-light);
+    border: rem.torem(2px) solid var(--color-border-brand-primary);
     background-color: var(--color-background-info);
   }
 

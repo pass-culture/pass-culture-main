@@ -46,7 +46,7 @@
   justify-content: space-between;
   padding: rem.torem(8px) rem.torem(12px);
   background-color: var(--color-background-default);
-  border: 1px solid var(--color-grey-semi-dark);
+  border: 1px solid var(--color-border-default);
   border-radius: rem.torem(8px);
   width: 100%;
   cursor: pointer;
@@ -54,7 +54,7 @@
 
   &:disabled {
     background-color: var(--color-background-disabled);
-    border: rem.torem(1px) solid var(--color-input-border-color-disabled);
+    border: rem.torem(1px) solid var(--color-border-disabled);
     color: var(--color-text-disabled);
     cursor: auto;
   }
@@ -64,7 +64,7 @@
   }
 
   &:focus {
-    border: 2px solid var(--color-black);
+    border: 2px solid var(--color-border-focused);
   }
 
   &:focus-visible {
@@ -75,11 +75,11 @@
   }
 
   &-selected {
-    border: 1px solid var(--color-black);
+    border: 1px solid var(--color-border-selected);
   }
 
   &-error {
-    border: 1px solid var(--color-error);
+    border: 1px solid var(--color-border-error);
   }
 }
 

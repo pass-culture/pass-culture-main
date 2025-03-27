@@ -2,7 +2,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .soft-deleted-offerer-warning {
-  border: rem.torem(1px) solid var(--color-grey-medium);
+  border: rem.torem(1px) solid var(--color-border-subtle);
   border-radius: rem.torem(8px);
   box-shadow: 0 rem.torem(2px) rem.torem(6px) 0
     rgb(from var(--color-black) r g b / 15%);
@@ -15,7 +15,7 @@
     flex-wrap: wrap;
     justify-content: center;
     min-height: rem.torem(205px);
-    border-left: rem.torem(8px) solid var(--color-grey-medium);
+    border-left: rem.torem(8px) solid var(--color-border-subtle);
     height: 100%;
     padding: rem.torem(16px) rem.torem(16px) rem.torem(24px);
     width: 100%;

@@ -58,8 +58,8 @@
     min-height: rem.torem(40px);
     align-items: center;
     color: var(--color-white);
-    background-color: var(--color-primary);
-    border-color: var(--color-primary);
+    background-color: var(--color-background-brand-primary);
+    border-color: var(--color-border-brand-primary);
 
     &:hover {
       background-color: var(--color-primary-dark);
@@ -85,14 +85,14 @@
   &-secondary {
     min-height: rem.torem(40px);
     align-items: center;
-    color: var(--color-primary);
+    color: var(--color-text-brand-primary);
     background-color: var(--color-background-default);
-    border-color: var(--color-primary);
+    border-color: var(--color-border-brand-primary);
 
     &:hover {
-      color: var(--color-white);
-      background-color: var(--color-primary-dark);
-      border-color: var(--color-primary-dark);
+      color: var(--color-text-inverted);
+      background-color: var(--color-background-brand-primary-hover);
+      border-color: var(--color-border-brand-primary-hover);
 
       .button-icon {
         color: var(--color-white);
@@ -200,7 +200,7 @@
     border: rem.torem(1px) solid var(--color-grey-dark);
     border-radius: rem.torem(6px);
     max-width: rem.torem(400px);
-    color: var(--color-text-subtle);
+    color: var(--color-text-default);
 
     &:hover:not(:disabled, .button-disabled) {
       box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
