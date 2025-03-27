@@ -14,5 +14,5 @@ $ python3.9 -m flask --app main:app run
 
 ## Déploiement
 
-La version de cette application est contenue dans le fichier `version.txt`.
-Pour qu'une nouvelle version soit déployée, il faut augmenter manuellement le numéro de version dans ce fichier.
+Une nouvelle version est déployée si un changement est détecté dans ce micro service. 
+Voir https://github.com/pass-culture/pass-culture-main/blob/2b8a2f52ec698bb64b06f9c495a65fdbf9a651b1/.github/workflows/dev_on_workflow_deploy_app_engine_image_resizing.yml#L1
