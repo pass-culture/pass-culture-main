@@ -360,8 +360,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         "PriceCategoryLabel", back_populates="venue"
     )
 
-    collectiveSubCategoryId = sa.Column(sa.Text, nullable=True)
-
     registration: sa_orm.Mapped["VenueRegistration | None"] = relationship(
         "VenueRegistration", back_populates="venue", uselist=False
     )
