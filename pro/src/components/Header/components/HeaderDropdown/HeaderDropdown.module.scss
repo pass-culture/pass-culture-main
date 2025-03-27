@@ -105,7 +105,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
     margin-top: 0;
     padding: rem.torem(8px) rem.torem(16px);
     border-radius: rem.torem(6px);
-    border: solid rem.torem(1px) var(--color-grey-medium);
+    border: solid rem.torem(1px) var(--color-border-subtle);
   }
 }
 
@@ -142,7 +142,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
 
   @media screen and (min-width: size.$tablet) {
     border-radius: rem.torem(6px);
-    border: solid rem.torem(1px) var(--color-grey-medium);
+    border: solid rem.torem(1px) var(--color-border-subtle);
   }
 
   &-email {
@@ -253,7 +253,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
 
     &[data-state="checked"] {
       border-radius: 6px;
-      border: 1px solid var(--color-grey-dark);
+      border: 1px solid var(--color-border-default);
 
       @media (min-width: $sub-popin-full-width-breakpoint) {
         border: none;

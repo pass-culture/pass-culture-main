@@ -4,7 +4,7 @@
 
 .adage-header-budget {
   border-left: none;
-  border-top: 1px solid var(--color-grey-medium);
+  border-top: 1px solid var(--color-border-subtle);
   padding: rem.torem(8px);
   width: 100%;
 
@@ -30,7 +30,7 @@
 
 @media (min-width: size.$tablet) {
   .adage-header-budget {
-    border-left: 1px solid var(--color-grey-medium);
+    border-left: 1px solid var(--color-border-subtle);
     border-top: none;
     padding: 0 0 0 rem.torem(32px);
     width: unset;

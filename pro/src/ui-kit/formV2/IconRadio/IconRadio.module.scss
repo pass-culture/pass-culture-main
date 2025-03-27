@@ -41,7 +41,7 @@
     @include fonts.button;
 
     background: var(--color-background-disabled);
-    border-color: var(--color-grey-light);
+    border-color: var(--color-border-disabled);
     color: var(--color-grey-dark);
   }
 

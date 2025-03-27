@@ -39,7 +39,7 @@ $number-size: rem.torem(30px);
       .inner {
         @include fonts.body-accent-xs;
 
-        border: solid 1px var(--color-grey-dark);
+        border: solid 1px var(--color-border-default);
         border-radius: 50%;
         width: $number-size;
         height: $number-size;
@@ -56,7 +56,7 @@ $number-size: rem.torem(30px);
 
         .number {
           .inner {
-            border-color: var(--color-secondary-light);
+            border-color: var(--color-border-brand-primary);
             color: var(--color-secondary-light);
           }
         }
@@ -88,7 +88,7 @@ $number-size: rem.torem(30px);
 
         .number {
           .inner {
-            border-color: var(--color-secondary-light);
+            border-color: var(--color-border-brand-primary);
             background-color: var(--color-secondary-light);
             color: var(--color-white);
             box-shadow: none;

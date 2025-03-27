@@ -2,7 +2,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 
-
 .headline-offer-container {
   display: flex;
   flex-direction: column;
@@ -24,7 +23,7 @@
   display: flex;
   gap: rem.torem(24px);
   align-items: center;
-  border: 1px solid var(--color-grey-medium);
+  border: 1px solid var(--color-border-subtle);
   border-radius: rem.torem(8px);
   padding: rem.torem(16px);
   width: 100%;

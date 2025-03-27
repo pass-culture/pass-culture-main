@@ -34,7 +34,7 @@
 
     &-svg {
       width: rem.torem(20px);
-      fill: var(--color-input-text-color);
+      fill: var(--color-black);
     }
   }
 
@@ -58,7 +58,7 @@
     &:checked,
     &:indeterminate {
       background-color: var(--color-secondary-light);
-      border-color: var(--color-secondary-light);
+      border-color: var(--color-border-brand-primary);
 
       &::after {
         background-image: url("./checkbox-check.svg");
@@ -84,11 +84,11 @@
 
   &.has-error {
     .base-checkbox-input {
-      border-color: var(--color-input-border-color-error);
+      border-color: var(--color-border-error);
 
       &:checked,
       &:indeterminate {
-        background-color: var(--color-input-border-color-error);
+        background-color: var(--color-error);
       }
     }
 
@@ -105,7 +105,7 @@
     }
 
     .base-checkbox-input {
-      border-color: var(--color-grey-medium);
+      border-color: var(--color-border-subtle);
       cursor: not-allowed;
 
       &:checked,
@@ -125,7 +125,7 @@
     text-decoration: underline;
 
     .base-checkbox-input {
-      border-color: var(--color-secondary-light);
+      border-color: var(--color-border-brand-primary);
 
       &:checked,
       &:indeterminate {
@@ -138,7 +138,7 @@
 
 .box-variant,
 .inline-box-variant {
-  border: rem.torem(1px) solid var(--color-grey-semi-dark);
+  border: rem.torem(1px) solid var(--color-border-default);
   border-radius: rem.torem(8px);
   min-width: 100%;
   padding-left: rem.torem(16px);
@@ -155,12 +155,12 @@
 
   &.has-error {
     background-color: transparent;
-    border-color: var(--color-error);
+    border-color: var(--color-border-error);
   }
 
   &.is-disabled {
     background-color: var(--color-background-disabled);
-    border-color: var(--color-grey-medium);
+    border-color: var(--color-border-disabled);
   }
 
   .base-checkbox-input:focus-visible {

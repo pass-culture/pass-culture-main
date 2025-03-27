@@ -2,7 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .offer-preview-container {
-  border: rem.torem(1px) solid var(--color-grey-medium);
+  border: rem.torem(1px) solid var(--color-border-subtle);
   border-radius: rem.torem(4px);
   box-shadow: 0 0 rem.torem(20px) 0 var(--color-large-shadow);
   height: fit-content;
