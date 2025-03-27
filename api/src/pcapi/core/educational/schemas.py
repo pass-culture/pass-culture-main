@@ -103,7 +103,6 @@ class EducationalBookingBaseResponse(AdageBaseResponseModel):
     participants: list[str] = Field(description="List of class levels which can participate")
     priceDetail: str | None = Field(description="Offer's stock price detail")
     venueTimezone: str
-    subcategoryLabel: str = Field(description="Subcategory label")
     totalAmount: decimal.Decimal = Field(description="Total price of the prebooking")
     url: str | None = Field(description="Url to access the offer")
     withdrawalDetails: str | None
