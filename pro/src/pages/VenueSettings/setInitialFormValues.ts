@@ -8,22 +8,20 @@ export const setInitialFormValues = ({
 }: {
   venue: GetVenueResponseModel
 }): VenueSettingsFormValues => {
-  const addressFields = venue.address || venue
-
-  let autoCompleteStreet = addressFields.street
-    ? addressFields.street + ' '
+  let autoCompleteStreet = venue.address?.street
+    ? venue.address.street + ' '
     : ''
 
   return {
-    street: addressFields.street || '',
-    postalCode: addressFields.postalCode || '',
-    city: addressFields.city || '',
-    addressAutocomplete: `${autoCompleteStreet}${addressFields.postalCode} ${addressFields.city}`,
-    'search-addressAutocomplete': `${autoCompleteStreet}${addressFields.postalCode} ${addressFields.city}`,
-    coords: `${addressFields.latitude}, ${addressFields.longitude}`,
-    latitude: String(addressFields.latitude) || '',
-    longitude: String(addressFields.longitude) || '',
-    banId: addressFields.banId || null,
+    street: venue.address?.street || '',
+    postalCode: venue.address?.postalCode || '',
+    city: venue.address?.city || '',
+    addressAutocomplete: `${autoCompleteStreet}${venue.address?.postalCode} ${venue.address?.city}`,
+    'search-addressAutocomplete': `${autoCompleteStreet}${venue.address?.postalCode} ${venue.address?.city}`,
+    coords: `${venue.address?.latitude}, ${venue.address?.longitude}`,
+    latitude: String(venue.address?.latitude) || '',
+    longitude: String(venue.address?.longitude) || '',
+    banId: venue.address?.banId || null,
     manuallySetAddress: venue.address?.isManualEdition,
     comment: venue.comment || '',
     bookingEmail: venue.bookingEmail || '',
