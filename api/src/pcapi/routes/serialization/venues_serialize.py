@@ -10,7 +10,6 @@ from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.connectors.serialization import acceslibre_serializers
-from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -229,7 +228,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     collectiveAccessInformation: str | None
     collectivePhone: str | None
     collectiveEmail: str | None
-    collectiveSubCategoryId: str | None
     collectiveDmsApplications: list[DMSApplicationForEAC]
     hasAdageId: bool
     adageInscriptionDate: datetime | None
@@ -271,7 +269,6 @@ class GetCollectiveVenueResponseModel(BaseModel):
     collectiveAccessInformation: str | None
     collectivePhone: str | None
     collectiveEmail: str | None
-    collectiveSubCategoryId: str | None
     siret: str | None
 
     class Config:
@@ -318,7 +315,6 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
     collectiveAccessInformation: str | None
     collectivePhone: str | None
     collectiveEmail: str | None
-    collectiveSubCategoryId: str | None
 
     _validate_collectiveDescription = string_length_validator("collectiveDescription", length=500)
     _validate_collectiveWebsite = string_length_validator("collectiveWebsite", length=150)
@@ -331,13 +327,6 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
         if not students:
             return []
         return shared_offers.validate_students(students)
-
-    @validator("collectiveSubCategoryId")
-    @classmethod
-    def validate_subcategory_id(cls, subcategory_id: str | None) -> str | None:
-        if subcategory_id and not subcategory_id in subcategories.COLLECTIVE_SUBCATEGORIES:
-            raise ValueError(f"Must be one of [{list(subcategories.COLLECTIVE_SUBCATEGORIES)}]")
-        return subcategory_id
 
 
 class VenueListItemResponseGetterDict(GetterDict):
@@ -376,7 +365,6 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalDetails: str | None
     siret: str | None
     hasCreatedOffer: bool
-    collectiveSubCategoryId: str | None
     venueTypeCode: offerers_models.VenueTypeCode
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
     address: address_serialize.AddressResponseIsLinkedToVenueModel | None
