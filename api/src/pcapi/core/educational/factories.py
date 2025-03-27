@@ -5,6 +5,7 @@ import typing
 from dateutil.relativedelta import relativedelta
 import factory
 
+from pcapi.core.categories import models as categories_models
 from pcapi.core.categories.subcategories import COLLECTIVE_SUBCATEGORIES
 from pcapi.core.educational import models
 from pcapi.core.educational import utils
@@ -71,6 +72,7 @@ class CollectiveOfferFactory(BaseFactory):
         "venueId": None,
     }
     interventionArea = ["93", "94", "95"]
+    formats = [categories_models.EacFormat.PROJECTION_AUDIOVISUELLE]
 
     @classmethod
     def _create(
@@ -132,6 +134,7 @@ class CollectiveOfferTemplateFactory(BaseFactory):
         start=datetime.datetime.utcnow() + datetime.timedelta(days=1),
         end=datetime.datetime.utcnow() + datetime.timedelta(days=7),
     )
+    formats = [categories_models.EacFormat.PROJECTION_AUDIOVISUELLE]
 
     @classmethod
     def _create(
