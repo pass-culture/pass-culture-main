@@ -24,7 +24,12 @@ export const OfferType = (): JSX.Element => {
   return (
     <Layout
       mainHeading="Créer une offre"
-      mainTopElement={!isOnboarding && offerer?.allowedOnAdage && <CollectiveBudgetCallout pageName="offer-creation-hub" />}
+      mainTopElement={
+        !isOnboarding &&
+        offerer?.allowedOnAdage && (
+          <CollectiveBudgetCallout pageName="offer-creation-hub" />
+        )
+      }
       layout={isOnboarding ? 'sticky-onboarding' : 'sticky-actions'}
     >
       <OfferTypeScreen />

@@ -258,7 +258,8 @@ $connect-as-header-height: rem.torem(52px);
 
   &-sticky-onboarding {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     max-width: size.$main-content-width;
     padding: size.$main-content-padding size.$main-content-padding 0;
     margin: 0 auto;
@@ -310,7 +311,7 @@ $connect-as-header-height: rem.torem(52px);
 
   &-subtitle {
     @include fonts.title2;
-  
+
     max-width: rem.torem(588px);
     display: block;
   }
