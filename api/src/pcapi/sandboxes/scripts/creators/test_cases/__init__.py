@@ -376,7 +376,7 @@ def _create_library_with_writers() -> None:
                 artist_id=artist.id, product_id=product.id, artist_type=ArtistType.AUTHOR
             )
             offer = offers_factories.OfferFactory(product=product, venue=venue)
-            offers_factories.StockFactory.create_batch(5, offer=offer)
+            offers_factories.StockFactory(offer=offer)
 
 
 def create_offers_with_gtls() -> None:
