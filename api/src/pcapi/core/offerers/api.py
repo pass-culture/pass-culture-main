@@ -2579,7 +2579,7 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
                     "analyticsSource": "app-pro",
                     "venue_id": venue.id,
                     "acceslibre_slug": slug,
-                    "message": "Slug not found at acceslibre, AccessibilityProvider removed for this venue",
+                    "slug_loss_message": "Slug not found at acceslibre, AccessibilityProvider removed for this venue",
                 },
                 technical_message_id="acceslibre.synchronisation",
             )
