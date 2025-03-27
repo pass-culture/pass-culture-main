@@ -7,13 +7,8 @@ import {
   MostViewedOffersProps,
 } from '../components/MostViewedOffers'
 
-const renderCumulatedViews = (props: MostViewedOffersProps, isHeadlineFeatureEnabled = false) => {
-  const features = []
-  if (isHeadlineFeatureEnabled) {
-    features.push('WIP_HEADLINE_OFFER')
-  }
-
-  return renderWithProviders(<MostViewedOffers {...props} />, { features })
+const renderCumulatedViews = (props: MostViewedOffersProps) => {
+  return renderWithProviders(<MostViewedOffers {...props} />)
 }
 
 const MOCKED_PROPS: MostViewedOffersProps = {
@@ -47,7 +42,9 @@ describe('MostViewedOffers', () => {
     MOCKED_PROPS.topOffers.forEach((topOffer, index) => {
       expect(screen.getByText(`#${index + 1}`)).toBeInTheDocument()
       expect(screen.getByText(topOffer.offerName)).toBeInTheDocument()
-      expect(screen.getByText(new RegExp(topOffer.numberOfViews.toString()))).toBeInTheDocument()
+      expect(
+        screen.getByText(new RegExp(topOffer.numberOfViews.toString()))
+      ).toBeInTheDocument()
     })
     expect(screen.getByText(/1 000 fois/)).toBeInTheDocument()
   })
@@ -59,10 +56,11 @@ describe('MostViewedOffers', () => {
       numberOfViews: 400,
       isHeadlineOffer: true,
     }
+
     renderCumulatedViews({
       ...MOCKED_PROPS,
-      topOffers: [ headlineOffer ]
-    }, true)
+      topOffers: [headlineOffer],
+    })
 
     expect(screen.getByText('Offre à la une')).toBeInTheDocument()
   })

@@ -28,7 +28,7 @@ export const IndividualOfferRow = ({
   selectOffer,
 }: IndividualOfferRowProps) => {
   const rowId = `collective-offer-${offer.id}`
-  const { headlineOffer, isHeadlineOfferAvailable } = useHeadlineOfferContext()
+  const { headlineOffer, isHeadlineOfferAllowedForOfferer } = useHeadlineOfferContext()
 
   const offerLink = getIndividualOfferUrl({
     offerId: offer.id,
@@ -84,7 +84,7 @@ export const IndividualOfferRow = ({
         status={offer.status}
         className={styles['individual-cell-status']}
         displayLabel
-        isHeadline={isHeadlineOfferAvailable && offer.id === headlineOffer?.id}
+        isHeadline={isHeadlineOfferAllowedForOfferer && offer.id === headlineOffer?.id}
       />
       <IndividualActionsCells
         rowId={rowId}

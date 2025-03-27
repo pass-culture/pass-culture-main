@@ -1,28 +1,24 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import * as useNotification from 'commons/hooks/useNotification'
 import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-} from 'commons/utils/factories/storeFactories'
+import { currentOffererFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
-  LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY,
   HeadlineOfferContextProvider,
-  HeadlineOfferContextProviderProps,
-  useHeadlineOfferContext
-} from "./HeadlineOfferContext"
+  LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY,
+  useHeadlineOfferContext,
+} from './HeadlineOfferContext'
 
 const LABELS = {
   display: {
     headlineOffer: 'Headline Offer Id',
-    isHeadlineOfferAvailable: 'Is Headline Offer Available',
+    isHeadlineOfferAllowedForOfferer: 'Is Headline Offer Available',
     isHeadlineOfferBannerOpen: 'Is Headline Offer Banner Open',
   },
   controls: {
@@ -33,13 +29,15 @@ const LABELS = {
   notify: {
     upsert: {
       success: 'Votre offre a été mise à la une !',
-      error: 'Une erreur s’est produite lors de l’ajout de votre offre à la une',
+      error:
+        'Une erreur s’est produite lors de l’ajout de votre offre à la une',
     },
     delete: {
       success: 'Votre offre n’est plus à la une',
-      error: 'Une erreur s’est produite lors du retrait de votre offre à la une',
-    }
-  }
+      error:
+        'Une erreur s’est produite lors du retrait de votre offre à la une',
+    },
+  },
 }
 
 const MOCK_DATA = {
@@ -53,7 +51,7 @@ const MOCK_DATA = {
     id: 2,
     name: 'Nouvelle offre à la une',
     venueId: 1,
-  }
+  },
 }
 
 vi.mock('apiClient/api', () => ({
@@ -62,7 +60,7 @@ vi.mock('apiClient/api', () => ({
     upsertHeadlineOffer: vi.fn(),
     deleteHeadlineOffer: vi.fn(),
     getVenues: vi.fn(),
-  }
+  },
 }))
 
 const mockMutate = vi.fn()
@@ -80,43 +78,55 @@ const TestComponent = () => {
     removeHeadlineOffer,
     isHeadlineOfferBannerOpen,
     closeHeadlineOfferBanner,
-    isHeadlineOfferAvailable,
+    isHeadlineOfferAllowedForOfferer,
   } = useHeadlineOfferContext()
 
-  return <>
-    <h1>Test Component</h1>
-    <div id="display">
-      <span>{LABELS.display.headlineOffer}: {headlineOffer ? headlineOffer.id : 'null'}</span>
-      <span>{LABELS.display.isHeadlineOfferAvailable}: {isHeadlineOfferAvailable ? 'true' : 'false'}</span>
-      <span>{LABELS.display.isHeadlineOfferBannerOpen}: {isHeadlineOfferBannerOpen ? 'true' : 'false'}</span>
-    </div>
-    <div id="controls">
-      <button onClick={() => upsertHeadlineOffer({
-        offerId: MOCK_DATA.newHeadlineOffer.id,
-        context: { actionType: 'add' }
-      })}>{LABELS.controls.upsertHeadlineOffer}</button>
-      <button onClick={removeHeadlineOffer}>{LABELS.controls.removeHeadlineOffer}</button>
-      <button onClick={closeHeadlineOfferBanner}>{LABELS.controls.closeHeadlineOfferBanner}</button>
-    </div>
-  </>
+  return (
+    <>
+      <h1>Test Component</h1>
+      <div id="display">
+        <span>
+          {LABELS.display.headlineOffer}:{' '}
+          {headlineOffer ? headlineOffer.id : 'null'}
+        </span>
+        <span>
+          {LABELS.display.isHeadlineOfferAllowedForOfferer}:{' '}
+          {isHeadlineOfferAllowedForOfferer ? 'true' : 'false'}
+        </span>
+        <span>
+          {LABELS.display.isHeadlineOfferBannerOpen}:{' '}
+          {isHeadlineOfferBannerOpen ? 'true' : 'false'}
+        </span>
+      </div>
+      <div id="controls">
+        <button
+          onClick={() =>
+            upsertHeadlineOffer({
+              offerId: MOCK_DATA.newHeadlineOffer.id,
+              context: { actionType: 'add' },
+            })
+          }
+        >
+          {LABELS.controls.upsertHeadlineOffer}
+        </button>
+        <button onClick={removeHeadlineOffer}>
+          {LABELS.controls.removeHeadlineOffer}
+        </button>
+        <button onClick={closeHeadlineOfferBanner}>
+          {LABELS.controls.closeHeadlineOfferBanner}
+        </button>
+      </div>
+    </>
+  )
 }
 
-type HeadlineOfferContextProviderTestProps = Partial<HeadlineOfferContextProviderProps> & {
-  isFeatureEnabled?: boolean
-}
-
-const renderIndividualOffersContext = ({
-  isFeatureEnabled = true,
-}: HeadlineOfferContextProviderTestProps = {}) => {
+const renderIndividualOffersContext = () => {
   return renderWithProviders(
     <HeadlineOfferContextProvider>
       <TestComponent />
     </HeadlineOfferContextProvider>,
     {
-      features: [
-        ...(isFeatureEnabled ? ['WIP_HEADLINE_OFFER'] : [])
-      ],
-       storeOverrides: {
+      storeOverrides: {
         offerer: MOCK_DATA.offerer,
       },
     }
@@ -125,15 +135,17 @@ const renderIndividualOffersContext = ({
 
 describe('HeadlineOfferContext', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue(MOCK_DATA.headlineOffer)
+    vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue(
+      MOCK_DATA.headlineOffer
+    )
     vi.spyOn(api, 'getVenues').mockResolvedValue({
       venues: [
         venueListItemFactory({
           id: MOCK_DATA.headlineOffer.venueId,
           isVirtual: false,
           isPermanent: true,
-        })
-      ]
+        }),
+      ],
     })
     localStorage.clear()
   })
@@ -143,17 +155,10 @@ describe('HeadlineOfferContext', () => {
       renderIndividualOffersContext()
 
       await waitFor(async () => {
-        const display = await screen.findByText(new RegExp(LABELS.display.isHeadlineOfferAvailable))
+        const display = await screen.findByText(
+          new RegExp(LABELS.display.isHeadlineOfferAllowedForOfferer)
+        )
         expect(display.textContent).toContain('true')
-      })
-    })
-
-    it('should not be available if feature is disabled', async () => {
-      renderIndividualOffersContext({ isFeatureEnabled: false })
-
-      await waitFor(async () => {
-        const display = await screen.findByText(new RegExp(LABELS.display.isHeadlineOfferAvailable))
-        expect(display.textContent).toContain('false')
       })
     })
 
@@ -165,14 +170,16 @@ describe('HeadlineOfferContext', () => {
             id: MOCK_DATA.headlineOffer.venueId,
             isVirtual: true,
             isPermanent: false,
-          })
-        ]
+          }),
+        ],
       })
 
       renderIndividualOffersContext()
 
       await waitFor(async () => {
-        const display = await screen.findByText(new RegExp(LABELS.display.isHeadlineOfferAvailable))
+        const display = await screen.findByText(
+          new RegExp(LABELS.display.isHeadlineOfferAllowedForOfferer)
+        )
         expect(display.textContent).toContain('false')
       })
     })
@@ -182,7 +189,9 @@ describe('HeadlineOfferContext', () => {
     renderIndividualOffersContext()
 
     await waitFor(async () => {
-      const display = await screen.findByText(new RegExp(LABELS.display.headlineOffer))
+      const display = await screen.findByText(
+        new RegExp(LABELS.display.headlineOffer)
+      )
       expect(display.textContent).toContain(MOCK_DATA.headlineOffer.id)
     })
   })
@@ -192,13 +201,13 @@ describe('HeadlineOfferContext', () => {
       renderIndividualOffersContext()
 
       const upsertButton = await screen.findByRole('button', {
-        name: new RegExp(LABELS.controls.upsertHeadlineOffer)
+        name: new RegExp(LABELS.controls.upsertHeadlineOffer),
       })
       await userEvent.click(upsertButton)
 
       await waitFor(() => {
         expect(api.upsertHeadlineOffer).toHaveBeenCalledWith({
-          offerId: MOCK_DATA.newHeadlineOffer.id
+          offerId: MOCK_DATA.newHeadlineOffer.id,
         })
       })
 
@@ -221,12 +230,12 @@ describe('HeadlineOfferContext', () => {
         }))
 
         renderIndividualOffersContext()
-  
+
         const upsertButton = await screen.findByRole('button', {
-          name: new RegExp(LABELS.controls.upsertHeadlineOffer)
+          name: new RegExp(LABELS.controls.upsertHeadlineOffer),
         })
         await userEvent.click(upsertButton)
-  
+
         expect(notifySuccess).toHaveBeenCalledWith(LABELS.notify.upsert.success)
       })
 
@@ -246,49 +255,56 @@ describe('HeadlineOfferContext', () => {
         renderIndividualOffersContext()
 
         const upsertButton = await screen.findByRole('button', {
-          name: new RegExp(LABELS.controls.upsertHeadlineOffer)
+          name: new RegExp(LABELS.controls.upsertHeadlineOffer),
         })
         await userEvent.click(upsertButton)
 
         expect(notifyError).toHaveBeenCalledWith(LABELS.notify.upsert.error)
       })
     })
-  
+
     it('should log event on successful upsert', async () => {
       let logEvent = vi.fn()
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-        logEvent
+        logEvent,
       }))
 
       renderIndividualOffersContext()
 
       const upsertButton = await screen.findByRole('button', {
-        name: new RegExp(LABELS.controls.upsertHeadlineOffer)
+        name: new RegExp(LABELS.controls.upsertHeadlineOffer),
       })
       await userEvent.click(upsertButton)
 
-      expect(logEvent).toHaveBeenCalledWith(Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
-        from: '/',
-        actionType: 'add',
-        requiredImageUpload: false,
-      })
+      expect(logEvent).toHaveBeenCalledWith(
+        Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER,
+        {
+          from: '/',
+          actionType: 'add',
+          requiredImageUpload: false,
+        }
+      )
     })
 
     it('should close headline offer banner on successful upsert', async () => {
       renderIndividualOffersContext()
 
       await waitFor(async () => {
-        const display = await screen.findByText(new RegExp(LABELS.display.isHeadlineOfferBannerOpen))
+        const display = await screen.findByText(
+          new RegExp(LABELS.display.isHeadlineOfferBannerOpen)
+        )
         expect(display.textContent).toContain('true')
       })
 
       const upsertButton = await screen.findByRole('button', {
-        name: new RegExp(LABELS.controls.upsertHeadlineOffer)
+        name: new RegExp(LABELS.controls.upsertHeadlineOffer),
       })
       await userEvent.click(upsertButton)
 
       await waitFor(async () => {
-        const updatedDisplay = await screen.findByText(new RegExp(LABELS.display.isHeadlineOfferBannerOpen))
+        const updatedDisplay = await screen.findByText(
+          new RegExp(LABELS.display.isHeadlineOfferBannerOpen)
+        )
         expect(updatedDisplay.textContent).toContain('false')
       })
     })
@@ -299,7 +315,7 @@ describe('HeadlineOfferContext', () => {
       renderIndividualOffersContext()
 
       const removeButton = await screen.findByRole('button', {
-        name: new RegExp(LABELS.controls.removeHeadlineOffer)
+        name: new RegExp(LABELS.controls.removeHeadlineOffer),
       })
       await userEvent.click(removeButton)
 
@@ -324,7 +340,7 @@ describe('HeadlineOfferContext', () => {
         renderIndividualOffersContext()
 
         const removeButton = await screen.findByRole('button', {
-          name: new RegExp(LABELS.controls.removeHeadlineOffer)
+          name: new RegExp(LABELS.controls.removeHeadlineOffer),
         })
         await userEvent.click(removeButton)
 
@@ -347,31 +363,34 @@ describe('HeadlineOfferContext', () => {
         renderIndividualOffersContext()
 
         const removeButton = await screen.findByRole('button', {
-          name: new RegExp(LABELS.controls.removeHeadlineOffer)
+          name: new RegExp(LABELS.controls.removeHeadlineOffer),
         })
         await userEvent.click(removeButton)
 
         expect(notifyError).toHaveBeenCalledWith(LABELS.notify.delete.error)
       })
     })
-  
+
     it('should log event on successful removal', async () => {
       let logEvent = vi.fn()
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-        logEvent
+        logEvent,
       }))
 
       renderIndividualOffersContext()
 
       const removeButton = await screen.findByRole('button', {
-        name: new RegExp(LABELS.controls.removeHeadlineOffer)
+        name: new RegExp(LABELS.controls.removeHeadlineOffer),
       })
       await userEvent.click(removeButton)
 
-      expect(logEvent).toHaveBeenCalledWith(Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
-        from: '/',
-        actionType: 'delete',
-      })
+      expect(logEvent).toHaveBeenCalledWith(
+        Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER,
+        {
+          from: '/',
+          actionType: 'delete',
+        }
+      )
     })
   })
 
@@ -380,32 +399,40 @@ describe('HeadlineOfferContext', () => {
       renderIndividualOffersContext()
 
       await waitFor(async () => {
-        const display = await screen.findByText(new RegExp(LABELS.display.isHeadlineOfferBannerOpen))
+        const display = await screen.findByText(
+          new RegExp(LABELS.display.isHeadlineOfferBannerOpen)
+        )
         expect(display.textContent).toContain('true')
       })
 
       const closeButton = await screen.findByRole('button', {
-        name: new RegExp(LABELS.controls.closeHeadlineOfferBanner)
+        name: new RegExp(LABELS.controls.closeHeadlineOfferBanner),
       })
       await userEvent.click(closeButton)
 
       await waitFor(async () => {
-        const updatedDisplay = await screen.findByText(new RegExp(LABELS.display.isHeadlineOfferBannerOpen))
+        const updatedDisplay = await screen.findByText(
+          new RegExp(LABELS.display.isHeadlineOfferBannerOpen)
+        )
         expect(updatedDisplay.textContent).toContain('false')
       })
     })
-  
+
     it('should remember the user choice', async () => {
       renderIndividualOffersContext()
 
-      expect(localStorage.getItem(LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY)).toBeNull()
+      expect(
+        localStorage.getItem(LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY)
+      ).toBeNull()
 
       const closeButton = await screen.findByRole('button', {
-        name: new RegExp(LABELS.controls.closeHeadlineOfferBanner)
+        name: new RegExp(LABELS.controls.closeHeadlineOfferBanner),
       })
       await userEvent.click(closeButton)
 
-      expect(localStorage.getItem(LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY)).toBe('true')
+      expect(
+        localStorage.getItem(LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY)
+      ).toBe('true')
     })
   })
 })

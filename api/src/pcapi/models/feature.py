@@ -147,7 +147,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_PRO_DIDACTIC_ONBOARDING = "Activer le parcours d'onboarding didactique des acteurs culturels"
     WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST = "Activer l'A/B test du parcours d'onboarding didactique"
     WIP_ENABLE_CLICKHOUSE_IN_BO = "Utiliser Clickhouse pour les statistiques des acteurs culturels dans le BO"
-    WIP_HEADLINE_OFFER = "Activer l'offre à la une"
     WIP_IS_OPEN_TO_PUBLIC = "Activer l'utilisation du critère 'ouvert au public' pour les synchro"
     WIP_2025_SIGN_UP = "Activer le nouveau parcours d’inscription au portail pro"
     WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION = (
@@ -229,7 +228,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
     FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
-    FeatureToggle.WIP_HEADLINE_OFFER,
     FeatureToggle.WIP_IS_OPEN_TO_PUBLIC,
     FeatureToggle.WIP_UBBLE_V2,
     # Please keep alphabetic order
