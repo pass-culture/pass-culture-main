@@ -19,6 +19,7 @@ class GroupId(Enum):
     OFFER_LINK = "Offer_link"
     SOON_EXPIRING_BOOKINGS = "Soon_expiring_bookings"
     FAVORITES_NOT_BOOKED = "Favorites_not_booked"
+    FUTURE_OFFER_ACTIVATED = "Future_offer_activated"
 
 
 class TransactionalNotificationMessage(BaseModel):

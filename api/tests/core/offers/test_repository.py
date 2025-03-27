@@ -1075,6 +1075,18 @@ class GetOffersByIdsTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class GetOfferFromFutureOfferTest:
+    def test_get_offer_from_future_offer(self):
+        offer = factories.OfferFactory()
+        future_offer = factories.FutureOfferFactory(offer=offer)
+
+        future_offer_id = future_offer.id
+        with assert_num_queries(1):
+            found_offer = repository.get_offer_from_future_offer(future_offer_id)
+            assert found_offer.id == offer.id
+
+
+@pytest.mark.usefixtures("db_session")
 class CheckStockConsistenceTest:
     def test_with_inconsistencies(self):
         # consistent stock without booking
