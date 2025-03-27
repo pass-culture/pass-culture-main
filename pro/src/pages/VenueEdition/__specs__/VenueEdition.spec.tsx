@@ -216,7 +216,9 @@ describe('VenueEdition', () => {
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
-      expect(screen.queryByText('Page sur l’application')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Page sur l’application')
+      ).not.toBeInTheDocument()
     })
   })
 
