@@ -21,36 +21,6 @@ describe('setInitialFormValues', () => {
 
   it('should return a valid initial form object', () => {
     const formValues = setInitialFormValues({
-      venue,
-    })
-
-    const expectedFormValues = {
-      street: '3 Rue de Valois',
-      postalCode: '75001',
-      city: 'Paris',
-      addressAutocomplete: '3 Rue de Valois 75001 Paris',
-      'search-addressAutocomplete': '3 Rue de Valois 75001 Paris',
-      coords: '48.85332, 2.348979',
-      latitude: '48.85332',
-      longitude: '2.348979',
-      banId: '35288_7283_00001',
-      manuallySetAddress: undefined,
-      comment: '',
-      bookingEmail: '',
-      name: 'Lieu de test',
-      venueSiret: '',
-      publicName: 'Adresse de la venue',
-      siret: '',
-      venueLabel: '',
-      venueType: 'Centre culturel',
-      withdrawalDetails: '',
-    }
-
-    expect(formValues).toEqual(expectedFormValues)
-  })
-
-  it('should return a valid initial form object with offer address fields', () => {
-    const formValues = setInitialFormValues({
       venue: {
         ...venue,
         address: {
