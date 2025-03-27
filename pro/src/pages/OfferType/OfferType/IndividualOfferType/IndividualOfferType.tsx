@@ -1,4 +1,6 @@
+import cn from 'classnames'
 import { useFormContext } from 'react-hook-form'
+import { useLocation } from 'react-router-dom'
 
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'commons/core/Offers/constants'
 import strokeDateIcon from 'icons/stroke-date.svg'
@@ -12,11 +14,15 @@ import styles from './IndividualOfferType.module.scss'
 
 export const IndividualOfferType = () => {
   const { setValue, getValues } = useFormContext()
+  const location = useLocation()
+  const isOnboarding = location.pathname.includes('onboarding')
 
   return (
     <RadioGroup
       name="individualOfferSubtype"
-      className={styles['container']}
+      className={cn(styles['container'], {
+        [styles['container-onboarding']]: isOnboarding,
+      })}
       legend={<h2 className={styles['legend']}>Votre offre est :</h2>}
       onChange={(e) => setValue('offer.individualOfferSubtype', e.target.value)}
       checkedOption={getValues('offer.individualOfferSubtype')}
