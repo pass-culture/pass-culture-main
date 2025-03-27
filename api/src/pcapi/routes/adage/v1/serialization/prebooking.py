@@ -122,14 +122,9 @@ def serialize_collective_booking(
         endDatetime=stock.endDatetime,
         cancellationDate=collective_booking.cancellationDate,
         cancellationLimitDate=collective_booking.cancellationLimitDate,
-        city=venue.city,
         confirmationDate=collective_booking.confirmationDate,
         confirmationLimitDate=collective_booking.confirmationLimitDate,
         contact=_get_collective_offer_contact(offer),
-        coordinates={  # type: ignore[arg-type]
-            "latitude": venue.latitude,
-            "longitude": venue.longitude,
-        },
         creationDate=collective_booking.dateCreated,
         description=offer.description,
         durationMinutes=offer.durationMinutes,
@@ -141,7 +136,6 @@ def serialize_collective_booking(
         numberOfTickets=stock.numberOfTickets,
         participants=[student.value for student in offer.students],
         priceDetail=stock.priceDetail,
-        postalCode=venue.postalCode,
         price=stock.price,
         quantity=1,
         redactor={  # type: ignore[arg-type]
@@ -155,7 +149,6 @@ def serialize_collective_booking(
         status=get_collective_booking_status(collective_booking),  # type: ignore[arg-type]
         cancellationReason=collective_booking.cancellationReason,
         venueTimezone=venue.timezone,
-        subcategoryLabel=offer.subcategory.app_label if offer.subcategory else "",
         totalAmount=stock.price,
         url=offer_app_link(offer),
         withdrawalDetails=None,
@@ -224,14 +217,9 @@ def serialize_reimbursement_notification(
         cancellationDate=collective_booking.cancellationDate,
         cancellationLimitDate=collective_booking.cancellationLimitDate,
         cancellationReason=collective_booking.cancellationReason,
-        city=venue.city,
         confirmationDate=collective_booking.confirmationDate,
         confirmationLimitDate=collective_booking.confirmationLimitDate,
         contact=_get_collective_offer_contact(offer),
-        coordinates={  # type: ignore[arg-type]
-            "latitude": venue.latitude,
-            "longitude": venue.longitude,
-        },
         creationDate=collective_booking.dateCreated,
         description=offer.description,
         durationMinutes=offer.durationMinutes,
@@ -243,7 +231,6 @@ def serialize_reimbursement_notification(
         numberOfTickets=stock.numberOfTickets,
         participants=[student.value for student in offer.students],
         priceDetail=stock.priceDetail,
-        postalCode=venue.postalCode,
         price=stock.price,
         quantity=1,
         redactor={  # type: ignore[arg-type]
@@ -256,7 +243,6 @@ def serialize_reimbursement_notification(
         yearId=collective_booking.educationalYearId,  # type: ignore[arg-type]
         status=get_collective_booking_status(collective_booking),  # type: ignore[arg-type]
         venueTimezone=venue.timezone,
-        subcategoryLabel=offer.subcategory.app_label if offer.subcategory else "",
         totalAmount=stock.price,
         url=offer_app_link(offer),
         withdrawalDetails=None,

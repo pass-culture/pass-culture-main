@@ -54,11 +54,6 @@ class Contact(AdageBaseResponseModel):
     phone: str | None
 
 
-class Coordinates(BaseModel):
-    latitude: decimal.Decimal | None
-    longitude: decimal.Decimal | None
-
-
 class Redactor(AdageBaseResponseModel):
     email: str
     redactorFirstName: str | None
@@ -76,11 +71,9 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     endDatetime: datetime = Field(description="End date of event")
     cancellationDate: datetime | None = Field(description="Date of cancellation if prebooking is cancelled")
     cancellationLimitDate: datetime | None = Field(description="Limit date to cancel the prebooking")
-    city: str | None
     confirmationDate: datetime | None = Field(description="Date of confirmation if prebooking is confirmed")
     confirmationLimitDate: datetime = Field(description="Limit date to confirm the prebooking")
     contact: Contact = Field(description="Contact of the prebooking")
-    coordinates: Coordinates
     creationDate: datetime
     description: str | None = Field(description="Offer description")
     durationMinutes: int | None = Field(description="Offer's duration in minutes")
@@ -90,7 +83,6 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     venueName: str = Field(description="Name of cultural venue proposing the event")
     name: str = Field(description="Name of event")
     numberOfTickets: int | None = Field(description="Number of tickets")
-    postalCode: str | None
     price: decimal.Decimal
     quantity: int = Field(description="Number of place prebooked")
     redactor: Redactor
@@ -103,7 +95,6 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     participants: list[str] = Field(description="List of class levels which can participate")
     priceDetail: str | None = Field(description="Offer's stock price detail")
     venueTimezone: str
-    subcategoryLabel: str = Field(description="Subcategory label")
     totalAmount: decimal.Decimal = Field(description="Total price of the prebooking")
     url: str | None = Field(description="Url to access the offer")
     withdrawalDetails: str | None

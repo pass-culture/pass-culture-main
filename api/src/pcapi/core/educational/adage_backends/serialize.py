@@ -28,20 +28,16 @@ class AdageCollectiveOffer(educational_schemas.AdageBaseResponseModel):
     address: str
     startDatetime: datetime
     endDatetime: datetime
-    city: str
     contact: AdageCollectiveOfferContact
-    coordinates: educational_schemas.Coordinates
     description: str | None
     durationMinutes: float | None
     id: int
     name: str
     numberOfTickets: int
     participants: list[models.StudentLevels]
-    postalCode: str
     price: decimal.Decimal
     priceDetail: str | None
     quantity: int
-    subcategoryLabel: str
     totalAmount: decimal.Decimal
     venueName: str
     venueTimezone: str
@@ -63,20 +59,16 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
         address=get_collective_offer_address(collective_offer),
         startDatetime=stock.startDatetime,
         endDatetime=stock.endDatetime,
-        city=venue.city,  # type: ignore[arg-type]  # TODO: check that it cannot be None
         contact=AdageCollectiveOfferContact(phone=collective_offer.contactPhone, email=collective_offer.contactEmail),
-        coordinates=educational_schemas.Coordinates(latitude=venue.latitude, longitude=venue.longitude),
         description=collective_offer.description,
         durationMinutes=collective_offer.durationMinutes,
         id=collective_offer.id,
         name=collective_offer.name,
         numberOfTickets=stock.numberOfTickets,
         participants=collective_offer.students,
-        postalCode=venue.postalCode,  # type: ignore[arg-type]  # TODO: check that it cannot be None
         price=stock.price,
         priceDetail=stock.priceDetail,
         quantity=1,
-        subcategoryLabel=collective_offer.subcategory.app_label if collective_offer.subcategory else "",
         totalAmount=stock.price,
         venueName=venue.name,
         venueTimezone=venue.timezone,
