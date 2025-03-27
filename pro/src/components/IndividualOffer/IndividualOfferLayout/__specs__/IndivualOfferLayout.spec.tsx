@@ -244,7 +244,6 @@ describe('IndividualOfferLayout', () => {
       },
       {
         initialRouterEntries: ['/offre/creation'],
-        features: ['WIP_HEADLINE_OFFER'],
       }
     )
 

@@ -1,20 +1,22 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import useSWR, { useSWRConfig } from 'swr'
 
-
 import { api } from 'apiClient/api'
 import { HeadLineOfferResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, GET_VENUES_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import {
+  GET_OFFERER_HEADLINE_OFFER_QUERY_KEY,
+  GET_VENUES_QUERY_KEY,
+} from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 
-export const LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY = 'headlineOfferBannerClosed'
+export const LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY =
+  'headlineOfferBannerClosed'
 
 type UpsertHeadlineOfferParams = {
   offerId: number
@@ -46,9 +48,11 @@ export const useHeadlineOfferContext = () => {
   return useContext(HeadlineOfferContext)
 }
 
-export type HeadlineOfferContextProviderProps = { children: React.ReactNode }
-export function HeadlineOfferContextProvider({ children }: HeadlineOfferContextProviderProps) {
-  const isHeadlineOfferEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
+type HeadlineOfferContextProviderProps = { children: React.ReactNode }
+
+export function HeadlineOfferContextProvider({
+  children,
+}: HeadlineOfferContextProviderProps) {
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const { mutate } = useSWRConfig()
   const notify = useNotification()
@@ -60,16 +64,19 @@ export function HeadlineOfferContextProvider({ children }: HeadlineOfferContextP
   )
   const nonVirtualVenues =
     data?.venues.filter((venue) => !venue.isVirtual) || []
-  const isHeadlineOfferAllowedForOfferer = nonVirtualVenues.length === 1 && nonVirtualVenues[0].isPermanent
-  const isHeadlineOfferAvailable = isHeadlineOfferEnabled && isHeadlineOfferAllowedForOfferer
-  const wasHeadlineOfferPreviouslyClosed = storageAvailable('localStorage') &&
-    localStorage.getItem(LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY) !== null
-  const initialIsHeadlineOfferBannerOpen = isHeadlineOfferAvailable && !wasHeadlineOfferPreviouslyClosed
+  const isHeadlineOfferAllowedForOfferer =
+    nonVirtualVenues.length === 1 && nonVirtualVenues[0].isPermanent
+  const isHeadlineOfferAvailable = isHeadlineOfferAllowedForOfferer
+  const wasHeadlineOfferPreviouslyClosed =
+    storageAvailable('localStorage') &&
+    localStorage.getItem(LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY) !==
+      null
+  const initialIsHeadlineOfferBannerOpen =
+    isHeadlineOfferAvailable && !wasHeadlineOfferPreviouslyClosed
 
-  const [
-    isHeadlineOfferBannerOpen,
-    setIsHeadlineOfferBannerOpen
-  ] = useState(initialIsHeadlineOfferBannerOpen)
+  const [isHeadlineOfferBannerOpen, setIsHeadlineOfferBannerOpen] = useState(
+    initialIsHeadlineOfferBannerOpen
+  )
 
   useEffect(() => {
     setIsHeadlineOfferBannerOpen(initialIsHeadlineOfferBannerOpen)
@@ -93,7 +100,7 @@ export function HeadlineOfferContextProvider({ children }: HeadlineOfferContextP
         if (error.status === 404) {
           return
         }
-      }
+      },
     }
   )
 
@@ -104,7 +111,10 @@ export function HeadlineOfferContextProvider({ children }: HeadlineOfferContextP
   const closeHeadlineOfferBanner = () => {
     setIsHeadlineOfferBannerOpen(false)
     if (storageAvailable('localStorage')) {
-      localStorage.setItem(LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY, 'true')
+      localStorage.setItem(
+        LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY,
+        'true'
+      )
     }
   }
 
@@ -113,7 +123,8 @@ export function HeadlineOfferContextProvider({ children }: HeadlineOfferContextP
     context,
   }: UpsertHeadlineOfferParams) => {
     try {
-      await mutate([GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId],
+      await mutate(
+        [GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId],
         api.upsertHeadlineOffer({ offerId }),
         { revalidate: true, throwOnError: true }
       )
@@ -138,7 +149,8 @@ export function HeadlineOfferContextProvider({ children }: HeadlineOfferContextP
   const removeHeadlineOffer = async () => {
     if (selectedOffererId) {
       try {
-        await mutate([GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId],
+        await mutate(
+          [GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId],
           api.deleteHeadlineOffer({ offererId: selectedOffererId }),
           {
             populateCache: () => null,

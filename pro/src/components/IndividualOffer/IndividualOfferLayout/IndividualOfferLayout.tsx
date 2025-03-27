@@ -8,7 +8,6 @@ import {
   OfferStatus,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { useNotification } from 'commons/hooks/useNotification'
 import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
@@ -52,7 +51,6 @@ export const IndividualOfferLayout = ({
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
 
-  const offerHeadlineEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
   const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
     offer?.publicationDate
   )
@@ -110,7 +108,7 @@ export const IndividualOfferLayout = ({
         {offer && (
           <p className={styles['offer-title']}>
             {offer.name}
-            {offerHeadlineEnabled && offer.isHeadlineOffer && (
+            {offer.isHeadlineOffer && (
               <HeadlineOfferTag
                 className={styles['offer-title-headline-tag']}
               />
