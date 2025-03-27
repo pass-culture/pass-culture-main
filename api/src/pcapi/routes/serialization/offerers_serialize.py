@@ -230,7 +230,6 @@ class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityCompliance
     collectiveInterventionArea: list[str] | None
     collectivePhone: str | None
     collectiveEmail: str | None
-    collectiveSubCategoryId: str | None
 
     class Config:
         orm_mode = True

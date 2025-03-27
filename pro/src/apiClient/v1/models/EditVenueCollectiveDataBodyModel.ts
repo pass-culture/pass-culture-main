@@ -12,7 +12,6 @@ export type EditVenueCollectiveDataBodyModel = {
   collectiveNetwork?: Array<string> | null;
   collectivePhone?: string | null;
   collectiveStudents?: Array<StudentLevels> | null;
-  collectiveSubCategoryId?: string | null;
   collectiveWebsite?: string | null;
   venueEducationalStatusId?: number | null;
 };
