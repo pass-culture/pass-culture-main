@@ -22,8 +22,10 @@ const renderOpeningHoursForm = ({
       initialValues={initialValues}
       onSubmit={onSubmit}
       validationSchema={getValidationSchema({
-        isOpenToPublicEnabled: false,
-        shouldValidateAccessibility: false,
+        mandatoryFields: {
+          isOpenToPublic: false,
+          accessibility: false,
+        },
       })}
     >
       <Form>
