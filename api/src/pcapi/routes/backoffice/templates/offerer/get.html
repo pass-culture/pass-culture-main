@@ -154,7 +154,9 @@
             <div class="col-4">
               {% if has_permission("CONNECT_AS_PRO") %}
                 <p class="mb-1">
-                  {{ links.build_connect_as_pseudo_link(offerer.id, "offerer", "/offres?structure="~offerer.id~"&from-bo=true", "Offres associées ", "fw-bold link-primary") }}
+                  {{ links.build_connect_as_pseudo_link(offerer.id, "offerer", "/offres?structure="~offerer.id~"&from-bo=true", "Offres individuelles ", "fw-bold link-primary") }}
+                  <br />
+                  {{ links.build_connect_as_pseudo_link(offerer.id, "offerer", "/offres/collectives?structure="~offerer.id~"&from-bo=true", "Offres collectives ", "fw-bold link-primary") }}
                 </p>
               {% endif %}
               {% set search_params = {
