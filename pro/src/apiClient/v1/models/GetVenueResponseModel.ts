@@ -48,7 +48,7 @@ export type GetVenueResponseModel = {
   hasAdageId: boolean;
   hasOffers: boolean;
   id: number;
-  isOpenToPublic?: boolean | null;
+  isOpenToPublic: boolean;
   isPermanent?: boolean | null;
   isVirtual: boolean;
   isVisibleInApp?: boolean;

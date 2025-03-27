@@ -522,9 +522,12 @@ describe('VenueEditionFormScreen', () => {
       })
 
       it('should display a mandatory toggle to define isOpenToPublic', () => {
-        renderForm(baseVenue, {
-          features: ['WIP_IS_OPEN_TO_PUBLIC'],
-        })
+        renderForm(
+          { ...baseVenue, isOpenToPublic: false },
+          {
+            features: ['WIP_IS_OPEN_TO_PUBLIC'],
+          }
+        )
 
         const toggle = screen.getByRole('group', {
           name: 'Accueillez-vous du public dans votre structure ? *',

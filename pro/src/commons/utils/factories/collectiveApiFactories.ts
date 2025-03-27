@@ -309,6 +309,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   dmsToken: 'fakeDmsToken',
   hasAdageId: true,
   hasOffers: true,
+  isOpenToPublic: true,
   isVirtual: false,
   managingOfferer: {
     id: 1,
