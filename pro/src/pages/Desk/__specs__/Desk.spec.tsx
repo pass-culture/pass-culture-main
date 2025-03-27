@@ -2,26 +2,25 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
 
-
 import { api, apiContremarque } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { venueListItemFactory , defaultGetBookingResponse } from 'commons/utils/factories/individualApiFactories'
+import {
+  defaultGetBookingResponse,
+  venueListItemFactory,
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { Desk } from '../Desk'
 
-const renderDesk = ({ isHeadlineOfferFeatureEnabled = false } = {}) => {
+const renderDesk = () => {
   renderWithProviders(
     <Routes>
       <Route path="/guichet" element={<Desk />} />
     </Routes>,
     {
-      initialRouterEntries: ["/guichet"],
-      features: [
-        ...(isHeadlineOfferFeatureEnabled ? ['WIP_HEADLINE_OFFER'] : []),
-      ]
+      initialRouterEntries: ['/guichet'],
     }
   )
 }
@@ -226,7 +225,7 @@ describe('Desk', () => {
     })
   })
 
-  describe('when headline offer feature is available', () => {
+  describe('Display headline offer', () => {
     beforeEach(() => {
       vi.spyOn(api, 'getVenues').mockResolvedValue({
         venues: [
@@ -234,15 +233,18 @@ describe('Desk', () => {
             id: 1,
             isVirtual: false,
             isPermanent: true,
-          })
-        ]
+          }),
+        ],
       })
     })
 
     it('should display headline offer banner', async () => {
-      renderDesk({ isHeadlineOfferFeatureEnabled: true })
+      renderDesk()
+
       await waitFor(async () => {
-        const banner = await screen.findByText(new RegExp('Nouvelle fonctionnalité : l’offre à la une'))
+        const banner = await screen.findByText(
+          new RegExp('Nouvelle fonctionnalité : l’offre à la une')
+        )
         expect(banner).toBeInTheDocument()
       })
     })

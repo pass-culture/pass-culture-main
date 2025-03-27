@@ -28,8 +28,8 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 
 import {
-  IndividualOfferRowProps,
   IndividualOfferRow,
+  IndividualOfferRowProps,
 } from './IndividualOfferRow'
 
 vi.mock('apiClient/api', () => ({
@@ -290,7 +290,7 @@ describe('IndividualOfferRow', () => {
 
     describe('headline offer actions', () => {
       it('should add new headline offer', async () => {
-        renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
+        renderOfferItem({ props })
 
         const openActionsButton = screen.getByRole('button', {
           name: LABELS.openActions,
@@ -320,7 +320,7 @@ describe('IndividualOfferRow', () => {
           stocks,
         })
 
-        renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
+        renderOfferItem({ props })
 
         const openActionsButton = screen.getByRole('button', {
           name: LABELS.openActions,
@@ -385,7 +385,7 @@ describe('IndividualOfferRow', () => {
           stocks,
         })
 
-        renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
+        renderOfferItem({ props })
 
         const openActionsButton = screen.getByRole('button', {
           name: LABELS.openActions,
@@ -441,7 +441,7 @@ describe('IndividualOfferRow', () => {
             ''
           )
         )
-        renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
+        renderOfferItem({ props })
 
         const openActionsButton = screen.getByRole('button', {
           name: LABELS.openActions,
@@ -467,7 +467,7 @@ describe('IndividualOfferRow', () => {
           venueId: 1,
         })
 
-        renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
+        renderOfferItem({ props })
 
         const openActionsButton = screen.getByRole('button', {
           name: LABELS.openActions,
@@ -499,7 +499,7 @@ describe('IndividualOfferRow', () => {
           venueId: 1,
         })
 
-        renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
+        renderOfferItem({ props })
 
         const openActionsButton = screen.getByRole('button', {
           name: LABELS.openActions,
@@ -532,7 +532,7 @@ describe('IndividualOfferRow', () => {
           venueId: 1,
         })
 
-        renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
+        renderOfferItem({ props })
 
         const openActionsButton = screen.getByRole('button', {
           name: LABELS.openActions,
@@ -551,25 +551,10 @@ describe('IndividualOfferRow', () => {
         ).toBeInTheDocument()
       })
 
-      it('should not render headline actions if feature WIP_HEADLINE_OFFER is not enabled', async () => {
-        renderOfferItem({ props })
-
-        const openActionsButton = screen.getByRole('button', {
-          name: LABELS.openActions,
-        })
-        await userEvent.click(openActionsButton)
-
-        const makeHeadlineOfferButton = screen.queryByRole('menuitem', {
-          name: LABELS.makeHeadlineOffer,
-        })
-
-        expect(makeHeadlineOfferButton).not.toBeInTheDocument()
-      })
-
       it('should not render headline actions if offer is not active', async () => {
         props.offer.status = OfferStatus.DRAFT
 
-        renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
+        renderOfferItem({ props })
 
         const openActionsButton = screen.getByRole('button', {
           name: LABELS.openActions,
@@ -586,7 +571,7 @@ describe('IndividualOfferRow', () => {
       it('should not render headline actions if offer is digital', async () => {
         props.offer.isDigital = true
 
-        renderOfferItem({ props, features: ['WIP_HEADLINE_OFFER'] })
+        renderOfferItem({ props })
 
         const openActionsButton = screen.getByRole('button', {
           name: LABELS.openActions,
@@ -604,7 +589,6 @@ describe('IndividualOfferRow', () => {
         renderOfferItem({
           props,
           isHeadlineOfferAllowedForOfferer: false,
-          features: ['WIP_HEADLINE_OFFER'],
         })
 
         const openActionsButton = screen.getByRole('button', {
@@ -810,7 +794,6 @@ describe('IndividualOfferRow', () => {
 
         renderOfferItem({
           props,
-          features: ['WIP_HEADLINE_OFFER'],
         })
 
         await waitFor(() => {

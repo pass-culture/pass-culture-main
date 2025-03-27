@@ -8,9 +8,9 @@ import { Thumb } from 'ui-kit/Thumb/Thumb'
 import styles from './HeadlineOffer.module.scss'
 
 export function HeadlineOffer() {
-  const {isHeadlineOfferAvailable,  headlineOffer } = useHeadlineOfferContext()
+  const {isHeadlineOfferAllowedForOfferer,  headlineOffer } = useHeadlineOfferContext()
 
-  if (!isHeadlineOfferAvailable || !headlineOffer) {
+  if (!isHeadlineOfferAllowedForOfferer || !headlineOffer) {
     return
   }
 

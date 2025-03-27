@@ -21,8 +21,8 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from 'commons/utils/factories/offererAddressFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
@@ -606,7 +606,7 @@ describe('IndividualOffersScreen', () => {
       venueId: 1,
     })
 
-    renderOffers(props, { features: ['WIP_HEADLINE_OFFER'] })
+    renderOffers(props)
 
     await waitFor(() => {
       expect(screen.getByText('Votre offre à la une')).toBeInTheDocument()

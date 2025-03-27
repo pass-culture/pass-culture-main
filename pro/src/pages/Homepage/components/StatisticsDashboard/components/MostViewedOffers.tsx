@@ -1,7 +1,6 @@
 import cn from 'classnames'
 
 import { TopOffersResponseData } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { pluralizeString } from 'commons/utils/pluralize'
 import { HeadlineOfferTag } from 'components/HeadlineOfferTag/HeadlineOfferTag'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
@@ -17,8 +16,6 @@ export const MostViewedOffers = ({
   last30daysViews,
   topOffers,
 }: MostViewedOffersProps) => {
-  const offerHeadlineEnabled = useActiveFeature('WIP_HEADLINE_OFFER')
-
   return (
     <div className={styles['container']}>
       <div>
@@ -44,8 +41,10 @@ export const MostViewedOffers = ({
               })}
             />
             <div className={styles['top-offer-details']}>
-              {offerHeadlineEnabled && topOffer.isHeadlineOffer && (
-                <HeadlineOfferTag className={styles['top-offer-headline-tag']} />
+              {topOffer.isHeadlineOffer && (
+                <HeadlineOfferTag
+                  className={styles['top-offer-headline-tag']}
+                />
               )}
               <span className={styles['top-offer-title']}>
                 {topOffer.offerName}

@@ -56,7 +56,8 @@ export const IndividualActionsCells = ({
     'WIP_COLLAPSED_MEMORIZED_FILTERS'
   )
   const { storedFilters } = getStoredFilterConfig('individual')
-  const { isHeadlineOfferAvailable, upsertHeadlineOffer } = useHeadlineOfferContext()
+  const { isHeadlineOfferAllowedForOfferer, upsertHeadlineOffer } =
+    useHeadlineOfferContext()
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const urlSearchFilters = useQuerySearchFilters()
   const finalSearchFilters = {
@@ -118,7 +119,7 @@ export const IndividualActionsCells = ({
   const onConfirmReplaceHeadlineOffer = async () => {
     await upsertHeadlineOffer({
       offerId: offer.id,
-      context: { actionType: 'replace' }
+      context: { actionType: 'replace' },
     })
     setIsConfirmDialogReplaceHeadlineOfferOpen(false)
   }
@@ -152,7 +153,7 @@ export const IndividualActionsCells = ({
                   editionStockLink={editionStockLink}
                 />
               )}{' '}
-              {isHeadlineOfferAvailable &&
+              {isHeadlineOfferAllowedForOfferer &&
                 offer.status === OfferStatus.ACTIVE &&
                 !offer.isDigital && (
                   <HeadlineOfferCell
