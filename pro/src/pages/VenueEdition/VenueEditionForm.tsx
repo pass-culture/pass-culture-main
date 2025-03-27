@@ -46,7 +46,9 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
   const initialValues = setInitialFormValues(venue)
 
-  const resetOpeningHoursAndAccessibility = async (formikProps: FormikProps<VenueEditionFormValues>) => {
+  const resetOpeningHoursAndAccessibility = async (
+    formikProps: FormikProps<VenueEditionFormValues>
+  ) => {
     const fieldsToReset: (keyof VenueEditionFormValues)[] = [
       'days',
       'monday',
@@ -124,19 +126,25 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   }
 
   const isAccessibilityDefinedViaAccesLibre = !!venue.externalAccessibilityData
-  const shouldValidateAccessibility = !venue.isVirtual && !isAccessibilityDefinedViaAccesLibre
-  const hasMandatoryInfo = isOpenToPublicEnabled || shouldValidateAccessibility
+  const mandatoryFields = {
+    isOpenToPublic: isOpenToPublicEnabled,
+    // If FF is enabled, acccessibility is mandatory depending on
+    // isOpenToPublic value / toggle, which is managed within yup validation schema instead.
+    accessibility:
+      !isOpenToPublicEnabled &&
+      !venue.isVirtual &&
+      !isAccessibilityDefinedViaAccesLibre,
+  }
+  const hasMandatoryInfo =
+    mandatoryFields.accessibility || mandatoryFields.isOpenToPublic
 
   return (
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
-      validationSchema={getValidationSchema({
-        isOpenToPublicEnabled,
-        shouldValidateAccessibility,
-      })}
+      validationSchema={getValidationSchema({ mandatoryFields })}
     >
-      {formikProps => (
+      {(formikProps) => (
         <Form>
           <ScrollToFirstErrorAfterSubmit />
           <FormLayout fullWidthActions>
@@ -170,7 +178,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                         }
                       }}
                       radioDescriptions={{
-                        yes: "Votre adresse postale sera visible, veuillez renseigner vos horaires d'ouvertures et vos modalités d'accessibilité."
+                        yes: "Votre adresse postale sera visible, veuillez renseigner vos horaires d'ouvertures et vos modalités d'accessibilité.",
                       }}
                     />
                   </FormLayout.Row>
@@ -184,17 +192,24 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                           <TextInput
                             name="street"
                             label="Adresse postale"
-                            className={styles['opening-hours-subsubsection-address-input']}
+                            className={
+                              styles[
+                                'opening-hours-subsubsection-address-input'
+                              ]
+                            }
                             disabled
                             isOptional
                             value={getFormattedAddress(venue.address)}
                           />
                           <Callout
-                            testId='address-callout'
+                            testId="address-callout"
                             variant={CalloutVariant.INFO}
-                            className={styles['opening-hours-subsubsection-callout']}
+                            className={
+                              styles['opening-hours-subsubsection-callout']
+                            }
                           >
-                            Pour modifier l’adresse de votre structure, rendez-vous dans votre page Paramètres généraux.
+                            Pour modifier l’adresse de votre structure,
+                            rendez-vous dans votre page Paramètres généraux.
                           </Callout>
                         </FormLayout.Row>
                         <FormLayout.Row>
@@ -204,7 +219,9 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                       <AccessibilityForm
                         isVenuePermanent={true}
                         externalAccessibilityId={venue.externalAccessibilityId}
-                        externalAccessibilityData={venue.externalAccessibilityData}
+                        externalAccessibilityData={
+                          venue.externalAccessibilityData
+                        }
                         isSubSubSection
                       />
                     </>

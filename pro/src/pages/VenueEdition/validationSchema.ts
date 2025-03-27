@@ -8,31 +8,38 @@ import { Day } from './types'
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
+const accessibilityTestAndShape = (schema: any) => {
+  return schema
+    .test({
+      name: 'is-one-true',
+      message: 'Veuillez sélectionner au moins un critère d’accessibilité',
+      test: isOneTrue,
+    })
+    .shape({
+      mental: yup.boolean(),
+      audio: yup.boolean(),
+      visual: yup.boolean(),
+      motor: yup.boolean(),
+      none: yup.boolean(),
+    })
+}
+
 export const getValidationSchema = ({
-  isOpenToPublicEnabled,
-  shouldValidateAccessibility,
+  mandatoryFields,
 }: {
-  isOpenToPublicEnabled: boolean
-  shouldValidateAccessibility: boolean
+  mandatoryFields: {
+    accessibility: boolean
+    isOpenToPublic: boolean
+  }
 }) =>
   yup.object().shape({
-    accessibility: shouldValidateAccessibility
-      ? yup
-          .object()
-          .test({
-            name: 'is-one-true',
-            message:
-              'Veuillez sélectionner au moins un critère d’accessibilité',
-            test: isOneTrue,
-          })
-          .shape({
-            mental: yup.boolean(),
-            audio: yup.boolean(),
-            visual: yup.boolean(),
-            motor: yup.boolean(),
-            none: yup.boolean(),
-          })
-      : yup.object(),
+    accessibility: mandatoryFields.accessibility
+      ? accessibilityTestAndShape(yup.object())
+      : yup.object().when('isOpenToPublic', {
+          is: 'true',
+          then: (schema) => accessibilityTestAndShape(schema),
+          otherwise: (schema) => schema,
+        }),
     email: yup.string().nullable().test(emailSchema),
     phoneNumber: yup
       .string()
@@ -46,9 +53,9 @@ export const getValidationSchema = ({
           return phone ? isPhoneValid(phone) : true
         },
       }),
-    isOpenToPublic: isOpenToPublicEnabled ?
-      yup.string().nullable().required('Veuillez renseigner ce champ') :
-      yup.string().nullable(),
+    isOpenToPublic: mandatoryFields.isOpenToPublic
+      ? yup.string().nullable().required('Veuillez renseigner ce champ')
+      : yup.string().nullable(),
     webSite: yup
       .string()
       .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
