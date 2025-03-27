@@ -42,7 +42,7 @@ class BaseVenueResponse(BaseModel):
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
     externalAccessibilityUrl: str | None
     externalAccessibilityId: str | None
-    isOpenToPublic: bool | None
+    isOpenToPublic: bool
     isPermanent: bool | None
     latitude: float | None
     longitude: float | None
