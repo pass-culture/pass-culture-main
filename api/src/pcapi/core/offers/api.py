@@ -1729,15 +1729,6 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
 
 
 def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
-    count_reimbursed_bookings = (
-        bookings_models.Booking.query.with_entities(bookings_models.Booking.id)
-        .join(bookings_models.Booking.stock)
-        .filter(models.Stock.offerId == offer.id, bookings_models.Booking.isReimbursed)
-        .count()
-    )
-    if count_reimbursed_bookings > 0:
-        raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
-
     venues_choices = offerers_repository.get_offerers_venues_with_pricing_point(
         offer.venue,
         include_without_pricing_points=True,
@@ -1831,7 +1822,6 @@ def move_offer(
             db.session.add(price_category)
 
         for booking in bookings:
-            assert not booking.isReimbursed
             booking.venueId = destination_venue.id
 
             # when offer has priced bookings, pricing point for destination venue must be the same as pricing point
