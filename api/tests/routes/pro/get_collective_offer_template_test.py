@@ -48,7 +48,7 @@ class Returns200Test:
             "start": format_into_utc_date(offer.start),
             "end": format_into_utc_date(offer.end),
         }
-        assert response.json["formats"] == offer.formats
+        assert response.json["formats"] == [format.value for format in offer.formats]
         assert response.json["displayedStatus"] == "ACTIVE"
         assert response.json["allowedActions"] == [
             "CAN_EDIT_DETAILS",

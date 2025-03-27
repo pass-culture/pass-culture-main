@@ -629,7 +629,7 @@ def test_serialize_collective_offer_template():
             "lng": 2.40929,
         },
         "isTemplate": True,
-        "formats": [fmt.value for fmt in subcategories.CONCERT.formats],
+        "formats": [format.value for format in collective_offer_template.formats],
     }
 
 
@@ -698,5 +698,5 @@ def test_serialize_collective_offer_template_legacy():
             "lng": float(venue.longitude),
         },
         "isTemplate": True,
-        "formats": [fmt.value for fmt in subcategories.CONCERT.formats],
+        "formats": [format.value for format in collective_offer_template.formats],
     }
