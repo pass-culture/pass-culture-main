@@ -4739,6 +4739,7 @@ class MoveOfferTest:
             bookings_models.BookingStatus.CONFIRMED,
             bookings_models.BookingStatus.CANCELLED,
             bookings_models.BookingStatus.USED,
+            bookings_models.BookingStatus.REIMBURSED,
         ],
     )
     def test_move_offer_with_different_statuses(self, state):
@@ -4755,6 +4756,7 @@ class MoveOfferTest:
             bookings_models.BookingStatus.CONFIRMED,
             bookings_models.BookingStatus.CANCELLED,
             bookings_models.BookingStatus.USED,
+            bookings_models.BookingStatus.REIMBURSED,
         ):
             assert bookings_models.Booking.query.count() == 1
             assert bookings_models.Booking.query.all()[0].venue == new_venue
