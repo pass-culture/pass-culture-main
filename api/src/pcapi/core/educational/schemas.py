@@ -69,7 +69,7 @@ class Redactor(AdageBaseResponseModel):
         alias_generator = to_camel
 
 
-class EducationalBookingBaseResponse(AdageBaseResponseModel):
+class EducationalBookingResponse(AdageBaseResponseModel):
     accessibility: str = Field(description="Accessibility of the offer")
     address: str = Field(description="Adresse of event")
     startDatetime: datetime = Field(description="Start date of event")
@@ -114,6 +114,7 @@ class EducationalBookingBaseResponse(AdageBaseResponseModel):
     imageUrl: str | None = Field(description="Url for offer image")
     venueId: int
     offererName: str
+    formats: list[subcategories.EacFormat] | None
 
     class Config:
         title = "Prebooking detailed response"
@@ -121,15 +122,11 @@ class EducationalBookingBaseResponse(AdageBaseResponseModel):
         allow_population_by_field_name = True
 
 
-class EducationalBookingResponse(EducationalBookingBaseResponse):
-    formats: list[subcategories.EacFormat] | None
-
-
 class EducationalBookingEdition(EducationalBookingResponse):
     updatedFields: list[str] = Field(description="List of fields updated")
 
 
-class AdageReimbursementNotification(EducationalBookingBaseResponse):
+class AdageReimbursementNotification(EducationalBookingResponse):
     reimbursementReason: str
     reimbursedValue: decimal.Decimal
     reimbursementDetails: str
