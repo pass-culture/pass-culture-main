@@ -290,4 +290,5 @@ def serialize_reimbursement_notification(
         reimbursementDetails=details,
         venueId=venue.id,
         offererName=venue.managingOfferer.name,
+        formats=collective_booking.collectiveStock.collectiveOffer.formats,
     )
