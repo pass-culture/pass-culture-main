@@ -2086,14 +2086,14 @@
     "@sentry/core" "8.55.0"
     hoist-non-react-statics "^3.3.2"
 
-"@storybook/addon-a11y@^8.6.8":
-  version "8.6.8"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.6.8.tgz#bb87944c7cdceb2cb6277417071513dac5bcbf35"
-  integrity sha512-luAo0vlei7oBEy4RlP9S7UbOCgtYxMCaL0OvzLxT4oPtCmAx2at6xpVseFtWVLT/hC+uZBg35grXtw2nfrgNfA==
+"@storybook/addon-a11y@^8.6.10":
+  version "8.6.10"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.6.10.tgz#407c28666ae51328beda585cc77c7c4f50002e86"
+  integrity sha512-g+p0soI03rshuLhBtjvRXfEuj0IxfX5RRIkHKaqpIKKRL8WVVdtLoxkEjOUo5zIAodmZKFEfYLC8+ELR7fmSjw==
   dependencies:
-    "@storybook/addon-highlight" "8.6.8"
+    "@storybook/addon-highlight" "8.6.10"
     "@storybook/global" "^5.0.0"
-    "@storybook/test" "8.6.8"
+    "@storybook/test" "8.6.10"
     axe-core "^4.2.0"
 
 "@storybook/addon-controls@^8.6.9":
@@ -2118,10 +2118,10 @@
     react-dom "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-highlight@8.6.8":
-  version "8.6.8"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.6.8.tgz#a8385106f295cb0b5c8cc55b535635ed6c783a3b"
-  integrity sha512-RBsnz7oquZtZMhXr8lqVYu7oU4RNslwhz69IOj6iM+WIgT0ZB51gxCWH/zxibivwb/zDb2LNeAYc2n8u53LyYw==
+"@storybook/addon-highlight@8.6.10":
+  version "8.6.10"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.6.10.tgz#6de9c0e16326b13a714eab8ad86d346bdce33375"
+  integrity sha512-ZKl0yKzs/6xOpeDIiqHhfrJGQYA7jQ6cxO2nUm3zyqOnHZspef38VlqE63VttBq+mKnh9VbemmaTd2mUgQnm2A==
   dependencies:
     "@storybook/global" "^5.0.0"
 
@@ -2188,10 +2188,10 @@
   resolved "https://registry.yarnpkg.com/@storybook/icons/-/icons-1.4.0.tgz#7cf7ab3dfb41943930954c4ef493a73798d8b31d"
   integrity sha512-Td73IeJxOyalzvjQL+JXx72jlIYHgs+REaHiREOqfpo3A2AYYG71AUbcv+lg7mEDIweKVCxsMQ0UKo634c8XeA==
 
-"@storybook/instrumenter@8.6.8":
-  version "8.6.8"
-  resolved "https://registry.yarnpkg.com/@storybook/instrumenter/-/instrumenter-8.6.8.tgz#32eb79087dd0fc72aa0e4edaef8fd1917ea1759b"
-  integrity sha512-FgfIINbA5svlIIBMc+q4hdIEdLRT+8i6R76BUeKj5btD8tYxWY4LywMeItZx8uyaFGFjYlFdMKnyXCmSnFXnaQ==
+"@storybook/instrumenter@8.6.10":
+  version "8.6.10"
+  resolved "https://registry.yarnpkg.com/@storybook/instrumenter/-/instrumenter-8.6.10.tgz#a30e9c97bf5a01f1ff1ed19af07eb64efa947943"
+  integrity sha512-Hlps6V0lkhFMbgcJQRynVBne51ciG7Xv+YtiDCd0PQtvZu8+vVJr/ebWt3nCwpvkRHooYiud1ScA3K8McyA73w==
   dependencies:
     "@storybook/global" "^5.0.0"
     "@vitest/utils" "^2.1.1"
@@ -2243,13 +2243,13 @@
     "@storybook/react-dom-shim" "8.6.8"
     "@storybook/theming" "8.6.8"
 
-"@storybook/test@8.6.8":
-  version "8.6.8"
-  resolved "https://registry.yarnpkg.com/@storybook/test/-/test-8.6.8.tgz#1ede719b95ab0b51bcef53cc00a3a4d0aad1854a"
-  integrity sha512-wMJkWWcfPK374uw3JPpgMBkPYkIhYPxqRVp/KAJR/h10YIhSAXg7yiH1LYmmNAwrmvI7Uc3KZZ9fX/Qvot5uRg==
+"@storybook/test@8.6.10":
+  version "8.6.10"
+  resolved "https://registry.yarnpkg.com/@storybook/test/-/test-8.6.10.tgz#8b8cef4c6158e30943c2d02956c83870b2294659"
+  integrity sha512-eCQueRB0SpwjnXcE5wmUNu2G7Z7nRzzHw+0QW2Yc3DoA5UwmOiuwTseZenQkD019dwvFJ87fHo1xXnDAamX1Tg==
   dependencies:
     "@storybook/global" "^5.0.0"
-    "@storybook/instrumenter" "8.6.8"
+    "@storybook/instrumenter" "8.6.10"
     "@testing-library/dom" "10.4.0"
     "@testing-library/jest-dom" "6.5.0"
     "@testing-library/user-event" "14.5.2"
@@ -3183,15 +3183,10 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.12.0.tgz#ce1c9d143389679e253b314241ea9aa5cec980d3"
   integrity sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==
 
-axe-core@^4.2.0:
+axe-core@^4.2.0, axe-core@^4.4.2:
   version "4.10.3"
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.10.3.tgz#04145965ac7894faddbac30861e5d8f11bfd14fc"
   integrity sha512-Xm7bpRXnDSX2YE2YFfBk2FnF0ep6tmG7xPh8iHee8MIcrgq762Nkce856dYtJYLkuIoYZvGfTs/PbZhideTcEg==
-
-axe-core@^4.4.2:
-  version "4.8.1"
-  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.8.1.tgz#6948854183ee7e7eae336b9877c5bafa027998ea"
-  integrity sha512-9l850jDDPnKq48nbad8SiEelCv4OrUWrKab/cPj0GScVg6cb6NbCCt/Ulk26QEq5jP9NnGr04Bit1BHyV6r5CQ==
 
 babel-plugin-macros@^3.1.0:
   version "3.1.0"
