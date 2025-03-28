@@ -25,7 +25,6 @@ describe('serializeEditVenueBodyModel', () => {
       venueSiret: '',
       publicName: 'Adresse de la venue',
       siret: '418 166 096 00069',
-      venueLabel: '',
       venueType: 'Centre culturel',
       withdrawalDetails: 'Details for withdraw',
     }
@@ -43,9 +42,6 @@ describe('serializeEditVenueBodyModel', () => {
       street: '3 Rue de Valois',
       siret: '41816609600069',
       withdrawalDetails: 'Details for withdraw',
-      venueLabelId: !formValues.venueLabel
-        ? null
-        : Number(formValues.venueLabel),
       venueTypeCode: 'Centre culturel' as VenueTypeCode,
       isManualEdition: false,
     }
