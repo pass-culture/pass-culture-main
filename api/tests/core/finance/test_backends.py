@@ -385,6 +385,7 @@ class BaseBackendTest:
         year = educational_factories.EducationalYearFactory()
         meg_program = educational_factories.EducationalInstitutionProgramFactory(name="marseille_en_grand")
         educational_institution = educational_factories.EducationalInstitutionFactory(programs=[meg_program])
+        # FIXME: how to test when the program is not associated to the institution?
         educational_factories.EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=year,

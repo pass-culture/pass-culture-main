@@ -7,6 +7,7 @@ import factory
 
 from pcapi.core.categories import models as categories_models
 from pcapi.core.categories.subcategories import COLLECTIVE_SUBCATEGORIES
+from pcapi.core.educational import constants
 from pcapi.core.educational import models
 from pcapi.core.educational import utils
 from pcapi.core.factories import BaseFactory
@@ -376,6 +377,16 @@ class EducationalInstitutionProgramFactory(BaseFactory):
     # constraint error.
     id = factory.Sequence(lambda n: n + 1_000)
     name = factory.Sequence("Program {}".format)
+
+
+class EducationalInstitutionProgramAssociationFactory(BaseFactory):
+    class Meta:
+        model = models.EducationalInstitutionProgramAssociation
+        sqlalchemy_get_or_create = ["institution", "program"]
+
+    institution = factory.SubFactory(EducationalInstitutionFactory)
+    program = factory.SubFactory(EducationalInstitutionProgramFactory)
+    timespan = db_utils.make_timerange(start=constants.MEG_BEGINNING_DATE, end=None)
 
 
 class PlaylistFactory(BaseFactory):
