@@ -28,6 +28,7 @@ from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_date
+from pcapi.utils import db as db_utils
 from pcapi.utils.requests import exceptions as requests_exceptions
 
 from .helpers import button as button_helpers
@@ -532,7 +533,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "value,expected_indexes",
         [
-            ("false", [0, 1, 2]),
+            ("false", [0, 1, 2, 4, 5]),
             ("true", [3]),
         ],
     )
@@ -540,12 +541,40 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         meg_program = educational_factories.EducationalInstitutionProgramFactory(
             name=educational_models.PROGRAM_MARSEILLE_EN_GRAND
         )
-        meg_educational_institution = educational_factories.EducationalInstitutionFactory(programs=[meg_program])
+        other_program = educational_factories.EducationalInstitutionProgramFactory(name="other")
+        meg_educational_institution = educational_factories.EducationalInstitutionFactory(
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(program=meg_program)
+            ]
+        )
+        other_educational_institution = educational_factories.EducationalInstitutionFactory(
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(program=other_program)
+            ]
+        )
+        one_year_ago = datetime.datetime.utcnow() - datetime.timedelta(days=365)
+        two_years_ago = datetime.datetime.utcnow() - datetime.timedelta(days=365 * 2)
+        leaving_meg_educational_institution = educational_factories.EducationalInstitutionFactory(
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(
+                    program=meg_program, timespan=db_utils.make_timerange(start=two_years_ago, end=one_year_ago)
+                )
+            ]
+        )
         educational_factories.EducationalDepositFactory(educationalInstitution=meg_educational_institution)
+        educational_factories.EducationalDepositFactory(educationalInstitution=other_educational_institution)
+        educational_factories.EducationalDepositFactory(educationalInstitution=leaving_meg_educational_institution)
         meg_offer = educational_factories.CollectiveStockFactory(
             collectiveOffer__institution=meg_educational_institution
         ).collectiveOffer
-        all_offers = list(collective_offers) + [meg_offer]
+        other_offer = educational_factories.CollectiveStockFactory(
+            collectiveOffer__institution=other_educational_institution
+        ).collectiveOffer
+        leaving_meg_offer = educational_factories.CollectiveStockFactory(
+            collectiveOffer__institution=leaving_meg_educational_institution
+        ).collectiveOffer
+
+        all_offers = list(collective_offers) + [meg_offer, leaving_meg_offer, other_offer]
 
         query_args = {
             "search-1-search_field": "MEG",

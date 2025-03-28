@@ -132,8 +132,8 @@ SEARCH_FIELD_TO_PYTHON = {
     "MEG": {
         "field": "boolean",
         "special": lambda x: x == "true",
-        "custom_filters_inner_join": {  # "inner_join" would not be applied with custom filter
-            "NULLABLE": "institution"
+        "custom_filters_inner_joins": {  # "inner_join" would not be applied with custom filter
+            "NULLABLE": ["institution", "stock"]
         },
         "custom_filters": {
             "NULLABLE": lambda value: (
@@ -144,6 +144,9 @@ SEARCH_FIELD_TO_PYTHON = {
                         == educational_models.EducationalInstitution.id,
                         educational_models.EducationalInstitutionProgram.id
                         == educational_models.EducationalInstitutionProgramAssociation.programId,
+                        educational_models.EducationalInstitutionProgramAssociation.timespan.contains(
+                            educational_models.CollectiveStock.startDatetime
+                        ),
                         educational_models.EducationalInstitutionProgram.name
                         == educational_models.PROGRAM_MARSEILLE_EN_GRAND,
                     )
@@ -353,6 +356,16 @@ def _get_collective_offers(
                     == educational_models.EducationalDeposit.educationalYearId,
                 ),
             )
+            .outerjoin(
+                educational_models.EducationalInstitutionProgramAssociation,
+                sa.and_(
+                    educational_models.EducationalInstitutionProgramAssociation.institutionId
+                    == educational_models.EducationalInstitution.id,
+                    educational_models.EducationalInstitutionProgramAssociation.timespan.contains(
+                        educational_models.CollectiveStock.startDatetime
+                    ),
+                ),
+            )
             .options(
                 sa.orm.contains_eager(educational_models.CollectiveOffer.institution).options(
                     sa.orm.contains_eager(educational_models.EducationalInstitution.deposits)
@@ -362,8 +375,12 @@ def _get_collective_offers(
                         educational_models.EducationalYear.beginningDate,
                         educational_models.EducationalYear.expirationDate,
                     ),
-                    sa.orm.joinedload(educational_models.EducationalInstitution.programs).load_only(  # max 1: MeG
-                        educational_models.EducationalInstitutionProgram.label
+                    sa.orm.contains_eager(educational_models.EducationalInstitution.programAssociations)
+                    .joinedload(
+                        educational_models.EducationalInstitutionProgramAssociation.program,
+                    )
+                    .load_only(
+                        educational_models.EducationalInstitutionProgram.label,
                     ),
                 )
             )

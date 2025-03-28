@@ -20,6 +20,7 @@ from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.repository import find_educational_year_by_date
 import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
+from pcapi.utils import db as db_utils
 import pcapi.utils.postal_code as postal_code_utils
 
 
@@ -207,7 +208,7 @@ def _update_institutions_educational_program(
 ) -> None:
     institutions: typing.Iterable[educational_models.EducationalInstitution] = (
         educational_models.EducationalInstitution.query.options(
-            sa.orm.joinedload(educational_models.EducationalInstitution.programs)
+            sa.orm.joinedload(educational_models.EducationalInstitution.programAssociations)
         )
     )
     institution_by_uai = {institution.institutionId: institution for institution in institutions}
@@ -215,9 +216,15 @@ def _update_institutions_educational_program(
     for uai in uais:
         institution = institution_by_uai[uai]
 
-        if educational_program.id not in {prog.id for prog in institution.programs}:
+        if educational_program.id not in {assoc.programId for assoc in institution.programAssociations}:
             logger.info("Linking UAI %s to program %s", uai, educational_program.name)
-            institution.programs.append(educational_program)
+            # FIXME: (rprasquier) the timespan will be updated accordingly once the logic of in/out of a program will be implemented on the import script
+            institution.programAssociations.append(
+                educational_models.EducationalInstitutionProgramAssociation(
+                    programId=educational_program.id,
+                    timespan=db_utils.make_timerange(datetime.utcnow(), None),
+                )
+            )
 
     db.session.flush()
 

@@ -1,3 +1,4 @@
+from datetime import datetime
 from itertools import chain
 
 
@@ -193,3 +194,5 @@ ALL_INTERVENTION_AREA = [
     "976",
     "all",
 ]
+
+MEG_BEGINNING_DATE = datetime(2023, 9, 1)

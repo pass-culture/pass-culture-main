@@ -45,15 +45,23 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
             name="FRANCOIS MOISSON",
             city="MARSEILLE",
             postalCode="13002",
-            programs=[program],
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(
+                    program=program,
+                )
+            ],
         ),
         educational_factories.EducationalInstitutionFactory(
             institutionId="0130541T",
             institutionType="ECOLE ELEMENTAIRE PUBLIQUE",
             name="CANET AMBROSINI",
             city="MARSEILLE",
-            programs=[program],
             postalCode="13014",
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(
+                    program=program,
+                )
+            ],
         ),
         # keep one school without the expected program to allow some
         # tests

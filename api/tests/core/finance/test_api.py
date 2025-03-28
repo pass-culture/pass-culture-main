@@ -2201,9 +2201,26 @@ def test_generate_payments_file(clean_temp_files):
         ministry=educational_models.Ministry.ARMEES.name,
     )
     meg_program = educational_factories.EducationalInstitutionProgramFactory(name="MeG")
-    meg_educational_institution = educational_factories.EducationalInstitutionFactory(programs=[meg_program])
+    meg_educational_institution = educational_factories.EducationalInstitutionFactory(
+        programAssociations=[educational_factories.EducationalInstitutionProgramAssociationFactory(program=meg_program)]
+    )
     deposit_meg = educational_factories.EducationalDepositFactory(
         educationalInstitution=meg_educational_institution,
+        educationalYear=year2,
+        ministry=educational_models.Ministry.EDUCATION_NATIONALE.name,
+    )
+
+    previously_meg_educational_institution = educational_factories.EducationalInstitutionFactory()
+
+    year_ago = datetime.datetime.utcnow() - datetime.timedelta(days=365)
+    two_year_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2 * 365)
+    educational_factories.EducationalInstitutionProgramAssociationFactory(
+        program=meg_program,
+        institution=previously_meg_educational_institution,
+        timespan=db_utils.make_timerange(start=two_year_ago, end=year_ago),
+    )
+    deposit_previously_meg = educational_factories.EducationalDepositFactory(
+        educationalInstitution=previously_meg_educational_institution,
         educationalYear=year2,
         ministry=educational_models.Ministry.EDUCATION_NATIONALE.name,
     )
@@ -2252,6 +2269,17 @@ def test_generate_payments_file(clean_temp_files):
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
         collectiveBooking__educationalInstitution=deposit_meg.educationalInstitution,
         collectiveBooking__educationalYear=deposit_meg.educationalYear,
+    )
+    factories.CollectivePricingFactory(
+        amount=-600,  # rate = 100 %
+        collectiveBooking__collectiveStock__price=5,
+        collectiveBooking__dateUsed=used_date,
+        collectiveBooking__collectiveStock__startDatetime=used_date,
+        collectiveBooking__collectiveStock__collectiveOffer__name="Une histoire militaire qui était marseillaise",
+        collectiveBooking__collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
+        collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
+        collectiveBooking__educationalInstitution=deposit_previously_meg.educationalInstitution,
+        collectiveBooking__educationalYear=deposit_previously_meg.educationalYear,
     )
 
     venue2 = offerers_factories.VenueFactory(
@@ -2440,7 +2468,7 @@ def test_generate_payments_file(clean_temp_files):
         "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_1.offerer.name} - {bank_account_1.label}",
         "Type de réservation": "EACC",
         "Ministère": "EDUCATION_NATIONALE",
-        "Montant net offreur": 3 + 7,
+        "Montant net offreur": 3 + 7 + 6,
     } in rows
     assert {
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
@@ -2927,7 +2955,9 @@ def test_generate_invoice_file(clean_temp_files):
     # eac related to a program
     educational_program = educational_factories.EducationalInstitutionProgramFactory(label="Marseille en grand")
     educational_institution_with_program = educational_factories.EducationalInstitutionFactory(
-        programs=[educational_program]
+        programAssociations=[
+            educational_factories.EducationalInstitutionProgramAssociationFactory(program=educational_program)
+        ]
     )
     deposit_with_program = educational_factories.EducationalDepositFactory(
         educationalInstitution=educational_institution_with_program,
@@ -2943,6 +2973,31 @@ def test_generate_invoice_file(clean_temp_files):
         status=models.PricingStatus.VALIDATED,
     )
     program_pline = factories.PricingLineFactory(pricing=program_pricing, amount=-2345)
+
+    # eac related to a program left
+    one_year_ago = datetime.datetime.utcnow() - datetime.timedelta(days=365)
+    two_years_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2 * 365)
+    educational_institution_with_program_left = educational_factories.EducationalInstitutionFactory(
+        programAssociations=[
+            educational_factories.EducationalInstitutionProgramAssociationFactory(
+                program=educational_program, timespan=db_utils.make_timerange(start=two_years_ago, end=one_year_ago)
+            )
+        ]
+    )
+    deposit_with_program_left = educational_factories.EducationalDepositFactory(
+        educationalInstitution=educational_institution_with_program_left,
+        educationalYear=year1,
+        ministry=educational_models.Ministry.AGRICULTURE.name,
+    )
+    program_pricing_left = factories.CollectivePricingFactory(
+        amount=-3456,
+        collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+        collectiveBooking__collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=8),
+        collectiveBooking__educationalInstitution=educational_institution_with_program_left,
+        collectiveBooking__educationalYear=deposit_with_program_left.educationalYear,
+        status=models.PricingStatus.VALIDATED,
+    )
+    program_pline_left = factories.PricingLineFactory(pricing=program_pricing_left, amount=-3456)
 
     # Create booking for overpayment finance incident
     incident_booking = bookings_factories.ReimbursedBookingFactory(
@@ -2986,6 +3041,7 @@ def test_generate_invoice_file(clean_temp_files):
             pricing2,
             collective_pricing,
             program_pricing,
+            program_pricing_left,
             pricing3,
             pricing4,
             *incidents_pricings,
@@ -3162,7 +3218,7 @@ def test_generate_invoice_file(clean_temp_files):
         "Type de ticket de facturation": coll_pline1.category.value,
         "Type de réservation": "EACC",
         "Ministère": "AGRICULTURE",
-        "Somme des tickets de facturation": coll_pline1.amount,
+        "Somme des tickets de facturation": coll_pline1.amount + program_pline_left.amount,
     }
     assert rows[9] == {
         "Identifiant des coordonnées bancaires": str(bank_account_1.id),

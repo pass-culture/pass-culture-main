@@ -3,14 +3,11 @@ import datetime
 from flask import url_for
 import pytest
 
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.educational.api.institution import get_educational_institution_department_code
-from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
-from pcapi.core.educational.factories import CollectiveStockFactory
-from pcapi.core.educational.factories import EducationalInstitutionFactory
-from pcapi.core.educational.factories import EducationalInstitutionProgramFactory
-from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.testing import assert_num_queries
+import pcapi.utils.db as db_utils
 
 from tests.routes.adage_iframe.utils_create_test_token import DEFAULT_LAT
 from tests.routes.adage_iframe.utils_create_test_token import DEFAULT_LON
@@ -61,11 +58,13 @@ def expected_serialized_auth_base(redactor, institution):
 
 class AuthenticateTest:
     def test_should_authenticate_redactor(self, client, valid_user):
-        redactor = EducationalRedactorFactory(email=valid_user.get("mail"))
-        program = EducationalInstitutionProgramFactory()
-        institution = EducationalInstitutionFactory(
+        redactor = educational_factories.EducationalRedactorFactory(email=valid_user.get("mail"))
+        program = educational_factories.EducationalInstitutionProgramFactory()
+        institution = educational_factories.EducationalInstitutionFactory(
             institutionId=DEFAULT_UAI,
-            programs=[program],
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(program=program)
+            ],
             ruralLevel=DEFAULT_RURAL_LEVEL,
         )
 
@@ -80,14 +79,43 @@ class AuthenticateTest:
             "programs": [{"name": program.name, "label": program.label, "description": program.description}],
         }
 
+    def test_should_authenticate_redactor_when_program_is_not_associated_to_institution_anymore(
+        self, client, valid_user
+    ):
+        redactor = educational_factories.EducationalRedactorFactory(email=valid_user.get("mail"))
+        program = educational_factories.EducationalInstitutionProgramFactory()
+        institution = educational_factories.EducationalInstitutionFactory(
+            institutionId=DEFAULT_UAI,
+            ruralLevel=DEFAULT_RURAL_LEVEL,
+        )
+        educational_factories.EducationalInstitutionProgramAssociationFactory(
+            institutionId=institution.id,
+            program=program,
+            timespan=db_utils.make_timerange(
+                start=datetime.datetime.utcnow() - datetime.timedelta(days=2 * 365),
+                end=datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            ),
+        )
+
+        valid_encoded_token = self._create_adage_valid_token(valid_user, uai_code=DEFAULT_UAI)
+
+        response = client.with_explicit_token(valid_encoded_token).get("/adage-iframe/authenticate")
+
+        assert response.status_code == 200
+        assert response.json == {
+            **expected_serialized_auth_base(redactor, institution),
+            "institutionRuralLevel": DEFAULT_RURAL_LEVEL.value,
+            "programs": [],
+        }
+
     def test_should_return_redactor_role_when_token_has_an_uai_code(self, client, valid_user) -> None:
         # Given
-        redactor = EducationalRedactorFactory(email=valid_user.get("mail"))
-        institution = EducationalInstitutionFactory(institutionId=valid_user.get("uai"))
-        CollectiveStockFactory(
+        redactor = educational_factories.EducationalRedactorFactory(email=valid_user.get("mail"))
+        institution = educational_factories.EducationalInstitutionFactory(institutionId=valid_user.get("uai"))
+        educational_factories.CollectiveStockFactory(
             collectiveOffer__institution=institution,
         )
-        CollectiveStockFactory(
+        educational_factories.CollectiveStockFactory(
             startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
             collectiveOffer__institution=institution,
         )
@@ -102,8 +130,8 @@ class AuthenticateTest:
         assert response.json == {**expected_serialized_auth_base(redactor, institution), "offersCount": 1}
 
     def test_favorites_count(self, client) -> None:
-        redactor = EducationalRedactorFactory(
-            favoriteCollectiveOfferTemplates=[CollectiveOfferTemplateFactory()],
+        redactor = educational_factories.EducationalRedactorFactory(
+            favoriteCollectiveOfferTemplates=[educational_factories.CollectiveOfferTemplateFactory()],
         )
 
         client = client.with_adage_token(email=redactor.email, uai="someuai")
@@ -119,8 +147,8 @@ class AuthenticateTest:
         assert response.json["favoritesCount"] == 1
 
     def test_preferences_are_correctly_serialized(self, client) -> None:
-        educational_institution = EducationalInstitutionFactory()
-        educational_redactor = EducationalRedactorFactory(
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_redactor = educational_factories.EducationalRedactorFactory(
             preferences={"feedback_form_closed": True, "broadcast_help_closed": True}
         )
 

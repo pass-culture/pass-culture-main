@@ -1544,7 +1544,17 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
                 ),
             )
             # max 1 program because of unique constraint on EducationalInstitutionProgramAssociation.institutionId
-            .outerjoin(educational_models.EducationalInstitution.programs)
+            .outerjoin(
+                educational_models.EducationalInstitutionProgramAssociation,
+                sa.and_(
+                    educational_models.EducationalInstitutionProgramAssociation.institutionId
+                    == educational_models.EducationalInstitution.id,
+                    educational_models.EducationalInstitutionProgramAssociation.timespan.contains(
+                        educational_models.CollectiveStock.startDatetime
+                    ),
+                ),
+            )
+            .outerjoin(educational_models.EducationalInstitutionProgramAssociation.program)
             .filter(models.Cashflow.batchId == batch_id)
             .group_by(
                 models.BankAccount.id,
@@ -1983,6 +1993,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
     def get_collective_data(query: BaseQuery, bank_accounts: typing.Iterable[int]) -> BaseQuery:
         return (
             query.join(models.Pricing.lines)
+            .join(educational_models.CollectiveBooking.collectiveStock)
             .join(educational_models.CollectiveBooking.educationalInstitution)
             .join(
                 educational_models.EducationalDeposit,
@@ -1994,7 +2005,19 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 ),
             )
             # max 1 program because of unique constraint on EducationalInstitutionProgramAssociation.institutionId
-            .outerjoin(educational_models.EducationalInstitution.programs)
+            .outerjoin(
+                educational_models.EducationalInstitutionProgramAssociation,
+                sa.and_(
+                    educational_models.EducationalInstitutionProgramAssociation.institutionId
+                    == educational_models.EducationalInstitution.id,
+                    educational_models.EducationalInstitutionProgramAssociation.timespan.contains(
+                        educational_models.CollectiveStock.startDatetime
+                    ),
+                ),
+            )
+            .outerjoin(
+                educational_models.EducationalInstitutionProgramAssociation.program,
+            )
             .filter(
                 models.Cashflow.batchId == batch.id,
                 models.Invoice.bankAccountId.in_(bank_accounts),
