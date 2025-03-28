@@ -273,7 +273,7 @@ describe('Create individual offers with OA', () => {
     cy.findByText('Vous ne trouvez pas votre adresse ?').click()
 
     cy.stepLog({ message: 'I want to put a custom address' })
-    cy.findAllByLabelText('Adresse postale *').last().type('Place de la gare')
+    cy.findAllByLabelText('Adresse postale').last().type('Place de la gare')
     cy.findAllByLabelText('Code postal *').type('123123')
     cy.findAllByLabelText('Ville *').type('Y')
     // eslint-disable-next-line cypress/unsafe-to-chain-command

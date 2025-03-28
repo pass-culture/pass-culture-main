@@ -64,6 +64,7 @@ export const AddressManual = ({
           name="street"
           disabled={readOnlyFields.includes('street')}
           maxLength={200}
+          isOptional={true}
         />
       </FormLayout.Row>
       <FormLayout.Row inline className={styles['inline-fields']}>

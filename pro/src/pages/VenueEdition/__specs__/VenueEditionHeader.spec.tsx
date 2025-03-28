@@ -95,15 +95,18 @@ describe('VenueEditionHeader', () => {
   })
 
   it('should display a preview link when venue is permanent and is open to public feature enabled', () => {
-    renderPartnerPages({
-      venue: {
-        ...defaultGetVenue,
-        venueTypeCode: VenueTypeCode.FESTIVAL,
-        isPermanent: true,
+    renderPartnerPages(
+      {
+        venue: {
+          ...defaultGetVenue,
+          venueTypeCode: VenueTypeCode.FESTIVAL,
+          isPermanent: true,
+        },
       },
-    }, {
-      features: ['WIP_IS_OPEN_TO_PUBLIC'],
-    })
+      {
+        features: ['WIP_IS_OPEN_TO_PUBLIC'],
+      }
+    )
 
     expect(screen.getByText('Visualiser votre page')).toBeInTheDocument()
   })
@@ -126,5 +129,65 @@ describe('VenueEditionHeader', () => {
     )
 
     expect(screen.queryByText('Créer une offre')).not.toBeInTheDocument()
+  })
+
+  it('should display the address', () => {
+    renderPartnerPages(
+      {
+        venue: {
+          ...defaultGetVenue,
+          address: {
+            city: 'paris',
+            id: 1,
+            id_oa: 1,
+            isManualEdition: false,
+            latitude: 1,
+            longitude: 2,
+            postalCode: '75001',
+            street: 'street',
+          },
+          venueTypeCode: VenueTypeCode.FESTIVAL,
+        },
+      },
+      {
+        user: sharedCurrentUserFactory(),
+        storeOverrides: {
+          user: { currentUser: sharedCurrentUserFactory() },
+          offerer: currentOffererFactory(),
+        },
+      }
+    )
+
+    expect(screen.getByText('street, 75001 paris')).toBeInTheDocument()
+  })
+
+  it('should display the address without street', () => {
+    renderPartnerPages(
+      {
+        venue: {
+          ...defaultGetVenue,
+          address: {
+            city: 'paris',
+            id: 1,
+            id_oa: 1,
+            isManualEdition: false,
+            latitude: 1,
+            longitude: 2,
+            postalCode: '75001',
+            street: null,
+          },
+          venueTypeCode: VenueTypeCode.FESTIVAL,
+        },
+      },
+      {
+        user: sharedCurrentUserFactory(),
+        storeOverrides: {
+          user: { currentUser: sharedCurrentUserFactory() },
+          offerer: currentOffererFactory(),
+        },
+      }
+    )
+
+    expect(screen.getByText('75001 paris')).toBeInTheDocument()
   })
 })
