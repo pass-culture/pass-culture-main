@@ -38,5 +38,8 @@ DEPARTMENT_TO_ACADEMIES = {
 }
 
 
-def get_academy_from_department(code: str) -> str:
-    return DEPARTMENT_TO_ACADEMIES[code]
+def get_academy_from_department(department_code: str | None) -> str | None:
+    if department_code is None:
+        return None
+
+    return DEPARTMENT_TO_ACADEMIES[department_code]

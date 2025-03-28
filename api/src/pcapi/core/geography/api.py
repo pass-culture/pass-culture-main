@@ -3,6 +3,7 @@ import math
 import os.path
 import pathlib
 import tempfile
+import typing
 
 import fiona
 import py7zr
@@ -13,6 +14,10 @@ from pcapi.models import db
 from . import constants
 from . import models
 
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.educational import models as educational_models
+    from pcapi.core.offerers import models as offerers_models
 
 logger = logging.getLogger(__name__)
 
@@ -88,4 +93,15 @@ def compute_distance(first_point: models.Coordinates, second_point: models.Coord
     return earth_radius_km * math.acos(
         math.sin(first_lat) * math.sin(second_lat)
         + math.cos(first_lat) * math.cos(second_lat) * math.cos(first_lon - second_lon)
+    )
+
+
+def get_coordinates(
+    item: "educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | offerers_models.Venue",
+) -> models.Coordinates | None:
+    if item.offererAddress is None:
+        return None
+
+    return models.Coordinates(
+        latitude=item.offererAddress.address.latitude, longitude=item.offererAddress.address.longitude
     )
