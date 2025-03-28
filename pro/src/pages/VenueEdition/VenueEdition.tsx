@@ -93,23 +93,26 @@ export const VenueEdition = (): JSX.Element | null => {
 
   const context = location.pathname.includes('collectif')
     ? 'collective'
-    : location.pathname.includes('partner-page') ?
-      'partnerPage'
+    : location.pathname.includes('page-partenaire')
+      ? 'partnerPage'
       : 'address'
 
   const filteredVenues =
-    offerer.managedVenues?.filter((venue) => context === 'partnerPage' ? venue.hasPartnerPage : venue.isPermanent) ?? []
+    offerer.managedVenues?.filter((venue) =>
+      context === 'partnerPage' ? venue.hasPartnerPage : venue.isPermanent
+    ) ?? []
 
   const venuesOptions: SelectOption[] = filteredVenues.map((venue) => ({
     label: venue.publicName || venue.name,
     value: venue.id.toString(),
   }))
 
-  const titleText = context === 'collective'
-    ? 'Page dans ADAGE'
-    : context === 'partnerPage'
-      ? 'Page sur l’application'
-      : 'Page adresse'
+  const titleText =
+    context === 'collective'
+      ? 'Page dans ADAGE'
+      : context === 'partnerPage'
+        ? 'Page sur l’application'
+        : 'Page adresse'
 
   return (
     <Layout mainHeading={titleText}>
@@ -122,7 +125,7 @@ export const VenueEdition = (): JSX.Element | null => {
                   label={`Sélectionnez votre page ${context === 'collective' ? 'dans ADAGE' : 'partenaire'}`}
                   name="venues"
                   isOptional
-                  className={styles['select-partner-page']}
+                  className={styles['select-page-partenaire']}
                 >
                   <SelectInput
                     name="venues"
@@ -130,7 +133,10 @@ export const VenueEdition = (): JSX.Element | null => {
                     value={venueId ?? ''}
                     onChange={(e) => {
                       const venueId = e.target.value
-                      const path = getPathToNavigateTo(offererId as string, venueId)
+                      const path = getPathToNavigateTo(
+                        offererId as string,
+                        venueId
+                      )
                       navigate(path)
                     }}
                   />
@@ -155,10 +161,11 @@ export const VenueEdition = (): JSX.Element | null => {
           />
         )}
 
-        {context === 'collective'
-          ? <CollectiveDataEdition venue={venue} />
-          : <VenueEditionFormScreen venue={venue} />
-        }
+        {context === 'collective' ? (
+          <CollectiveDataEdition venue={venue} />
+        ) : (
+          <VenueEditionFormScreen venue={venue} />
+        )}
       </div>
     </Layout>
   )
