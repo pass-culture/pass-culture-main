@@ -38,7 +38,6 @@ describe('ADAGE discovery', () => {
                       dateCreated: 1726907257.840899,
                       name: 'offer 280 pour eac_pending_bank_informations template request',
                       students: ['Lycée - Seconde'],
-                      subcategoryId: 'EVENEMENT_CINE',
                       domains: [10],
                       educationalInstitutionUAICode: 'all',
                       interventionArea: ['2A', '2B'],

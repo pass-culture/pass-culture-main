@@ -19,7 +19,6 @@
     "filterOnly(offer.interventionArea)",
     "filterOnly(offer.schoolInterventionArea)",
     "filterOnly(offer.students)",
-    "searchable(offer.subcategoryId)",
     "filterOnly(venue.departmentCode)",
     "filterOnly(venue.id)",
     "filterOnly(venue.academy)",
@@ -56,7 +55,6 @@
     "unordered(venue.publicName)",
     "unordered(offerer.name)",
     "unordered(offer.description)",
-    "unordered(offer.artist)",
     "unordered(distinct)"
   ],
   "numericAttributesForFiltering": null
