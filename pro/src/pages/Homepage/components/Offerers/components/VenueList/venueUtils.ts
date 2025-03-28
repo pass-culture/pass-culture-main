@@ -4,6 +4,7 @@ import {
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
 import { getLastCollectiveDmsApplication } from 'commons/utils/getLastCollectiveDmsApplication'
+import { VenueThing } from 'pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
 
 export const getVirtualVenueFromOfferer = (
   offerer?: GetOffererResponseModel | null
@@ -26,7 +27,7 @@ export const hasOffererAtLeastOnePhysicalVenue = (
   offerer?.managedVenues?.some((venue) => !venue.isVirtual && venue.id) ?? false
 
 export const shouldDisplayEACInformationSectionForVenue = (
-  venue?: GetOffererVenueResponseModel
+  venue?: VenueThing
 ): boolean => {
   const dmsInformations = getLastCollectiveDmsApplication(
     venue?.collectiveDmsApplications ?? []
@@ -39,7 +40,5 @@ export const shouldDisplayEACInformationSectionForVenue = (
   )
 }
 
-export const shouldShowVenueOfferStepsForVenue = (
-  venue?: GetOffererVenueResponseModel
-) =>
+export const shouldShowVenueOfferStepsForVenue = (venue?: VenueThing) =>
   shouldDisplayEACInformationSectionForVenue(venue) || !venue?.hasCreatedOffer

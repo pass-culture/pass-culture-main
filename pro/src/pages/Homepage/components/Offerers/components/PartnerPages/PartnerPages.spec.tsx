@@ -1,17 +1,17 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { beforeEach, expect } from 'vitest'
 
+import { api } from 'apiClient/api'
 import { VenueTypeCode } from 'apiClient/v1'
+import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import {
-  PartnerPagesProps,
-  PartnerPages,
-} from './PartnerPages'
+import { PartnerPagesProps, PartnerPages } from './PartnerPages'
 
 const renderPartnerPages = (props: Partial<PartnerPagesProps> = {}) => {
   renderWithProviders(
@@ -25,7 +25,25 @@ const renderPartnerPages = (props: Partial<PartnerPagesProps> = {}) => {
 }
 
 describe('PartnerPages', () => {
-  it('should not display select if only one venue', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'getVenue').mockResolvedValue({
+      ...defaultGetVenue,
+      venueTypeCode: VenueTypeCode.FESTIVAL,
+      bannerUrl: 'MyFirstImage',
+      name: 'first venue',
+      bannerMeta: {
+        original_image_url: 'MyFirstImage',
+        crop_params: {
+          height_crop_percent: 12,
+          width_crop_percent: 12,
+          x_crop_percent: 12,
+          y_crop_percent: 12,
+        },
+      },
+    })
+  })
+
+  it('should not display select if only one venue', async () => {
     renderPartnerPages({
       venues: [
         {
@@ -42,7 +60,9 @@ describe('PartnerPages', () => {
       screen.queryByLabelText(/Sélectionnez votre page partenaire/)
     ).not.toBeInTheDocument()
 
-    expect(screen.getByText('Festival')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Festival')).toBeInTheDocument()
+    })
     expect(
       screen.getByText('Gérer votre page pour le grand public')
     ).toBeInTheDocument()
@@ -51,7 +71,7 @@ describe('PartnerPages', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display select if multiple venues', () => {
+  it('should display select if multiple venues', async () => {
     renderPartnerPages({
       venues: [
         defaultGetOffererVenueResponseModel,
@@ -64,9 +84,11 @@ describe('PartnerPages', () => {
       ],
     })
 
-    expect(
-      screen.getByRole('heading', { name: 'Vos pages partenaire' })
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: 'Vos pages partenaire' })
+      ).toBeInTheDocument()
+    })
     expect(
       screen.getByLabelText(/Sélectionnez votre page partenaire/)
     ).toBeInTheDocument()
@@ -110,15 +132,38 @@ describe('PartnerPages', () => {
 
     renderPartnerPages({ venues })
 
+    await waitFor(() => {
+      expect(
+        screen.getByAltText('Prévisualisation de l’image')
+      ).toBeInTheDocument()
+    })
     let image = screen.getByAltText('Prévisualisation de l’image')
     expect(image).toHaveAttribute('src', 'MyFirstImage')
+
+    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
+      ...defaultGetVenue,
+      id: 666,
+      bannerUrl: 'MyOtherImage',
+      name: 'other venue',
+      bannerMeta: {
+        original_image_url: 'MyOtherImage',
+        crop_params: {
+          height_crop_percent: 12,
+          width_crop_percent: 12,
+          x_crop_percent: 12,
+          y_crop_percent: 12,
+        },
+      },
+    })
 
     await userEvent.selectOptions(
       screen.getByLabelText('Sélectionnez votre page partenaire *'),
       '666'
     )
 
-    image = screen.getByAltText('Prévisualisation de l’image')
-    expect(image).toHaveAttribute('src', 'MyOtherImage')
+    await waitFor(() => {
+      image = screen.getByAltText('Prévisualisation de l’image')
+      expect(image).toHaveAttribute('src', 'MyOtherImage')
+    })
   })
 })
