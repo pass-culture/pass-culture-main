@@ -973,7 +973,7 @@ describe('route Offers', () => {
 
   describe('when headline offer feature is available', () => {
     it('should render an awesome headline offer banner', async () => {
-      await renderOffers(undefined, ['WIP_HEADLINE_OFFER'])
+      await renderOffers(undefined)
 
       const bannerTitle = await screen.findByText(
         /Nouvelle fonctionnalité : l’offre à la une !/
@@ -986,7 +986,7 @@ describe('route Offers', () => {
         PRO_EXPERIMENT_GTM_HEADLINE_OFFER: 'true',
       })
 
-      await renderOffers(undefined, ['WIP_HEADLINE_OFFER'])
+      await renderOffers(undefined)
 
       let bannerTitle = await screen.findByText(
         /Nouvelle fonctionnalité : l’offre à la une !/
@@ -999,7 +999,7 @@ describe('route Offers', () => {
       await userEvent.click(closeButton)
 
       // If the user refreshes the page, the banner should not be displayed anymore.
-      await renderOffers(undefined, ['WIP_HEADLINE_OFFER'])
+      await renderOffers(undefined)
       expect(
         screen.queryByText(/Nouvelle fonctionnalité : l’offre à la une !/)
       ).not.toBeInTheDocument()
