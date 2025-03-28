@@ -15,17 +15,17 @@ from pcapi.core.categories.app_search_tree import SEARCH_GROUPS
 from pcapi.core.categories.genres.music import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.core.categories.genres.music import TITELIVE_MUSIC_TYPES
 from pcapi.core.categories.models import SHOW_TYPES_LABEL_BY_CODE
+from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.academies import get_academy_from_department
-import pcapi.core.educational.api.offer as educational_api_offer
-import pcapi.core.educational.models as educational_models
-import pcapi.core.offerers.api as offerers_api
-import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offers.models as offers_models
+from pcapi.core.educational.api import offer as educational_api_offer
+from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.utils import get_offer_address
 from pcapi.core.providers import titelive_gtl
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
-import pcapi.utils.date as date_utils
-from pcapi.utils.regions import get_department_code_from_city_code
+from pcapi.models import feature
+from pcapi.utils import date as date_utils
 from pcapi.utils.stopwords import STOPWORDS
 
 
@@ -372,16 +372,14 @@ class AlgoliaSerializationMixin:
         offerer = venue.managingOfferer
         date_created = collective_offer_template.dateCreated.timestamp()
 
-        department_code = venue.offererAddress.address.departmentCode if venue.offererAddress else None
-        if department_code is None:
-            # FIXME (dramelet, 03/02/2025): This can be safely removed once Venue table sanitized
-            # and location columns dropped
+        if venue.offererAddress is None:
+            # a venue linked to a collective offer should be a physical one (isVirtual=False) and have an offererAddress
+            logger.error("Found venue with id %s without offererAddress", venue.id)
+            department_code = None
+        else:
+            department_code = venue.offererAddress.address.departmentCode
 
-            # postalCode can’t be None at this point
-            assert venue.postalCode
-            department_code = get_department_code_from_city_code(venue.postalCode)
-
-        latitude, longitude = educational_api_offer.get_offer_coordinates(collective_offer_template)
+        latitude, longitude = _get_offer_coordinates(collective_offer_template)
 
         return {
             "objectID": _transform_collective_offer_template_id(collective_offer_template.id),
@@ -408,7 +406,7 @@ class AlgoliaSerializationMixin:
                 "name": offerer.name,
             },
             "venue": {
-                "academy": get_academy_from_department(department_code),
+                "academy": get_academy_from_department(department_code) if department_code is not None else None,
                 "departmentCode": department_code,
                 "id": venue.id,
                 "name": venue.name,
@@ -436,6 +434,31 @@ def position(venue: offerers_models.Venue, offer: offers_models.Offer | None = N
         latitude = venue.latitude
         longitude = venue.longitude
     return format_coordinates(latitude, longitude)
+
+
+def _get_offer_coordinates(
+    offer: educational_models.CollectiveOfferTemplate,
+) -> tuple[decimal.Decimal, decimal.Decimal] | tuple[None, None]:
+    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active():
+        return _get_offer_coordinates_from_address(offer)
+
+    # use the specified venue if any or use the offer's billing address as the default
+    venue = educational_api_offer.get_offer_event_venue(offer)
+    return educational_api_offer.get_coordinates(venue)
+
+
+def _get_offer_coordinates_from_address(
+    offer: educational_models.CollectiveOfferTemplate,
+) -> tuple[decimal.Decimal, decimal.Decimal] | tuple[None, None]:
+    match offer.locationType:
+        case educational_models.CollectiveLocationType.SCHOOL | educational_models.CollectiveLocationType.TO_BE_DEFINED:
+            return educational_api_offer.get_coordinates(offer.venue)
+
+        case educational_models.CollectiveLocationType.ADDRESS:
+            return educational_api_offer.get_coordinates(offer)
+
+        case _:
+            raise ValueError("Invalid locationType received")
 
 
 def format_coordinates(latitude: Numeric | None, longitude: Numeric | None) -> dict[str, float]:

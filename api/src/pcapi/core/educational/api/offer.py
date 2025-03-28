@@ -1,6 +1,6 @@
 import dataclasses
 import datetime
-from decimal import Decimal
+import decimal
 from functools import partial
 import logging
 import typing
@@ -990,33 +990,21 @@ def get_offer_event_venue(offer: AnyCollectiveOffer) -> offerers_models.Venue:
     else:
         venue = None
 
-    # no specific venue specified - or it does not exists
-    # anymore
+    # no specific venue specified - or it does not exists anymore
     if not venue:
         venue = offer.venue
 
     return venue
 
 
-def get_offer_coordinates(offer: AnyCollectiveOffer) -> tuple[float | Decimal, float | Decimal] | tuple[None, None]:
-    """
-    Return the offer's coordinates to use. Use the specified venue
-    if any or use the offer's billing address as the default.
-    """
-    venue = get_offer_event_venue(offer)
+# TODO: move in offerer api ?
+def get_coordinates(
+    item: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | offerers_models.Venue,
+) -> tuple[decimal.Decimal, decimal.Decimal] | tuple[None, None]:
+    if item.offererAddress is None:
+        return None, None
 
-    # we should return a coherent value: either latitude AND
-    # longitude or empty coordinates.
-    if venue.offererAddress is not None:
-        latitude = venue.offererAddress.address.latitude
-        longitude = venue.offererAddress.address.longitude
-    else:
-        latitude, longitude = None, None
-
-    if not latitude or not longitude:
-        return (None, None)
-
-    return latitude, longitude
+    return item.offererAddress.address.latitude, item.offererAddress.address.longitude
 
 
 def archive_collective_offers(
