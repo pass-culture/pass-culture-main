@@ -102,7 +102,13 @@ def test_update_external_pro_user_attributes(
     if create_collective_offer:
         if create_collective_offer_meg:
             program = educational_factories.EducationalInstitutionProgramFactory(name="marseille_en_grand")
-            institution = educational_factories.EducationalInstitutionFactory(programs=[program])
+            institution = educational_factories.EducationalInstitutionFactory(
+                programAssociations=[
+                    educational_factories.EducationalInstitutionProgramAssociationFactory(
+                        program=program,
+                    )
+                ]
+            )
 
             collective_offer = educational_factories.CollectiveOfferFactory(isActive=True, institution=institution)
         else:

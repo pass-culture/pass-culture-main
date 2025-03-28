@@ -25,8 +25,8 @@ from pcapi.core.finance import models as finance_models
 from pcapi.models import offer_mixin
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
-from pcapi.utils.db import MagicEnum
 from pcapi.utils.phone_number import ParsedPhoneNumber
 from pcapi.utils.siren import SIREN_LENGTH
 
@@ -614,7 +614,7 @@ class CollectiveOffer(
     )
 
     rejectionReason: CollectiveOfferRejectionReason | None = sa.Column(
-        MagicEnum(CollectiveOfferRejectionReason), default=None
+        db_utils.MagicEnum(CollectiveOfferRejectionReason), default=None
     )
 
     isNonFreeOffer: sa_orm.Mapped["bool | None"] = sa_orm.query_expression()
@@ -627,7 +627,7 @@ class CollectiveOffer(
     )
 
     locationType: sa_orm.Mapped[CollectiveLocationType | None] = sa.Column(
-        MagicEnum(CollectiveLocationType), nullable=True, server_default=None, default=None
+        db_utils.MagicEnum(CollectiveLocationType), nullable=True, server_default=None, default=None
     )
     locationComment: sa_orm.Mapped[str | None] = sa.Column(sa.Text(), nullable=True)
 
@@ -1111,14 +1111,14 @@ class CollectiveOfferTemplate(
     contactPhone: str | None = sa.Column(sa.Text, nullable=True)
     contactUrl: str | None = sa.Column(sa.Text, nullable=True)
     contactForm: OfferContactFormEnum | None = sa.Column(
-        MagicEnum(OfferContactFormEnum),
+        db_utils.MagicEnum(OfferContactFormEnum),
         nullable=True,
         server_default=None,
         default=None,
     )
 
     rejectionReason: CollectiveOfferRejectionReason | None = sa.Column(
-        MagicEnum(CollectiveOfferRejectionReason), default=None
+        db_utils.MagicEnum(CollectiveOfferRejectionReason), default=None
     )
 
     offererAddressId: sa_orm.Mapped[int | None] = sa.Column(
@@ -1129,7 +1129,7 @@ class CollectiveOfferTemplate(
     )
 
     locationType: sa_orm.Mapped[CollectiveLocationType | None] = sa.Column(
-        MagicEnum(CollectiveLocationType), nullable=True, server_default=None, default=None
+        db_utils.MagicEnum(CollectiveLocationType), nullable=True, server_default=None, default=None
     )
     locationComment: sa_orm.Mapped[str | None] = sa.Column(sa.Text(), nullable=True)
 
@@ -1554,13 +1554,13 @@ class EducationalInstitution(PcObject, models.Base, models.Model):
         "CollectiveOfferRequest", back_populates="educationalInstitution"
     )
 
-    programs: list["EducationalInstitutionProgram"] = sa_orm.relationship(
-        "EducationalInstitutionProgram",
-        secondary="educational_institution_program_association",
-        back_populates="institutions",
+    programAssociations: sa_orm.Mapped["list[EducationalInstitutionProgramAssociation]"] = sa_orm.relationship(
+        "EducationalInstitutionProgramAssociation", back_populates="institution"
     )
 
-    ruralLevel: InstitutionRuralLevel = sa.Column(MagicEnum(InstitutionRuralLevel), nullable=True, default=None)
+    ruralLevel: InstitutionRuralLevel = sa.Column(
+        db_utils.MagicEnum(InstitutionRuralLevel), nullable=True, default=None
+    )
 
     collective_playlists: list[sa_orm.Mapped["CollectivePlaylist"]] = sa_orm.relationship(
         "CollectivePlaylist", back_populates="institution"
@@ -1582,6 +1582,9 @@ class EducationalInstitution(PcObject, models.Base, models.Model):
     @property
     def full_name(self) -> str:
         return f"{self.institutionType} {self.name}".strip()
+
+    def programs_at_date(self, date: datetime.datetime) -> list["EducationalInstitutionProgram"]:
+        return [association.program for association in self.programAssociations if date in association.timespan]
 
 
 class EducationalYear(PcObject, models.Base, models.Model):
@@ -2232,11 +2235,24 @@ class EducationalInstitutionProgramAssociation(models.Base, models.Model):
         # booking and a program, then fix generate_invoice_file().
         unique=True,
     )
+    institution: sa_orm.Mapped["EducationalInstitution"] = sa_orm.relationship(
+        "EducationalInstitution", foreign_keys=[institutionId]
+    )
     programId: int = sa.Column(
         sa.BigInteger,
         sa.ForeignKey("educational_institution_program.id", ondelete="CASCADE"),
         index=True,
         primary_key=True,
+    )
+    program: sa_orm.Mapped["EducationalInstitutionProgram"] = sa_orm.relationship(
+        "EducationalInstitutionProgram", foreign_keys=[programId]
+    )
+    timespan: sa_orm.Mapped[DateTimeRange] = sa.Column(
+        # the date 2023-09-01 is the beginning of the MEG program. This will need to evolve if other programs are added
+        "timespan",
+        postgresql.TSRANGE(),
+        server_default=sa.text("'[\"2023-09-01 00:00:00\",)'::tsrange"),
+        nullable=False,
     )
 
 
@@ -2247,13 +2263,9 @@ class EducationalInstitutionProgram(PcObject, models.Base, models.Model):
     label: str | None = sa.Column(sa.Text, nullable=True)
     description: str | None = sa.Column(sa.Text, nullable=True)
 
-    institutions: list["EducationalInstitution"] = sa_orm.relationship(
-        "EducationalInstitution", secondary="educational_institution_program_association", back_populates="programs"
-    )
-
 
 class CollectivePlaylist(PcObject, models.Base, models.Model):
-    type: str = sa.Column(MagicEnum(PlaylistType), nullable=False)
+    type: str = sa.Column(db_utils.MagicEnum(PlaylistType), nullable=False)
     distanceInKm: float = sa.Column(sa.Float, nullable=True)
 
     institutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False)

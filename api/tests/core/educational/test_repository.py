@@ -15,6 +15,7 @@ from pcapi.core.offers.repository import _filter_collective_offers_by_statuses
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import offer_mixin
+from pcapi.utils import db as db_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -666,16 +667,38 @@ class HasCollectiveOffersForProgramAndVenueIdsTest:
         venue = offerers_factories.VenueFactory()
         other_venue = offerers_factories.VenueFactory()
 
-        institution = educational_factories.EducationalInstitutionFactory(programs=[program])
-        other_institution = educational_factories.EducationalInstitutionFactory(programs=[other_program])
+        venue_not_in_program_anymore = offerers_factories.VenueFactory()
 
-        _collective_offer_with_program = educational_factories.CollectiveOfferFactory(
-            venue=venue, institution=institution
+        institution = educational_factories.EducationalInstitutionFactory(
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(
+                    program=program,
+                )
+            ]
         )
-        _collective_offer_without_program = educational_factories.CollectiveOfferFactory(venue=venue)
-        _collective_offer_with_other_program = educational_factories.CollectiveOfferFactory(
-            venue=other_venue, institution=other_institution
+        other_institution = educational_factories.EducationalInstitutionFactory(
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(
+                    program=other_program,
+                )
+            ]
         )
+
+        institution_not_in_program_anymore = educational_factories.EducationalInstitutionFactory(
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(
+                    program=program,
+                    timespan=db_utils.make_timerange(start=datetime(2022, 1, 1), end=datetime(2022, 1, 31)),
+                )
+            ]
+        )
+
+        educational_factories.CollectiveOfferFactory(venue=venue, institution=institution)
+        educational_factories.CollectiveOfferFactory(
+            venue=venue_not_in_program_anymore, institution=institution_not_in_program_anymore
+        )
+        educational_factories.CollectiveOfferFactory(venue=venue)
+        educational_factories.CollectiveOfferFactory(venue=other_venue, institution=other_institution)
 
         venue_id = venue.id
 
@@ -688,6 +711,49 @@ class HasCollectiveOffersForProgramAndVenueIdsTest:
 
         assert (
             educational_repository.has_collective_offers_for_program_and_venue_ids("program", [other_venue.id]) == False
+        )
+
+        assert (
+            educational_repository.has_collective_offers_for_program_and_venue_ids(
+                "program", [venue_not_in_program_anymore.id]
+            )
+            == False
+        )
+
+    def test_has_collective_offers_for_program_after_leaving_program(self, app):
+        program = educational_factories.EducationalInstitutionProgramFactory(name="program")
+
+        venue = offerers_factories.VenueFactory()
+        venue_used_by_leaving_institution = offerers_factories.VenueFactory()
+
+        leaving_institution = educational_factories.EducationalInstitutionFactory()
+        institution = educational_factories.EducationalInstitutionFactory()
+
+        previous_year = datetime.utcnow() - timedelta(days=365)
+        two_years_ago = datetime.utcnow() - timedelta(days=365 * 2)
+
+        educational_factories.EducationalInstitutionProgramAssociationFactory(
+            institution=leaving_institution,
+            program=program,
+            timespan=db_utils.make_timerange(two_years_ago, previous_year),
+        )
+
+        educational_factories.EducationalInstitutionProgramAssociationFactory(
+            institution=institution, program=program, timespan=db_utils.make_timerange(previous_year, None)
+        )
+
+        educational_factories.CollectiveOfferFactory(venue=venue, institution=institution)
+
+        educational_factories.CollectiveOfferFactory(
+            venue=venue_used_by_leaving_institution, institution=leaving_institution
+        )
+
+        assert educational_repository.has_collective_offers_for_program_and_venue_ids("program", [venue.id]) == True
+        assert (
+            educational_repository.has_collective_offers_for_program_and_venue_ids(
+                "program", [venue_used_by_leaving_institution.id]
+            )
+            == False
         )
 
 

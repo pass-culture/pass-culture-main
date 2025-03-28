@@ -199,7 +199,17 @@ class BaseFinanceBackend:
                 ),
             )
             # max 1 program because of unique constraint on EducationalInstitutionProgramAssociation.institutionId
-            .outerjoin(educational_models.EducationalInstitution.programs)
+            .outerjoin(
+                educational_models.EducationalInstitutionProgramAssociation,
+                sa.and_(
+                    educational_models.EducationalInstitutionProgramAssociation.institutionId
+                    == educational_models.EducationalInstitution.id,
+                    educational_models.EducationalInstitutionProgramAssociation.timespan.contains(
+                        educational_models.CollectiveStock.startDatetime
+                    ),
+                ),
+            )
+            .outerjoin(educational_models.EducationalInstitutionProgramAssociation.program)
             .group_by(
                 finance_models.PricingLine.category,
                 educational_models.EducationalDeposit.ministry,
