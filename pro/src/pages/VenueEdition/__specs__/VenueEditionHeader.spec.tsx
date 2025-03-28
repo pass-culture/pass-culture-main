@@ -20,6 +20,7 @@ import {
   VenueEditionHeader,
   VenueEditionHeaderProps,
 } from '../VenueEditionHeader'
+import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 
 const mockLogEvent = vi.fn()
 
@@ -95,17 +96,44 @@ describe('VenueEditionHeader', () => {
   })
 
   it('should display a preview link when venue is permanent and is open to public feature enabled', () => {
+    renderPartnerPages(
+      {
+        venue: {
+          ...defaultGetVenue,
+          venueTypeCode: VenueTypeCode.FESTIVAL,
+          isPermanent: true,
+        },
+      },
+      {
+        features: ['WIP_IS_OPEN_TO_PUBLIC'],
+      }
+    )
+
+    expect(screen.getByText('Visualiser votre page')).toBeInTheDocument()
+  })
+
+  it('should display the address if present', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetVenue,
         venueTypeCode: VenueTypeCode.FESTIVAL,
         isPermanent: true,
+        address: getAddressResponseIsLinkedToVenueModelFactory(),
       },
-    }, {
-      features: ['WIP_IS_OPEN_TO_PUBLIC'],
     })
 
-    expect(screen.getByText('Visualiser votre page')).toBeInTheDocument()
+    expect(screen.getByTestId('venue-address')).toBeInTheDocument()
+    expect(screen.getByText(/ma super rue, 75008/)).toBeInTheDocument()
+  })
+
+  it('should not display the address if not present', () => {
+    renderPartnerPages({
+      venue: {
+        ...defaultGetVenue,
+      },
+    })
+
+    expect(screen.queryByTestId('venue-address')).not.toBeInTheDocument()
   })
 
   it('should not display new offer button in new nav', () => {

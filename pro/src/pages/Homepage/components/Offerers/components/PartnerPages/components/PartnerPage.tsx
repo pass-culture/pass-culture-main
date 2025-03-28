@@ -4,8 +4,8 @@ import { useSWRConfig } from 'swr'
 
 import {
   GetOffererResponseModel,
-  GetOffererVenueResponseModel,
   VenueTypeResponseModel,
+  type GetVenueResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFERER_QUERY_KEY } from 'commons/config/swrQueryKeys'
@@ -27,14 +27,16 @@ import { PartnerPageIndividualSection } from './PartnerPageIndividualSection'
 
 export interface PartnerPageProps {
   offerer: GetOffererResponseModel
-  venue: GetOffererVenueResponseModel
+  venue: GetVenueResponseModel
   venueTypes: VenueTypeResponseModel[]
+  venueHasPartnerPage: boolean
 }
 
 export const PartnerPage = ({
   offerer,
   venue,
   venueTypes,
+  venueHasPartnerPage,
 }: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
@@ -105,9 +107,13 @@ export const PartnerPage = ({
             {venue.publicName || venue.name}
           </h3>
 
-          {venue.street && (
-            <address className={styles['venue-address']}>
-              {venue.street}, {venue.postalCode} {venue.city}
+          {venue.address && (
+            <address
+              data-testid="venue-address"
+              className={styles['venue-address']}
+            >
+              {venue.address.street ? `${venue.address.street}, ` : ''}
+              {venue.address.postalCode} {venue.address.city}
             </address>
           )}
         </div>
@@ -116,17 +122,22 @@ export const PartnerPage = ({
       <VenueOfferSteps
         className={styles['venue-offer-steps']}
         offerer={offerer}
-        venue={venue}
+        venue={{
+          ...venue,
+          hasCreatedOffer: venue.hasOffers,
+        }}
         hasVenue
         isInsidePartnerBlock
       />
-      {venue.hasPartnerPage && <PartnerPageIndividualSection
-        venueId={venue.id}
-        venueName={venue.name}
-        offererId={offerer.id}
-        isVisibleInApp={Boolean(venue.isVisibleInApp)}
-        isDisplayedInHomepage
-      />}
+      {venueHasPartnerPage && (
+        <PartnerPageIndividualSection
+          venueId={venue.id}
+          venueName={venue.name}
+          offererId={offerer.id}
+          isVisibleInApp={Boolean(venue.isVisibleInApp)}
+          isDisplayedInHomepage
+        />
+      )}
       <PartnerPageCollectiveSection
         collectiveDmsApplications={venue.collectiveDmsApplications}
         venueId={venue.id}
