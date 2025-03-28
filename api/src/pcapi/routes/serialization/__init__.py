@@ -3,20 +3,12 @@ from math import isfinite
 
 import pydantic.v1 as pydantic_v1
 
+from pcapi.core import schemas as core_schemas
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils.date import format_into_utc_date
 
 
-class BaseModel(pydantic_v1.BaseModel):
-    @pydantic_v1.validator("*")
-    def do_not_allow_nan(cls, v, field):  # type: ignore[no-untyped-def]
-        if field.allow_none and v is None:
-            return v
-
-        if field.outer_type_ is float and not isfinite(v):
-            raise pydantic_v1.errors.DecimalIsNotFiniteError()
-        return v
-
+class BaseModel(core_schemas.SchemasBaseModel):
     class Config:
         @staticmethod
         def schema_extra(schema, model):  # type: ignore[no-untyped-def]
