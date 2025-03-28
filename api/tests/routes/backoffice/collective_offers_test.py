@@ -139,7 +139,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Nom de l'offre"] == collective_offers[0].name
         assert rows[0]["Créateur de l'offre"] == collective_offers[0].author.full_name
         assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offers[0].formats])
-        assert rows[0]["État"] == "Validée"
+        assert rows[0]["État"] == "• Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
         assert rows[0]["Date de l'évènement"] == (datetime.date.today() + datetime.timedelta(days=1)).strftime(
             "%d/%m/%Y"
@@ -187,7 +187,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(collective_offers[1].id)
         assert rows[0]["Nom de l'offre"] == collective_offers[1].name
         assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offers[1].formats])
-        assert rows[0]["État"] == "Validée"
+        assert rows[0]["État"] == "• Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
         assert (
             rows[0]["Date de l'évènement"]
@@ -616,7 +616,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offer.id}
-        assert rows[0]["État"] == "Validée"
+        assert rows[0]["État"] == "• Validée"
 
     def test_list_collective_offers_by_offerer(self, authenticated_client, collective_offers):
         offerer_id = collective_offers[1].venue.managingOffererId
@@ -645,7 +645,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
-        assert rows[0]["État"] == "Rejetée Date erronée"
+        assert rows[0]["État"] == "• Rejetée Date erronée"
 
     def test_list_collective_offers_by_four_filters(self, authenticated_client, collective_offers):
         venue_id = collective_offers[2].venueId
@@ -1357,7 +1357,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         )
         assert "Statut : Expirée" in content_as_text
         assert "Statut PC Pro : Réservée" in content_as_text
-        assert "État : Validée" in content_as_text
+        assert "État : • Validée" in content_as_text
         assert "Utilisateur de la dernière validation" not in content_as_text
         assert "Date de dernière validation de l’offre" not in content_as_text
         assert "Enseignant : Pacôme De Champignac" in content_as_text

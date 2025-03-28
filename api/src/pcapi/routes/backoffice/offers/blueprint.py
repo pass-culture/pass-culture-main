@@ -1,9 +1,12 @@
 from collections import namedtuple
+import dataclasses
 import datetime
 import decimal
+import enum
 import functools
 from io import BytesIO
 import logging
+import random
 import re
 import typing
 
@@ -52,6 +55,7 @@ from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
+from pcapi.utils import urls
 
 from . import forms
 
@@ -281,6 +285,48 @@ SUBQUERY_DICT: dict[str, dict[str, typing.Any]] = {
         ),
     },
 }
+
+
+class OfferDetailsActionType(enum.StrEnum):
+    ACTIVATE = enum.auto()
+    DEACTIVATE = enum.auto()
+    VALIDATE = enum.auto()
+    REJECT = enum.auto()
+    TAG_WEIGHT = enum.auto()
+    RESYNC = enum.auto()
+    EDIT_VENUE = enum.auto()
+    MOVE = enum.auto()
+
+
+@dataclasses.dataclass
+class OfferDetailsAction:
+    type: OfferDetailsActionType
+    position: int
+    inline: bool
+
+
+class OfferDetailsActions:
+    def __init__(self, threshold: int) -> None:
+        self.current_pos = 0
+        self.actions: list[OfferDetailsAction] = []
+        self.threshold = threshold
+
+    def add_action(self, action_type: OfferDetailsActionType) -> None:
+        self.actions.append(
+            OfferDetailsAction(type=action_type, position=self.current_pos, inline=self.current_pos < self.threshold)
+        )
+        self.current_pos += 1
+
+    def __contains__(self, action_type: OfferDetailsActionType) -> bool:
+        return action_type in [e.type for e in self.actions]
+
+    @property
+    def inline_actions(self) -> list[OfferDetailsActionType]:
+        return [action.type for action in self.actions if action.inline]
+
+    @property
+    def additional_actions(self) -> list[OfferDetailsActionType]:
+        return [action.type for action in self.actions if not action.inline]
 
 
 def _get_offer_ids_algolia(form: forms.GetOfferAlgoliaSearchForm) -> list[int]:
@@ -993,6 +1039,27 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
         )
 
 
+def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> OfferDetailsActions:
+    offer_details_actions = OfferDetailsActions(threshold)
+    if offer.isActive and utils.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
+        offer_details_actions.add_action(OfferDetailsActionType.DEACTIVATE)
+    if not offer.isActive and utils.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
+        offer_details_actions.add_action(OfferDetailsActionType.ACTIVATE)
+    if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+        offer_details_actions.add_action(OfferDetailsActionType.VALIDATE)
+        offer_details_actions.add_action(OfferDetailsActionType.REJECT)
+    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERS):
+        offer_details_actions.add_action(OfferDetailsActionType.TAG_WEIGHT)
+    if utils.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
+        offer_details_actions.add_action(OfferDetailsActionType.RESYNC)
+
+    ############################################################################################################
+    # Caution !!! EDIT_VENUE and MOVE actions are added in get_offer_details to avoid duplicated stock queries #
+    ############################################################################################################
+
+    return offer_details_actions
+
+
 @list_offers_blueprint.route("/<int:offer_id>", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_OFFERS)
 def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
@@ -1053,6 +1120,8 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         editable_stock_ids = _get_editable_stock(offer_id)
 
     is_advanced_pro_support = utils.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+    # if the actions count is above this threshold then display the action buttons in a dropdown menu
+    allowed_actions = _get_offer_details_actions(offer, threshold=5)
 
     edit_offer_venue_form = None
     if is_advanced_pro_support:
@@ -1060,6 +1129,8 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
             venue_choices = offers_api.check_can_move_event_offer(offer)
             edit_offer_venue_form = forms.EditOfferVenueForm()
             edit_offer_venue_form.set_venue_choices(venue_choices)
+            # add the action here to avoid additional stock queries
+            allowed_actions.add_action(OfferDetailsActionType.EDIT_VENUE)
         except offers_exceptions.MoveOfferBaseException:
             pass
 
@@ -1069,17 +1140,31 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
             venue_choices = offers_api.check_can_move_offer(offer)
             move_offer_form = forms.EditOfferVenueForm()
             move_offer_form.set_venue_choices(venue_choices)
+            # add the action here to avoid additional stock queries
+            allowed_actions.add_action(OfferDetailsActionType.MOVE)
         except offers_exceptions.MoveOfferBaseException:
             pass
 
+    connect_as = None
+    if utils.has_current_user_permission(perm_models.Permissions.CONNECT_AS_PRO):
+        random_int = random.randint(10000, 99999)
+        connect_as_form_id = f"connect-as-form-offer-{offer.id}-{random_int}"
+        pc_pro_url = urls.build_pc_pro_offer_path(offer)
+        connect_as_href = urls.build_pc_pro_offer_link(offer)
+        connect_as_form = forms.ConnectAsForm(object_type="offer", object_id=offer.id, redirect=pc_pro_url)
+        connect_as = {"form": connect_as_form, "form_name": connect_as_form_id, "href": connect_as_href}
+
     return render_template(
-        "offer/details.html",
+        "offer/details_v2.html" if FeatureToggle.WIP_ENABLE_BO_OFFER_DETAILS_V2 else "offer/details.html",
         offer=offer,
         active_tab=request.args.get("active_tab", "stock"),
         editable_stock_ids=editable_stock_ids,
         reindex_offer_form=empty_forms.EmptyForm() if is_advanced_pro_support else None,
         edit_offer_venue_form=edit_offer_venue_form,
         move_offer_form=move_offer_form,
+        connect_as=connect_as,
+        allowed_actions=allowed_actions,
+        action=OfferDetailsActionType,
     )
 
 
@@ -1260,7 +1345,7 @@ def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeRespons
         "offer/confirm_stock_price_change.html",
         form=form,
         dst=url_for("backoffice_web.offer.edit_offer_stock", offer_id=offer_id, stock_id=stock_id),
-        div_id=f"edit-offer-modal-{stock_id}",
+        div_id=f"edit-offer-stock-modal-{stock_id}",
         title=f"Baisser le prix du stock {stock_id}",
         button_text="Continuer",
         information="Nombre de réservations actives par prix :",
@@ -1281,7 +1366,7 @@ def get_offer_stock_edit_form(
     if finance_api.are_cashflows_being_generated():
         return render_template(
             "components/turbo/modal_form.html",
-            div_id=f"edit-offer-modal-{stock_id}",
+            div_id=f"edit-offer-stock-modal-{stock_id}",
             title=f"Baisser le prix du stock {stock_id}",
             alert="Le script de génération des cashflows est en cours, veuillez réessayer plus tard.",
         )
@@ -1289,7 +1374,7 @@ def get_offer_stock_edit_form(
     if not _is_stock_editable(offer_id, stock_id):
         return render_template(
             "components/turbo/modal_form.html",
-            div_id=f"edit-offer-modal-{stock_id}",
+            div_id=f"edit-offer-stock-modal-{stock_id}",
             title=f"Baisser le prix du stock {stock_id}",
             alert="Ce stock n'est pas éditable.",
         )
@@ -1309,7 +1394,7 @@ def _generate_offer_stock_edit_form(
         "components/turbo/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.offer.confirm_offer_stock", offer_id=offer_id, stock_id=stock_id),
-        div_id=f"edit-offer-modal-{stock_id}",
+        div_id=f"edit-offer-stock-modal-{stock_id}",
         title=f"Baisser le prix du stock {stock_id}",
         button_text="Continuer",
         information="Nombre de réservations actives par prix :",

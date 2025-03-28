@@ -7,29 +7,14 @@
     src: url("/static/backoffice/fonts/Inter-VariableFont_opsz,wght.ttf") format("truetype");
 }
 
-$pc-nav-pills-bg-color-active: #DBDADAFF;
-
-// scss-docs-start color-variables
-$blue:   #0066FF;
-$indigo: #870087;
-$purple: #320096;
-$pink:   #eb0055;
-$red:    #B60025;
-$orange: #fd7e14;
-$yellow: #fbc02D;
-$green:  #15884F;
-$teal:   #20c997;
-$cyan:   #0dcaf0;
-// scss-docs-end color-variables
-
 // scss-docs-start theme-color-variables
-$primary:   $pink;
-$secondary: $purple;
-$success:   $green;
-$info:      $blue;
-$warning:   $yellow;
-$danger:    $red;
-$light:     $gray-100;
+$primary:   #320096;
+$secondary: $gray-900;
+$success:   $green-700;
+$info:      $blue-700;
+$warning:   $yellow-800;
+$danger:    $red-700;
+$light:     $white;
 $dark:      #c10046;
 // scss-docs-end theme-color-variables
 
@@ -41,6 +26,39 @@ $border-radius-xl:            $border-radius;
 $border-radius-2xl:           $border-radius;
 $border-radius-pill:          50rem;
 // scss-docs-end border-radius-variables
+
+// scss-docs-start theme-text-variables
+$primary-text-emphasis:   shade-color($primary, 60%);
+$secondary-text-emphasis: shade-color($secondary, 60%);
+$success-text-emphasis:   shade-color($success, 60%);
+$info-text-emphasis:      shade-color($info, 60%);
+$warning-text-emphasis:   shade-color($warning, 60%);
+$danger-text-emphasis:    shade-color($danger, 60%);
+$light-text-emphasis:     $gray-700;
+$dark-text-emphasis:      $gray-700;
+// scss-docs-end theme-text-variables
+
+// scss-docs-start theme-bg-subtle-variables
+$primary-bg-subtle:       #f3edff;
+$secondary-bg-subtle:     $gray-200;
+$success-bg-subtle:       $green-100;
+$info-bg-subtle:          $blue-100;
+$warning-bg-subtle:       $yellow-100;
+$danger-bg-subtle:        $red-100;
+$light-bg-subtle:         mix($gray-100, $white);
+$dark-bg-subtle:          $gray-400;
+// scss-docs-end theme-bg-subtle-variables
+
+// scss-docs-start theme-border-subtle-variables
+$primary-border-subtle:   tint-color($primary, 60%);
+$secondary-border-subtle: tint-color($secondary, 60%);
+$success-border-subtle:   tint-color($success, 60%);
+$info-border-subtle:      tint-color($info, 60%);
+$warning-border-subtle:   tint-color($warning, 60%);
+$danger-border-subtle:    tint-color($danger, 60%);
+$light-border-subtle:     $gray-200;
+$dark-border-subtle:      $gray-500;
+// scss-docs-end theme-border-subtle-variables
 
 // merge with existing $theme-colors map
 $theme-colors: map-merge($theme-colors, (
@@ -54,9 +72,8 @@ $theme-colors: map-merge($theme-colors, (
   "dark": $dark
 ));
 
-
 // redefine color to match old theme
-$body-bg: $gray-100;
+$body-bg: $white;
 $link-color: $primary;
 $input-bg: $white;
 $form-select-bg: $white;
@@ -85,7 +102,8 @@ $form-switch-focus-bg-image:        url("data:image/svg+xml,<svg xmlns='http://w
 
 // scss-docs-start headings-variables
 $headings-color:              $gray-700;
-$headings-font-weight:        $font-weight-semibold;
+$headings-font-weight:        $font-weight-medium;
+$headings-margin-bottom:      16px;
 // scss-docs-end headings-variables
 
 // stylelint-disable value-keyword-case
@@ -104,9 +122,22 @@ $dropdown-link-active-color: inherited;
 
 //scss-docs-start tab management
 $nav-tabs-link-active-bg: $white;
-// scss-docs-end card-variables
+// scss-docs-end tag management
+
+// scss-docs-start nav-variables
+$nav-underline-gap:                 0;
+$nav-underline-link-active-color:   $primary;
+
+$nav-pills-link-active-color:       inherit;
+$nav-pills-link-active-bg:          $primary-bg-subtle;
+// scss-docs-end nav-variables
 
 $table-bg: inherit;
+
+// scss-docs-start alert-variables
+$alert-margin-bottom:           0;
+$alert-padding-y:               0.5rem;
+// scss-docs-end alert-variables
 
 $zindex-levels: map-merge($zindex-levels, (
   4: 4,
@@ -124,3 +155,19 @@ $font-sizes: (
   7: $font-size-base * 0.75
 );
 // scss-docs-end font-sizes
+
+// scss-docs-start badge-variables
+$badge-font-weight:                 $font-weight-normal;
+$badge-font-size:                   $font-size-base;
+$badge-padding-y:                   4px;
+$badge-padding-x:                   6px;
+$badge-border-radius:               4px;
+// scss-docs-end badge-variables
+
+// scss-docs-start box-shadow-variables
+$box-shadow-sm:               0px 0px 12px 0px #0000000D;
+// scss-docs-end box-shadow-variables
+
+// scss-docs-start border-variables
+$border-color:                #cbcdd2;
+// scss-docs-end border-variables

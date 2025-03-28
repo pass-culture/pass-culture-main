@@ -630,3 +630,9 @@ class EditStockForm(FlaskForm):
             self.percent.errors += error
             return False
         return super().validate()
+
+
+class ConnectAsForm(FlaskForm):
+    object_id = wtforms.HiddenField()
+    object_type = wtforms.HiddenField()
+    redirect = wtforms.HiddenField()

@@ -152,6 +152,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION = (
         "Activer la personnalisation tu tableau des offres individuelles dans le BO"
     )
+    WIP_ENABLE_BO_OFFER_DETAILS_V2 = "Afficher le nouveau design de la page `details de l'offre`"
     WIP_ENABLE_EVENT_WITH_OPENING_HOUR = "Activer la nouvelle création d'un événement sur horaires d'ouverture"
 
     def is_active(self) -> bool:

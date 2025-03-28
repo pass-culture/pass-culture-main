@@ -15,6 +15,12 @@ class BsTooltips extends PcAddOn {
     this.$tooltips.forEach(($tooltip) => {
       this.tooltips.push(new bootstrap.Tooltip($tooltip))
     })
+    // Fix the case where a button has a tooltip and displays a modal once clicked → the tooltip must hide and not stay there forever
+    addEventListener("show.bs.modal", () => {
+      this.tooltips.forEach((tooltip) => {
+        tooltip.hide()
+      })
+    })
   }
 
   unbindEvents = () => {

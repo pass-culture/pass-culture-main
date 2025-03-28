@@ -1,7 +1,39 @@
-.nav-link:hover {
-  text-decoration: underline;
+.nav-pills {
+  .nav-link {
+    color: inherit;
+
+    &:hover,
+    &:focus {
+      background-color: var(--#{$prefix}nav-pills-link-active-bg);
+    }
+  }
+
+  .navbar-text {
+    font-size: 12px;
+    padding: var(--#{$prefix}nav-link-padding-y) var(--#{$prefix}nav-link-padding-x);
+    text-transform: uppercase;
+    color: var(--#{$prefix}secondary-color);
+  }
+
 }
 
-.nav-pills {
-  --bs-nav-pills-link-active-bg: $pc-nav-pills-bg-color-active;
+.nav-underline {
+
+  .nav-link {
+    color: var(--#{$prefix}body-color);
+    font-weight: $font-weight-semibold;
+    border-bottom: var(--#{$prefix}nav-underline-border-width) solid var(--#{$prefix}border-color);
+
+    &:hover,
+    &:focus {
+      color: $primary;
+    }
+  }
+
+  .nav-link.active,
+  .show > .nav-link {
+    font-weight: $font-weight-semibold;
+    color: var(--#{$prefix}nav-underline-link-active-color);
+    border-bottom-color: currentcolor;
+  }
 }

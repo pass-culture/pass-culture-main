@@ -1,0 +1,60 @@
+{% import "components/logo.html" as logo %}
+<nav class="navbar py-1 px-5 border-bottom">
+  <div class="container-fluid d-flex p-0 gap-1 justify-content-start">
+    <button class="btn"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvas_navbar_main_menu"
+            aria-controls="offcanvasNavbar"
+            aria-label="Afficher/Cacher le menu">
+      <i class="bi bi-list h4"></i>
+    </button>
+    <a href="{{ url_for('backoffice_web.home') }}">
+      <p class="navbar-brand m-0 text-primary btn">
+        {{ logo.passculture() }}
+        Back Office
+      </p>
+    </a>
+    <div class="offcanvas offcanvas-start"
+         tabindex="-1"
+         id="offcanvas_navbar_main_menu"
+         aria-labelledby="offcanvasNavbarLabel">
+      <div class="offcanvas-body">
+        <div class="d-flex justify-content-between align-items-center p-3">
+          <div class="text-primary">
+            {{ logo.passculture() }}
+            Back Office
+          </div>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="offcanvas"
+                  aria-label="Close"></button>
+        </div>
+        <ul class="nav nav-pills flex-column gap-1">
+          {% for menu_section in menu %}
+            <li class="navbar-text">{{ menu_section.label }}</li>
+            {% for menu_item in menu_section.items %}
+              <li class="nav-item">
+                <a class="nav-link{% if menu_item.is_active %} active{% endif %}"
+                   href="{{ menu_item.url }}">{{ menu_item.label }}</a>
+              </li>
+            {% endfor %}
+            <hr />
+          {% endfor %}
+          <li class="nav-item">
+            <form action="{{ url_for('backoffice_web.logout') }}"
+                  name="{{ url_for('backoffice_web.logout') | action_to_name  }}"
+                  method="post">
+              {{ csrf_token }}
+              <button type="submit"
+                      class="btn d-flex align-items-center gap-2">
+                <i class="bi bi-box-arrow-right fs-5"></i>
+                Se déconnecter
+              </button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>

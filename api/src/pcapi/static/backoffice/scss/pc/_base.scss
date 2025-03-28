@@ -1,5 +1,7 @@
 .pc-header-top {
-  background: linear-gradient(to right, $primary, $secondary);
+  --old-primary: #eb0055;       // pink
+  --old-secondary: #320096;     // purple
+  background: linear-gradient(to right, var(--old-primary), var(--old-secondary));
 }
 
 a {
@@ -31,3 +33,16 @@ a {
   -o-transform: rotate(-90deg);
   vertical-align: baseline;
  }
+
+dt {
+  font-size: $font-size-base;
+  font-weight: $font-weight-light !important;
+  color: var(--bs-secondary-color);
+  margin-bottom: 2px;
+}
+
+dd {
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  color: var(--bs-body-color);
+}

@@ -1,8 +1,10 @@
-{% macro copy_to_clipboard(link, over) %}
-  <i class="bi bi-stickies pc-clipboard"
-     data-bs-toggle="tooltip"
-     data-bs-placement="top"
-     data-bs-title="{{ over }}"
-     data-text="{{ link }}">
-  </i>
+{% macro copy_to_clipboard(text_to_copy, tooltip_title) %}
+  <a href="">
+    <i class="bi bi-copy pc-clipboard text-body"
+       data-bs-toggle="tooltip"
+       data-bs-placement="top"
+       data-bs-title="{{ tooltip_title }}"
+       data-text="{{ text_to_copy }}">
+    </i>
+  </a>
 {% endmacro %}
