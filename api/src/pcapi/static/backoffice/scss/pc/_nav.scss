@@ -2,6 +2,24 @@
   text-decoration: underline;
 }
 
-.nav-pills {
-  --bs-nav-pills-link-active-bg: $pc-nav-pills-bg-color-active;
+.nav-underline {
+
+  .nav-link {
+    color: var(--#{$prefix}body-color);
+    font-weight: $font-weight-semibold;
+    border-bottom: var(--#{$prefix}nav-underline-border-width) solid var(--#{$prefix}border-color);
+
+    &:hover,
+    &:focus {
+      text-decoration: none;
+      color: $primary;
+    }
+  }
+
+  .nav-link.active,
+  .show > .nav-link {
+    font-weight: $font-weight-semibold;
+    color: var(--#{$prefix}nav-underline-link-active-color);
+    border-bottom-color: currentcolor;
+  }
 }

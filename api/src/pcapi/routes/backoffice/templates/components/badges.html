@@ -62,7 +62,7 @@
 {% macro build_offer_offerer_fraud_badges(offerer) %}
   {% if has_permission("PRO_FRAUD_ACTIONS") %}
     {{ offerer.confidenceLevel | format_confidence_level_badge }}
-    {% if offerer.isTopActeur %}<span class="badge text-bg-light shadow-sm">Top Acteur</span>{% endif %}
+    {% if offerer.isTopActeur %}{{ "Top Acteur" | format_badge("secondary")  }}{% endif %}
   {% endif %}
 {% endmacro %}
 {% macro build_offer_venue_fraud_badges(venue) %}

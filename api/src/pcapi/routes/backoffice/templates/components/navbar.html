@@ -1,0 +1,59 @@
+{% import "components/logo.html" as logo %}
+<nav class="navbar text-bg-primary p-3 pc-header-top">
+  <div class="container-fluid d-flex justify-content-between p-0">
+    <button class="btn"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvas_navbar_main_menu"
+            aria-controls="offcanvasNavbar"
+            aria-label="Afficher/Cacher le menu">
+      <i class="bi bi-list text-white h4"></i>
+    </button>
+    <div class="offcanvas offcanvas-start"
+         tabindex="-1"
+         id="offcanvas_navbar_main_menu"
+         aria-labelledby="offcanvasNavbarLabel">
+      <div class="offcanvas-body">
+        <div class="position-absolute top-0 end-0 p-2">
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="offcanvas"
+                  aria-label="Close"></button>
+        </div>
+        <ul class="navbar-nav">
+          {% for menu_section in menu %}
+            <li class="navbar-text">
+              <h5>{{ menu_section.label }}</h5>
+              <ul class="navbar-nav ps-4">
+                {% for menu_item in menu_section.items %}
+                  <li class="nav-item">
+                    <a class="nav-link"
+                       href="{{ menu_item.url }}">{{ menu_item.label  }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+              {% if not loop.last %}<hr />{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <a href="{{ url_for('backoffice_web.home') }}">
+      <p class="navbar-brand m-0 text-white btn">
+        {{ logo.passculture() }}
+        Back Office
+      </p>
+    </a>
+    <div>
+      <form action="{{ url_for('backoffice_web.logout') }}"
+            name="{{ url_for('backoffice_web.logout') | action_to_name  }}"
+            method="post">
+        {{ csrf_token }}
+        <button type="submit"
+                class="btn btn-link text-white">
+          <i class="bi bi-box-arrow-right fs-5"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</nav>

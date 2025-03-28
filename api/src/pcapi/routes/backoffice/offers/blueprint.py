@@ -5,6 +5,7 @@ import functools
 from io import BytesIO
 import logging
 import re
+import secrets
 import typing
 
 from flask import flash
@@ -52,6 +53,7 @@ from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
+from pcapi.utils import urls
 
 from . import forms
 
@@ -1039,14 +1041,24 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         except offers_exceptions.MoveOfferBaseException:
             pass
 
+    connect_as = None
+    if utils.has_current_user_permission(perm_models.Permissions.CONNECT_AS_PRO):
+        random_int = secrets.randbelow(1000000000000)
+        connect_as_form_id = f"connect-as-form-offer-{offer.id}-{random_int}"
+        pc_pro_url = urls.build_pc_pro_offer_path(offer)
+        connect_as_href = urls.build_pc_pro_offer_link(offer)
+        connect_as_form = forms.ConnectAsForm(object_type="offer", object_id=offer.id, redirect=pc_pro_url)
+        connect_as = {"form": connect_as_form, "form_name": connect_as_form_id, "href": connect_as_href}
+
     return render_template(
-        "offer/details.html",
+        "offer/details_v2.html" if FeatureToggle.WIP_ENABLE_BO_OFFER_DETAILS_V2 else "offer/details.html",
         offer=offer,
         active_tab=request.args.get("active_tab", "stock"),
         editable_stock_ids=editable_stock_ids,
         reindex_offer_form=empty_forms.EmptyForm() if is_advanced_pro_support else None,
         edit_offer_venue_form=edit_offer_venue_form,
         move_offer_form=move_offer_form,
+        connect_as=connect_as,
     )
 
 
