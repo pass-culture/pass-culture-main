@@ -6,6 +6,7 @@ from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
+import jwt
 from sqlalchemy.exc import IntegrityError
 from werkzeug import Response
 
@@ -75,15 +76,36 @@ def signup_pro(body: users_serializers.ProUserCreationBodyV2Model) -> None:
 @blueprint.pro_private_api.route("/users/validate_signup/<token>", methods=["PATCH"])
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def validate_user(token: str) -> None:
-    try:
-        stored_token = token_utils.Token.load_and_check(token, token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION)
-        user_to_validate = users_models.User.query.get_or_404(stored_token.user_id)
-        stored_token.expire()
-        users_api.validate_pro_user_email(user_to_validate)
-    except users_exceptions.InvalidToken:
-        errors = ResourceNotFoundError()
-        errors.add_error("global", "Ce lien est invalide")
-        raise errors
+    def classic_token_check(token: str) -> None:
+        try:
+            stored_token = token_utils.Token.load_and_check(token, token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION)
+            user_to_validate = users_models.User.query.get_or_404(stored_token.user_id)
+            stored_token.expire()
+            users_api.validate_pro_user_email(user_to_validate)
+        except users_exceptions.InvalidToken:
+            raise ResourceNotFoundError(errors={"global": "Ce lien est invalide"})
+
+    if FeatureToggle.WIP_2025_SIGN_UP.is_active():
+        try:
+            user_id = token_utils.validate_passwordless_token(token)["sub"]
+            user = users_models.User.query.get_or_404(user_id)
+            users_api.validate_pro_user_email(user)
+        except jwt.InvalidAlgorithmError:
+            # Users could have signup before the FF were activated, but validate their email after.
+            # This can safely be removed a few days after the FF activation, while users consume their tokens.
+            classic_token_check(token)
+        except users_exceptions.ExpiredToken:
+            # To be changed in PC-34119
+            raise ResourceNotFoundError(errors={"global": "Ce lien est invalide"})
+        except users_exceptions.InvalidToken:
+            raise ResourceNotFoundError(errors={"global": "Ce lien est invalide"})
+        discard_session()
+        login_user(user)
+        stamp_session(user)
+        flask.session["last_login"] = datetime.utcnow().timestamp()
+        users_api.update_last_connection_date(user)
+    else:
+        classic_token_check(token)
 
 
 @blueprint.pro_private_api.route("/users/tuto-seen", methods=["PATCH"])
