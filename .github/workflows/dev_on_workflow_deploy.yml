@@ -258,7 +258,7 @@ jobs:
 
   apply-algolia-config:
     name: "apply Algolia settings"
-    needs: [deploy-api]
+    needs: deploy-api
     if: |
       inputs.apply_algolia_config == true &&
       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped')
