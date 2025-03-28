@@ -27,7 +27,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 @pytest.fixture(name="instructor")
 def instructor_fixture():
     return users_factories.AdminFactory(
-        email="instructeur@example.com",
+        email="instructeur@passculture.app",
         backoffice_profile__dsInstructorId="SW5wdHK1Y3RleRItFeA2aEs",
     )
 
@@ -453,7 +453,7 @@ class SyncUserAccountUpdateRequestsTest:
         sync_response = copy.deepcopy(ds_fixtures.DS_RESPONSE_EMAIL_CHANGED_WITH_SET_WITHOUT_CONTINUATION)
         for message in sync_response["demarche"]["dossiers"]["nodes"][0]["messages"]:
             if message["email"] == sync_response["demarche"]["dossiers"]["nodes"][0]["usager"]["email"]:
-                message["email"] = None  # "removes" the message
+                message["email"] = "not an email"  # "removes" the message
 
         with patch(
             "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
