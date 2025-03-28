@@ -6,6 +6,7 @@ import typing
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
+from sqlalchemy import orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors.big_query import queries as big_query_queries
@@ -17,7 +18,7 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
-import pcapi.core.offers.repository as offers_repository
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.search.backends import base
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -381,12 +382,9 @@ def _reindex_collective_offer_template_ids(
     from_error_queue: bool = False,
 ) -> None:
     logger.info("Starting to index collective offers templates", extra={"count": len(collective_offer_template_ids)})
-    collective_offers_templates = educational_models.CollectiveOfferTemplate.query.filter(
+    query = get_base_query_for_collective_template_offer_indexation()
+    collective_offers_templates = query.filter(
         educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids)
-    ).options(
-        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
-            offerers_models.Venue.managingOfferer, innerjoin=True
-        ),
     )
 
     to_add = [
@@ -446,10 +444,13 @@ def index_offers_of_venues_in_queue() -> None:
         logger.exception("Could not index offers of venues from queue")
 
 
-def get_base_query_for_collective_template_offer_indexation() -> BaseQuery:
-    return educational_models.CollectiveOfferTemplate.query.options(
-        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
-            offerers_models.Venue.managingOfferer, innerjoin=True
+def get_base_query_for_collective_template_offer_indexation() -> (
+    "sa_orm.Query[educational_models.CollectiveOfferTemplate]"
+):
+    return db.session.query(educational_models.CollectiveOfferTemplate).options(
+        sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).options(
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
         ),
     )
 
