@@ -21,7 +21,6 @@ export const serializeEditVenueBodyModel = (
     street: removeQuotes(formValues.street?.trim() ?? ''),
     siret: unhumanizeSiret(formValues.siret),
     withdrawalDetails: formValues.withdrawalDetails,
-    venueLabelId: !formValues.venueLabel ? null : Number(formValues.venueLabel),
     venueTypeCode: formValues.venueType as VenueTypeCode,
     isManualEdition: formValues.manuallySetAddress,
   }
