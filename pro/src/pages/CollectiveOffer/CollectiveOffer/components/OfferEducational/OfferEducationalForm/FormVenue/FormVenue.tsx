@@ -5,6 +5,7 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import {
   isCollectiveOffer,
@@ -26,6 +27,7 @@ interface FormVenueProps {
   offer?:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
+  venues?: VenueListItemResponseModel[]
 }
 
 export const FormVenue = ({
@@ -35,6 +37,7 @@ export const FormVenue = ({
   disableForm,
   isOfferCreated,
   offer,
+  venues,
 }: FormVenueProps): JSX.Element => {
   const lastBookingStatus = isCollectiveOffer(offer)
     ? offer.lastBookingStatus
@@ -69,7 +72,8 @@ export const FormVenue = ({
                   applyVenueDefaultsToFormValues(
                     { ...values, venueId: event.target.value },
                     userOfferer,
-                    isOfferCreated
+                    isOfferCreated,
+                    venues
                   )
                 )
               }

@@ -98,7 +98,8 @@ const templateSerializer: PatchOfferSerializer<PatchCollectiveOfferTemplateBodyM
 
 export const createPatchOfferPayload = (
   offer: OfferEducationalFormValues,
-  initialValues: OfferEducationalFormValues
+  initialValues: OfferEducationalFormValues,
+  isCollectiveOaActive: boolean
 ): PatchCollectiveOfferBodyModel => {
   let changedValues: PatchCollectiveOfferBodyModel = {}
 
@@ -122,7 +123,8 @@ export const createPatchOfferPayload = (
 
 export const createPatchOfferTemplatePayload = (
   offer: OfferEducationalFormValues,
-  initialValues: OfferEducationalFormValues
+  initialValues: OfferEducationalFormValues,
+  isCollectiveOaActive: boolean
 ): PatchCollectiveOfferTemplateBodyModel => {
   const keysToOmmit: (keyof OfferEducationalFormValues)[] = [
     'imageUrl',

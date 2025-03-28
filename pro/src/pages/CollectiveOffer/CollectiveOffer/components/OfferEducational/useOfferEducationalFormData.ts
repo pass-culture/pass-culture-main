@@ -40,7 +40,8 @@ export const useOfferEducationalFormData = (
       targetOffererId
         ? [GET_EDUCATIONAL_OFFERERS_QUERY_KEY, targetOffererId]
         : null,
-      ([, offererId]) => api.listEducationalOfferers(offererId)
+      ([, offererId]) => api.listEducationalOfferers(offererId),
+      { fallback: [] }
     )
 
   const selectedEducationalOfferer =

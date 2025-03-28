@@ -2,6 +2,7 @@ import {
   EacFormat,
   PatchCollectiveOfferBodyModel,
   OfferAddressType,
+  CollectiveLocationType,
 } from 'apiClient/v1'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { buildStudentLevelsMapWithDefaultValue } from 'commons/core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
@@ -32,6 +33,9 @@ describe('createPatchOfferPayload', () => {
       addressType: OfferAddressType.OFFERER_VENUE,
       otherAddress: 'TestOtherAddress',
       venueId: 12,
+    },
+    location: {
+      locationType: CollectiveLocationType.ADDRESS,
     },
     participants: {
       ...buildStudentLevelsMapWithDefaultValue(true),
@@ -67,6 +71,9 @@ describe('createPatchOfferPayload', () => {
       addressType: OfferAddressType.SCHOOL,
       otherAddress: 'TestOtherAddress update',
       venueId: 12,
+    },
+    location: {
+      locationType: CollectiveLocationType.ADDRESS,
     },
     participants: {
       ...buildStudentLevelsMapWithDefaultValue(false),

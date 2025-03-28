@@ -7,6 +7,7 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import {
   isCollectiveOffer,
@@ -16,6 +17,7 @@ import {
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { SelectOption } from 'commons/custom_types/form'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { sortByLabel } from 'commons/utils/strings'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
@@ -38,6 +40,7 @@ import {
   FormImageUploader,
   ImageUploaderOfferProps,
 } from './FormImageUploader/FormImageUploader'
+import { FormLocation } from './FormLocation/FormLocation'
 import { FormNotifications } from './FormNotifications/FormNotifications'
 import { FormOfferType } from './FormOfferType/FormOfferType'
 import { FormParticipants } from './FormParticipants/FormParticipants'
@@ -58,6 +61,7 @@ export type OfferEducationalFormProps = {
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
   isSubmitting: boolean
+  venues?: VenueListItemResponseModel[]
 }
 
 export const OfferEducationalForm = ({
@@ -71,9 +75,13 @@ export const OfferEducationalForm = ({
   isOfferCreated = false,
   offer,
   isSubmitting,
+  venues,
 }: OfferEducationalFormProps): JSX.Element => {
   const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
   const [isEligible, setIsEligible] = useState<boolean>()
+  const isCollectiveOaActive = useActiveFeature(
+    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
+  )
 
   const { setFieldValue, initialValues, dirty, values } =
     useFormikContext<OfferEducationalFormValues>()
@@ -160,6 +168,7 @@ export const OfferEducationalForm = ({
                 userOfferer={userOfferer}
                 venuesOptions={venuesOptions}
                 offer={offer}
+                venues={venues}
               />
             )}
             {values.offererId && values.venueId && isEligible ? (
@@ -182,11 +191,17 @@ export const OfferEducationalForm = ({
                     dateCreated={offer?.dateCreated}
                   />
                 )}
-                <FormPracticalInformation
-                  currentOfferer={userOfferer}
-                  venuesOptions={venuesOptions}
-                  disableForm={!canEditDetails}
-                />
+
+                {isCollectiveOaActive ? (
+                  <FormLocation venues={venues} disableForm={!canEditDetails} />
+                ) : (
+                  <FormPracticalInformation
+                    currentOfferer={userOfferer}
+                    venuesOptions={venuesOptions}
+                    disableForm={!canEditDetails}
+                  />
+                )}
+
                 <FormParticipants disableForm={!canEditDetails} />
                 <FormAccessibility disableForm={!canEditDetails} />
                 {isTemplate ? (
