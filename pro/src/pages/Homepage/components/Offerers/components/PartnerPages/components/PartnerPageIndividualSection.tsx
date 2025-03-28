@@ -76,7 +76,7 @@ export function PartnerPageIndividualSection({
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           className={styles['details-link']}
-          to={`/structures/${offererId}/lieux/${venueId}/partner-page`}
+          to={`/structures/${offererId}/lieux/${venueId}/page-partenaire`}
           aria-label={`Gérer la page ${venueName}`}
           icon={fullNextIcon}
           onClick={() =>
