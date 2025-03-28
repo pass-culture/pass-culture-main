@@ -384,6 +384,7 @@ def _reindex_collective_offer_template_ids(
     collective_offers_templates = educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids)
     ).options(
+        # TODO: add join on venue.OA (use get_base_query_for_collective_template_offer_indexation)
         sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
             offerers_models.Venue.managingOfferer, innerjoin=True
         ),
@@ -447,6 +448,7 @@ def index_offers_of_venues_in_queue() -> None:
 
 
 def get_base_query_for_collective_template_offer_indexation() -> BaseQuery:
+    # TODO: add joinedload venue.oa
     return educational_models.CollectiveOfferTemplate.query.options(
         sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
             offerers_models.Venue.managingOfferer, innerjoin=True
