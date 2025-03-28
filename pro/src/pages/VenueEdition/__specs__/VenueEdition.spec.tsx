@@ -23,10 +23,18 @@ interface VenueEditionTestProps {
   options?: RenderWithProvidersOptions
 }
 
-const renderVenueEdition = ({ context = 'address', options }: VenueEditionTestProps = {}) => {
+const renderVenueEdition = ({
+  context = 'address',
+  options,
+}: VenueEditionTestProps = {}) => {
   const offererId = defaultGetOffererResponseModel.id
   const venueId = defaultGetVenue.id
-  const translatedContext = context === 'adage' ? '/collectif' : context === 'partnerPage' ? '/partner-page' : ''
+  const translatedContext =
+    context === 'adage'
+      ? '/collectif'
+      : context === 'partnerPage'
+        ? '/page-partenaire'
+        : ''
   const initialPath = `/structures/${offererId}/lieux/${venueId}${translatedContext}/edition`
 
   return renderWithProviders(
@@ -228,7 +236,7 @@ describe('VenueEdition', () => {
         ...baseVenue,
         isPermanent: true,
       })
-      renderVenueEdition({ options: { user: sharedCurrentUserFactory() }})
+      renderVenueEdition({ options: { user: sharedCurrentUserFactory() } })
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
       expect(screen.queryByText('Pour le grand public')).not.toBeInTheDocument()
