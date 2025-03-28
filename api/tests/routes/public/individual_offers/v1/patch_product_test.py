@@ -386,11 +386,21 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         new_desc = product_offer.description + " updated"
 
         expected_num_queries = 1  # get api key
-        expected_num_queries += 1  # get offer and related data
+        expected_num_queries += 1  # get offer
+
+        expected_num_queries += 1  # get mediations
+        expected_num_queries += 1  # get stocks
+        expected_num_queries += 1  # get price categories
+
         expected_num_queries += 1  # select oa
         expected_num_queries += 1  # update offer
         expected_num_queries += 1  # reload provider
-        expected_num_queries += 1  # reload offer and related data (before serialization)
+        expected_num_queries += 1  # reload offer
+
+        expected_num_queries += 1  # reload stock
+        expected_num_queries += 1  # reload price categories
+        expected_num_queries += 1  # reload mediations
+
         expected_num_queries += 1  # check venue offerer address
         with assert_num_queries(expected_num_queries):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(

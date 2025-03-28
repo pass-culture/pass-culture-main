@@ -21,7 +21,14 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
     num_queries_with_error = 1  # retrieve API key
     num_queries_with_error += 1  # retrieve offer
-    num_queries = num_queries_with_error + 1  # future_offer (a backref)
+
+    # fetch stocks (1 query)
+    # fetch mediations (1 query)
+    # fetch price categories (1 query)
+    num_queries = num_queries_with_error + 3
+
+    # fetch product (1 query)
+    num_queries_full = num_queries + 1
 
     def setup_base_resource(self, venue=None) -> offers_models.Offer:
         venue = venue or self.setup_venue()
@@ -65,7 +72,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
         event_offer = self.setup_base_resource(venue=venue_provider.venue)
         event_offer_id = event_offer.id
 
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_full):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
 
         assert response.status_code == 200
@@ -109,7 +116,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             publicationDate=publication_date,
         )
 
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_full):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
 
         assert response.status_code == 200

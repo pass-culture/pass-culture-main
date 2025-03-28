@@ -18,8 +18,12 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "get"
     default_path_params = {"product_id": 1}
 
-    num_queries = 1  # select api_key, offerer and provider
-    num_queries += 1  # select offers
+    num_queries_404 = 1  # select api_key, offerer and provider
+    num_queries_404 += 1  # select offers
+
+    num_queries = num_queries_404 + 1  # select price categories
+    num_queries += 1  # select mediations
+    num_queries += 1  # select stocks
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
@@ -31,7 +35,7 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
             idAtProvider="provider_id_at_provider",
         ).id
 
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_404):
             response = client.with_explicit_token(plain_api_key).get(
                 self.endpoint_url.format(product_id=product_offer_id)
             )
@@ -46,7 +50,7 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
             idAtProvider="provider_id_at_provider",
         ).id
 
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_404):
             response = client.with_explicit_token(plain_api_key).get(
                 self.endpoint_url.format(product_id=product_offer_id)
             )
@@ -164,7 +168,7 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
         venue = venue_provider.venue
         event_offer_id = offers_factories.EventOfferFactory(venue=venue).id
 
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_404):
             response = client.with_explicit_token(plain_api_key).get(f"/public/offers/v1/products/{event_offer_id}")
             assert response.status_code == 404
         assert response.json == {"product_id": ["The product offer could not be found"]}
