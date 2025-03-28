@@ -36,7 +36,7 @@ export interface LayoutProps {
    */
   mainTopElement?: React.ReactNode
   /**
-   * In case both <h1> & back to nav link
+   * In case both `<h1>` & back to nav link
    * had to be declared within the children
    */
   areMainHeadingAndBackToNavLinkInChild?: boolean
