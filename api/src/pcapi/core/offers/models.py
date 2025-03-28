@@ -524,6 +524,7 @@ class EventOpeningHours(PcObject, Base, Model, SoftDeletableMixin):
     __tablename__ = "event_opening_hours"
 
     offerId: sa_orm.Mapped[int] = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), nullable=False, index=True)
+    offer: sa_orm.Mapped["Offer"] = relationship("Offer", foreign_keys=[offerId], back_populates="eventOpeningHours")
 
     # To track
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa.Column(
@@ -848,6 +849,10 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     @isDigital.expression  # type: ignore[no-redef]
     def isDigital(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls.url.is_not(None), cls.url != "")
+
+    @property
+    def hasOpeningHours(self) -> bool:
+        return any(not eventOpeningHours.isSoftDeleted for eventOpeningHours in self.eventOpeningHours)
 
     @property
     def isEditable(self) -> bool:

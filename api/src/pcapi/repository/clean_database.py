@@ -73,6 +73,8 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     bookings_models.Booking,
     educational_models.CollectiveStock,
     offers_models.Stock,
+    offers_models.EventWeekDayOpeningHours,
+    offers_models.EventOpeningHours,
     users_models.Favorite,
     offers_models.Mediation,
     criteria_models.OfferCriterion,
