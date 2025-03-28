@@ -37,7 +37,6 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadStats()
   }, [offerer.id])
-
   return (
     <>
       <div className={styles['header']}>
