@@ -205,6 +205,7 @@ def import_deposit_institution_data(
 def _update_institutions_educational_program(
     educational_program: educational_models.EducationalInstitutionProgram, uais: typing.Iterable[str]
 ) -> None:
+    # FIXME: (rprasquier) This should be updated to take into account the entering/exiting institutions
     institutions: typing.Iterable[educational_models.EducationalInstitution] = (
         educational_models.EducationalInstitution.query.options(
             sa.orm.joinedload(educational_models.EducationalInstitution.programs)
