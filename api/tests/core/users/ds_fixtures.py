@@ -175,7 +175,7 @@ DS_RESPONSE_PHONE_NUMBER_CHANGED = {
                         "email": None,
                     },
                     "demarche": {"revision": {"id": "UHJvY2VkdXJlUmV2aXNpb24tMTYyOTUz"}},
-                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@example.com"}],
+                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@passculture.app"}],
                     "champs": [
                         {
                             # "__typename": "TextChamp",
@@ -261,7 +261,7 @@ DS_RESPONSE_PHONE_NUMBER_CHANGED = {
                         },
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxNDEwNjc=",
-                            "email": "instructeur@example.com",
+                            "email": "instructeur@passculture.app",
                             # "body": "Message de l'instructeur",
                             "createdAt": "2024-11-26T11:04:05+01:00",
                             "correction": None,
@@ -307,7 +307,7 @@ DS_RESPONSE_TWO_APPLICATIONS_FIRST_NAME_LAST_NAME_CHANGED = {
                         "email": None,
                     },
                     "demarche": {"revision": {"id": "UHJvY2VkdXJlUmV2aXNpb24tMTYyOTUz"}},
-                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@example.com"}],
+                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@passculture.app"}],
                     "champs": [
                         {
                             # "__typename": "TextChamp",
@@ -432,7 +432,7 @@ DS_RESPONSE_TWO_APPLICATIONS_FIRST_NAME_LAST_NAME_CHANGED = {
                         "email": None,
                     },
                     "demarche": {"revision": {"id": "UHJvY2VkdXJlUmV2aXNpb24tMTYyOTUz"}},
-                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@example.com"}],
+                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@passculture.app"}],
                     "champs": [
                         {
                             # "__typename": "TextChamp",
@@ -511,10 +511,15 @@ DS_RESPONSE_TWO_APPLICATIONS_FIRST_NAME_LAST_NAME_CHANGED = {
                         },
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxNDI4NDM=",
-                            "email": "instructeur@example.com",
+                            "email": "instructeur@passculture.app",
                             # "body": "Correction demand\u00e9e",
-                            "createdAt": "2024-11-26T11:22:16+01:00",
+                            "createdAt": "2024-11-26T11:21:16+01:00",
                             "correction": {"dateResolution": None},
+                        },
+                        {
+                            "email": "oldinstructeur@passculture.app",
+                            # "body": "Bonjour, je suis un vieil instructeur",
+                            "createdAt": "2024-11-26T11:22:16+01:00",
                         },
                     ],
                 },
@@ -606,7 +611,7 @@ DS_RESPONSE_APPLIED_BY_PROXY = {
                     "deposeParUnTiers": True,
                     "demandeur": {"nom": "Enfant", "prenom": "Jeune", "email": "jeune@example.com"},
                     "demarche": {"revision": {"id": "UHJvY2VkdXJlUmV2aXNpb24tMTYyOTUz"}},
-                    "instructeurs": [{"email": "instructeur@example.com"}],
+                    "instructeurs": [{"email": "instructeur@passculture.app"}],
                     "champs": [
                         {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-08-07"},
@@ -632,7 +637,7 @@ DS_RESPONSE_APPLIED_BY_PROXY = {
                             "correction": None,
                         },
                         {
-                            "email": "instructeur@example.com",
+                            "email": "instructeur@passculture.app",
                             "createdAt": "2024-11-26T16:55:14+01:00",
                             "correction": None,
                         },
@@ -670,7 +675,7 @@ DS_RESPONSE_CORRECTION_RESOLVED = {
                     "deposeParUnTiers": False,
                     "demandeur": {"nom": "B\u00e9n\u00e9ficiaire", "prenom": "Jeune", "email": None},
                     "demarche": {"revision": {"id": "UHJvY2VkdXJlUmV2aXNpb24tMTYyOTUz"}},
-                    "instructeurs": [{"email": "instructeur@example.com"}],
+                    "instructeurs": [{"email": "instructeur@passculture.app"}],
                     "champs": [
                         {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-09-08"},
@@ -696,7 +701,7 @@ DS_RESPONSE_CORRECTION_RESOLVED = {
                             "correction": None,
                         },
                         {
-                            "email": "instructeur@example.com",
+                            "email": "instructeur@passculture.app",
                             "createdAt": "2024-11-26T17:05:04+01:00",
                             "correction": {"dateResolution": "2024-11-26T17:05:32+01:00"},
                         },
@@ -855,7 +860,7 @@ DS_RESPONSE_EMAIL_CHANGED_WITH_SET_WITHOUT_CONTINUATION = {
                         "email": None,
                     },
                     "demarche": {"revision": {"id": "UHJvY2VkdXJlUmV2aXNpb24tMTYyOTUz"}},
-                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@example.com"}],
+                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@passculture.app"}],
                     "champs": [
                         {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-06-05"},
@@ -877,7 +882,7 @@ DS_RESPONSE_EMAIL_CHANGED_WITH_SET_WITHOUT_CONTINUATION = {
                             "correction": None,
                         },
                         {
-                            "email": "instructeur@example.com",
+                            "email": "instructeur@passculture.app",
                             "createdAt": "2024-12-12T12:12:00+01:00",
                             "correction": None,
                         },
@@ -927,7 +932,7 @@ DS_RESPONSE_FIRSTNAME_CHANGED_WITH_SET_WITHOUT_CONTINUATION = {
                         "email": None,
                     },
                     "demarche": {"revision": {"id": "UHJvY2VkdXJlUmV2aXNpb24tMTYyOTUz"}},
-                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@example.com"}],
+                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@passculture.app"}],
                     "champs": [
                         {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-06-05"},
@@ -948,7 +953,7 @@ DS_RESPONSE_FIRSTNAME_CHANGED_WITH_SET_WITHOUT_CONTINUATION = {
                             "correction": None,
                         },
                         {
-                            "email": "instructeur@example.com",
+                            "email": "instructeur@passculture.app",
                             "createdAt": "2024-12-12T12:12:00+01:00",
                             "correction": None,
                         },
@@ -998,7 +1003,7 @@ DS_RESPONSE_EMAIL_CHANGED_FROM_DRAFT_WITH_SET_WITHOUT_CONTINUATION = {
                         "email": None,
                     },
                     "demarche": {"revision": {"id": "UHJvY2VkdXJlUmV2aXNpb24tMTYyOTUz"}},
-                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@example.com"}],
+                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@passculture.app"}],
                     "champs": [
                         {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-06-05"},
@@ -1020,7 +1025,7 @@ DS_RESPONSE_EMAIL_CHANGED_FROM_DRAFT_WITH_SET_WITHOUT_CONTINUATION = {
                             "correction": None,
                         },
                         {
-                            "email": "instructeur@example.com",
+                            "email": "instructeur@passculture.app",
                             "createdAt": "2024-12-12T12:12:00+01:00",
                             "correction": None,
                         },
@@ -1070,7 +1075,7 @@ DS_RESPONSE_ARCHIVED = {
                         "email": None,
                     },
                     "demarche": {"revision": {"id": "UHJvY2VkdXJlUmV2aXNpb24tMTYyOTUz"}},
-                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@example.com"}],
+                    "instructeurs": [{"id": "SW5zdHJ1Y3RldXItMTAyOTgz", "email": "instructeur@passculture.app"}],
                     "champs": [
                         {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-06-05"},

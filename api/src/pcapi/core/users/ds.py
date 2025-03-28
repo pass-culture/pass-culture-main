@@ -207,9 +207,7 @@ def _sync_ds_application(
         instructors = node.get("instructeurs", [])
         messages = node.get("messages", [])
         user_messages = [message for message in messages if message["email"] == node["usager"]["email"]]
-        instructor_messages = [
-            message for message in messages if message["email"] in (instructor["email"] for instructor in instructors)
-        ]
+        instructor_messages = [message for message in messages if message["email"].endswith("@passculture.app")]
 
         data = {
             "firstName": node["demandeur"]["prenom"],
