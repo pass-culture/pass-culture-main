@@ -168,7 +168,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Nom de l'offre"] == offers[0].name
         assert rows[0]["Catégorie"] == offers[0].category.pro_label
         assert rows[0]["Sous-catégorie"] == offers[0].subcategory.pro_label
-        assert rows[0]["État"] == "Validée"
+        assert rows[0]["État"] == "• Validée"
         assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
         assert rows[0]["Dernière validation"] == ""
         assert rows[0]["Dép."] == offers[0].venue.departementCode
@@ -228,7 +228,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Nom de l'offre"] == offers[1].name
         assert rows[0]["Catégorie"] == offers[1].category.pro_label
         assert rows[0]["Sous-catégorie"] == offers[1].subcategory.pro_label
-        assert rows[0]["État"] == "Validée"
+        assert rows[0]["État"] == "• Validée"
         assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
         assert rows[0]["Dernière validation"] == "22/02/2022"
         assert rows[0]["Dép."] == offers[1].venue.departementCode
@@ -709,7 +709,7 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[2].id}
-        assert rows[0]["État"] == "Rejetée"
+        assert rows[0]["État"] == "• Rejetée"
 
     def test_list_offers_by_four_filters(self, authenticated_client, criteria, offers):
         criterion_id = criteria[1].id
@@ -1913,6 +1913,7 @@ class BatchOfferRejectTest(PostEndpointHelper):
         )
 
 
+@pytest.mark.features(WIP_ENABLE_BO_OFFER_DETAILS_V2=False)
 class GetOfferDetailsTest(GetEndpointHelper):
     endpoint = "backoffice_web.offer.get_offer_details"
     endpoint_kwargs = {"offer_id": 1}
@@ -1949,7 +1950,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Sous-catégorie : Support physique (DVD, Blu-ray...)" in card_text
         assert "Type de musique : Alternatif" in card_text
         assert "Statut : Épuisée" in card_text
-        assert "État : Validée" in card_text
+        assert "État : • Validée" in card_text
         assert "Score data : 55 " in card_text
         assert "Raison de score faible : Prix Sous-catégorie Description de l'offre " in card_text
         assert "Entité juridique : Le Petit Rintintin Management" in card_text
@@ -2064,7 +2065,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert f"Produit : good movie ({product.id})" in card_text
         assert "Genres : ADVENTURE, ANIMATION, DRAMA " in card_text
         assert "Statut : Épuisée" in card_text
-        assert "État : Validée" in card_text
+        assert "État : • Validée" in card_text
         assert "Entité juridique : Le Petit Rintintin Management" in card_text
         assert "Partenaire culturel : Le Petit Rintintin" in card_text
         assert "Adresse :" not in card_text  # no offererAddress

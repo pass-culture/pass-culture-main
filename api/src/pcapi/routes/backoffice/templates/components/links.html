@@ -56,6 +56,9 @@
 {% macro build_offerer_name_to_details_link(offerer, text_attr="name") %}
   <a href="{{ url_for('backoffice_web.offerer.get', offerer_id=offerer.id) }}"
      class="link-primary"
+     data-bs-toggle="tooltip"
+     data-bs-placement="top"
+     data-bs-title="Voir l'entité juridique"
      target="_top">{{ offerer[text_attr] }}</a>
 {% endmacro %}
 {% macro build_finance_incident_to_details_link(finance_incident, text_attr="id", active_tab='bookings') %}
@@ -66,6 +69,9 @@
 {% macro build_venue_name_to_details_link(venue, text_attr="common_name", active_tab=None) %}
   <a href="{{ url_for('backoffice_web.venue.get', venue_id=venue.id, active_tab=active_tab) }}"
      class="link-primary"
+     data-bs-toggle="tooltip"
+     data-bs-placement="top"
+     data-bs-title="Voir le partenaire culturel"
      target="_top">{{ venue[text_attr] }}</a>
 {% endmacro %}
 {% macro build_offer_name_to_details_link(offer, text_attr="name") %}
@@ -195,7 +201,9 @@
   {% set ban_path = address.banId or '#18/' + address.latitude|string + '/' + address.longitude|string %}
   <a href="https://adresse.data.gouv.fr/base-adresse-nationale/{{ ban_path }}"
      target="_blank"
-     title="Localiser sur le site national de l'adresse"
+     data-bs-toggle="tooltip"
+     data-bs-placement="top"
+     data-bs-title="Accéder à data.gouv"
      class="link-primary">{{ address.latitude }}, {{ address.longitude }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
 {% macro build_ds_application_external_link(ds_dossier_id, ds_procedure_id=none, prefix="", subpath="") %}

@@ -10,3 +10,30 @@
   justify-content: center;
   margin-bottom: 1.125rem;
 }
+
+/********************
+ * Offer details v2 *
+ ********************/
+
+.accessibility-logo-container {
+  max-width: 72px;
+}
+
+.accessibility-logo {
+  height: 48px;
+  width: 48px;
+}
+
+$offer-image-width:         160px;
+$offer-image-height:        200px;
+
+.offer-image {
+  max-width: $offer-image-width;
+  max-height: $offer-image-height;
+}
+
+
+.offer-no-image {
+  width: $offer-image-width;
+  height: $offer-image-height;
+}
