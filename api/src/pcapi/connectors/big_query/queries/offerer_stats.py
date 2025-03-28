@@ -36,9 +36,9 @@ class OffererDailyViewsLast180Days(BaseQuery):
     @property
     def raw_query(self) -> str:
         return f"""
-        SELECT 
+        SELECT
             offerer_id as offererId,
-            CONCAT('[',STRING_AGG(CONCAT('{{"eventDate":"',event_date, '","numberOfViews":', IFNULL(cum_consult, 0), '}}') order by event_date), ']') AS dailyViews 
+            CONCAT('[',STRING_AGG(CONCAT('{{"eventDate":"',event_date, '","numberOfViews":', IFNULL(cum_consult, 0), '}}') order by event_date), ']') AS dailyViews
         FROM `{settings.BIG_QUERY_TABLE_BASENAME}.{DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE}`
         WHERE
             DATE(event_date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 180 DAY)

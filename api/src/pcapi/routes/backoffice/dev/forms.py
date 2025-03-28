@@ -11,8 +11,6 @@ from pcapi.core.users.generator import GeneratedSubscriptionStep
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
 
-from ..forms import fields
-
 
 class SimpleComponentsForm(FlaskForm):
     checkbox = fields.PCCheckboxField("checkbox")

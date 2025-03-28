@@ -56,7 +56,7 @@ def _fix_offers(start_id: int, end_id: int) -> None:
             AND product."jsonData"->>'gtl_id' is not null
             AND product."jsonData"->>'gtl_id' != ''
             AND (offer."jsonData"->>'csr_id' is null OR offer."jsonData"->>'csr_id' = '' OR offer."jsonData"->>'code_clil' is null OR offer."jsonData"->>'code_clil' = '' OR offer."jsonData"->>'gtl_id' is null OR offer."jsonData"->>'gtl_id' = '')
-            AND ((product."jsonData"->>'csr_id' is not null AND product."jsonData"->>'csr_id' != '') OR (product."jsonData"->>'code_clil' is not null AND product."jsonData"->>'code_clil' != ''))            
+            AND ((product."jsonData"->>'csr_id' is not null AND product."jsonData"->>'csr_id' != '') OR (product."jsonData"->>'code_clil' is not null AND product."jsonData"->>'code_clil' != ''))
             """,
             params={"start": i, "end": i + BATCH_SIZE},
         )

@@ -194,7 +194,7 @@ class AllocineStocks(LocalProvider):
         custom_label: str | None = None,
     ) -> offers_models.PriceCategory:
         offer = allocine_stock.offer
-        if not offer in self.price_categories_by_offer:
+        if offer not in self.price_categories_by_offer:
             self.price_categories_by_offer[offer] = (
                 offers_models.PriceCategory.query.filter_by(offer=offer)
                 .order_by(offers_models.PriceCategory.id.desc())
