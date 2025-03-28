@@ -266,6 +266,7 @@ def test_public_api(client):
                         "BACKOFFICE_OFFER_WITH_WRONG_INFORMATION",
                         "BACKOFFICE_OFFERER_BUSINESS_CLOSED",
                         "OFFERER_CONNECT_AS",
+                        "OFFERER_CLOSED",
                     ],
                     "title": "BookingCancellationReasons",
                 },

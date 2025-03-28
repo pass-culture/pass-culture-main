@@ -55,6 +55,7 @@ const cancellationReasonTitle = (
     case CollectiveBookingCancellationReasons.BACKOFFICE_OFFER_MODIFIED:
     case CollectiveBookingCancellationReasons.BACKOFFICE_OFFER_WITH_WRONG_INFORMATION:
     case CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS:
+    case CollectiveBookingCancellationReasons.OFFERER_CLOSED:
     default:
       return 'Le pass Culture a annulé la réservation'
   }
