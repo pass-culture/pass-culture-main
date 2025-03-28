@@ -27,6 +27,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -193,6 +194,19 @@ class GetOffererTest(GetEndpointHelper):
 
         assert "Peut créer une offre EAC : Oui" in html_parser.content_as_text(response.data)
         assert "Partenaires culturels cartographiés sur ADAGE : 0/1" in html_parser.content_as_text(response.data)
+
+    def test_offerer_with_venue_provider_has_provider_data(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+        providers_factories.VenueProviderFactory(venue__managingOfferer=offerer)
+        providers_factories.VenueProviderFactory(venue__managingOfferer=offerer, isActive=False)
+        offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert "Partenaires culturels synchronisés : 1/3" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_individual_subscription_tab(self, authenticated_client, offerer):
         offerer_id = offerer.id

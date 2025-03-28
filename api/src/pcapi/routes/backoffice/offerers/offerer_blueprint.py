@@ -30,6 +30,7 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -102,6 +103,26 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .scalar_subquery()
     )
 
+    provider_query = (
+        sa.select(
+            sa.func.concat(
+                sa.func.coalesce(sa.func.sum(sa.case((providers_models.VenueProvider.isActive, 1), else_=0)), 0),
+                "/",
+                sa.func.count(offerers_models.Venue.id),
+            )
+        )
+        .select_from(offerers_models.Venue)
+        .outerjoin(
+            providers_models.VenueProvider,
+            providers_models.VenueProvider.venueId == offerers_models.Venue.id,
+        )
+        .filter(
+            offerers_models.Venue.managingOffererId == offerer_id,
+        )
+        .correlate(offerers_models.Offerer)
+        .scalar_subquery()
+    )
+
     creator_user_offerer_id_query = (
         db.session.query(offerers_models.UserOfferer.id)
         .filter(offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
@@ -132,6 +153,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             has_non_virtual_venues_query.label("has_non_virtual_venues"),
             has_offerer_address_query.label("has_offerer_address"),
             adage_query.label("adage_information"),
+            provider_query.label("provider_information"),
             users_models.User.phoneNumber.label("creator_phone_number"),  # type: ignore[attr-defined]
         )
         .filter(offerers_models.Offerer.id == offerer_id)
@@ -215,6 +237,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         region=regions_utils.get_region_name_from_postal_code(offerer.postalCode),
         creator_phone_number=row.creator_phone_number,
         adage_information=row.adage_information,
+        provider_information=row.provider_information,
         bank_information_status=bank_information_status,
         edit_offerer_form=edit_offerer_form,
         suspension_form=offerer_forms.SuspendOffererForm(),
