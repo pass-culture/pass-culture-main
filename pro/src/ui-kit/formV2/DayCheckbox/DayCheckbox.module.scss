@@ -76,5 +76,9 @@ $checkbox-size: rem.torem(40px);
     background-color: var(--color-background-disabled);
     color: var(--color-text-disabled);
     border: var(--color-border-disabled);
+
+    &:checked {
+      border: rem.torem(2px) solid var(--color-text-subtle);
+    }
   }
 }

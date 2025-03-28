@@ -1,8 +1,9 @@
-import { addDays } from 'date-fns'
+import { addDays, addMonths } from 'date-fns'
 
 import { SelectOption } from 'commons/custom_types/form'
 import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
 
+import { weekDays } from '../constants'
 import {
   DurationTypeOption,
   RecurrenceFormValues,
@@ -147,6 +148,10 @@ describe('validationSchema with FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR', () => {
     pricingCategoriesQuantities: [{ priceCategory: '1', isUnlimited: true }],
     specificTimeSlots: [{ slot: '00:00' }],
     timeSlotType: TimeSlotTypeOption.SPECIFIC_TIME,
+    multipleDaysStartDate: addDays(new Date(), 1).toISOString().split('T')[0],
+    multipleDaysEndDate: addDays(new Date(), 3).toISOString().split('T')[0],
+    multipleDaysHasNoEndDate: false,
+    multipleDaysWeekDays: weekDays.map((d) => ({ ...d, checked: true })),
   }
 
   const cases: {
@@ -227,6 +232,59 @@ describe('validationSchema with FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR', () => {
       expectedErrors: [
         'Veuillez indiquer un nombre de places, ou bien cocher la case "Illimité"',
       ],
+    },
+    {
+      description: 'invalid form for missing end date',
+      formValues: {
+        ...defaultValues,
+        durationType: DurationTypeOption.MULTIPLE_DAYS_WEEKS,
+        multipleDaysEndDate: '',
+      },
+      expectedErrors: [
+        'La date de fin est obligatoire',
+        'La date de fin doit être postérieure à la date de début',
+        "La date de fin ne peut pas être plus d'un an après la date de début",
+      ],
+    },
+    {
+      description: 'invalid form for end date before start date',
+      formValues: {
+        ...defaultValues,
+        durationType: DurationTypeOption.MULTIPLE_DAYS_WEEKS,
+        multipleDaysStartDate: addDays(new Date(), 3)
+          .toISOString()
+          .split('T')[0],
+        multipleDaysEndDate: addDays(new Date(), 1).toISOString().split('T')[0],
+      },
+      expectedErrors: [
+        'La date de fin doit être postérieure à la date de début',
+      ],
+    },
+    {
+      description:
+        'invalid form for end date more than a year after start date',
+      formValues: {
+        ...defaultValues,
+        durationType: DurationTypeOption.MULTIPLE_DAYS_WEEKS,
+        multipleDaysStartDate: addDays(new Date(), 1)
+          .toISOString()
+          .split('T')[0],
+        multipleDaysEndDate: addMonths(new Date(), 13)
+          .toISOString()
+          .split('T')[0],
+      },
+      expectedErrors: [
+        "La date de fin ne peut pas être plus d'un an après la date de début",
+      ],
+    },
+    {
+      description: 'invalid form for missing weekday',
+      formValues: {
+        ...defaultValues,
+        durationType: DurationTypeOption.MULTIPLE_DAYS_WEEKS,
+        multipleDaysWeekDays: weekDays.map((d) => ({ ...d, checked: false })),
+      },
+      expectedErrors: ['Sélectionnez au moins un jour de la semaine'],
     },
   ]
 
