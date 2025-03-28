@@ -16,7 +16,13 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
 
     num_queries_400 = 1  # select api_key, offerer and provider
     num_queries_404 = num_queries_400 + 1  # check venue_provider exists
-    num_queries_success = num_queries_404 + 1  # select offer
+
+    num_queries_success_no_offers = num_queries_404 + 1  # fetch offers
+
+    # fetch stocks (1 query)
+    # fetch mediations (1 query)
+    # fetch price categories (1 query)
+    num_queries_success = num_queries_success_no_offers + 3
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
@@ -133,11 +139,11 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
             assert response.status_code == 200
             assert response.json["products"][0]["name"] == name_more_than_90_signs_long
 
-    def test_404_when_the_page_is_too_high(self, client):
+    def test_200_when_the_page_is_too_high(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         venue_id = venue_provider.venueId
-        with testing.assert_num_queries(self.num_queries_success):
+        with testing.assert_num_queries(self.num_queries_success_no_offers):
             response = client.with_explicit_token(plain_api_key).get(
                 self.endpoint_url, params={"venueId": venue_id, "limit": 5, "firstIndex": 1}
             )
@@ -148,7 +154,7 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
     def test_200_for_first_page_if_no_items(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue_id = venue_provider.venueId
-        with testing.assert_num_queries(self.num_queries_success):
+        with testing.assert_num_queries(self.num_queries_success_no_offers):
             response = client.with_explicit_token(plain_api_key).get(
                 self.endpoint_url, params={"venueId": venue_id, "limit": 5}
             )

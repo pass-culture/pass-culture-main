@@ -39,8 +39,8 @@ def get_venue_with_offerer_address(venue_id: int) -> offerers_models.Venue:
 
 def retrieve_offer_relations_query(query: sa_orm.Query) -> sa_orm.Query:
     return (
-        query.options(sa_orm.joinedload(offers_models.Offer.stocks))
-        .options(sa_orm.joinedload(offers_models.Offer.mediations))
+        query.options(sa_orm.selectinload(offers_models.Offer.stocks))
+        .options(sa_orm.selectinload(offers_models.Offer.mediations))
         .options(
             sa_orm.joinedload(offers_models.Offer.product)
             .load_only(
@@ -49,13 +49,14 @@ def retrieve_offer_relations_query(query: sa_orm.Query) -> sa_orm.Query:
                 offers_models.Product.description,
                 offers_models.Product.durationMinutes,
             )
-            .joinedload(offers_models.Product.productMediations)
+            .selectinload(offers_models.Product.productMediations)
         )
         .options(
-            sa_orm.joinedload(offers_models.Offer.priceCategories).joinedload(
+            sa_orm.selectinload(offers_models.Offer.priceCategories).joinedload(
                 offers_models.PriceCategory.priceCategoryLabel
             )
         )
+        .options(sa_orm.joinedload(offers_models.Offer.futureOffer))
     )
 
 
@@ -111,7 +112,11 @@ def get_filtered_offers_linked_to_provider(
         .filter(offers_models.Offer.id >= query_filters.firstIndex)
         .order_by(offers_models.Offer.id)
         .options(sa_orm.contains_eager(offers_models.Offer.futureOffer))
-        .options(sa_orm.joinedload(offers_models.Offer.venue))
+        .options(
+            sa_orm.joinedload(offers_models.Offer.venue).load_only(
+                offerers_models.Venue.id, offerers_models.Venue.offererAddressId
+            )
+        )
     )
 
     if query_filters.venue_id:
