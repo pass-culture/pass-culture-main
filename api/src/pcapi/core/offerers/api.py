@@ -2958,40 +2958,67 @@ def duplicate_oa(
 
 
 def create_offerer_address_from_address_api(address: offerers_schemas.AddressBodyModel) -> geography_models.Address:
-    if address.isManualEdition:
-        try:
-            address_info = api_adresse.get_municipality_centroid(city=address.city, postcode=address.postalCode)
-            location_data = LocationData(
-                city=address.city,
-                postal_code=address.postalCode,
-                latitude=float(address.latitude),
-                longitude=float(address.longitude),
-                street=address.street,
-                insee_code=address_info.citycode,
-                ban_id=None,
-            )
-        except api_adresse.NoResultException:
-            location_data = LocationData(
-                city=address.city,
-                postal_code=address.postalCode,
-                latitude=float(address.latitude),
-                longitude=float(address.longitude),
-                street=address.street,
-                insee_code=None,
-                ban_id=None,
-            )
-    else:
-        address_info = api_adresse.get_address(address=address.street, postcode=address.postalCode, city=address.city)
+    try:
+        address_info = api_adresse.get_municipality_centroid(city=address.city, postcode=address.postalCode)
+        _ban_id = address.banId if not address.isManualEdition else None
+        # breakpoint()
         location_data = LocationData(
-            city=address_info.city,
-            postal_code=address_info.postcode,
-            latitude=address_info.latitude,
-            longitude=address_info.longitude,
-            street=address_info.street,
+            city=address.city,
+            postal_code=address.postalCode,
+            latitude=float(address.latitude),
+            longitude=float(address.longitude),
+            street=address.street,
             insee_code=address_info.citycode,
-            ban_id=address_info.id,
+            ban_id=_ban_id,
+        )
+    except api_adresse.NoResultException:
+        location_data = LocationData(
+            city=address.city,
+            postal_code=address.postalCode,
+            latitude=float(address.latitude),
+            longitude=float(address.longitude),
+            street=address.street,
+            insee_code=None,
+            ban_id=None,
         )
     return get_or_create_address(location_data, is_manual_edition=address.isManualEdition)
+
+    # if address.isManualEdition:
+    #     try:
+    #         address_info = api_adresse.get_municipality_centroid(city=address.city, postcode=address.postalCode)
+    #         location_data = LocationData(
+    #             city=address.city,
+    #             postal_code=address.postalCode,
+    #             latitude=float(address.latitude),
+    #             longitude=float(address.longitude),
+    #             street=address.street,
+    #             insee_code=address_info.citycode,
+    #             ban_id=None,
+    #         )
+    #     except api_adresse.NoResultException:
+    #         location_data = LocationData(
+    #             city=address.city,
+    #             postal_code=address.postalCode,
+    #             latitude=float(address.latitude),
+    #             longitude=float(address.longitude),
+    #             street=address.street,
+    #             insee_code=None,
+    #             ban_id=None,
+    #         )
+    # else:
+        # breakpoint()
+        #bulle
+        # address_info = api_adresse.get_address(address=address.street, postcode=address.postalCode, city=address.city)
+        # location_data = LocationData(
+        #     city=address_info.city,
+        #     postal_code=address_info.postcode,
+        #     latitude=address_info.latitude,
+        #     longitude=address_info.longitude,
+        #     street=address_info.street,
+        #     insee_code=address_info.citycode,
+        #     ban_id=address_info.id,
+        # )
+    # return get_or_create_address(location_data, is_manual_edition=address.isManualEdition)
 
 
 def get_offerer_address_from_address(
