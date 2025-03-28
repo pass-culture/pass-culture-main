@@ -2096,10 +2096,10 @@
     "@storybook/test" "8.6.10"
     axe-core "^4.2.0"
 
-"@storybook/addon-controls@^8.6.9":
-  version "8.6.9"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-8.6.9.tgz#3bc31709d1acd884e97d5d37b360feb727ab5ac1"
-  integrity sha512-YXBYsbHqdYhmrbGI+wv9LAr/LlKnPt9f9GL+9rw82lnYadWObYxzUxs+PPLNO5tc14fd2g+FMVHOfovaRdFvrQ==
+"@storybook/addon-controls@^8.6.10":
+  version "8.6.10"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-8.6.10.tgz#48102017a08acba35de3ca88c11a829d96df88ea"
+  integrity sha512-aMw3NCVSq+vWEAp10kbBlbMx+7PIFFdgxMCh7b9N2DUR/5J4KCNFQosa8fAn03Noh2g5jgceqNyY6L4lDIu0Xw==
   dependencies:
     "@storybook/global" "^5.0.0"
     dequal "^2.0.2"
