@@ -2202,6 +2202,16 @@ def test_generate_payments_file(clean_temp_files):
     )
     meg_program = educational_factories.EducationalInstitutionProgramFactory(name="MeG")
     meg_educational_institution = educational_factories.EducationalInstitutionFactory(programs=[meg_program])
+    previously_meg_educational_institution = educational_factories.EducationalInstitutionFactory()
+
+    year_ago = datetime.datetime.utcnow() - datetime.timedelta(days=365)
+    two_year_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2 * 365)
+    educational_factories.EducationalInstitutionProgramAssociationFactory(
+        program=meg_program,
+        institution=previously_meg_educational_institution,
+        timespan=db_utils.make_timerange(start=two_year_ago, end=year_ago),
+    )
+    # FIXME: How to test this?
     deposit_meg = educational_factories.EducationalDepositFactory(
         educationalInstitution=meg_educational_institution,
         educationalYear=year2,

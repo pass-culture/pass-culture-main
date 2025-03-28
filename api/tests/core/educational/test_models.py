@@ -629,6 +629,18 @@ class EducationalInstitutionProgramTest:
             institution.programs = [program1, program2]
             db.session.commit()
 
+    def test_current_program_for_an_educational_institution(self):
+        program1 = factories.EducationalInstitutionProgramFactory()
+
+        institution = factories.EducationalInstitutionFactory()
+
+        factories.EducationalInstitutionProgramAssociationFactory(institution=institution, program=program1)
+
+        assert institution.current_programs(datetime.datetime.utcnow()) == [program1]
+
+        before_meg_start = datetime.datetime(2020, 1, 1)
+        assert institution.current_programs(before_meg_start) == []
+
 
 class CollectiveOfferDisplayedStatusTest:
     @pytest.mark.parametrize(
