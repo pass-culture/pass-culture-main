@@ -14,7 +14,14 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
 
     num_queries_400 = 1  # select api_key, offerer and provider
     num_queries_404 = num_queries_400 + 1  # check venue_provider exists
-    num_queries_success = num_queries_404 + 1  # select offers
+
+    # fetch offer (1 query)
+    num_queries_offer_not_found = num_queries_404 + 1
+
+    # fetch stocks (1 query)
+    # fetch mediations (1 query)
+    # fetch price categories (1 query)
+    num_queries_success = num_queries_offer_not_found + 3
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
@@ -296,7 +303,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
         )
 
-        with testing.assert_num_queries(self.num_queries_success):
+        with testing.assert_num_queries(self.num_queries_offer_not_found):
             response = client.with_explicit_token(plain_api_key).get(
                 f"/public/offers/v1/products/ean?eans=1234567890123&venueId={venue_id}"
             )
