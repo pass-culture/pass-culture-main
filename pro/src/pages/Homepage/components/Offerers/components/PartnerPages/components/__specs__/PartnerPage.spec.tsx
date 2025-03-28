@@ -4,10 +4,8 @@ import { userEvent } from '@testing-library/user-event'
 import { VenueTypeCode } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import {
-  defaultGetOffererResponseModel,
-  defaultGetOffererVenueResponseModel,
-} from 'commons/utils/factories/individualApiFactories'
+import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
   sharedCurrentUserFactory,
   currentOffererFactory,
@@ -16,15 +14,20 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 
 import { PartnerPage, PartnerPageProps } from '../PartnerPage'
+import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 
 const mockLogEvent = vi.fn()
 
-const renderPartnerPages = (props: Partial<PartnerPageProps>, features?: string[]) => {
+const renderPartnerPages = (
+  props: Partial<PartnerPageProps>,
+  features?: string[]
+) => {
   renderWithProviders(
     <PartnerPage
       offerer={{ ...defaultGetOffererResponseModel }}
-      venue={{ ...defaultGetOffererVenueResponseModel }}
+      venue={{ ...defaultGetVenue }}
       venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
+      venueHasPartnerPage={false}
       {...props}
     />,
     {
@@ -32,7 +35,7 @@ const renderPartnerPages = (props: Partial<PartnerPageProps>, features?: string[
         user: { currentUser: sharedCurrentUserFactory() },
         offerer: currentOffererFactory(),
       },
-      features, 
+      features,
     }
   )
 }
@@ -45,7 +48,7 @@ describe('PartnerPages', () => {
 
     renderPartnerPages({
       venue: {
-        ...defaultGetOffererVenueResponseModel,
+        ...defaultGetVenue,
         venueTypeCode: VenueTypeCode.FESTIVAL,
       },
     })
@@ -55,7 +58,7 @@ describe('PartnerPages', () => {
 
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_ADD_IMAGE, {
       offererId: '1',
-      venueId: defaultGetOffererVenueResponseModel.id,
+      venueId: defaultGetVenue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
       imageCreationStage: 'add image',
@@ -65,7 +68,7 @@ describe('PartnerPages', () => {
   it('should display the image if its present', () => {
     renderPartnerPages({
       venue: {
-        ...defaultGetOffererVenueResponseModel,
+        ...defaultGetVenue,
         venueTypeCode: VenueTypeCode.FESTIVAL,
         bannerUrl: 'https://www.example.com/image.png',
         bannerMeta: {
@@ -87,8 +90,29 @@ describe('PartnerPages', () => {
     )
   })
 
+  it('should display a "Grand public" section without address', () => {
+    renderPartnerPages({ venueHasPartnerPage: true })
+
+    expect(screen.getByText('Grand public')).toBeInTheDocument()
+    expect(screen.queryByTestId('venue-address')).not.toBeInTheDocument()
+  })
+
+  it('should display a "Grand public" section with address', () => {
+    renderPartnerPages({
+      venueHasPartnerPage: true,
+      venue: {
+        ...defaultGetVenue,
+        address: getAddressResponseIsLinkedToVenueModelFactory(),
+      },
+    })
+
+    expect(screen.getByText('Grand public')).toBeInTheDocument()
+    expect(screen.getByTestId('venue-address')).toBeInTheDocument()
+    expect(screen.getByText(/ma super rue, 75008/)).toBeInTheDocument()
+  })
+
   it('should display a "Grand public" section', () => {
-    renderPartnerPages({})
+    renderPartnerPages({ venueHasPartnerPage: true })
 
     expect(screen.getByText('Grand public')).toBeInTheDocument()
   })
@@ -96,7 +120,7 @@ describe('PartnerPages', () => {
   it('should display the EAC section', () => {
     renderPartnerPages({
       venue: {
-        ...defaultGetOffererVenueResponseModel,
+        ...defaultGetVenue,
         collectiveDmsApplications: [],
       },
       offerer: {
@@ -113,23 +137,29 @@ describe('PartnerPages', () => {
 
   describe('when open to public feature is enabled', () => {
     it('should display the "Grand public" section when the venue has a partner page', () => {
-      renderPartnerPages({
-        venue: {
-          ...defaultGetOffererVenueResponseModel,
-          hasPartnerPage: true,
+      renderPartnerPages(
+        {
+          venue: {
+            ...defaultGetVenue,
+          },
+          venueHasPartnerPage: true,
         },
-      }, ['WIP_IS_OPEN_TO_PUBLIC'])
+        ['WIP_IS_OPEN_TO_PUBLIC']
+      )
 
       expect(screen.getByText('Grand public')).toBeInTheDocument()
     })
 
     it('should not display the "Grand public" section when the venue does not have a partner page', () => {
-      renderPartnerPages({
-        venue: {
-          ...defaultGetOffererVenueResponseModel,
-          hasPartnerPage: false,
+      renderPartnerPages(
+        {
+          venue: {
+            ...defaultGetVenue,
+          },
+          venueHasPartnerPage: false,
         },
-      }, ['WIP_IS_OPEN_TO_PUBLIC'])
+        ['WIP_IS_OPEN_TO_PUBLIC']
+      )
 
       expect(screen.queryByText('Grand public')).not.toBeInTheDocument()
     })

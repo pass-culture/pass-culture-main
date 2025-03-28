@@ -1,10 +1,13 @@
 import { useState } from 'react'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
   VenueTypeResponseModel,
 } from 'apiClient/v1'
+import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { SelectOption } from 'commons/custom_types/form'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
@@ -24,18 +27,22 @@ export const PartnerPages = ({
   venueTypes,
 }: PartnerPagesProps) => {
   const [selectedVenueId, setSelectedVenueId] = useState<string>(
-    venues.length > 0
-      ? venues[0].id.toString()
-      : ''
+    venues.length > 0 ? venues[0].id.toString() : ''
   )
 
   const venuesOptions: SelectOption[] = venues.map((venue) => ({
     label: venue.publicName || venue.name,
     value: venue.id.toString(),
   }))
-  const selectedVenue =
+  const selectedOffererVenue =
     venues.find((venue) => venue.id.toString() === selectedVenueId) ??
     (venues.length > 0 ? venues[0] : undefined)
+
+  const venueQuery = useSWR(
+    [GET_VENUE_QUERY_KEY, selectedVenueId],
+    ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
+  )
+  const venue = venueQuery.data
 
   return (
     <section className={styles['section']}>
@@ -64,15 +71,16 @@ export const PartnerPages = ({
         </>
       )}
 
-      {selectedVenue && (
+      {venue && (
         <PartnerPage
           offerer={offerer}
-          venue={selectedVenue}
+          venue={venue}
           venueTypes={venueTypes}
           // In order to have the image state changing in PartnerPage,
           // we wanna the state reset when the venue change, see :
           // https://react.dev/learn/preserving-and-resetting-state#option-2-resetting-state-with-a-key
-          key={selectedVenue.id}
+          key={venue.id}
+          venueHasPartnerPage={selectedOffererVenue?.hasPartnerPage ?? false}
         />
       )}
     </section>
