@@ -9,7 +9,6 @@ export type VenueListItemResponseModel = {
   address?: AddressResponseIsLinkedToVenueModel | null;
   audioDisabilityCompliant?: boolean | null;
   bookingEmail?: string | null;
-  collectiveSubCategoryId?: string | null;
   externalAccessibilityData?: ExternalAccessibilityDataModel | null;
   hasCreatedOffer: boolean;
   id: number;

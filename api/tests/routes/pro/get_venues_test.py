@@ -34,7 +34,6 @@ def test_response_serialization(client):
         {
             "id": venue.id,
             "managingOffererId": venue.managingOffererId,
-            "collectiveSubCategoryId": venue.collectiveSubCategoryId,
             "name": venue.name,
             "offererName": user_offerer.offerer.name,
             "publicName": venue.publicName,
@@ -69,7 +68,6 @@ def test_response_serialization(client):
         {
             "id": venue_with_accessibility_provider.id,
             "managingOffererId": venue_with_accessibility_provider.managingOffererId,
-            "collectiveSubCategoryId": venue_with_accessibility_provider.collectiveSubCategoryId,
             "name": venue_with_accessibility_provider.name,
             "offererName": user_offerer.offerer.name,
             "publicName": venue_with_accessibility_provider.publicName,

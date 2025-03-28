@@ -172,7 +172,6 @@ class Returns200Test:
             "collectivePhone": None,
             "collectiveStudents": [],
             "collectiveWebsite": None,
-            "collectiveSubCategoryId": None,
             "collectiveDmsApplications": [
                 {
                     "venueId": dmsapplication.venue.id,
