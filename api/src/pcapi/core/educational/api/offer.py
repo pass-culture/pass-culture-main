@@ -1,6 +1,5 @@
 import dataclasses
 import datetime
-from decimal import Decimal
 from functools import partial
 import logging
 import typing
@@ -961,38 +960,16 @@ def get_offer_event_venue(offer: AnyCollectiveOffer) -> offerers_models.Venue:
     offerer_venue_id = offer.offerVenue.get("venueId")
 
     # the offer takes place in a specific venue
-    if address_type == "offererVenue" and offerer_venue_id:
+    if address_type == educational_models.OfferAddressType.OFFERER_VENUE.value and offerer_venue_id:
         venue = db.session.query(offerers_models.Venue).get(offerer_venue_id)
     else:
         venue = None
 
-    # no specific venue specified - or it does not exists
-    # anymore
+    # no specific venue specified - or it does not exist anymore
     if not venue:
         venue = offer.venue
 
     return venue
-
-
-def get_offer_coordinates(offer: AnyCollectiveOffer) -> tuple[float | Decimal, float | Decimal] | tuple[None, None]:
-    """
-    Return the offer's coordinates to use. Use the specified venue
-    if any or use the offer's billing address as the default.
-    """
-    venue = get_offer_event_venue(offer)
-
-    # we should return a coherent value: either latitude AND
-    # longitude or empty coordinates.
-    if venue.offererAddress is not None:
-        latitude = venue.offererAddress.address.latitude
-        longitude = venue.offererAddress.address.longitude
-    else:
-        latitude, longitude = None, None
-
-    if not latitude or not longitude:
-        return (None, None)
-
-    return latitude, longitude
 
 
 def archive_collective_offers(

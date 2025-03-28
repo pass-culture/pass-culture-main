@@ -14,8 +14,8 @@ from pcapi.utils.date import METROPOLE_TIMEZONE
 
 @dataclasses.dataclass
 class Coordinates:
-    latitude: Decimal | float
-    longitude: Decimal | float
+    latitude: Decimal
+    longitude: Decimal
 
 
 class IrisFrance(PcObject, Base, Model):

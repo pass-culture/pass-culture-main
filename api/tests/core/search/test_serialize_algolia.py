@@ -562,17 +562,17 @@ def test_serialize_future_offer():
     assert "_tags" not in serialized
 
 
-def test_serialize_collective_offer_template():
+def test_serialize_collective_offer_template_offerer_venue():
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
-    offer_venue_offerer_address = offerers_factories.OffererAddressFactory(
-        address__latitude=serialization.DEFAULT_LATITUDE,
-        address__longitude=serialization.DEFAULT_LONGITUDE,
-    )
+
+    # offer.offerVenue
+    offer_venue_offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
     offer_venue = offerers_factories.VenueFactory(offererAddress=offer_venue_offerer_address)
+
+    # offer.venue
     venue_offerer_address = offerers_factories.OffererAddressFactory(
-        address__postalCode="86140",
-        address__departmentCode="86",
+        address__postalCode="86140", address__departmentCode="86", address__latitude=44, address__longitude=2
     )
 
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
@@ -593,7 +593,6 @@ def test_serialize_collective_offer_template():
             "otherAddress": "",
         },
         locationType=educational_models.CollectiveLocationType.ADDRESS,
-        offererAddress=offer_venue_offerer_address,
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
@@ -623,22 +622,113 @@ def test_serialize_collective_offer_template():
             "publicName": "La Moyenne Librairie",
             "adageId": collective_offer_template.venue.adageId,
         },
-        "_geoloc": {
-            "lat": 47.15846,
-            "lng": 2.40929,
-        },
+        "_geoloc": {"lat": 45, "lng": 3},  # values are extracted from offer.offerVenue (and not offer.venue)
         "isTemplate": True,
         "formats": [format.value for format in collective_offer_template.formats],
     }
+
+
+def test_serialize_collective_offer_template_school():
+    venue_offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
+
+    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+        venue__offererAddress=venue_offerer_address,
+        offerVenue={
+            "addressType": educational_models.OfferAddressType.SCHOOL,
+            "venueId": None,
+            "otherAddress": "",
+        },
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
+    assert serialized["offer"]["eventAddressType"] == "school"
+    assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
+
+
+def test_serialize_collective_offer_template_other():
+    venue_offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
+
+    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+        venue__offererAddress=venue_offerer_address,
+        offerVenue={
+            "addressType": educational_models.OfferAddressType.OTHER,
+            "venueId": None,
+            "otherAddress": "Here",
+        },
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
+    assert serialized["offer"]["eventAddressType"] == "other"
+    assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
+
+
+@pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+def test_serialize_collective_offer_template_school_with_ff():
+    venue_offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
+    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+        venue__offererAddress=venue_offerer_address,
+        locationType=educational_models.CollectiveLocationType.SCHOOL,
+        offererAddress=None,
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
+    assert serialized["offer"]["locationType"] == "SCHOOL"
+    assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
+
+
+@pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+def test_serialize_collective_offer_template_address_with_ff():
+    offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
+    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+        locationType=educational_models.CollectiveLocationType.ADDRESS, offererAddress=offerer_address
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
+    assert serialized["offer"]["locationType"] == "ADDRESS"
+    assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
+
+
+@pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+def test_serialize_collective_offer_template_to_be_defined_with_ff():
+    venue_offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
+    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+        venue__offererAddress=venue_offerer_address,
+        locationType=educational_models.CollectiveLocationType.TO_BE_DEFINED,
+        locationComment="Here",
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
+    assert serialized["offer"]["locationType"] == "TO_BE_DEFINED"
+    assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
+
+
+@pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+def test_serialize_collective_offer_template_no_location_with_ff():
+    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(locationType=None)
+
+    with pytest.raises(ValueError) as exc:
+        algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
+
+    assert str(exc.value) == f"Invalid locationType for collective offer template {collective_offer_template.id}"
+
+
+def test_serialize_collective_offer_template_virtual_venue():
+    # this should not happen, collective offers should be linked to physical venues
+    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+        venue__offererAddress=None, venue__isVirtual=True, venue__siret=None, venue__comment=None
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
+    assert serialized["venue"]["departmentCode"] is None
+    assert serialized["venue"]["academy"] is None
+    assert serialized["_geoloc"] == {"lat": serialization.DEFAULT_LATITUDE, "lng": serialization.DEFAULT_LONGITUDE}
 
 
 def test_serialize_collective_offer_template_legacy():
     # Same as test_serialize_collective_offer_template
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
-    venue = offerers_factories.VenueFactory(
-        latitude=serialization.DEFAULT_LATITUDE, longitude=serialization.DEFAULT_LONGITUDE
-    )
+    venue = offerers_factories.VenueFactory()
 
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
@@ -691,8 +781,8 @@ def test_serialize_collective_offer_template_legacy():
             "adageId": collective_offer_template.venue.adageId,
         },
         "_geoloc": {
-            "lat": float(venue.latitude),
-            "lng": float(venue.longitude),
+            "lat": float(collective_offer_template.venue.offererAddress.address.latitude),
+            "lng": float(collective_offer_template.venue.offererAddress.address.longitude),
         },
         "isTemplate": True,
         "formats": [format.value for format in collective_offer_template.formats],
