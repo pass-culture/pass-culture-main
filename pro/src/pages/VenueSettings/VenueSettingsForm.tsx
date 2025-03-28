@@ -7,7 +7,6 @@ import {
   VenueProviderResponse,
   VenueTypeResponseModel,
 } from 'apiClient/v1'
-import { SelectOption } from 'commons/custom_types/form'
 import { resetAddressFields } from 'commons/utils/resetAddressFields'
 import { AddressSelect } from 'components/Address/Address'
 import { AddressManual } from 'components/AddressManual/AddressManual'
@@ -33,7 +32,6 @@ import { WithdrawalDetails } from './WithdrawalDetails/WithdrawalDetails'
 interface VenueFormProps {
   offerer: GetOffererResponseModel
   updateIsSiretValued: (isSiretValued: boolean) => void
-  venueLabels: SelectOption[]
   venueTypes: VenueTypeResponseModel[]
   venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
@@ -42,7 +40,6 @@ interface VenueFormProps {
 export const VenueSettingsForm = ({
   offerer,
   updateIsSiretValued,
-  venueLabels,
   venueTypes,
   venueProviders,
   venue,
@@ -143,23 +140,6 @@ export const VenueSettingsForm = ({
               disabled={venue.isVirtual}
             />
           </FormLayout.Row>
-
-          {!venue.isVirtual && (
-            <FormLayout.Row>
-              <Select
-                options={[
-                  {
-                    value: '',
-                    label: `Si votre structure est labellisée précisez-le en le sélectionnant`,
-                  },
-                  ...venueLabels,
-                ]}
-                name="venueLabel"
-                label="Label du ministère de la Culture ou du Centre national du cinéma et de l’image animée"
-                isOptional
-              />
-            </FormLayout.Row>
-          )}
         </FormLayout.Section>
 
         {!venue.isVirtual && <WithdrawalDetails />}

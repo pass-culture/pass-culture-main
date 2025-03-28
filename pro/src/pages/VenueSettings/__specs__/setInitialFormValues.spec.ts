@@ -41,7 +41,6 @@ describe('setInitialFormValues', () => {
       venueSiret: '',
       publicName: 'Adresse de la venue',
       siret: '',
-      venueLabel: '',
       venueType: 'Centre culturel',
       withdrawalDetails: '',
     }
@@ -87,7 +86,6 @@ describe('setInitialFormValues', () => {
       venueSiret: '',
       publicName: 'Adresse de la venue',
       siret: '',
-      venueLabel: '',
       venueType: 'Centre culturel',
       withdrawalDetails: '',
     }
