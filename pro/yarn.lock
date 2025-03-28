@@ -2142,6 +2142,11 @@
     browser-assert "^1.2.1"
     ts-dedent "^2.0.0"
 
+"@storybook/components@8.6.10":
+  version "8.6.10"
+  resolved "https://registry.yarnpkg.com/@storybook/components/-/components-8.6.10.tgz#ceca4278ec4a4636291d9c204c6676792f71968c"
+  integrity sha512-9TE2aZU+1zjGO4R74jc4Dmx+pFb+9hm1vnlWH+WVfYV1nCSCZOMmMoO2J86PHPkR6RmPjcQJXz4ySdBbYiwKiw==
+
 "@storybook/components@8.6.8":
   version "8.6.8"
   resolved "https://registry.yarnpkg.com/@storybook/components/-/components-8.6.8.tgz#76151d9dd1076d288349a1142d54246487b663e7"
@@ -2196,10 +2201,20 @@
     "@storybook/global" "^5.0.0"
     "@vitest/utils" "^2.1.1"
 
+"@storybook/manager-api@8.6.10":
+  version "8.6.10"
+  resolved "https://registry.yarnpkg.com/@storybook/manager-api/-/manager-api-8.6.10.tgz#14576e0ccd66d9b516a81d7795b28599b33424f7"
+  integrity sha512-roJ2aXqbZfSh9IM4q34U2GpU0CDmUjTKGwAnYOS2SG6rGLPenPflIksW8A52cVFdzGa4eH/KzP2FIg5Zi1KLJQ==
+
 "@storybook/manager-api@8.6.8":
   version "8.6.8"
   resolved "https://registry.yarnpkg.com/@storybook/manager-api/-/manager-api-8.6.8.tgz#e3ddc0d3db075c3fea1cc9bf339f1a0adf1a8e6e"
   integrity sha512-MTyMYRXSP0iRE5xaFCNdD8ZBrhtJXTDNhQTWsjZQBmYgA94mf6FHSzsgGgOQp/sqTPzONZpBCrw7Y0aY8zxHKw==
+
+"@storybook/preview-api@8.6.10":
+  version "8.6.10"
+  resolved "https://registry.yarnpkg.com/@storybook/preview-api/-/preview-api-8.6.10.tgz#865535fd33bcce94d085aa113f301d8d7d3b2bf1"
+  integrity sha512-8ki1GgiUlcSqZD3Oe42Fy0uW3E7XPpMAyzO+NSnHCKKfNlZgi036Rr+FyGcKwG5lJyubWwNesPGQX5UHigYu4w==
 
 "@storybook/preview-api@8.6.8":
   version "8.6.8"
@@ -2231,7 +2246,7 @@
     resolve "^1.22.8"
     tsconfig-paths "^4.2.0"
 
-"@storybook/react@8.6.8", "@storybook/react@^8.6.8":
+"@storybook/react@8.6.8":
   version "8.6.8"
   resolved "https://registry.yarnpkg.com/@storybook/react/-/react-8.6.8.tgz#eb68e9553be600646396480c267549c75e044fbb"
   integrity sha512-UVP+vuVrgC9CgUp2ZKQs3ch2JzImGAUbVUpmb+GMAOGD3DGAf9iP7qldIZc5rrNw/jNyTFTo4oX6XnXrWgOCVg==
@@ -2242,6 +2257,18 @@
     "@storybook/preview-api" "8.6.8"
     "@storybook/react-dom-shim" "8.6.8"
     "@storybook/theming" "8.6.8"
+
+"@storybook/react@^8.6.10":
+  version "8.6.10"
+  resolved "https://registry.yarnpkg.com/@storybook/react/-/react-8.6.10.tgz#eade7f3a0c78922e4563b5f44cdf8424f0d1113f"
+  integrity sha512-QCs5nyXe+G2ZoZ1uspEsnSp7VYLJej5dJ1bSf22rrdHQde641zvC2HZQaba4dqR2YQxRCG9JtCdaQ3UVmnfzzA==
+  dependencies:
+    "@storybook/components" "8.6.10"
+    "@storybook/global" "^5.0.0"
+    "@storybook/manager-api" "8.6.10"
+    "@storybook/preview-api" "8.6.10"
+    "@storybook/react-dom-shim" "8.6.10"
+    "@storybook/theming" "8.6.10"
 
 "@storybook/test@8.6.10":
   version "8.6.10"
