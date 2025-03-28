@@ -5,6 +5,7 @@ import { VenueTypeCode } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
+import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
   sharedCurrentUserFactory,
@@ -20,7 +21,6 @@ import {
   VenueEditionHeader,
   VenueEditionHeaderProps,
 } from '../VenueEditionHeader'
-import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 
 const mockLogEvent = vi.fn()
 

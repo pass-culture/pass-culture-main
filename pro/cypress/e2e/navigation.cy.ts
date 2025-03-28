@@ -12,6 +12,10 @@ describe('Navigation', () => {
         login = response.body.user.email
       }
     )
+    cy.intercept({
+      method: 'GET',
+      url: `/venues/**`,
+    }).as('getVenue')
   })
 
   it('I should see the top of the page when changing page', () => {
@@ -19,6 +23,8 @@ describe('Navigation', () => {
 
     cy.stepLog({ message: 'I close the collective budget information modal' })
     cy.findAllByText('Fermer').click()
+
+    cy.wait('@getVenue')
 
     cy.stepLog({ message: 'I scroll to my venue' })
     cy.contains(
@@ -36,7 +42,7 @@ describe('Navigation', () => {
     cy.get('a[aria-label^="Gérer la page pour les enseignants"]').click()
 
     cy.stepLog({ message: 'I should be at the top of the page' })
-    cy.get('[id=unaccessible-top-page]').should('have.focus', { timeout: 1000 })
+    cy.get('[id=back-to-nav-link]').should('have.focus', { timeout: 1000 })
     cy.get('[id=content-wrapper]').then((el) => {
       expect(el.get(0).scrollTop).to.eq(0)
     })
