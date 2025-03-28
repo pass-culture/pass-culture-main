@@ -1,4 +1,5 @@
 import logging
+import typing
 from typing import Iterable
 
 from pcapi.connectors.big_query import queries as big_query_queries
@@ -17,6 +18,14 @@ blueprint = Blueprint(__name__, __name__)
 
 logger = logging.getLogger(__name__)
 
+BATCH_SIZE = 1000
+
+BigQueryModel = typing.TypeVar("BigQueryModel", ArtistModel, ArtistProductLinkModel, ArtistAliasModel)
+Model = typing.TypeVar("Model", artist_models.Artist, artist_models.ArtistProductLink, artist_models.ArtistAlias)
+CreateFunc = typing.Callable[[BigQueryModel], Model]
+ExistsFunc = typing.Callable[[BigQueryModel], bool]
+GetAllFunc = typing.Callable[[], BigQueryModel]
+
 
 @blueprint.cli.command("import_all_artists_data")
 def import_all_artists_data() -> None:
@@ -25,96 +34,102 @@ def import_all_artists_data() -> None:
     import_all_artist_aliases()
 
 
-def get_all_artists() -> Iterable[ArtistModel]:
-    yield from big_query_queries.ArtistQuery().execute()
+def import_all_artists() -> None:
+    def get_all_artists() -> Iterable[ArtistModel]:
+        yield from big_query_queries.ArtistQuery().execute()
+
+    def exists_artist(artist: ArtistModel) -> bool:
+        return artist_models.Artist.query.filter_by(id=artist.id).first() is not None
+
+    def create_artist(artist: ArtistModel) -> artist_models.Artist:
+        return artist_models.Artist(
+            id=artist.id,
+            name=artist.name,
+            description=artist.description,
+            image=artist.image,
+            image_author=sanitize_author_html(artist.image_author),
+            image_license=artist.image_license,
+            image_license_url=artist.image_license_url,
+        )
+
+    logger.info("Importing artists from big query table")
+    generic_import(get_all_artists, exists_artist, create_artist)
 
 
-def get_all_artist_product_links() -> Iterable[ArtistProductLinkModel]:
-    yield from big_query_queries.ArtistProductLinkQuery().execute()
+def import_all_artist_product_links() -> None:
+    def get_all_product_links() -> Iterable[ArtistProductLinkModel]:
+        yield from big_query_queries.ArtistProductLinkQuery().execute()
+
+    def exists_product_link(link: ArtistProductLinkModel) -> bool:
+        return (
+            artist_models.ArtistProductLink.query.filter_by(
+                artist_id=link.artist_id,
+                product_id=link.product_id,
+            ).first()
+            is not None
+        )
+
+    def create_product_link(link: ArtistProductLinkModel) -> artist_models.ArtistProductLink:
+        return artist_models.ArtistProductLink(
+            artist_id=link.artist_id,
+            product_id=link.product_id,
+            artist_type=get_artist_type(link.artist_type),
+        )
+
+    logger.info("Importing artist product links from BigQuery")
+    generic_import(get_all_product_links, exists_product_link, create_product_link)
 
 
-def get_all_artist_aliases() -> Iterable[ArtistAliasModel]:
-    yield from big_query_queries.ArtistAliasQuery().execute()
+def import_all_artist_aliases() -> None:
+    def get_all_aliases() -> Iterable[ArtistAliasModel]:
+        yield from big_query_queries.ArtistAliasQuery().execute()
+
+    def exists_alias(alias: ArtistAliasModel) -> bool:
+        return (
+            artist_models.ArtistAlias.query.filter_by(
+                artist_id=alias.artist_id,
+                artist_alias_name=alias.artist_alias_name,
+                artist_cluster_id=alias.artist_cluster_id,
+            ).first()
+            is not None
+        )
+
+    def create_alias(alias: ArtistAliasModel) -> artist_models.ArtistAlias:
+        return artist_models.ArtistAlias(
+            artist_id=alias.artist_id,
+            artist_alias_name=alias.artist_alias_name,
+            artist_cluster_id=alias.artist_cluster_id,
+            artist_type=get_artist_type(alias.artist_type),
+            artist_wiki_data_id=alias.artist_wiki_data_id,
+            offer_category_id=alias.offer_category_id,
+        )
+
+    logger.info("Importing artist aliases from BigQuery")
+    generic_import(get_all_aliases, exists_alias, create_alias)
 
 
-def bulk_update_database(inserted_data: list) -> None:
+def generic_import(get_all: GetAllFunc, exists: ExistsFunc, create: CreateFunc) -> None:
+    imported = []
+    for item in get_all():
+        if exists(item):
+            continue
+
+        new = create(item)
+
+        imported.append(new)
+        if len(imported) == BATCH_SIZE:
+            _bulk_update_database(imported)
+            imported = []
+
+    _bulk_update_database(imported)
+
+
+def _bulk_update_database(inserted_data: list) -> None:
     if not inserted_data:
         return
+
     with transaction():
         db.session.bulk_save_objects(inserted_data)
 
     name_of_class = type(inserted_data[0]).__name__
-
     logger.info("Successfully imported %s %s", len(inserted_data), name_of_class)
-
-
-def import_all_artists() -> None:
-    logger.info("Importing artists from big query table")
-    imported_artists = []
-
-    for raw_artist in get_all_artists():
-        existing_artist = artist_models.Artist.query.filter_by(id=raw_artist.id).first()
-        if existing_artist:
-            continue
-
-        image_author = sanitize_author_html(raw_artist.image_author)
-
-        new_artist = artist_models.Artist(
-            id=raw_artist.id,
-            name=raw_artist.name,
-            description=raw_artist.description,
-            image=raw_artist.image,
-            image_author=image_author,
-            image_license=raw_artist.image_license,
-            image_license_url=raw_artist.image_license_url,
-        )
-
-        imported_artists.append(new_artist)
-    bulk_update_database(imported_artists)
-
-
-def import_all_artist_product_links() -> None:
-    logger.info("Importing artist product links from BigQuery")
-    imported_product_links: list[artist_models.ArtistProductLink] = []
-
-    for raw_product_link in get_all_artist_product_links():
-        existing_product_link = artist_models.ArtistProductLink.query.filter_by(
-            artist_id=raw_product_link.artist_id,
-            product_id=raw_product_link.product_id,
-        ).first()
-        if existing_product_link:
-            continue
-
-        new_product_link = artist_models.ArtistProductLink(
-            artist_id=raw_product_link.artist_id,
-            product_id=raw_product_link.product_id,
-            artist_type=get_artist_type(raw_product_link.artist_type),
-        )
-        imported_product_links.append(new_product_link)
-
-    bulk_update_database(imported_product_links)
-
-
-def import_all_artist_aliases() -> None:
-    logger.info("Importing artist aliases from BigQuery")
-    imported_aliases: list[artist_models.ArtistAlias] = []
-
-    for raw_alias in get_all_artist_aliases():
-        existing_alias = artist_models.ArtistAlias.query.filter_by(
-            artist_id=raw_alias.artist_id,
-            artist_alias_name=raw_alias.artist_alias_name,
-        ).first()
-        if existing_alias:
-            continue
-
-        new_alias = artist_models.ArtistAlias(
-            artist_id=raw_alias.artist_id,
-            artist_alias_name=raw_alias.artist_alias_name,
-            artist_cluster_id=raw_alias.artist_cluster_id,
-            artist_type=get_artist_type(raw_alias.artist_type),
-            artist_wiki_data_id=raw_alias.artist_wiki_data_id,
-            offer_category_id=raw_alias.offer_category_id,
-        )
-        imported_aliases.append(new_alias)
-
-    bulk_update_database(imported_aliases)
