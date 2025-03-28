@@ -4,7 +4,6 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { Layout } from 'app/App/layout/Layout'
 import {
-  GET_VENUE_LABELS_QUERY_KEY,
   GET_VENUE_PROVIDERS_QUERY_KEY,
   GET_VENUE_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
@@ -32,12 +31,6 @@ const VenueSettings = (): JSX.Element | null => {
   )
   const venue = venueQuery.data
 
-  const venueLabelsQuery = useSWR(
-    [GET_VENUE_LABELS_QUERY_KEY],
-    () => api.fetchVenueLabels(),
-    { fallbackData: [] }
-  )
-
   const { data: offerer, isLoading: isOffererLoading } = useOfferer(offererId)
 
   const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
@@ -54,7 +47,6 @@ const VenueSettings = (): JSX.Element | null => {
   if (
     isOffererLoading ||
     venueQuery.isLoading ||
-    venueLabelsQuery.isLoading ||
     venueTypesQuery.isLoading ||
     venueProvidersQuery.isLoading ||
     !offerer ||
@@ -69,14 +61,9 @@ const VenueSettings = (): JSX.Element | null => {
     )
   }
 
-  const venueLabels = venueLabelsQuery.data.map((type) => ({
-    value: type.id.toString(),
-    label: type.label,
-  }))
-
   return (
     <Layout
-      mainHeading='Paramètres généraux'
+      mainHeading="Paramètres généraux"
       mainTopElement={
         <Button
           variant={ButtonVariant.TERNARYPINK}
@@ -90,7 +77,6 @@ const VenueSettings = (): JSX.Element | null => {
       <VenueSettingsScreen
         initialValues={setInitialFormValues({ venue })}
         offerer={offerer}
-        venueLabels={venueLabels}
         venueTypes={venueTypes}
         venue={venue}
         venueProviders={venueProviders}

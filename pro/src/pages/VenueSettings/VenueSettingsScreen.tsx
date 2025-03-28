@@ -14,7 +14,6 @@ import {
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { SelectOption } from 'commons/custom_types/form'
 import { useNotification } from 'commons/hooks/useNotification'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { generateSiretValidationSchema } from 'pages/VenueSettings/SiretOrCommentFields/validationSchema'
@@ -27,7 +26,6 @@ import { VenueSettingsForm } from './VenueSettingsForm'
 interface VenueSettingsScreenProps {
   initialValues: VenueSettingsFormValues
   offerer: GetOffererResponseModel
-  venueLabels: SelectOption[]
   venueTypes: VenueTypeResponseModel[]
   venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
@@ -36,7 +34,6 @@ interface VenueSettingsScreenProps {
 export const VenueSettingsScreen = ({
   initialValues,
   offerer,
-  venueLabels,
   venueTypes,
   venueProviders,
   venue,
@@ -71,7 +68,6 @@ export const VenueSettingsScreen = ({
       const apiFieldsMap: Record<string, string> = {
         venue: 'venueId',
         venueTypeCode: 'venueType',
-        venueLabelId: 'venueLabel',
         'contact.email': 'email',
         'contact.phoneNumber': 'phoneNumber',
         'contact.website': 'webSite',
@@ -121,7 +117,6 @@ export const VenueSettingsScreen = ({
         <form onSubmit={formik.handleSubmit} noValidate>
           <VenueSettingsForm
             updateIsSiretValued={setIsSiretValued}
-            venueLabels={venueLabels}
             venueTypes={venueTypes}
             venueProviders={venueProviders}
             venue={venue}

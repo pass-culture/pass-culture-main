@@ -31,10 +31,6 @@ const renderForm = async (options?: RenderWithProvidersOptions) => {
         siren: '881457238',
       }}
       venueTypes={venueTypes}
-      venueLabels={[
-        { label: 'Lieu de spectacle', value: 'show' },
-        { label: 'Lieu de pratique', value: 'practice' },
-      ]}
       venueProviders={[
         defaultVenueProvider,
         {
@@ -73,7 +69,6 @@ const renderForm = async (options?: RenderWithProvidersOptions) => {
         siret: '12345678901234',
         street: '123 Rue Principale',
         venueSiret: 12345678901234,
-        venueLabel: 'Salle de Concert',
         venueType: 'Théâtre',
         withdrawalDetails:
           "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
@@ -216,7 +211,6 @@ describe('VenueSettingsScreen', () => {
       postalCode: '75001',
       publicName: 'Lieu Exemple Public Updated',
       street: '123 Rue Principale',
-      venueLabelId: NaN,
       venueTypeCode: 'Théâtre',
       withdrawalDetails:
         "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
