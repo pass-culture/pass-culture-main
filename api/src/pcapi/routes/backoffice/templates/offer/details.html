@@ -126,9 +126,9 @@
                 {% endif %}
                 {% if extra_data.genres %}<span class="fw-bold">Genres :</span> {{ extra_data.genres | format_string_list }}{% endif %}
                 {% if offer.product %}
-                    <p class="mb-1">
-                        <span class="fw-bold">Produit : </span> {{ offer.product.name }} ({{ offer.productId }})
-                    </p>
+                  <p class="mb-1">
+                    <span class="fw-bold">Produit :</span> {{ offer.product.name }} ({{ offer.productId }})
+                  </p>
                 {% endif %}
                 <p class="mb-1 mt-4">
                   <span class="fw-bold">Voir dans l'app :</span>
@@ -250,7 +250,7 @@
                             <li class="dropdown-item">
                               <a class="btn btn-sm d-block w-100 text-start px-3"
                                  data-bs-toggle="modal"
-                                 data-bs-target="#edit-offer-modal-{{ stock.id }}">Modifier</a>
+                                 data-bs-target="#edit-offer-stock-modal-{{ stock.id }}">Modifier</a>
                             </li>
                           </ul>
                         </div>
@@ -409,7 +409,7 @@
     </div>
     {% if has_permission("MANAGE_OFFERS") %}
       {% for stock_id in editable_stock_ids %}
-        {{ build_lazy_modal(url_for('backoffice_web.offer.get_offer_stock_edit_form', offer_id=offer.id, stock_id=stock_id) , "edit-offer-modal-" + stock_id|string) }}
+        {{ build_lazy_modal(url_for('backoffice_web.offer.get_offer_stock_edit_form', offer_id=offer.id, stock_id=stock_id) , "edit-offer-stock-modal-" + stock_id|string) }}
       {% endfor %}
     {% endif %}
   </div>

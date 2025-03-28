@@ -9,18 +9,18 @@
       <li class="d-flex align-items-start justify-content-between pt-2"
           data-field-number="{{ subfield.name|field_list_get_number_from_name }}">
         {{ subfield }}
-        <button class="btn field-list-rm-btn align-self-center ms-2"
+        <button class="btn btn-outline-primary-subtle-bg field-list-rm-btn align-self-center ms-2 border-0 rounded-xs"
                 type="button">
-          <i class="bi bi-trash3 pe-none btn-outline-primary-subtle-bg"></i>
+          <i class="bi bi-trash3"></i>
         </button>
       </li>
     {% endfor %}
   </ul>
-  <button class="btn btn-outline-primary field-list-add-btn btn-outline-primary-subtle-bg"
+  <button class="btn btn-outline-primary-subtle-bg field-list-add-btn"
           type="button">
     Filtre<i class="bi bi-plus-lg ms-2"></i>
   </button>
-  <button class="btn btn-outline-primary field-list-rm-all-btn mx-3 btn-outline-primary-subtle-bg"
+  <button class="btn btn-outline-primary-subtle-bg field-list-rm-all-btn mx-3"
           type="button">
     Tout effacer<i class="bi bi-trash3 ms-2"></i>
   </button>

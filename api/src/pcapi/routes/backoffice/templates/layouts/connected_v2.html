@@ -1,0 +1,15 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+  {% block header %}
+    <header>
+      {% include "components/navbar.html" %}
+    </header>
+  {% endblock header %}
+  {% block page_content %}
+    <div class="page-wrapper">
+      {% include "components/messages.html" %}
+      {% block main_content %}
+      {% endblock main_content %}
+    </div>
+  {% endblock page_content %}
+{% endblock content %}

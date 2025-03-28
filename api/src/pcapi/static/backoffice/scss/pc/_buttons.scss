@@ -1,0 +1,10 @@
+// Generate classes for button-outline (empty background with filled background on hover) with subtle background color
+@each $color, $value in $theme-colors {
+  .btn-outline-#{$color}-subtle-bg {
+    @include button-outline-variant($value);
+    --#{$prefix}btn-hover-bg: #{map-get($theme-colors-bg-subtle, $color)};
+    --#{$prefix}btn-hover-color: #{$value};
+    --#{$prefix}btn-active-color: #{$value};
+    --#{$prefix}btn-active-bg: #{map-get($theme-colors-bg-subtle, $color)};
+  }
+}

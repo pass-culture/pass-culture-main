@@ -514,16 +514,24 @@ def format_validation_status(status: validation_status_mixin.ValidationStatus) -
             return status.value
 
 
+def format_badge(text: str, category: str = "primary") -> str:
+    # Category: primary, secondary, success, danger, warning and info
+    return Markup('<span class="badge text-{category} bg-{category}-subtle">{text}</span>').format(
+        text=text, category=category
+    )
+
+
 def format_offer_validation_status(status: offer_mixin.OfferValidationStatus, with_badge: bool = False) -> str:
+    prefix = "\u2022\u00a0"  # bullet(•) + no-break space
     match status:
         case offer_mixin.OfferValidationStatus.DRAFT:
-            return Markup('<span class="badge text-bg-info">Nouvelle</span>') if with_badge else "Nouvelle"
+            return format_badge(f"{prefix}Nouvelle", "info") if with_badge else "Nouvelle"
         case offer_mixin.OfferValidationStatus.PENDING:
-            return Markup('<span class="badge text-bg-warning">En attente</span>') if with_badge else "En attente"
+            return format_badge(f"{prefix}En attente", "warning") if with_badge else "En attente"
         case offer_mixin.OfferValidationStatus.APPROVED:
-            return Markup('<span class="badge text-bg-success">Validée</span>') if with_badge else "Validée"
+            return format_badge(f"{prefix}Validée", "success") if with_badge else "Validée"
         case offer_mixin.OfferValidationStatus.REJECTED:
-            return Markup('<span class="badge text-bg-danger">Rejetée</span>') if with_badge else "Rejetée"
+            return format_badge(f"{prefix}Rejetée", "danger") if with_badge else "Rejetée"
         case _:
             return status.value
 
@@ -859,9 +867,7 @@ def format_as_badges(items: list[str] | None, return_markup: bool = True) -> str
     if not items:
         return ""
 
-    return (Markup(" ") if return_markup else " ").join(
-        Markup('<span class="badge text-bg-light shadow-sm">{name}</span>').format(name=item) for item in items
-    )
+    return (Markup(" ") if return_markup else " ").join(format_badge(item, "secondary") for item in items)
 
 
 def format_tag_object_list(
@@ -921,14 +927,12 @@ def format_confidence_level_badge(
 ) -> str:
     match confidence_level:
         case offerers_models.OffererConfidenceLevel.MANUAL_REVIEW:
-            return Markup('<span class="badge text-bg-danger shadow-sm">Revue manuelle {info}</span>').format(info=info)
+            return format_badge(f"Revue manuelle {info}", "warning")
         case offerers_models.OffererConfidenceLevel.WHITELIST:
-            return Markup('<span class="badge text-bg-success shadow-sm">Validation auto {info}</span>').format(
-                info=info
-            )
+            return format_badge(f"Validation auto {info}", "success")
 
     if show_no_rule:
-        return Markup('<span class="badge text-bg-light shadow-sm">Suivre les règles</span>')
+        return format_badge("Suivre les règles", "secondary")
 
     return ""
 
@@ -1033,17 +1037,21 @@ def format_music_gtl_id(music_gtl_id: str) -> str:
 
 
 def format_show_type(show_type_id: int | str) -> str:
-    try:
-        return show.SHOW_TYPES_LABEL_BY_CODE.get(int(show_type_id), f"Autre[{show_type_id}]")
-    except ValueError:
-        return f"Autre[{show_type_id}]"
+    if show_type_id:
+        try:
+            return show.SHOW_TYPES_LABEL_BY_CODE.get(int(show_type_id), f"Autre[{show_type_id}]")
+        except ValueError:
+            return f"Autre[{show_type_id}]"
+    return "[Non renseigné]"
 
 
 def format_show_subtype(show_subtype_id: int | str) -> str:
-    try:
-        return show.SHOW_SUB_TYPES_LABEL_BY_CODE.get(int(show_subtype_id), f"Autre[{show_subtype_id}]")
-    except ValueError:
-        return f"Autre[{show_subtype_id}]"
+    if show_subtype_id:
+        try:
+            return show.SHOW_SUB_TYPES_LABEL_BY_CODE.get(int(show_subtype_id), f"Autre[{show_subtype_id}]")
+        except ValueError:
+            return f"Autre[{show_subtype_id}]"
+    return "[Non renseigné]"
 
 
 def match_opening_hours(info_name: str) -> str | None:
@@ -1660,6 +1668,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["any"] = any
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
     app.jinja_env.filters["format_amount"] = format_amount
+    app.jinja_env.filters["format_badge"] = format_badge
     app.jinja_env.filters["format_booking_cancellation"] = format_booking_cancellation
     app.jinja_env.filters["format_booking_status"] = format_booking_status
     app.jinja_env.filters["format_booking_status_long"] = format_booking_status_long

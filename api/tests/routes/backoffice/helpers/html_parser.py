@@ -196,3 +196,32 @@ def extract_input_value(html_content: str, name: str) -> str:
     assert input_field is not None
 
     return input_field["value"]
+
+
+def extract_descriptions(html_content: str) -> dict[str, str]:
+    description_titles = extract(html_content, tag="dt")
+    description_details = extract(html_content, tag="dd")
+    assert len(description_titles) == len(description_details)
+
+    return dict(zip(description_titles, description_details))
+
+
+def extract_badges(html_content: str) -> list[str]:
+    return extract(html_content, "span", class_="badge")
+
+
+def extract_accessibility_badges(html_content: str) -> dict[str, str]:
+    soup = get_soup(html_content)
+
+    badge_divs = soup.find_all("figure", class_="accessibility-logo-container")
+    badges = {}
+    for div in badge_divs:
+        badge_soup = get_soup(div.encode("utf-8"))
+        badge_caption = badge_soup.find("figcaption")
+        assert badge_caption is not None
+        badge_text = _filter_whitespaces(badge_caption.text)
+        has_ok_icon = badge_soup.find("i", class_="bi-check-circle-fill") is not None
+        has_nok_icon = badge_soup.find("i", class_="bi-x-circle-fill") is not None
+        assert has_ok_icon != has_nok_icon  # cannot be ok and nok at the same time
+        badges[badge_text] = has_ok_icon
+    return badges
