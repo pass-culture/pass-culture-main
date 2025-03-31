@@ -58,12 +58,14 @@ def test_synchronize_adage_ids_on_venues(db_session):
     venue4 = offerers_factories.VenueFactory()
     venue5 = offerers_factories.VenueFactory(adageId="11", adageInscriptionDate=datetime.utcnow())
     venue6 = offerers_factories.VenueFactory(adageId="1252", adageInscriptionDate=datetime.utcnow())
+    venue7 = offerers_factories.VenueFactory(adageId="128033", adageInscriptionDate=datetime.utcnow())
 
     adage_id1 = 128028
     adage_id2 = 128029
     adage_id3 = 128030
     adage_id4 = 128031
     adage_id5 = 128032
+    adage_id7 = 128033
 
     venue1_data = {**BASE_DATA, "id": adage_id1, "venueId": venue1.id}
     venue1_extra_data = {**BASE_DATA, "id": adage_id5, "venueId": venue1.id}
@@ -72,6 +74,7 @@ def test_synchronize_adage_ids_on_venues(db_session):
     venue4_data = {**BASE_DATA, "id": adage_id4, "venueId": None}
     venue5_data = {**BASE_DATA, "id": adage_id4, "venueId": venue5.id, "synchroPass": 1, "actif": None}
     venue6_data = {**BASE_DATA, "id": adage_id3, "venueId": venue6.id, "synchroPass": 0, "actif": None}
+    venue7_data = {**BASE_DATA, "id": adage_id7, "venueId": venue7.id}
 
     with requests_mock.Mocker() as request_mock:
         request_mock.get(
@@ -80,7 +83,16 @@ def test_synchronize_adage_ids_on_venues(db_session):
                 "X-omogen-api-key": "adage-api-key",
             },
             status_code=200,
-            json=[venue1_data, venue1_extra_data, venue2_data, venue3_data, venue4_data, venue5_data, venue6_data],
+            json=[
+                venue1_data,
+                venue1_extra_data,
+                venue2_data,
+                venue3_data,
+                venue4_data,
+                venue5_data,
+                venue6_data,
+                venue7_data,
+            ],
         )
         with patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email") as mock_activation_mail:
             educational_api_adage.synchronize_adage_ids_on_venues()
@@ -91,6 +103,7 @@ def test_synchronize_adage_ids_on_venues(db_session):
     db.session.refresh(venue4)
     db.session.refresh(venue5)
     db.session.refresh(venue6)
+    db.session.refresh(venue7)
 
     # venue1 had not adageId and obtained two after synchronization
     # (venues merged)
@@ -138,6 +151,11 @@ def test_synchronize_adage_ids_on_venues(db_session):
     assert venue6.adageInscriptionDate is None
     assert {ava.adageId for ava in venue6.adage_addresses} == {None}
     assert {ava.adageInscriptionDate for ava in venue6.adage_addresses} == {None}
+
+    # venue7 had a adageId which is unchanged
+    # -> nothing should have been updated
+    assert venue7.adageId == str(adage_id7)
+    assert len(venue7.action_history) == 0
 
     expected_emails = get_emails_by_venue(venue1) | get_emails_by_venue(venue2)
     expected_venues = {venue1.id, venue2.id}
@@ -197,6 +215,7 @@ def test_synchronize_adage_ids_on_venues_with_unknown_venue(db_session):
     action = history_models.ActionHistory.query.one()
     assert action.actionType == history_models.ActionType.INFO_MODIFIED
     assert action.venue == venue
+    assert action.comment == "Synchronisation ADAGE"
     assert action.extraData == {"modified_info": {"adageId": {"old_info": None, "new_info": str(adage_id3)}}}
 
 
@@ -239,6 +258,7 @@ def test_synchronize_adage_ids_on_venues_with_venue_id_missing(db_session, caplo
     action = history_models.ActionHistory.query.one()
     assert action.actionType == history_models.ActionType.INFO_MODIFIED
     assert action.venue == venue
+    assert action.comment == "Synchronisation ADAGE"
     assert action.extraData == {"modified_info": {"adageId": {"old_info": None, "new_info": str(adage_id1)}}}
 
 

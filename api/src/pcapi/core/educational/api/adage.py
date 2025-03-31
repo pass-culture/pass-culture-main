@@ -242,13 +242,13 @@ def synchronize_adage_ids_on_venues(debug: bool = False, since_date: datetime | 
                 if venue.adageId != new_adage_id:
                     adage_id_updates[venue.id] = new_adage_id
 
-                history_api.add_action(
-                    history_models.ActionType.INFO_MODIFIED,
-                    author=None,
-                    venue=venue,
-                    comment="Synchronisation ADAGE",
-                    modified_info={"adageId": {"old_info": venue.adageId, "new_info": str(new_adage_id)}},
-                )
+                    history_api.add_action(
+                        history_models.ActionType.INFO_MODIFIED,
+                        author=None,
+                        venue=venue,
+                        comment="Synchronisation ADAGE",
+                        modified_info={"adageId": {"old_info": venue.adageId, "new_info": str(new_adage_id)}},
+                    )
                 venue.adageId = str(new_adage_id)
                 db.session.add(venue)
             else:
