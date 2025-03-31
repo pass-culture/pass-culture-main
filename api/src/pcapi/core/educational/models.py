@@ -20,7 +20,6 @@ from pcapi.core import object_storage
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
-from pcapi.core.educational import constants
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.models import offer_mixin
@@ -1571,13 +1570,7 @@ class EducationalInstitution(PcObject, models.Base, models.Model):
         "CollectiveOfferRequest", back_populates="educationalInstitution"
     )
 
-    programs: list["EducationalInstitutionProgram"] = sa_orm.relationship(
-        "EducationalInstitutionProgram",
-        secondary="educational_institution_program_association",
-        back_populates="institutions",
-    )
-
-    programAssociations: sa_orm.Mapped["EducationalInstitutionProgramAssociation"] = sa_orm.relationship(
+    programAssociations: sa_orm.Mapped["list[EducationalInstitutionProgramAssociation]"] = sa_orm.relationship(
         "EducationalInstitutionProgramAssociation", back_populates="institution"
     )
 
@@ -1606,7 +1599,7 @@ class EducationalInstitution(PcObject, models.Base, models.Model):
     def full_name(self) -> str:
         return f"{self.institutionType} {self.name}".strip()
 
-    def current_programs(self, date: datetime.datetime) -> list["EducationalInstitutionProgram"]:
+    def programs_at_date(self, date: datetime.datetime) -> list["EducationalInstitutionProgram"]:
         return [association.program for association in self.programAssociations if date in association.timespan]
 
 
@@ -2270,9 +2263,12 @@ class EducationalInstitutionProgramAssociation(models.Base, models.Model):
     program: sa_orm.Mapped["EducationalInstitutionProgram"] = sa_orm.relationship(
         "EducationalInstitutionProgram", foreign_keys=[programId]
     )
-
-    timespan: DateTimeRange | None = sa.Column(
-        "timespan", postgresql.TSRANGE(), server_default=f"[{constants.MEG_BEGINNING_DATE},)", nullable=False
+    timespan: sa_orm.Mapped[DateTimeRange] = sa.Column(
+        # the date 2023-09-01 is the beginning of the MEG program. This will need to evolve if other programs are added
+        "timespan",
+        postgresql.TSRANGE(),
+        server_default=sa.text("'[\"2023-09-01 00:00:00\",)'::tsrange"),
+        nullable=False,
     )
 
 
@@ -2282,10 +2278,6 @@ class EducationalInstitutionProgram(PcObject, models.Base, models.Model):
     # public (printable) name - if something different from name is needed
     label: str | None = sa.Column(sa.Text, nullable=True)
     description: str | None = sa.Column(sa.Text, nullable=True)
-
-    institutions: list["EducationalInstitution"] = sa_orm.relationship(
-        "EducationalInstitution", secondary="educational_institution_program_association", back_populates="programs"
-    )
 
 
 class CollectivePlaylist(PcObject, models.Base, models.Model):

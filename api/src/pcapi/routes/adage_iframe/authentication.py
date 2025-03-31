@@ -83,5 +83,5 @@ def _get_programs(institution: educational_models.EducationalInstitution | None)
         return []
     return [
         EducationalInstitutionProgramModel.from_orm(program)
-        for program in institution.current_programs(datetime.datetime.utcnow())
+        for program in institution.programs_at_date(datetime.datetime.utcnow())
     ]
