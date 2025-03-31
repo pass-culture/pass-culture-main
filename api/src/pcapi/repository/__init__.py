@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import functools
 import itertools
 import logging
+from traceback import format_exc
 from types import TracebackType
 import typing
 
@@ -51,6 +52,7 @@ class OnCommitCallback:
                 "An error was raised in the post commit callbacks",
                 extra={
                     "exception": exp,
+                    "trace": format_exc(),
                     "robust": self.robust,
                 },
             )
