@@ -2,14 +2,16 @@
 
 .image-preview-shell {
   position: absolute;
-  height: rem.torem(515px);
+  height: rem.torem(130px);
+  left: rem.torem(44px);
+  top: rem.torem(12px);
 }
 
 .image-preview-home-preview {
+  position: absolute;
+  height: rem.torem(56px);
   background-color: var(--color-white);
   border-radius: rem.torem(5px);
-  left: rem.torem(16px);
-  position: absolute;
-  top: rem.torem(152px);
-  height: rem.torem(228px);
+  top: rem.torem(50px);
+  left: rem.torem(48px);
 }

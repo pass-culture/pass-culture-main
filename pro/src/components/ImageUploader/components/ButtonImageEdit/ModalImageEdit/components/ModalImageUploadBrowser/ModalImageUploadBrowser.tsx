@@ -18,15 +18,17 @@ export const ModalImageUploadBrowser = ({
   isReady,
 }: ModalImageUploadBrowserProps) => {
   return (
-    <section className={style['modal-upload-browser']}>
+    <section>
       <Dialog.Title asChild>
-        <h1 className={style['header']}>Ajouter une image</h1>
+        <h2 className={style['modal-upload-header']}>Ajouter une image</h2>
       </Dialog.Title>
-      <ImageUploadBrowserForm
-        isReady={isReady}
-        onSubmit={onImageClientUpload}
-        mode={mode}
-      />
+      <div className={style['modal-upload-browser']}>
+        <ImageUploadBrowserForm
+          isReady={isReady}
+          onSubmit={onImageClientUpload}
+          mode={mode}
+        />
+      </div>
     </section>
   )
 }

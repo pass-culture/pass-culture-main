@@ -1,11 +1,8 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
 
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useGetImageBitmap } from 'commons/hooks/useGetBitmap'
-import { useNotification } from 'commons/hooks/useNotification'
 import {
   ImageEditor,
   ImageEditorConfig,
@@ -17,8 +14,6 @@ import fullDownloadIcon from 'icons/full-download.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { Divider } from 'ui-kit/Divider/Divider'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
 import { getCropMaxDimension } from '../../utils/getCropMaxDimension'
 
@@ -36,27 +31,20 @@ export type ModalImageCropProps = {
   saveInitialPosition: (position: Position) => void
   onEditedImageSave: (dataUrl: string, croppedRect: CroppedRect) => void
   mode: UploaderModeEnum
-  showPreviewInModal: boolean
 }
 
 export const ModalImageCrop = ({
   onReplaceImage,
   onImageDelete,
   image,
-  credit,
-  onSetCredit,
   onEditedImageSave,
   saveInitialPosition,
   initialPosition,
   initialScale,
   mode,
-  showPreviewInModal,
 }: ModalImageCropProps): JSX.Element => {
-  const { logEvent } = useAnalytics()
   const { width, height } = useGetImageBitmap(image)
   const editorRef = useRef<AvatarEditor>(null)
-  const notification = useNotification()
-  const [creditInput, setCreditInput] = useState(credit || '')
 
   const minWidth = modeValidationConstraints[mode].minWidth
 
@@ -68,10 +56,11 @@ export const ModalImageCrop = ({
   const maxScale: number = Math.min(4, (maxWidth - 10) / minWidth)
 
   const canvasHeight: number = {
-    [UploaderModeEnum.OFFER]: 384,
-    [UploaderModeEnum.OFFER_COLLECTIVE]: 384,
+    [UploaderModeEnum.OFFER]: 300,
+    [UploaderModeEnum.OFFER_COLLECTIVE]: 300,
     [UploaderModeEnum.VENUE]: 244,
   }[mode]
+
   const imageEditorConfig: ImageEditorConfig = {
     [UploaderModeEnum.OFFER]: {
       canvasHeight,
@@ -99,11 +88,7 @@ export const ModalImageCrop = ({
     },
   }[mode]
 
-  const handleNext = () => {
-    logEvent(Events.CLICKED_ADD_IMAGE, {
-      imageCreationStage: 'reframe image',
-    })
-
+  const onImageChange = () => {
     try {
       if (editorRef.current) {
         const canvas = editorRef.current.getImage()
@@ -113,88 +98,52 @@ export const ModalImageCrop = ({
           x: coordonateToPosition(croppingRect.x, croppingRect.width),
           y: coordonateToPosition(croppingRect.y, croppingRect.height),
         })
-        onEditedImageSave(canvas.toDataURL(), croppingRect)
+
+        const debounced = setTimeout(() => {
+          onEditedImageSave(canvas.toDataURL(), croppingRect)
+        }, 1000)
+        return () => clearTimeout(debounced)
       }
-      onSetCredit(creditInput)
     } catch {
-      notification.error(
-        'Une erreur est survenue. Merci de réessayer plus tard'
-      )
+      /* empty */
     }
+    return
   }
 
   return (
     <section className={style['modal-image-crop']}>
-      <form>
-        <div className={style['modal-image-crop-form']}>
-          <Dialog.Title asChild>
-            <h1 className={style['modal-image-crop-header']}>
-              Modifier une image
-            </h1>
-          </Dialog.Title>
+      <div className={style['modal-image-crop-form']}>
+        <div className={style['modal-image-crop-editor']}>
+          <ImageEditor
+            {...imageEditorConfig}
+            image={image}
+            initialPosition={initialPosition}
+            ref={editorRef}
+            initialScale={initialScale}
+            onImageChange={onImageChange}
+          />
 
-          <p className={style['modal-image-crop-right']}>
-            En utilisant ce contenu, je certifie que je suis propriétaire ou que
-            je dispose des autorisations nécessaires pour l’utilisation de
-            celui-ci.
-          </p>
+          <div className={style['modal-image-crop-actions']}>
+            <Button
+              icon={fullDownloadIcon}
+              onClick={onReplaceImage}
+              variant={ButtonVariant.TERNARY}
+            >
+              Remplacer l’image
+            </Button>
 
-          <div className={style['modal-image-crop-editor']}>
-            <ImageEditor
-              {...imageEditorConfig}
-              image={image}
-              initialPosition={initialPosition}
-              ref={editorRef}
-              initialScale={initialScale}
-            />
-
-            <div className={style['modal-image-crop-actions']}>
+            <Dialog.Close asChild>
               <Button
-                icon={fullDownloadIcon}
-                onClick={onReplaceImage}
+                icon={fullTrashIcon}
+                onClick={onImageDelete}
                 variant={ButtonVariant.TERNARY}
               >
-                Remplacer l’image
+                Supprimer l’image
               </Button>
-
-              <Dialog.Close asChild>
-                <Button
-                  icon={fullTrashIcon}
-                  onClick={onImageDelete}
-                  variant={ButtonVariant.TERNARY}
-                >
-                  Supprimer l’image
-                </Button>
-              </Dialog.Close>
-            </div>
+            </Dialog.Close>
           </div>
-
-          <TextInput
-            count={creditInput.length}
-            className={style['modal-image-crop-credit']}
-            label="Crédit de l’image"
-            maxLength={255}
-            value={creditInput}
-            onChange={(e) => setCreditInput(e.target.value)}
-            name="credit"
-            type="text"
-          />
         </div>
-
-        <Divider />
-
-        <div className={style['modal-image-crop-footer']}>
-          <Button
-            type="submit"
-            onClick={(e) => {
-              e.preventDefault()
-              handleNext()
-            }}
-          >
-            {showPreviewInModal ? 'Suivant' : 'Enregistrer'}
-          </Button>
-        </div>
-      </form>
+      </div>
     </section>
   )
 }

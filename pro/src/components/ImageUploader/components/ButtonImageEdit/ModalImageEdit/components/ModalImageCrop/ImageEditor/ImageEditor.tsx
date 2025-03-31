@@ -35,6 +35,7 @@ export interface ImageEditorConfig {
 
 interface ImageEditorProps extends ImageEditorConfig {
   image: File
+  onImageChange: () => void
   initialPosition?: Position
   initialScale?: number
   children?: never
@@ -44,6 +45,7 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
   (
     {
       image,
+      onImageChange,
       canvasHeight,
       canvasWidth,
       cropBorderColor,
@@ -109,6 +111,9 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       if (!ctx) {
         return
       }
+
+      onImageChange()
+
       const canvasTools = new CanvasTools(ctx)
       canvasTools.drawArea({
         width: 0,

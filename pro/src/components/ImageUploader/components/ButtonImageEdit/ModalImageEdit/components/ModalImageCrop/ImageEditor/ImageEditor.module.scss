@@ -19,14 +19,15 @@
     display: flex;
     align-items: center;
     padding-top: rem.torem(8px);
-    padding-bottom: rem.torem(16px);
-
+    padding-bottom: rem.torem(8px);
+    padding-top: rem.torem(6px);
+    max-width: rem.torem(300px);
+    
     &-label {
       @include fonts.body-accent-xs;
 
-      margin-left: rem.torem(28px);
-      margin-right: rem.torem(28px);
-      padding-bottom: rem.torem(4px);
+      margin-left: rem.torem(8px);
+      margin-right: rem.torem(8px);
       color: var(--color-text-subtle);
     }
 

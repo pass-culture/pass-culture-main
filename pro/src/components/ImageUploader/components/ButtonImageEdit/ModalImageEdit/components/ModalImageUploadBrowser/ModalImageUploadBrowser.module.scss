@@ -7,17 +7,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
 
-  // UI width minus dialog padding to reach 656px
-  @media (min-width: size.$tablet) {
-    min-width: calc(rem.torem(656px) - size.$dialog-box-padding * 2);
-  }
-
-  .header {
-    @include fonts.title3;
-  }
-
-  .horizontal-rule {
-    width: 100%;
-  }
+.modal-upload-header {
+  @include fonts.title3;
 }
