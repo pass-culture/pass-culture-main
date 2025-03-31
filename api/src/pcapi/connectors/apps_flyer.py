@@ -91,7 +91,7 @@ def log_offer_event(booking: Booking, event_name: str) -> None:
         "af_user_id": str(booking.userId),
         "af_offer_id": str(booking.stock.offerId),
         "af_booking_id": str(booking.id),
-        "af_price": booking.amount,
+        "af_price": str(booking.amount),
         "af_category": booking.stock.offer.subcategoryId,
     }
     _send_apps_flyer_event(booking.user, event_name, event_value, "OFFER BOOKED")
