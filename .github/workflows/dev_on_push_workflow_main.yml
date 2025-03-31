@@ -299,7 +299,7 @@ jobs:
       cluster_scope: metier
       cluster_environment: ehp
       workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
-      apply_algolia_config: ${{ needs.pcapi-init-job.outputs.algolia-config-changed }}
+      apply_algolia_config: ${{ needs.pcapi-init-job.algolia-config-changed == 'true' }}
       deploy_api: ${{ needs.test-api.result == 'success' }}
       deploy_pro: ${{ needs.test-pro.result == 'success' }}
     secrets:
