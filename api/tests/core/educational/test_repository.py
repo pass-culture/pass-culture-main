@@ -667,16 +667,38 @@ class HasCollectiveOffersForProgramAndVenueIdsTest:
         venue = offerers_factories.VenueFactory()
         other_venue = offerers_factories.VenueFactory()
 
-        institution = educational_factories.EducationalInstitutionFactory(programs=[program])
-        other_institution = educational_factories.EducationalInstitutionFactory(programs=[other_program])
+        venue_not_in_program_anymore = offerers_factories.VenueFactory()
 
-        _collective_offer_with_program = educational_factories.CollectiveOfferFactory(
-            venue=venue, institution=institution
+        institution = educational_factories.EducationalInstitutionFactory(
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(
+                    program=program,
+                )
+            ]
         )
-        _collective_offer_without_program = educational_factories.CollectiveOfferFactory(venue=venue)
-        _collective_offer_with_other_program = educational_factories.CollectiveOfferFactory(
-            venue=other_venue, institution=other_institution
+        other_institution = educational_factories.EducationalInstitutionFactory(
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(
+                    program=other_program,
+                )
+            ]
         )
+
+        institution_not_in_program_anymore = educational_factories.EducationalInstitutionFactory(
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(
+                    program=program,
+                    timespan=db_utils.make_timerange(start=datetime(2022, 1, 1), end=datetime(2022, 1, 31)),
+                )
+            ]
+        )
+
+        educational_factories.CollectiveOfferFactory(venue=venue, institution=institution)
+        educational_factories.CollectiveOfferFactory(
+            venue=venue_not_in_program_anymore, institution=institution_not_in_program_anymore
+        )
+        educational_factories.CollectiveOfferFactory(venue=venue)
+        educational_factories.CollectiveOfferFactory(venue=other_venue, institution=other_institution)
 
         venue_id = venue.id
 
@@ -689,6 +711,13 @@ class HasCollectiveOffersForProgramAndVenueIdsTest:
 
         assert (
             educational_repository.has_collective_offers_for_program_and_venue_ids("program", [other_venue.id]) == False
+        )
+
+        assert (
+            educational_repository.has_collective_offers_for_program_and_venue_ids(
+                "program", [venue_not_in_program_anymore.id]
+            )
+            == False
         )
 
     def test_has_collective_offers_for_program_after_leaving_program(self, app):

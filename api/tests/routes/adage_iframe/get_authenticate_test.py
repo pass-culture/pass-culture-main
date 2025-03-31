@@ -62,7 +62,9 @@ class AuthenticateTest:
         program = educational_factories.EducationalInstitutionProgramFactory()
         institution = educational_factories.EducationalInstitutionFactory(
             institutionId=DEFAULT_UAI,
-            programs=[program],
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(program=program)
+            ],
             ruralLevel=DEFAULT_RURAL_LEVEL,
         )
 

@@ -305,8 +305,8 @@ def generate_search_query(
 
         if custom_filter := meta_field.get("custom_filters", {}).get(operator):
             filters.append(custom_filter(field_value))
-            if custom_filter_inner_join := meta_field.get("custom_filters_inner_join", {}).get(operator):
-                inner_joins.add(custom_filter_inner_join)
+            if custom_filter_inner_joins := meta_field.get("custom_filters_inner_joins", {}).get(operator, set()):
+                inner_joins.update(custom_filter_inner_joins)
             continue
 
         column = meta_field["column"]

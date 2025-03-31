@@ -173,18 +173,7 @@ def find_educational_year_by_date(date_searched: datetime) -> educational_models
 
 
 def find_educational_institution_by_uai_code(uai_code: str | None) -> educational_models.EducationalInstitution | None:
-    return (
-        educational_models.EducationalInstitution.query.filter_by(institutionId=uai_code)
-        .outerjoin(educational_models.EducationalInstitutionProgramAssociation)
-        .filter(
-            sa.or_(
-                educational_models.EducationalInstitutionProgramAssociation.timespan.is_(None),
-                educational_models.EducationalInstitutionProgramAssociation.timespan.contains(datetime.utcnow()),
-            )
-        )
-        .options(sa.orm.joinedload(educational_models.EducationalInstitution.programs))
-        .one_or_none()
-    )
+    return educational_models.EducationalInstitution.query.filter_by(institutionId=uai_code).one_or_none()
 
 
 def find_educational_deposit_by_institution_id_and_year(
@@ -1358,10 +1347,11 @@ def has_collective_offers_for_program_and_venue_ids(program_name: str, venue_ids
         educational_models.CollectiveOffer.query.join(
             educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
         )
-        .join(educational_models.EducationalInstitutionProgram, educational_models.EducationalInstitution.programs)
         .join(
-            educational_models.EducationalInstitutionProgramAssociation,
             educational_models.EducationalInstitution.programAssociations,
+        )
+        .join(
+            educational_models.EducationalInstitutionProgramAssociation.program,
         )
         .filter(
             educational_models.CollectiveOffer.venueId.in_(venue_ids),
