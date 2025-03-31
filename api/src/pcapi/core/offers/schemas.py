@@ -1,6 +1,10 @@
+import datetime
 import typing
 
+from psycopg2.extras import NumericRange
 from pydantic.v1 import EmailStr
+from pydantic.v1 import ConstrainedList
+from pydantic.v1 import ConstrainedStr
 from pydantic.v1 import HttpUrl
 from pydantic.v1 import validator
 
@@ -10,8 +14,95 @@ from pcapi.core.offers import models as offers_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
+from pcapi.utils.date import time_to_int
 
 from .validation import check_offer_subcategory_is_valid
+
+
+class HourType(ConstrainedStr):
+    regex = r"^([0-1]\d|2[0-3]):[0-5]\d$"
+
+
+class TimeSpanType(ConstrainedList):
+    min_items = 2
+    max_items = 2
+    __args__ = (HourType,)
+    item_type = HourType
+
+
+class TimeSpanListType(ConstrainedList):
+    max_items = 2
+    __args__ = (TimeSpanType,)
+    item_type = TimeSpanType
+
+
+def _convert_to_numeric_ranges(time_spans: list[list[str]]) -> list[NumericRange]:
+    if len(time_spans) == 1:
+        start, end = time_spans[0]
+        return [NumericRange(time_to_int(start), time_to_int(end), "[]")]
+
+    if len(time_spans) == 2:
+        start1, end1 = time_spans[0]
+        start2, end2 = time_spans[1]
+
+        start1 = time_to_int(start1)
+        end1 = time_to_int(end1)
+        start2 = time_to_int(start2)
+        end2 = time_to_int(end2)
+
+        if (start2 <= start1 <= end2) or (start2 <= end1 <= end2):
+            raise ValueError("Time spans overlaps")
+
+        return [
+            NumericRange(start1, end1, "[]"),
+            NumericRange(start2, end2, "[]"),
+        ]
+
+    return []
+
+
+class OpeningHoursModel(BaseModel):
+    MONDAY: TimeSpanListType
+    TUESDAY: TimeSpanListType
+    WEDNESDAY: TimeSpanListType
+    THURSDAY: TimeSpanListType
+    FRIDAY: TimeSpanListType
+    SATURDAY: TimeSpanListType
+    SUNDAY: TimeSpanListType
+
+    @validator("MONDAY", pre=False)
+    def validate_monday(cls, monday: list[list[str]], values: dict) -> list[NumericRange]:
+        return _convert_to_numeric_ranges(monday)
+
+    @validator("TUESDAY", pre=False)
+    def validate_tuesday(cls, tuesday: list[list[str]], values: dict) -> list[NumericRange]:
+        return _convert_to_numeric_ranges(tuesday)
+
+    @validator("WEDNESDAY", pre=False)
+    def validate_wednesday(cls, wednesday: list[list[str]], values: dict) -> list[NumericRange]:
+        return _convert_to_numeric_ranges(wednesday)
+
+    @validator("THURSDAY", pre=False)
+    def validate_thursday(cls, thursday: list[list[str]], values: dict) -> list[NumericRange]:
+        return _convert_to_numeric_ranges(thursday)
+
+    @validator("FRIDAY", pre=False)
+    def validate_friday(cls, friday: list[list[str]], values: dict) -> list[NumericRange]:
+        return _convert_to_numeric_ranges(friday)
+
+    @validator("SATURDAY", pre=False)
+    def validate_saturday(cls, saturday: list[list[str]], values: dict) -> list[NumericRange]:
+        return _convert_to_numeric_ranges(saturday)
+
+    @validator("SUNDAY", pre=False)
+    def validate_sunday(cls, sunday: list[list[str]], values: dict) -> list[NumericRange]:
+        return _convert_to_numeric_ranges(sunday)
+
+
+class CreateEventOpeningHoursModel(BaseModel):
+    startDatetime: datetime.datetime
+    endDatetime: datetime.datetime
+    openingHours: OpeningHoursModel
 
 
 class PostDraftOfferBodyModel(BaseModel):
