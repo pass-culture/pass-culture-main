@@ -105,17 +105,6 @@ def get_location_options(venue: offerers_models.Venue) -> list[LocationOption]:
             "interventionArea": ["75", "92", "93", "94", "95"],
             "locationType": educational_models.CollectiveLocationType.ADDRESS,
         },
-        {
-            "name": "La culture chez l'acteur qui n'existe pas",
-            "offerVenue": {
-                "addressType": educational_models.OfferAddressType.OFFERER_VENUE,
-                "venueId": 424242,
-                "otherAddress": "",
-            },
-            "interventionArea": ["75", "92", "93", "94", "95"],
-            "locationType": educational_models.CollectiveLocationType.TO_BE_DEFINED,
-            "locationComment": "Structure inexistante",
-        },
     ]
 
 
