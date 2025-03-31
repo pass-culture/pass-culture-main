@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 import time
+import traceback
 import typing
 
 from authlib.integrations.flask_client import OAuth
@@ -251,17 +252,32 @@ def mark_4xx_as_invalid(response: flask.Response) -> flask.Response:
 def remove_db_session(exc: BaseException | None = None) -> None:
     try:
         db.session.remove()
-    except AttributeError:
-        pass
+    except Exception as exception:  # pylint: disable=broad-exception-caught
+        logger.error(
+            "An error happened while managing the transaction",
+            extra={
+                "exc": str(exception),
+                "stacktrace": traceback.format_exc(),
+            },
+        )
 
 
 @app.teardown_request
 def teardown_atomic(exc: BaseException | None = None) -> None:
     if app.config.get("USE_GLOBAL_ATOMIC", False):
-        if exc:
-            repository.mark_transaction_as_invalid()
-        repository._manage_session()
-        db.session.autoflush = True
+        try:
+            if exc:
+                repository.mark_transaction_as_invalid()
+            repository._manage_session()
+            db.session.autoflush = True
+        except Exception as exception:  # pylint: disable=broad-exception-caught
+            logger.error(
+                "An error happened while managing the transaction",
+                extra={
+                    "exc": str(exception),
+                    "stacktrace": traceback.format_exc(),
+                },
+            )
 
 
 with app.app_context():
