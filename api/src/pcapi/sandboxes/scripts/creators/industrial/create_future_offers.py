@@ -1,6 +1,5 @@
 import datetime
 import logging
-import random
 
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import Subcategory
@@ -18,12 +17,10 @@ def _create_future_offer_factory(
     description: str | None = None,
 ) -> None:
     offer = offer_factories.OfferFactory(
-        isActive=is_active, subcategoryId=subcategory.id, name=name, description=description
+        isActive=is_active, isDuo=True, subcategoryId=subcategory.id, name=name, description=description
     )
     offer_factories.EventStockFactory(
-        offer=offer,
-        beginningDatetime=publication_date + datetime.timedelta(days=random.randint(0, 10)),
-        price=random.randint(10, 40) + random.randint(0, 100) / 100,
+        offer=offer, beginningDatetime=publication_date - datetime.timedelta(days=1), price=12.25
     )
 
     offer_factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
@@ -32,7 +29,7 @@ def _create_future_offer_factory(
 def create_future_offers() -> None:
     # Create future Offers not active, i.e. proper coming soon offers
     for i in range(5):
-        publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=i * 5)
+        publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=(i + 1) * 5)
         _create_future_offer_factory(
             is_active=False,
             publication_date=publication_date,
