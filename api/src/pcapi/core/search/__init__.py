@@ -333,12 +333,12 @@ def _reindex_venue_ids(
     logger.info("Starting to index venues", extra={"count": len(venue_ids)})
     venues = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(venue_ids))
-        .options(sa.orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True))
-        .options(sa.orm.joinedload(offerers_models.Venue.contact))
-        .options(sa.orm.joinedload(offerers_models.Venue.criteria))
-        .options(sa.orm.joinedload(offerers_models.Venue.googlePlacesInfo))
+        .options(sa_orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True))
+        .options(sa_orm.joinedload(offerers_models.Venue.contact))
+        .options(sa_orm.joinedload(offerers_models.Venue.criteria))
+        .options(sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo))
         .options(
-            sa.orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
         )
     )
 
@@ -473,7 +473,7 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
             & offers_models.FutureOffer.isWaitingForPublication,
         )
         .options(
-            sa.orm.contains_eager(offers_models.Offer.stocks).load_only(
+            sa_orm.contains_eager(offers_models.Offer.stocks).load_only(
                 offers_models.Stock.id,
                 offers_models.Stock.beginningDatetime,
                 offers_models.Stock.bookingLimitDatetime,
@@ -484,9 +484,9 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
                 offers_models.Stock.quantity,
             )
         )
-        .options(sa.orm.contains_eager(offers_models.Offer.futureOffer))
+        .options(sa_orm.contains_eager(offers_models.Offer.futureOffer))
         .options(
-            sa.orm.joinedload(offers_models.Offer.venue)
+            sa_orm.joinedload(offers_models.Offer.venue)
             .load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.bannerUrl,
@@ -507,14 +507,14 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
             )
         )
         .options(
-            sa.orm.joinedload(offers_models.Offer.venue)
+            sa_orm.joinedload(offers_models.Offer.venue)
             .joinedload(offerers_models.Venue.googlePlacesInfo)
             .load_only(offerers_models.GooglePlacesInfo.bannerUrl)
         )
-        .options(sa.orm.joinedload(offers_models.Offer.criteria).load_only(criteria_models.Criterion.id))
-        .options(sa.orm.joinedload(offers_models.Offer.mediations).load_only(offers_models.Mediation.id))
+        .options(sa_orm.joinedload(offers_models.Offer.criteria).load_only(criteria_models.Criterion.id))
+        .options(sa_orm.joinedload(offers_models.Offer.mediations).load_only(offers_models.Mediation.id))
         .options(
-            sa.orm.joinedload(offers_models.Offer.product)
+            sa_orm.joinedload(offers_models.Offer.product)
             .joinedload(offers_models.Product.productMediations)
             .load_only(
                 offers_models.ProductMediation.id,
@@ -523,7 +523,7 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
             )
         )
         .options(
-            sa.orm.joinedload(offers_models.Offer.product)
+            sa_orm.joinedload(offers_models.Offer.product)
             .load_only(
                 offers_models.Product.id,
                 offers_models.Product.last_30_days_booking,
@@ -534,18 +534,18 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
             .joinedload(offers_models.Product.artists)
             .load_only(artist_models.Artist.id, artist_models.Artist.name, artist_models.Artist.image)
         )
-        .options(sa.orm.joinedload(offers_models.Offer.headlineOffers))
+        .options(sa_orm.joinedload(offers_models.Offer.headlineOffers))
         .options(
-            sa.orm.joinedload(offers_models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address)
+            sa_orm.joinedload(offers_models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address)
         )
         .options(
-            sa.orm.with_expression(
+            sa_orm.with_expression(
                 offers_models.Offer.likesCount, offers_repository.get_offer_reaction_count_subquery()
             )
         )
         .options(
-            sa.orm.joinedload(offers_models.Offer.product).options(
-                sa.orm.with_expression(
+            sa_orm.joinedload(offers_models.Offer.product).options(
+                sa_orm.with_expression(
                     offers_models.Product.likesCount, offers_repository.get_product_reaction_count_subquery()
                 )
             )
