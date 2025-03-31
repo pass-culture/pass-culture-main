@@ -5,7 +5,7 @@ import logging
 from sqlalchemy.orm import selectinload
 
 from pcapi.app import app
-from pcapi.core.finance.enum import DepositType
+from pcapi.core.finance.models import DepositType
 from pcapi.core.finance.models import Deposit
 from pcapi.core.finance.models import Recredit
 from pcapi.core.finance.models import RecreditType
@@ -19,21 +19,15 @@ logger = logging.getLogger(__name__)
 
 
 def fix_pre_decree_deposit_amount() -> None:
-    users = (
+    users_query = (
         User.query.join(User.deposits)
-        .filter(
-            BeneficiaryFraudCheck.query.filter(
-                BeneficiaryFraudCheck.userId == User.id, BeneficiaryFraudCheck.eligibilityType == EligibilityType.AGE18
-            ).exists(),
-        )
+        .filter(User.beneficiaryFraudChecks.any(BeneficiaryFraudCheck.eligibilityType == EligibilityType.AGE18))
         .filter(
             Deposit.type == DepositType.GRANT_17_18,
-            Recredit.query.filter(
-                Recredit.depositId == Deposit.id, Recredit.recreditType == RecreditType.RECREDIT_18
-            ).exists(),
+            Deposit.recredits.any(Recredit.recreditType == RecreditType.RECREDIT_18),
+            Deposit.amount != 300,
         )
-        .options(selectinload(User.deposits))
-        .all()
+        .options(selectinload(User.deposits).selectinload(Deposit.recredits))
     )
 
     for user in users:
