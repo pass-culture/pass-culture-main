@@ -36,10 +36,11 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
             "OFFER_NAME": offer.name,
             "OFFER_PRICE": booking.total_amount,
             "OFFERER_NAME": offer.venue.managingOfferer.name,
+            "REASON": booking.cancellationReason.value if booking.cancellationReason else None,
+            "REJECTED": rejected_by_fraud_action,
             "USER_FIRST_NAME": booking.firstName,
             "USER_LAST_NAME": booking.lastName,
             "VENUE_NAME": offer.venue.common_name,
-            "REJECTED": rejected_by_fraud_action,
         },
     )
 

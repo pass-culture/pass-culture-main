@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 import decimal
 import logging
@@ -1740,6 +1741,166 @@ class CloseOffererTest:
             offerers_api.close_offerer(offerer, datetime.date.today() + datetime.timedelta(days=1), admin)
 
         assert offerer.isValidated
+
+    def test_close_offerer_with_thing_bookings(self):
+        admin = users_factories.AdminFactory()
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        confirmed_booking = bookings_factories.BookingFactory(
+            stock=offers_factories.ThingStockFactory(offer__venue=venue)
+        )
+        used_booking = bookings_factories.UsedBookingFactory(
+            stock=offers_factories.ThingStockFactory(offer__venue=venue)
+        )
+        canceled_booking = bookings_factories.CancelledBookingFactory(
+            stock=offers_factories.ThingStockFactory(offer__venue=venue),
+            cancellationReason=bookings_models.BookingCancellationReasons.BENEFICIARY,
+        )
+        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(
+            stock=offers_factories.ThingStockFactory(offer__venue=venue)
+        )
+        other_booking = bookings_factories.BookingFactory(
+            stock=offers_factories.ThingStockFactory(), user=confirmed_booking.user
+        )
+        offerers_api.close_offerer(offerer, datetime.date(2025, 3, 26), admin)
+
+        assert offerer.isClosed
+
+        # canceled:
+        assert confirmed_booking.status == bookings_models.BookingStatus.CANCELLED
+        assert confirmed_booking.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER_CLOSED
+
+        # unchanged:
+        assert used_booking.status == bookings_models.BookingStatus.USED
+        assert canceled_booking.status == bookings_models.BookingStatus.CANCELLED
+        assert canceled_booking.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
+        assert reimbursed_booking.status == bookings_models.BookingStatus.REIMBURSED
+        assert other_booking.status == bookings_models.BookingStatus.CONFIRMED
+
+        # no user_offerer in this test, 1 booking canceled
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value
+        )
+        assert mails_testing.outbox[0]["To"] == confirmed_booking.user.email
+        assert mails_testing.outbox[0]["params"]["OFFER_NAME"] == confirmed_booking.stock.offer.name
+        assert mails_testing.outbox[0]["params"]["REASON"] == "OFFERER_CLOSED"
+
+    def test_close_offerer_with_event_bookings(self):
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        confirmed_booking_2_days_ago = bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(
+                offer__venue=venue, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2)
+            )
+        )
+        confirmed_booking_in_2_days = bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(
+                offer__venue=venue, beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2)
+            )
+        )
+
+        used_booking = bookings_factories.UsedBookingFactory(
+            stock=offers_factories.EventStockFactory(offer__venue=venue)
+        )
+        canceled_booking = bookings_factories.CancelledBookingFactory(
+            stock=offers_factories.EventStockFactory(offer__venue=venue),
+            cancellationReason=bookings_models.BookingCancellationReasons.BENEFICIARY,
+        )
+        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(
+            stock=offers_factories.EventStockFactory(offer__venue=venue)
+        )
+        other_booking = bookings_factories.BookingFactory(stock=offers_factories.EventStockFactory())
+
+        offerers_api.close_offerer(offerer, datetime.date(2025, 3, 20), None)
+
+        assert offerer.isClosed
+
+        # canceled:
+        assert confirmed_booking_in_2_days.status == bookings_models.BookingStatus.CANCELLED
+        assert (
+            confirmed_booking_in_2_days.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER_CLOSED
+        )
+
+        # unchanged:
+        assert confirmed_booking_2_days_ago.status == bookings_models.BookingStatus.CONFIRMED
+        assert used_booking.status == bookings_models.BookingStatus.USED
+        assert canceled_booking.status == bookings_models.BookingStatus.CANCELLED
+        assert canceled_booking.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
+        assert reimbursed_booking.status == bookings_models.BookingStatus.REIMBURSED
+        assert other_booking.status == bookings_models.BookingStatus.CONFIRMED
+
+        # no user_offerer in this test, 1 booking canceled
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value
+        )
+        assert mails_testing.outbox[0]["To"] == confirmed_booking_in_2_days.user.email
+        assert mails_testing.outbox[0]["params"]["OFFER_NAME"] == confirmed_booking_in_2_days.stock.offer.name
+        assert mails_testing.outbox[0]["params"]["REASON"] == "OFFERER_CLOSED"
+
+    def test_close_offerer_with_collective_bookings(self):
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        pending_booking = educational_factories.PendingCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue=venue,
+            collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+        )
+        confirmed_booking_ends_2_days_ago = educational_factories.ConfirmedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue=venue,
+            collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            collectiveStock__endDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+        )
+        confirmed_booking_started_which_ends_in_2_days = educational_factories.ConfirmedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue=venue,
+            collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+        )
+        confirmed_booking_starts_in_4_days = educational_factories.ConfirmedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue=venue,
+            collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=4),
+            collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=6),
+        )
+        used_booking = educational_factories.UsedCollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
+        reimbursed_booking = educational_factories.ReimbursedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue=venue
+        )
+        canceled_booking = educational_factories.CancelledCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue=venue,
+            cancellationReason=educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER,
+        )
+        other_booking = educational_factories.PendingCollectiveBookingFactory()
+
+        offerers_api.close_offerer(offerer, datetime.date(2025, 3, 20), None)
+
+        assert offerer.isClosed
+
+        # canceled:
+        for booking in (
+            pending_booking,
+            confirmed_booking_started_which_ends_in_2_days,
+            confirmed_booking_starts_in_4_days,
+        ):
+            assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
+            assert booking.cancellationReason == educational_models.CollectiveBookingCancellationReasons.OFFERER_CLOSED
+
+        # unchanged:
+        assert confirmed_booking_ends_2_days_ago.status == educational_models.CollectiveBookingStatus.CONFIRMED
+        assert used_booking.status == educational_models.CollectiveBookingStatus.USED
+        assert canceled_booking.status == educational_models.CollectiveBookingStatus.CANCELLED
+        assert (
+            canceled_booking.cancellationReason
+            == educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER
+        )
+        assert reimbursed_booking.status == educational_models.CollectiveBookingStatus.REIMBURSED
+        assert other_booking.status == educational_models.CollectiveBookingStatus.PENDING
+
+        # no user_offerer in this test, no transactional email for EAC
+        assert len(mails_testing.outbox) == 0
 
 
 def test_grant_user_offerer_access():

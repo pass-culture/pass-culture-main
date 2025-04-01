@@ -704,6 +704,24 @@ def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> Non
     transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
 
 
+def cancel_booking_on_closed_offerer(booking: Booking, author_id: int | None = None) -> None:
+    validation.check_booking_can_be_cancelled(booking)
+    try:
+        cancelled = _cancel_booking(booking, BookingCancellationReasons.OFFERER_CLOSED, author_id=author_id)
+    except external_bookings_exceptions.ExternalBookingException as exc:
+        logger.info(
+            "API error while cancelling external booking, try to cancel unilaterally",
+            extra={"exc": exc, "booking": booking.id},
+        )
+        cancelled = _cancel_booking(
+            booking, BookingCancellationReasons.OFFERER_CLOSED, one_side_cancellation=True, author_id=author_id
+        )
+    if not cancelled:
+        return
+    logger.info("Cancelled booking on closed offerer", extra={"booking": booking.id})
+    transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
+
+
 def mark_as_used(booking: Booking, validation_author_type: BookingValidationAuthorType) -> None:
     validation.check_is_usable(booking)
 

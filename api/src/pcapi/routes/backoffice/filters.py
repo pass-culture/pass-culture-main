@@ -424,6 +424,11 @@ def format_booking_cancellation(
             return "Refusée par le chef d'établissement"
         case educational_models.CollectiveBookingCancellationReasons.PUBLIC_API:
             return "Refusée sur l'API publique"
+        case (
+            bookings_models.BookingCancellationReasons.OFFERER_CLOSED
+            | educational_models.CollectiveBookingCancellationReasons.OFFERER_CLOSED
+        ):
+            return "Fermeture de l'entité juridique"
         case None:
             return ""
         case _:
