@@ -280,6 +280,8 @@ def edit_collective_offer(
 
     try:
         educational_api_offer.update_collective_offer(offer_id=offer_id, body=body, user=current_user)
+    except offers_exceptions.ForbiddenDestinationVenue:
+        raise ApiErrors({"venueId": ["Ce partenaire culturel n'est pas éligible au transfert de l'offre"]}, 400)
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
     except offers_exceptions.OfferEventInThePast:
