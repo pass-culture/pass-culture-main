@@ -7,7 +7,7 @@ import typing
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
+from sqlalchemy import orm as sa_orm
 from sqlalchemy.sql.expression import extract
 
 from pcapi.core.categories import subcategories
@@ -204,8 +204,8 @@ def get_educational_year_beginning_at_given_year(year: int) -> educational_model
     return educational_year
 
 
-def _get_bookings_for_adage_base_query() -> BaseQuery:
-    query = educational_models.CollectiveBooking.query
+def _get_bookings_for_adage_base_query() -> "sa_orm.Query[educational_models.CollectiveBooking]":
+    query = db.session.query(educational_models.CollectiveBooking)
     query = query.options(
         sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
         .load_only(
@@ -315,7 +315,8 @@ def find_active_collective_booking_by_offer_id(
     collective_offer_id: int,
 ) -> educational_models.CollectiveBooking | None:
     return (
-        educational_models.CollectiveBooking.query.filter(
+        db.session.query(educational_models.CollectiveBooking)
+        .filter(
             educational_models.CollectiveBooking.status.in_(
                 [
                     educational_models.CollectiveBookingStatus.CONFIRMED,
@@ -863,14 +864,7 @@ def get_collective_offer_by_id_query(offer_id: int) -> sa_orm.Query:
         .options(sa_orm.joinedload(educational_models.CollectiveOffer.provider))
         .options(sa_orm.joinedload(educational_models.CollectiveOffer.teacher))
         .options(sa_orm.joinedload(educational_models.CollectiveOffer.institution))
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).joinedload(
-                offerers_models.OffererAddress.address
-            ),
-            sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).with_expression(
-                offerers_models.OffererAddress._isLinkedToVenue, offerers_models.OffererAddress.isLinkedToVenue.expression  # type: ignore [attr-defined]
-            ),
-        )
+        .options(*_get_collective_offer_address_joinedload_with_expression())
     )
 
 
@@ -954,27 +948,19 @@ def get_offerer_ids_from_collective_offers_template_ids(offers_ids: list[int]) -
 def get_collective_offer_template_by_id(offer_id: int) -> educational_models.CollectiveOfferTemplate:
     try:
         return (
-            educational_models.CollectiveOfferTemplate.query.filter(
-                educational_models.CollectiveOfferTemplate.id == offer_id
-            )
+            db.session.query(educational_models.CollectiveOfferTemplate)
+            .filter(educational_models.CollectiveOfferTemplate.id == offer_id)
             .options(
-                sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
+                sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
                     offerers_models.Venue.managingOfferer, innerjoin=True
                 )
             )
-            .options(sa.orm.joinedload(educational_models.CollectiveOfferTemplate.domains))
-            .options(sa.orm.joinedload(educational_models.CollectiveOfferTemplate.nationalProgram))
-            .options(
-                sa_orm.joinedload(educational_models.CollectiveOfferTemplate.offererAddress).joinedload(
-                    offerers_models.OffererAddress.address
-                ),
-                sa_orm.joinedload(educational_models.CollectiveOfferTemplate.offererAddress).with_expression(
-                    offerers_models.OffererAddress._isLinkedToVenue, offerers_models.OffererAddress.isLinkedToVenue.expression  # type: ignore [attr-defined]
-                ),
-            )
+            .options(sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains))
+            .options(sa_orm.joinedload(educational_models.CollectiveOfferTemplate.nationalProgram))
+            .options(*_get_collective_offer_template_address_joinedload_with_expression())
             .one()
         )
-    except sa.orm.exc.NoResultFound:
+    except sa_orm.exc.NoResultFound:
         raise educational_exceptions.CollectiveOfferTemplateNotFound()
 
 
@@ -983,8 +969,8 @@ def get_collective_offer_templates_for_playlist_query(
     playlist_type: educational_models.PlaylistType,
     max_distance: int | None = None,
     min_distance: int | None = None,
-) -> BaseQuery:
-    query = educational_models.CollectivePlaylist.query.filter(
+) -> "sa_orm.Query[educational_models.CollectivePlaylist]":
+    query = db.session.query(educational_models.CollectivePlaylist).filter(
         educational_models.CollectivePlaylist.type == playlist_type,
         educational_models.CollectivePlaylist.institutionId == institution_id,
     )
@@ -996,25 +982,15 @@ def get_collective_offer_templates_for_playlist_query(
         query = query.filter(educational_models.CollectivePlaylist.distanceInKm > min_distance)
 
     query = query.options(
-        sa.orm.joinedload(educational_models.CollectivePlaylist.collective_offer_template)
-        .joinedload(
-            educational_models.CollectiveOfferTemplate.venue,
-            innerjoin=True,
-        )
-        .joinedload(
-            offerers_models.Venue.managingOfferer,
-            innerjoin=True,
+        sa_orm.joinedload(educational_models.CollectivePlaylist.collective_offer_template).options(
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).options(
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True),
+                sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
+            *_get_collective_offer_template_address_joinedload_with_expression(),
         ),
-        sa.orm.joinedload(educational_models.CollectivePlaylist.collective_offer_template).joinedload(
-            educational_models.CollectiveOfferTemplate.domains
-        ),
-        sa.orm.joinedload(educational_models.CollectivePlaylist.collective_offer_template)
-        .joinedload(
-            educational_models.CollectiveOfferTemplate.venue,
-            innerjoin=True,
-        )
-        .joinedload(offerers_models.Venue.googlePlacesInfo),
-        sa.orm.joinedload(educational_models.CollectivePlaylist.venue).joinedload(
+        sa_orm.joinedload(educational_models.CollectivePlaylist.venue).joinedload(
             offerers_models.Venue.googlePlacesInfo
         ),
     )
@@ -1029,48 +1005,61 @@ def user_has_bookings(user: User) -> bool:
 
 
 def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
-    query = educational_models.CollectiveOffer.query.filter(
-        educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-    ).options(
-        sa.orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
-        sa.orm.joinedload(educational_models.CollectiveOffer.teacher).load_only(
-            educational_models.EducationalRedactor.email,
-            educational_models.EducationalRedactor.firstName,
-            educational_models.EducationalRedactor.lastName,
-            educational_models.EducationalRedactor.civility,
-        ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
-            educational_models.CollectiveStock.collectiveBookings
-        ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.institution),
-        sa.orm.joinedload(educational_models.CollectiveOffer.venue)
-        .joinedload(offerers_models.Venue.managingOfferer)
-        .load_only(
-            offerers_models.Offerer.name,
-            offerers_models.Offerer.validationStatus,
-            offerers_models.Offerer.isActive,
-        ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.domains),
+    query = (
+        db.session.query(educational_models.CollectiveOffer)
+        .filter(
+            educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+        )
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
+            sa_orm.joinedload(educational_models.CollectiveOffer.teacher).load_only(
+                educational_models.EducationalRedactor.email,
+                educational_models.EducationalRedactor.firstName,
+                educational_models.EducationalRedactor.lastName,
+                educational_models.EducationalRedactor.civility,
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+                educational_models.CollectiveStock.collectiveBookings
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.institution),
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue).options(
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+                    offerers_models.Offerer.name,
+                    offerers_models.Offerer.validationStatus,
+                    offerers_models.Offerer.isActive,
+                ),
+                sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.domains),
+            *_get_collective_offer_address_joinedload_with_expression(),
+        )
     )
     return query.filter(educational_models.CollectiveOffer.id == offer_id).one()
 
 
-def _get_collective_offer_template_by_id_for_adage_base_query() -> BaseQuery:
-    return educational_models.CollectiveOfferTemplate.query.filter(
-        educational_models.CollectiveOfferTemplate.validation == offer_mixin.OfferValidationStatus.APPROVED,
-    ).options(
-        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.nationalProgram),
-        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue)
-        .joinedload(offerers_models.Venue.managingOfferer)
-        .load_only(
-            offerers_models.Offerer.name,
-            offerers_models.Offerer.validationStatus,
-            offerers_models.Offerer.isActive,
-        ),
-        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue).joinedload(
-            offerers_models.Venue.googlePlacesInfo
-        ),
-        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
+def _get_collective_offer_template_by_id_for_adage_base_query() -> (
+    "sa_orm.Query[educational_models.CollectiveOfferTemplate]"
+):
+    return (
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .filter(
+            educational_models.CollectiveOfferTemplate.validation == offer_mixin.OfferValidationStatus.APPROVED,
+        )
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.nationalProgram),
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue)
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(
+                offerers_models.Offerer.name,
+                offerers_models.Offerer.validationStatus,
+                offerers_models.Offerer.isActive,
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).joinedload(
+                offerers_models.Venue.googlePlacesInfo
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
+            *_get_collective_offer_template_address_joinedload_with_expression(),
+        )
     )
 
 
@@ -1296,18 +1285,18 @@ def get_educational_institution_public(
 
 def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[educational_models.CollectiveOfferTemplate]:
     return (
-        educational_models.CollectiveOfferTemplate.query.join(
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .join(
             educational_models.EducationalRedactor,
             educational_models.CollectiveOfferTemplate.educationalRedactorsFavorite,
         )
         .options(
-            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).joinedload(
-                offerers_models.Venue.managingOfferer
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).options(
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer),
+                sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
             ),
             sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
-            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).selectinload(
-                offerers_models.Venue.googlePlacesInfo
-            ),
+            *_get_collective_offer_template_address_joinedload_with_expression(),
         )
         .filter(educational_models.EducationalRedactor.id == redactor_id)
         .all()
@@ -1383,3 +1372,33 @@ def offerer_has_ongoing_collective_bookings(offerer_id: int, include_used: bool 
             educational_models.CollectiveBooking.status.in_(statuses),
         ).exists()
     ).scalar()
+
+
+def _get_collective_offer_template_address_joinedload_with_expression() -> tuple[sa_orm.Load, ...]:
+    """
+    Use this when querying CollectiveOfferTemplate and you need to load its address, including the isLinkedToVenue expression
+    """
+
+    return (
+        sa_orm.joinedload(educational_models.CollectiveOfferTemplate.offererAddress).joinedload(
+            offerers_models.OffererAddress.address
+        ),
+        sa_orm.joinedload(educational_models.CollectiveOfferTemplate.offererAddress).with_expression(
+            offerers_models.OffererAddress._isLinkedToVenue, offerers_models.OffererAddress.isLinkedToVenue.expression  # type: ignore [attr-defined]
+        ),
+    )
+
+
+def _get_collective_offer_address_joinedload_with_expression() -> tuple[sa_orm.Load, ...]:
+    """
+    Use this when querying CollectiveOffer and you need to load its address, including the isLinkedToVenue expression
+    """
+
+    return (
+        sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).joinedload(
+            offerers_models.OffererAddress.address
+        ),
+        sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).with_expression(
+            offerers_models.OffererAddress._isLinkedToVenue, offerers_models.OffererAddress.isLinkedToVenue.expression  # type: ignore [attr-defined]
+        ),
+    )

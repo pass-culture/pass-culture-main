@@ -10,12 +10,10 @@ from pydantic.v1.class_validators import validator
 
 from pcapi.core.categories.subcategories import EacFormat
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization.collective_offers_serialize import TemplateDatesModel
-from pcapi.routes.serialization.collective_offers_serialize import validate_venue_id
+from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared import validation
 from pcapi.routes.shared.price import convert_to_cent
@@ -79,7 +77,7 @@ class OfferVenueResponse(BaseModel):
 
 
 class CollectiveOfferOfferVenue(BaseModel):
-    addressType: OfferAddressType
+    addressType: educational_models.OfferAddressType
     otherAddress: str
     venueId: int | None
     name: str | None
@@ -89,7 +87,9 @@ class CollectiveOfferOfferVenue(BaseModel):
     city: str | None
     distance: Decimal | None
 
-    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
+    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(
+        collective_offers_serialize.validate_venue_id
+    )
 
     class Config:
         alias_generator = to_camel
@@ -127,33 +127,46 @@ class EducationalRedactorResponseModel(BaseModel):
         orm_mode = True
 
 
-class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
+class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
     id: int
     description: str | None
     isExpired: bool
     isSoldOut: bool
     name: str
-    collectiveStock: OfferStockResponse = Field(alias="stock")
     venue: OfferVenueResponse
     students: list[educational_models.StudentLevels]
+    # offerVenue will be replaced with location, for now we send both
     offerVenue: CollectiveOfferOfferVenue
+    location: collective_offers_serialize.GetCollectiveOfferLocationModel | None
     contactEmail: str | None
     contactPhone: str | None
     durationMinutes: int | None
     educationalPriceDetail: str | None
     domains: typing.Sequence[OfferDomain]
-    institution: EducationalInstitutionResponseModel | None = Field(alias="educationalInstitution")
     interventionArea: list[str]
     imageCredit: str | None
     imageUrl: str | None
-    teacher: EducationalRedactorResponseModel | None
     nationalProgram: NationalProgramModel | None
     formats: typing.Sequence[EacFormat]
-    isTemplate: bool = False
+    isTemplate: bool
+
+    class Config:
+        alias_generator = to_camel
+        orm_mode = True
+        allow_population_by_field_name = True
+        json_encoders = {datetime: format_into_utc_date}
+        use_enum_values = True
+        extra = "forbid"
+
+
+class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
+    collectiveStock: OfferStockResponse = Field(alias="stock")
+    institution: EducationalInstitutionResponseModel | None = Field(alias="educationalInstitution")
+    teacher: EducationalRedactorResponseModel | None
 
     @classmethod
     def build(
-        cls,
+        cls: "type[CollectiveOfferResponseModel]",
         offer: educational_models.CollectiveOffer,
         offerVenue: offerers_models.Venue | None = None,
     ) -> "CollectiveOfferResponseModel":
@@ -177,6 +190,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
                 venueId=offer.offerVenue["venueId"],
                 otherAddress=offer.offerVenue["otherAddress"],
             ),
+            location=collective_offers_serialize.get_collective_offer_location_model(offer),
             contactEmail=offer.contactEmail,
             contactPhone=offer.contactPhone,
             durationMinutes=offer.durationMinutes,
@@ -193,15 +207,8 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
             motorDisabilityCompliant=offer.motorDisabilityCompliant,
             visualDisabilityCompliant=offer.visualDisabilityCompliant,
             formats=offer.formats,
+            isTemplate=False,
         )
-
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
-        allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
-        use_enum_values = True
-        extra = "forbid"
 
 
 class ListCollectiveOffersResponseModel(BaseModel):
@@ -211,40 +218,21 @@ class ListCollectiveOffersResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
-class CollectiveOfferTemplateResponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
-    id: int
-    description: str | None
-    isExpired: bool
-    isSoldOut: bool
-    name: str
-    venue: OfferVenueResponse
-    students: list[educational_models.StudentLevels]
-    offerVenue: CollectiveOfferOfferVenue
-    durationMinutes: int | None
-    educationalPriceDetail: str | None
-    domains: typing.Sequence[OfferDomain]
-    interventionArea: list[str]
-    imageCredit: str | None
-    imageUrl: str | None
-    nationalProgram: NationalProgramModel | None
+class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
     isFavorite: bool | None
-    dates: TemplateDatesModel | None
-    formats: typing.Sequence[EacFormat]
-    isTemplate: bool = True
-    contactEmail: str | None
-    contactPhone: str | None
+    dates: collective_offers_serialize.TemplateDatesModel | None
     contactUrl: str | None
     contactForm: educational_models.OfferContactFormEnum | None
 
     @classmethod
     def build(
-        cls,
+        cls: "type[CollectiveOfferTemplateResponseModel]",
         offer: educational_models.CollectiveOfferTemplate,
         is_favorite: bool,
         offerVenue: offerers_models.Venue | None = None,
     ) -> "CollectiveOfferTemplateResponseModel":
         if offer.start and offer.end:
-            dates = TemplateDatesModel(start=offer.start, end=offer.end)
+            dates = collective_offers_serialize.TemplateDatesModel(start=offer.start, end=offer.end)
         else:
             dates = None
 
@@ -267,6 +255,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
                 venueId=offer.offerVenue["venueId"],
                 otherAddress=offer.offerVenue["otherAddress"],
             ),
+            location=collective_offers_serialize.get_collective_offer_location_model(offer),
             durationMinutes=offer.durationMinutes,
             educationalPriceDetail=offer.priceDetail,
             domains=offer.domains,
@@ -285,14 +274,8 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
             contactPhone=offer.contactPhone,
             contactUrl=offer.contactUrl,
             contactForm=offer.contactForm,
+            isTemplate=True,
         )
-
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
-        allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
-        use_enum_values = True
 
 
 class ListCollectiveOfferTemplateResponseModel(BaseModel):

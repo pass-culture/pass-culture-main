@@ -6,7 +6,7 @@ import time_machine
 
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational.models import StudentLevels
+from pcapi.core.educational import models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import offer_mixin
@@ -32,6 +32,9 @@ def redactor_fixture():
 
 
 class CollectiveOfferTest:
+    num_queries = 1  # fetch collective offer and related data
+    num_queries += 1  # fetch redactor
+
     @time_machine.travel("2020-11-17 15:00:00")
     def test_get_collective_offer(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
@@ -42,7 +45,7 @@ class CollectiveOfferTest:
             collectiveOffer__name="offer name",
             collectiveOffer__description="offer description",
             price=10,
-            collectiveOffer__students=[StudentLevels.GENERAL2],
+            collectiveOffer__students=[models.StudentLevels.GENERAL2],
             collectiveOffer__educational_domains=[educational_factories.EducationalDomainFactory()],
             collectiveOffer__institution=institution,
             collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(),
@@ -56,15 +59,10 @@ class CollectiveOfferTest:
         offer = stock.collectiveOffer
 
         dst = url_for("adage_iframe.get_collective_offer", offer_id=stock.collectiveOfferId)
-
-        # 1. fetch redactor
-        # 2. fetch collective offer and related data
-        # 3. fetch the offerVenue's details (Venue)
-        # 4. fetch the venue's images
-        with assert_num_queries(4):
+        num_queries = self.num_queries + 1  # fetch offerVenue venue details
+        with assert_num_queries(num_queries):
             response = eac_client.get(dst)
 
-        # Then
         assert response.status_code == 200
         assert response.json == {
             "description": "offer description",
@@ -114,6 +112,7 @@ class CollectiveOfferTest:
                 "publicName": venue.publicName,
                 "venueId": venue.id,
             },
+            "location": None,
             "students": ["Lycée - Seconde"],
             "educationalPriceDetail": stock.priceDetail,
             "domains": [{"id": offer.domains[0].id, "name": offer.domains[0].name}],
@@ -137,6 +136,30 @@ class CollectiveOfferTest:
             "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
             "isTemplate": False,
         }
+
+    def test_location_address_venue(self, eac_client):
+        venue = offerers_factories.VenueFactory()
+        offer = educational_factories.ActiveCollectiveOfferFactory(
+            venue=venue,
+            locationType=models.CollectiveLocationType.ADDRESS,
+            locationComment=None,
+            offererAddressId=venue.offererAddressId,
+            interventionArea=None,
+        )
+
+        dst = url_for("adage_iframe.get_collective_offer", offer_id=offer.id)
+
+        with assert_num_queries(self.num_queries):
+            response = eac_client.get(dst)
+
+        assert response.status_code == 200
+        response_location = response.json["location"]
+        assert response_location["locationType"] == "ADDRESS"
+        assert response_location["locationComment"] is None
+        assert response_location["address"] is not None
+        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["isLinkedToVenue"] is True
+        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
 
     def test_should_return_404_when_no_collective_offer(self, eac_client, redactor):
         response = eac_client.get("/adage-iframe/collective/offers/0")
@@ -174,10 +197,7 @@ class CollectiveOfferTest:
         offer = educational_factories.CollectiveStockFactory().collectiveOffer
         dst = url_for("adage_iframe.get_collective_offer", offer_id=offer.id)
 
-        # 1. fetch redactor
-        # 2. fetch collective offer and related data
-        # 3. fetch the venue's images
-        with assert_num_queries(3):
+        with assert_num_queries(self.num_queries):
             response = eac_client.get(dst)
 
         assert response.status_code == 200

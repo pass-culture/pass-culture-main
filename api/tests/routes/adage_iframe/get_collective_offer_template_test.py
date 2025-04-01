@@ -90,6 +90,7 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
             "postalCode": offer_venue.postalCode if offer_venue else None,
             "publicName": offer_venue.publicName if offer_venue else None,
         },
+        "location": None,
         "students": [student.value for student in offer.students],
         "educationalPriceDetail": offer.priceDetail,
         "domains": [{"id": domain.id, "name": domain.name} for domain in offer.domains],
@@ -217,6 +218,31 @@ class CollectiveOfferTemplateTest:
 
         assert response.status_code == 200
         assert response.json["isFavorite"]
+
+    def test_location_address_venue(self, eac_client):
+        venue = offerers_factories.VenueFactory()
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            venue=venue,
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
+            locationComment=None,
+            offererAddressId=venue.offererAddressId,
+            interventionArea=None,
+        )
+
+        dst = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
+        num_queries = 1  # fetch collective offer template and related data
+        num_queries += 1  # fetch redactor
+        with assert_num_queries(num_queries):
+            response = eac_client.get(dst)
+
+        assert response.status_code == 200
+        response_location = response.json["location"]
+        assert response_location["locationType"] == "ADDRESS"
+        assert response_location["locationComment"] is None
+        assert response_location["address"] is not None
+        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["isLinkedToVenue"] is True
+        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
 
     def test_should_return_404_when_no_collective_offer_template(self, eac_client, redactor):
         response = eac_client.get("/adage-iframe/collective/offers-template/0")
@@ -368,6 +394,93 @@ class GetCollectiveOfferTemplatesTest:
 
         assert response.status_code == 200
         assert response.json["collectiveOffers"] == [expected_serialized_offer(offer, redactor, venue)]
+
+    def test_location_address_venue(self, eac_client, redactor):
+        venue = offerers_factories.VenueFactory()
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            venue=venue,
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
+            locationComment=None,
+            offererAddressId=venue.offererAddressId,
+            interventionArea=None,
+        )
+
+        url = url_for(self.endpoint, ids=offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = eac_client.get(url)
+
+        assert response.status_code == 200
+        [result] = response.json["collectiveOffers"]
+        response_location = result["location"]
+        assert response_location["locationType"] == "ADDRESS"
+        assert response_location["locationComment"] is None
+        assert response_location["address"] is not None
+        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["isLinkedToVenue"] is True
+        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
+
+    def test_location_school(self, eac_client, redactor):
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            locationType=educational_models.CollectiveLocationType.SCHOOL,
+            locationComment=None,
+            offererAddressId=None,
+            interventionArea=["33", "75", "93"],
+        )
+
+        url = url_for(self.endpoint, ids=offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = eac_client.get(url)
+
+        assert response.status_code == 200
+        [result] = response.json["collectiveOffers"]
+        response_location = result["location"]
+        assert response_location["locationType"] == "SCHOOL"
+        assert response_location["locationComment"] is None
+        assert response_location["address"] is None
+
+    def test_location_address(self, eac_client, redactor):
+        venue = offerers_factories.VenueFactory()
+        oa = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
+            locationComment=None,
+            offererAddress=oa,
+            interventionArea=None,
+            venue=venue,
+        )
+
+        url = url_for(self.endpoint, ids=offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = eac_client.get(url)
+
+        assert response.status_code == 200
+        [result] = response.json["collectiveOffers"]
+        response_location = result["location"]
+        assert response_location["locationType"] == "ADDRESS"
+        assert response_location["locationComment"] is None
+        assert response_location["address"] is not None
+        assert response_location["address"]["id_oa"] == oa.id
+        assert response_location["address"]["isLinkedToVenue"] is False
+        assert response_location["address"]["banId"] == oa.address.banId
+
+    def test_location_to_be_defined(self, eac_client, redactor):
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            locationType=educational_models.CollectiveLocationType.TO_BE_DEFINED,
+            locationComment="In space",
+            offererAddressId=None,
+            interventionArea=["33", "75", "93"],
+        )
+
+        url = url_for(self.endpoint, ids=offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = eac_client.get(url)
+
+        assert response.status_code == 200
+        [result] = response.json["collectiveOffers"]
+        response_location = result["location"]
+        assert response_location["locationType"] == "TO_BE_DEFINED"
+        assert response_location["locationComment"] == "In space"
+        assert response_location["address"] is None
 
     def test_unknown_ids(self, eac_client, redactor):
         offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(3)

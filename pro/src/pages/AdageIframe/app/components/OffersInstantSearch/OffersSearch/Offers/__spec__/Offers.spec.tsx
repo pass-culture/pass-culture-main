@@ -212,6 +212,7 @@ describe('offers', () => {
       students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
       interventionArea: ['973'],
       formats: [EacFormat.CONCERT],
+      isTemplate: false,
     }
 
     otherOffer = {
@@ -257,6 +258,7 @@ describe('offers', () => {
       students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
       interventionArea: ['75', '92'],
       formats: [EacFormat.CONCERT],
+      isTemplate: false,
     }
 
     offersProps = {

@@ -4,8 +4,9 @@ from datetime import timedelta
 from flask import url_for
 import pytest
 
-import pcapi.core.educational.factories as educational_factories
-import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 
 
@@ -80,3 +81,31 @@ class CollectiveOfferTest:
         assert response_data[1]["id"] == stocks[1].collectiveOffer.id
         assert response_data[1]["educationalInstitution"]["id"] == institution.id
         assert response_data[1]["stock"]["id"] == stocks[1].id
+
+    def test_location_address_venue(self, eac_client):
+        institution = educational_factories.EducationalInstitutionFactory(institutionId=UAI)
+        venue = offerers_factories.VenueFactory()
+        educational_factories.ActiveCollectiveOfferFactory(
+            venue=venue,
+            locationType=models.CollectiveLocationType.ADDRESS,
+            locationComment=None,
+            offererAddressId=venue.offererAddressId,
+            interventionArea=None,
+            institution=institution,
+        )
+
+        dst = url_for("adage_iframe.get_collective_offers_for_my_institution")
+        num_queries = 1  # fetch collective offer and related data
+        num_queries += 1  # fetch redactor
+        with assert_num_queries(num_queries):
+            response = eac_client.get(dst)
+
+        assert response.status_code == 200
+        [result] = response.json["collectiveOffers"]
+        response_location = result["location"]
+        assert response_location["locationType"] == "ADDRESS"
+        assert response_location["locationComment"] is None
+        assert response_location["address"] is not None
+        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["isLinkedToVenue"] is True
+        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
