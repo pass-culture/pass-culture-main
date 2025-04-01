@@ -71,6 +71,7 @@ class ActionType(enum.Enum):
     LINK_VENUE_PROVIDER_UPDATED = "Lien avec le partenaire technique modifié"
     LINK_VENUE_PROVIDER_DELETED = "Suppression du lien avec le partenaire technique"
     SYNC_VENUE_TO_PROVIDER = "Synchronisation du lieu avec un partenaire technique"
+    MOVE_ALL_OFFER = "Migration de toutes les offres (individuelles et collectives)"
 
     # Permissions role changes:
     ROLE_PERMISSIONS_CHANGED = "Modification des permissions du rôle"
