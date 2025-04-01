@@ -19,7 +19,7 @@ import styles from './ActionBar.module.scss'
 export interface ActionBarProps {
   onClickNext?: () => void
   onClickPrevious?: () => void
-  isDisabled: boolean
+  isDisabled?: boolean
   step: OFFER_WIZARD_STEP_IDS
   dirtyForm?: boolean
 }
@@ -27,7 +27,7 @@ export interface ActionBarProps {
 export const ActionBar = ({
   onClickNext,
   onClickPrevious,
-  isDisabled,
+  isDisabled = false,
   step,
   dirtyForm,
 }: ActionBarProps) => {

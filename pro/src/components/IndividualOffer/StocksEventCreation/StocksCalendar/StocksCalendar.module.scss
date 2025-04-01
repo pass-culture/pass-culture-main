@@ -6,17 +6,24 @@
   padding: rem.torem(32px) 0;
 }
 
-.title {
-  @include fonts.title2;
-
-  margin-bottom: rem.torem(64px);
+.header {
+  display: flex;
+  align-items: center;
+  gap: rem.torem(32px);
+  flex-wrap: wrap;
+  margin-bottom: rem.torem(24px);
 }
 
-.content {
+.title {
+  @include fonts.title2;
+}
+
+.no-stocks-content {
   display: flex;
   flex-direction: column;
   gap: rem.torem(40px);
   align-items: center;
+  margin-top: rem.torem(64px);
 }
 
 .icon {
@@ -30,4 +37,12 @@
 .button {
   display: inline-block;
   width: fit-content;
+}
+
+.spinner {
+  margin-top: rem.torem(16px);
+}
+
+.pagination {
+  margin: rem.torem(24px) 0;
 }

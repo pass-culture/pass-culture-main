@@ -90,11 +90,9 @@ const renderStockEventCreation = async (
     }
   )
 
-  if (!features?.includes('WIP_ENABLE_EVENT_WITH_OPENING_HOUR')) {
-    await waitFor(() => {
-      expect(api.getStocks).toHaveBeenCalledTimes(1)
-    })
-  }
+  await waitFor(() => {
+    expect(api.getStocks).toHaveBeenCalledTimes(1)
+  })
 }
 
 const tomorrow = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
@@ -201,5 +199,15 @@ describe('StocksEventCreation', () => {
     expect(
       screen.getByRole('heading', { name: 'Calendrier' })
     ).toBeInTheDocument()
+  })
+
+  it('should not show the action bar here when the FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR is enabled', async () => {
+    await renderStockEventCreation([], { offer: getIndividualOfferFactory() }, [
+      'WIP_ENABLE_EVENT_WITH_OPENING_HOUR',
+    ])
+
+    expect(
+      screen.queryByRole('link', { name: 'Enregistrer et continuer' })
+    ).not.toBeInTheDocument()
   })
 })
