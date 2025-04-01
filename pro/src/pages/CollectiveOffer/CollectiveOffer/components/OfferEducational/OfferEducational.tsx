@@ -1,7 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useSWRConfig } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
@@ -13,6 +13,7 @@ import {
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
+  GET_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import {
   isCollectiveOffer,
@@ -77,14 +78,26 @@ export const OfferEducational = ({
 
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
+  const isCollectiveOaActive = useActiveFeature(
+    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
+  )
+
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
   const { mutate } = useSWRConfig()
 
   const { lieu: venueId, requete: requestId } = queryParamsFromOfferer(location)
 
+  // Getting selected venue at step 1 (details) to infer address fields
+  const venuesQuery = useSWR(
+    [GET_VENUES_QUERY_KEY, userOfferer?.id],
+    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
+    { fallbackData: { venues: [] } }
+  )
+
   const baseInitialValues = computeInitialValuesFromOffer(
     userOfferer,
     isTemplate,
+    venuesQuery.data.venues,
     offer,
     venueId,
     isMarseilleEnabled
@@ -95,7 +108,8 @@ export const OfferEducational = ({
       ? applyVenueDefaultsToFormValues(
           baseInitialValues,
           userOfferer,
-          isOfferCreated
+          isOfferCreated,
+          venuesQuery.data.venues
         )
       : baseInitialValues
 
@@ -105,23 +119,34 @@ export const OfferEducational = ({
     try {
       if (isTemplate) {
         if (offer === undefined) {
-          const payload = createCollectiveOfferTemplatePayload(offerValues)
+          const payload = createCollectiveOfferTemplatePayload(
+            offerValues,
+            isCollectiveOaActive
+          )
 
           response = await api.createCollectiveOfferTemplate(payload)
         } else {
           const payload = createPatchOfferTemplatePayload(
             offerValues,
-            initialValues
+            initialValues,
+            isCollectiveOaActive
           )
           response = await api.editCollectiveOfferTemplate(offer.id, payload)
         }
       } else {
         if (offer === undefined) {
-          const payload = createCollectiveOfferPayload(offerValues)
+          const payload = createCollectiveOfferPayload(
+            offerValues,
+            isCollectiveOaActive
+          )
 
           response = await api.createCollectiveOffer(payload)
         } else {
-          const payload = createPatchOfferPayload(offerValues, initialValues)
+          const payload = createPatchOfferPayload(
+            offerValues,
+            initialValues,
+            isCollectiveOaActive
+          )
           response = await api.editCollectiveOffer(offer.id, payload)
         }
       }
@@ -182,7 +207,7 @@ export const OfferEducational = ({
   const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit,
-    validationSchema: getOfferEducationalValidationSchema(),
+    validationSchema: getOfferEducationalValidationSchema(isCollectiveOaActive),
   })
 
   if (
@@ -220,6 +245,7 @@ export const OfferEducational = ({
             isOfferCreated={isOfferCreated}
             offer={offer}
             isSubmitting={formik.isSubmitting}
+            venues={venuesQuery.data.venues}
           />
         </form>
       </FormikProvider>

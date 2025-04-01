@@ -1,4 +1,3 @@
-
 import { OfferContactFormEnum } from 'apiClient/adage'
 import {
   PatchCollectiveOfferBodyModel,
@@ -55,6 +54,10 @@ const serializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
       offerVenue: eventAddressPayload,
     }
   },
+  location: (payload, offer) => ({
+    ...payload,
+    location: offer.location,
+  }),
   participants: (payload, offer) => ({
     ...payload,
     students: serializeParticipants(offer.participants),
@@ -98,13 +101,18 @@ const templateSerializer: PatchOfferSerializer<PatchCollectiveOfferTemplateBodyM
 
 export const createPatchOfferPayload = (
   offer: OfferEducationalFormValues,
-  initialValues: OfferEducationalFormValues
+  initialValues: OfferEducationalFormValues,
+  isCollectiveOaActive: boolean
 ): PatchCollectiveOfferBodyModel => {
   let changedValues: PatchCollectiveOfferBodyModel = {}
 
   const offerKeys = Object.keys(offer) as (keyof OfferEducationalFormValues)[]
 
   const keysToOmmit = ['imageUrl', 'imageCredit', 'isTemplate']
+  isCollectiveOaActive
+    ? keysToOmmit.push('eventAddress')
+    : keysToOmmit.push('location')
+
   offerKeys.forEach((key) => {
     if (
       !isEqual(offer[key], initialValues[key]) &&
@@ -122,7 +130,8 @@ export const createPatchOfferPayload = (
 
 export const createPatchOfferTemplatePayload = (
   offer: OfferEducationalFormValues,
-  initialValues: OfferEducationalFormValues
+  initialValues: OfferEducationalFormValues,
+  isCollectiveOaActive: boolean
 ): PatchCollectiveOfferTemplateBodyModel => {
   const keysToOmmit: (keyof OfferEducationalFormValues)[] = [
     'imageUrl',
@@ -135,6 +144,10 @@ export const createPatchOfferTemplatePayload = (
     'contactFormType',
     'contactOptions',
   ]
+
+  isCollectiveOaActive
+    ? keysToOmmit.push('eventAddress')
+    : keysToOmmit.push('location')
   let changedValues: PatchCollectiveOfferTemplateBodyModel = {}
 
   const offerKeys = Object.keys(offer) as (keyof OfferEducationalFormValues)[]

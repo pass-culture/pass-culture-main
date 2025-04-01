@@ -9,10 +9,12 @@ import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
 import { createCollectiveOfferPayload } from './createOfferPayload'
 import { postCollectiveOfferImage } from './postCollectiveOfferImage'
 
+// TODO(ahello - 31/03/25) do not make direct api calls, use swr instead
 export const createOfferFromTemplate = async (
   navigate: ReturnType<typeof useNavigate>,
   notify: ReturnType<typeof useNotification>,
   templateOfferId: number,
+  isCollectiveOaActive: boolean,
   requestId?: string,
   isMarseilleActive?: boolean
 ) => {
@@ -31,15 +33,22 @@ export const createOfferFromTemplate = async (
     const offerers = targetOfferer
       ? serializeEducationalOfferer(targetOfferer)
       : null
+    const { venues } = await api.getVenues(null, true, targetOffererId)
 
     const initialValues = computeInitialValuesFromOffer(
       offerers,
       false,
+      venues,
       offerTemplateResponse,
       undefined,
       isMarseilleActive
     )
-    const payload = createCollectiveOfferPayload(initialValues, templateOfferId)
+
+    const payload = createCollectiveOfferPayload(
+      initialValues,
+      isCollectiveOaActive,
+      templateOfferId
+    )
 
     try {
       const response = await api.createCollectiveOffer(payload)

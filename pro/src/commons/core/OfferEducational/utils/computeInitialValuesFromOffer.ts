@@ -1,8 +1,10 @@
 import {
+  CollectiveLocationType,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
   StudentLevels,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import {
   formatShortDateForInput,
@@ -75,6 +77,7 @@ const getInitialVenueId = (
 export const computeInitialValuesFromOffer = (
   offerer: GetEducationalOffererResponseModel | null,
   isTemplate: boolean,
+  venues: VenueListItemResponseModel[],
   offer?:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel,
@@ -89,12 +92,30 @@ export const computeInitialValuesFromOffer = (
     venueIdQueryParam
   )
 
+  const defaultVenue = venues.find((v) => v.id.toString() === initialVenueId)
+
+  const offerLocationFromVenue = defaultVenue
+    ? {
+        locationType: CollectiveLocationType.ADDRESS,
+        address: {
+          isVenueAddress: true,
+          city: defaultVenue.address?.city ?? '',
+          latitude: defaultVenue.address?.latitude ?? '',
+          longitude: defaultVenue.address?.longitude ?? '',
+          postalCode: defaultVenue.address?.postalCode ?? '',
+          street: defaultVenue.address?.street ?? '',
+        },
+        id_oa: defaultVenue.address?.id_oa.toString() ?? '',
+      }
+    : DEFAULT_EAC_FORM_VALUES.location
+
   if (offer === undefined) {
     const today = formatShortDateForInput(getToday())
     return {
       ...DEFAULT_EAC_FORM_VALUES,
       offererId: initialOffererId,
       venueId: initialVenueId,
+      location: offerLocationFromVenue,
       isTemplate,
       beginningDate: isTemplate
         ? today
@@ -108,6 +129,22 @@ export const computeInitialValuesFromOffer = (
       contactFormType: 'form',
       contactUrl: isTemplate ? '' : undefined, //  If the field is not given an intial value, a submit would not set it as touched and the error would not appear the first time
     }
+  }
+
+  const offerLocationFromOffer = {
+    locationType:
+      offer.location?.locationType ??
+      DEFAULT_EAC_FORM_VALUES.location.locationType,
+    address: {
+      isVenueAddress:
+        offer.location?.address?.id_oa === defaultVenue?.address?.id_oa,
+      city: offer.location?.address?.city ?? '',
+      latitude: offer.location?.address?.latitude ?? '',
+      longitude: offer.location?.address?.longitude ?? '',
+      postalCode: offer.location?.address?.postalCode ?? '',
+      street: offer.location?.address?.street ?? '',
+    },
+    id_oa: offer.location?.address?.id_oa.toString(),
   }
 
   const participants = {
@@ -148,6 +185,13 @@ export const computeInitialValuesFromOffer = (
     interventionArea: offer.interventionArea,
     venueId: initialVenueId,
     offererId: initialOffererId,
+    location:
+      // If the venue's OA selected at step 1 is the same than the one we have saved in offer draft,
+      // then set this OA id in formik field (so it will be checked by default)
+      // Else, we can assume it's an "other" address
+      offer.location?.address?.id_oa === defaultVenue?.address?.id_oa
+        ? offerLocationFromVenue
+        : offerLocationFromOffer,
     priceDetail:
       isCollectiveOfferTemplate(offer) && offer.educationalPriceDetail
         ? offer.educationalPriceDetail

@@ -6,6 +6,7 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
+  CollectiveOfferLocationModel,
 } from 'apiClient/v1'
 import { AccessibilityFormValues } from 'commons/core/shared/types'
 import { hasProperty } from 'commons/utils/types'
@@ -23,6 +24,7 @@ export type OfferEducationalFormValues = {
     otherAddress: string
     venueId: number | null
   }
+  location: CollectiveOfferLocationModel & { id_oa?: string }
   interventionArea: string[]
   participants: {
     college: boolean

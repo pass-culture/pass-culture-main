@@ -30,6 +30,9 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const isCollectiveOaActive = useActiveFeature(
+    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
+  )
 
   const { offerId, requestId } = useParams<{
     offerId: string
@@ -62,19 +65,22 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
       navigate,
       notify,
       Number(offerId),
+      isCollectiveOaActive,
       requestId,
       isMarseilleActive
     )
   }
 
   if (isLoading || !informations) {
-    return <Layout>
-      <Spinner />
-    </Layout>
+    return (
+      <Layout>
+        <Spinner />
+      </Layout>
+    )
   }
 
   return (
-    <Layout mainHeading='Récapitulatif de la demande'>
+    <Layout mainHeading="Récapitulatif de la demande">
       <div className={styles['eac-section']}>
         Vous avez reçu une demande de création d’offres de la part d’un
         établissement scolaire. Vous pouvez créer une offre à partir des
