@@ -295,6 +295,10 @@ class AddProUserForm(FlaskForm):
         return pro_user_id
 
 
+class InviteUserForm(FlaskForm):
+    email = fields.PCEmailField("Adresse email")
+
+
 class OffererTagBaseForm(FlaskForm):
     name = fields.PCStringField(
         "Nom",
