@@ -381,7 +381,7 @@ class EventOpeningHoursFactory(BaseFactory):
         extracted: list[models.EventWeekDayOpeningHours] | None,
         **kwargs: typing.Any,
     ) -> list[models.EventWeekDayOpeningHours] | None:
-        if not create:
+        if not create or extracted is False:
             return None
         week_day_opening_hours = extracted
         if not week_day_opening_hours:

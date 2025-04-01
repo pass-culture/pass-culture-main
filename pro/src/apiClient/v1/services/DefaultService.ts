@@ -110,6 +110,7 @@ import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
 import type { SubmitReviewRequestModel } from '../models/SubmitReviewRequestModel';
+import type { UpdateEventOpeningHoursModel } from '../models/UpdateEventOpeningHoursModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
 import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
 import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel';
@@ -1967,6 +1968,34 @@ export class DefaultService {
       url: '/offers/{offer_id}/event_opening_hours',
       path: {
         'offer_id': offerId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * update_event_opening_hours <PATCH>
+   * @param offerId
+   * @param eventOpeningHoursId
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public updateEventOpeningHours(
+    offerId: number,
+    eventOpeningHoursId: number,
+    requestBody?: UpdateEventOpeningHoursModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/offers/{offer_id}/event_opening_hours/{event_opening_hours_id}',
+      path: {
+        'offer_id': offerId,
+        'event_opening_hours_id': eventOpeningHoursId,
       },
       body: requestBody,
       mediaType: 'application/json',
