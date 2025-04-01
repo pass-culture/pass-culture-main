@@ -2094,3 +2094,53 @@ def _update_product_extra_data(product: offers_models.Product, movie: offers_mod
         extra_data["visa"] = movie.visa
 
     product.extraData.update((key, value) for key, value in extra_data.items() if value is not None)  # type: ignore[typeddict-item]
+
+
+def update_event_opening_hours(
+    event: offers_models.EventOpeningHours, update_body: offers_schemas.UpdateEventOpeningHoursModel
+) -> None:
+    """Update an event opening hours information: start and end dates,
+    opening hours.
+
+    Start and end dates updates are trivial. The opening hours part is
+    a little bit more complicated. The update body must contain the
+    whole opening hours update. This means that:
+        * an unknown day should be removed from the event opening hours;
+        * an existing day will overwrite existing timespans;
+        * a new day (unknown to the event opening hours) will create a new
+        database object.
+
+    Warning: no update nor insert will be committed by this function.
+    """
+    offers_validation.check_event_opening_hours_can_be_updated(offer, opening_hours, body)
+
+    if update_body.startDatetime:
+        event.startDatetime = update_body.startDatetime
+
+    if update_body.endDatetime:
+        event.endDatetime = update_body.endDatetime
+
+    if update_body.openingHours:
+        existing_days_with_opening_hours = {day.weekday.value for day in event.weekDayOpeningHours}
+        new_opening_hours = update_body.openingHours.dict()
+
+        to_remove = {day for day, ts in new_opening_hours.items() if not ts}
+        to_update = {day for day, ts in new_opening_hours.items() if ts and day in existing_days_with_opening_hours}
+        to_create = new_opening_hours.keys() - to_remove - to_update
+
+        for weekday_opening_hours in event.weekDayOpeningHours:
+            weekday = weekday_opening_hours.weekday.value
+
+            if weekday in to_remove:
+                db.session.delete(weekday_opening_hours)
+
+            elif weekday in to_update:
+                weekday_opening_hours.timeSpans = new_opening_hours[weekday]
+
+        for weekday in to_create:
+            time_spans = new_opening_hours[weekday]
+            db.session.add(
+                models.EventWeekDayOpeningHours(
+                    eventOpeningHours=event, weekday=models.Weekday[weekday], timeSpans=time_spans
+                )
+            )
