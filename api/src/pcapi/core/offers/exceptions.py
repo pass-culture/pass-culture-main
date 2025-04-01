@@ -411,3 +411,33 @@ class OfferWithoutImageCanNotBeHeadline(Exception):
 class CannotRemoveHeadlineOffer(Exception):
     def __init__(self) -> None:
         super().__init__("headlineOffer", "Error during removal of this headline offer")
+
+
+class EventOpeningHoursError(Exception):
+    field = "global"
+    msg = "event opening hours error"
+
+
+class EventOpeningHoursIsSoftDeleted(EventOpeningHoursError):
+    field = "event"
+    msg = "event opening hours has been deleted"
+
+
+class EventOpeningHoursNewStartAfterEnd(EventOpeningHoursError):
+    field = "event.startDatetime"
+    msg = "event opening hours cannot be updated: cannot start after ending (start date update)"
+
+
+class EventOpeningHoursStartsTooSoon(EventOpeningHoursError):
+    field = "event.startDatetime"
+    msg = "event opening hours cannot be updated: new start is too soon (too close to current end)"
+
+
+class EventOpeningHoursEndPassed(EventOpeningHoursError):
+    field = "event.endDatetime"
+    msg = "event opening hours cannot be updated: end date has already passed (end date update)"
+
+
+class EventOpeningHoursEndsTooSoon(EventOpeningHoursError):
+    field = "event.endDatetime"
+    msg = "event opening hours cannot be updated: new end is too soon"

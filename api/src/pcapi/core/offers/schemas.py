@@ -16,8 +16,6 @@ from pcapi.serialization import utils as serialization_utils
 from pcapi.utils.date import time_to_int
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
-from .validation import check_offer_subcategory_is_valid
-
 
 class TimeSpan(BaseModel):
     open: datetime.time
@@ -119,6 +117,12 @@ class CreateEventOpeningHoursModel(BaseModel):
         extra = "forbid"
 
 
+class UpdateEventOpeningHoursModel(CreateEventOpeningHoursModel):
+    startDatetime: datetime.datetime | None  # type: ignore[assignment]
+    endDatetime: datetime.datetime | None
+    openingHours: OpeningHoursModel | None  # type: ignore[assignment]
+
+
 class PostDraftOfferBodyModel(BaseModel):
     name: str
     subcategory_id: str
@@ -154,6 +158,8 @@ class PatchDraftOfferBodyModel(BaseModel):
 
     @validator("subcategory_id", pre=True)
     def validate_subcategory_id(cls, subcategory_id: str, values: dict) -> str:
+        from .validation import check_offer_subcategory_is_valid
+
         check_offer_subcategory_is_valid(subcategory_id)
         return subcategory_id
 
