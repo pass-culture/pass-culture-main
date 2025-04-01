@@ -212,7 +212,6 @@ class User(PcObject, Base, Model, DeactivableMixin):
         "BackOfficeUserProfile", uselist=False, back_populates="user"
     )
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
-    pro_flags: UserProFlags = orm.relationship("UserProFlags", back_populates="user", uselist=False)
 
     gdprUserDataExtract: orm.Mapped["GdprUserDataExtract"] = orm.relationship(
         "GdprUserDataExtract", back_populates="user", foreign_keys="GdprUserDataExtract.userId"
@@ -1093,21 +1092,6 @@ class UserAccountUpdateRequest(PcObject, Base, Model):
 class UserSession(PcObject, Base, Model):
     userId: int = sa.Column(sa.BigInteger, nullable=False)
     uuid: UUID = sa.Column(postgresql.UUID(as_uuid=True), unique=True, nullable=False)
-
-
-class UserProFlags(PcObject, Base, Model):
-    __tablename__ = "user_pro_flags"
-
-    firebase: dict = sa.Column(
-        MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}"
-    )
-    userId: int = sa.Column(
-        sa.BigInteger,
-        sa.ForeignKey("user.id", ondelete="CASCADE"),
-        unique=True,
-        nullable=False,
-    )
-    user: User = orm.relationship(User, foreign_keys=[userId], back_populates="pro_flags", uselist=False)
 
 
 class TrustedDevice(PcObject, Base, Model):

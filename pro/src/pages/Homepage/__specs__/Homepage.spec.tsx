@@ -1,6 +1,5 @@
 import {
   screen,
-  waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 
@@ -153,21 +152,6 @@ describe('Homepage', () => {
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(screen.queryByTestId('home-offer-steps')).not.toBeInTheDocument()
-  })
-
-  it('should send user-pro-flag data', async () => {
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      DATA: 'TEST',
-    })
-    vi.spyOn(api, 'postProFlags').mockResolvedValue()
-    renderHomePage()
-    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-    await waitFor(() => {
-      expect(api.postProFlags).toHaveBeenCalledWith({
-        firebase: { DATA: 'TEST' },
-      })
-    })
   })
 
   describe('render statistics dashboard', () => {

@@ -1190,14 +1190,6 @@ class LastNameUpdateRequestFactory(UserAccountUpdateRequestFactory):
     newLastName = "Nouveau-Nom"
 
 
-class UserProFlagsFactory(BaseFactory):
-    class Meta:
-        model = models.UserProFlags
-
-    user = factory.SubFactory(ProFactory)
-    firebase = {"BETTER_OFFER_CREATION": "true"}
-
-
 class GdprUserDataExtractBeneficiaryFactory(BaseFactory):
     class Meta:
         model = models.GdprUserDataExtract
