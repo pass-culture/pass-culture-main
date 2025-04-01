@@ -133,6 +133,36 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
             max_try -= 1
         assert playlist_order_1 != playlist_order_2
 
+    def test_get_classroom_playlist_with_location(self, client):
+        institution = educational_factories.EducationalInstitutionFactory()
+        venue = offerers_factories.VenueFactory()
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            venue=venue,
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
+            locationComment=None,
+            offererAddressId=venue.offererAddressId,
+            interventionArea=None,
+        )
+        educational_models.CollectivePlaylist(
+            type=educational_models.PlaylistType.CLASSROOM,
+            distanceInKm=10.0,
+            institution=institution,
+            collective_offer_template=offer,
+        )
+
+        iframe_client = _get_iframe_client(client, uai=institution.institutionId)
+        response = iframe_client.get(url_for(self.endpoint))
+
+        assert response.status_code == 200
+        [result] = response.json["collectiveOffers"]
+        response_location = result["location"]
+        assert response_location["locationType"] == "ADDRESS"
+        assert response_location["locationComment"] is None
+        assert response_location["address"] is not None
+        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["isLinkedToVenue"] is True
+        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
+
 
 class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError):
     endpoint = "adage_iframe.new_template_offers_playlist"
@@ -198,6 +228,36 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
             assert response_offer["isFavorite"] == (
                 redactor.favoriteCollectiveOfferTemplates[0].id == response_offer["id"]
             )
+
+    def test_new_template_offers_playlist_with_location(self, client):
+        institution = educational_factories.EducationalInstitutionFactory()
+        venue = offerers_factories.VenueFactory()
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            venue=venue,
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
+            locationComment=None,
+            offererAddressId=venue.offererAddressId,
+            interventionArea=None,
+        )
+        educational_models.CollectivePlaylist(
+            type=educational_models.PlaylistType.NEW_OFFER,
+            distanceInKm=10.0,
+            institution=institution,
+            collective_offer_template=offer,
+        )
+
+        iframe_client = _get_iframe_client(client, uai=institution.institutionId)
+        response = iframe_client.get(url_for(self.endpoint))
+
+        assert response.status_code == 200
+        [result] = response.json["collectiveOffers"]
+        response_location = result["location"]
+        assert response_location["locationType"] == "ADDRESS"
+        assert response_location["locationComment"] is None
+        assert response_location["address"] is not None
+        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["isLinkedToVenue"] is True
+        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
 
     def test_no_rows(self, client):
         iframe_client = _get_iframe_client(client)

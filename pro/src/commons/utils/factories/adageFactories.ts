@@ -102,6 +102,7 @@ export const defaultCollectiveOffer: CollectiveOfferResponseModel = {
   students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
   interventionArea: ['75', '92'],
   formats: [EacFormat.CONCERT],
+  isTemplate: false,
 }
 
 export const defaultAdageUser: AuthenticatedResponse = {

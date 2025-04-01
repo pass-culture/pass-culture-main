@@ -7,13 +7,13 @@ from sqlalchemy.orm import exc as orm_exc
 
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
-import pcapi.core.educational.api.institution as educational_institution_api
-import pcapi.core.educational.api.offer as educational_api_offer
+from pcapi.core.educational import utils as educational_utils
+from pcapi.core.educational.api import institution as educational_institution_api
+from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.models import AdageFrontRoles
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import EducationalRedactor
-import pcapi.core.educational.utils as educational_utils
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import get_venue_by_id

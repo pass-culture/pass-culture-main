@@ -362,7 +362,7 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
-def collective_offer_location_getter_dict_helper(
+def get_collective_offer_location_model(
     offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
 ) -> GetCollectiveOfferLocationModel | None:
     if offer.locationType is None:
@@ -385,7 +385,7 @@ def collective_offer_location_getter_dict_helper(
 class GetCollectiveOfferBaseResponseGetterDict(pydantic_utils.GetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
         if key == "location":
-            return collective_offer_location_getter_dict_helper(self._obj)
+            return get_collective_offer_location_model(self._obj)
         return super().get(key, default)
 
 
