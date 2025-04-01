@@ -770,6 +770,16 @@ class Returns400Test:
             assert response.status_code == 400
             assert response.json == {"venueId": ["No venue with a pricing point found for the destination venue."]}
 
+    def test_patch_collective_offer_replacing_by_venue_not_eligible(self, auth_client, venue, other_related_venue):
+        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+
+        other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json={"venueId": other_venue.id})
+            assert response.status_code == 400
+            assert response.json == {"venueId": ["Ce partenaire culturel n'est pas éligible au transfert de l'offre"]}
+
     def test_patch_collective_offer_description_invalid(self, auth_client, venue):
         offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
 
