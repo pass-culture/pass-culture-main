@@ -1823,6 +1823,35 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.type == finance_models.DepositType.GRANT_18
         assert user.recreditAmountToShow == 300
 
+    def test_pre_decree_underage_transition_to_18_ignores_false_age_18_fraud_checks(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        nineteen_years_ago = before_decree - relativedelta(years=19)
+        eighteen_years_ago = before_decree - relativedelta(years=18)
+        next_week = datetime.today() + relativedelta(weeks=1)
+        # user has ok underage fraud check
+        user = users_factories.Transition1718Factory(
+            dateOfBirth=nineteen_years_ago,
+            validatedBirthDate=eighteen_years_ago,
+            _phoneNumber="0123456789",
+            dateCreated=before_decree,
+            deposit__expirationDate=next_week,
+        )
+        # user got their dateOfBirth wrong, so the earliest created fraud check is age18
+        last_year = before_decree - relativedelta(years=1)
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, eligibilityType=users_models.EligibilityType.AGE18, dateCreated=last_year
+        )
+        # user goes through the second activation flow when they reach 18 for real
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user, dateCreated=before_decree)
+        fraud_factories.HonorStatementFraudCheckFactory(user=user)
+
+        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.is_beneficiary
+        assert user.deposit.type == finance_models.DepositType.GRANT_18
+        assert user.recreditAmountToShow == 300
+
     def test_underage_transition_to_18_after_decree(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         user = users_factories.Transition1718Factory(_phoneNumber="0123456789", dateCreated=before_decree)

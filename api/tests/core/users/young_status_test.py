@@ -34,6 +34,7 @@ class YoungStatusTest:
                     registration_datetime=datetime.datetime.utcnow() - relativedelta(years=1)
                 ),
                 type=fraud_models.FraudCheckType.DMS,
+                eligibilityType=users_models.EligibilityType.AGE18,
                 user=user,
             )
             assert young_status.young_status(user).status_type == young_status.YoungStatusType.ELIGIBLE
