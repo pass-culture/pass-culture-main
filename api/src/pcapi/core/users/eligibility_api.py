@@ -137,13 +137,13 @@ def get_first_eligible_registration_date(
         for fraud_check in fraud_checks
         if (not eligibility or fraud_check.eligibilityType == eligibility)
     )
-    eligible_registration_dates = [
-        registration_date
-        for registration_date in registration_dates
-        if get_eligibility_at_date(birth_date, registration_date, user.departementCode) is not None
-    ]
-    if eligible_registration_dates:
-        return eligible_registration_dates[0]
+    for registration_date in registration_dates:
+        eligibility_at_date = get_eligibility_at_date(birth_date, registration_date, user.departementCode)
+        if eligibility is None and eligibility_at_date is not None:
+            return registration_date
+
+        if eligibility is not None and eligibility_at_date == eligibility:
+            return registration_date
 
     return None
 

@@ -473,11 +473,11 @@ class GetFirstRegistrationDateTest:
             type=fraud_models.FraudCheckType.UBBLE,
             dateCreated=today_in_utc,
             resultContent=None,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
         first_registration_date = eligibility_api.get_first_eligible_registration_date(
-            user, user.birth_date, users_models.EligibilityType.UNDERAGE
+            user, user.birth_date, users_models.EligibilityType.AGE17_18
         )
 
         assert first_registration_date == today_in_utc
