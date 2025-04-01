@@ -16,8 +16,14 @@ export const getPriceCategoryOptions = (
 
   return newPriceCategories.map(
     (priceCategory): SelectOption => ({
-      label: `${formatPrice(priceCategory.price)} - ${priceCategory.label}`,
+      label: getPriceCategoryName(priceCategory),
       value: priceCategory.id,
     })
   )
+}
+
+export function getPriceCategoryName(
+  priceCategory: PriceCategoryResponseModel
+) {
+  return `${formatPrice(priceCategory.price)} - ${priceCategory.label}`
 }
