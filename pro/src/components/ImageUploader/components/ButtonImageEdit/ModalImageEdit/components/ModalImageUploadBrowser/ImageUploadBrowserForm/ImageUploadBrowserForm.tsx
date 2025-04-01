@@ -8,17 +8,18 @@ import {
   Constraint,
   imageConstraints,
 } from 'components/ConstraintCheck/imageConstraints'
-import { ImagePreferredOrientation } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/ImagePreferredOrientation/ImagePreferredOrientation'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { BaseFileInput } from 'ui-kit/form/shared/BaseFileInput/BaseFileInput'
 
+import { OnImageUploadArgs } from '../../../ModalImageEdit'
+
 import { modeValidationConstraints } from './constants'
-import { ImageUploadBrowserFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
 
 interface ImageUploadBrowserFormProps {
-  onSubmit: (values: ImageUploadBrowserFormValues) => void
+  onSubmit: (values: OnImageUploadArgs) => void
   mode: UploaderModeEnum
+  label: string
   isReady: boolean
   children?: never
 }
@@ -26,10 +27,10 @@ interface ImageUploadBrowserFormProps {
 export const ImageUploadBrowserForm = ({
   onSubmit,
   mode,
+  label,
   isReady,
 }: ImageUploadBrowserFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
-
   const [errors, setErrors] = useState<string[]>([])
   const validationConstraints = modeValidationConstraints[mode]
   const preferredOrientationCaptionId = 'preferred-orientation-caption'
@@ -61,6 +62,8 @@ export const ImageUploadBrowserForm = ({
         ? event.currentTarget.files[0]
         : null
 
+    console.log(newFile)
+
     if (newFile) {
       try {
         await validationSchema.validate(
@@ -84,13 +87,14 @@ export const ImageUploadBrowserForm = ({
   /* istanbul ignore next: DEBT, TO FIX */
   return (
     <form onSubmit={(e) => e.preventDefault()}>
-      <ImagePreferredOrientation
+      {/* <ImagePreferredOrientation
         id={preferredOrientationCaptionId}
         orientation={orientation}
-      />
+      /> */}
+
       <BaseFileInput
         isDisabled={!isReady}
-        label="Importer une image depuis l’ordinateur"
+        label={label}
         fileTypes={['image/png', 'image/jpeg']}
         isValid={errors.length === 0}
         onChange={onChange}
