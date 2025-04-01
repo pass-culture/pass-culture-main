@@ -13,8 +13,6 @@ from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.connectors.entreprise import models as entreprise_models
 from pcapi.connectors.entreprise import sirene
-from pcapi.core.bookings import repository as bookings_repository
-from pcapi.core.educational import repository as educational_repository
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
@@ -126,7 +124,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
                         rejection_reason=offerers_models.OffererRejectionReason.CLOSED_BUSINESS,
                         **action_kwargs,
                     )
-                elif _can_close_offerer(offerer):
+                elif offerer.isValidated and FeatureToggle.ENABLE_AUTO_CLOSE_CLOSED_OFFERERS.is_active():
                     offerers_api.close_offerer(
                         offerer,
                         siren_info.closure_date,
@@ -226,19 +224,3 @@ def _get_total_offers_count(offerer_id: int) -> int | str:
         return f"{offerers_repository.MAX_OFFERS_PER_OFFERER_FOR_COUNT}+"
 
     return offers_count
-
-
-def _can_close_offerer(offerer: offerers_models.Offerer) -> bool:
-    if not offerer.isValidated:
-        return False
-
-    if not FeatureToggle.ENABLE_AUTO_CLOSE_CLOSED_OFFERERS.is_active():
-        return False
-
-    if bookings_repository.offerer_has_ongoing_bookings(offerer.id):
-        return False
-
-    if educational_repository.offerer_has_ongoing_collective_bookings(offerer.id):
-        return False
-
-    return True
