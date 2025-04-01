@@ -84,7 +84,7 @@ def get_venue_by_siret_for_adage_iframe(
             else:
                 relative.append(candidate.id)
     else:
-        venue = offerers_repository.find_venue_by_siret(siret)
+        venue = offerers_repository.find_venue_by_siret(siret, load_address=True)
     return venue, relative
 
 
@@ -101,7 +101,7 @@ def get_venue_by_id_for_adage_iframe(
             else:
                 relative.append(candidate.id)
     else:
-        venue = offerers_repository.find_venue_by_id(venue_id)
+        venue = offerers_repository.find_venue_by_id(venue_id, load_address=True)
     return venue, relative
 
 

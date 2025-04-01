@@ -211,8 +211,15 @@ def find_relative_venue_by_id(venue_id: int) -> list[models.Venue]:
     return query.all()
 
 
-def find_venue_by_siret(siret: str) -> models.Venue | None:
-    return models.Venue.query.filter_by(siret=siret).one_or_none()
+def find_venue_by_siret(siret: str, load_address: bool = False) -> models.Venue | None:
+    query = db.session.query(models.Venue).filter_by(siret=siret)
+
+    if load_address:
+        query = query.options(
+            sqla_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address)
+        )
+
+    return query.one_or_none()
 
 
 def find_virtual_venue_by_offerer_id(offerer_id: int) -> models.Venue | None:
