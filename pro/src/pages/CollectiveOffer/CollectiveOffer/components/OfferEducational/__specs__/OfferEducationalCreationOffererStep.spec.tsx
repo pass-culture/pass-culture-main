@@ -1,7 +1,11 @@
 import { screen } from '@testing-library/react'
 
+import { api } from 'apiClient/api'
 import * as hooks from 'commons/hooks/swr/useOfferer'
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  venueListItemFactory,
+} from 'commons/utils/factories/individualApiFactories'
 import {
   sharedCurrentUserFactory,
   currentOffererFactory,
@@ -46,6 +50,9 @@ describe('screens | OfferEducational : creation offerer step', () => {
           managedVenues: managedVenuesFactory([{}]),
         }),
       }
+      vi.spyOn(api, 'getVenues').mockResolvedValue({
+        venues: [venueListItemFactory()],
+      })
     })
 
     it('should display specific banner instead of place and referencing banner', async () => {
@@ -64,6 +71,13 @@ describe('screens | OfferEducational : creation offerer step', () => {
     const venue3Id = 3
     beforeEach(() => {
       vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
+      vi.spyOn(api, 'getVenues').mockResolvedValue({
+        venues: [
+          venueListItemFactory({ id: venue1Id }),
+          venueListItemFactory({ id: venue2Id }),
+          venueListItemFactory({ id: venue3Id }),
+        ],
+      })
 
       props = {
         ...defaultCreationProps,

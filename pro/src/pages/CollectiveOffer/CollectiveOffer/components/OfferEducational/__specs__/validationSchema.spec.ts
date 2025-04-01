@@ -1,4 +1,9 @@
-import { EacFormat, OfferAddressType, StudentLevels } from 'apiClient/v1'
+import {
+  CollectiveLocationType,
+  EacFormat,
+  OfferAddressType,
+  StudentLevels,
+} from 'apiClient/v1'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
 
@@ -34,6 +39,9 @@ const defaultValues: OfferEducationalFormValues = {
     addressType: OfferAddressType.OTHER,
     otherAddress: '123 address',
     venueId: 1234,
+  },
+  location: {
+    locationType: CollectiveLocationType.ADDRESS,
   },
   formats: [EacFormat.CONCERT],
   contactOptions: {
@@ -140,7 +148,7 @@ describe('validationSchema OfferEducational', () => {
     cases.forEach(({ description, formValues, expectedErrors }) => {
       it(`should validate the form for case: ${description}`, async () => {
         const errors = await getYupValidationSchemaErrors(
-          getOfferEducationalValidationSchema(),
+          getOfferEducationalValidationSchema(false),
           formValues
         )
         expect(errors).toEqual(expectedErrors)

@@ -20,6 +20,7 @@ import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 vi.mock('apiClient/api', () => ({
   api: {
     editCollectiveOffer: vi.fn(),
+    getVenues: vi.fn(),
   },
 }))
 
