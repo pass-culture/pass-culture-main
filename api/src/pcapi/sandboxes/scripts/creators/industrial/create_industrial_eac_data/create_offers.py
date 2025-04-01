@@ -34,6 +34,7 @@ class LocationOption(typing.TypedDict):
     locationType: educational_models.CollectiveLocationType
     locationComment: typing.NotRequired[str]
     isManualEdition: typing.NotRequired[bool]
+    street: typing.NotRequired[str]  # used in the Address model
 
 
 def get_location_options(venue: offerers_models.Venue) -> list[LocationOption]:
@@ -73,6 +74,7 @@ def get_location_options(venue: offerers_models.Venue) -> list[LocationOption]:
             "interventionArea": ["75", "92", "93", "94", "95"],
             "locationType": educational_models.CollectiveLocationType.ADDRESS,
             "isManualEdition": True,
+            "street": "35 Bd de Sébastopol",
         },
         {
             "name": "La culture à une adresse précise",
@@ -83,6 +85,7 @@ def get_location_options(venue: offerers_models.Venue) -> list[LocationOption]:
             },
             "interventionArea": ["75", "92", "93", "94", "95"],
             "locationType": educational_models.CollectiveLocationType.ADDRESS,
+            "street": "35 Bd de Sébastopol",
         },
         {
             "name": "La culture dans un lieu flou",
@@ -108,7 +111,7 @@ def get_location_options(venue: offerers_models.Venue) -> list[LocationOption]:
     ]
 
 
-def get_offer_address_id(
+def _get_offerer_address_id(
     location_option: LocationOption, managing_offerer: offerers_models.Offerer, oa_label: str
 ) -> int | None:
     if location_option["locationType"] != educational_models.CollectiveLocationType.ADDRESS:
@@ -124,7 +127,7 @@ def get_offer_address_id(
         if location_option.get("isManualEdition", False)
         else geography_factories.AddressFactory
     )
-    address = factory(street=offer_venue["otherAddress"])
+    address = factory(street=location_option["street"])
     offerer_address = offerers_factories.OffererAddressFactory(
         label=oa_label, address=address, offerer=managing_offerer
     )
@@ -799,7 +802,7 @@ def _set_offer_location_columns(
     if isinstance(offer, educational_models.CollectiveOfferTemplate):
         oa_label += " (template)"
 
-    offer.offererAddressId = get_offer_address_id(
+    offer.offererAddressId = _get_offerer_address_id(
         location_option=location_option, managing_offerer=offerer, oa_label=oa_label
     )
 
