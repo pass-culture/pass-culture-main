@@ -3665,6 +3665,78 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
         )
 
 
+class InviteUserButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+    button_label = "Inviter un collaborateur"
+
+    @property
+    def path(self):
+        offerer = offerers_factories.OffererFactory()
+        return url_for("backoffice_web.offerer.get_pro_users", offerer_id=offerer.id)
+
+
+class InviteUserTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offerer.invite_user"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_invite_user(self, legit_user, authenticated_client, offerer):
+        invited_email = "someone@example.com"
+
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, form={"email": invited_email}, follow_redirects=True
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == f"L'invitation a été envoyée à {invited_email}"
+
+        invitation = offerers_models.OffererInvitation.query.one()
+        assert invitation.offererId == offerer.id
+        assert invitation.email == invited_email
+        assert invitation.user == legit_user
+        assert invitation.status == offerers_models.InvitationStatus.PENDING
+
+        assert mails_testing.outbox[0]["To"] == invited_email
+        assert (
+            mails_testing.outbox[0]["template"]
+            == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value.__dict__
+        )
+
+    def test_invite_user_already_invited(self, authenticated_client, offerer):
+        email = offerers_factories.OffererInvitationFactory(offerer=offerer).email
+
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, form={"email": email}, follow_redirects=True
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == "Une invitation a déjà été envoyée à ce collaborateur"
+        assert offerers_models.OffererInvitation.query.count() == 1
+
+    def test_invite_user_already_associated(self, authenticated_client, offerer):
+        user = offerers_factories.UserOffererFactory(offerer=offerer).user
+
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, form={"email": user.email}, follow_redirects=True
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == "Ce collaborateur est déjà rattaché à l'entité juridique"
+        assert offerers_models.OffererInvitation.query.count() == 0
+
+    def test_invite_user_empty(self, authenticated_client, offerer):
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, form={"email": ""}, follow_redirects=True
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Les données envoyées comportent des erreurs. Adresse email : Email obligatoire, doit contenir entre 3 et 128 caractères ;"
+        )
+        assert offerers_models.OffererInvitation.query.count() == 0
+
+
 class BatchOffererValidateTest(PostEndpointHelper):
     endpoint = "backoffice_web.validation.batch_validate_offerer"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER

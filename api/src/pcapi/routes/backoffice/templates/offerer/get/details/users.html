@@ -14,6 +14,9 @@
             disabled>Récupérer un compte pro rejeté</button>
   {% endif %}
 {% endif %}
+{% if invite_user_form %}
+  {{ build_modal_form("invite-email", invite_user_dst, invite_user_form, "Inviter un collaborateur", "Inviter un collaborateur", "Inviter", "Vous pouvez inviter des collaborateurs à rejoindre cette entité juridique. Une invitation leur sera envoyée par email. Vous serez notifié quand ils auront rejoint l’espace.") }}
+{% endif %}
 <table class="table table-hover my-4">
   <thead>
     <tr>

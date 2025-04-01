@@ -694,6 +694,14 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
                 }
             )
 
+    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY):
+        kwargs.update(
+            {
+                "invite_user_form": offerer_forms.InviteUserForm(),
+                "invite_user_dst": url_for("backoffice_web.offerer.invite_user", offerer_id=offerer_id),
+            }
+        )
+
     users_pro = [row for row in rows if row.UserOfferer is not None]
 
     users_invited_formatted = [
@@ -841,6 +849,33 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
         ),
         "success",
     )
+    return _self_redirect(offerer.id, active_tab="users", anchor="offerer_details_frame")
+
+
+@offerer_blueprint.route("/invite-user", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def invite_user(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.filter_by(id=offerer_id).one_or_none()
+    if not offerer:
+        raise NotFound()
+
+    form = offerer_forms.InviteUserForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return _self_redirect(offerer.id, active_tab="users", anchor="offerer_details_frame")
+
+    try:
+        offerers_api.invite_member(offerer, form.email.data, current_user)
+    except offerers_exceptions.EmailAlreadyInvitedException:
+        mark_transaction_as_invalid()
+        flash("Une invitation a déjà été envoyée à ce collaborateur", "warning")
+    except offerers_exceptions.UserAlreadyAttachedToOffererException:
+        mark_transaction_as_invalid()
+        flash("Ce collaborateur est déjà rattaché à l'entité juridique", "warning")
+    else:
+        flash(Markup("L'invitation a été envoyée à <b>{email}</b>").format(email=form.email.data), "info")
+
     return _self_redirect(offerer.id, active_tab="users", anchor="offerer_details_frame")
 
 
