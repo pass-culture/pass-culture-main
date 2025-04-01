@@ -27,6 +27,7 @@ import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
+import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
 import {
   sharedCurrentUserFactory,
   currentOffererFactory,
@@ -88,6 +89,9 @@ describe('CollectiveEditionOfferNavigation', () => {
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
 
     vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [venueListItemFactory()],
+    })
 
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
 

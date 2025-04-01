@@ -2,19 +2,22 @@ import { OfferContactFormEnum } from 'apiClient/v1'
 import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import { formatShortDateForInput } from 'commons/utils/date'
 import { getCollectiveOfferTemplateFactory } from 'commons/utils/factories/collectiveApiFactories'
+import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
 
 import { computeInitialValuesFromOffer } from '../computeInitialValuesFromOffer'
 
+const venues = [venueListItemFactory()]
+
 describe('computeInitialValuesFromOffer', () => {
   it('should return default values when no offer is provided', () => {
-    expect(computeInitialValuesFromOffer(null, false)).toEqual(
+    expect(computeInitialValuesFromOffer(null, false, venues)).toEqual(
       DEFAULT_EAC_FORM_VALUES
     )
   })
 
   it('should pre-set todays dates for a template offer creation initial values', () => {
     expect(
-      computeInitialValuesFromOffer(null, true, undefined).beginningDate
+      computeInitialValuesFromOffer(null, true, venues, undefined).beginningDate
     ).toEqual(formatShortDateForInput(new Date()))
   })
 
@@ -23,6 +26,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         null,
         true,
+        venues,
         getCollectiveOfferTemplateFactory({
           dates: {
             end: '2024-01-29T23:00:28.040559Z',
@@ -35,7 +39,14 @@ describe('computeInitialValuesFromOffer', () => {
 
   it('should create a default template offer form with custom contact options', () => {
     expect(
-      computeInitialValuesFromOffer(null, true, undefined, undefined, false)
+      computeInitialValuesFromOffer(
+        null,
+        true,
+        venues,
+        undefined,
+        undefined,
+        false
+      )
     ).toEqual(
       expect.objectContaining({
         contactOptions: { email: false, phone: false, form: false },
@@ -49,6 +60,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         null,
         true,
+        venues,
         getCollectiveOfferTemplateFactory({
           contactEmail: 'email@test.co',
           contactPhone: null,
@@ -69,6 +81,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         null,
         true,
+        venues,
         getCollectiveOfferTemplateFactory({
           contactEmail: undefined,
           contactPhone: '00000000',
@@ -89,6 +102,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         null,
         true,
+        venues,
         getCollectiveOfferTemplateFactory({
           contactEmail: undefined,
           contactPhone: undefined,
@@ -111,6 +125,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         null,
         true,
+        venues,
         getCollectiveOfferTemplateFactory({
           contactEmail: undefined,
           contactPhone: undefined,

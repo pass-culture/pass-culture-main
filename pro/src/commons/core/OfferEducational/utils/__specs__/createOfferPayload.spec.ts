@@ -13,7 +13,7 @@ describe('createOfferPayload', () => {
           ...DEFAULT_EAC_FORM_VALUES,
           beginningDate: '2021-09-01',
           endingDate: '2021-09-10',
-        })
+        }, false)
       )
     ).toEqual(expect.not.arrayContaining(['dates']))
   })
@@ -25,7 +25,7 @@ describe('createOfferPayload', () => {
         beginningDate: '2021-09-01',
         endingDate: '2021-09-10',
         datesType: 'specific_dates',
-      }).dates
+      }, false).dates
     ).toBeTruthy()
   })
 
@@ -35,7 +35,7 @@ describe('createOfferPayload', () => {
         ...DEFAULT_EAC_FORM_VALUES,
         beginningDate: undefined,
         endingDate: undefined,
-      }).dates
+      }, false).dates
     ).toBeFalsy()
   })
 
@@ -51,7 +51,7 @@ describe('createOfferPayload', () => {
       phone: '12345',
       contactFormType: 'url',
       contactUrl: 'http://url.com',
-    })
+    }, false)
     expect(Object.keys(offerPayload)).toEqual(
       expect.not.arrayContaining(['phone', 'contactUrl'])
     )
@@ -73,7 +73,7 @@ describe('createOfferPayload', () => {
       phone: '12345',
       contactFormType: 'url',
       contactUrl: 'http://url.com',
-    })
+    }, false)
     expect(Object.keys(offerPayload)).toEqual(
       expect.not.arrayContaining(['email', 'contactUrl'])
     )
@@ -95,7 +95,7 @@ describe('createOfferPayload', () => {
       phone: '12345',
       contactFormType: 'url',
       contactUrl: 'http://url.com',
-    })
+    }, false)
     expect(Object.keys(offerPayload)).toEqual(
       expect.not.arrayContaining(['email', 'phone'])
     )

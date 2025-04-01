@@ -25,6 +25,12 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { defaultEditionProps } from '../__tests-utils__/defaultProps'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
+vi.mock('apiClient/api', () => ({
+  api: {
+    getVenues: vi.fn(),
+  },
+}))
+
 function renderComponent(props: OfferEducationalProps) {
   const user = sharedCurrentUserFactory()
   renderWithProviders(<OfferEducational {...props} />, {

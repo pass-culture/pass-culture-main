@@ -2,6 +2,7 @@ import {
   EacFormat,
   PatchCollectiveOfferBodyModel,
   OfferAddressType,
+  CollectiveLocationType,
 } from 'apiClient/v1'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { buildStudentLevelsMapWithDefaultValue } from 'commons/core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
@@ -32,6 +33,9 @@ describe('createPatchOfferPayload', () => {
       addressType: OfferAddressType.OFFERER_VENUE,
       otherAddress: 'TestOtherAddress',
       venueId: 12,
+    },
+    location: {
+      locationType: CollectiveLocationType.ADDRESS,
     },
     participants: {
       ...buildStudentLevelsMapWithDefaultValue(true),
@@ -67,6 +71,9 @@ describe('createPatchOfferPayload', () => {
       addressType: OfferAddressType.SCHOOL,
       otherAddress: 'TestOtherAddress update',
       venueId: 12,
+    },
+    location: {
+      locationType: CollectiveLocationType.ADDRESS,
     },
     participants: {
       ...buildStudentLevelsMapWithDefaultValue(false),
@@ -112,7 +119,7 @@ describe('createPatchOfferPayload', () => {
   }
 
   it('should return the correct patch offer payload for a non-template offer', () => {
-    const payload = createPatchOfferPayload({ ...offer }, initialValues)
+    const payload = createPatchOfferPayload({ ...offer }, initialValues, false)
 
     expect(payload).toMatchObject({
       ...patchOfferPayload,
@@ -123,7 +130,7 @@ describe('createPatchOfferPayload', () => {
   it('should return the correct patch offer payload for a template offer', () => {
     const payload = createPatchOfferTemplatePayload(
       { ...offer, priceDetail: '123', isTemplate: true },
-      initialValues
+      initialValues, false
     )
 
     expect(payload).toMatchObject({
@@ -140,7 +147,8 @@ describe('createPatchOfferPayload', () => {
         beginningDate: '',
         datesType: 'permanent',
       },
-      initialValues
+      initialValues,
+      false
     )
 
     expect(payload).toMatchObject({

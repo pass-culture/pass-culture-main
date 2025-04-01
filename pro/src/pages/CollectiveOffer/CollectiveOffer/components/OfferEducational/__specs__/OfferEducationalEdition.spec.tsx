@@ -1,12 +1,16 @@
 import { screen, waitFor } from '@testing-library/react'
 
+import { api } from 'apiClient/api'
 import { Mode } from 'commons/core/OfferEducational/types'
 import * as hooks from 'commons/hooks/swr/useOfferer'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferVenueFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  venueListItemFactory,
+} from 'commons/utils/factories/individualApiFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -34,6 +38,9 @@ describe('screens | OfferEducational: edition', () => {
     }
 
     vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [venueListItemFactory()],
+    })
 
     props = defaultEditionProps
   })
