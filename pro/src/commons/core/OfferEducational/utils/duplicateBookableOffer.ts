@@ -9,6 +9,7 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
 import { postCollectiveOfferImage } from './postCollectiveOfferImage'
 
+// TODO(ahello - 31/03/25) do not make direct api calls, use swr instead
 export const duplicateBookableOffer = async (
   navigate: ReturnType<typeof useNavigate>,
   notify: ReturnType<typeof useNotification>,
@@ -27,7 +28,14 @@ export const duplicateBookableOffer = async (
       ? serializeEducationalOfferer(targetOfferer)
       : null
 
-    initialValues = computeInitialValuesFromOffer(offerer, false, offerResponse)
+    const { venues } = await api.getVenues(null, true, offerer?.id)
+
+    initialValues = computeInitialValuesFromOffer(
+      offerer,
+      false,
+      venues,
+      offerResponse
+    )
   } catch {
     return notify.error(
       'Une erreur est survenue lors de la récupération de votre offre'

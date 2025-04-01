@@ -2,7 +2,7 @@ import { addYears, isBefore } from 'date-fns'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
-import { OfferAddressType } from 'apiClient/v1'
+import { CollectiveLocationType, OfferAddressType } from 'apiClient/v1'
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_PRICE_DETAILS_LENGTH,
@@ -32,7 +32,9 @@ const isPhoneValid = (phone: string | undefined): boolean => {
 const isNotEmpty = (description: string | undefined): boolean =>
   description ? Boolean(description.trim().length > 0) : false
 
-export function getOfferEducationalValidationSchema() {
+export function getOfferEducationalValidationSchema(
+  isCollectiveOaActive: boolean
+) {
   return yup.object().shape({
     title: yup.string().max(110).required('Veuillez renseigner un titre'),
     description: yup
@@ -53,6 +55,25 @@ export function getOfferEducationalValidationSchema() {
       .string()
       .required('Veuillez sélectionner une entité juridique'),
     venueId: yup.string().required('Veuillez sélectionner une structure'),
+    location: isCollectiveOaActive
+      ? yup.object().shape({
+          locationType: yup
+            .string()
+            .oneOf([
+              CollectiveLocationType.ADDRESS,
+              CollectiveLocationType.SCHOOL,
+              CollectiveLocationType.TO_BE_DEFINED,
+            ]),
+          id_oa: yup
+            .string()
+            .when('locationType', {
+              is: CollectiveLocationType.ADDRESS,
+              then: (schema) =>
+                schema.required('Veuillez sélectionner un lieu'),
+            })
+            .nullable(),
+        })
+      : yup.mixed(),
     eventAddress: yup.object().shape({
       addressType: yup
         .string()

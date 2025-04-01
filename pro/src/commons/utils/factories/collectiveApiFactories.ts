@@ -25,6 +25,7 @@ import {
   ListOffersVenueResponseModel,
   CollectiveOfferStatus,
   CollectiveOfferDisplayedStatus,
+  CollectiveLocationType,
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 
@@ -124,6 +125,9 @@ export const getCollectiveOfferFactory = (
     isTemplate: false,
     collectiveStock: getCollectiveOfferCollectiveStockFactory(),
     allowedActions: [],
+    location: {
+      locationType: CollectiveLocationType.ADDRESS
+    },
     ...customCollectiveOffer,
   }
 }

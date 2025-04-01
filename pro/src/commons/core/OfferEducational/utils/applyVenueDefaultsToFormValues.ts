@@ -1,4 +1,8 @@
-import { GetEducationalOffererResponseModel } from 'apiClient/v1'
+import {
+  CollectiveLocationType,
+  GetEducationalOffererResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 
 import { DEFAULT_EAC_FORM_VALUES } from '../constants'
 import { OfferEducationalFormValues } from '../types'
@@ -6,14 +10,32 @@ import { OfferEducationalFormValues } from '../types'
 export const applyVenueDefaultsToFormValues = (
   values: OfferEducationalFormValues,
   offerer: GetEducationalOffererResponseModel | null,
-  isOfferCreated: boolean
+  isOfferCreated: boolean,
+  venues?: VenueListItemResponseModel[]
 ): OfferEducationalFormValues => {
   const venue = offerer?.managedVenues.find(
     ({ id }) => id.toString() === values.venueId
   )
 
+  const selectedVenue = venues?.find(
+    (v) => v.id.toString() === values.venueId.toString()
+  )
+
   if (!venue) {
     return values
+  }
+
+  const locationFromSelectedVenue = {
+    locationType: CollectiveLocationType.ADDRESS,
+    address: {
+      isVenueAddress: true,
+      city: selectedVenue?.address?.city ?? '',
+      latitude: selectedVenue?.address?.latitude ?? '',
+      longitude: selectedVenue?.address?.longitude ?? '',
+      postalCode: selectedVenue?.address?.postalCode ?? '',
+      street: selectedVenue?.address?.street ?? '',
+    },
+    id_oa: selectedVenue?.address?.id_oa.toString() ?? '',
   }
 
   if (isOfferCreated) {
@@ -29,6 +51,11 @@ export const applyVenueDefaultsToFormValues = (
         venue.collectivePhone && !values.phone
           ? venue.collectivePhone
           : values.phone,
+      location:
+        values.location.locationType === CollectiveLocationType.ADDRESS &&
+        values.location.address?.isVenueAddress
+          ? locationFromSelectedVenue
+          : { ...values.location },
     }
   }
 
@@ -41,6 +68,7 @@ export const applyVenueDefaultsToFormValues = (
       ...values.eventAddress,
       venueId: Number(values.venueId),
     },
+    location: locationFromSelectedVenue,
   }
 
   // Change these fields only if offer is not created yet

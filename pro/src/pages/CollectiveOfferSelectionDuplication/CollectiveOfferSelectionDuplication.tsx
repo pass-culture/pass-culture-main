@@ -40,6 +40,9 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const isCollectiveOaActive = useActiveFeature(
+    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
+  )
   const formikSearch = useFormik({
     initialValues: { searchFilter: '' },
     onSubmit: (formValues) =>
@@ -100,7 +103,10 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         }
 
         setOffers(offers)
-        await formikSelection.setFieldValue('templateOfferId', String(offers[0].id))
+        await formikSelection.setFieldValue(
+          'templateOfferId',
+          String(offers[0].id)
+        )
         setIsLoading(false)
       } catch {
         setIsLoading(false)
@@ -127,6 +133,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
       navigate,
       notify,
       Number(templateOfferId),
+      isCollectiveOaActive,
       undefined,
       isMarseilleActive
     )
