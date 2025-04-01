@@ -1216,27 +1216,6 @@ def validate_pro_user_email(user: models.User, author_user: models.User | None =
     offerers_api.accept_offerer_invitation_if_exists(user)
 
 
-def save_firebase_flags(user: models.User, firebase_value: dict) -> None:
-    user_pro_flags = models.UserProFlags.query.filter(models.UserProFlags.user == user).one_or_none()
-    if user_pro_flags:
-        if user.pro_flags.firebase and user.pro_flags.firebase != firebase_value:
-            logger.warning("%s now has different Firebase flags than before", user)
-        user.pro_flags.firebase = firebase_value
-    else:
-        user_pro_flags = models.UserProFlags(user=user, firebase=firebase_value)
-    db.session.add(user_pro_flags)
-    db.session.commit()
-
-
-def save_flags(user: models.User, flags: dict) -> None:
-    for flag, value in flags.items():
-        match flag:
-            case "firebase":
-                save_firebase_flags(user, value)
-            case _:
-                raise ValueError()
-
-
 def save_trusted_device(device_info: "account_serialization.TrustedDevice", user: models.User) -> None:
     if not device_info.device_id:
         logger.info(

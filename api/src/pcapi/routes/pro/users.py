@@ -7,7 +7,6 @@ from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
 import jwt
-from sqlalchemy.exc import IntegrityError
 from werkzeug import Response
 
 from pcapi import settings
@@ -290,34 +289,6 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
 def signout() -> None:
     discard_session()
     logout_user()
-
-
-@blueprint.pro_private_api.route("/users/pro_flags", methods=["POST"])
-@login_required
-@spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
-def post_pro_flags(body: users_serializers.ProFlagsQueryModel) -> None:
-    current_user_obj = current_user._get_current_object()
-    user = users_models.User.query.filter(users_models.User.id == current_user_obj.id).one_or_none()
-
-    if not user:
-        raise ApiErrors(
-            errors={
-                "user": "L'utilisateur demandé n'existe pas",
-            },
-            status_code=404,
-        )
-    try:
-        users_api.save_flags(user=user, flags=body.dict())
-    except IntegrityError as e:
-        # FIXME ogeber 14.10.2024 this log is here to investigate an issue of updating the
-        # user's pro flags. Remove when fixed
-        logger.exception(
-            "Error during updating pro flags for user %d (current user is %d, current user object is %d) with the following error %s",
-            user,
-            current_user,
-            current_user_obj,
-            e,
-        )
 
 
 @blueprint.pro_private_api.route("/users/cookies", methods=["POST"])

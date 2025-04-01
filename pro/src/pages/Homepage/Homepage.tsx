@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { useRemoteConfigParams } from 'app/App/analytics/firebase'
 import { Layout } from 'app/App/layout/Layout'
 import { GET_VENUE_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
@@ -31,19 +30,7 @@ import styles from './Homepage.module.scss'
 export const Homepage = (): JSX.Element => {
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
-  const remoteConfigData = useRemoteConfigParams()
   const [isCollectiveDialogOpen, setIsCollectiveDialogOpen] = useState(true)
-
-  useEffect(() => {
-    const callApi = async () => {
-      await api.postProFlags({
-        firebase: remoteConfigData,
-      })
-    }
-    if (Object.keys(remoteConfigData).length > 0) {
-      void callApi()
-    }
-  }, [remoteConfigData])
 
   const offererNamesQuery = useOffererNamesQuery()
 
