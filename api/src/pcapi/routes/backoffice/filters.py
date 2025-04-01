@@ -34,6 +34,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.subscription.ubble import api as ubble_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.models import offer_mixin
@@ -943,6 +944,8 @@ def format_confidence_level_badge_for_venue(venue: offerers_models.Venue) -> str
 
 def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemModel) -> str:
     if id_check_item.type == fraud_models.FraudCheckType.UBBLE.value:
+        if ubble_api.is_v2_identification(id_check_item.thirdPartyId):
+            return f"https://dashboard.ubble.ai/identity-verifications/{id_check_item.thirdPartyId}"
         return f"https://dashboard.ubble.ai/identifications/{id_check_item.thirdPartyId}"
     if id_check_item.type == fraud_models.FraudCheckType.DMS.value and id_check_item.technicalDetails:
         return f"https://www.demarches-simplifiees.fr/procedures/{id_check_item.technicalDetails['procedure_number']}/dossiers/{id_check_item.thirdPartyId}"
@@ -951,6 +954,8 @@ def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemMode
 
 def format_fraud_action_dict_url(fraud_action_dict: dict) -> str:
     if fraud_action_dict["type"] == fraud_models.FraudCheckType.UBBLE.value:
+        if ubble_api.is_v2_identification(fraud_action_dict["techId"]):
+            return f"https://dashboard.ubble.ai/identity-verifications/{fraud_action_dict['techId']}"
         return f"https://dashboard.ubble.ai/identifications/{fraud_action_dict['techId']}"
     if fraud_action_dict["type"] == fraud_models.FraudCheckType.DMS.value and fraud_action_dict["technicalDetails"]:
         return f"https://www.demarches-simplifiees.fr/procedures/{fraud_action_dict['technicalDetails']['procedure_number']}/dossiers/{fraud_action_dict['techId']}"
