@@ -30,12 +30,16 @@ from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.connectors.entreprise import sirene
 import pcapi.connectors.thumb_storage as storage
 from pcapi.core import search
+from pcapi.core.bookings import api as bookings_api
+from pcapi.core.bookings import constants as bookings_constants
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
+from pcapi.core.categories import subcategories
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.api import booking as educational_booking_api
 from pcapi.core.educational.api import dms as dms_api
 import pcapi.core.educational.api.adage as adage_api
 import pcapi.core.educational.api.address as educational_address_api
@@ -58,6 +62,7 @@ from pcapi.models import feature
 from pcapi.models import pc_object
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.repository import atomic
 from pcapi.repository import is_managed_transaction
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
@@ -1318,6 +1323,11 @@ def reject_offerer(
         _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_DEACTIVATION)
 
 
+# We do not want to cancel bookings on events which took place on the last 3 days, because they automatically become
+# USED after AUTO_USE_AFTER_EVENT_TIME_DELAY (+ one day margin because marking as used is a daily cron).
+USED_EVENT_DELAY = bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY + timedelta(days=1)
+
+
 def close_offerer(
     offerer: offerers_models.Offerer,
     closure_date: date | None,
@@ -1350,8 +1360,100 @@ def close_offerer(
 
     db.session.flush()
 
+    author_id = author_user.id if author_user else None
+
+    _cancel_individual_bookings_on_offerer_closure(offerer.id, author_id)
+    _cancel_collective_bookings_on_offerer_closure(offerer.id, author_id)
+
     if was_validated:
         _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_DEACTIVATION)
+
+
+def _cancel_individual_bookings_on_offerer_closure(offerer_id: int, author_id: int | None) -> None:
+    now = datetime.utcnow()
+    event_subcategory_ids = subcategories.EVENT_SUBCATEGORIES.keys()
+
+    ongoing_bookings = (
+        bookings_models.Booking.query.filter(
+            bookings_models.Booking.offererId == offerer_id,
+            bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
+        )
+        .options(
+            sa.orm.joinedload(bookings_models.Booking.stock)
+            .load_only(offers_models.Stock.beginningDatetime)
+            .joinedload(offers_models.Stock.offer)
+            .load_only(offers_models.Offer.subcategoryId)
+        )
+        .all()
+    )
+
+    for booking in ongoing_bookings:
+        if booking.stock.offer.subcategoryId in event_subcategory_ids and (
+            now - USED_EVENT_DELAY <= booking.stock.beginningDatetime <= now
+        ):
+            # Do not cancel booking which will become USED in auto_mark_as_used_after_event()
+            logger.info(
+                "Event booking not cancelled when closing offerer",
+                extra={"booking_id": booking.id, "offerer_id": offerer_id},
+            )
+            continue
+        with atomic():
+            try:
+                bookings_api.cancel_booking_on_closed_offerer(booking, author_id=author_id)
+            except Exception as exc:  # pylint: disable=broad-except
+                mark_transaction_as_invalid()
+                logger.exception(
+                    "Failed to cancel booking when closing offerer",
+                    extra={"exc": exc, "booking_id": booking.id, "offerer_id": offerer_id},
+                )
+
+    db.session.flush()
+
+
+def _cancel_collective_bookings_on_offerer_closure(offerer_id: int, author_id: int | None) -> None:
+    now = datetime.utcnow()
+
+    ongoing_collective_bookings = (
+        educational_models.CollectiveBooking.query.filter(
+            educational_models.CollectiveBooking.offererId == offerer_id,
+            educational_models.CollectiveBooking.status.in_(
+                (
+                    educational_models.CollectiveBookingStatus.CONFIRMED,
+                    educational_models.CollectiveBookingStatus.PENDING,
+                )
+            ),
+        )
+        .options(
+            sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock).load_only(
+                educational_models.CollectiveStock.endDatetime
+            )
+        )
+        .all()
+    )
+
+    for collective_booking in ongoing_collective_bookings:
+        if collective_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED and (
+            now - USED_EVENT_DELAY <= collective_booking.collectiveStock.endDatetime <= now
+        ):
+            # Do not cancel booking which will become USED in auto_mark_as_used_after_event()
+            logger.info(
+                "Collective booking not cancelled when closing offerer",
+                extra={"collective_booking_id": collective_booking.id, "offerer_id": offerer_id},
+            )
+            continue
+        try:
+            educational_booking_api.cancel_collective_booking(
+                collective_booking,
+                educational_models.CollectiveBookingCancellationReasons.OFFERER_CLOSED,
+                author_id=author_id,
+            )
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.exception(
+                "Failed to cancel collective booking when closing offerer",
+                extra={"exc": exc, "collective_booking_id": collective_booking.id, "offerer_id": offerer_id},
+            )
+
+    db.session.flush()
 
 
 def set_offerer_pending(
