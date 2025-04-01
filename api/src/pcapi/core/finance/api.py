@@ -1506,8 +1506,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
             .group_by(
                 models.BankAccount.id,
                 offerers_models.Offerer.id,
-                models.Deposit.type,
-                bookings_models.Booking.usedRecreditType,
+                ORIGIN_OF_CREDIT_CASE,
             )
             .with_entities(
                 models.BankAccount.id.label("bank_account_id"),
@@ -1967,8 +1966,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.Invoice.bankAccountId,
                 models.PricingLine.category,
                 offerers_models.Offerer.is_caledonian,
-                models.Deposit.type,
-                bookings_models.Booking.usedRecreditType,
+                ORIGIN_OF_CREDIT_CASE,
             )
             .with_entities(
                 models.Invoice.id,

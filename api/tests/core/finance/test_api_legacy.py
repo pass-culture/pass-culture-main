@@ -952,8 +952,8 @@ def test_generate_payments_file(clean_temp_files):
     )
 
     factories.PricingFactory(
-        amount=-500,  # rate = 50 %
-        booking__amount=10,
+        amount=-800,  # rate = 50 %
+        booking__amount=16,
         booking__user=underage_user,
         booking__dateUsed=used_date,
         booking__stock__offer__name="Une histoire plutôt bien en doublon",
@@ -1112,7 +1112,7 @@ def test_generate_payments_file(clean_temp_files):
         "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_3.offerer.name} - {bank_account_3.label}",
         "Type de réservation": "AR18-",
         "Ministère": "",
-        "Montant net offreur": 4 + 4 + 5,
+        "Montant net offreur": 4 + 4 + 8,
     } in rows
     assert {
         "Identifiant des coordonnées bancaires": str(bank_account_3.id),
@@ -1652,8 +1652,25 @@ def test_generate_invoice_file(clean_temp_files):
         amount=100,
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
+    # add the same pricing, that was transferred from a 15-17 to a 17-18
+    nc_pricing_transferred = factories.PricingFactory(
+        status=models.PricingStatus.VALIDATED,
+        booking__stock__offer__venue=nc_venue,
+        booking__user__deposit__type=models.DepositType.GRANT_17_18,
+        booking__usedRecreditType=None,
+        amount=-1000,
+    )
+    nc_pline_1_transferred = factories.PricingLineFactory(pricing=nc_pricing_transferred, amount=-1100)
+    nc_pline_2_transferred = factories.PricingLineFactory(
+        pricing=nc_pricing_transferred,
+        amount=100,
+        category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
+    )
     nc_cashflow = factories.CashflowFactory(
-        bankAccount=nc_bank_account, pricings=[nc_pricing], status=models.CashflowStatus.ACCEPTED, batch=cashflow1.batch
+        bankAccount=nc_bank_account,
+        pricings=[nc_pricing, nc_pricing_transferred],
+        status=models.CashflowStatus.ACCEPTED,
+        batch=cashflow1.batch,
     )
     nc_invoice = factories.InvoiceFactory(
         bankAccount=nc_bank_account,
@@ -1760,7 +1777,7 @@ def test_generate_invoice_file(clean_temp_files):
         "Type de ticket de facturation": nc_pline_1.category.value,
         "Type de réservation": "AR18-",
         "Ministère": "NC",
-        "Somme des tickets de facturation": nc_pline_1.amount,
+        "Somme des tickets de facturation": nc_pline_1.amount + nc_pline_1_transferred.amount,
     }
     assert rows[7] == {
         "Identifiant des coordonnées bancaires": str(nc_bank_account.id),
@@ -1770,7 +1787,7 @@ def test_generate_invoice_file(clean_temp_files):
         "Type de ticket de facturation": nc_pline_2.category.value,
         "Type de réservation": "AR18-",
         "Ministère": "NC",
-        "Somme des tickets de facturation": nc_pline_2.amount,
+        "Somme des tickets de facturation": nc_pline_2.amount + nc_pline_2_transferred.amount,
     }
     # collective pricing lines
     assert rows[8] == {
