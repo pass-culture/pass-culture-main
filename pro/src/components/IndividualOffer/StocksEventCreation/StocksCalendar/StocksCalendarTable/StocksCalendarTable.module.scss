@@ -1,0 +1,66 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_a11y.scss" as a11y;
+
+.table {
+  width: 100%;
+  border-bottom: rem.torem(1px) solid var(--color-border-subtle);
+}
+
+.thead {
+  border-top-left-radius: rem.torem(8px);
+  border-top-right-radius: rem.torem(8px);
+  width: 100%;
+  background-color: var(--color-background-subtle);
+
+  &-th {
+    @include fonts.body-accent-xs;
+
+    padding: rem.torem(8px);
+    text-align: left;
+
+    &:first-child {
+      border-top-left-radius: rem.torem(8px);
+      padding-left: rem.torem(16px);
+    }
+
+    &:last-child {
+      border-top-right-radius: rem.torem(8px);
+      padding-right: rem.torem(16px);
+      text-align: right;
+    }
+
+    &-date {
+      display: flex;
+      align-items: center;
+      gap: rem.torem(8px);
+    }
+  }
+}
+
+.tbody {
+  &-td {
+    padding: rem.torem(8px);
+
+    &-date {
+      margin-left: rem.torem(8px);
+    }
+
+    &:first-of-type {
+      padding-left: rem.torem(16px);
+    }
+
+    &:last-of-type {
+      text-align: right;
+      padding-right: rem.torem(16px);
+    }
+  }
+}
+
+.tr {
+  border-bottom: rem.torem(1px) solid var(--color-border-subtle);
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
