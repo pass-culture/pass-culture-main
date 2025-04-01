@@ -3157,3 +3157,36 @@ def synchronize_from_ds_and_check_application(offerer_id: int) -> bool:
         .filter(offerers_models.Venue.collectiveDmsApplications.any())
     )
     return db.session.query(query.exists()).scalar()
+
+
+def create_action_history_when_move_offers(
+    origin_venue_id: int,
+    destination_venue_id: int,
+    offer_ids: list[int] | None,
+    offers_type: typing.Literal["individual", "collective"],
+) -> None:
+    """
+    Simple action history entry, in both origin and destination venues, when moving
+    all offers (individual or collective) from one venue to another.
+    One entry is made by offer type.
+    """
+    action_history_origin_extra_data = {
+        offers_type + "_offer_ids": offer_ids,
+        "destination_venue_id": destination_venue_id,
+    }
+    action_history_origin = history_models.ActionHistory(
+        venueId=origin_venue_id,
+        actionType=history_models.ActionType.MOVE_ALL_OFFER,
+        extraData=action_history_origin_extra_data,
+    )
+
+    action_history_destination_extra_data = {
+        offers_type + "_offer_ids": offer_ids,
+        "origin_venue_id": origin_venue_id,
+    }
+    action_history_destination = history_models.ActionHistory(
+        venueId=destination_venue_id,
+        actionType=history_models.ActionType.MOVE_ALL_OFFER,
+        extraData=action_history_destination_extra_data,
+    )
+    db.session.add_all([action_history_origin, action_history_destination])

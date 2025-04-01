@@ -3077,3 +3077,29 @@ class SendReminderEmailToIndividualOfferersTest:
         assert offerer.individualSubscription.isReminderEmailSent is True
         assert offerer.individualSubscription.dateReminderEmailSent == datetime.date.today()
         mocked_transactional_mail.assert_called_once_with(offerer.UserOfferers[0].user.email)
+
+
+class CreateActionHistoryWhenMoveOffersTest:
+    def test_create_action_history_when_move_offers(self):
+        offer_ids = [1, 2, 3]
+        origin_venue_id = offerers_factories.VenueFactory().id
+        destination_venue_id = offerers_factories.VenueFactory().id
+        offerers_api.create_action_history_when_move_offers(
+            origin_venue_id=origin_venue_id,
+            destination_venue_id=destination_venue_id,
+            offer_ids=offer_ids,
+            offers_type="individual",
+        )
+        assert history_models.ActionHistory.query.count() == 2
+        assert history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.venueId == origin_venue_id
+        ).one().extraData == {
+            "individual_offer_ids": offer_ids,
+            "destination_venue_id": destination_venue_id,
+        }
+        assert history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.venueId == destination_venue_id
+        ).one().extraData == {
+            "individual_offer_ids": offer_ids,
+            "origin_venue_id": origin_venue_id,
+        }
