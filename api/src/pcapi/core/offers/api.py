@@ -2077,3 +2077,7 @@ def _update_product_extra_data(product: offers_models.Product, movie: offers_mod
         extra_data["visa"] = movie.visa
 
     product.extraData.update((key, value) for key, value in extra_data.items() if value is not None)  # type: ignore[typeddict-item]
+
+
+def update_event_opening_hours(event_id: int, update_body: dict) -> None:
+    pass

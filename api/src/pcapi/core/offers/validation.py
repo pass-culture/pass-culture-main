@@ -926,3 +926,32 @@ def check_offer_is_eligible_to_be_headline(offer: models.Offer) -> None:
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
     if subcategory.is_online_only:
         raise exceptions.VirtualOfferCanNotBeHeadline()
+
+
+class EventOpeningHoursError(Exception):
+    msg = "event opening hours error"
+
+
+class EventOpeningHoursDoesNotBelongToOfferError(EventOpeningHoursError):
+    msg = "event opening hours does not belong to offer"
+
+
+class EventOpeningHoursIsSoftDeleted(EventOpeningHoursError):
+    msg = "event opening hours has been deleted"
+
+
+class EventOpeningHoursHasBegun(EventOpeningHoursError):
+    msg = "event opening hours cannot be updated: event has begun"
+
+
+def validate_event_opening_hours_can_be_updated(offer: models.Offer, opening_hours: models.EventOpeningHours, body: serialize.UpdateEventOpeningHoursBody) -> None:
+    # TODO(jbaudet-pass/cnormant-pass): add creation validations
+    if opening_hours.offerId != offer.id:
+        raise EventOpeningHoursDoesNotBelongToOfferError()
+
+    if opening_hours.isSoftDeleted:
+        raise EventOpeningHoursIsSoftDeleted()
+
+    if body.startDatetime:
+        if datetime.datetime.now(datetime.timezone.utc) >= body.startDatetime:
+            raise EventOpeningHoursHasBegun()

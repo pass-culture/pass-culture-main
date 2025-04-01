@@ -4,6 +4,7 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 import sqlalchemy as sqla
+import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
 
@@ -694,3 +695,24 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
     )
     check_product_cgu_and_offerer(product, ean, offerer)
     return offers_serialize.GetProductInformations.from_orm(product=product)
+
+
+@private_api.route("/offers/<int:offer_id>/event_opening_hours/<int:event_opening_hours_id>", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    # response_model=offers_serialize.,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
+def update_event_opening_hours(
+    offer_id: int, event_opening_hours_id: int, body: offers_serialize.UpdateEventOpeningHoursBody
+) -> None:
+    offer = models.Offer.query.get_or_404(offer_id)
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    opening_hours = models.EventOpeningHours.query.options(
+        sa_orm.selectinload(models.EventOpeningHours.weekDayOpeningHours)
+    ).get_or_404(event_opening_hours_id)
+
+    validation.validate_event_opening_hours_can_be_updated(offer, opening_hours, body)
+    offers_api.update_event_opening_hours(opening_hours, body)
