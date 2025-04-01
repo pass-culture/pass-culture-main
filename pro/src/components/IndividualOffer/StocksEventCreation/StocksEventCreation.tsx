@@ -52,7 +52,7 @@ export const StocksEventCreation = ({
 
   const handleNextStep = async () => {
     // Check that there is at least one stock left
-    if (!hasStocks) {
+    if (!hasStocks && !isEventWithOpeningHoursEnabled) {
       notify.error('Veuillez renseigner au moins une date')
       return
     }
@@ -74,7 +74,11 @@ export const StocksEventCreation = ({
     <>
       <div className={styles['container']}>
         {isEventWithOpeningHoursEnabled ? (
-          <StocksCalendar offer={offer} />
+          <StocksCalendar
+            offer={offer}
+            handlePreviousStep={handlePreviousStep}
+            handleNextStep={handleNextStep}
+          />
         ) : (
           <>
             {hasStocks === false && (
@@ -91,14 +95,16 @@ export const StocksEventCreation = ({
           </>
         )}
       </div>
-      <ActionBar
-        isDisabled={false}
-        onClickPrevious={handlePreviousStep}
-        onClickNext={handleNextStep}
-        step={OFFER_WIZARD_STEP_IDS.STOCKS}
-        // now we submit in RecurrenceForm, StocksEventCreation could not be dirty
-        dirtyForm={false}
-      />
+      {!isEventWithOpeningHoursEnabled && (
+        <ActionBar
+          isDisabled={false}
+          onClickPrevious={handlePreviousStep}
+          onClickNext={handleNextStep}
+          step={OFFER_WIZARD_STEP_IDS.STOCKS}
+          // now we submit in RecurrenceForm, StocksEventCreation could not be dirty
+          dirtyForm={false}
+        />
+      )}
     </>
   )
 }
