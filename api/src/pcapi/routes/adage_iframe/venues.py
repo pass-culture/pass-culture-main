@@ -28,7 +28,7 @@ def get_venue_by_siret(
         logger.info("Venue does not exists for given siret", extra={"siret": siret})
         raise ApiErrors({"siret": "Aucun lieu n'existe pour ce siret"}, status_code=404)
 
-    return VenueResponse.from_orm(venue, relative)
+    return VenueResponse.build(venue=venue, relative=relative)
 
 
 @blueprint.adage_iframe.route("/venues/<int:venue_id>", methods=["GET"])
@@ -46,4 +46,4 @@ def get_venue_by_id(
         logger.info("Venue does not exists for given venue_id", extra={"venue_id": venue_id})
         raise ApiErrors({"venue_id": "Aucun lieu n'existe pour ce venue_id"}, status_code=404)
 
-    return VenueResponse.from_orm(venue, relative)
+    return VenueResponse.build(venue=venue, relative=relative)
