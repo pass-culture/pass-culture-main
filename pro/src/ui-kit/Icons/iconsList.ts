@@ -1,17 +1,14 @@
 /* istanbul ignore file */
-import fillThumbUp from 'icons/fill-thumb-up.svg'
-import fullAddUserIcon from 'icons/full-add-user.svg'
 import fullArchiveIcon from 'icons/full-archive.svg'
 import fullArrowLeftIcon from 'icons/full-arrow-left.svg'
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
 import fullBackIcon from 'icons/full-back.svg'
 import fullBoostedIcon from 'icons/full-boosted.svg'
-import fullBurgerkIcon from 'icons/full-burger.svg'
+import fullBurgerIcon from 'icons/full-burger.svg'
 import fullCheckIcon from 'icons/full-check.svg'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCloseIcon from 'icons/full-close.svg'
 import fullCodeIcon from 'icons/full-code.svg'
-import fullDeskIcon from 'icons/full-desk.svg'
 import fullDisclosureCloseIcon from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpenIcon from 'icons/full-disclosure-open.svg'
 import fullDownIcon from 'icons/full-down.svg'
@@ -27,7 +24,6 @@ import fullInfoIcon from 'icons/full-info.svg'
 import fullKeyIcon from 'icons/full-key.svg'
 import fullLeftIcon from 'icons/full-left.svg'
 import fullLessIcon from 'icons/full-less.svg'
-import fullLikeIcon from 'icons/full-like.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullListIcon from 'icons/full-list.svg'
 import fullLogoutIcon from 'icons/full-logout.svg'
@@ -48,6 +44,7 @@ import fullSortIcon from 'icons/full-sort.svg'
 import fullStarIcon from 'icons/full-star.svg'
 import fullSwitchIcon from 'icons/full-switch.svg'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
+import fullThumbUpIcon from 'icons/full-thumb-up.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
@@ -66,7 +63,6 @@ import strokeArticleIcon from 'icons/stroke-article.svg'
 import strokeBarcodeIcon from 'icons/stroke-barcode.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
-import strokeBoostIcon from 'icons/stroke-boost.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
@@ -79,7 +75,6 @@ import strokeDateIcon from 'icons/stroke-date.svg'
 import strokeDeskIcon from 'icons/stroke-desk.svg'
 import strokeDoubleCheckIcon from 'icons/stroke-double-check.svg'
 import strokeDownIcon from 'icons/stroke-down.svg'
-import strokeDownloadIcon from 'icons/stroke-download.svg'
 import strokeDraftIcon from 'icons/stroke-draft.svg'
 import strokeDuoIcon from 'icons/stroke-duo.svg'
 import strokeDuplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
@@ -96,37 +91,29 @@ import strokeInstitutionIcon from 'icons/stroke-institution.svg'
 import strokeLeftIcon from 'icons/stroke-left.svg'
 import strokeLessIcon from 'icons/stroke-less.svg'
 import strokeLibraryIcon from 'icons/stroke-library.svg'
-import strokeLikeIcon from 'icons/stroke-like.svg'
 import strokeLinkIcon from 'icons/stroke-link.svg'
-import strokeLocalisationIcon from 'icons/stroke-localisation.svg'
 import strokeLocationIcon from 'icons/stroke-location.svg'
-import strokeLogoutIcon from 'icons/stroke-logout.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 import strokeMoreIcon from 'icons/stroke-more.svg'
 import strokeNearIcon from 'icons/stroke-near.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
-import strokeNewIcon from 'icons/stroke-new.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
-import strokeOffersIcon from 'icons/stroke-offers.svg'
 import strokePageNotFoundIcon from 'icons/stroke-page-not-found.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
-import strokePieIcon from 'icons/stroke-pie.svg'
 import strokePriceIcon from 'icons/stroke-price.svg'
 import strokeRepaymentIcon from 'icons/stroke-repayment.svg'
 import strokeRightIcon from 'icons/stroke-right.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeShareIcon from 'icons/stroke-share.svg'
-import strokeShoutIcon from 'icons/stroke-shout.svg'
 import strokeShowIcon from 'icons/stroke-show.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
 import strokeThingIcon from 'icons/stroke-thing.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
-import strokeUpIcon from 'icons/stroke-up.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
@@ -144,7 +131,7 @@ interface IconListItem {
 // Those icons are put in the order of the design library here:
 // https://www.figma.com/file/AEXCkb4KbUyPmB4BRFa88s/PRO---Library?type=design&node-id=8059-111986&t=sLfFXFbaXGFLjdhX-0
 export const fullIcons: IconListItem[] = [
-  { src: fillThumbUp },
+  { src: fullThumbUpIcon },
   { src: fullPauseIcon },
   { src: fullPlayIcon },
   { src: fullValidateIcon },
@@ -160,7 +147,6 @@ export const fullIcons: IconListItem[] = [
   { src: fullDuplicateIcon },
   { src: fullShowIcon },
   { src: fullHideIcon },
-  { src: fullLikeIcon },
   { src: fullBackIcon },
   { src: fullNextIcon },
   { src: fullWaitIcon },
@@ -181,10 +167,8 @@ export const fullIcons: IconListItem[] = [
   { src: fullGoTop },
   { src: fullArrowRightIcon },
   { src: fullArrowLeftIcon },
-  { src: fullAddUserIcon },
   { src: fullStarIcon },
-  { src: fullDeskIcon },
-  { src: fullBurgerkIcon },
+  { src: fullBurgerIcon },
   { src: fullWarningIcon },
   { src: fullGridIcon },
   { src: fullListIcon },
@@ -213,7 +197,6 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeLessIcon },
   { src: strokeCheckIcon },
   { src: strokeDoubleCheckIcon },
-  { src: strokeOffersIcon },
   { src: strokeOfferIcon },
   { src: strokeRepaymentIcon },
   { src: strokeEuroIcon },
@@ -230,7 +213,6 @@ export const strokeIcons: IconListItem[] = [
   { src: strokePhoneIcon },
   { src: strokeNearIcon },
   { src: strokeLocationIcon },
-  { src: strokeLocalisationIcon },
   { src: strokeFranceIcon },
   { src: strokeHomeIcon },
   { src: strokeBuildingIcon },
@@ -240,21 +222,16 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeHourglassIcon },
   { src: strokeShowIcon },
   { src: strokeHideIcon },
-  { src: strokeLikeIcon },
-  { src: strokeLogoutIcon },
   { src: strokeShareIcon },
-  { src: strokeDownloadIcon },
   { src: strokeSearchIcon },
   { src: strokeTrashIcon },
   { src: strokeDraftIcon },
   { src: strokeTeacherIcon },
-  { src: strokeNewIcon },
   { src: strokeCodeIcon },
   { src: strokeAccessibilityEyeIcon },
   { src: strokeAccessibilityEarIcon },
   { src: strokeAccessibilityLegIcon },
   { src: strokeAccessibilityBrainIcon },
-  { src: strokePieIcon },
   { src: strokePartyIcon },
   { src: strokeNewOfferIcon },
   { src: strokeDuplicateOfferIcon },
@@ -262,7 +239,6 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeLeftIcon },
   { src: strokeRightIcon },
   { src: strokeDownIcon },
-  { src: strokeUpIcon },
   { src: strokeLinkIcon },
   { src: strokePassIcon },
   { src: strokeLibraryIcon },
@@ -274,11 +250,9 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeNoBookingIcon },
   { src: strokeBookingHold },
   { src: stroke404Icon },
-  { src: strokeShoutIcon },
   { src: strokeCollaboratorIcon },
   { src: strokeBarcodeIcon },
-  { src: strokePageNotFoundIcon, viewBox: '0 0 130 100' },
-  { src: strokeBoostIcon },
+  { src: strokePageNotFoundIcon },
   { src: strokeVisualArtIcon },
   { src: strokeAddCalendarIcon },
 ]

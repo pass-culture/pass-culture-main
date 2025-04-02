@@ -11,7 +11,7 @@ import {
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { getLastDmsApplicationForOfferer } from 'commons/utils/getLastCollectiveDmsApplication'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
-import duplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
+import strokeDuplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
@@ -99,7 +99,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
                 value: COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE,
                 description:
                   'Créer une offre réservable en dupliquant les informations d’une offre vitrine existante.',
-                icon: duplicateOfferIcon,
+                icon: strokeDuplicateOfferIcon,
               },
             ]}
             variant={RadioVariant.BOX}

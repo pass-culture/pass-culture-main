@@ -8,7 +8,7 @@ import { isErrorAPIError, getError } from 'apiClient/helpers'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullCloseIcon from 'icons/full-close.svg'
-import strokeBarcode from 'icons/stroke-barcode.svg'
+import strokeBarcodeIcon from 'icons/stroke-barcode.svg'
 import { Product } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import { isSubCategoryCD } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { eanSearchValidationSchema } from 'pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
@@ -145,7 +145,7 @@ export const DetailsEanSearch = ({
               maxLength={13}
               description="Format : EAN à 13 chiffres"
               {...(!displayClearButton && {
-                rightIcon: strokeBarcode,
+                rightIcon: strokeBarcodeIcon,
               })}
               {...register('eanSearch')}
               count={ean?.length}

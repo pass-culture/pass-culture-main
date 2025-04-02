@@ -20,9 +20,9 @@ import { useMediaQuery } from 'commons/hooks/useMediaQuery'
 import { setSearchView } from 'commons/store/adageFilter/reducer'
 import { adageSearchViewSelector } from 'commons/store/adageFilter/selectors'
 import { LOGS_DATA } from 'commons/utils/config'
-import fullGoTop from 'icons/full-go-top.svg'
-import fullGrid from 'icons/full-grid.svg'
-import fullList from 'icons/full-list.svg'
+import fullGoTopIcon from 'icons/full-go-top.svg'
+import fullGridIcon from 'icons/full-grid.svg'
+import fullListIcon from 'icons/full-list.svg'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
 import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
@@ -178,13 +178,13 @@ export const Offers = ({
             {
               label: 'Vue liste',
               id: 'list',
-              content: <SvgIcon width="24" src={fullList} alt="" />,
+              content: <SvgIcon width="24" src={fullListIcon} alt="" />,
               onClick: toggleButtonClicked,
             },
             {
               label: 'Vue grille',
               id: 'grid',
-              content: <SvgIcon width="24" src={fullGrid} alt="" />,
+              content: <SvgIcon width="24" src={fullGridIcon} alt="" />,
               onClick: toggleButtonClicked,
             },
           ]}
@@ -254,7 +254,7 @@ export const Offers = ({
         <a href="#root" className={styles['back-to-top-button']}>
           <SvgIcon
             alt=""
-            src={fullGoTop}
+            src={fullGoTopIcon}
             className={styles['back-to-top-button-icon']}
             width="20"
           />
