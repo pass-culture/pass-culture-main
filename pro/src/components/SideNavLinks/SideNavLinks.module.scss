@@ -36,6 +36,7 @@
   &-icon {
     height: rem.torem(18px);
     width: rem.torem(18px);
+    color: var(--color-icon-default);
   }
 }
 
@@ -135,4 +136,8 @@
   &-scroll {
     overflow-y: auto;
   }
+}
+
+.icon {
+  color: var(--color-icon-default);
 }

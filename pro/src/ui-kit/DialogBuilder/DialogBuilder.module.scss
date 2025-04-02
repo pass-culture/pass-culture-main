@@ -114,6 +114,7 @@ $animation-timing-function: ease-in-out;
   &-icon {
     width: rem.torem(24px);
     height: rem.torem(24px);
+    color: var(--color-icon-default);
   }
 
   &:focus-visible {

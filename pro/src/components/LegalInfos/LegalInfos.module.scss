@@ -10,6 +10,10 @@
     color: var(--color-primary);
     display: inline;
     text-decoration: underline;
+
+    svg {
+      color: var(--color-primary);
+    }
   }
 
   .icon-legal-infos {

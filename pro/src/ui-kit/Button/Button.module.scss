@@ -129,6 +129,10 @@
     border: none;
     height: auto;
 
+    .button-icon {
+      color: var(--color-icon-default);
+    }
+
     &-pink {
       color: var(--color-primary);
     }
@@ -146,7 +150,7 @@
 
     &:disabled .button-icon,
     &.button-disabled .button-icon {
-      color: var(--color-grey-semi-dark);
+      color: var(--color-icon-disabled);
     }
 
     .button-icon:not(.has-tooltip) {
@@ -202,6 +206,10 @@
     max-width: rem.torem(400px);
     color: var(--color-text-default);
 
+    .button-icon {
+      color: var(--color-icon-default);
+    }
+
     &:hover:not(:disabled, .button-disabled) {
       box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
         var(--color-medium-shadow);
@@ -214,7 +222,7 @@
       color: var(--color-text-disabled);
 
       .button-icon {
-        color: var(--color-grey-dark);
+        color: var(--color-icon-disabled);
       }
     }
   }

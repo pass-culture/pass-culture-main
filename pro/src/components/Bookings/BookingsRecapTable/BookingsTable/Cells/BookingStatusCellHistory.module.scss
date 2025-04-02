@@ -18,19 +18,19 @@
   }
 
   &.bs-history-pending {
-    background-color: var(--color-alert-dark);
+    background-color: var(--color-icon-warning);
   }
 
   &.bs-history-cancelled {
-    background-color: var(--color-grey-dark);
+    background-color: var(--color-icon-subtle);
   }
 
   &.bs-history-confirmed {
-    background-color: var(--color-black);
+    background-color: var(--color-icon-default);
   }
 
   &.bs-history-reimbursed {
-    background-color: var(--color-valid);
+    background-color: var(--color-icon-success);
   }
 
   &.bs-history-validated {

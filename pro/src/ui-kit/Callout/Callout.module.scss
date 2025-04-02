@@ -28,7 +28,7 @@
     background-color: var(--color-background-success);
 
     .icon {
-      color: var(--color-valid);
+      color: var(--color-icon-success);
     }
   }
 
@@ -36,7 +36,7 @@
     background-color: var(--color-background-warning);
 
     .icon {
-      color: var(--color-alert-dark);
+      color: var(--color-icon-warning);
     }
   }
 
@@ -44,7 +44,7 @@
     background-color: var(--color-background-error);
 
     .icon {
-      color: var(--color-error);
+      color: var(--color-icon-error);
     }
   }
 

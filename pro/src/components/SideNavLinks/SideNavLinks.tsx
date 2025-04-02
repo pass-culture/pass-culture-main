@@ -112,7 +112,12 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               })
             }
           >
-            <SvgIcon src={strokeHomeIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
+            <SvgIcon
+              src={strokeHomeIcon}
+              alt=""
+              width={NAV_ITEM_ICON_SIZE}
+              className={styles['icon']}
+            />
             <span className={styles['nav-links-item-title']}>Accueil</span>
           </NavLink>
         </li>
@@ -130,7 +135,12 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             aria-controls="individual-sublist"
             id="individual-sublist-button"
           >
-            <SvgIcon src={strokePhoneIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
+            <SvgIcon
+              src={strokePhoneIcon}
+              alt=""
+              width={NAV_ITEM_ICON_SIZE}
+              className={styles['icon']}
+            />
             <span className={styles['nav-section-title']}>Individuel</span>
             <SvgIcon
               src={isIndividualSectionOpen ? fullUpIcon : fullDownIcon}
@@ -229,6 +239,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               src={strokeTeacherIcon}
               alt=""
               width={NAV_ITEM_ICON_SIZE}
+              className={styles['icon']}
             />
             <span className={styles['nav-section-title']}>Collectif</span>
             <SvgIcon
@@ -325,7 +336,12 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               })
             }
           >
-            <SvgIcon src={strokeEuroIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
+            <SvgIcon
+              src={strokeEuroIcon}
+              alt=""
+              width={NAV_ITEM_ICON_SIZE}
+              className={styles['icon']}
+            />
             Gestion financière
           </NavLink>
         </li>
@@ -342,6 +358,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               src={strokeCollaboratorIcon}
               alt=""
               width={NAV_ITEM_ICON_SIZE}
+              className={styles['icon']}
             />
             Collaborateurs
           </NavLink>
