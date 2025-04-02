@@ -1,10 +1,10 @@
 import cn from 'classnames'
 
 import { AccessibilityEnum } from 'commons/core/shared/types'
-import strokeAccessibilityBrain from 'icons/stroke-accessibility-brain.svg'
-import audioDisabilitySvg from 'icons/stroke-accessibility-ear.svg'
-import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
-import strokeAccessibilityLeg from 'icons/stroke-accessibility-leg.svg'
+import strokeAccessibilityBrainIcon from 'icons/stroke-accessibility-brain.svg'
+import strokeAccessibilityEarIcon from 'icons/stroke-accessibility-ear.svg'
+import strokeAccessibilityEyeIcon from 'icons/stroke-accessibility-eye.svg'
+import strokeAccessibilityLegIcon from 'icons/stroke-accessibility-leg.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './AccessibilityLabel.module.scss'
@@ -48,19 +48,19 @@ export const AccessibilityLabel = ({
   const labelData = {
     [AccessibilityEnum.AUDIO]: {
       label: 'Auditif',
-      svg: audioDisabilitySvg,
+      svg: strokeAccessibilityEarIcon,
     },
     [AccessibilityEnum.MENTAL]: {
       label: 'Psychique ou cognitif',
-      svg: strokeAccessibilityBrain,
+      svg: strokeAccessibilityBrainIcon,
     },
     [AccessibilityEnum.MOTOR]: {
       label: 'Moteur',
-      svg: strokeAccessibilityLeg,
+      svg: strokeAccessibilityLegIcon,
     },
     [AccessibilityEnum.VISUAL]: {
       label: 'Visuel',
-      svg: strokeAccessibilityEye,
+      svg: strokeAccessibilityEyeIcon,
     },
     [AccessibilityEnum.NONE]: {
       label: 'Non accessible',

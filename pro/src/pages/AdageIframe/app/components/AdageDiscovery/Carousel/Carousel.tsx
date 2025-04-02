@@ -2,8 +2,8 @@ import cn from 'classnames'
 import { createRef } from 'react'
 
 import { useIsElementVisible } from 'commons/hooks/useIsElementVisible'
-import arrowLeftIcon from 'icons/full-arrow-left.svg'
-import arrowRightIcon from 'icons/full-arrow-right.svg'
+import fullArrowLeftIcon from 'icons/full-arrow-left.svg'
+import fullArrowRightIcon from 'icons/full-arrow-right.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -79,7 +79,7 @@ export function Carousel({
               data-testid="carousel-arrow-left"
             >
               <SvgIcon
-                src={arrowLeftIcon}
+                src={fullArrowLeftIcon}
                 alt="Faire défiler le carrousel vers la gauche"
                 width="24"
               />
@@ -92,7 +92,7 @@ export function Carousel({
               data-testid="carousel-arrow-right"
             >
               <SvgIcon
-                src={arrowRightIcon}
+                src={fullArrowRightIcon}
                 alt="Faire défiler le carrousel vers la droite"
                 width="24"
               />

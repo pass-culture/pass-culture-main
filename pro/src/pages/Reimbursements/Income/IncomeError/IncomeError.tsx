@@ -9,9 +9,7 @@ export const IncomeError = () => {
       <SvgIcon
         className={styles['income-error-icon']}
         src={strokePageNotFoundIcon}
-        viewBox="0 0 130 100"
         alt=""
-        width="100"
       />
       Erreur dans le chargement des données.
     </div>

@@ -8,7 +8,7 @@
   text-align: center;
 
   &-icon {
-    margin-bottom: rem.torem(32px);
     color: var(--color-icon-subtle);
+    width: rem.torem(100px);
   }
 }

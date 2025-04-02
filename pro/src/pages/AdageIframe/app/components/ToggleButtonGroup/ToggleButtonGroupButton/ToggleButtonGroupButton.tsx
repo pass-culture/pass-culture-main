@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 
-import fullCheck from 'icons/full-check.svg'
+import fullCheckIcon from 'icons/full-check.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 
@@ -36,7 +36,7 @@ export function ToggleButtonGroupButton({
           data-testid={`toggle-button${isActive ? '-active' : ''}`}
           aria-label={button.label}
         >
-          {isActive && <SvgIcon alt="" src={fullCheck} width="20" />}
+          {isActive && <SvgIcon alt="" src={fullCheckIcon} width="20" />}
           {button.content}
         </button>
       </Tooltip>

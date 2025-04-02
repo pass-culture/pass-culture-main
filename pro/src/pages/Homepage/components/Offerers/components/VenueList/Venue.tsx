@@ -8,8 +8,8 @@ import {
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { VenueEvents } from 'commons/core/FirebaseEvents/constants'
 import { Card } from 'components/Card/Card'
-import fullDisclosureClose from 'icons/full-disclosure-close.svg'
-import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
+import fullDisclosureCloseIcon from 'icons/full-disclosure-close.svg'
+import fullDisclosureOpenIcon from 'icons/full-disclosure-open.svg'
 import strokeConnectIcon from 'icons/stroke-connect.svg'
 import { shouldShowVenueOfferStepsForVenue } from 'pages/Homepage/components/Offerers/components/VenueList/venueUtils'
 import { VenueOfferSteps } from 'pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
@@ -75,7 +75,11 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
                   isToggleOpen ? 'Masquer' : 'Afficher'
                 } les statistiques`}
                 className={styles['toggle-icon']}
-                src={isToggleOpen ? fullDisclosureOpen : fullDisclosureClose}
+                src={
+                  isToggleOpen
+                    ? fullDisclosureOpenIcon
+                    : fullDisclosureCloseIcon
+                }
               />
               <span data-testid={'venue-name-span-' + venue.id}>
                 {venueDisplayName}

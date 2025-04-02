@@ -5,7 +5,7 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import fillThumbUp from 'icons/fill-thumb-up.svg'
+import fullThumbUpIcon from 'icons/full-thumb-up.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -67,7 +67,7 @@ export const HeadlineOfferVideoBanner = () => {
           <Button
             className={styles['headline-offer-button']}
             variant={ButtonVariant.TERNARY}
-            icon={fillThumbUp}
+            icon={fullThumbUpIcon}
             onClick={() => onClick(Events.FAKE_DOOR_VIDEO_INTERESTED, true)}
           >
             Intéressé.e
@@ -76,7 +76,7 @@ export const HeadlineOfferVideoBanner = () => {
             className={styles['headline-offer-button']}
             iconClassName={styles['headline-offer-icon-down']}
             variant={ButtonVariant.TERNARY}
-            icon={fillThumbUp}
+            icon={fullThumbUpIcon}
             onClick={() => onClick(Events.FAKE_DOOR_VIDEO_INTERESTED, false)}
           >
             Pas intéressé.e

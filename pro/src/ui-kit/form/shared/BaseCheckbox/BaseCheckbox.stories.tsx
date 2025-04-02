@@ -1,6 +1,6 @@
 import type { StoryObj } from '@storybook/react'
 
-import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
+import strokeAccessibilityEyeIcon from 'icons/stroke-accessibility-eye.svg'
 
 import { BaseCheckbox, CheckboxVariant } from './BaseCheckbox'
 
@@ -12,7 +12,7 @@ export default {
 export const Default: StoryObj<typeof BaseCheckbox> = {
   args: {
     label: 'Checkbox label',
-    icon: strokeAccessibilityEye,
+    icon: strokeAccessibilityEyeIcon,
   },
 }
 

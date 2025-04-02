@@ -1,23 +1,24 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import strokeAccessibilityBrain from 'icons/stroke-accessibility-brain.svg'
-import strokeAccessibilityEar from 'icons/stroke-accessibility-ear.svg'
-import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
-import strokeAccessibilityLeg from 'icons/stroke-accessibility-leg.svg'
+import strokeAccessibilityBrainIcon from 'icons/stroke-accessibility-brain.svg'
+import strokeAccessibilityEarIcon from 'icons/stroke-accessibility-ear.svg'
+import strokeAccessibilityEyeIcon from 'icons/stroke-accessibility-eye.svg'
+import strokeAccessibilityLegIcon from 'icons/stroke-accessibility-leg.svg'
 import { AccessibilityCallout } from 'pages/VenueEdition/AccessibilityCallout/AccessibilityCallout'
 
 import styles from './ExternalAccessibility.module.scss'
 import { ExternalAccessibilityCollapse } from './ExternalAccessibilityCollapse/ExternalAccessibilityCollapse'
 
-
 interface ExternalAccessibilityProps {
   externalAccessibilityId: GetVenueResponseModel['externalAccessibilityId']
-  externalAccessibilityData: NonNullable<GetVenueResponseModel['externalAccessibilityData']>
+  externalAccessibilityData: NonNullable<
+    GetVenueResponseModel['externalAccessibilityData']
+  >
 }
 
 export const ExternalAccessibility = ({
   externalAccessibilityId,
-  externalAccessibilityData
+  externalAccessibilityData,
 }: ExternalAccessibilityProps) => {
   const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
 
@@ -30,7 +31,7 @@ export const ExternalAccessibility = ({
           isAccessible={Boolean(
             externalAccessibilityData.isAccessibleMotorDisability
           )}
-          icon={strokeAccessibilityLeg}
+          icon={strokeAccessibilityLegIcon}
         >
           <ul className={styles['details']}>
             <li>
@@ -59,8 +60,8 @@ export const ExternalAccessibility = ({
             <li>
               <span className={styles['details-label']}>Sanitaire</span>
               <span className={styles['details-item']}>
-                {externalAccessibilityData.motorDisability
-                  ?.facilities ?? 'Non renseigné'}
+                {externalAccessibilityData.motorDisability?.facilities ??
+                  'Non renseigné'}
               </span>
             </li>
           </ul>
@@ -71,14 +72,14 @@ export const ExternalAccessibility = ({
           isAccessible={Boolean(
             externalAccessibilityData.isAccessibleMentalDisability
           )}
-          icon={strokeAccessibilityBrain}
+          icon={strokeAccessibilityBrainIcon}
         >
           <div className={styles['details']}>
             <div>
               <span className={styles['details-label']}>Personnel</span>
               <span className={styles['details-item']}>
-                {externalAccessibilityData.mentalDisability
-                  ?.trainedPersonnel ?? 'Non renseigné'}
+                {externalAccessibilityData.mentalDisability?.trainedPersonnel ??
+                  'Non renseigné'}
               </span>
             </div>
           </div>
@@ -89,7 +90,7 @@ export const ExternalAccessibility = ({
           isAccessible={Boolean(
             externalAccessibilityData.isAccessibleAudioDisability
           )}
-          icon={strokeAccessibilityEar}
+          icon={strokeAccessibilityEarIcon}
         >
           <div className={styles['details']}>
             <div>
@@ -97,8 +98,8 @@ export const ExternalAccessibility = ({
                 Équipement sourd & malentendant
               </span>
               <span className={styles['details-item']}>
-                {externalAccessibilityData.audioDisability
-                  ?.deafAndHardOfHearing?.length ? (
+                {externalAccessibilityData.audioDisability?.deafAndHardOfHearing
+                  ?.length ? (
                   <ul className={styles['details-list']}>
                     {externalAccessibilityData.audioDisability.deafAndHardOfHearing.map(
                       (item) => (
@@ -119,16 +120,14 @@ export const ExternalAccessibility = ({
           isAccessible={Boolean(
             externalAccessibilityData.isAccessibleVisualDisability
           )}
-          icon={strokeAccessibilityEye}
+          icon={strokeAccessibilityEyeIcon}
         >
           <ul className={styles['details']}>
             <li>
-              <span className={styles['details-label']}>
-                Audiodescription
-              </span>
+              <span className={styles['details-label']}>Audiodescription</span>
               <span className={styles['details-item']}>
-                {externalAccessibilityData.visualDisability
-                  ?.audioDescription?.length ? (
+                {externalAccessibilityData.visualDisability?.audioDescription
+                  ?.length ? (
                   <ul className={styles['details-list']}>
                     {externalAccessibilityData.visualDisability.audioDescription.map(
                       (item) => (
@@ -144,14 +143,14 @@ export const ExternalAccessibility = ({
             <li>
               <span className={styles['details-label']}>Balise sonore</span>
               <span className={styles['details-item']}>
-                {externalAccessibilityData.visualDisability
-                  ?.soundBeacon ?? 'Non renseigné'}
+                {externalAccessibilityData.visualDisability?.soundBeacon ??
+                  'Non renseigné'}
               </span>
             </li>
           </ul>
         </ExternalAccessibilityCollapse>
       </div>
-      <AccessibilityCallout 
+      <AccessibilityCallout
         className={styles['callout']}
         externalAccessibilityId={externalAccessibilityId}
       />
