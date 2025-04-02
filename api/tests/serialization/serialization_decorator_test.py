@@ -7,6 +7,7 @@ from werkzeug.datastructures import MultiDict
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import _transform_query_args_to_dict
+from pcapi.serialization.decorator import feature_flag_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 
@@ -41,6 +42,25 @@ def spectree_get_test_endpoint():
 @spectree_serialize(on_success_status=204)
 def spectree_post_test_endpoint():
     endpoint_method()
+
+
+_active_ff_mock = Mock()
+_active_ff_mock.is_active.return_value = True
+
+_inactive_ff_mock = Mock()
+_inactive_ff_mock.is_active.return_value = False
+
+
+@test_blueprint.route("/test-ff-active", methods=["GET"])
+@feature_flag_required(feature_flag=_active_ff_mock)
+def spectree_get_test_ff_active_endpoint():
+    return {}
+
+
+@test_blueprint.route("/test-ff-inactive", methods=["GET"])
+@feature_flag_required(feature_flag=_inactive_ff_mock)
+def spectree_get_test_ff_inactive_endpoint():
+    return {}
 
 
 @test_blueprint.route("/body-validation-with-http-responses", methods=["POST"])
@@ -197,6 +217,16 @@ class SerializationDecoratorTest:
         )
         assert response.status_code == 400
         assert response.get_data() == b'Please send a "Content-Type: application/json" HTTP header'
+
+
+class LinkRouteToFeatureFlagDecoratorTest:
+    def test_should_return_200(self, client):
+        response = client.get("/test-blueprint/test-ff-active")
+        assert response.status_code == 200
+
+    def test_should_return_404(self, client):
+        response = client.get("/test-blueprint/test-ff-inactive")
+        assert response.status_code == 404
 
 
 class TransformQueryArgsToDictTest:

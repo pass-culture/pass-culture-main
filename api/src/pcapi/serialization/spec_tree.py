@@ -7,8 +7,11 @@ from spectree import Response
 from spectree import SpecTree
 from spectree import Tag
 
+from pcapi.models.feature import FeatureToggle
+
 
 _AUTHENTICATION_ATTRIBUTE = "requires_authentication"
+_FEATURE_FLAG_ATTRIBUTE = "feature_flag"
 
 
 def get_model_key(model: type[BaseModel]) -> str:
@@ -29,6 +32,10 @@ def add_security_scheme(route_function: Callable, auth_key: str, scopes: list[st
     authentication_param = getattr(route_function, _AUTHENTICATION_ATTRIBUTE, [])
     authentication_param.append({auth_key: scopes or []})
     setattr(route_function, _AUTHENTICATION_ATTRIBUTE, authentication_param)
+
+
+def add_feature_flag(route_function: Callable, feature_flag: FeatureToggle) -> None:
+    setattr(route_function, _FEATURE_FLAG_ATTRIBUTE, feature_flag)
 
 
 def build_operation_id(func: Callable) -> str:
@@ -57,6 +64,13 @@ class ExtendedSpecTree(SpecTree):
 
                 path_parameter_descriptions = getattr(func, "path_parameter_descriptions", None)
                 path, _ = self.backend.parse_path(route, path_parameter_descriptions)
+
+                route_feature_flag = getattr(func, _FEATURE_FLAG_ATTRIBUTE, None)
+
+                if route_feature_flag and not route_feature_flag.is_active():
+                    # the route (path + method) is removed from documentation
+                    spec["paths"][path].pop(method.lower())
+                    continue
 
                 if self.humanize_operation_id:
                     spec["paths"][path][method.lower()]["operationId"] = build_operation_id(func)

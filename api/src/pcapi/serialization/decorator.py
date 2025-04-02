@@ -1,22 +1,21 @@
 from collections import defaultdict
 from functools import wraps
 import logging
-from typing import Any
-from typing import Callable
-from typing import Sequence
+import typing
 
-from flask import Response
-from flask import make_response
-from flask import request
+import flask
 import pydantic.v1
 import spectree
 from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import BadRequest
 
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.apis import api as default_api
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
+
+from .spec_tree import add_feature_flag
 
 
 logger = logging.getLogger(__name__)
@@ -28,30 +27,30 @@ def _make_json_response(
     by_alias: bool,
     exclude_none: bool = False,
     headers: dict | None = None,
-) -> Response:
+) -> flask.Response:
     """serializes model, creates JSON response with given status code"""
     if status_code == 204:
-        return make_response("", 204)
+        return flask.make_response("", 204)
 
     if not content:
         raise ApiErrors({"configuration": "You need to provide a response body model if the status code is not 204"})
 
     json_content = content.json(exclude_none=exclude_none, by_alias=by_alias)
 
-    response = make_response(json_content, status_code, headers or {})
+    response = flask.make_response(json_content, status_code, headers or {})
     response.mimetype = "application/json"
     return response
 
 
-def _make_string_response(content: BaseModel | None, status_code: int, headers: dict | None = None) -> Response:
+def _make_string_response(content: BaseModel | None, status_code: int, headers: dict | None = None) -> flask.Response:
     """serializes model, creates JSON response with given status code"""
     if status_code == 204:
-        return make_response("", 204)
+        return flask.make_response("", 204)
 
     if not content:
         raise ApiErrors({"configuration": "You need to provide a response body model if the status code is not 204"})
 
-    response = make_response(content, status_code, headers or {})
+    response = flask.make_response(content, status_code, headers or {})
     return response
 
 
@@ -75,9 +74,9 @@ def spectree_serialize(
     headers: type[BaseModel] | None = None,
     cookies: type[BaseModel] | None = None,
     response_model: type[BaseModel] | None = None,
-    tags: Sequence = (),
-    before: Callable | None = None,
-    after: Callable | None = None,
+    tags: typing.Sequence = (),
+    before: typing.Callable | None = None,
+    after: typing.Callable | None = None,
     response_by_alias: bool = True,
     exclude_none: bool = False,
     on_success_status: int = 200,
@@ -91,7 +90,7 @@ def spectree_serialize(
     deprecated: bool = False,
     flatten: bool = False,
     query_params_as_list: list[str] | None = None,
-) -> Callable[[Any], Any]:
+) -> typing.Callable[[typing.Any], typing.Any]:
     """A decorator that serialize/deserialize and validate input/output
 
     Args:
@@ -112,7 +111,7 @@ def spectree_serialize(
         query_params_as_list: a list of query parameters that will be cast to a list. Defaults to [].
 
     Returns:
-        Callable[[Any], Any]: [description]
+        typing.Callable[[Any], typing.Any]: [description]
     """
 
     on_error_statuses = on_error_statuses or []
@@ -120,7 +119,7 @@ def spectree_serialize(
     on_empty_status = on_empty_status or on_success_status
     query_params_as_list = query_params_as_list or []
 
-    def decorate_validation(route: Callable[..., Any]) -> Callable[[Any], Any]:
+    def decorate_validation(route: typing.Callable[..., typing.Any]) -> typing.Callable[[typing.Any], typing.Any]:
         body_in_kwargs = route.__annotations__.get("body")
         query_in_kwargs = route.__annotations__.get("query")
         form_in_kwargs = route.__annotations__.get("form")
@@ -150,11 +149,11 @@ def spectree_serialize(
             resp=spectree_response,
             tags=tags,
         )
-        def sync_validate(*args: Any, **kwargs: Any) -> Response:
+        def sync_validate(*args: typing.Any, **kwargs: typing.Any) -> flask.Response:
             try:
-                body_params = request.get_json()
+                body_params = flask.request.get_json()
             except BadRequest:
-                if "/v2/bookings" in request.path:
+                if "/v2/bookings" in flask.request.path:
                     # FIXME (mageoffray 26-06-2023): because of historical reasons we need to
                     # not throw error when some invalid json in provided for V2 bookings api.
                     body_params = None
@@ -163,8 +162,8 @@ def spectree_serialize(
                     # the only case we should end here is with an PATCH/POST with no validator for body params
                     # or a GET request with a invalid body.
                     raise
-            query_params = request.args
-            form = request.form
+            query_params = flask.request.args
+            form = flask.request.form
             if body_in_kwargs:
                 try:
                     kwargs["body"] = body_in_kwargs(**(body_params or {}))
@@ -173,7 +172,7 @@ def spectree_serialize(
                     # not send the correct HTTP header. Otherwise, the
                     # validation error would have been caught by the
                     # `before` handler in `api.validate()` decorator.
-                    return make_response(
+                    return flask.make_response(
                         'Please send a "Content-Type: application/json" HTTP header',
                         400,
                     )
@@ -183,13 +182,13 @@ def spectree_serialize(
                 if len(query_params_as_list) > 0:
                     content = _transform_query_args_to_dict(query_params, query_params_as_list)
                 else:
-                    content = request.args.to_dict(flat=False) if flatten else query_params
+                    content = flask.request.args.to_dict(flat=False) if flatten else query_params
                 kwargs["query"] = query_in_kwargs(**content)
             if form_in_kwargs:
                 try:
                     kwargs["form"] = form_in_kwargs(**form)
                 except pydantic.v1.ValidationError:
-                    return make_response(
+                    return flask.make_response(
                         'Please send a "Content-Type: application/x-www-form-urlencoded" HTTP header', 400
                     )
 
@@ -210,3 +209,27 @@ def spectree_serialize(
         return sync_validate
 
     return decorate_validation
+
+
+def feature_flag_required(feature_flag: FeatureToggle) -> typing.Callable:
+    """
+    Decorator to link a route to a feature flag
+
+    If the feature flag is not active :
+        - calls to the route return a HTTP 404 response
+        - the route does not appear in the openapi.json generated by spectree
+    """
+
+    def route_decorator(route_function: typing.Callable) -> typing.Callable:
+        add_feature_flag(route_function, feature_flag=feature_flag)
+
+        @wraps(route_function)
+        def wrapper(*args: typing.Any, **kwds: typing.Any) -> flask.Response:
+            if not feature_flag.is_active():
+                flask.abort(404)
+
+            return route_function(*args, **kwds)
+
+        return wrapper
+
+    return route_decorator
