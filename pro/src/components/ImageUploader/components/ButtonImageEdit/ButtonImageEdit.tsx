@@ -1,16 +1,13 @@
-import cn from 'classnames'
 import { useState } from 'react'
 
 import fullEditIcon from 'icons/full-edit.svg'
-import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { UploaderModeEnum } from '../../types'
 
-import style from './ButtonImageEdit.module.scss'
+import { ImageUploadBrowserForm } from './ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/ImageUploadBrowserForm'
 import {
   ModalImageEdit,
   OnImageUploadArgs,
@@ -37,11 +34,14 @@ export const ButtonImageEdit = ({
   disableForm,
 }: ButtonImageEditProps): JSX.Element => {
   const { imageUrl, originalImageUrl } = initialValues
+  const [image, setImage] = useState<File>()
 
+  console.log(imageUrl, originalImageUrl)
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
 
   const onClickButtonImageAdd = () => {
     if (onClickButtonImage) {
+      setIsModalImageOpen(true)
       onClickButtonImage()
     }
   }
@@ -50,53 +50,45 @@ export const ButtonImageEdit = ({
     onImageDelete()
   }
 
-  function onImageUploadHandler(values: OnImageUploadArgs) {
+  const onImageClientUpload = (values: OnImageUploadArgs) => {
+    console.log(values)
+    setImage(values.image)
     onImageUpload(values)
-    setIsModalImageOpen(false)
+    setIsModalImageOpen(true)
   }
 
   return (
-    <>
-      <DialogBuilder
-        onOpenChange={setIsModalImageOpen}
-        open={isModalImageOpen}
-        trigger={
-          imageUrl || originalImageUrl ? (
-            <Button
-              onClick={onClickButtonImageAdd}
-              variant={ButtonVariant.TERNARY}
-              aria-label="Modifier l’image"
-              icon={fullEditIcon}
-            >
-              {children ?? 'Modifier'}
-            </Button>
-          ) : (
-            <button
-              className={cn(style['button-image-add'], {
-                [style['add-image-venue']]: mode === UploaderModeEnum.VENUE,
-                [style['add-image-offer']]:
-                  mode === UploaderModeEnum.OFFER ||
-                  mode === UploaderModeEnum.OFFER_COLLECTIVE,
-              })}
-              onClick={onClickButtonImageAdd}
-              type="button"
-              disabled={disableForm}
-            >
-              <>
-                <SvgIcon src={fullMoreIcon} alt="" className={style['icon']} />
-                <span className={style['label']}>Ajouter une image</span>
-              </>
-            </button>
-          )
-        }
-      >
-        <ModalImageEdit
-          mode={mode}
-          onImageUpload={onImageUploadHandler}
-          onImageDelete={handleImageDelete}
-          initialValues={initialValues}
-        />
-      </DialogBuilder>
-    </>
+    <DialogBuilder
+      onOpenChange={setIsModalImageOpen}
+      open={isModalImageOpen}
+      variant="drawer"
+      trigger={
+        imageUrl || originalImageUrl ? (
+          <Button
+            onClick={onClickButtonImageAdd}
+            variant={ButtonVariant.TERNARY}
+            aria-label="Modifier l’image"
+            icon={fullEditIcon}
+          >
+            {children ?? 'Modifier'}
+          </Button>
+        ) : (
+          <ImageUploadBrowserForm
+            label="Ajouter une image"
+            isReady={true}
+            onSubmit={onImageClientUpload}
+            mode={mode}
+          />
+        )
+      }
+    >
+      <ModalImageEdit
+        mode={mode}
+        uploadedFile={image}
+        onImageUpload={onImageClientUpload}
+        onImageDelete={handleImageDelete}
+        initialValues={initialValues}
+      />
+    </DialogBuilder>
   )
 }

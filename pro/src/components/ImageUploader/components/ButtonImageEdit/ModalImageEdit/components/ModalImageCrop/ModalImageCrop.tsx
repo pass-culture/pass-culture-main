@@ -20,7 +20,9 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Divider } from 'ui-kit/Divider/Divider'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
+import { OnImageUploadArgs } from '../../ModalImageEdit'
 import { getCropMaxDimension } from '../../utils/getCropMaxDimension'
+import { ImageUploadBrowserForm } from '../ModalImageUploadBrowser/ImageUploadBrowserForm/ImageUploadBrowserForm'
 
 import style from './ModalImageCrop.module.scss'
 
@@ -64,6 +66,8 @@ export const ModalImageCrop = ({
     originalDimensions: { width, height },
     orientation: mode === UploaderModeEnum.VENUE ? 'landscape' : 'portrait',
   })
+
+  const [imageBis, setImageBis] = useState<File>(image)
 
   const maxScale: number = Math.min(4, (maxWidth - 10) / minWidth)
 
@@ -123,6 +127,11 @@ export const ModalImageCrop = ({
     }
   }
 
+  const onImageClientUpload = (values: OnImageUploadArgs) => {
+    setImageBis(values.image)
+    console.log(values)
+  }
+
   return (
     <section className={style['modal-image-crop']}>
       <form>
@@ -142,7 +151,7 @@ export const ModalImageCrop = ({
           <div className={style['modal-image-crop-editor']}>
             <ImageEditor
               {...imageEditorConfig}
-              image={image}
+              image={imageBis}
               initialPosition={initialPosition}
               ref={editorRef}
               initialScale={initialScale}
@@ -154,7 +163,12 @@ export const ModalImageCrop = ({
                 onClick={onReplaceImage}
                 variant={ButtonVariant.TERNARY}
               >
-                Remplacer l’image
+                <ImageUploadBrowserForm
+                  isReady={true}
+                  label={"Remplacer l'image"}
+                  onSubmit={onImageClientUpload}
+                  mode={mode}
+                />
               </Button>
 
               <Dialog.Close asChild>
