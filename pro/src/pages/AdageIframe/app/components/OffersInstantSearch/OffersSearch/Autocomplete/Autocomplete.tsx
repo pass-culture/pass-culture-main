@@ -17,7 +17,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { useSearchBox } from 'react-instantsearch'
+import { useInstantSearch, useSearchBox } from 'react-instantsearch'
 import { useDispatch } from 'react-redux'
 
 import { SuggestionType } from 'apiClient/adage'
@@ -89,6 +89,7 @@ export const Autocomplete = ({ initialQuery }: AutocompleteProps) => {
   const dispatch = useDispatch()
 
   const { refine } = useSearchBox()
+  const { refresh } = useInstantSearch()
   const [instantSearchUiState, setInstantSearchUiState] = useState<
     AutocompleteState<SuggestionItem>
   >({
@@ -274,6 +275,7 @@ export const Autocomplete = ({ initialQuery }: AutocompleteProps) => {
           setInstantSearchUiState(state)
         },
         onSubmit: ({ state }) => {
+          refresh()
           refine(state.query)
           dispatch(setAdageQuery(state.query))
           dispatch(setAdagePageSaved(0))
