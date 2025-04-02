@@ -181,7 +181,8 @@ class Returns200Test:
             name="Name",
             description="description",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"gtl_id": "07000000", "ean": "1111111111111"},
+            ean="1111111111111",
+            extraData={"gtl_id": "07000000"},
         )
         offer = offers_factories.OfferFactory(
             venue=venue,
@@ -514,7 +515,7 @@ class Returns400Test:
         )
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"ean": "1111111111111"},
+            ean="1111111111111",
             name="Name",
             description="description",
         )

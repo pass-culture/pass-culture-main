@@ -104,7 +104,7 @@ def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
 
     products: list[sa_orm.Mapped[offers_models.Product]] = []
     if ean:
-        products = offers_models.Product.query.filter(offers_models.Product.extraData["ean"].astext == ean).all()
+        products = offers_models.Product.query.filter(offers_models.Product.ean == ean).all()
 
     try:
         if all((content, ean, form.email)):

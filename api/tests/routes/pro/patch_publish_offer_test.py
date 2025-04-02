@@ -256,7 +256,7 @@ class Returns400Test:
             managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.RECORD_STORE
         )
 
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": ean})
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, ean=ean)
         offers_factories.OfferFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,
