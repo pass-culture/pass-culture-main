@@ -8,240 +8,287 @@
 
 $action-gap: rem.torem(10px);
 
-.orejime-Modal-header,
-.orejime-Modal-body,
-.orejime-Modal-footer {
-  padding: 0;
-}
-
-.orejime-Notice,
-.orejime-Modal {
-  background: var(--color-background-default);
-  box-shadow: 0 2px 16px var(--color-medium-shadow);
-  color: var(--color-text-default);
-}
-
-.orejime-Notice-actionItem button,
-.orejime-Modal-form button {
-  @include fonts.button;
-
-  text-align: center;
-  border-radius: rem.torem(30px);
-  border: rem.torem(2px) solid var(--color-primary);
-  padding: rem.torem(10px) rem.torem(24px);
-  line-height: var(--typography-body-line-height);
-  background: var(--color-primary);
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--color-primary-dark);
-    border-color: var(--color-primary-dark);
-  }
-
-  &:focus-visible {
-    @include outline.focus-outline;
-  }
-}
-
-.orejime-Notice {
-  border-radius: rem.torem(6px);
-  padding: rem.torem(16px);
-
-  @media (width >= 990px) {
-    max-width: rem.torem(439px);
-    width: 100%;
-  }
-
-  &-title {
-    @include fonts.body-accent;
-
-    color: var(--color-text-default);
-    line-height: var(--typography-body-line-height);
-    margin-bottom: rem.torem(8px);
-  }
-
-  &-body {
+.orejime-Env {
+  .orejime-Modal-header,
+  .orejime-Modal-body,
+  .orejime-Modal-footer {
     padding: 0;
-    margin: 0;
   }
 
-  &-description {
-    margin-bottom: rem.torem(16px);
+  .orejime-Banner-body,
+  .orejime-Modal {
+    background: var(--color-background-default);
+    box-shadow: 0 2px 16px var(--color-medium-shadow);
     color: var(--color-text-default);
-
-    @include fonts.body;
   }
 
-  &-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $action-gap;
+  .orejime-Banner-actions button,
+  .orejime-Modal-form button {
+    @include fonts.button;
 
-    .orejime-Notice-actionItem button {
-      margin: 0;
-      width: 100%;
+    text-align: center;
+    border-radius: rem.torem(30px);
+    border: rem.torem(2px) solid var(--color-primary);
+    padding: rem.torem(10px) rem.torem(24px);
+    line-height: var(--typography-body-line-height);
+    background: var(--color-primary);
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--color-primary-dark);
+      border-color: var(--color-primary-dark);
     }
 
-    .orejime-Notice-actionItem--save,
-    .orejime-Notice-actionItem--decline {
-      width: calc(50% - ($action-gap / 2));
+    &:focus-visible {
+      @include outline.focus-outline;
+    }
+  }
+
+  .orejime-Banner {
+    &-body {
+      border-radius: rem.torem(6px);
+      padding: rem.torem(16px);
+
+      @media (width >= 990px) {
+        max-width: rem.torem(439px);
+        width: 100%;
+      }
+
     }
 
-    .orejime-Notice-actionItem--info {
-      width: 100%;
+    &-title {
+      @include fonts.body-accent;
 
-      button {
-        background: var(--color-background-default);
-        color: var(--color-primary);
+      color: var(--color-text-default);
+      line-height: var(--typography-body-line-height);
+      margin-bottom: rem.torem(8px);
+    }
 
-        &:hover {
-          color: var(--color-white);
-          background-color: var(--color-primary-dark);
-          border-color: var(--color-primary-dark);
+    &-description {
+      margin-bottom: rem.torem(16px);
+      color: var(--color-text-default);
+
+      @include fonts.body;
+    }
+
+    &-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $action-gap;
+
+      .orejime-Banner-actionItem button {
+        margin: 0;
+        width: 100%;
+      }
+
+      .orejime-Banner-actionItem--save,
+      .orejime-Banner-actionItem--decline {
+        width: calc(50% - ($action-gap / 2));
+      }
+
+      .orejime-Banner-actionItem--info {
+        width: 100%;
+
+        button {
+          background: var(--color-background-default);
+          color: var(--color-primary);
+
+          &:hover {
+            color: var(--color-white);
+            background-color: var(--color-primary-dark);
+            border-color: var(--color-primary-dark);
+          }
+        }
+      }
+    }
+  }
+
+  @media (min-width: size.$tablet) {
+    .orejime-ModalWrapper,
+    .orejime-Modal {
+      width: rem.torem(735px);
+      max-width: none;
+    }
+  }
+
+  .orejime-Modal {
+    padding: rem.torem(30px);
+
+    &-body {
+      margin-bottom: rem.torem(26px);
+    }
+
+    &-closeButton {
+      top: rem.torem(30px);
+      right: rem.torem(30px);
+      padding: 0;
+
+      & > svg {
+        width: 12px;
+      }
+    }
+
+    &-title {
+      margin-bottom: rem.torem(8px);
+
+      @include fonts.title3;
+    }
+
+    &-description {
+      @include fonts.body;
+
+      a {
+        @include fonts.body;
+
+        color: var(--color-text-default);
+      }
+    }
+
+    &-poweredByLink {
+      display: none;
+    }
+
+    &-form {
+      .orejime-PurposeToggles {
+        margin: rem.torem(32px) 0;
+        gap: 0.5rem;
+
+        button {
+          background: var(--color-background-default);
+          color: var(--color-primary);
+          cursor: pointer;
+          margin: 0;
+
+          &[aria-disabled="true"] {
+            background: var(--color-background-disabled);
+            border-color: var(--color-border-disabled);
+            color: var(--color-text-disabled);
+            border-radius: 30px;
+            opacity: 1;
+            cursor: default;
+            pointer-events: none;
+          }
+
+          &:hover {
+            color: var(--color-white);
+            background-color: var(--color-primary-dark);
+            border-color: var(--color-primary-dark);
+          }
+        }
+      }
+    }
+  }
+
+  .orejime-PurposeList {
+    .orejime-Purpose {
+      margin-top: 0;
+
+      &-description {
+        @include fonts.body;
+
+        margin-top: rem.torem(8px);
+        color: var(--color-text-default);
+      }
+
+      &-required {
+        @include fonts.body-accent-xs;
+      }
+
+      &-label {
+        display: inline-block;
+      }
+
+      &-purposes {
+        display: none;
+      }
+
+      &-title {
+        @include fonts.title3;
+
+        font-family: var(--typography-body-font-family), system-ui, sans-serif;
+      }
+    }
+
+    &-apps {
+      margin: rem.torem(16px) 0 0;
+    }
+  }
+
+  .orejime-PurposeList-item {
+    $initial-padding-left-item: 60px;
+
+    .orejime-Purpose-input, .orejime-Purpose-attribute {
+      display: none;
+    }
+
+    &:last-of-type {
+      display: none;
+    }
+  }
+
+  .orejime-Modal-footer,
+  .orejime-Modal-header {
+    border: none;
+  }
+
+  .orejime-Purpose-children {
+    margin: rem.torem(16px) 0 rem.torem(24px);
+
+    .orejime-PurposeList-item {
+      display: block;
+    }
+
+    .orejime-PurposeList .orejime-PurposeList-item {
+      .orejime-Purpose-attribute--state {
+        @include fonts.body-accent-xs;
+      }
+
+      .orejime-Purpose-label,  .orejime-Purpose-title {
+        @include fonts.title4;
+      }
+
+      .orejime-Purpose-input, .orejime-Purpose-attribute {
+        display: initial;
+      }
+
+      .orejime-Purpose-input {
+        appearance: none;
+        border: rem.torem(2px) solid var(--color-grey-dark);
+        border-radius: rem.torem(3px);
+        transition:
+                border 150ms ease,
+                background 150ms ease;
+        flex: 0 0 auto;
+        margin-right: rem.torem(8px);
+        outline: none;
+        padding: 0;
+        position: relative;
+        vertical-align: middle;
+        height: size.$checkbox-size;
+        width: size.$checkbox-size;
+        cursor: pointer;
+
+        &:checked {
+          background-color: var(--color-secondary-light);
+          border-color: var(--color-border-brand-primary);
+
+          &::after {
+            background-image: url("/icon/checkbox-check.svg");
+            background-position: center;
+            background-repeat: no-repeat;
+            content: "";
+            height: 100%;
+            position: absolute;
+            width: 100%;
+          }
+        }
+
+        &:focus-visible {
+          @include outline.focus-outline(rem.torem(4px));
         }
       }
     }
   }
 }
 
-@media (min-width: size.$tablet) {
-  .orejime-ModalWrapper,
-  .orejime-Modal {
-    width: rem.torem(735px);
-  }
-}
 
-.orejime-Modal {
-  padding: rem.torem(30px);
-
-  &-closeButton {
-    top: rem.torem(30px);
-    right: rem.torem(30px);
-  }
-
-  &-title {
-    margin-bottom: rem.torem(8px);
-
-    @include fonts.title3;
-  }
-
-  &-description {
-    @include fonts.body;
-  }
-
-  &-poweredByLink {
-    display: none;
-  }
-}
-
-.orejime-AppToggles {
-  margin: rem.torem(32px) 0;
-
-  button {
-    background: var(--color-background-default);
-    color: var(--color-primary);
-    cursor: pointer;
-    margin-bottom: 0.5rem;
-
-    &[disabled] {
-      background: var(--color-background-disabled);
-      border-color: var(--color-border-disabled);
-      color: var(--color-text-disabled);
-      border-radius: 30px;
-      opacity: 1;
-      cursor: default;
-      pointer-events: none;
-    }
-
-    &:hover {
-      color: var(--color-white);
-      background-color: var(--color-primary-dark);
-      border-color: var(--color-primary-dark);
-    }
-  }
-}
-
-.orejime-CategorizedAppList {
-  .orejime-AppItem {
-    input[type="checkbox"] {
-      @include a11y.visually-hidden;
-    }
-
-    &-input:checked + .orejime-AppItem-label .orejime-AppItem-slider {
-      background-color: var(--color-valid);
-
-      &::before {
-        transform: translateX(26px);
-      }
-    }
-
-    &-input:focus-visible + .orejime-AppItem-label .orejime-AppItem-slider {
-      @include outline.focus-outline(rem.torem(0));
-    }
-
-    &-slider {
-      box-shadow: none;
-    }
-
-    &-switch,
-    &-slider {
-      width: rem.torem(56px);
-    }
-
-    &-title {
-      @include fonts.title4;
-    }
-
-    &-description {
-      @include fonts.body;
-    }
-
-    &-switchLabel {
-      @include fonts.body-accent-xs;
-
-      margin-top: rem.torem(8px);
-    }
-
-    &-required {
-      @include fonts.body-accent-xs;
-    }
-
-    &-label {
-      margin-bottom: rem.torem(8px);
-      display: inline-block;
-    }
-
-    &-purposes {
-      display: none;
-    }
-  }
-
-  &-apps {
-    margin: rem.torem(16px) 0 0;
-  }
-
-  &-item {
-    margin-bottom: rem.torem(24px);
-
-    &:first-of-type {
-      display: none;
-    }
-  }
-}
-
-.orejime-AppList {
-  $initial-padding-left-item: 60px;
-
-  &-item {
-    padding-left: rem.torem(calc($initial-padding-left-item + 9px));
-  }
-}
-
-.orejime-Modal-footer,
-.orejime-Modal-header {
-  border: none;
-}
-
-.orejime-Modal-footer {
-  margin-top: rem.torem(50px);
-}
