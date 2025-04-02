@@ -135,14 +135,6 @@ describe('ImageUploader', () => {
         'En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci.'
       )
     ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Suivant'))
-
-    // dialog: img preview
-    expect(
-      screen.getByText(
-        'Prévisualisation de votre image dans l’application pass Culture'
-      )
-    ).toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Enregistrer'))
 

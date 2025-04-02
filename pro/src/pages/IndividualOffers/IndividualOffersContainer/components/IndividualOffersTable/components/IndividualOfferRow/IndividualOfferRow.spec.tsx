@@ -347,14 +347,6 @@ describe('IndividualOfferRow', () => {
 
         // dialog: crop img
         expect(screen.getByText('Modifier une image')).toBeInTheDocument()
-        await userEvent.click(screen.getByText('Suivant'))
-
-        // dialog: img preview
-        expect(
-          screen.getByText(
-            'Prévisualisation de votre image dans l’application pass Culture'
-          )
-        ).toBeInTheDocument()
 
         await userEvent.click(screen.getByText('Enregistrer'))
         expect(api.createThumbnail).toHaveBeenCalled()
@@ -412,14 +404,6 @@ describe('IndividualOfferRow', () => {
 
         // dialog: crop img
         expect(screen.getByText('Modifier une image')).toBeInTheDocument()
-        await userEvent.click(screen.getByText('Suivant'))
-
-        // dialog: img preview
-        expect(
-          screen.getByText(
-            'Prévisualisation de votre image dans l’application pass Culture'
-          )
-        ).toBeInTheDocument()
 
         await userEvent.click(screen.getByText('Enregistrer'))
         expect(api.createThumbnail).toHaveBeenCalled()

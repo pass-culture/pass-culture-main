@@ -131,15 +131,11 @@ export const ModalImageEdit = ({
     setIsUploading(false)
   }
 
-  const showPreviewInModal = mode !== UploaderModeEnum.OFFER_COLLECTIVE
-
   const onEditedImageSave = (dataUrl: string, croppedRect: CroppedRect) => {
     setCroppingRect(croppedRect)
     setEditedImageDataUrl(dataUrl)
 
-    if (!showPreviewInModal) {
-      handleOnUpload(croppedRect, image, dataUrl)
-    }
+    handleOnUpload(croppedRect, image, dataUrl)
   }
 
   return !image ? (
@@ -164,7 +160,7 @@ export const ModalImageEdit = ({
       onSetCredit={setCredit}
       saveInitialPosition={setEditorInitialPosition}
       mode={mode}
-      showPreviewInModal={showPreviewInModal}
+      showPreviewInModal={false}
     />
   ) : (
     <ModalImageUploadConfirm
