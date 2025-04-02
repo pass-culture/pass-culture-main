@@ -1,16 +1,13 @@
-import cn from 'classnames'
 import { useState } from 'react'
 
 import fullEditIcon from 'icons/full-edit.svg'
-import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { UploaderModeEnum } from '../../types'
 
-import style from './ButtonImageEdit.module.scss'
+import { ImageUploadBrowserForm } from './ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/ImageUploadBrowserForm'
 import {
   ModalImageEdit,
   OnImageUploadArgs,
@@ -34,9 +31,9 @@ export const ButtonImageEdit = ({
   onImageDelete,
   onClickButtonImage,
   children,
-  disableForm,
 }: ButtonImageEditProps): JSX.Element => {
   const { imageUrl, originalImageUrl } = initialValues
+  const [imageFile, setImageFile] = useState<File | undefined>()
 
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
 
@@ -51,6 +48,11 @@ export const ButtonImageEdit = ({
   }
 
   function onImageUploadHandler(values: OnImageUploadArgs) {
+    setImageFile(values.image)
+    setIsModalImageOpen(true)
+  }
+
+  function onImageRegister(values: OnImageUploadArgs) {
     onImageUpload(values)
     setIsModalImageOpen(false)
   }
@@ -72,30 +74,20 @@ export const ButtonImageEdit = ({
               {children ?? 'Modifier'}
             </Button>
           ) : (
-            <button
-              className={cn(style['button-image-add'], {
-                [style['add-image-venue']]: mode === UploaderModeEnum.VENUE,
-                [style['add-image-offer']]:
-                  mode === UploaderModeEnum.OFFER ||
-                  mode === UploaderModeEnum.OFFER_COLLECTIVE,
-              })}
-              onClick={onClickButtonImageAdd}
-              type="button"
-              disabled={disableForm}
-            >
-              <>
-                <SvgIcon src={fullMoreIcon} alt="" className={style['icon']} />
-                <span className={style['label']}>Ajouter une image</span>
-              </>
-            </button>
+            <ImageUploadBrowserForm
+              onSubmit={onImageUploadHandler}
+              mode={UploaderModeEnum.OFFER}
+              isReady={true}
+            />
           )
         }
       >
         <ModalImageEdit
           mode={mode}
-          onImageUpload={onImageUploadHandler}
+          onImageUpload={onImageRegister}
           onImageDelete={handleImageDelete}
           initialValues={initialValues}
+          imageFile={imageFile}
         />
       </DialogBuilder>
     </>

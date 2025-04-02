@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { useState } from 'react'
 import { ValidationError } from 'yup'
 
@@ -8,14 +9,15 @@ import {
   Constraint,
   imageConstraints,
 } from 'components/ConstraintCheck/imageConstraints'
-import { ImagePreferredOrientation } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/ImagePreferredOrientation/ImagePreferredOrientation'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
+import fullMoreIcon from 'icons/full-more.svg'
 import { BaseFileInput } from 'ui-kit/form/shared/BaseFileInput/BaseFileInput'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { modeValidationConstraints } from './constants'
+import style from './ImageUploadBrowserForm.module.scss'
 import { ImageUploadBrowserFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
-
 interface ImageUploadBrowserFormProps {
   onSubmit: (values: ImageUploadBrowserFormValues) => void
   mode: UploaderModeEnum
@@ -34,16 +36,6 @@ export const ImageUploadBrowserForm = ({
   const validationConstraints = modeValidationConstraints[mode]
   const preferredOrientationCaptionId = 'preferred-orientation-caption'
   const constraintCheckId = 'constraint-check'
-
-  const orientationsForMode: {
-    [key in UploaderModeEnum]: 'portrait' | 'landscape'
-  } = {
-    [UploaderModeEnum.OFFER]: 'portrait',
-    [UploaderModeEnum.OFFER_COLLECTIVE]: 'portrait',
-    [UploaderModeEnum.VENUE]: 'landscape',
-  }
-
-  const orientation = orientationsForMode[mode]
 
   const constraints: Constraint[] = [
     imageConstraints.formats(validationConstraints.types),
@@ -84,18 +76,26 @@ export const ImageUploadBrowserForm = ({
   /* istanbul ignore next: DEBT, TO FIX */
   return (
     <form onSubmit={(e) => e.preventDefault()}>
-      <ImagePreferredOrientation
-        id={preferredOrientationCaptionId}
-        orientation={orientation}
-      />
       <BaseFileInput
         isDisabled={!isReady}
-        label="Importer une image depuis l’ordinateur"
+        label={''}
         fileTypes={['image/png', 'image/jpeg']}
         isValid={errors.length === 0}
         onChange={onChange}
         ariaDescribedBy={`${preferredOrientationCaptionId} ${constraintCheckId}`}
-      />
+      >
+        <div
+          className={cn(style['button-image-add'], {
+            [style['add-image-venue']]: mode === UploaderModeEnum.VENUE,
+            [style['add-image-offer']]:
+              mode === UploaderModeEnum.OFFER ||
+              mode === UploaderModeEnum.OFFER_COLLECTIVE,
+          })}
+        >
+          <SvgIcon src={fullMoreIcon} alt="" className={style['icon']} />
+          <span className={style['label']}>Ajouter une image</span>
+        </div>
+      </BaseFileInput>
       <ConstraintCheck
         id={constraintCheckId}
         constraints={constraints}
