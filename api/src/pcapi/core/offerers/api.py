@@ -107,9 +107,19 @@ def update_venue(
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     is_manual_edition: bool = False,
 ) -> models.Venue:
-    # TODO: (pcharlet 2024-11-28) Remove new_permanent when regularisation is done. Used only to sync venues with acceslibre when update permanent from BO
     new_open_to_public = not venue.isOpenToPublic and modifications.get("isOpenToPublic")
+
+    # TODO: (pcharlet 2025-04-02) Remove the next 5 lines when regularisation is done.
+    # We need consistent informations between isPermanent and isOpenToPublic during regularisation. isPermanent will be removed.
+    not_permanent_anymore = venue.isPermanent and modifications.get("isPermanent") is False
+    if new_open_to_public and not venue.isPermanent:
+        modifications["isPermanent"] = True
+    elif not_permanent_anymore and venue.isOpenToPublic:
+        modifications["isOpenToPublic"] = False
+
+    # TODO: (pcharlet 2024-11-28) Remove new_permanent when regularisation is done. Used only to sync venues with acceslibre when update permanent from BO
     new_permanent = not venue.isPermanent and modifications.get("isPermanent")
+
     has_address_changed = (
         modifications.get("banId", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
         or modifications.get("postalCode", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
