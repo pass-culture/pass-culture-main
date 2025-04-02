@@ -6,8 +6,12 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
   NationalProgramModel,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { GET_EDUCATIONAL_OFFERERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import {
+  GET_EDUCATIONAL_OFFERERS_QUERY_KEY,
+  GET_VENUES_QUERY_KEY,
+} from 'commons/config/swrQueryKeys'
 import { serializeEducationalOfferer } from 'commons/core/OfferEducational/utils/serializeEducationalOfferer'
 import { useEducationalDomains } from 'commons/hooks/swr/useEducationalDomains'
 
@@ -20,6 +24,7 @@ export type DomainOption = {
 type OfferEducationalFormData = {
   domains: DomainOption[]
   offerer: GetEducationalOffererResponseModel | null
+  venues: VenueListItemResponseModel[]
 }
 
 export const useOfferEducationalFormData = (
@@ -44,6 +49,13 @@ export const useOfferEducationalFormData = (
       { fallback: [] }
     )
 
+  // Getting selected venue at step 1 (details) to infer address fields
+  const { data: venues, isLoading: loadingVenues } = useSWR(
+    [GET_VENUES_QUERY_KEY, targetOffererId],
+    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
+    { fallbackData: { venues: [] } }
+  )
+
   const selectedEducationalOfferer =
     educationalOfferers?.educationalOfferers.find(
       (educationalOfferer) => educationalOfferer.id === targetOffererId
@@ -52,19 +64,20 @@ export const useOfferEducationalFormData = (
   const domains = educationalDomains.map((domain) => ({
     id: domain.id.toString(),
     label: domain.name,
-    nationalPrograms: domain.nationalPrograms
+    nationalPrograms: domain.nationalPrograms,
   }))
-
 
   const offerer = selectedEducationalOfferer
     ? serializeEducationalOfferer(selectedEducationalOfferer)
     : null
 
-  const isLoading = loadingEducationalOfferers || loadingEducationalDomains
+  const isLoading =
+    loadingEducationalOfferers || loadingEducationalDomains || loadingVenues
 
   return {
     isReady: !isLoading,
     domains,
     offerer,
+    venues: venues.venues,
   }
 }
