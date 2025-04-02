@@ -416,6 +416,48 @@ class Returns200Test:
 
         assert offer.offerVenue == {"addressType": "other", "otherAddress": "Right here", "venueId": None}
 
+    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
+    def test_location_change_venue(self, client):
+        offer = educational_factories.CollectiveOfferFactory()
+        # offer is located at the address of its venue
+        offer.locationType = models.CollectiveLocationType.ADDRESS
+        offer.offererAddress = offer.venue.offererAddress
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        # we change offer.venue and set the location to the new venue address
+        other_venue = offerers_factories.VenueFactory(
+            managingOfferer=offer.venue.managingOfferer, pricing_point=offer.venue
+        )
+        new_address = other_venue.offererAddress.address
+        data = {
+            "venueId": other_venue.id,
+            "location": {
+                "locationType": models.CollectiveLocationType.ADDRESS.value,
+                "locationComment": None,
+                "address": {
+                    "isVenueAddress": True,
+                    "isManualEdition": False,
+                    "city": new_address.city,
+                    "latitude": new_address.latitude,
+                    "longitude": new_address.longitude,
+                    "postalCode": new_address.postalCode,
+                    "street": new_address.street,
+                },
+            },
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+
+        assert offer.venueId == other_venue.id
+        assert offer.offererAddressId == other_venue.offererAddressId
+        assert offer.locationType == models.CollectiveLocationType.ADDRESS
+        assert offer.locationComment is None
+
+        assert offer.offerVenue == {"addressType": "offererVenue", "otherAddress": "", "venueId": other_venue.id}
+
     def test_national_program_unchanged(self, client):
         program = educational_factories.NationalProgramFactory()
         offer = educational_factories.CollectiveOfferFactory(nationalProgram=program)
