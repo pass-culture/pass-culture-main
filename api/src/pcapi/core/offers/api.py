@@ -124,10 +124,14 @@ def build_new_offer_from_product(
     provider_id: int | None,
     offerer_address_id: int | None = None,
 ) -> models.Offer:
+    product_extra_data = product.extraData or {}
+    # FIXME (jmontagnat, 2024-04-01) Temporary solution to add product EAN to offer extraData
+    #  It will be deleted when the offer uses the EAN column instead of extraData->>ean
+    offer_extra_data = offers_models.OfferExtraData(**{**product_extra_data, "ean": product.ean})
     return models.Offer(
         bookingEmail=venue.bookingEmail,
-        ean=product.extraData.get("ean") if product.extraData else None,
-        extraData=product.extraData,
+        ean=product.ean,
+        extraData=offer_extra_data,
         idAtProvider=id_at_provider,
         lastProviderId=provider_id,
         name=product.name,
@@ -381,6 +385,7 @@ def update_offer(
             motor_disability_compliant=get_field(offer, updates, "motorDisabilityCompliant", aliases=aliases),
             visual_disability_compliant=get_field(offer, updates, "visualDisabilityCompliant", aliases=aliases),
         )
+
     if "extraData" in updates:
         formatted_extra_data = _format_extra_data(offer.subcategoryId, body.extra_data) or {}
         validation.check_offer_extra_data(
@@ -1103,7 +1108,7 @@ def add_criteria_to_offers(
     query = models.Product.query
     if ean:
         ean = ean.replace("-", "").replace(" ", "")
-        query = query.filter(models.Product.extraData["ean"].astext == ean)
+        query = query.filter(models.Product.ean == ean)
     if visa:
         query = query.filter(models.Product.extraData["visa"].astext == visa)
 
@@ -1150,7 +1155,7 @@ def reject_inappropriate_products(
     send_booking_cancellation_emails: bool = True,
 ) -> bool:
     products = models.Product.query.filter(
-        models.Product.extraData["ean"].astext.in_(eans),
+        models.Product.ean.in_(eans),
         models.Product.idAtProviders.is_not(None),
         models.Product.gcuCompatibilityType != models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
     ).all()
@@ -1660,7 +1665,7 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
 def approves_provider_product_and_rejected_offers(ean: str) -> None:
     product = models.Product.query.filter(
         models.Product.gcuCompatibilityType == models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
-        models.Product.extraData["ean"].astext == ean,
+        models.Product.ean == ean,
         models.Product.idAtProviders.is_not(None),
     ).one_or_none()
 

@@ -24,7 +24,7 @@ def create_industrial_chronicles() -> None:
     )
     products = (
         offers_models.Product.query.filter(
-            ~offers_models.Product.extraData["ean"].astext.is_(None),
+            ~offers_models.Product.ean.is_(None),
         )
         .order_by(offers_models.Product.id)
         .limit(9)

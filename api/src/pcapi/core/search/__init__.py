@@ -857,10 +857,8 @@ def update_last_30_days_bookings_for_eans() -> list[offers_models.Product]:
     eans = list(booking_count_by_ean.keys())
     for batch in range(0, len(booking_count_by_ean), batch_size):
         ean_batch = eans[batch : batch + batch_size]
-        for product in db.session.query(offers_models.Product).filter(
-            offers_models.Product.extraData["ean"].astext.in_(ean_batch)
-        ):
-            ean = product.extraData["ean"]
+        for product in db.session.query(offers_models.Product).filter(offers_models.Product.ean.in_(ean_batch)):
+            ean = product.ean
             old_last_x_days_booking = product.last_30_days_booking
             updated_last_x_days_booking = booking_count_by_ean.get(ean)
 

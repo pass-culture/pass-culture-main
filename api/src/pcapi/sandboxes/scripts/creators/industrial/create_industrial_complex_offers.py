@@ -88,8 +88,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sed mi consec
 In in neque commodo, mattis ligula ac, laoreet dolor. Morbi interdum posuere lectus. Nam eu massa sapien. Proin faucibus, nisl eu ultricies tincidunt, metus lectus sodales ipsum, non maximus odio dui eu magna. Proin tristique lectus in nisl feugiat posuere. Praesent sit amet varius dolor, ut iaculis nulla. Suspendisse vel placerat ipsum. Nullam maximus sapien eros, ut tempus magna pharetra sed. Donec rutrum ipsum a commodo blandit. Pellentesque viverra, erat vitae lobortis tempus, augue quam convallis ante, sit amet malesuada ante eros eu augue. Etiam rutrum tellus et est commodo ullamcorper.
 Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus. Proin at pulvinar nisl.
         """,
+        ean="1234567891234",
         extraData={
-            "ean": "1234567891234",
             "dewey": "839",
             "rayon": "Littérature française Romans Nouvelles Correspondance",
             "author": "Étienne de La Boétie",

@@ -55,7 +55,7 @@ class TiteliveSearchTest:
             providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
         )
         offers_factories.ProductFactory(
-            extraData={"ean": "3700187679323"}, idAtProviders="3700187679323", lastProvider=titelive_epagine_provider
+            ean="3700187679323", idAtProviders="3700187679323", lastProvider=titelive_epagine_provider
         )
 
         sync_date = datetime.date(2022, 12, 1)
@@ -76,7 +76,6 @@ class TiteliveSearchTest:
         assert cd_product.extraData["date_parution"] == "2022-12-02"
         assert cd_product.extraData["dispo"] == "1"
         assert cd_product.extraData["distributeur"] == "Believe"
-        assert cd_product.extraData["ean"] == "3700187679323"
         assert cd_product.extraData["editeur"] == "BELIEVE"
         assert cd_product.extraData["music_label"] == "PLAY TWO"
         assert cd_product.extraData["nb_galettes"] == "1"
@@ -105,7 +104,6 @@ class TiteliveSearchTest:
         assert shared_gtl_product.extraData["date_parution"] == "2022-12-02"
         assert shared_gtl_product.extraData["dispo"] == "1"
         assert shared_gtl_product.extraData["distributeur"] == "Believe"
-        assert shared_gtl_product.extraData["ean"] == "3700187679324"
         assert shared_gtl_product.extraData["editeur"] == "BELIEVE"
         assert shared_gtl_product.extraData["music_label"] == "PLAY TWO"
         assert shared_gtl_product.extraData["nb_galettes"] == "1"
@@ -136,7 +134,6 @@ class TiteliveSearchTest:
         assert vinyle_product.extraData["date_parution"] == "2023-02-24"
         assert vinyle_product.extraData["dispo"] == "1"
         assert vinyle_product.extraData["distributeur"] == "Warner Music France"
-        assert vinyle_product.extraData["ean"] == "5054197199738"
         assert vinyle_product.extraData["editeur"] == "WARNER MUSIC UK"
         assert vinyle_product.extraData["music_label"] == "WARNER MUSIC UK"
         assert vinyle_product.extraData["nb_galettes"] == "1"
@@ -216,14 +213,12 @@ class TiteliveSearchTest:
             f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
         )
         other_provider = providers_factories.ProviderFactory()
-        offers_factories.ProductFactory(extraData={"ean": "3700187679323"}, lastProvider=other_provider)
+        offers_factories.ProductFactory(ean="3700187679323", lastProvider=other_provider)
 
         sync_date = datetime.date(2022, 12, 1)
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        products_with_same_ean_query = offers_models.Product.query.filter(
-            offers_models.Product.extraData["ean"].astext == "3700187679323"
-        )
+        products_with_same_ean_query = offers_models.Product.query.filter(offers_models.Product.ean == "3700187679323")
         assert products_with_same_ean_query.count() == 1
 
         titelive_epagine_provider = providers_repository.get_provider_by_name(
@@ -421,7 +416,7 @@ class TiteliveBookSearchTest:
             extra_data["ean"] = ean
 
         product = offers_factories.ProductFactory(
-            extraData=extra_data,
+            ean=ean,
             idAtProviders=ean,
             gcuCompatibilityType=gcuCompatibilityType,
             lastProviderId=titelive_provider.id,
@@ -443,7 +438,7 @@ class TiteliveBookSearchTest:
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.ean == self.EAN_TEST
         assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.value
-        assert product.extraData.get("ean") == self.EAN_TEST
+        assert product.ean == self.EAN_TEST
 
         assert product.extraData.get("gtl_id") == "03020300"
         closest_csr = {"label": "Bandes dessinées adultes / Comics", "csr_id": "1901"}
@@ -487,7 +482,7 @@ class TiteliveBookSearchTest:
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.ean == self.EAN_TEST
         assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.value
-        assert product.extraData.get("ean") == self.EAN_TEST
+        assert product.ean == self.EAN_TEST
 
         assert product.extraData.get("gtl_id") == "03020300"
         closest_csr = {"label": "Bandes dessinées adultes / Comics", "csr_id": "1901"}
@@ -684,7 +679,7 @@ class TiteliveBookSearchTest:
         # Then
         product = offers_models.Product.query.one()
         assert product.ean == self.EAN_TEST
-        assert product.extraData.get("ean") == self.EAN_TEST
+        assert product.ean == self.EAN_TEST
 
     # UPDATE
     def test_update_1_thing(self, requests_mock, settings):
@@ -700,7 +695,7 @@ class TiteliveBookSearchTest:
         # Then
         product = offers_models.Product.query.one()
         assert product.ean == self.EAN_TEST
-        assert product.extraData.get("ean") == self.EAN_TEST
+        assert product.ean == self.EAN_TEST
         assert product.name == fixture_data["result"][0]["titre"]
 
     def test_should_reject_product_when_gtl_changes_to_school_related_product(self, requests_mock, settings):
@@ -852,7 +847,7 @@ class TiteliveBookSearchTest:
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.value
         assert product.ean == self.EAN_TEST
-        assert product.extraData.get("ean") == self.EAN_TEST
+        assert product.ean == self.EAN_TEST
 
         assert product.extraData.get("gtl_id") == "03020300"
         closest_csr = {"label": "Bandes dessinées adultes / Comics", "csr_id": "1901"}

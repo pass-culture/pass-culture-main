@@ -12,7 +12,7 @@ from tests.routes.adage.v1.conftest import expected_serialized_prebooking
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_get_collective_bookings(self, client) -> None:
+    def test_get_collective_bookings(self, client) -> None:  # lala
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
         booking1 = CollectiveBookingFactory(

@@ -24,6 +24,8 @@ from pcapi.utils.date import timespan_str_to_numrange
 from . import models
 
 
+fake = faker.Faker(locale="fr_FR")
+
 EVENT_PRODUCT_SUBCATEGORIES_IDS = [subcategories.SEANCE_CINE.id]
 THINGS_PRODUCT_SUBCATEGORIES_IDS = [
     subcategories.LIVRE_PAPIER.id,
@@ -44,6 +46,7 @@ class ProductFactory(BaseFactory):
     subcategoryId = subcategories.LIVRE_PAPIER.id
     name = factory.Sequence("Product {}".format)
     description = factory.Sequence("A passionate description of product {}".format)
+    ean = factory.LazyAttribute(lambda o: fake.ean13() if o.subcategoryId in THINGS_PRODUCT_SUBCATEGORIES_IDS else None)
 
     @classmethod
     def _create(
@@ -53,6 +56,10 @@ class ProductFactory(BaseFactory):
         **kwargs: typing.Any,
     ) -> models.Product:
         # Graciously provide the required idAtProviders if lastProvider is given.
+
+        if kwargs.get("extraData") and "ean" in kwargs.get("extraData", {}):
+            raise ValueError("'ean' key is no longer allowed in extraData. Use the ean column instead.")
+
         if kwargs["subcategoryId"] not in cls.AVAILABLE_SUBCATEGORIES:
             raise ValueError(f"Events products subcategory can only be one of {cls.AVAILABLE_SUBCATEGORIES}.")
 
@@ -65,7 +72,7 @@ class ProductFactory(BaseFactory):
                 subcategory_id, str
             )  # if the subcategoryId was not given in the factory, it will get the default subcategoryId
             kwargs["extraData"] = build_extra_data_from_subcategory(
-                subcategory_id, kwargs.pop("set_all_fields", False), True
+                subcategory_id, kwargs.pop("set_all_fields", False), True, is_offer=False
             )
 
         return super()._create(model_class, *args, **kwargs)
@@ -91,9 +98,8 @@ class ThingProductFactory(ProductFactory):
 
 
 def build_extra_data_from_subcategory(
-    subcategory_id: str, set_all_fields: bool, build_for_product: bool = False
+    subcategory_id: str, set_all_fields: bool, build_for_product: bool = False, is_offer: bool = True
 ) -> offers_models.OfferExtraData:
-    fake = faker.Faker(locale="fr_FR")
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(subcategory_id)
     if not subcategory:
         raise ValueError(f"Unknown subcategory {subcategory_id}")
@@ -125,7 +131,10 @@ def build_extra_data_from_subcategory(
             case item if item in name_fields:
                 extradata[field] = fake.name()  # type: ignore[literal-required]
             case subcategories.ExtraDataFieldEnum.EAN.value:
-                extradata[field] = fake.ean13()
+                # FIXME (jmontagnat, 2024-04-01) Condition (and is_offer parameter) to remove.
+                #  This condition will be removed when the offer uses the EAN column instead of extraData->>ean
+                if is_offer:
+                    extradata[field] = fake.ean13()
             case subcategories.ExtraDataFieldEnum.GTL_ID.value:
                 if subcategory_id == subcategories.LIVRE_PAPIER.id:
                     if build_for_product:
@@ -198,6 +207,14 @@ class OfferFactory(BaseFactory):
             kwargs["subcategoryId"] = product.subcategoryId
             kwargs["description"] = None
             kwargs["extraData"] = product.extraData
+
+            # FIXME (jmontagnat, 2024-04-03) Remove this block of code
+            #  when the offer uses the EAN column instead of extraData->>ean
+            if kwargs.get("extraData"):
+                kwargs["extraData"]["ean"] = product.ean
+            else:
+                kwargs["extraData"] = {"ean": product.ean}
+
             kwargs["durationMinutes"] = None
         else:
             if "extraData" not in kwargs:
@@ -233,12 +250,17 @@ def _check_offer_kwargs(product: models.Product, kwargs: dict[str, typing.Any]) 
         raise ValueError("Name of the offer and the product must be the same")
     if kwargs.get("subcategoryId") and kwargs.get("subcategoryId") != product.subcategoryId:
         raise ValueError("SubcategoryId of the offer and the product must be the same")
-    if kwargs.get("extraData") and kwargs.get("extraData") != product.extraData:
-        raise ValueError("ExtraData of the offer and the product must be the same")
     if kwargs.get("durationMinutes"):
         raise ValueError("DurationMinutes of the offer must be None when product is given")
     if kwargs.get("description"):
         raise ValueError("Description of the offer must be None when product is given")
+    if kwargs.get("extraData"):
+        # FIXME (jmontagnat, 2024-04-01) Remove this block of code
+        #  when the offer uses the EAN column instead of extraData->>ean
+        offer_extra_data = kwargs.get("extraData", {}).copy()
+        offer_extra_data.pop("ean", None)
+        if offer_extra_data != product.extraData:
+            raise ValueError("ExtraData of the offer and the product must be the same")
 
 
 class EventOfferFactory(OfferFactory):

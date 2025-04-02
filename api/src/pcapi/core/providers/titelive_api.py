@@ -72,7 +72,7 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
                     with repository.transaction():
                         db.session.add(product)
                 except Exception as e:  # pylint: disable=broad-except
-                    ean = product.extraData.get("ean") if product.extraData else None
+                    ean = product.ean
                     logger.error(
                         "Error while saving product in db",
                         extra={"exception": e, "productId": product.id, "ean": ean},
@@ -172,11 +172,11 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
         titelive_eans = [article.gencod for work in titelive_page for article in work.article]
 
         products = offers_models.Product.query.filter(
-            offers_models.Product.extraData["ean"].astext.in_(titelive_eans),
+            offers_models.Product.ean.in_(titelive_eans),
             offers_models.Product.lastProviderId.is_not(None),
         ).all()
 
-        products_by_ean: dict[str, offers_models.Product] = {p.extraData["ean"]: p for p in products}
+        products_by_ean: dict[str, offers_models.Product] = {p.ean: p for p in products}
         for titelive_search_result in titelive_page:
             products_by_ean = self.upsert_titelive_result_in_dict(titelive_search_result, products_by_ean)
 
@@ -208,7 +208,7 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
         for product in products:
             assert product.extraData, "product %s initialized without extra data" % product.id
 
-            ean = product.extraData.get("ean")
+            ean = product.ean
             assert ean, "product %s initialized without ean" % product.id
 
             new_thumbnail_urls = thumbnail_url_by_ean.get(ean)
@@ -287,7 +287,7 @@ def filter_recent_products(
 
 def activate_newly_eligible_product_and_offers(product: offers_models.Product) -> None:
     is_product_newly_eligible = product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
-    ean = product.extraData.get("ean") if product.extraData else None
+    ean = product.ean
     if ean is None:
         return
     if is_product_newly_eligible:
