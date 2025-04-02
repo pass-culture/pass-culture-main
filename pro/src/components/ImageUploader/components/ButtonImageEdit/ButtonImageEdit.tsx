@@ -60,6 +60,7 @@ export const ButtonImageEdit = ({
       <DialogBuilder
         onOpenChange={setIsModalImageOpen}
         open={isModalImageOpen}
+        variant="drawer"
         trigger={
           imageUrl || originalImageUrl ? (
             <Button
