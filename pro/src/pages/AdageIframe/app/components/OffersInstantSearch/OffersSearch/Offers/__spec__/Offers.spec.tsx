@@ -8,6 +8,7 @@ import {
   AuthenticatedResponse,
   CancelablePromise,
   CollectiveOfferResponseModel,
+  EacFormat,
   ListCollectiveOfferTemplateResponseModel,
   OfferAddressType,
   StudentLevels,
@@ -210,6 +211,7 @@ describe('offers', () => {
       },
       students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
       interventionArea: ['973'],
+      formats: [EacFormat.CONCERT],
     }
 
     otherOffer = {
@@ -254,6 +256,7 @@ describe('offers', () => {
       },
       students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
       interventionArea: ['75', '92'],
+      formats: [EacFormat.CONCERT],
     }
 
     offersProps = {

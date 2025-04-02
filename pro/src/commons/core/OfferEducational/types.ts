@@ -53,7 +53,7 @@ export type OfferEducationalFormValues = {
   beginningDate?: string
   endingDate?: string
   hour?: string
-  formats?: EacFormat[]
+  formats: EacFormat[]
 }
 
 export enum Mode {

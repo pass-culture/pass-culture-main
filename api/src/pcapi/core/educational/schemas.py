@@ -105,7 +105,7 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     imageUrl: str | None = Field(description="Url for offer image")
     venueId: int
     offererName: str
-    formats: list[subcategories.EacFormat] | None
+    formats: list[subcategories.EacFormat]
 
     class Config:
         title = "Prebooking detailed response"

@@ -25,7 +25,7 @@ export const CollectiveOfferTypeSection = ({
 
   offerTypeDescriptions.push({
     title: 'Format',
-    text: offer.formats?.join(', ') || DEFAULT_RECAP_VALUE,
+    text: offer.formats.join(', ') || DEFAULT_RECAP_VALUE,
   })
 
   offerTypeDescriptions.push({

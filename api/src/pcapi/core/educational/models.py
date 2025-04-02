@@ -609,8 +609,8 @@ class CollectiveOffer(
         "OfferValidationRule", secondary="validation_rule_collective_offer_link", back_populates="collectiveOffers"
     )
 
-    formats: list[subcategories.EacFormat] | None = sa.Column(
-        postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=True
+    formats: list[subcategories.EacFormat] = sa.Column(
+        postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=False
     )
 
     rejectionReason: CollectiveOfferRejectionReason | None = sa.Column(
@@ -654,8 +654,6 @@ class CollectiveOffer(
 
         return tuple(parent_args)
 
-    # TODO(jeremieb): remove this property once the front end client
-    # does not need this field anymore.
     @property
     def isPublicApi(self) -> bool:
         return self.providerId is not None
@@ -848,13 +846,6 @@ class CollectiveOffer(
             date_limit_score = BIG_NUMBER_FOR_SORTING_OFFERS
 
         return not self.isArchived, -date_limit_score, self.dateCreated
-
-    def get_formats(self) -> typing.Sequence[subcategories.EacFormat] | None:
-        if self.formats:
-            return self.formats
-        if self.subcategory:
-            return self.subcategory.formats
-        return None
 
     @property
     def displayedStatus(self) -> CollectiveOfferDisplayedStatus:
@@ -1108,8 +1099,8 @@ class CollectiveOfferTemplate(
 
     dateRange: DateTimeRange = sa.Column(postgresql.TSRANGE)
 
-    formats: list[subcategories.EacFormat] | None = sa.Column(
-        postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=True
+    formats: list[subcategories.EacFormat] = sa.Column(
+        postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=False
     )
 
     collective_playlists: list[sa_orm.Mapped["CollectivePlaylist"]] = sa_orm.relationship(
@@ -1345,13 +1336,6 @@ class CollectiveOfferTemplate(
         to the constant.
         """
         return (not self.isArchived, -BIG_NUMBER_FOR_SORTING_OFFERS, self.dateCreated)
-
-    def get_formats(self) -> typing.Sequence[subcategories.EacFormat] | None:
-        if self.formats:
-            return self.formats
-        if self.subcategory:
-            return self.subcategory.formats
-        return None
 
     @property
     def subcategory(self) -> subcategories.Subcategory | None:

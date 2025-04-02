@@ -21,7 +21,7 @@ export function AdageOfferListCardContent({
       <p className={styles['offer-offerer']}>
         {getOfferVenueAndOffererName(offer.venue)}
       </p>
-      {offer.formats?.length && (
+      {offer.formats.length && (
         <div className={styles['offer-formats']}>
           {offer.formats.length === 1 ? (
             <span className={styles['offer-formats-format']}>

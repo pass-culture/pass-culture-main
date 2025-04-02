@@ -20,7 +20,7 @@ export type CollectiveOfferResponseModel = {
   dates?: TemplateDatesModel | null;
   displayedStatus: CollectiveOfferDisplayedStatus;
   educationalInstitution?: EducationalInstitutionResponseModel | null;
-  formats?: Array<EacFormat> | null;
+  formats: Array<EacFormat>;
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
   imageCredit?: string | null;

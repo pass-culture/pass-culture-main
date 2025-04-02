@@ -20,7 +20,6 @@ import {
   CollectiveOfferSummary,
   CollectiveOfferSummaryProps,
 } from './CollectiveOfferSummary'
-import { DEFAULT_RECAP_VALUE } from './components/constants'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -80,7 +79,7 @@ describe('CollectiveOfferSummary', () => {
     expect(screen.getByText('Collège au cinéma')).toBeInTheDocument()
   })
 
-  it('should display format when ff is active', async () => {
+  it('should display format', async () => {
     renderCollectiveOfferSummary({
       ...props,
       offer: {
@@ -94,20 +93,6 @@ describe('CollectiveOfferSummary', () => {
     expect(
       screen.getByText('Projection audiovisuelle, Concert')
     ).toBeInTheDocument()
-  })
-
-  it('should display defaut format value when null and ff is active', async () => {
-    renderCollectiveOfferSummary({
-      ...props,
-      offer: {
-        ...props.offer,
-        formats: null,
-      },
-    })
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-    expect(screen.getByText('Format :')).toBeInTheDocument()
-    expect(screen.getAllByText(DEFAULT_RECAP_VALUE)[0]).toBeInTheDocument()
   })
 
   it('should display the date and time of the offer', async () => {

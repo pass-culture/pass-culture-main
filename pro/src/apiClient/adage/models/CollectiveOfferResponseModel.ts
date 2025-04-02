@@ -20,7 +20,7 @@ export type CollectiveOfferResponseModel = {
   durationMinutes?: number | null;
   educationalInstitution?: EducationalInstitutionResponseModel | null;
   educationalPriceDetail?: string | null;
-  formats?: Array<EacFormat> | null;
+  formats: Array<EacFormat>;
   id: number;
   imageCredit?: string | null;
   imageUrl?: string | null;

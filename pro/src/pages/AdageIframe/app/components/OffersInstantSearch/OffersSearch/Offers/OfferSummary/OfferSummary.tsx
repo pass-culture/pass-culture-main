@@ -71,7 +71,7 @@ export const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
               className={styles['offer-summary-item-icon']}
             />
           </dt>
-          <dd>{offer.formats?.join(', ')}</dd>
+          <dd>{offer.formats.join(', ')}</dd>
         </>
       </div>
       <div className={styles['offer-summary-item']}>

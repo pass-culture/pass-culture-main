@@ -30,7 +30,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;
   educationalPriceDetail?: string | null;
-  formats?: Array<EacFormat> | null;
+  formats: Array<EacFormat>;
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
   imageCredit?: string | null;

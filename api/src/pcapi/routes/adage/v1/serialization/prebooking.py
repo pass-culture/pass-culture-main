@@ -55,7 +55,7 @@ class EducationalBookingPerYearResponse(educational_schemas.AdageBaseResponseMod
     venueId: int | None
     venueName: str | None
     offererName: str | None
-    formats: typing.Sequence[subcategories.EacFormat] | None
+    formats: typing.Sequence[subcategories.EacFormat]
 
     class Config:
         use_enum_values = True

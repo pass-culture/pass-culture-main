@@ -220,7 +220,7 @@ export const computeInitialValuesFromOffer = (
       isCollectiveOfferTemplate(offer) && offer.dates
         ? formatTimeForInput(toDateStrippedOfTimezone(offer.dates.start))
         : DEFAULT_EAC_FORM_VALUES.hour,
-    formats: offer.formats ?? DEFAULT_EAC_FORM_VALUES.formats,
+    formats: offer.formats,
     contactOptions: isCollectiveOfferTemplate(offer)
       ? {
           email: Boolean(offer.contactEmail),

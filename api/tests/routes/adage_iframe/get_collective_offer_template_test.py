@@ -49,13 +49,6 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
         "latitude": float(offer.venue.latitude),
     }
 
-    if offer.formats:
-        formats = [fmt.value for fmt in offer.formats]
-    elif offer.subcategoryId:
-        formats = [fmt.value for fmt in offer.subcategory.formats]
-    else:
-        formats = []
-
     return {
         "description": offer.description,
         "id": offer.id,
@@ -108,7 +101,7 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
             "start": format_into_utc_date(offer.start) if offer.start else None,
             "end": format_into_utc_date(offer.end) if offer.end else None,
         },
-        "formats": formats,
+        "formats": [format.value for format in offer.formats],
         "isTemplate": isinstance(offer, educational_models.CollectiveOfferTemplate),
     }
 

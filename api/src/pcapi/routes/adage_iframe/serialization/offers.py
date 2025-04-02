@@ -148,7 +148,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     imageUrl: str | None
     teacher: EducationalRedactorResponseModel | None
     nationalProgram: NationalProgramModel | None
-    formats: typing.Sequence[EacFormat] | None
+    formats: typing.Sequence[EacFormat]
     isTemplate: bool = False
 
     @classmethod
@@ -192,7 +192,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
             motorDisabilityCompliant=offer.motorDisabilityCompliant,
             visualDisabilityCompliant=offer.visualDisabilityCompliant,
-            formats=offer.get_formats(),
+            formats=offer.formats,
         )
 
     class Config:
@@ -229,7 +229,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     nationalProgram: NationalProgramModel | None
     isFavorite: bool | None
     dates: TemplateDatesModel | None
-    formats: typing.Sequence[EacFormat] | None
+    formats: typing.Sequence[EacFormat]
     isTemplate: bool = True
     contactEmail: str | None
     contactPhone: str | None
@@ -280,7 +280,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
             motorDisabilityCompliant=offer.motorDisabilityCompliant,
             visualDisabilityCompliant=offer.visualDisabilityCompliant,
             dates=dates,
-            formats=offer.get_formats(),
+            formats=offer.formats,
             contactEmail=offer.contactEmail,
             contactPhone=offer.contactPhone,
             contactUrl=offer.contactUrl,

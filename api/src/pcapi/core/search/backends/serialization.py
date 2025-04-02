@@ -381,9 +381,6 @@ class AlgoliaSerializationMixin:
 
         latitude, longitude = educational_api_offer.get_offer_coordinates(collective_offer_template)
 
-        raw_formats = collective_offer_template.get_formats()
-        formats = [fmt.value for fmt in raw_formats] if raw_formats else None
-
         return {
             "objectID": _transform_collective_offer_template_id(collective_offer_template.id),
             "offer": {
@@ -418,7 +415,7 @@ class AlgoliaSerializationMixin:
             },
             "_geoloc": format_coordinates(latitude, longitude),
             "isTemplate": True,
-            "formats": formats,
+            "formats": [format.value for format in collective_offer_template.formats],
         }
 
 

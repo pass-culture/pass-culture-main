@@ -1,5 +1,3 @@
-from contextlib import suppress
-
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
@@ -304,6 +302,7 @@ def patch_collective_offer_public(
         "visualDisabilityCompliant",
         "isActive",
         "educational_institution_id",
+        "formats",
     ]
     for field in non_nullable_fields:
         if field in new_values and new_values[field] is None:
@@ -316,12 +315,6 @@ def patch_collective_offer_public(
 
     if "educationalPriceDetail" in new_values:
         new_values["priceDetail"] = new_values.pop("educationalPriceDetail")
-
-    with suppress(KeyError):
-        if not new_values["formats"] and not new_values["subcategoryId"]:
-            raise ApiErrors(
-                errors={"formats & subcategoryId": ["Au moins l'un des deux doit être renseigné"]}, status_code=400
-            )
 
     # access control
     try:
@@ -567,7 +560,7 @@ def patch_collective_offer_public(
 )
 def get_offers_formats() -> offers_serialization.GetCollectiveFormatListModel:
     """
-    Get Collectice Offer Formats
+    Get Collective Offer Formats
     """
     return offers_serialization.GetCollectiveFormatListModel(
         __root__=[
