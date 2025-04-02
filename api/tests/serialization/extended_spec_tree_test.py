@@ -1,7 +1,10 @@
+from unittest.mock import Mock
+
 from flask import Blueprint
 from spectree import SecurityScheme
 from spectree import Tag
 
+from pcapi.serialization.decorator import feature_flag_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.spec_tree import _AUTHENTICATION_ATTRIBUTE
@@ -60,6 +63,35 @@ def spectree_post_test_endpoint():
     pass
 
 
+_active_ff_mock = Mock()
+_active_ff_mock.is_active.return_value = True
+
+_inactive_ff_mock = Mock()
+_inactive_ff_mock.is_active.return_value = False
+
+
+# Fake endpoint with active ff
+@test_extended_spec_tree_blueprint.route("/active_ff", methods=["POST"])
+@feature_flag_required(feature_flag=_active_ff_mock)
+@spectree_serialize(
+    on_success_status=204,
+    api=api_schema,
+)
+def spectree_active_ff_test_endpoint():
+    pass
+
+
+# Fake endpoint with inactive ff
+@test_extended_spec_tree_blueprint.route("/inactive_ff", methods=["POST"])
+@feature_flag_required(feature_flag=_inactive_ff_mock)
+@spectree_serialize(
+    on_success_status=204,
+    api=api_schema,
+)
+def spectree_inactive_ff_test_endpoint():
+    pass
+
+
 # Register fake endpoints
 api_schema.register(test_extended_spec_tree_blueprint)
 
@@ -69,6 +101,11 @@ class ExtendedSpecTreeTest:
         spec = api_schema._generate_spec()
         assert "security" not in spec["paths"]["/test-extended-spec-tree/"]["get"]
         assert spec["paths"]["/test-extended-spec-tree/require_auth"]["post"]["security"] == [{AUTH_KEY: []}]
+
+    def test_should_remove_endpoint_documentation_if_ff_is_inactive(self):
+        spec = api_schema._generate_spec()
+        assert spec["paths"]["/test-extended-spec-tree/active_ff"]["post"]
+        assert not spec["paths"]["/test-extended-spec-tree/inactive_ff"].get("post", None)
 
     def test_should_order_tags(self):
         spec = api_schema._generate_spec()
