@@ -11,7 +11,10 @@ from pcapi.models import db
 def remove_product_ean_duplicate(do_update: bool) -> None:
     products = (
         offers_models.Product.query.options(joinedload(offers_models.Product.offers))
-        .filter(offers_models.Product.extraData["ean"].astext.is_not(None))
+        .filter(
+            offers_models.Product.extraData["ean"].astext.is_not(None),
+            offers_models.Product.extraData["ean"].astext != "",
+        )
         .order_by(offers_models.Product.extraData["ean"].astext, offers_models.Product.id)
         .all()
     )
@@ -24,7 +27,7 @@ def remove_product_ean_duplicate(do_update: bool) -> None:
         product_to_keep = products[0]
         products_to_remove = products[1:]
         print(
-            f"[PREVIEW] For ean {product_to_keep.extraData['ean']}, keep product id {product_to_keep.id} "
+            f"[PREVIEW] For ean {product_to_keep.extraData['ean']} keep product id {product_to_keep.id} "
             f"and delete {len(products_to_remove)} products (id: {[p.id for p in products_to_remove]})"
         )
         for product in products_to_remove:
