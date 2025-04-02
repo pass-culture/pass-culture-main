@@ -10,7 +10,7 @@ interface BaseFileInputProps {
   isValid: boolean
   isDisabled?: boolean
   onChange: React.ChangeEventHandler<HTMLInputElement>
-  children?: never
+  children: React.ReactNode | React.ReactNode[]
   ariaDescribedBy?: string
 }
 
@@ -21,15 +21,18 @@ export const BaseFileInput = ({
   onChange,
   isDisabled = false,
   ariaDescribedBy,
+  children,
 }: BaseFileInputProps): JSX.Element => (
   <label
-    className={cn(
-      buttonStyle['button'],
-      buttonStyle['button-primary'],
-      style['base-file-input-container']
-    )}
+    className={cn({
+      [cn(
+        buttonStyle['button'],
+        buttonStyle['button-primary'],
+        style['base-file-input-container']
+      )]: Boolean(!children),
+    })}
   >
-    {label}
+    {children ? children : label}
     <input
       accept={fileTypes.join()}
       aria-invalid={!isValid}

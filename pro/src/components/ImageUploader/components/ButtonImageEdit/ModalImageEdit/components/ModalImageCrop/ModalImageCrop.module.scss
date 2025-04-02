@@ -24,7 +24,7 @@
     flex-direction: column;
     gap: rem.torem(16px);
     padding: rem.torem(16px);
-    align-items: flex-start;
+    align-items: center;
   }
 
   &-form {
@@ -41,10 +41,9 @@
   }
 
   &-right {
-    min-width: fit-content;
-    max-width: rem.torem(400px);
-    margin-bottom: rem.torem(24px);
-    text-align: center;
+    @include fonts.body-s;
+
+    margin-bottom: rem.torem(16px);
   }
 
   &-credit {

@@ -13,7 +13,6 @@ import {
 import { coordonateToPosition } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ImageEditor/utils'
 import { modeValidationConstraints } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/constants'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import fullDownloadIcon from 'icons/full-download.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -29,18 +28,16 @@ export type ModalImageCropProps = {
   credit: string
   onSetCredit: (credit: string) => void
   children?: never
-  onReplaceImage: () => void
+  onReplaceImage?: () => void
   onImageDelete: () => void
   initialPosition?: Position
   initialScale?: number
   saveInitialPosition: (position: Position) => void
   onEditedImageSave: (dataUrl: string, croppedRect: CroppedRect) => void
   mode: UploaderModeEnum
-  showPreviewInModal: boolean
 }
 
 export const ModalImageCrop = ({
-  onReplaceImage,
   onImageDelete,
   image,
   credit,
@@ -50,7 +47,6 @@ export const ModalImageCrop = ({
   initialPosition,
   initialScale,
   mode,
-  showPreviewInModal,
 }: ModalImageCropProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const { width, height } = useGetImageBitmap(image)
@@ -126,7 +122,7 @@ export const ModalImageCrop = ({
   return (
     <section className={style['modal-image-crop']}>
       <form>
-        <div className={style['modal-image-crop-form']}>
+        <div>
           <Dialog.Title asChild>
             <h1 className={style['modal-image-crop-header']}>
               Modifier une image
@@ -139,46 +135,40 @@ export const ModalImageCrop = ({
             celui-ci.
           </p>
 
-          <div className={style['modal-image-crop-editor']}>
-            <ImageEditor
-              {...imageEditorConfig}
-              image={image}
-              initialPosition={initialPosition}
-              ref={editorRef}
-              initialScale={initialScale}
-            />
+          <div className={style['modal-image-crop-form']}>
+            <div className={style['modal-image-crop-editor']}>
+              <ImageEditor
+                {...imageEditorConfig}
+                image={image}
+                initialPosition={initialPosition}
+                ref={editorRef}
+                initialScale={initialScale}
+              />
 
-            <div className={style['modal-image-crop-actions']}>
-              <Button
-                icon={fullDownloadIcon}
-                onClick={onReplaceImage}
-                variant={ButtonVariant.TERNARY}
-              >
-                Remplacer l’image
-              </Button>
-
-              <Dialog.Close asChild>
-                <Button
-                  icon={fullTrashIcon}
-                  onClick={onImageDelete}
-                  variant={ButtonVariant.TERNARY}
-                >
-                  Supprimer l’image
-                </Button>
-              </Dialog.Close>
+              <div className={style['modal-image-crop-actions']}>
+                <Dialog.Close asChild>
+                  <Button
+                    icon={fullTrashIcon}
+                    onClick={onImageDelete}
+                    variant={ButtonVariant.TERNARY}
+                  >
+                    Supprimer l’image
+                  </Button>
+                </Dialog.Close>
+              </div>
             </div>
-          </div>
 
-          <TextInput
-            count={creditInput.length}
-            className={style['modal-image-crop-credit']}
-            label="Crédit de l’image"
-            maxLength={255}
-            value={creditInput}
-            onChange={(e) => setCreditInput(e.target.value)}
-            name="credit"
-            type="text"
-          />
+            <TextInput
+              count={creditInput.length}
+              className={style['modal-image-crop-credit']}
+              label="Crédit de l’image"
+              maxLength={255}
+              value={creditInput}
+              onChange={(e) => setCreditInput(e.target.value)}
+              name="credit"
+              type="text"
+            />
+          </div>
         </div>
 
         <Divider />
@@ -191,7 +181,7 @@ export const ModalImageCrop = ({
               handleNext()
             }}
           >
-            {showPreviewInModal ? 'Suivant' : 'Enregistrer'}
+            Enregistrer
           </Button>
         </div>
       </form>
