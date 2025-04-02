@@ -39,7 +39,7 @@ from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.utils import regions as regions_utils
-from pcapi.utils.siren import is_valid_siren
+from pcapi.utils import siren as siren_utils
 
 from . import forms as offerer_forms
 from . import serialization
@@ -938,11 +938,10 @@ def get_offerer_addresses(offerer_id: int) -> utils.BackofficeResponse:
 def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse:
     collective_dms_applications = (
         educational_models.CollectiveDmsApplication.query.filter(
-            educational_models.CollectiveDmsApplication.siret.startswith(
-                sa.select(offerers_models.Offerer.siren)
-                .filter(offerers_models.Offerer.id == offerer_id)
-                .scalar_subquery()
-            )
+            educational_models.CollectiveDmsApplication.siren
+            == sa.select(offerers_models.Offerer.siren)
+            .filter(offerers_models.Offerer.id == offerer_id)
+            .scalar_subquery()
         )
         .options(
             sa.orm.load_only(
@@ -1163,7 +1162,7 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
     if not offerer.siren:
         raise NotFound()
 
-    if not is_valid_siren(offerer.siren):
+    if not siren_utils.is_valid_siren(offerer.siren):
         mark_transaction_as_invalid()
         return render_template("offerer/get/details/entreprise_info.html", is_invalid_siren=True, offerer=offerer)
 
@@ -1199,7 +1198,7 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
 def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
-    if not offerer.siren or not is_valid_siren(offerer.siren):
+    if not offerer.siren or not siren_utils.is_valid_siren(offerer.siren):
         raise NotFound()
 
     data: dict[str, typing.Any] = {}
@@ -1218,7 +1217,7 @@ def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
 def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
-    if not offerer.siren or not is_valid_siren(offerer.siren):
+    if not offerer.siren or not siren_utils.is_valid_siren(offerer.siren):
         raise NotFound()
 
     data: dict[str, typing.Any] = {}
@@ -1245,7 +1244,7 @@ def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
 def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
-    if not offerer.siren or not is_valid_siren(offerer.siren):
+    if not offerer.siren or not siren_utils.is_valid_siren(offerer.siren):
         raise NotFound()
 
     data: dict[str, typing.Any] = {}

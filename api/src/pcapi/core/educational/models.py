@@ -28,6 +28,7 @@ from pcapi.models.pc_object import PcObject
 from pcapi.utils import image_conversion
 from pcapi.utils.db import MagicEnum
 from pcapi.utils.phone_number import ParsedPhoneNumber
+from pcapi.utils.siren import SIREN_LENGTH
 
 
 logger = logging.getLogger(__name__)
@@ -2049,6 +2050,18 @@ class CollectiveDmsApplication(PcObject, models.Base, models.Model):
     instructionDate = sa.Column(sa.DateTime, nullable=True)
     processingDate = sa.Column(sa.DateTime, nullable=True)
     userDeletionDate = sa.Column(sa.DateTime, nullable=True)
+
+    @hybrid_property
+    def siren(self):
+        return self.siret[:SIREN_LENGTH]
+
+    @siren.expression  # type: ignore[no-redef]
+    def siren(cls) -> str:  # pylint: disable=no-self-argument
+        return sa.func.substr(cls.siret, 1, SIREN_LENGTH)
+
+    # Search application related to an offerer should use siren expression to use take benefit from the index
+    # instead of "LIKE '123456782%'" which causes a sequential scan.
+    sa.Index("ix_collective_dms_application_siren", sa.func.substr(siret, 1, SIREN_LENGTH))
 
 
 CollectiveBooking.trig_update_cancellationDate_on_isCancelled_ddl = f"""

@@ -11,6 +11,7 @@ from pcapi.core.educational import factories
 from pcapi.core.educational.models import ALLOWED_ACTIONS_BY_DISPLAYED_STATUS
 from pcapi.core.educational.models import COLLECTIVE_OFFER_TEMPLATE_STATUSES
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveDmsApplication
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferAllowedAction
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
@@ -870,3 +871,17 @@ class CollectiveBookingTest:
         assert booking.dateUsed is None
 
         db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
+
+
+class CollectiveDmsApplicationTest:
+    def test_siren(self):
+        application = factories.CollectiveDmsApplicationFactory(venue__siret="12345678200010")
+        assert application.siren == "123456782"
+
+    def test_siren_sql_expression(self):
+        application_1 = factories.CollectiveDmsApplicationFactory(venue__siret="12345678200010")
+        application_2 = factories.CollectiveDmsApplicationFactory(venue__siret="12345678200028")
+        factories.CollectiveDmsApplicationFactory(venue__siret="12345679000013")
+
+        filtered = CollectiveDmsApplication.query.filter(CollectiveDmsApplication.siren == "123456782").all()
+        assert set(filtered) == {application_1, application_2}
