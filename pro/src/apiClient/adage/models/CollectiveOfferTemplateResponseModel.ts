@@ -21,7 +21,7 @@ export type CollectiveOfferTemplateResponseModel = {
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;
   educationalPriceDetail?: string | null;
-  formats?: Array<EacFormat> | null;
+  formats: Array<EacFormat>;
   id: number;
   imageCredit?: string | null;
   imageUrl?: string | null;

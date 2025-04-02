@@ -51,6 +51,7 @@ export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseMode
       start: new Date().toISOString(),
       end: addDays(new Date(), 1).toISOString(),
     },
+    formats: [EacFormat.CONCERT],
   }
 
 export const defaultCollectiveOffer: CollectiveOfferResponseModel = {

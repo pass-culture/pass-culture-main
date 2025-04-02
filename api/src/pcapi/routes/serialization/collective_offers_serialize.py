@@ -13,6 +13,7 @@ from pydantic.v1 import utils as pydantic_utils
 from pydantic.v1 import validator
 
 from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
@@ -83,7 +84,7 @@ class ListCollectiveOffersQueryModel(BaseModel):
     period_beginning_date: date | None
     period_ending_date: date | None
     collective_offer_type: CollectiveOfferType | None
-    format: subcategories.EacFormat | None
+    format: EacFormat | None
 
     class Config:
         alias_generator = to_camel
@@ -154,7 +155,7 @@ class CollectiveOfferResponseModel(BaseModel):
     imageUrl: str | None
     isPublicApi: bool
     nationalProgram: NationalProgramModel | None
-    formats: typing.Sequence[subcategories.EacFormat] | None
+    formats: typing.Sequence[EacFormat]
     dates: TemplateDatesModel | None
 
     class Config:
@@ -212,7 +213,7 @@ def _serialize_offer_paginated(
         imageUrl=offer.imageUrl,
         isPublicApi=offer.isPublicApi if not is_offer_template else False,
         nationalProgram=offer.nationalProgram,
-        formats=offer.get_formats(),
+        formats=offer.formats,
         dates=offer.dates,  # type: ignore[arg-type]
     )
 
@@ -414,7 +415,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     imageCredit: str | None
     imageUrl: str | None
     nationalProgram: NationalProgramModel | None
-    formats: typing.Sequence[subcategories.EacFormat] | None
+    formats: typing.Sequence[EacFormat]
     isNonFreeOffer: bool | None
 
     class Config:
@@ -486,17 +487,9 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     teacher: EducationalRedactorResponseModel | None
     isPublicApi: bool
     provider: GetCollectiveOfferProviderResponseModel | None
-    formats: typing.Sequence[subcategories.EacFormat] | None
     isTemplate: bool = False
     dates: TemplateDatesModel | None
     allowedActions: list[educational_models.CollectiveOfferAllowedAction]
-
-    @classmethod
-    def from_orm(cls, offer: educational_models.CollectiveOffer) -> "GetCollectiveOfferResponseModel":
-        result = super().from_orm(offer)
-        result.formats = offer.get_formats()
-
-        return result
 
 
 class CollectiveOfferResponseIdModel(BaseModel):
@@ -620,36 +613,11 @@ class PostCollectiveOfferBodyModel(BaseModel):
     intervention_area: list[str] | None
     template_id: int | None
     nationalProgramId: int | None
-    # TODO(jeremieb): when subcategory_id is removed, formats becomes
-    # mandatory
-    formats: typing.Sequence[subcategories.EacFormat] | None
+    formats: typing.Sequence[EacFormat]
 
     @validator("students")
     def validate_students(cls, students: list[str]) -> list[educational_models.StudentLevels]:
         return shared_offers.validate_students(students)
-
-    @root_validator
-    def validate_formats_and_subcategory(cls, values: dict) -> dict:
-        # TODO(jeremieb): remove this validator when subcategory_id can
-        # be removed
-        if values.get("template_id"):
-            return values
-
-        formats = values.get("formats")
-        if formats:
-            return values
-
-        subcategory_id = values.get("subcategory_id")
-        if not subcategory_id:
-            raise ValueError("subcategory_id & formats: at least one should not be null")
-
-        try:
-            subcategory = subcategories.COLLECTIVE_SUBCATEGORIES[subcategory_id]
-        except KeyError:
-            raise ValueError("Unknown subcategory id")
-
-        values["formats"] = subcategory.formats
-        return values
 
     @validator("name")
     def validate_name(cls, name: str) -> str:
@@ -666,6 +634,12 @@ class PostCollectiveOfferBodyModel(BaseModel):
         if not domains:
             raise ValueError("domains must have at least one value")
         return domains
+
+    @validator("formats")
+    def validate_formats(cls, formats: list[EacFormat]) -> list[EacFormat]:
+        if len(formats) == 0:
+            raise ValueError("formats must have at least one value")
+        return formats
 
     @validator("intervention_area")
     def validate_intervention_area(
@@ -764,7 +738,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     interventionArea: list[str] | None
     venueId: int | None
     nationalProgramId: int | None
-    formats: typing.Sequence[subcategories.EacFormat] | None
+    formats: typing.Sequence[EacFormat] | None
 
     @validator("students")
     def validate_students(cls, students: list[str] | None) -> list[educational_models.StudentLevels] | None:
@@ -785,14 +759,16 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         educational_validation.check_collective_offer_description_length_is_valid(description)
         return description
 
-    @validator("domains")
-    def validate_domains_collective_offer_edition(
-        cls,
-        domains: list[int] | None,
-    ) -> list[int] | None:
-        if domains is None or (domains is not None and len(domains) == 0):
-            raise ValueError("domains must have at least one value")
+    @validator("formats")
+    def validate_formats(cls, formats: list[EacFormat] | None) -> list[EacFormat]:
+        if formats is None or len(formats) == 0:
+            raise ValueError("formats must have at least one value")
+        return formats
 
+    @validator("domains")
+    def validate_domains_collective_offer_edition(cls, domains: list[int] | None) -> list[int] | None:
+        if domains is None or len(domains) == 0:
+            raise ValueError("domains must have at least one value")
         return domains
 
     @validator("interventionArea")

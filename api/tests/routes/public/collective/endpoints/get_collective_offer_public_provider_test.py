@@ -169,5 +169,5 @@ def expected_serialized_offer(offer):
         "imageUrl": offer.imageUrl,
         "nationalProgram": {"id": offer.nationalProgram.id, "name": offer.nationalProgram.name},
         "bookings": bookings,
-        "formats": [fmt.value for fmt in offer.formats] if offer.formats else None,
+        "formats": [fmt.value for fmt in offer.formats],
     }

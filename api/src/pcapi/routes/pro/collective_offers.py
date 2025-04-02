@@ -879,8 +879,8 @@ def duplicate_collective_offer(
 
     try:
         original_offer = educational_repository.get_collective_offer_by_id(offer_id)
-    except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
+    except educational_exceptions.CollectiveOfferNotFound:
+        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id"]}, status_code=404)
 
     try:
         offer = educational_api_offer.duplicate_offer_and_stock(original_offer=original_offer)

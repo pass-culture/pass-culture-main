@@ -65,6 +65,7 @@ export const collectiveOfferFactory = (
     isShowcase: false,
     allowedActions: [],
     ...customCollectiveOffer,
+    formats: [EacFormat.ATELIER_DE_PRATIQUE],
   }
 }
 export const listOffersVenueFactory = (

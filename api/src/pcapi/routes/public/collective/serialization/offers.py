@@ -247,7 +247,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     imageUrl: str | None = fields.IMAGE_URL
     bookings: Sequence[CollectiveBookingResponseModel]
     nationalProgram: NationalProgramModel | None
-    formats: list[subcategories.EacFormat] | None = fields.COLLECTIVE_OFFER_FORMATS
+    formats: list[subcategories.EacFormat] = fields.COLLECTIVE_OFFER_FORMATS
 
     class Config:
         extra = "forbid"
@@ -375,8 +375,13 @@ class PostCollectiveOfferBodyModel(BaseModel):
     def validate_domains(cls, domains: list[str]) -> list[str]:
         if len(domains) == 0:
             raise ValueError("domains must have at least one value")
-
         return domains
+
+    @validator("formats")
+    def validate_formats(cls, formats: list[subcategories.EacFormat]) -> list[subcategories.EacFormat]:
+        if len(formats) == 0:
+            raise ValueError("formats must have at least one value")
+        return formats
 
     @root_validator(pre=True)
     def image_validator(cls, values: dict) -> dict:
@@ -477,11 +482,16 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         return shared_offers.validate_students(students)
 
     @validator("domains")
-    def validate_domains(cls, domains: list[int]) -> list[int]:
+    def validate_domains(cls, domains: list[int]) -> list[int]:  # TODO (jcicurel): check these validators
         if len(domains) == 0:
             raise ValueError("domains must have at least one value")
-
         return domains
+
+    @validator("formats")
+    def validate_formats(cls, formats: list[subcategories.EacFormat] | None) -> list[subcategories.EacFormat]:
+        if formats is None or len(formats) == 0:
+            raise ValueError("formats must have at least one value")
+        return formats
 
     @validator("name", allow_reuse=True)
     def validate_name(cls, name: str | None) -> str | None:
@@ -496,7 +506,9 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         return description
 
     @validator("domains")
-    def validate_domains_collective_offer_edition(cls, domains: list[int] | None) -> list[int] | None:
+    def validate_domains_collective_offer_edition(
+        cls, domains: list[int] | None
+    ) -> list[int] | None:  # TODO (jcicurel): check these validators
         if domains is None or (domains is not None and len(domains) == 0):
             raise ValueError("domains must have at least one value")
 

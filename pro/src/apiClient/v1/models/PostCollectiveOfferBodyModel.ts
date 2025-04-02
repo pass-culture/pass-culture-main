@@ -14,7 +14,7 @@ export type PostCollectiveOfferBodyModel = {
   description: string;
   domains: Array<number>;
   durationMinutes?: number | null;
-  formats?: Array<EacFormat> | null;
+  formats: Array<EacFormat>;
   interventionArea?: Array<string> | null;
   location?: CollectiveOfferLocationModel | null;
   mentalDisabilityCompliant?: boolean;

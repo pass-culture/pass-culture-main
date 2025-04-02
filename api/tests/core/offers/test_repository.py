@@ -1337,7 +1337,6 @@ class GetCollectiveOffersTemplateByFiltersTest:
             formats=[subcategories.EacFormat.CONCERT, subcategories.EacFormat.CONFERENCE_RENCONTRE]
         )
         educational_factories.CollectiveOfferTemplateFactory(formats=[subcategories.EacFormat.CONFERENCE_RENCONTRE])
-        educational_factories.CollectiveOfferTemplateFactory(formats=None)
 
         result = repository.get_collective_offers_template_by_filters(
             user_id=admin_user.id, user_is_admin=True, formats=[subcategories.EacFormat.CONCERT]

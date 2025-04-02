@@ -149,7 +149,7 @@ export const FormOfferType = ({
           <MultiSelect
             options={eacFormatOptions}
             defaultOptions={eacFormatOptions.filter((option) =>
-              values.formats?.includes(option.id)
+              values.formats.includes(option.id)
             )}
             label="Ajoutez un ou plusieurs formats"
             buttonLabel="Formats"

@@ -52,6 +52,7 @@ describe('createPatchOfferPayload', () => {
     datesType: 'specific_dates',
     hour: '10:00',
     isTemplate: false,
+    formats: [EacFormat.CONCERT],
   }
   const offer: OfferEducationalFormValues = {
     title: 'Test Offer update',

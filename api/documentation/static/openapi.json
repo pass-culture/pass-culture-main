@@ -4235,7 +4235,6 @@
                         "items": {
                             "$ref": "#/components/schemas/EacFormat"
                         },
-                        "nullable": true,
                         "type": "array"
                     },
                     "hasBookingLimitDatetimesPassed": {
@@ -4378,7 +4377,8 @@
                     "totalPrice",
                     "numberOfTickets",
                     "offerVenue",
-                    "bookings"
+                    "bookings",
+                    "formats"
                 ],
                 "title": "GetPublicCollectiveOfferResponseModel",
                 "type": "object"
@@ -12416,7 +12416,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get Collectice Offer Formats",
+                "summary": "Get Collective Offer Formats",
                 "tags": [
                     "Collective Offer Attributes"
                 ]
