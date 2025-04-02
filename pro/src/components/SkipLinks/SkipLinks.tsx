@@ -8,17 +8,21 @@ interface SkipLinksProps {
   shouldDisplayTopPageLink?: boolean
 }
 
-export const SkipLinks = ({ shouldDisplayTopPageLink = true }: SkipLinksProps): JSX.Element => {
+export const SkipLinks = ({
+  shouldDisplayTopPageLink = true,
+}: SkipLinksProps): JSX.Element => {
   return (
     <>
-      {shouldDisplayTopPageLink && <a
-        tabIndex={-1}
-        href="#"
-        id="unaccessible-top-page"
-        className={styles['visually-hidden']}
-      />}
+      {shouldDisplayTopPageLink && (
+        <a
+          tabIndex={-1}
+          href="#"
+          id="unaccessible-top-page"
+          className={styles['visually-hidden']}
+        />
+      )}
+      <div id="orejimeElement" />
       <nav aria-label="Accès rapide" className={styles['skip-links']}>
-        <div id="orejime" />
         <div className={styles['skip-list']}>
           <ButtonLink
             to="#content"
