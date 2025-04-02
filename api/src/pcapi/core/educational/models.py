@@ -966,14 +966,6 @@ class CollectiveOffer(
             text_data.append(self.collectiveStock.priceDetail)
         return " ".join(text_data)
 
-    @hybrid_property
-    def isEvent(self) -> bool:
-        return self.subcategory.is_event
-
-    @isEvent.expression  # type: ignore[no-redef]
-    def isEvent(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
-        return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
-
     @property
     def is_cancellable_from_offerer(self) -> bool:
         if self.collectiveStock is None:
@@ -1369,14 +1361,6 @@ class CollectiveOfferTemplate(
     @property
     def visibleText(self) -> str:  # used in validation rule, do not remove
         return f"{self.name} {self.description} {self.priceDetail}"
-
-    @hybrid_property
-    def isEvent(self) -> bool:
-        return self.subcategory.is_event
-
-    @isEvent.expression  # type: ignore[no-redef]
-    def isEvent(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
-        return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
 
     @property
     def is_cancellable_from_offerer(self) -> bool:
