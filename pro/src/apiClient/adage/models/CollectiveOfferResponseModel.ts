@@ -6,6 +6,7 @@ import type { CollectiveOfferOfferVenue } from './CollectiveOfferOfferVenue';
 import type { EacFormat } from './EacFormat';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { EducationalRedactorResponseModel } from './EducationalRedactorResponseModel';
+import type { GetCollectiveOfferLocationModel } from './GetCollectiveOfferLocationModel';
 import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferDomain } from './OfferDomain';
 import type { OfferStockResponse } from './OfferStockResponse';
@@ -27,7 +28,8 @@ export type CollectiveOfferResponseModel = {
   interventionArea: Array<string>;
   isExpired: boolean;
   isSoldOut: boolean;
-  isTemplate?: boolean;
+  isTemplate: boolean;
+  location?: GetCollectiveOfferLocationModel | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;

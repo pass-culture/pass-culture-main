@@ -135,7 +135,9 @@ class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComp
     name: str
     venue: OfferVenueResponse
     students: list[educational_models.StudentLevels]
+    # offerVenue will be replaced with location, for now we send both
     offerVenue: CollectiveOfferOfferVenue
+    location: collective_offers_serialize.GetCollectiveOfferLocationModel | None
     contactEmail: str | None
     contactPhone: str | None
     durationMinutes: int | None
@@ -188,6 +190,7 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
                 venueId=offer.offerVenue["venueId"],
                 otherAddress=offer.offerVenue["otherAddress"],
             ),
+            location=collective_offers_serialize.get_collective_offer_location_model(offer),
             contactEmail=offer.contactEmail,
             contactPhone=offer.contactPhone,
             durationMinutes=offer.durationMinutes,
@@ -252,6 +255,7 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
                 venueId=offer.offerVenue["venueId"],
                 otherAddress=offer.offerVenue["otherAddress"],
             ),
+            location=collective_offers_serialize.get_collective_offer_location_model(offer),
             durationMinutes=offer.durationMinutes,
             educationalPriceDetail=offer.priceDetail,
             domains=offer.domains,

@@ -5,8 +5,7 @@ import logging
 import os
 import typing
 
-from flask_sqlalchemy import BaseQuery
-import sqlalchemy as sa
+from sqlalchemy import orm as sa_orm
 
 from pcapi.connectors.big_query.queries import InstitutionRuralLevelQuery
 from pcapi.core.educational import adage_backends as adage_client
@@ -18,9 +17,9 @@ from pcapi.core.educational.adage_backends.serialize import AdageEducationalInst
 from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.repository import find_educational_year_by_date
-import pcapi.core.offerers.models as offerers_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
-import pcapi.utils.postal_code as postal_code_utils
+from pcapi.utils import postal_code as postal_code_utils
 
 
 logger = logging.getLogger(__name__)
@@ -207,7 +206,7 @@ def _update_institutions_educational_program(
 ) -> None:
     institutions: typing.Iterable[educational_models.EducationalInstitution] = (
         educational_models.EducationalInstitution.query.options(
-            sa.orm.joinedload(educational_models.EducationalInstitution.programs)
+            sa_orm.joinedload(educational_models.EducationalInstitution.programs)
         )
     )
     institution_by_uai = {institution.institutionId: institution for institution in institutions}
@@ -343,7 +342,7 @@ def get_offers_count_for_my_institution(uai: str) -> int:
             educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
         )
         .options(
-            sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
                 educational_models.CollectiveStock.collectiveBookings
             ),
         )
@@ -353,25 +352,29 @@ def get_offers_count_for_my_institution(uai: str) -> int:
     return offer_count
 
 
-def get_offers_for_my_institution(uai: str) -> BaseQuery:
+def get_offers_for_my_institution(uai: str) -> "sa_orm.Query[educational_models.CollectiveOffer]":
+    # TODO: this should go in educational/repository
     return (
-        educational_models.CollectiveOffer.query.join(
-            educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
-        )
+        db.session.query(educational_models.CollectiveOffer)
+        .join(educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution)
         .options(
-            sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
                 educational_models.CollectiveStock.collectiveBookings
             ),
-            sa.orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(
-                offerers_models.Venue.managingOfferer,
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue).options(
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer),
+                sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
             ),
-            sa.orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(
-                offerers_models.Venue.googlePlacesInfo,
+            sa_orm.joinedload(educational_models.CollectiveOffer.institution),
+            sa_orm.joinedload(educational_models.CollectiveOffer.teacher),
+            sa_orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
+            sa_orm.joinedload(educational_models.CollectiveOffer.domains),
+            sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).joinedload(
+                offerers_models.OffererAddress.address
             ),
-            sa.orm.joinedload(educational_models.CollectiveOffer.institution),
-            sa.orm.joinedload(educational_models.CollectiveOffer.teacher),
-            sa.orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
-            sa.orm.joinedload(educational_models.CollectiveOffer.domains),
+            sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).with_expression(
+                offerers_models.OffererAddress._isLinkedToVenue, offerers_models.OffererAddress.isLinkedToVenue.expression  # type: ignore [attr-defined]
+            ),
         )
         .filter(
             educational_models.EducationalInstitution.institutionId == uai,
