@@ -944,7 +944,26 @@ class EventOpeningHoursHasBegun(EventOpeningHoursError):
     msg = "event opening hours cannot be updated: event has begun"
 
 
+class EventOpeningHoursNewStartBeforeEnd(EventOpeningHoursError):
+    msg = "event opening hours cannot be updated: cannot start after ending (start date update)"
+
+
+class EventOpeningHoursStartsTooSoon(EventOpeningHoursError):
+    msg = "event opening hours cannot be updated: new start is too soon (too close to current end)"
+
+
+class EventOpeningHoursEndPassed(EventOpeningHoursError):
+    msg = "event opening hours cannot be updated: end date has already passed (end date update)"
+
+
+class EventOpeningHoursStartsTooSoon(EventOpeningHoursError):
+    msg = "event opening hours cannot be updated: new end is too soon"
+
+
 def validate_event_opening_hours_can_be_updated(offer: models.Offer, opening_hours: models.EventOpeningHours, body: serialize.UpdateEventOpeningHoursBody) -> None:
+    now = datetime.datetime.now(datetime.timezone.utc)
+    two_days_from_now = now + datetime.timedelta(hours=48)
+
     # TODO(jbaudet-pass/cnormant-pass): add creation validations
     if opening_hours.offerId != offer.id:
         raise EventOpeningHoursDoesNotBelongToOfferError()
@@ -953,5 +972,19 @@ def validate_event_opening_hours_can_be_updated(offer: models.Offer, opening_hou
         raise EventOpeningHoursIsSoftDeleted()
 
     if body.startDatetime:
-        if datetime.datetime.now(datetime.timezone.utc) >= body.startDatetime:
+        if body.startDatetime <= now:
             raise EventOpeningHoursHasBegun()
+
+        if not body.endDatetime and body.startDatetime >= opening_hours.endDatetime:
+            raise EventOpeningHoursNewStartBeforeEnd()
+
+        has_end_date_and_is_not_updated = not body.endDatetime and opening_hours.endDatetime
+        if has_end_date_and_is_not_updated and body.startDatetime <= two_days_from_now:
+            raise EventOpeningHoursStartsTooSoon()
+
+    if body.endDatetime:
+        if opening_hours.endDatetime <= now:
+            raise EventOpeningHoursEndPassed()
+
+        if body.endDatetime <= two_days_from_now:
+            raise EventOpeningHoursEndsTooSoon()
