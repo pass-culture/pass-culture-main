@@ -311,8 +311,11 @@ def create_offer(
     repository.add_to_session(offer)
     db.session.flush()
 
+    # This log is used for analytics purposes.
+    # If you need to make a 'breaking change' of this log, please contact the data team.
+    # Otherwise, you will break some dashboards
     logger.info(
-        "models.Offer has been created",
+        "Offer has been created",
         extra={"offer_id": offer.id, "venue_id": venue.id, "product_id": offer.productId},
         technical_message_id="offer.created",
     )
@@ -422,7 +425,9 @@ def update_offer(
     if offer.is_soft_deleted():
         raise pc_object.DeletedRecordException()
 
+    changes = {}
     for key, value in updates.items():
+        changes[key] = {"oldValue": getattr(offer, key), "newValue": value}
         setattr(offer, key, value)
     with db.session.no_autoflush:
         validation.check_url_is_coherent_with_subcategory(offer.subcategory, offer.url)
@@ -431,7 +436,15 @@ def update_offer(
         offer.fieldsUpdated = list(set(offer.fieldsUpdated) | updates_set)
     repository.add_to_session(offer)
 
-    logger.info("Offer has been updated", extra={"offer_id": offer.id}, technical_message_id="offer.updated")
+    # This log is used for analytics purposes.
+    # If you need to make a 'breaking change' of this log, please contact the data team.
+    # Otherwise, you will break some dashboards
+    logger.info(
+        "Offer has been updated",
+        extra={"offer_id": offer.id, "venue_id": offer.venueId, "product_id": offer.productId, "changes": {**changes}},
+        technical_message_id="offer.updated",
+    )
+    print({"offer_id": offer.id, "venue_id": offer.venueId, "product_id": offer.productId, "changes": {**changes}})
 
     withdrawal_fields = {"bookingContact", "withdrawalDelay", "withdrawalDetails", "withdrawalType"}
     withdrawal_updated = updates_set & withdrawal_fields
@@ -797,6 +810,9 @@ def edit_stock(
         ),
     )
 
+    # This log is used for analytics purposes.
+    # If you need to make a 'breaking change' of this log, please contact the data team.
+    # Otherwise, you will break some dashboards
     log_extra_data: dict[str, typing.Any] = {
         "offer_id": stock.offerId,
         "stock_id": stock.id,
@@ -804,7 +820,6 @@ def edit_stock(
         "provider_id": editing_provider.id if editing_provider else None,
         "changes": {**changes},
     }
-
     logger.info("Successfully updated stock", extra=log_extra_data, technical_message_id="stock.updated")
 
     return stock, "beginningDatetime" in modifications
@@ -913,9 +928,18 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
     # the algolia sync for the stock will happen within this function
     cancelled_bookings = bookings_api.cancel_bookings_from_stock_by_offerer(stock, author_id, user_connect_as)
 
+    # This log is used for analytics purposes.
+    # If you need to make a 'breaking change' of this log, please contact the data team.
+    # Otherwise, you will break some dashboards
     logger.info(
         "Deleted stock and cancelled its bookings",
-        extra={"stock": stock.id, "bookings": [b.id for b in cancelled_bookings]},
+        extra={
+            "stock": stock.id,
+            "bookings": [b.id for b in cancelled_bookings],
+            "author_id": author_id,
+            "user_connect_as": bool(user_connect_as),
+        },
+        technical_message_id="stock.deleted",
     )
     if cancelled_bookings:
         for booking in cancelled_bookings:

@@ -920,10 +920,11 @@ def _generate_finance_event_context(
 @pytest.mark.usefixtures("db_session")
 class DeleteStockTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_delete_stock_basics(self, mocked_async_index_offer_ids):
+    def test_delete_stock_basics(self, mocked_async_index_offer_ids, caplog):
         stock = factories.EventStockFactory()
 
-        api.delete_stock(stock)
+        with caplog.at_level(logging.INFO):
+            api.delete_stock(stock)
 
         stock = models.Stock.query.one()
         assert stock.isSoftDeleted
@@ -931,6 +932,17 @@ class DeleteStockTest:
             [stock.offerId],
             reason=search.IndexationReason.STOCK_DELETION,
         )
+
+        # Test tracking
+        last_record = caplog.records[-1]
+        assert last_record.technical_message_id == "stock.deleted"
+        assert last_record.message == "Deleted stock and cancelled its bookings"
+        assert last_record.extra == {
+            "stock": stock.id,
+            "bookings": [],
+            "author_id": None,
+            "user_connect_as": False,
+        }
 
     def test_delete_stock_cancel_bookings_and_send_emails(self):
         offerer_email = "offerer@example.com"
@@ -1313,7 +1325,7 @@ class CreateOfferTest:
 
         assert offer.offererAddressId == None
 
-    def test_create_offer_from_scratch(self):
+    def test_create_offer_from_scratch(self, caplog):
         venue = offerers_factories.VenueFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
 
@@ -1326,7 +1338,8 @@ class CreateOfferTest:
             motorDisabilityCompliant=True,
             visualDisabilityCompliant=True,
         )
-        offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
+        with caplog.at_level(logging.INFO):
+            offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
 
         assert offer.name == "A pretty good offer"
         assert offer.venue == venue
@@ -1343,6 +1356,14 @@ class CreateOfferTest:
         assert models.Offer.query.count() == 1
         assert offer.offererAddress == offerer_address
         assert offer.offererAddress != venue.offererAddress
+
+        # Test tracking
+        offer_update_record = caplog.records[0]
+        mail_third_party_record = caplog.records[1]
+        assert offer_update_record.technical_message_id == "offer.created"
+        assert offer_update_record.message == "Offer has been created"
+
+        assert mail_third_party_record.message == "update_sib_pro_attributes_task"
 
     def test_create_offer_with_id_at_provider(self):
         venue = offerers_factories.VenueFactory()
@@ -1499,13 +1520,14 @@ class CreateOfferTest:
 @pytest.mark.usefixtures("db_session")
 class UpdateOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_basics(self, mocked_async_index_offer_ids):
+    def test_basics(self, mocked_async_index_offer_ids, caplog):
         offer = factories.OfferFactory(
             isDuo=False, bookingEmail="old@example.com", subcategoryId=subcategories.ESCAPE_GAME.id
         )
 
         body = offers_schemas.UpdateOffer(isDuo=True, bookingEmail="new@example.com")
-        offer = api.update_offer(offer, body)
+        with caplog.at_level(logging.DEBUG):
+            offer = api.update_offer(offer, body)
         db.session.flush()
 
         assert offer.isDuo
@@ -1515,6 +1537,20 @@ class UpdateOfferTest:
             reason=search.IndexationReason.OFFER_UPDATE,
             log_extra={"changes": {"bookingEmail", "isDuo"}},
         )
+
+        # Test tracking
+        last_record = caplog.records[-1]
+        assert last_record.technical_message_id == "offer.updated"
+        assert last_record.message == "Offer has been updated"
+        assert last_record.extra == {
+            "offer_id": offer.id,
+            "venue_id": offer.venueId,
+            "product_id": offer.productId,
+            "changes": {
+                "bookingEmail": {"oldValue": "old@example.com", "newValue": "new@example.com"},
+                "isDuo": {"oldValue": False, "newValue": True},
+            },
+        }
 
     def test_update_extra_data_should_raise_error_when_mandatory_field_not_provided(self):
         offer = factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
