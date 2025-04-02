@@ -766,10 +766,6 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         else:
             self._durationMinutes = value
 
-    @property
-    def isEducational(self) -> bool:
-        return False
-
     @hybrid_property
     def isSoldOut(self) -> bool:
         for stock in self.stocks:
