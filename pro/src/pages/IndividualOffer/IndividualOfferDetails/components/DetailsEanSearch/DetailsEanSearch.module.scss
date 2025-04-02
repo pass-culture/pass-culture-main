@@ -19,9 +19,9 @@ $icon-size: rem.torem(20px);
     right: 0;
     top: rem.torem(57px);
   }
-   
+
   .details-ean-search-container {
-     max-width: rem.torem(340px);
+    max-width: rem.torem(340px);
   }
 }
 
@@ -48,7 +48,7 @@ $icon-size: rem.torem(20px);
     height: $icon-size;
 
     path {
-      fill: var(--color-black);
+      fill: var(--color-icon-default);
     }
   }
 }

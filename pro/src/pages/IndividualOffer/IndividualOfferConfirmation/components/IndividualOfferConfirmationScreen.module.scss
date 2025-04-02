@@ -8,13 +8,13 @@
 
 .validate-icon {
   height: rem.torem(56px);
-  color: var(--color-valid);
+  color: var(--color-icon-success);
 }
 
 .pending-icon {
   height: rem.torem(43px);
   margin-bottom: rem.torem(17px);
-  color: var(--color-grey-dark);
+  color: var(--color-icon-subtle);
 }
 
 .confirmation-title {

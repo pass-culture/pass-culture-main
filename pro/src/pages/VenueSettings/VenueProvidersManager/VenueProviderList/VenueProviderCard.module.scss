@@ -94,7 +94,7 @@
 
 .last-synchronisation {
   &::before {
-    background-color: var(--color-valid);
+    background-color: var(--color-icon-success);
     border-radius: 50%;
     content: "";
     display: inline-block;

@@ -29,31 +29,31 @@ $vertical-offset-icon-from-step: calc(
 }
 
 .icon-error {
-  color: var(--color-error);
+  color: var(--color-icon-error);
 
   path {
-    fill: var(--color-error);
+    fill: var(--color-icon-error);
   }
 }
 
 .icon-success {
-  color: var(--color-valid);
+  color: var(--color-icon-success);
 }
 
 .icon-success-disabled {
-  color: var(--color-grey-semi-dark);
+  color: var(--color-icon-disabled);
 }
 
 .icon-waiting {
-  color: var(--color-grey-dark);
+  color: var(--color-icon-subtle);
 }
 
 .icon-disabled {
-  color: var(--color-grey-medium);
+  color: var(--color-icon-disabled);
 }
 
 .icon-wrong {
-  color: var(--color-error);
+  color: var(--color-icon-error);
 }
 
 .step {

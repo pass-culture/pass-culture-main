@@ -10,7 +10,7 @@
 }
 
 .draft-saved-icon {
-  color: var(--color-valid);
+  color: var(--color-icon-success);
   vertical-align: middle;
   margin-right: rem.torem(4px);
 }
@@ -24,7 +24,7 @@ $not-saved-size: rem.torem(16px);
   width: $not-saved-size;
   height: $not-saved-size;
   border-radius: 50%;
-  background-color: var(--color-alert-dark);
+  background-color: var(--color-icon-warning);
 }
 
 @media (min-width: size.$tablet) {

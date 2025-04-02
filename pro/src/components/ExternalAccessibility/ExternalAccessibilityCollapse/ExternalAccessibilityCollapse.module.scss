@@ -22,11 +22,11 @@
   border-radius: 50%;
 
   &.accessible {
-    color: var(--color-text-success);
+    color: var(--color-icon-success);
   }
 
   &.non-accessible {
-    color: var(--color-text-error);
+    color: var(--color-icon-error);
   }
 }
 
