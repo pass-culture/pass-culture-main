@@ -1,11 +1,15 @@
 import argparse
 from itertools import groupby
+import logging
 
 from sqlalchemy.orm import joinedload
 
 from pcapi import settings
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
+
+
+logger = logging.getLogger(__name__)
 
 
 def remove_product_ean_duplicate(do_update: bool) -> None:
@@ -21,24 +25,33 @@ def remove_product_ean_duplicate(do_update: bool) -> None:
 
     products_group_by_ean = [list(g) for k, g in groupby(products, key=lambda p: p.extraData["ean"])]
     products_group_by_ean = [list_of_product for list_of_product in products_group_by_ean if len(list_of_product) > 1]
-    print(f"Found {len(products_group_by_ean)} group of products with duplicate ean")
+    logger.info("Found %d group of products with duplicate ean", len(products_group_by_ean))
 
     for products in products_group_by_ean:
         product_to_keep = products[0]
         products_to_remove = products[1:]
-        print(
-            f"[PREVIEW] For ean {product_to_keep.extraData['ean']} keep product id {product_to_keep.id} "
-            f"and delete {len(products_to_remove)} products (id: {[p.id for p in products_to_remove]})"
+        logger.info(
+            "[PREVIEW] For ean %s keep product id %d and delete %d products (id: %s)",
+            product_to_keep.extraData["ean"],
+            product_to_keep.id,
+            len(products_to_remove),
+            [p.id for p in products_to_remove],
         )
         for product in products_to_remove:
-            print(
-                f"[JOIN INFO] Product {product.id} is linked to {len(product.offers)}"
-                f" offers (id: {[o.id for o in product.offers]})"
+            logger.info(
+                "[JOIN INFO] Product %d is linked to %d offers (id: %s)",
+                product.id,
+                len(product.offers),
+                [o.id for o in product.offers],
             )
             for idx, offer in enumerate(product.offers):
-                print(
-                    f"[TRANSFER][{idx + 1}/{len(product.offers)}] offer: {offer.id}"
-                    f" product {product.id} to product {product_to_keep.id}"
+                logger.info(
+                    "[TRANSFER][%d/%d] offer: %d product %d to product %d",
+                    idx + 1,
+                    len(product.offers),
+                    offer.id,
+                    product.id,
+                    product_to_keep.id,
                 )
                 offer.productId = product_to_keep.id
 
@@ -46,7 +59,7 @@ def remove_product_ean_duplicate(do_update: bool) -> None:
 
         for product in products_to_remove:
             db.session.delete(product)
-            print(f"[DELETE] product {product.id}")
+            logger.info("[DELETE] product %d", product.id)
 
         do_commit(do_update)
 
