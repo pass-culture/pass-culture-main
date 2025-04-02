@@ -166,7 +166,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
         self, mock_whitelist_product, mock_get_by_ean13, mocked_async_index_offer_ids, authenticated_client, form_data
     ):
         thing_product = offers_factories.ThingProductFactory(
-            extraData={"ean": BOOK_BY_SINGLE_EAN_FIXTURE["ean"]},
+            ean=BOOK_BY_SINGLE_EAN_FIXTURE["ean"],
             description="Tome 1",
             idAtProviders=str(BOOK_BY_SINGLE_EAN_FIXTURE["ean"]),
             name="Immortelle randonnée ; Compostelle malgré moi",
@@ -256,7 +256,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
         self, mock_whitelist_product, mock_get_by_ean13, authenticated_client, requests_mock
     ):
         thing_product = offers_factories.ThingProductFactory(
-            extraData={"ean": BOOK_BY_SINGLE_EAN_FIXTURE["ean"]},
+            ean=BOOK_BY_SINGLE_EAN_FIXTURE["ean"],
             description="Tome 1",
             idAtProviders=str(BOOK_BY_SINGLE_EAN_FIXTURE["ean"]),
             name="Immortelle randonnée ; Compostelle malgré moi",
@@ -341,7 +341,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
         self, mock_whitelist_product, mock_get_by_ean13, mocked_async_index_offer_ids, authenticated_client, legit_user
     ):
         thing_product = offers_factories.ThingProductFactory(
-            extraData={"ean": BOOK_BY_SINGLE_EAN_FIXTURE["ean"]},
+            ean=BOOK_BY_SINGLE_EAN_FIXTURE["ean"],
             description="Tome 1",
             idAtProviders=str(BOOK_BY_SINGLE_EAN_FIXTURE["ean"]),
             name="Immortelle randonnée ; Compostelle malgré moi",

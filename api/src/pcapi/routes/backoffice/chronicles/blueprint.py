@@ -63,11 +63,11 @@ def list_chronicles() -> utils.BackofficeResponse:
     q_filters = []
     if form.q.data and string_utils.is_ean_valid(form.q.data):
         query = query.join(chronicles_models.Chronicle.products)
-        q_filters.append(offers_models.Product.extraData["ean"].astext == string_utils.format_ean_or_visa(form.q.data))
+        q_filters.append(offers_models.Product.ean == string_utils.format_ean_or_visa(form.q.data))
     elif form.q.data:
         if form.search_type.data in (forms.SearchType.ALL.name, forms.SearchType.CHRONICLE_CONTENT.name):
             q_filters.append(
-                sa.and_(
+                sa.and_(  # type: ignore[type-var]
                     chronicles_models.Chronicle.__content_ts_vector__.op("@@")(sa.func.plainto_tsquery("french", w))
                     for w in form.q.data.split(" ")
                     if len(w) > 1
@@ -128,6 +128,7 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
         .options(
             joinedload(chronicles_models.Chronicle.products).load_only(
                 offers_models.Product.name,
+                offers_models.Product.ean,
                 offers_models.Product.extraData,
             )
         )
@@ -144,7 +145,7 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
     )
     product_name = None
     for product in chronicle.products:
-        if product.extraData.get("ean") == chronicle.ean:
+        if product.ean == chronicle.ean:
             product_name = product.name
             break
 
@@ -253,7 +254,7 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
         chronicles = chronicles_models.Chronicle.query.filter(
             chronicles_models.Chronicle.ean == selected_chronicle.ean
         ).all()
-    products = offers_models.Product.query.filter(offers_models.Product.extraData["ean"].astext == form.ean.data).all()
+    products = offers_models.Product.query.filter(offers_models.Product.ean == form.ean.data).all()
 
     if not products:
         mark_transaction_as_invalid()

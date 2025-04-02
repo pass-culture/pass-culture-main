@@ -1,3 +1,4 @@
+from factory.faker import faker
 import pytest
 
 from pcapi.core import testing
@@ -7,6 +8,9 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import GcuCompatibilityType
 from pcapi.core.offers.models import ImageType
 import pcapi.core.users.factories as users_factories
+
+
+Fake = faker.Faker(locale="fr_FR")
 
 
 @pytest.mark.usefixtures("db_session")
@@ -21,8 +25,8 @@ class Returns200Test:
             description="Product description",
             name="Product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
+            ean="1234567891011",
             extraData={
-                "ean": "1234567891011",
                 "author": "Martin Dupont",
                 "gtl_id": "02000000",
                 "performer": "Martine Dupond",
@@ -61,7 +65,8 @@ class Returns200Test:
             description=None,
             name="Product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"ean": "1234567891011", "author": "Martin Dupont"},
+            ean="1234567891011",
+            extraData={"author": "Martin Dupont"},
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )
 
@@ -85,8 +90,8 @@ class Returns200Test:
             description="Product description",
             name="Product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
+            ean="1234567891011",
             extraData={
-                "ean": "1234567891011",
                 "author": "Martin Dupont",
                 "gtl_id": "02000000",
                 "performer": "Martine Dupond",
@@ -108,6 +113,7 @@ class Returns200Test:
 class Returns422Test:
     def test_get_product_by_ean_not_gcu_compatible(self, client):
         user = users_factories.UserFactory()
+        ean = Fake.ean13()
         offerer = offerers_factories.OffererFactory()
         offerer_id = offerer.id
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
@@ -116,7 +122,8 @@ class Returns422Test:
             description="Product description",
             name="Product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"ean": "EANDUPRODUIT", "author": "Martin Dupont"},
+            ean=ean,
+            extraData={"author": "Martin Dupont"},
             gcuCompatibilityType=GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
@@ -127,7 +134,7 @@ class Returns422Test:
         num_queries += 1  # select offer
         num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get_product_by_ean/EANDUPRODUIT/{offerer_id}")
+            response = test_client.get(f"/get_product_by_ean/{ean}/{offerer_id}")
 
             assert response.status_code == 422
             assert response.json == {"ean": ["EAN invalide. Ce produit n'est pas conforme à nos CGU."]}
@@ -150,6 +157,7 @@ class Returns422Test:
             assert response.json == {"ean": ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."]}
 
     def test_get_product_by_ean_offer_already_exists_for_offerrer_with_only_one_venue(self, client):
+        ean = Fake.ean13()
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerer_id = offerer.id
@@ -160,7 +168,8 @@ class Returns422Test:
             description="Product description",
             name="Product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"ean": "EANDUPRODUIT", "author": "Martin Dupont"},
+            ean=ean,
+            extraData={"author": "Martin Dupont"},
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )
         offers_factories.OfferFactory(product=product, venue=venue)
@@ -172,7 +181,7 @@ class Returns422Test:
         num_queries += 1  # select offer
         num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get_product_by_ean/EANDUPRODUIT/{offerer_id}")
+            response = test_client.get(f"/get_product_by_ean/{ean}/{offerer_id}")
 
             assert response.status_code == 422
             assert response.json == {
@@ -180,12 +189,14 @@ class Returns422Test:
             }
 
     def test_offerer_does_not_exist(self, client):
+        ean = Fake.ean13()
         user = users_factories.UserFactory()
         offers_factories.ProductFactory(
             description="Product description",
             name="Product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"ean": "EANDUPRODUIT", "author": "Martin Dupont"},
+            ean=ean,
+            extraData={"author": "Martin Dupont"},
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )
 
@@ -195,7 +206,7 @@ class Returns422Test:
         num_queries += 1  # select offerer join load venue
         num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
-            response = test_client.get("/get_product_by_ean/EANDUPRODUIT/0")
+            response = test_client.get(f"/get_product_by_ean/{ean}/0")
 
             assert response.status_code == 422
             assert response.json == {"ean": ["Structure non reconnue."]}

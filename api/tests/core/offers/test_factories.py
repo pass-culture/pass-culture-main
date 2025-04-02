@@ -112,7 +112,7 @@ class ProductFactoryTest:
 
         assert book_product.extraData is not None
         assert isinstance(book_product.extraData.get("author"), str)
-        assert re.match(r"\d{13}", book_product.extraData.get("ean"))
+        assert re.match(r"\d{13}", book_product.ean)
         assert book_product.extraData.get("gtl_id") in GTLS
 
     def test_generate_CDs_extra_data(self):

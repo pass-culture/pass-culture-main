@@ -27,7 +27,7 @@ def create_offers_with_ean() -> None:
                 idAtProviders=ean,
                 subcategoryId=subcategories.LIVRE_PAPIER.id,
                 lastProviderId=provider.id,
-                extraData={"ean": f"9780000000{i:03}"},
+                ean=f"9780000000{i:03}",
             )
         )
 

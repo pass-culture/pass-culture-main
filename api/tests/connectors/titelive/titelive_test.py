@@ -57,7 +57,6 @@ class TiteliveTest:
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.lastProvider.name == providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
         assert product.extraData["author"] == oeuvre["auteurs"]
-        assert product.extraData["ean"] == ean
         assert product.extraData["prix_livre"] == article["prix"]
         assert product.extraData["collection"] == article["collection"]
         assert product.extraData["comic_series"] == article["serie"]

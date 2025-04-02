@@ -289,7 +289,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offers_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"ean": "1111111111111"},
+            ean="1111111111111",
             name="New name",
             description="description",
         )
@@ -311,7 +311,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"ean": "1111111111111"},
+            ean="1111111111111",
             name="New name",
             description="description",
         )
@@ -1073,7 +1073,7 @@ class Returns400Test:
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"ean": "1111111111111"},
+            ean="1111111111111",
             name="New name",
             description="description",
         )

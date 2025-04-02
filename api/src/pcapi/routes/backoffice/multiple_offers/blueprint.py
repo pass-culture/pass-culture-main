@@ -64,7 +64,7 @@ def search_multiple_offers() -> utils.BackofficeResponse:
     ean = form.ean.data
 
     product = offers_models.Product.query.filter(
-        offers_models.Product.extraData["ean"].astext == ean, offers_models.Product.idAtProviders.is_not(None)
+        offers_models.Product.ean == ean, offers_models.Product.idAtProviders.is_not(None)
     ).one_or_none()
 
     if not product:

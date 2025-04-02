@@ -3109,9 +3109,7 @@ def generate_beneficiary():
     )
     product = offers_factories.ProductFactory(
         name="my super book",
-        extraData={
-            "ean": "1234567890123",
-        },
+        ean="1234567890123",
     )
     chronicles_factories.ChronicleFactory(
         user=user,

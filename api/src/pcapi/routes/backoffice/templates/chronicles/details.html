@@ -157,12 +157,12 @@
                         </div>
                       </td>
                     {% endif %}
-                    {% if product.extraData.get('ean') == chronicle.ean %}
+                    {% if product.ean == chronicle.ean %}
                       <td>
-                        <b>{{ product.extraData.get("ean") }}</b>
+                        <b>{{ product.ean }}</b>
                       </td>
                     {% else %}
-                      <td>{{ product.extraData.get("ean") }}</td>
+                      <td>{{ product.ean }}</td>
                     {% endif %}
                     <td>{{ product.name }}</td>
                   </tr>

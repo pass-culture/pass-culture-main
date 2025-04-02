@@ -60,7 +60,7 @@ class ListChroniclesTest(GetEndpointHelper):
 
     def test_search_by_ean(self, authenticated_client):
         ean = "1234567890123"
-        product = offers_factories.ProductFactory(extraData={"ean": ean})
+        product = offers_factories.ProductFactory(ean=ean)
         chronicle_with_product = chronicles_factories.ChronicleFactory(products=[product])
         chronicles_factories.ChronicleFactory()
         with assert_num_queries(self.expected_num_queries):
@@ -182,7 +182,7 @@ class GetChronicleDetailsTest(GetEndpointHelper):
 
     def test_nominal(self, authenticated_client):
         products = [
-            offers_factories.ProductFactory(extraData={"ean": "1235467890123"}),
+            offers_factories.ProductFactory(ean="1235467890123"),
             offers_factories.ProductFactory(),
         ]
         user = users_factories.BeneficiaryFactory()
@@ -191,7 +191,7 @@ class GetChronicleDetailsTest(GetEndpointHelper):
             age=18,
             city="valechat",
             content="A short content",
-            ean=products[0].extraData["ean"],
+            ean=products[0].ean,
             email=user.email,
             firstName=user.firstName,
             isIdentityDiffusible=True,
@@ -395,7 +395,7 @@ class AttachProductTest(PostEndpointHelper):
 
     def test_attach_product(self, authenticated_client, legit_user):
         ean = "1234567890123"
-        product = offers_factories.ProductFactory(extraData={"ean": ean})
+        product = offers_factories.ProductFactory(ean=ean)
         chronicle = chronicles_factories.ChronicleFactory()
 
         response = self.post_to_endpoint(
@@ -416,7 +416,7 @@ class AttachProductTest(PostEndpointHelper):
 
     def test_attach_product_to_multiple_chronicles(self, authenticated_client, legit_user):
         ean = "1234567890123"
-        product = offers_factories.ProductFactory(extraData={"ean": ean})
+        product = offers_factories.ProductFactory(ean=ean)
         chronicles_to_update = chronicles_factories.ChronicleFactory.create_batch(2, ean="0123456789123")
         untouched_chronicle = chronicles_factories.ChronicleFactory()
 

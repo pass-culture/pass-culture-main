@@ -430,7 +430,8 @@ def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_mo
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         lastProvider=providers_factories.PublicApiProviderFactory(name="BookProvider"),
         idAtProviders=ean,
-        extraData={"gtl_id": gtl_id, "author": Fake.name(), "ean": ean},
+        extraData={"gtl_id": gtl_id, "author": Fake.name()},
+        ean=ean,
     )
     offers = offers_factories.OfferFactory.create_batch(
         product=product,
@@ -479,7 +480,8 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         lastProvider=providers_factories.PublicApiProviderFactory(name="BookProvider"),
         idAtProviders=ean,
-        extraData={"ean": ean, "author": author},
+        ean=ean,
+        extraData={"author": author},
     )
     offer = offers_factories.OfferFactory(
         product=product,
@@ -723,7 +725,8 @@ def create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list
         product = offers_factories.ProductFactory(
             name="One Piece tome " + str(tome),
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"ean": ean, "author": author},
+            ean=ean,
+            extraData={"author": author},
         )
         for venue in venues:
             offer = offers_factories.OfferFactory(
@@ -737,7 +740,8 @@ def create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list
         product = offers_factories.ProductFactory(
             name="One Piece tome " + str(tome),
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"ean": ean, "author": author},
+            ean=ean,
+            extraData={"author": author},
         )
         offer = offers_factories.OfferFactory(
             product=product,
@@ -753,7 +757,8 @@ def create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
     product = offers_factories.ProductFactory(
         name="multiauth",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
-        extraData={"ean": ean, "author": ", ".join(authors)},
+        ean=ean,
+        extraData={"author": ", ".join(authors)},
     )
     offer = offers_factories.OfferFactory(
         product=product,
@@ -979,7 +984,7 @@ def create_product_with_multiple_images() -> None:
     product = offers_factories.ProductFactory(
         name="multiple thumbs",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
-        extraData={"ean": "9999999999999"},
+        ean="9999999999999",
     )
     offer = offers_factories.OfferFactory(product=product, name=product.name, subcategoryId=product.subcategoryId)
     offers_factories.StockFactory(offer=offer)

@@ -1871,7 +1871,7 @@ def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.Gdpr
         chronicles_models.Chronicle.userId == user.id,
     ).options(
         sa_orm.joinedload(chronicles_models.Chronicle.products).load_only(
-            offers_models.Product.extraData,
+            offers_models.Product.ean,
             offers_models.Product.name,
         )
     )
@@ -1880,7 +1880,7 @@ def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.Gdpr
     for chronicle in chronicles_data:
         product_name = None
         for product in chronicle.products:
-            if chronicle.ean and product.extraData.get("ean") == chronicle.ean:
+            if chronicle.ean and product.ean == chronicle.ean:
                 product_name = product.name
                 break
         chronicles.append(

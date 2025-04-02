@@ -26,7 +26,8 @@ class GetEANsAvailabilityTest(PublicAPIEndpointBaseHelper):
         offers_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             name="Vieux motard que jamais",
-            extraData={"ean": valid_ean, "subcategoryId": subcategories.LIVRE_PAPIER.id},
+            ean=valid_ean,
+            extraData={"subcategoryId": subcategories.LIVRE_PAPIER.id},
         )
 
         # Invalid EAN because of subcategory
@@ -34,10 +35,8 @@ class GetEANsAvailabilityTest(PublicAPIEndpointBaseHelper):
         offers_factories.ProductFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             name="Les 3000 mousquetaires contre Goldorak (collection Art & Essai)",
-            extraData={
-                "ean": invalid_ean_because_not_in_allowed_subcategory,
-                "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
-            },
+            ean=invalid_ean_because_not_in_allowed_subcategory,
+            extraData={"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id},
         )
 
         # Invalid EAN because not compliant with CGU
@@ -46,10 +45,8 @@ class GetEANsAvailabilityTest(PublicAPIEndpointBaseHelper):
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
             name="Un livre un peu 'olé olé'",
-            extraData={
-                "ean": invalid_ean_because_not_compliant_with_cgu,
-                "subcategoryId": subcategories.LIVRE_PAPIER.id,
-            },
+            ean=invalid_ean_because_not_compliant_with_cgu,
+            extraData={"subcategoryId": subcategories.LIVRE_PAPIER.id},
         )
         not_found_ean = "4234567890123"
 

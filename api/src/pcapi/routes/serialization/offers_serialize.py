@@ -398,8 +398,12 @@ class PriceCategoryResponseModel(BaseModel):
 class IndividualOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "extraData" and self._obj.product:
-            self._obj.extraData = self._obj.product.extraData
-
+            # FIXME (jmontagnat, 2024-04-02) Remove this block of code
+            #  when the offer uses the EAN column instead of extraData->>ean
+            product_extra_data = self._obj.product.extraData.copy()
+            if self._obj.product.ean:
+                product_extra_data.update({"ean": self._obj.product.ean})
+            return product_extra_data
         return super().get(key, default)
 
 
