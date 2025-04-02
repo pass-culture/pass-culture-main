@@ -18,18 +18,26 @@
       -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com https://*.getbeamer.com/; connect-src 'self' data: https: http: ws://*:3001 wss://*:3001; style-src 'self' https://app.getbeamer.com/styles/beamer-embed.css https://fonts.googleapis.com/css 'unsafe-inline'"
+      content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com https://*.getbeamer.com/; connect-src 'self' data: https: http: ws://*:3001 wss://*:3001; style-src 'self' https://app.getbeamer.com/styles/beamer-embed.css https://fonts.googleapis.com/css https://cdn.jsdelivr.net/npm/orejime@3.0.0/dist/orejime-standard.css 'unsafe-inline'"
     />
     <% } else { %>
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com https://*.getbeamer.com/; style-src 'self' https://app.getbeamer.com/styles/beamer-embed.css https://fonts.googleapis.com/css 'unsafe-inline'"
+      content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com https://*.getbeamer.com/; style-src 'self' https://app.getbeamer.com/styles/beamer-embed.css https://fonts.googleapis.com/css https://cdn.jsdelivr.net/npm/orejime@3.0.0/dist/orejime-standard.css 'unsafe-inline'"
     />
     <% } %>
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="shortcut icon" href="/icon/app-icon-iphone.png" />
     <link rel="apple-touch-icon" href="/icon/app-icon-iphone.png" />
+
+
+    <script src="https://cdn.jsdelivr.net/npm/orejime@3.0.0/dist/orejime-standard-fr.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/orejime@3.0.0/dist/orejime-standard.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
 
     <!-- The following line is the placeholder where the fonts preloads are injected on build -->
     <!-- inject:preload-design-system-fonts --><!-- endinject -->
@@ -41,12 +49,11 @@
     <div id="root"></div>
     <noscript>passCulture Pro a besoin de JavaScript pour fonctionner</noscript>
     <script type="module" src="/index.tsx"></script>
-    <script
-      data-type="text/javascript"
-      type="opt-in"
-      data-name="beamer"
-      data-src="https://app.getbeamer.com/js/beamer-embed.js"
-      defer="defer"
-    ></script>
+    <template data-purpose="beamer">
+      <script
+        src="https://app.getbeamer.com/js/beamer-embed.js"
+        defer="defer"
+      ></script>
+    </template>
   </body>
 </html>

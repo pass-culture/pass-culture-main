@@ -23,5 +23,6 @@ declare global {
       ready: (callback: () => Promise<void>) => void
       reset?: (siteKey: string) => void
     }
+    loadOrejime: (...args: any[]) => void
   }
 }

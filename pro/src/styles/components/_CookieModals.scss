@@ -6,240 +6,349 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_outline.scss" as outline;
 
-$action-gap: rem.torem(10px);
+$action-gap: rem.torem(12px);
 
-.orejime-Modal-header,
-.orejime-Modal-body,
-.orejime-Modal-footer {
-  padding: 0;
-}
-
-.orejime-Notice,
-.orejime-Modal {
-  background: var(--color-background-default);
-  box-shadow: 0 2px 16px var(--color-medium-shadow);
-  color: var(--color-text-default);
-}
-
-.orejime-Notice-actionItem button,
-.orejime-Modal-form button {
-  @include fonts.button;
-
-  text-align: center;
-  border-radius: rem.torem(30px);
-  border: rem.torem(2px) solid var(--color-border-brand-primary);
-  padding: rem.torem(10px) rem.torem(24px);
-  background: var(--color-background-brand-primary);
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--color-background-brand-primary-hover);
-    border-color: var(--color-border-brand-primary-hover);
-  }
-
-  &:focus-visible {
-    @include outline.focus-outline;
-  }
-}
-
-.orejime-Notice {
-  border-radius: rem.torem(6px);
-  padding: rem.torem(16px);
-
-  @media (width >= 990px) {
-    max-width: rem.torem(439px);
-    width: 100%;
-  }
-
-  &-title {
-    @include fonts.body-accent;
-
-    color: var(--color-text-default);
-    margin-bottom: rem.torem(8px);
-  }
-
-  &-body {
+.orejime-Env {
+  .orejime-Modal-header,
+  .orejime-Modal-body,
+  .orejime-Modal-footer {
     padding: 0;
-    margin: 0;
   }
 
-  &-description {
-    margin-bottom: rem.torem(16px);
+  .orejime-Banner-body,
+  .orejime-Modal {
+    background: var(--color-background-default);
+    box-shadow: 0 2px 16px var(--color-medium-shadow);
     color: var(--color-text-default);
-
-    @include fonts.body;
   }
 
-  &-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $action-gap;
+  .orejime-Banner-actions button,
+  .orejime-Modal-form button {
+    @include fonts.button;
 
-    .orejime-Notice-actionItem button {
-      margin: 0;
+    text-align: center;
+    border-radius: rem.torem(30px);
+    border: rem.torem(2px) solid var(--color-primary);
+    padding: 0 rem.torem(16px);
+    min-height: rem.torem(40px);
+    line-height: var(--typography-body-line-height);
+    background: var(--color-primary);
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--color-primary-dark);
+      border-color: var(--color-primary-dark);
+    }
+
+    &:focus-visible {
+      @include outline.focus-outline;
+    }
+  }
+
+  .orejime-Banner {
+    @media (min-width: size.$tablet) {
+      padding: rem.torem(24px);
+      width: initial;
+    }
+
+    padding: 0;
+    width: 100%;
+
+    &-body {
+      @media (min-width: size.$tablet) {
+        max-width: rem.torem(439px);
+      }
+
+      border-radius: rem.torem(6px);
+      padding: rem.torem(21px);
+      max-width: initial;
       width: 100%;
     }
 
-    .orejime-Notice-actionItem--save,
-    .orejime-Notice-actionItem--decline {
-      width: calc(50% - ($action-gap / 2));
+    &-title {
+      @include fonts.title4;
+
+      color: var(--color-text-default);
+      line-height: var(--typography-body-line-height);
+      margin-bottom: rem.torem(12px);
     }
 
-    .orejime-Notice-actionItem--info {
-      width: 100%;
+    &-description {
+      margin-bottom: rem.torem(21px);
+      padding-bottom: rem.torem(21px);
+      border-bottom: 1px solid var(--separator-color-subtle, #CBCDD2);
+      color: var(--color-text-subtle);
 
-      button {
-        background: var(--color-background-default);
-        color: var(--color-text-brand-primary);
+      @include fonts.body;
+    }
 
-        &:hover {
-          color: var(--color-text-inverted);
-          background-color: var(--color-background-brand-primary-hover);
-          border-color: var(--color-border-brand-primary-hover);
+    &-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $action-gap;
+
+      .orejime-Banner-actionItem {
+        width: 100%;
+
+        button {
+          margin: 0;
+          width: 100%;
+
+          @include fonts.button;
+        }
+      }
+
+      .orejime-Banner-actionItem--info {
+        button {
+          outline: none;
+          color: var(--color-text-default);
+          align-items: flex-start;
+          justify-content: flex-start;
+          background-color: transparent;
+          border-radius: rem.torem(4px);
+          padding: 0;
+          border: none;
+          height: auto;
+
+          &:hover,
+          &:focus-visible {
+            text-decoration: underline;
+          }
+
+          &:disabled {
+            text-decoration: none;
+            color: var(--color-text-disabled);
+          }
+
+          &:focus-visible,
+          &:focus {
+            @include outline.focus-outline;
+          }
+        }
+      }
+    }
+  }
+
+  .orejime-ModalWrapper,
+  .orejime-Modal {
+    width: rem.torem(1104px);
+    max-width: 100%;
+  }
+
+  .orejime-Modal {
+    padding: rem.torem(32px);
+
+    &-body {
+      margin-bottom: rem.torem(26px);
+    }
+
+    &-closeButton {
+      top: rem.torem(32px);
+      right: rem.torem(32px);
+      padding: 0;
+
+      & > .orejime-CloseIcon {
+        width: 16px;
+        height: 16px;
+        stroke-width: 1px;
+      }
+    }
+
+    &-title {
+      margin-bottom: rem.torem(12px);
+
+      @include fonts.title3;
+    }
+
+    &-description {
+      @include fonts.body;
+
+      a {
+        @include fonts.body;
+
+        color: var(--color-text-default);
+      }
+    }
+
+    &-poweredByLink {
+      display: none;
+    }
+
+    &-form {
+      .orejime-PurposeToggles {
+        margin-bottom: rem.torem(20px);
+        gap: 0.5rem;
+
+        button {
+          background: var(--color-background-default);
+          color: var(--color-primary);
+          cursor: pointer;
+          margin: 0;
+
+          &[aria-disabled="true"] {
+            background: var(--color-background-disabled);
+            border-color: var(--color-border-disabled);
+            color: var(--color-text-disabled);
+            border-radius: 30px;
+            opacity: 1;
+            cursor: default;
+            pointer-events: none;
+          }
+
+          &:hover {
+            color: var(--color-white);
+            background-color: var(--color-primary-dark);
+            border-color: var(--color-primary-dark);
+          }
+        }
+      }
+    }
+  }
+
+  .orejime-PurposeList {
+    .orejime-Purpose {
+      margin-top: 0;
+      grid-template: "empty description"
+        "empty children"
+        "input label"/min-content auto;
+
+      &-description {
+        @include fonts.body;
+
+        color: var(--color-text-default);
+      }
+
+      &-required {
+        @include fonts.body-accent-xs;
+      }
+
+      &-label {
+        display: inline;
+        border-radius: 4px;
+        background: var(--color-black, #161617);
+        color: var(--color-white, #fff);
+        padding: rem.torem(4px) rem.torem(8px);
+        width: fit-content;
+        margin: rem.torem(8px) 0 0 rem.torem(37px);
+      }
+
+      &-purposes {
+        display: none;
+      }
+
+      &-title {
+        @include fonts.body-xs
+      }
+    }
+
+    &-apps {
+      margin: rem.torem(16px) 0 0;
+    }
+  }
+
+  .orejime-PurposeList-item {
+    $initial-padding-left-item: 60px;
+
+    border-radius: 8px;
+    border: 1px solid var(--color-border-subtle, #CBCDD2);
+    padding: rem.torem(12px) rem.torem(16px);
+    margin-bottom: rem.torem(12px);
+
+    .orejime-Purpose-input, .orejime-Purpose-attribute {
+      display: none;
+    }
+
+    &:last-of-type {
+      display: none;
+    }
+  }
+
+  .orejime-Modal-footer,
+  .orejime-Modal-header {
+    border: none;
+  }
+
+  .orejime-Modal-header {
+    margin-bottom: rem.torem(16px);
+  }
+
+  .orejime-Purpose-children {
+    .orejime-PurposeList-item {
+      display: block;
+      border: none;
+      padding: initial;
+      margin-bottom: initial;
+    }
+
+    .orejime-Purpose {
+      grid-template: "input label"
+        "empty description"
+        "empty children"/min-content auto;
+    }
+
+    .orejime-PurposeList .orejime-PurposeList-item {
+      .orejime-Purpose-attribute--state {
+        @include fonts.body-accent-xs;
+        @include a11y.visually-hidden;
+      }
+
+      .orejime-Purpose-label {
+        width: initial;
+        margin: initial;
+        margin-bottom: rem.torem(4px);
+        padding: 0;
+      }
+
+      .orejime-Purpose-label,  .orejime-Purpose-title {
+        @include fonts.body-accent;
+
+        border-radius: initial;
+        background: initial;
+        color: initial;
+      }
+
+      .orejime-Purpose-input, .orejime-Purpose-attribute {
+        display: initial;
+      }
+
+      .orejime-Purpose-input {
+        appearance: none;
+        border: rem.torem(2px) solid var(--color-grey-dark);
+        border-radius: rem.torem(3px);
+        transition:
+                border 150ms ease,
+                background 150ms ease;
+        flex: 0 0 auto;
+        margin-right: rem.torem(8px);
+        outline: none;
+        padding: 0;
+        position: relative;
+        vertical-align: middle;
+        height: size.$checkbox-size;
+        width: size.$checkbox-size;
+        cursor: pointer;
+
+        &:checked {
+          background-color: var(--color-secondary-light);
+          border-color: var(--color-border-brand-primary);
+
+          &::after {
+            background-image: url("/icon/checkbox-check.svg");
+            background-position: center;
+            background-repeat: no-repeat;
+            content: "";
+            height: 100%;
+            position: absolute;
+            width: 100%;
+          }
+        }
+
+        &:focus-visible {
+          @include outline.focus-outline(rem.torem(4px));
         }
       }
     }
   }
 }
 
-@media (min-width: size.$tablet) {
-  .orejime-ModalWrapper,
-  .orejime-Modal {
-    width: rem.torem(735px);
-  }
-}
 
-.orejime-Modal {
-  padding: rem.torem(30px);
-
-  &-closeButton {
-    top: rem.torem(30px);
-    right: rem.torem(30px);
-  }
-
-  &-title {
-    margin-bottom: rem.torem(8px);
-
-    @include fonts.title3;
-  }
-
-  &-description {
-    @include fonts.body;
-  }
-
-  &-poweredByLink {
-    display: none;
-  }
-}
-
-.orejime-AppToggles {
-  margin: rem.torem(32px) 0;
-
-  button {
-    background: var(--color-background-default);
-    color: var(--color-primary);
-    cursor: pointer;
-    margin-bottom: 0.5rem;
-
-    &[disabled] {
-      background: var(--color-background-disabled);
-      border-color: var(--color-border-disabled);
-      color: var(--color-text-disabled);
-      border-radius: 30px;
-      opacity: 1;
-      cursor: default;
-      pointer-events: none;
-    }
-
-    &:hover {
-      color: var(--color-text-inverted);
-      background-color: var(--color-background-brand-primary-hover);
-      border-color: var(--color-border-brand-primary-hover);
-    }
-  }
-}
-
-.orejime-CategorizedAppList {
-  .orejime-AppItem {
-    input[type="checkbox"] {
-      @include a11y.visually-hidden;
-    }
-
-    &-input:checked + .orejime-AppItem-label .orejime-AppItem-slider {
-      background-color: var(--color-valid);
-
-      &::before {
-        transform: translateX(26px);
-      }
-    }
-
-    &-input:focus-visible + .orejime-AppItem-label .orejime-AppItem-slider {
-      @include outline.focus-outline(rem.torem(0));
-    }
-
-    &-slider {
-      box-shadow: none;
-    }
-
-    &-switch,
-    &-slider {
-      width: rem.torem(56px);
-    }
-
-    &-title {
-      @include fonts.title4;
-    }
-
-    &-description {
-      @include fonts.body;
-    }
-
-    &-switchLabel {
-      @include fonts.body-accent-xs;
-
-      margin-top: rem.torem(8px);
-    }
-
-    &-required {
-      @include fonts.body-accent-xs;
-    }
-
-    &-label {
-      margin-bottom: rem.torem(8px);
-      display: inline-block;
-    }
-
-    &-purposes {
-      display: none;
-    }
-  }
-
-  &-apps {
-    margin: rem.torem(16px) 0 0;
-  }
-
-  &-item {
-    margin-bottom: rem.torem(24px);
-
-    &:first-of-type {
-      display: none;
-    }
-  }
-}
-
-.orejime-AppList {
-  $initial-padding-left-item: 60px;
-
-  &-item {
-    padding-left: rem.torem(calc($initial-padding-left-item + 9px));
-  }
-}
-
-.orejime-Modal-footer,
-.orejime-Modal-header {
-  border: none;
-}
-
-.orejime-Modal-footer {
-  margin-top: rem.torem(50px);
-}

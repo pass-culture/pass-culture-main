@@ -1,5 +1,3 @@
-// @ts-expect-error no types for this lib yet
-import * as Orejime from 'orejime'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
@@ -8,9 +6,9 @@ import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 
 import {
-  Consents,
   LOCAL_STORAGE_DEVICE_ID_KEY,
   orejimeConfig,
+  Consents,
 } from './orejimeConfig'
 
 export let orejime: any = null
@@ -19,6 +17,21 @@ export const useOrejime = () => {
   const location = useLocation()
   const [consentedToFirebase, setConsentedToFirebase] = useState(false)
   const [consentedToBeamer, setConsentedToBeamer] = useState(false)
+
+  function addListener() {
+    orejime.manager.on(
+      'update',
+      function (
+        updatedConsents: { [key in Consents]: boolean },
+        allConsents: { [key in Consents]: boolean }
+      ) {
+        if (Object.keys(updatedConsents).length > 0) {
+          setConsentedToFirebase(allConsents[Consents.FIREBASE])
+          setConsentedToBeamer(allConsents[Consents.BEAMER])
+        }
+      }
+    )
+  }
 
   useEffect(() => {
     // Initialize cookie consent modal
@@ -32,37 +45,25 @@ export const useOrejime = () => {
         }
 
         try {
-          orejime = Orejime.init(orejimeConfig)
+          if (!orejime) {
+            orejime = window.loadOrejime(orejimeConfig)
+            addListener()
+            setConsentedToFirebase(
+              orejime.manager.getConsent(Consents.FIREBASE) || false
+            )
+            setConsentedToBeamer(
+              orejime.manager.getConsent(Consents.BEAMER) || false
+            )
+          } else if (!document.cookie.includes('orejime')) {
+            // We force the banner to be displayed again if the cookie was deleted somehow
+            orejime.manager.clearConsents()
+            orejime = window.loadOrejime(orejimeConfig)
+            addListener()
+          }
         } catch (e) {
           sendSentryCustomError(e)
           setConsentedToFirebase(false)
           setConsentedToBeamer(false)
-        }
-
-        if (orejime !== null) {
-          // Set the consent on consent change
-          orejime.internals.manager.watch({
-            update: ({
-              consents,
-            }: {
-              consents: { [key in Consents]: boolean }
-            }) => {
-              setConsentedToFirebase(consents[Consents.FIREBASE])
-              setConsentedToBeamer(consents[Consents.BEAMER])
-            },
-          })
-          setConsentedToFirebase(
-            orejime.internals.manager.consents[Consents.FIREBASE]
-          )
-          setConsentedToBeamer(
-            orejime.internals.manager.consents[Consents.BEAMER]
-          )
-
-          // We force the banner to be displayed again if the cookie was deleted somehow
-          if (!document.cookie.includes('orejime')) {
-            orejime.internals.manager.confirmed = false
-            orejime = Orejime.init(orejimeConfig)
-          }
         }
       })
     } else {
