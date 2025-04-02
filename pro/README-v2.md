@@ -122,14 +122,23 @@ Une fois l’environnement installé, démarrez le backend avec la commande suiv
 ```bash
 pc start-backend
 
-# ⚠️ Peut prendre plusieurs minutes …
+# ou si vous avez configuré le proxy Netskope :
+pc start-proxy-backend
+
+# ⚠️ Cela peut prendre plusieurs minutes …
 ```
 
-Cela aura pour effet de lancer les conteneurs Docker permettant de faire tourner les services nécessaires, notamment :
+Cela aura pour effet de builder et lancer les conteneurs Docker permettant de faire tourner les services nécessaires, notamment :
 
 - l'API backend (réponds sur le port [:5001](http://localhost:5001))
 - la base de données (réponds sur le port **:5434**)
 - le back-office (réponds sur le port [:5002](http://localhost:5002))
+
+> [!TIP]
+>
+> Si plus tard vous souhaitez redémarrer le back-end sans rebuilder les images Docker, vous pouvez utiliser le flag `--fast` :
+>
+> `pc start-backend --fast` ou `pc start-proxy-backend --fast`
 
 ## Lancer le front-end
 
