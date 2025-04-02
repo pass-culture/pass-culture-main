@@ -29,9 +29,11 @@ export const CollectiveOfferCreation = ({
   )
 
   if (!isReady) {
-    return <Layout layout={'sticky-actions'}>
-      <Spinner />
-    </Layout>
+    return (
+      <Layout layout={'sticky-actions'}>
+        <Spinner />
+      </Layout>
+    )
   }
 
   return (
@@ -45,6 +47,7 @@ export const CollectiveOfferCreation = ({
       <OfferEducational
         userOfferer={offerEducationalFormData.offerer}
         domainsOptions={offerEducationalFormData.domains}
+        venues={offerEducationalFormData.venues}
         offer={offer}
         mode={Mode.CREATION}
         isTemplate={isTemplate}

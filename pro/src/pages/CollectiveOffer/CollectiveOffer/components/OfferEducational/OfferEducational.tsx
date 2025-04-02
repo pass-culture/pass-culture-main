@@ -1,7 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
-import useSWR, { useSWRConfig } from 'swr'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
@@ -9,11 +9,11 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
-  GET_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import {
   isCollectiveOffer,
@@ -61,6 +61,7 @@ export interface OfferEducationalProps {
   domainsOptions: DomainOption[]
   isTemplate: boolean
   isOfferCreated?: boolean
+  venues: VenueListItemResponseModel[]
 }
 
 export const OfferEducational = ({
@@ -69,6 +70,7 @@ export const OfferEducational = ({
   domainsOptions,
   mode,
   isTemplate,
+  venues,
 }: OfferEducationalProps): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
@@ -87,17 +89,10 @@ export const OfferEducational = ({
 
   const { lieu: venueId, requete: requestId } = queryParamsFromOfferer(location)
 
-  // Getting selected venue at step 1 (details) to infer address fields
-  const venuesQuery = useSWR(
-    [GET_VENUES_QUERY_KEY, userOfferer?.id],
-    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
-    { fallbackData: { venues: [] } }
-  )
-
   const baseInitialValues = computeInitialValuesFromOffer(
     userOfferer,
     isTemplate,
-    venuesQuery.data.venues,
+    venues,
     offer,
     venueId,
     isMarseilleEnabled
@@ -109,7 +104,7 @@ export const OfferEducational = ({
           baseInitialValues,
           userOfferer,
           isOfferCreated,
-          venuesQuery.data.venues
+          venues
         )
       : baseInitialValues
 
@@ -245,7 +240,7 @@ export const OfferEducational = ({
             isOfferCreated={isOfferCreated}
             offer={offer}
             isSubmitting={formik.isSubmitting}
-            venues={venuesQuery.data.venues}
+            venues={venues}
           />
         </form>
       </FormikProvider>

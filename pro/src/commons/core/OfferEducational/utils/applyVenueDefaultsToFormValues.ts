@@ -52,6 +52,8 @@ export const applyVenueDefaultsToFormValues = (
           ? venue.collectivePhone
           : values.phone,
       location:
+        // if offer location was the venue address, we set by default the new selected
+        // venue address in offer location otherwise we keep former selected location
         values.location.locationType === CollectiveLocationType.ADDRESS &&
         values.location.address?.isVenueAddress
           ? locationFromSelectedVenue

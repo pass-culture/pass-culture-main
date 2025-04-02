@@ -1,4 +1,3 @@
-
 import { Layout } from 'app/App/layout/Layout'
 import {
   isCollectiveOfferTemplate,
@@ -26,9 +25,11 @@ const CollectiveOfferEdition = ({
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
   if (!isReady) {
-    return <Layout layout={'sticky-actions'}>
-      <Spinner />
-    </Layout>
+    return (
+      <Layout layout={'sticky-actions'}>
+        <Spinner />
+      </Layout>
+    )
   }
 
   return (
@@ -40,6 +41,7 @@ const CollectiveOfferEdition = ({
       <OfferEducational
         userOfferer={offerEducationalFormData.offerer}
         domainsOptions={offerEducationalFormData.domains}
+        venues={offerEducationalFormData.venues}
         offer={offer}
         isOfferActive={offer.isActive}
         isOfferBooked={
