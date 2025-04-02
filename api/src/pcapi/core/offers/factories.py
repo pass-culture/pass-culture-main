@@ -75,6 +75,37 @@ class ProductFactory(BaseFactory):
                 subcategory_id, kwargs.pop("set_all_fields", False), True, is_offer=False
             )
 
+        if "ean" not in kwargs:
+            fake = faker.Faker(locale="fr_FR")
+            subcategory_id = kwargs.get("subcategoryId")
+            assert isinstance(
+                subcategory_id, str
+            )  # if the subcategoryId was not given in the factory, it will get the default subcategoryId
+            subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(subcategory_id)
+            if not subcategory:
+                raise ValueError(f"Unknown subcategory {subcategory_id}")
+
+            conditional_fields = (
+                sorted(  # we sort to ensure MUSIC_SUB_TYPE and SHOW_SUB_TYPE is always after MUSIC_TYPE and SHOW_TYPE
+                    subcategory.conditional_fields,
+                    key=lambda field: (
+                        1
+                        if field
+                        in [
+                            subcategories.ExtraDataFieldEnum.MUSIC_SUB_TYPE.value,
+                            subcategories.ExtraDataFieldEnum.SHOW_SUB_TYPE.value,
+                        ]
+                        else 0
+                    ),
+                )
+            )
+            if kwargs.get("set_all_fields", False) or (
+                "ean" in conditional_fields and subcategory.conditional_fields["ean"].is_required_in_internal_form
+            ):
+                kwargs["ean"] = fake.ean13()
+
+        kwargs.pop("set_all_fields", False)
+
         return super()._create(model_class, *args, **kwargs)
 
 
