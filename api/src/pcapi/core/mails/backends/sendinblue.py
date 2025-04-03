@@ -57,12 +57,12 @@ class SendinblueBackend(BaseBackend):
                 use_pro_subaccount=data.template.use_pro_subaccount,
             )
             if data.template.use_priority_queue:
-                if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS.is_active():
+                if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
                     send_transactional_email_primary_task_celery.delay(payload.dict())
                 else:
                     send_transactional_email_primary_task_cloud_tasks.delay(payload)
             else:
-                if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS.is_active():
+                if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
                     send_transactional_email_secondary_task_celery.delay(payload.dict())
                 else:
                     send_transactional_email_secondary_task_cloud_tasks.delay(payload)
@@ -80,7 +80,7 @@ class SendinblueBackend(BaseBackend):
                 params=None,
                 tags=None,
             )
-            if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS.is_active():
+            if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
                 send_transactional_email_secondary_task_celery.delay(payload.dict())
             else:
                 send_transactional_email_secondary_task_cloud_tasks.delay(payload)
