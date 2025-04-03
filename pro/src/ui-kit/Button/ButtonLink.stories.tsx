@@ -14,7 +14,15 @@ export default {
   decorators: [withRouter],
   argTypes: {
     variant: {
-      options: ['primary', 'secondary', 'ternary', 'quaternary', 'box'],
+      options: [
+        'primary',
+        'secondary',
+        'ternary',
+        'quaternary',
+        'ternary-brand',
+        'quaternary-brand',
+        'box',
+      ],
       control: 'radio',
     },
     iconPosition: {
@@ -43,7 +51,7 @@ export const TernaryWithIcon: StoryObj<typeof ButtonLink> = {
 export const TernaryPinkWithIcon: StoryObj<typeof ButtonLink> = {
   args: {
     ...TernaryWithIcon.args,
-    variant: ButtonVariant.TERNARYPINK,
+    variant: ButtonVariant.TERNARYBRAND,
   },
 }
 
@@ -60,6 +68,6 @@ export const QuaternaryWithIcon: StoryObj<typeof ButtonLink> = {
 export const QuaternaryPinkWithIcon: StoryObj<typeof ButtonLink> = {
   args: {
     ...QuaternaryWithIcon.args,
-    variant: ButtonVariant.QUATERNARYPINK,
+    variant: ButtonVariant.TERNARYBRAND,
   },
 }

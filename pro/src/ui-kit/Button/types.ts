@@ -2,9 +2,9 @@ export enum ButtonVariant {
   PRIMARY = 'primary',
   SECONDARY = 'secondary',
   TERNARY = 'ternary',
-  TERNARYPINK = 'ternary-pink',
+  TERNARYBRAND = 'ternary-brand',
   QUATERNARY = 'quaternary',
-  QUATERNARYPINK = 'quaternary-pink',
+  QUATERNARYBRAND = 'quaternary-brand',
   BOX = 'box',
 }
 
