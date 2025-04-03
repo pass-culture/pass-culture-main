@@ -28,7 +28,7 @@
   }
 
   &-icon {
-    height: size.$button-icon-size;
+    height: var(--typography-body-line-height);
     width: size.$button-icon-size;
     flex-shrink: 0;
     vertical-align: text-bottom;
@@ -57,45 +57,50 @@
   &-primary {
     min-height: rem.torem(40px);
     align-items: center;
-    color: var(--color-white);
-    background-color: var(--color-primary);
-    border-color: var(--color-primary);
+    color: var(--color-text-inverted);
+    background-color: var(--color-background-brand-primary);
+    border-color: var(--color-border-brand-primary);
 
     &:hover {
-      background-color: var(--color-primary-dark);
-      border-color: var(--color-primary-dark);
+      background-color: var(--color-background-brand-primary-hover);
+      border-color: var(--color-border-brand-primary-hover);
+      color: var(--color-text-locked);
+
+      .button-icon {
+        color: var(--color-text-locked);
+      }
     }
 
     &:disabled,
     &.button-disabled {
       background-color: var(--color-background-disabled);
       color: var(--color-text-disabled);
-      border-color: var(--color-grey-light);
+      border-color: var(--color-border-disabled);
 
       .button-icon {
-        color: var(--color-grey-semi-dark);
+        color: var(--color-icon-disabled);
       }
     }
 
     .button-icon {
-      color: var(--color-white);
+      color: var(--color-icon-inverted);
     }
   }
 
   &-secondary {
     min-height: rem.torem(40px);
     align-items: center;
-    color: var(--color-primary);
+    color: var(--color-text-brand-primary);
     background-color: var(--color-background-default);
-    border-color: var(--color-primary);
+    border-color: var(--color-border-brand-primary);
 
     &:hover {
-      color: var(--color-white);
-      background-color: var(--color-primary-dark);
-      border-color: var(--color-primary-dark);
+      background-color: var(--color-background-brand-primary-hover);
+      border-color: var(--color-border-brand-primary-hover);
+      color: var(--color-text-locked);
 
       .button-icon {
-        color: var(--color-white);
+        color: var(--color-text-locked);
       }
     }
 
@@ -103,23 +108,21 @@
     &.button-disabled {
       background-color: var(--color-background-disabled);
       color: var(--color-text-disabled);
-      border-color: var(--color-grey-light);
-    }
+      border-color: var(--color-border-disabled);
 
-    &:disabled .button-icon,
-    &.button-disabled .button-icon {
-      color: var(--color-grey-medium);
+      .button-icon {
+        color: var(--color-icon-disabled);
+      }
     }
 
     .button-icon {
-      color: var(--color-primary);
+      color: var(--color-icon-brand-primary);
     }
   }
 
   &-ternary,
   &-quaternary,
-  &-ternary-pink,
-  &-quaternary-pink {
+  &-ternary-brand {
     color: var(--color-text-default);
     align-items: flex-start;
     justify-content: flex-start;
@@ -133,8 +136,12 @@
       color: var(--color-icon-default);
     }
 
-    &-pink {
-      color: var(--color-primary);
+    &-brand {
+      color: var(--color-text-brand-primary);
+
+      .button-icon {
+        color: var(--color-icon-brand);
+      }
     }
 
     &:hover,
@@ -146,11 +153,10 @@
     &.button-disabled {
       text-decoration: none;
       color: var(--color-text-disabled);
-    }
 
-    &:disabled .button-icon,
-    &.button-disabled .button-icon {
-      color: var(--color-icon-disabled);
+      .button-icon {
+        color: var(--color-icon-disabled);
+      }
     }
 
     .button-icon:not(.has-tooltip) {
@@ -201,7 +207,7 @@
     justify-content: flex-start;
     width: 100%;
     padding: rem.torem(12px) rem.torem(8px);
-    border: rem.torem(1px) solid var(--color-grey-dark);
+    border: rem.torem(1px) solid var(--color-border-default);
     border-radius: rem.torem(6px);
     max-width: rem.torem(400px);
     color: var(--color-text-default);
@@ -218,7 +224,7 @@
     &:disabled,
     &.button-disabled {
       background: var(--color-background-disabled);
-      border-color: var(--color-grey-light);
+      border-color: var(--color-border-disabled);
       color: var(--color-text-disabled);
 
       .button-icon {
