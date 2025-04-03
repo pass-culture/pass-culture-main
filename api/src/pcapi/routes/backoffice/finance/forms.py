@@ -106,6 +106,14 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
         ),
     )
 
+    incident_type = fields.PCSelectMultipleField(
+        "Type d'incident",
+        choices=(
+            (finance_models.IncidentType.OVERPAYMENT.name, "Trop perçu"),
+            (finance_models.IncidentType.COMMERCIAL_GESTURE.name, "Geste commercial"),
+        ),
+    )
+
     is_collective = fields.PCSelectMultipleField(
         "Type de réservation",
         choices=(("true", "Collective"), ("false", "Individuelle")),
@@ -140,6 +148,7 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
             (
                 self.q.data,
                 self.status.data,
+                self.incident_type.data,
                 self.is_collective.data,
                 self.offerer.data,
                 self.venue.data,
