@@ -186,7 +186,6 @@ describe('Create individual offers with OA', () => {
     )
     cy.get('input[type=range]').setSliderValue(1.7)
 
-    cy.findByText('Suivant').click()
     cy.findByText('Enregistrer').click()
 
     cy.stepLog({ message: 'the details of offer should be correct' })
