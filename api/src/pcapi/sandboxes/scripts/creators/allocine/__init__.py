@@ -6,7 +6,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.repository import repository
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import create_industrial_admin_users
 
 
 class Sirene:

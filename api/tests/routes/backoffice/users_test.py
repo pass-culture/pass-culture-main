@@ -87,7 +87,7 @@ class SuspendUserTest(PostEndpointHelper):
         )
 
         assert not user.isActive
-        assert not "email.supprime" in user.email
+        assert "email.supprime" not in user.email
         assert len(user.action_history) == 1
         assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
         assert user.action_history[0].authorUser == beneficiary_fraud_admin

@@ -27,7 +27,7 @@ class ApiErrors(Exception):
             self.add_error(field, "Tu dois saisir au moins " + str(length) + " caractères.")
 
     def check_email(self, field: str, value: str) -> None:
-        if not "@" in value:
+        if "@" not in value:
             self.add_error(field, "L’email doit contenir un @.")
 
     def __str__(self) -> str:

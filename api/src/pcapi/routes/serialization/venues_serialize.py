@@ -335,7 +335,7 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
     @validator("collectiveSubCategoryId")
     @classmethod
     def validate_subcategory_id(cls, subcategory_id: str | None) -> str | None:
-        if subcategory_id and not subcategory_id in subcategories.COLLECTIVE_SUBCATEGORIES:
+        if subcategory_id and subcategory_id not in subcategories.COLLECTIVE_SUBCATEGORIES:
             raise ValueError(f"Must be one of [{list(subcategories.COLLECTIVE_SUBCATEGORIES)}]")
         return subcategory_id
 

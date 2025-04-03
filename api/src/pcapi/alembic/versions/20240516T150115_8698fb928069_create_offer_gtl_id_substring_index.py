@@ -20,12 +20,12 @@ def upgrade() -> None:
         op.execute(
             f"""
             CREATE INDEX CONCURRENTLY IF NOT EXISTS
-            "offer_music_subcategory_with_gtl_id_substr_idx" 
+            "offer_music_subcategory_with_gtl_id_substr_idx"
             ON public.offer USING btree (
-            "subcategoryId", 
+            "subcategoryId",
             (substr("jsonData" ->> 'gtl_id'::text, 1, 2))
-            ) 
-            WHERE ("jsonData" ->> 'gtl_id') IS NOT NULL AND offer."subcategoryId" IN 
+            )
+            WHERE ("jsonData" ->> 'gtl_id') IS NOT NULL AND offer."subcategoryId" IN
             ({", ".join([f"'{subcategory_id}'" for subcategory_id in MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS])});
                     
                 """
