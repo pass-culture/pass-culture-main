@@ -444,7 +444,6 @@ def update_offer(
         extra={"offer_id": offer.id, "venue_id": offer.venueId, "product_id": offer.productId, "changes": {**changes}},
         technical_message_id="offer.updated",
     )
-    print({"offer_id": offer.id, "venue_id": offer.venueId, "product_id": offer.productId, "changes": {**changes}})
 
     withdrawal_fields = {"bookingContact", "withdrawalDelay", "withdrawalDetails", "withdrawalType"}
     withdrawal_updated = updates_set & withdrawal_fields
