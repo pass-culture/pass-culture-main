@@ -1183,6 +1183,7 @@ class UpdateVenueTest(PostEndpointHelper):
             contact__email=contact_email,
             contact__website=website,
             contact__social_medias=social_medias,
+            isOpenToPublic=True,
         )
 
         data = {
@@ -1268,6 +1269,7 @@ class UpdateVenueTest(PostEndpointHelper):
             contact__email=contact_email,
             contact__website=website,
             contact__social_medias=social_medias,
+            isOpenToPublic=True,
         )
         oa_id = venue.offererAddressId
 
@@ -1337,6 +1339,7 @@ class UpdateVenueTest(PostEndpointHelper):
             contact__website=website,
             contact__social_medias=social_medias,
             offererAddress__address__banId="97129_hz0hwa_00044",
+            isOpenToPublic=True,
         )
 
         data = {
@@ -2162,39 +2165,10 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert venue.accessibilityProvider.externalAccessibilityUrl == "https://acceslibre.beta.gouv.fr/erps/mon-slug/"
 
-    def test_update_venue_accessibility_provider_from_acceslibre_url_when_becoming_permanent(
-        self, authenticated_client
-    ):
-        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.TRAVELING_CINEMA)
-
-        data = self._get_current_data(venue)
-        data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/erps/mon-slug/"
-        data["is_permanent"] = True
-
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
-
-        assert response.status_code == 303
-        db.session.refresh(venue)
-        assert venue.accessibilityProvider
-        assert venue.action_history[0].extraData == {
-            "modified_info": {
-                "accessibilityProvider.externalAccessibilityId": {
-                    "new_info": "mon-slug",
-                    "old_info": None,
-                },
-                "accessibilityProvider.externalAccessibilityUrl": {
-                    "new_info": "https://acceslibre.beta.gouv.fr/erps/mon-slug/",
-                    "old_info": None,
-                },
-                "isPermanent": {
-                    "new_info": True,
-                    "old_info": False,
-                },
-            }
-        }
-
-    def test_update_venue_should_not_add_accessibility_provider_if_not_permanent(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.TRAVELING_CINEMA)
+    def test_update_venue_should_fail_when_add_accessibility_provider_if_not_open_to_public(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(
+            venueTypeCode=offerers_models.VenueTypeCode.TRAVELING_CINEMA, isOpenToPublic=False
+        )
 
         data = self._get_current_data(venue)
         data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/erps/mon-slug/"
@@ -2206,6 +2180,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.accessibilityProvider == None
 
     def test_update_venue_remove_accesslibre_url_when_becoming_non_permanent(self, authenticated_client):
+        # Venue becoming none permanent, become close to public. Venue close to public does not have acceslibre sync
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
         offerers_factories.AccessibilityProviderFactory(
             venue=venue,
@@ -2243,7 +2218,7 @@ class UpdateVenueTest(PostEndpointHelper):
         }
 
     @patch("pcapi.workers.match_acceslibre_job.match_acceslibre_job.delay")
-    def test_update_venue_becomes_permanent_should_call_match_acceslibre_job(
+    def test_update_venue_becomes_permanent_should_not_call_match_acceslibre_job(
         self, match_acceslibre_job, authenticated_client
     ):
         venue = offerers_factories.VenueFactory(isPermanent=False)
@@ -2253,7 +2228,7 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
-        match_acceslibre_job.assert_called_once_with(venue.id)
+        match_acceslibre_job.assert_not_called()
 
     @pytest.mark.settings(ACCESLIBRE_BACKEND="pcapi.connectors.acceslibre.AcceslibreBackend")
     def test_update_venue_unexisting_acceslibre_url_must_not_update_accessibility_provider(self, authenticated_client):

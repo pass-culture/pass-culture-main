@@ -219,31 +219,58 @@ class Returns200Test:
         assert offerer_address.addressId == address.id
         assert offerer_address.label is None
 
-    @pytest.mark.parametrize(
-        "old_isOpenToPublic,new_isOpenToPublic,old_isPermanent,new_isPermanent",
-        [(False, True, False, True), (True, False, True, True)],
-    )
-    def test_should_update_venue_is_open_to_public_keep_is_permanent_consistent(
-        self, client, old_isOpenToPublic, new_isOpenToPublic, old_isPermanent, new_isPermanent
-    ) -> None:
-        user_offerer = offerers_factories.UserOffererFactory(
-            user__lastConnectionDate=datetime.utcnow(),
-        )
+    def test_update_venue_is_open_to_public_should_set_is_permanent_to_true_and_sync_acceslibre(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory(user__lastConnectionDate=datetime.utcnow())
         venue = offerers_factories.VenueFactory(
-            name="old name",
             managingOfferer=user_offerer.offerer,
-            isOpenToPublic=old_isOpenToPublic,
-            isPermanent=old_isPermanent,
+            isOpenToPublic=False,
+            isPermanent=True,
         )
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
 
-        response = auth_request.patch(f"/venues/{venue.id}", {"isOpenToPublic": new_isOpenToPublic})
+        response = auth_request.patch(f"/venues/{venue_id}", {"isOpenToPublic": True})
 
         assert response.status_code == 200
-        new_venue = offerers_models.Venue.query.get(venue_id)
-        assert new_venue.isOpenToPublic is new_isOpenToPublic
-        assert new_venue.isPermanent is new_isPermanent
+        db.session.refresh(venue)
+
+        assert venue.isOpenToPublic is True
+        assert venue.isPermanent is True
+
+        assert venue.accessibilityProvider.externalAccessibilityId == "mon-lieu-chez-acceslibre"
+        assert set(venue.accessibilityProvider.externalAccessibilityData["access_modality"]) == set(
+            [
+                acceslibre_connector.ExpectedFieldsEnum.EXTERIOR_ONE_LEVEL.value,
+                acceslibre_connector.ExpectedFieldsEnum.ENTRANCE_ONE_LEVEL.value,
+            ]
+        )
+
+    def test_update_venue_is_close_to_public_should_not_change_is_permanent_but_delete_sync_acceslibre(
+        self, client
+    ) -> None:
+        user_offerer = offerers_factories.UserOffererFactory(user__lastConnectionDate=datetime.utcnow())
+        venue = offerers_factories.VenueFactory(
+            venueTypeCode=offerers_models.VenueTypeCode.LIBRARY,
+            managingOfferer=user_offerer.offerer,
+            isOpenToPublic=True,
+            isPermanent=True,
+        )
+        offerers_factories.AccessibilityProviderFactory(
+            venue=venue,
+            externalAccessibilityId="mon-slug",
+            externalAccessibilityUrl="https://acceslibre.beta.gouv.fr/erps/mon-slug/",
+        )
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue.id
+
+        response = auth_request.patch(f"/venues/{venue_id}", {"isOpenToPublic": False})
+
+        assert response.status_code == 200
+        db.session.refresh(venue)
+
+        assert venue.isOpenToPublic is False
+        assert venue.isPermanent is True
+        assert not venue.accessibilityProvider
 
     @patch(
         "pcapi.connectors.api_adresse.get_address",
