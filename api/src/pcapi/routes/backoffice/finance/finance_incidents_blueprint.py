@@ -64,6 +64,11 @@ def _get_incidents(
         .outerjoin(educational_models.CollectiveBooking.collectiveStock)
     )
 
+    if form.incident_type.data and len(form.incident_type.data) == 1:
+        query = query.filter(
+            finance_models.FinanceIncident.kind == finance_models.IncidentType[form.incident_type.data[0]]
+        )
+
     if form.is_collective.data and len(form.is_collective.data) == 1:
         if form.is_collective.data[0] == "true":
             query = query.filter(finance_models.FinanceIncident.relates_to_collective_bookings)

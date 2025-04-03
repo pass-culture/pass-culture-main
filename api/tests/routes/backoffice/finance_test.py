@@ -281,6 +281,26 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(incidents[1].id)
 
     @pytest.mark.parametrize(
+        "incident_type, expected_results",
+        [
+            ("OVERPAYMENT", {"36", "37", "38"}),
+            ("COMMERCIAL_GESTURE", {"39"}),
+        ],
+    )
+    def test_list_incident_by_incident_kind(self, authenticated_client, incidents, incident_type, expected_results):
+        finance_factories.IndividualBookingFinanceCommercialGestureFactory(
+            incident__id=39,
+            booking=bookings_factories.BookingFactory(id=50, stock__offer__id=70),
+        )
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, incident_type=incident_type))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == len(expected_results)
+        assert {row["ID"] for row in rows} == expected_results
+
+    @pytest.mark.parametrize(
         "is_collective, expected_results",
         [
             ("true", {"37"}),
