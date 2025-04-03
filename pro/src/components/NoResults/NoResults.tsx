@@ -25,7 +25,7 @@ export const NoResults = ({ resetFilters }: NoResultsProps): JSX.Element => (
       Vous pouvez modifier votre recherche ou
     </p>
     <Button
-      variant={ButtonVariant.TERNARYPINK}
+      variant={ButtonVariant.TERNARYBRAND}
       icon={fullRefresh}
       onClick={resetFilters}
     >

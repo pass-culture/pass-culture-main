@@ -179,7 +179,7 @@ export const RequestFormDialog = ({
               <i>via</i> son formulaire :
               <ButtonLink
                 onClick={logContactUrl}
-                variant={ButtonVariant.TERNARYPINK}
+                variant={ButtonVariant.TERNARYBRAND}
                 className={styles['form-description-link-text']}
                 to={contactUrl}
                 isExternal
@@ -233,7 +233,7 @@ export const RequestFormDialog = ({
       </div>
       <ButtonLink
         onClick={logContactUrl}
-        variant={ButtonVariant.TERNARYPINK}
+        variant={ButtonVariant.TERNARYBRAND}
         className={styles['form-description-link-text']}
         to={contactUrl}
         isExternal

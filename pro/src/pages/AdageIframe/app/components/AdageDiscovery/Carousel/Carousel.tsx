@@ -75,7 +75,7 @@ export function Carousel({
             <Button
               disabled={firstElementVisible}
               onClick={handleOnClickArrowLeft}
-              variant={ButtonVariant.QUATERNARYPINK}
+              variant={ButtonVariant.TERNARYBRAND}
               data-testid="carousel-arrow-left"
             >
               <SvgIcon
@@ -88,7 +88,7 @@ export function Carousel({
             <Button
               disabled={lastElementVisible}
               onClick={handleOnClickArrowRight}
-              variant={ButtonVariant.QUATERNARYPINK}
+              variant={ButtonVariant.TERNARYBRAND}
               data-testid="carousel-arrow-right"
             >
               <SvgIcon

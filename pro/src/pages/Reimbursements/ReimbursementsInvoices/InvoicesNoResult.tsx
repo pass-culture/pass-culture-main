@@ -13,9 +13,8 @@ interface InvoicesNoResultsProps {
 
 export const InvoicesNoResult = ({
   areFiltersDefault,
-  onReset
+  onReset,
 }: InvoicesNoResultsProps): JSX.Element => {
-
   return (
     <div className={styles['no-refunds']}>
       <SvgIcon
@@ -33,7 +32,7 @@ export const InvoicesNoResult = ({
         <Button
           disabled={areFiltersDefault}
           onClick={onReset}
-          variant={ButtonVariant.TERNARYPINK}
+          variant={ButtonVariant.TERNARYBRAND}
           icon={fullRefreshIcon}
         >
           Réinitialiser les filtres

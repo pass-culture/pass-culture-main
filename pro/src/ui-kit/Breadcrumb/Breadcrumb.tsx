@@ -31,7 +31,7 @@ export const Breadcrumb = ({ crumbs }: BreadcrumbProps) => {
                 <ButtonLink
                   {...crumb.link}
                   className={styles['breadcrumb-list-item-link']}
-                  variant={ButtonVariant.QUATERNARYPINK}
+                  variant={ButtonVariant.TERNARYBRAND}
                 >
                   <>
                     {crumb.icon && (

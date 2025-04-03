@@ -441,7 +441,7 @@ export const Autocomplete = ({ initialQuery }: AutocompleteProps) => {
                         className={
                           styles['dialog-panel-autocomplete-text-clean']
                         }
-                        variant={ButtonVariant.QUATERNARYPINK}
+                        variant={ButtonVariant.TERNARYBRAND}
                         icon={fullClearIcon}
                         onClick={() => {
                           if (storageAvailable('localStorage')) {
