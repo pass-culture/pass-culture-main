@@ -36,6 +36,12 @@ tasks_failed_counter = Counter(
     labelnames=["task"],
     registry=registry,
 )
+tasks_rate_limited_counter = Counter(
+    "celery_tasks_rate_limited",
+    "Total number of Celery tasks started that were rate limited",
+    labelnames=["task"],
+    registry=registry,
+)
 tasks_execution_time_histogram = Histogram(
     "celery_tasks_execution_time",
     "Time needed to run tasks",
