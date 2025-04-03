@@ -1,4 +1,3 @@
-
 import fullRefresh from 'icons/full-refresh.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -28,7 +27,7 @@ export const NoBookingsForPreFiltersMessage = ({
       Vous pouvez modifier vos filtres et lancer une nouvelle recherche ou
     </p>
     <Button
-      variant={ButtonVariant.TERNARYPINK}
+      variant={ButtonVariant.TERNARYBRAND}
       icon={fullRefresh}
       onClick={resetPreFilters}
     >
