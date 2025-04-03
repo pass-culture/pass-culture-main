@@ -24,7 +24,7 @@
     }
 
     &-icon {
-      color: var(--color-secondary-light);
+      color: var(--color-icon-brand-primary);
       width: rem.torem(44px);
       height: rem.torem(44px);
       min-width: rem.torem(44px);
@@ -48,7 +48,7 @@
     height: rem.torem(20px);
     min-width: rem.torem(20px);
     width: rem.torem(20px);
-    border: rem.torem(2px) solid var(--color-grey-dark);
+    border: rem.torem(2px) solid var(--color-border-default);
     border-radius: 50%;
     background-color: var(--color-background-default);
     margin-right: rem.torem(8px);
@@ -58,7 +58,7 @@
 
     &:disabled {
       cursor: default;
-      border-color: var(--color-border-disabled);
+      border-color: var(--color-icon-disabled);
       background-color: transparent;
     }
 
@@ -67,20 +67,20 @@
     }
 
     &:checked {
-      box-shadow: inset 0 0 0 rem.torem(3px) var(--color-white);
-      border-color: var(--color-border-brand-primary);
-      background-color: var(--color-secondary-light);
+      box-shadow: inset 0 0 0 rem.torem(3px) var(--color-background-default);
+      border-color: var(--color-icon-brand-primary);
+      background-color: var(--color-icon-brand-primary);
 
       &:disabled {
-        box-shadow: inset 0 0 0 rem.torem(3px) var(--color-grey-light);
-        border-color: var(--color-grey-semi-dark);
-        background-color: var(--color-grey-semi-dark);
+        box-shadow: inset 0 0 0 rem.torem(3px) var(--color-background-subtle);
+        border-color: var(--color-text-disabled);
+        background-color: var(--color-icon-disabled);
       }
 
       &.has-error {
-        box-shadow: inset 0 0 0 rem.torem(3px) var(--color-white);
-        border-color: var(--color-border-error);
-        background-color: var(--color-error);
+        box-shadow: inset 0 0 0 rem.torem(3px) var(--color-background-error);
+        border-color: var(--color-icon-error);
+        background-color: var(--color-icon-error);
       }
     }
   }
@@ -109,7 +109,7 @@
 }
 
 .radio.box-variant {
-  border: rem.torem(1px) solid var(--color-grey-dark);
+  border: rem.torem(1px) solid var(--color-border-default);
   border-radius: rem.torem(8px);
   padding: 0 0 0 rem.torem(16px);
 
@@ -129,6 +129,10 @@
   &.has-error {
     border-color: var(--color-border-error);
     background-color: var(--color-background-error);
+
+    .base-radio-label-icon {
+      color: var(--color-icon-error);
+    }
   }
 
   &.is-disabled {
@@ -143,7 +147,7 @@
 }
 
 .radio.is-disabled .base-radio-label-icon {
-  color: var(--color-grey-dark);
+  color: var(--color-icon-disabled);
 }
 
 .radio.has-children {
