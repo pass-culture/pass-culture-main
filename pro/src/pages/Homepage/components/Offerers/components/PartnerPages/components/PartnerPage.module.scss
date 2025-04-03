@@ -10,7 +10,7 @@
 
   @media (min-width: size.$tablet) {
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
   }
 }
 
@@ -24,6 +24,7 @@
   gap: rem.torem(8px);
   display: flex;
   flex-direction: column;
+  margin-top: rem.torem(32px);
 
   &-type {
     color: var(--color-text-subtle);

@@ -8,7 +8,6 @@ import {
   Constraint,
   imageConstraints,
 } from 'components/ConstraintCheck/imageConstraints'
-import { ImagePreferredOrientation } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/ImagePreferredOrientation/ImagePreferredOrientation'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { BaseFileInput } from 'ui-kit/form/shared/BaseFileInput/BaseFileInput'
 
@@ -20,13 +19,14 @@ interface ImageUploadBrowserFormProps {
   onSubmit: (values: ImageUploadBrowserFormValues) => void
   mode: UploaderModeEnum
   isReady: boolean
-  children?: never
+  children?: React.ReactNode | React.ReactNode[]
 }
 
 export const ImageUploadBrowserForm = ({
   onSubmit,
   mode,
   isReady,
+  children,
 }: ImageUploadBrowserFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
 
@@ -34,16 +34,6 @@ export const ImageUploadBrowserForm = ({
   const validationConstraints = modeValidationConstraints[mode]
   const preferredOrientationCaptionId = 'preferred-orientation-caption'
   const constraintCheckId = 'constraint-check'
-
-  const orientationsForMode: {
-    [key in UploaderModeEnum]: 'portrait' | 'landscape'
-  } = {
-    [UploaderModeEnum.OFFER]: 'portrait',
-    [UploaderModeEnum.OFFER_COLLECTIVE]: 'portrait',
-    [UploaderModeEnum.VENUE]: 'landscape',
-  }
-
-  const orientation = orientationsForMode[mode]
 
   const constraints: Constraint[] = [
     imageConstraints.formats(validationConstraints.types),
@@ -67,7 +57,7 @@ export const ImageUploadBrowserForm = ({
           { image: newFile },
           { abortEarly: false }
         )
-        onSubmit({ image: newFile })
+        onSubmit({ imageFile: newFile })
         logEvent(Events.CLICKED_ADD_IMAGE, {
           imageCreationStage: 'import image',
         })
@@ -83,24 +73,22 @@ export const ImageUploadBrowserForm = ({
 
   /* istanbul ignore next: DEBT, TO FIX */
   return (
-    <form onSubmit={(e) => e.preventDefault()}>
-      <ImagePreferredOrientation
-        id={preferredOrientationCaptionId}
-        orientation={orientation}
-      />
+    <div>
       <BaseFileInput
         isDisabled={!isReady}
-        label="Importer une image depuis l’ordinateur"
+        label={''}
         fileTypes={['image/png', 'image/jpeg']}
         isValid={errors.length === 0}
         onChange={onChange}
         ariaDescribedBy={`${preferredOrientationCaptionId} ${constraintCheckId}`}
-      />
+      >
+        {children}
+      </BaseFileInput>
       <ConstraintCheck
         id={constraintCheckId}
         constraints={constraints}
         failingConstraints={errors}
       />
-    </form>
+    </div>
   )
 }

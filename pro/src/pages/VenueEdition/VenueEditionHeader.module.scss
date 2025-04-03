@@ -7,6 +7,7 @@
   flex-direction: column;
   gap: rem.torem(24px);
   margin-bottom: rem.torem(32px);
+  align-items: flex-start;
 
   @media (min-width: size.$tablet) {
     flex-direction: row;

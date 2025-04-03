@@ -131,7 +131,7 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       <div className={style['image-editor']}>
         <AvatarEditor
           border={[responsiveCropBorderWidth, responsiveCropBorderHeight]}
-          color={[0, 0, 0, 0.4]}
+          color={[0, 0, 0, 0.2]}
           crossOrigin="anonymous"
           height={responsiveCanvasHeight}
           image={image}

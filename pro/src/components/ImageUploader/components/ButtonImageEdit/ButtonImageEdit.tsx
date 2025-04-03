@@ -1,3 +1,4 @@
+import * as Dialog from '@radix-ui/react-dialog'
 import cn from 'classnames'
 import { useState } from 'react'
 
@@ -11,6 +12,8 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { UploaderModeEnum } from '../../types'
 
 import style from './ButtonImageEdit.module.scss'
+import { ImageUploadBrowserForm } from './ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/ImageUploadBrowserForm'
+import { ImageUploadBrowserFormValues } from './ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/types'
 import {
   ModalImageEdit,
   OnImageUploadArgs,
@@ -34,9 +37,9 @@ export const ButtonImageEdit = ({
   onImageDelete,
   onClickButtonImage,
   children,
-  disableForm,
 }: ButtonImageEditProps): JSX.Element => {
   const { imageUrl, originalImageUrl } = initialValues
+  const [imageFile, setImageFile] = useState<File | undefined>()
 
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
 
@@ -50,7 +53,12 @@ export const ButtonImageEdit = ({
     onImageDelete()
   }
 
-  function onImageUploadHandler(values: OnImageUploadArgs) {
+  function onImageUploadHandler(values: ImageUploadBrowserFormValues) {
+    setImageFile(values.imageFile)
+    setIsModalImageOpen(true)
+  }
+
+  function onImageSave(values: OnImageUploadArgs) {
     onImageUpload(values)
     setIsModalImageOpen(false)
   }
@@ -72,30 +80,37 @@ export const ButtonImageEdit = ({
               {children ?? 'Modifier'}
             </Button>
           ) : (
-            <button
-              className={cn(style['button-image-add'], {
-                [style['add-image-venue']]: mode === UploaderModeEnum.VENUE,
-                [style['add-image-offer']]:
-                  mode === UploaderModeEnum.OFFER ||
-                  mode === UploaderModeEnum.OFFER_COLLECTIVE,
-              })}
-              onClick={onClickButtonImageAdd}
-              type="button"
-              disabled={disableForm}
+            <ImageUploadBrowserForm
+              onSubmit={onImageUploadHandler}
+              mode={mode}
+              isReady={true}
             >
-              <>
+              <div
+                className={cn(style['button-image-add'], {
+                  [style['add-image-venue']]: mode === UploaderModeEnum.VENUE,
+                  [style['add-image-offer']]:
+                    mode === UploaderModeEnum.OFFER ||
+                    mode === UploaderModeEnum.OFFER_COLLECTIVE,
+                })}
+              >
                 <SvgIcon src={fullMoreIcon} alt="" className={style['icon']} />
                 <span className={style['label']}>Ajouter une image</span>
-              </>
-            </button>
+              </div>
+            </ImageUploadBrowserForm>
           )
         }
       >
+        <Dialog.Title asChild>
+          <h1 className={style['button-image-modal-title']}>
+            Modifier une image
+          </h1>
+        </Dialog.Title>
         <ModalImageEdit
           mode={mode}
-          onImageUpload={onImageUploadHandler}
+          onImageSave={onImageSave}
           onImageDelete={handleImageDelete}
           initialValues={initialValues}
+          imageFile={imageFile}
         />
       </DialogBuilder>
     </>
