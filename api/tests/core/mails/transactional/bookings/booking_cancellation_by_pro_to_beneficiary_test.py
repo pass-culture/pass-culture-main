@@ -5,6 +5,7 @@ import decimal
 import pytest
 import time_machine
 
+from pcapi.core.bookings import models as bookings_models
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.mails import models
 import pcapi.core.mails.testing as mails_testing
@@ -23,10 +24,11 @@ import pcapi.core.offers.factories as offers_factories
 class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
     def test_should_sends_email_to_beneficiary_when_pro_cancels_booking_without_offerer_address(self):
         # Given
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.CancelledBookingFactory(
             user__email="user@example.com",
             user__firstName="Jeanne",
             user__lastName="Doux",
+            cancellationReason=bookings_models.BookingCancellationReasons.OFFERER,
         )
 
         # When
@@ -50,10 +52,11 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
             "OFFERER_NAME": booking.offerer.name,
+            "REASON": "OFFERER",
+            "REJECTED": False,
             "USER_FIRST_NAME": "Jeanne",
             "USER_LAST_NAME": "Doux",
             "VENUE_NAME": booking.venue.name,
-            "REJECTED": False,
         }
 
     @time_machine.travel("2024-07-31 15:12")
@@ -73,11 +76,12 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
             offer__venue__managingOfferer=offerer,
             offer__venue__offererAddress=offerer_address,
         )
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.CancelledBookingFactory(
             user__email="user@example.com",
             user__firstName="Jeanne",
             user__lastName="Doux",
             stock=stock,
+            cancellationReason=bookings_models.BookingCancellationReasons.OFFERER,
         )
 
         # When
@@ -101,10 +105,11 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
             "OFFERER_NAME": booking.offerer.name,
+            "REASON": "OFFERER",
+            "REJECTED": False,
             "USER_FIRST_NAME": "Jeanne",
             "USER_LAST_NAME": "Doux",
             "VENUE_NAME": booking.venue.name,
-            "REJECTED": False,
         }
 
 
@@ -137,10 +142,11 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
             "OFFERER_NAME": booking.offerer.name,
+            "REASON": None,
+            "REJECTED": False,
             "USER_FIRST_NAME": "Georges",
             "USER_LAST_NAME": "Moustiquos",
             "VENUE_NAME": booking.venue.name,
-            "REJECTED": False,
         }
 
     def test_should_return_thing_data_when_booking_is_on_a_thing(self):
@@ -171,10 +177,11 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
             "OFFERER_NAME": booking.offerer.name,
+            "REASON": None,
+            "REJECTED": False,
             "USER_FIRST_NAME": "Georges",
             "USER_LAST_NAME": "Doux",
             "VENUE_NAME": booking.venue.name,
-            "REJECTED": False,
         }
 
     def test_should_return_thing_data_when_booking_is_on_an_online_offer(self):
@@ -202,10 +209,11 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
             "OFFERER_NAME": booking.offerer.name,
+            "REASON": None,
+            "REJECTED": False,
             "USER_FIRST_NAME": "Georges",
             "USER_LAST_NAME": "Georges",
             "VENUE_NAME": booking.venue.name,
-            "REJECTED": False,
         }
 
     def test_should_not_display_the_price_when_booking_is_on_a_free_offer(self):

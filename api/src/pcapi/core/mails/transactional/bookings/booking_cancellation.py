@@ -35,6 +35,9 @@ def send_booking_cancellation_emails_to_user_and_offerer(
     elif reason == BookingCancellationReasons.OFFERER:
         send_booking_cancellation_by_pro_to_beneficiary_email(booking)
         send_booking_cancellation_confirmation_by_pro_to_pro_email(booking)
+    elif reason == BookingCancellationReasons.OFFERER_CLOSED:
+        send_booking_cancellation_by_pro_to_beneficiary_email(booking)
+        # Do not notify pro for every booking: an email is already sent to all attached users for closure
     elif reason in (
         BookingCancellationReasons.FRAUD,
         BookingCancellationReasons.FRAUD_INAPPROPRIATE,
