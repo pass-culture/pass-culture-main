@@ -22,9 +22,6 @@ const Summary = (): JSX.Element | null => {
   } else {
     title = getTitle(mode)
   }
-  if (offer === null) {
-    return <Spinner />
-  }
 
   return (
     <IndividualOfferLayout
@@ -33,7 +30,7 @@ const Summary = (): JSX.Element | null => {
       mode={mode}
       venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
     >
-      <SummaryScreen />
+      {offer === null ? <Spinner /> : <SummaryScreen />}
     </IndividualOfferLayout>
   )
 }

@@ -10,10 +10,6 @@ export const IndividualOfferConfirmation = (): JSX.Element => {
   const mode = useOfferWizardMode()
   const { offer } = useIndividualOfferContext()
 
-  if (offer === null) {
-    return <Spinner />
-  }
-
   return (
     <IndividualOfferLayout
       withStepper={false}
@@ -21,7 +17,11 @@ export const IndividualOfferConfirmation = (): JSX.Element => {
       title={getTitle(mode)}
       mode={mode}
     >
-      <IndividualOfferConfirmationScreen offer={offer} />
+      {offer === null ? (
+        <Spinner />
+      ) : (
+        <IndividualOfferConfirmationScreen offer={offer} />
+      )}
     </IndividualOfferLayout>
   )
 }
