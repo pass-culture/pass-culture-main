@@ -1837,7 +1837,6 @@ def move_offer(
     }
     with transaction():
         offer.venue = destination_venue
-        offer.offererAddressId = destination_venue.offererAddressId
         db.session.add(offer)
 
         for price_category in offer.priceCategories:
