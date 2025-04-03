@@ -23,7 +23,7 @@ from . import utils
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_EAN_OFFERS=False)
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_EAN_OFFERS=True)
 class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/products/ean"
     endpoint_method = "post"
@@ -145,7 +145,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert created_offer.lastProvider.name == "Technical provider"
         assert created_offer.name == product.name
         assert created_offer.product.id == product.id
-        assert created_offer.venue == venue
+        assert created_offer.venue.id == venue.id
         assert created_offer.subcategoryId == product.subcategoryId
         assert created_offer.withdrawalDetails == venue.withdrawalDetails
         assert created_offer.audioDisabilityCompliant == venue.audioDisabilityCompliant

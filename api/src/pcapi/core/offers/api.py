@@ -44,6 +44,7 @@ from pcapi.core.external_bookings.cds.exceptions import CineDigitalServiceAPIExc
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import utils as finance_utils
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
@@ -74,6 +75,7 @@ from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import is_managed_transaction
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
+from pcapi.routes.public.individual_offers.v1 import serialization
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
 from pcapi.utils.chunks import get_chunks
@@ -137,7 +139,7 @@ def build_new_offer_from_product(
         venueId=venue.id,
         subcategoryId=product.subcategoryId,
         withdrawalDetails=venue.withdrawalDetails,
-        offererAddressId=venue.offererAddressId if offerer_address_id is None else offerer_address_id,
+        offererAddressId=(venue.offererAddressId if offerer_address_id is None else offerer_address_id),
     )
 
 
@@ -257,7 +259,12 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
     if "extraData" in updates or "ean" in updates:
         formatted_extra_data = _format_extra_data(offer.subcategoryId, body.extra_data) or {}
         validation.check_offer_extra_data(
-            offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api=True, offer=offer, ean=body_ean
+            offer.subcategoryId,
+            formatted_extra_data,
+            offer.venue,
+            is_from_private_api=True,
+            offer=offer,
+            ean=body_ean,
         )
 
     for key, value in updates.items():
@@ -321,7 +328,11 @@ def create_offer(
     # Otherwise, you will break some dashboards
     logger.info(
         "Offer has been created",
-        extra={"offer_id": offer.id, "venue_id": venue.id, "product_id": offer.productId},
+        extra={
+            "offer_id": offer.id,
+            "venue_id": venue.id,
+            "product_id": offer.productId,
+        },
         technical_message_id="offer.created",
     )
 
@@ -389,7 +400,12 @@ def update_offer(
     if "extraData" in updates or "ean" in updates:
         formatted_extra_data = _format_extra_data(offer.subcategoryId, body.extra_data) or {}
         validation.check_offer_extra_data(
-            offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api, offer=offer, ean=body.ean
+            offer.subcategoryId,
+            formatted_extra_data,
+            offer.venue,
+            is_from_private_api,
+            offer=offer,
+            ean=body.ean,
         )
 
     if "isDuo" in updates:
@@ -447,11 +463,21 @@ def update_offer(
     # Otherwise, you will break some dashboards
     logger.info(
         "Offer has been updated",
-        extra={"offer_id": offer.id, "venue_id": offer.venueId, "product_id": offer.productId, "changes": {**changes}},
+        extra={
+            "offer_id": offer.id,
+            "venue_id": offer.venueId,
+            "product_id": offer.productId,
+            "changes": {**changes},
+        },
         technical_message_id="offer.updated",
     )
 
-    withdrawal_fields = {"bookingContact", "withdrawalDelay", "withdrawalDetails", "withdrawalType"}
+    withdrawal_fields = {
+        "bookingContact",
+        "withdrawalDelay",
+        "withdrawalDetails",
+        "withdrawalType",
+    }
     withdrawal_updated = updates_set & withdrawal_fields
     oa_updated = "offererAddress" in updates
     if should_send_mail and (withdrawal_updated or oa_updated):
@@ -494,8 +520,8 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
             on_commit(
                 partial(
                     logger.info,
-                    "Offers has been activated" if update_fields["isActive"] else "Offers has been deactivated",
-                    technical_message_id="offers.activated" if update_fields["isActive"] else "offers.deactivated",
+                    ("Offers has been activated" if update_fields["isActive"] else "Offers has been deactivated"),
+                    technical_message_id=("offers.activated" if update_fields["isActive"] else "offers.deactivated"),
                     extra={"offer_ids": offer_ids, "venue_ids": venue_ids},
                 )
             )
@@ -509,9 +535,11 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
             ),
         )
 
-        withdrawal_updated = {"withdrawalDetails", "withdrawalType", "withdrawalDelay"}.intersection(
-            update_fields.keys()
-        )
+        withdrawal_updated = {
+            "withdrawalDetails",
+            "withdrawalType",
+            "withdrawalDelay",
+        }.intersection(update_fields.keys())
         if send_email_notification and withdrawal_updated:
             for offer in query_to_update.all():
                 transactional_mails.send_email_for_each_ongoing_booking(offer)
@@ -521,7 +549,11 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
     else:
         db.session.commit()
 
-    log_extra = {"updated_fields": update_fields, "nb_offers": offers_count, "nb_venues": len(found_venue_ids)}
+    log_extra = {
+        "updated_fields": update_fields,
+        "nb_offers": offers_count,
+        "nb_venues": len(found_venue_ids),
+    }
     logger.info("Batch update of offers: end", extra=log_extra)
 
 
@@ -553,7 +585,9 @@ def create_event_opening_hours(
     return event_opening_hours
 
 
-def activate_future_offers(publication_date: datetime.datetime | None = None) -> list[int]:
+def activate_future_offers(
+    publication_date: datetime.datetime | None = None,
+) -> list[int]:
     offer_query, future_offer_query = offers_repository.get_offers_by_publication_date(
         publication_date=publication_date
     )
@@ -833,7 +867,10 @@ def edit_stock(
 
     changes = {}
     for model_attr, value in modifications.items():
-        changes[model_attr] = {"old_value": getattr(stock, model_attr), "new_value": value}
+        changes[model_attr] = {
+            "old_value": getattr(stock, model_attr),
+            "new_value": value,
+        }
         setattr(stock, model_attr, value)
 
     if "beginningDatetime" in modifications:
@@ -859,7 +896,11 @@ def edit_stock(
         "provider_id": editing_provider.id if editing_provider else None,
         "changes": {**changes},
     }
-    logger.info("Successfully updated stock", extra=log_extra_data, technical_message_id="stock.updated")
+    logger.info(
+        "Successfully updated stock",
+        extra=log_extra_data,
+        technical_message_id="stock.updated",
+    )
 
     return stock, "beginningDatetime" in modifications
 
@@ -919,7 +960,11 @@ def publish_offer(
         )
         logger.info(
             "Offer has been published",
-            extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
+            extra={
+                "offer_id": offer.id,
+                "venue_id": offer.venueId,
+                "offer_status": offer.status,
+            },
             technical_message_id="offer.published",
         )
     return offer
@@ -936,7 +981,10 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
     offer.lastValidationType = OfferValidationType.AUTO
     offer.lastValidationAuthorUserId = None
 
-    if offer.validation in (models.OfferValidationStatus.PENDING, models.OfferValidationStatus.REJECTED):
+    if offer.validation in (
+        models.OfferValidationStatus.PENDING,
+        models.OfferValidationStatus.REJECTED,
+    ):
         offer.isActive = False
     else:
         offer.isActive = True
@@ -953,7 +1001,9 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
         transactional_mails.send_first_venue_approved_offer_email_to_pro(offer)
 
 
-def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookings_models.Booking]:
+def _invalidate_bookings(
+    bookings: list[bookings_models.Booking],
+) -> list[bookings_models.Booking]:
     for booking in bookings:
         if booking.status is bookings_models.BookingStatus.USED:
             try:
@@ -963,7 +1013,11 @@ def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookin
     return bookings
 
 
-def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connect_as: bool | None = None) -> None:
+def _delete_stock(
+    stock: models.Stock,
+    author_id: int | None = None,
+    user_connect_as: bool | None = None,
+) -> None:
     stock.isSoftDeleted = True
     repository.save(stock)
 
@@ -1004,7 +1058,11 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
     )
 
 
-def delete_stock(stock: models.Stock, author_id: int | None = None, user_connect_as: bool | None = None) -> None:
+def delete_stock(
+    stock: models.Stock,
+    author_id: int | None = None,
+    user_connect_as: bool | None = None,
+) -> None:
     validation.check_stock_is_deletable(stock)
     _delete_stock(stock, author_id, user_connect_as)
 
@@ -1024,7 +1082,11 @@ def create_mediation(
     aspect_ratio: image_conversion.ImageRatio = image_conversion.ImageRatio.PORTRAIT,
 ) -> models.Mediation:
     validation.check_image(
-        image_as_bytes, min_width=min_width, min_height=min_height, max_width=max_width, max_height=max_height
+        image_as_bytes,
+        min_width=min_width,
+        min_height=min_height,
+        max_width=max_width,
+        max_height=max_height,
     )
 
     mediation = models.Mediation(author=user, offer=offer, credit=credit)
@@ -1043,7 +1105,10 @@ def create_mediation(
     except image_conversion.ImageRatioError:
         raise
     except Exception as exception:
-        logger.exception("An unexpected error was encountered during the thumbnail creation: %s", exception)
+        logger.exception(
+            "An unexpected error was encountered during the thumbnail creation: %s",
+            exception,
+        )
         raise exceptions.ThumbnailStorageError
 
     # cleanup former thumbnails and mediations
@@ -1128,7 +1193,10 @@ def add_criteria_to_offers(
 
     offer_ids_query = (
         db.session.query(models.Offer)
-        .filter(models.Offer.productId.in_(p.id for p in products), models.Offer.isActive.is_(True))
+        .filter(
+            models.Offer.productId.in_(p.id for p in products),
+            models.Offer.isActive.is_(True),
+        )
         .with_entities(models.Offer.id)
     )
     offer_ids = {offer_id for (offer_id,) in offer_ids_query.all()}
@@ -1299,13 +1367,18 @@ def rule_flags_offer(rule: models.OfferValidationRule, offer: AnyOffer) -> bool:
     return is_offer_flagged
 
 
-def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferValidationStatus:
+def set_offer_status_based_on_fraud_criteria(
+    offer: AnyOffer,
+) -> models.OfferValidationStatus:
     status = models.OfferValidationStatus.APPROVED
 
     confidence_level = offerers_api.get_offer_confidence_level(offer.venue)
 
     if confidence_level == offerers_models.OffererConfidenceLevel.WHITELIST:
-        logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value, "whitelist": True})
+        logger.info(
+            "Computed offer validation",
+            extra={"offer": offer.id, "status": status.value, "whitelist": True},
+        )
         return status
 
     if confidence_level == offerers_models.OffererConfidenceLevel.MANUAL_REVIEW:
@@ -1369,7 +1442,10 @@ def unindex_expired_offers(process_all_expired: bool = False) -> None:
 
 
 def report_offer(
-    user: users_models.User, offer: models.Offer, reason: models.Reason, custom_reason: str | None
+    user: users_models.User,
+    offer: models.Offer,
+    reason: models.Reason,
+    custom_reason: str | None,
 ) -> None:
     try:
         # transaction() handles the commit/rollback operations
@@ -1440,7 +1516,9 @@ def _should_try_to_update_offer_stock_quantity(offer: models.Offer) -> bool:
     return False
 
 
-def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer: models.Offer) -> None:
+def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(
+    offer: models.Offer,
+) -> None:
     if not _should_try_to_update_offer_stock_quantity(offer):
         return
     try:
@@ -1466,20 +1544,33 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
 
     try:
         shows_remaining_places = get_shows_remaining_places_from_provider(venue_provider.provider.localClass, offer)
-    except (EMSAPIException, BoostAPIException, CineDigitalServiceAPIException, CGRAPIException) as e:
+    except (
+        EMSAPIException,
+        BoostAPIException,
+        CineDigitalServiceAPIException,
+        CGRAPIException,
+    ) as e:
         # If we can't retrieve the stocks from the provider, we stop here to avoid breaking the code following this function
         # This is not ideal, I believe this function should be called on its own, or asynchronously
         # However this means frontend code (probably) so this temporarily fixes crashes for end users
         # TODO: (lixxday, 29/05/2024): remove this try/catch when the function is no longer called directly in GET /offer route
         logger.exception(
             "Failed to get shows remaining places from provider",
-            extra={"offer": offer.id, "provider": venue_provider.provider.localClass, "error": e},
+            extra={
+                "offer": offer.id,
+                "provider": venue_provider.provider.localClass,
+                "error": e,
+            },
         )
         return
     except Exception as e:
         logger.exception(
             "Unknown error when getting shows remaining places from provider",
-            extra={"offer": offer.id, "provider": venue_provider.provider.localClass, "error": e},
+            extra={
+                "offer": offer.id,
+                "provider": venue_provider.provider.localClass,
+                "error": e,
+            },
         )
         return
 
@@ -1508,12 +1599,18 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
                 db.session.rollback()
                 logger.info(
                     "Recompute dnBookedQuantity of a stock",
-                    extra={"stock_id": stock.id, "stock_dnBookedQuantity": stock.dnBookedQuantity},
+                    extra={
+                        "stock_id": stock.id,
+                        "stock_dnBookedQuantity": stock.dnBookedQuantity,
+                    },
                 )
                 bookings_api.recompute_dnBookedQuantity([stock.id])
                 logger.info(
                     "New value for dnBookedQuantity of a stock",
-                    extra={"stock_id": stock.id, "stock_dnBookedQuantity": stock.dnBookedQuantity},
+                    extra={
+                        "stock_id": stock.id,
+                        "stock_dnBookedQuantity": stock.dnBookedQuantity,
+                    },
                 )
                 offers_repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
             offer_has_new_sold_out_stock = True
@@ -1554,7 +1651,9 @@ def whitelist_product(idAtProviders: str) -> models.Product | None:
     return product
 
 
-def fetch_or_update_product_with_titelive_data(titelive_product: models.Product) -> models.Product:
+def fetch_or_update_product_with_titelive_data(
+    titelive_product: models.Product,
+) -> models.Product:
     product = db.session.query(models.Product).filter_by(idAtProviders=titelive_product.idAtProviders).one_or_none()
     if not product:
         return titelive_product
@@ -1576,7 +1675,10 @@ def fetch_or_update_product_with_titelive_data(titelive_product: models.Product)
 
 def batch_delete_draft_offers(query: BaseQuery) -> None:
     offer_ids = [id_ for (id_,) in query.with_entities(models.Offer.id)]
-    filters = (models.Offer.validation == models.OfferValidationStatus.DRAFT, models.Offer.id.in_(offer_ids))
+    filters = (
+        models.Offer.validation == models.OfferValidationStatus.DRAFT,
+        models.Offer.id.in_(offer_ids),
+    )
     db.session.query(models.Mediation).filter(models.Mediation.offerId == models.Offer.id).filter(*filters).delete(
         synchronize_session=False
     )
@@ -1597,7 +1699,9 @@ def batch_delete_draft_offers(query: BaseQuery) -> None:
 
 
 def batch_delete_stocks(
-    stocks_to_delete: list[models.Stock], author_id: int | None, user_connect_as: bool | None
+    stocks_to_delete: list[models.Stock],
+    author_id: int | None,
+    user_connect_as: bool | None,
 ) -> None:
     # We want to check that all stocks can be deleted first
     for stock in stocks_to_delete:
@@ -1627,7 +1731,10 @@ def create_price_category(
 
     price_category_label = get_or_create_label(label, offer.venue)
     created_price_category = models.PriceCategory(
-        offer=offer, price=price, priceCategoryLabel=price_category_label, idAtProvider=id_at_provider
+        offer=offer,
+        price=price,
+        priceCategoryLabel=price_category_label,
+        idAtProvider=id_at_provider,
     )
     repository.add_to_session(created_price_category)
     return created_price_category
@@ -1740,7 +1847,12 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
     except Exception as exception:
         logger.exception(
             "Could not approve product and rejected offers: %s",
-            extra={"ean": ean, "product": product.id, "offers": offer_ids, "exc": str(exception)},
+            extra={
+                "ean": ean,
+                "product": product.id,
+                "offers": offer_ids,
+                "exc": str(exception),
+            },
         )
         raise exceptions.NotUpdateProductOrOffers(exception)
 
@@ -1763,7 +1875,10 @@ def get_stocks_stats(offer_id: int) -> StocksStats:
                     .exists(),
                     None,
                 ),
-                else_=sa.cast(sa.func.sum(models.Stock.quantity - models.Stock.dnBookedQuantity), sa.Integer),
+                else_=sa.cast(
+                    sa.func.sum(models.Stock.quantity - models.Stock.dnBookedQuantity),
+                    sa.Integer,
+                ),
             ),
         )
         .filter(models.Stock.offerId == offer_id, models.Stock.isSoftDeleted.is_(False))
@@ -1826,11 +1941,17 @@ def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
 
 
 def _get_or_create_same_price_category_label(
-    venue: offerers_models.Venue, source_price_category_label: offers_models.PriceCategoryLabel
+    venue: offerers_models.Venue,
+    source_price_category_label: offers_models.PriceCategoryLabel,
 ) -> offers_models.PriceCategoryLabel:
     try:
         # Use label which already exists when found, otherwise unique_label_venue constraint would cause exception
-        return next(filter(lambda pcl: pcl.label == source_price_category_label.label, venue.priceCategoriesLabel))
+        return next(
+            filter(
+                lambda pcl: pcl.label == source_price_category_label.label,
+                venue.priceCategoriesLabel,
+            )
+        )
     except StopIteration:
         # Copy price category label from source to destination venue
         new_price_category_label = offers_models.PriceCategoryLabel(
@@ -1888,7 +2009,9 @@ def move_offer(
         # Use a different OA if the offer uses the venue's OA
         if offer.offererAddress and offer.offererAddress == original_venue.offererAddress:
             destination_oa = offerers_api.get_or_create_offerer_address(
-                original_venue.managingOffererId, original_venue.offererAddress.addressId, original_venue.common_name
+                original_venue.managingOffererId,
+                original_venue.offererAddress.addressId,
+                original_venue.common_name,
             )
             db.session.add(destination_oa)
             offer.offererAddress = destination_oa
@@ -1914,7 +2037,9 @@ def move_offer(
 
 
 def move_event_offer(
-    offer: models.Offer, destination_venue: offerers_models.Venue, notify_beneficiary: bool = False
+    offer: models.Offer,
+    destination_venue: offerers_models.Venue,
+    notify_beneficiary: bool = False,
 ) -> None:
     offer_id = offer.id
 
@@ -1936,7 +2061,10 @@ def move_event_offer(
             sa.and_(
                 finance_models.FinanceEvent.bookingId == bookings_models.Booking.id,
                 finance_models.FinanceEvent.status.in_(
-                    (finance_models.FinanceEventStatus.PENDING, finance_models.FinanceEventStatus.READY)
+                    (
+                        finance_models.FinanceEventStatus.PENDING,
+                        finance_models.FinanceEventStatus.READY,
+                    )
                 ),
             ),
         )
@@ -2010,7 +2138,9 @@ def move_event_offer(
 
 
 def update_used_stock_price(
-    stock: models.Stock, new_price: float | None = None, price_percent: decimal.Decimal | None = None
+    stock: models.Stock,
+    new_price: float | None = None,
+    price_percent: decimal.Decimal | None = None,
 ) -> None:
     if not stock.offer.isEvent:
         raise ValueError("Only stocks associated with an event offer can be edited with used bookings")
@@ -2053,7 +2183,9 @@ def update_used_stock_price(
 
 
 def upsert_movie_product_from_provider(
-    movie: offers_models.Movie, provider: providers_models.Provider, id_at_providers: str
+    movie: offers_models.Movie,
+    provider: providers_models.Provider,
+    id_at_providers: str,
 ) -> offers_models.Product | None:
     if not movie.allocine_id and not movie.visa:
         logger.warning("Cannot create a movie product without allocineId nor visa")
@@ -2106,7 +2238,10 @@ def _is_allocine(provider_id: int) -> bool:
 
 
 def _update_movie_product(
-    product: offers_models.Product, movie: offers_models.Movie, provider_id: int, id_at_providers: str
+    product: offers_models.Product,
+    movie: offers_models.Movie,
+    provider_id: int,
+    id_at_providers: str,
 ) -> None:
     product.description = movie.description
     product.durationMinutes = movie.duration
@@ -2128,7 +2263,8 @@ def _update_product_extra_data(product: offers_models.Product, movie: offers_mod
 
 
 def update_event_opening_hours(
-    event: offers_models.EventOpeningHours, update_body: offers_schemas.UpdateEventOpeningHoursModel
+    event: offers_models.EventOpeningHours,
+    update_body: offers_schemas.UpdateEventOpeningHoursModel,
 ) -> None:
     """Update an event opening hours information: start and end dates,
     opening hours.
@@ -2172,12 +2308,16 @@ def update_event_opening_hours(
             time_spans = new_opening_hours[weekday]
             db.session.add(
                 models.EventWeekDayOpeningHours(
-                    eventOpeningHours=event, weekday=models.Weekday[weekday], timeSpans=time_spans
+                    eventOpeningHours=event,
+                    weekday=models.Weekday[weekday],
+                    timeSpans=time_spans,
                 )
             )
 
 
-def delete_event_opening_hours(event_opening_hours: offers_models.EventOpeningHours) -> None:
+def delete_event_opening_hours(
+    event_opening_hours: offers_models.EventOpeningHours,
+) -> None:
     """Delete an offer's opening hours and cancel its related bookings.
 
     No database row in really deleted, it is marked as soft deleted instead.
@@ -2190,14 +2330,18 @@ def delete_event_opening_hours(event_opening_hours: offers_models.EventOpeningHo
         for booking in stock.bookings:
             try:
                 bookings_api.cancel_booking_by_offerer(booking)
-            except (bookings_exceptions.BookingIsAlreadyCancelled, bookings_exceptions.BookingIsAlreadyRefunded):
+            except (
+                bookings_exceptions.BookingIsAlreadyCancelled,
+                bookings_exceptions.BookingIsAlreadyRefunded,
+            ):
                 # this should not happen but it can safely be ignored since
                 # the main goal here is to block the user from using its
                 # booking.
                 continue
             except bookings_exceptions.BookingIsAlreadyUsed:
                 raise exceptions.EventOpeningHoursException(
-                    field="booking", msg=f"booking #{booking.id} is already used, it cannot be cancelled"
+                    field="booking",
+                    msg=f"booking #{booking.id} is already used, it cannot be cancelled",
                 )
 
 
@@ -2255,7 +2399,11 @@ def delete_offers_and_all_related_objects(offer_ids: typing.Collection[int], off
             models.Offer.query.filter(models.Offer.id.in_(chunk)).delete(synchronize_session=False)
             db.session.flush()
 
-            log_extra = {"round": idx, "offers_count": len(chunk), "time_spent": str(time.time() - start)}
+            log_extra = {
+                "round": idx,
+                "offers_count": len(chunk),
+                "time_spent": str(time.time() - start),
+            }
             logger.info("delete offers and related objects: round %d, end", idx, extra=log_extra)
 
 
@@ -2273,7 +2421,11 @@ def delete_unbookable_unbooked_old_offers(
     Each offer should also be unindexed.
     """
     start = time.time()
-    log_extra = {"min_id": min_id, "max_id": max_id, "offer_chunk_size": offer_chunk_size}
+    log_extra = {
+        "min_id": min_id,
+        "max_id": max_id,
+        "offer_chunk_size": offer_chunk_size,
+    }
     logger.info("delete_unbookable_unbooked_unmodified_old_offers start", extra=log_extra)
 
     offer_ids = offers_repository.get_unbookable_unbooked_old_offer_ids(min_id, max_id)
@@ -2289,7 +2441,78 @@ def delete_unbookable_unbooked_old_offers(
             "min_id": min(chunk),
             "max_id": max(chunk),
         }
-        logger.info("delete_unbookable_unbooked_unmodified_old_offers round %d: end", idx, extra=extra)
+        logger.info(
+            "delete_unbookable_unbooked_unmodified_old_offers round %d: end",
+            idx,
+            extra=extra,
+        )
 
     log_extra["time_spent"] = time.time() - start  # type: ignore[assignment]
     logger.info("delete_unbookable_unbooked_unmodified_old_offers end", extra=log_extra)
+
+
+def upsert_product_stock(
+    offer: offers_models.Offer,
+    stock_body: serialization.StockEdition | None,
+    provider: providers_models.Provider,
+) -> None:
+    existing_stock = next((stock for stock in offer.activeStocks), None)
+    if not stock_body:
+        if existing_stock:
+            delete_stock(existing_stock)
+        return
+
+    # no need to create an empty stock
+    if not existing_stock and stock_body.quantity == 0:
+        return
+
+    if not existing_stock:
+        if stock_body.price is None:
+            raise ApiErrors({"stock.price": ["Required"]})
+        create_stock(
+            offer=offer,
+            price=finance_utils.cents_to_full_unit(stock_body.price),
+            quantity=serialization.deserialize_quantity(stock_body.quantity),
+            booking_limit_datetime=stock_body.booking_limit_datetime,
+            creating_provider=provider,
+        )
+        return
+
+    stock_update_body = stock_body.dict(exclude_unset=True)
+    price = stock_update_body.get("price", UNCHANGED)
+
+    quantity = serialization.deserialize_quantity(stock_update_body.get("quantity", UNCHANGED))
+    new_quantity = quantity + existing_stock.dnBookedQuantity if isinstance(quantity, int) else quantity
+
+    if new_quantity == 0:
+        delete_stock(existing_stock)
+        return
+
+    edit_stock(
+        existing_stock,
+        quantity=new_quantity,
+        price=(finance_utils.cents_to_full_unit(price) if price != UNCHANGED else UNCHANGED),
+        booking_limit_datetime=stock_update_body.get("booking_limit_datetime", UNCHANGED),
+        editing_provider=provider,
+    )
+
+
+def _create_stock(product: offers_models.Offer, body: serialization.ProductOfferCreation) -> None:
+    if not body.stock:
+        return
+
+    if body.stock.quantity == 0:
+        return
+
+    try:
+        offers_api.create_stock(
+            offer=product,
+            price=finance_utils.cents_to_full_unit(body.stock.price),
+            quantity=serialization.deserialize_quantity(body.stock.quantity),
+            booking_limit_datetime=body.stock.booking_limit_datetime,
+            creating_provider=current_api_key.provider,
+        )
+    except sa_exc.SQLAlchemyError as error:
+        raise CreateStockDBError() from error
+    except Exception as error:
+        raise CreateStockError() from error
