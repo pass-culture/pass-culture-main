@@ -57,6 +57,14 @@ tasks_execution_time_histogram = Histogram(
 )
 metrics_list += [tasks_execution_time_histogram]
 
+tasks_rate_limited_counter = Counter(
+    "celery_tasks_rate_limited",
+    "Total number of Celery tasks started that were rate limited",
+    labelnames=["task"],
+    registry=registry,
+)
+metrics_list += [tasks_rate_limited_counter]
+
 
 def start_metrics_server() -> None:
     start_http_server(settings.CELERY_WORKER_METRICS_PORT, registry=registry)
