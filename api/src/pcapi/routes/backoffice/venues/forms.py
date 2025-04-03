@@ -157,13 +157,14 @@ class EditVenueForm(EditVirtualVenueForm):
             )
         if not acceslibre_connector.id_exists_at_acceslibre(slug=acceslibre_url.data.split("/")[-2]):
             raise validators.ValidationError("Cette URL n'existe pas chez acceslibre")
+        # TODO: (pcharlet 2025-04-04) delete this condition when removing isPermanent. Keep next condition over self.venue.isOpenToPublic is False
         if self.is_permanent.data is False and acceslibre_url.data:
-            if self.venue.isPermanent:
+            if self.venue.isOpenToPublic:
                 acceslibre_url.data = None
-            else:
-                raise validators.ValidationError(
-                    "Vous ne pouvez pas ajouter d'url à ce partenaire culturel car il n'est pas permanent"
-                )
+        if self.venue.isOpenToPublic is False and acceslibre_url.data:
+            raise validators.ValidationError(
+                "Vous ne pouvez pas ajouter d'url à ce partenaire culturel car il n'est pas ouvert au public"
+            )
 
         return acceslibre_url
 

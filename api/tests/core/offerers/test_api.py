@@ -2771,7 +2771,7 @@ class AccessibilityProviderTest:
         venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        count = offerers_api.count_open_to_public_or_permanent_venues_with_accessibility_provider()
+        count = offerers_api.count_open_to_public_venues_with_accessibility_provider()
         assert count == 1
 
     def test_get_open_to_public_venues_with_accessibility_provider(self):
@@ -2779,18 +2779,16 @@ class AccessibilityProviderTest:
         venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        venues_list = offerers_api.get_open_to_public_or_permanent_venues_with_accessibility_provider(
-            batch_size=10, batch_num=0
-        )
+        venues_list = offerers_api.get_open_to_public_venues_with_accessibility_provider(batch_size=10, batch_num=0)
         assert len(venues_list) == 1
         assert venues_list[0] == venue
 
-    def get_open_to_public_or_permanent_venues_without_accessibility_provider(self):
+    def test_get_open_to_public_venues_without_accessibility_provider(self):
         offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True, isVirtual=False)
         venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
-        venues_list = offerers_api.get_open_to_public_or_permanent_venues_without_accessibility_provider()
+        venues_list = offerers_api.get_open_to_public_venues_without_accessibility_provider()
         assert len(venues_list) == 3
 
     @patch("pcapi.connectors.acceslibre.find_new_entries_by_activity")
