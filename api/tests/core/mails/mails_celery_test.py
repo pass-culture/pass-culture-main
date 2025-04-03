@@ -15,7 +15,7 @@ from pcapi.utils.module_loading import import_string
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_TASKS=True)
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_MAILS=True)
 class SendinblueBackendTest:
     recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
     bcc_recipients = ["catherine.clark@example.com", "tate.walker@example.com"]
@@ -146,7 +146,7 @@ class SendinblueBackendTest:
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_TASKS=True)
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_MAILS=True)
 class ToDevSendinblueBackendTest(SendinblueBackendTest):
     expected_sent_data_to_dev = sendinblue_tasks.SendTransactionalEmailRequest(
         recipients=["dev@example.com"],
@@ -235,7 +235,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         assert list(task_param.recipients) == [recipient]
 
 
-@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_TASKS=True)
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_MAILS=True)
 class SendTest:
     @pytest.mark.settings(IS_TESTING=True, EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
     @patch("pcapi.celery_tasks.sendinblue.send_transactional_email")

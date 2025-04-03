@@ -211,7 +211,7 @@ class TransactionalEmailWithTemplateTest:
         mock_send_transactional_email_task.assert_called_once()
 
     @pytest.mark.settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
-    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_TASKS=True)
+    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_MAILS=True)
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_primary_task_celery.delay")
     def test_to_dev_send_email_confirmation_email_through_celery(self, mock_send_transactional_email_task, db_session):
         user = users_factories.UserFactory(email="john.celery@gmail.com")
