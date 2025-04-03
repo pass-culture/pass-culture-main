@@ -124,6 +124,7 @@ export const HeadlineOfferImageDialogs = ({
         <ModalImageEdit
           mode={UploaderModeEnum.OFFER}
           onImageSave={onImageUpload}
+          onReplaceImage={() => {}}
         />
       </DialogBuilder>
       <ConfirmDialog
