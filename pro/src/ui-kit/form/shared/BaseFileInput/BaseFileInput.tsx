@@ -24,12 +24,9 @@ export const BaseFileInput = ({
   children,
 }: BaseFileInputProps): JSX.Element => (
   <label
-    className={cn({
-      [cn(
-        buttonStyle['button'],
-        buttonStyle['button-primary'],
-        style['base-file-input-container']
-      )]: Boolean(!children),
+    className={cn(style['base-file-input-container'], {
+      [cn(buttonStyle['button'], buttonStyle['button-primary'])]:
+        Boolean(!children),
     })}
   >
     {children ? children : label}

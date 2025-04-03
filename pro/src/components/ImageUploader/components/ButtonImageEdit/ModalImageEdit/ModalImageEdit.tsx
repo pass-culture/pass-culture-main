@@ -22,8 +22,9 @@ export interface OnImageUploadArgs {
 
 interface ModalImageEditProps {
   mode: UploaderModeEnum
-  onImageUpload: (values: OnImageUploadArgs) => void
+  onImageSave: (values: OnImageUploadArgs) => void
   onImageDelete?: () => void
+  onReplaceImage: React.ChangeEventHandler<HTMLInputElement>
   initialValues?: UploadImageValues
   imageFile: File | undefined
 }
@@ -32,8 +33,9 @@ interface ModalImageEditProps {
 /* istanbul ignore next: DEBT, TO FIX */
 export const ModalImageEdit = ({
   mode,
-  onImageUpload,
+  onImageSave,
   onImageDelete,
+  onReplaceImage,
   initialValues = {},
   imageFile,
 }: ModalImageEditProps): JSX.Element | null => {
@@ -46,9 +48,11 @@ export const ModalImageEdit = ({
     cropParams: initialCropParams,
   } = initialValues
 
-  const [image, setImage] = useState<File | undefined>(imageFile)
+  const [image, setImage] = useState<File | undefined>(undefined)
 
   useEffect(() => {
+    setImage(imageFile)
+
     async function setImageFromUrl(url: string) {
       try {
         setImage(await getFileFromURL(url))
@@ -60,11 +64,12 @@ export const ModalImageEdit = ({
     const imageUrl = initialOriginalImageUrl
       ? initialOriginalImageUrl
       : initialImageUrl
+
     if (imageUrl) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setImageFromUrl(imageUrl)
     }
-  }, [])
+  }, [imageFile, initialImageUrl, initialOriginalImageUrl, notification])
 
   const [credit, setCredit] = useState(initialCredit || '')
 
@@ -87,10 +92,6 @@ export const ModalImageEdit = ({
         : 0.5,
   })
 
-  const onReplaceImage = () => {
-    setImage(undefined)
-  }
-
   const handleImageDelete = () => {
     if (!initialImageUrl && !initialOriginalImageUrl) {
       setImage(undefined)
@@ -108,7 +109,7 @@ export const ModalImageEdit = ({
       return
     }
 
-    onImageUpload({
+    onImageSave({
       imageFile: imageToUpload,
       imageCroppedDataUrl: imageDataUrl,
       cropParams: croppedRect,
@@ -136,7 +137,6 @@ export const ModalImageEdit = ({
       onSetCredit={setCredit}
       saveInitialPosition={setEditorInitialPosition}
       mode={mode}
-      showPreviewInModal={false}
     />
   ) : (
     <></>

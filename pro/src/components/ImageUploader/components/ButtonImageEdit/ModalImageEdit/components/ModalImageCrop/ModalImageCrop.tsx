@@ -6,18 +6,21 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useGetImageBitmap } from 'commons/hooks/useGetBitmap'
 import { useNotification } from 'commons/hooks/useNotification'
+import { modeValidationConstraints } from 'components/ImageUploader/components/ButtonImageEdit/constants'
 import {
   ImageEditor,
   ImageEditorConfig,
 } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ImageEditor/ImageEditor'
 import { coordonateToPosition } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ImageEditor/utils'
-import { modeValidationConstraints } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/constants'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
+import fullDownloadIcon from 'icons/full-download.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Divider } from 'ui-kit/Divider/Divider'
+import { BaseFileInput } from 'ui-kit/form/shared/BaseFileInput/BaseFileInput'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { getCropMaxDimension } from '../../utils/getCropMaxDimension'
 
@@ -28,7 +31,7 @@ export type ModalImageCropProps = {
   credit: string
   onSetCredit: (credit: string) => void
   children?: never
-  onReplaceImage?: () => void
+  onReplaceImage: React.ChangeEventHandler<HTMLInputElement>
   onImageDelete: () => void
   initialPosition?: Position
   initialScale?: number
@@ -38,6 +41,7 @@ export type ModalImageCropProps = {
 }
 
 export const ModalImageCrop = ({
+  onReplaceImage,
   onImageDelete,
   image,
   credit,
@@ -123,12 +127,6 @@ export const ModalImageCrop = ({
     <section className={style['modal-image-crop']}>
       <form>
         <div>
-          <Dialog.Title asChild>
-            <h1 className={style['modal-image-crop-header']}>
-              Modifier une image
-            </h1>
-          </Dialog.Title>
-
           <p className={style['modal-image-crop-right']}>
             En utilisant ce contenu, je certifie que je suis propriétaire ou que
             je dispose des autorisations nécessaires pour l’utilisation de
@@ -146,6 +144,23 @@ export const ModalImageCrop = ({
               />
 
               <div className={style['modal-image-crop-actions']}>
+                <BaseFileInput
+                  isDisabled={false}
+                  label={''}
+                  fileTypes={['image/png', 'image/jpeg']}
+                  isValid={true}
+                  onChange={onReplaceImage}
+                >
+                  <div className={style['modal-image-crop-replace']}>
+                    <SvgIcon
+                      src={fullDownloadIcon}
+                      alt=""
+                      className={style['modal-image-crop-replace-icon']}
+                    />{' '}
+                    <div>Remplacer l’image</div>
+                  </div>
+                </BaseFileInput>
+
                 <Dialog.Close asChild>
                   <Button
                     icon={fullTrashIcon}

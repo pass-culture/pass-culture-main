@@ -27,17 +27,25 @@
     align-items: center;
   }
 
+  &-replace {
+    @include fonts.button;
+
+    display: flex;
+    flex-direction: row;
+    gap: rem.torem(8px);
+    align-items: center;
+    font-weight: 700;
+
+    &-icon {
+      width: rem.torem(20px);
+    }
+  }
+
   &-form {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-  }
-
-  &-header {
-    @include fonts.title3;
-
-    margin-bottom: rem.torem(16px);
   }
 
   &-right {
