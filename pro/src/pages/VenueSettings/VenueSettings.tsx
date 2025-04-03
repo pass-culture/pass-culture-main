@@ -76,10 +76,10 @@ const VenueSettings = (): JSX.Element | null => {
 
   return (
     <Layout
-      mainHeading='Paramètres généraux'
+      mainHeading="Paramètres généraux"
       mainTopElement={
         <Button
-          variant={ButtonVariant.TERNARYPINK}
+          variant={ButtonVariant.TERNARYBRAND}
           icon={fullBackIcon}
           onClick={() => navigate(-1)}
         >

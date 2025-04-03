@@ -20,7 +20,15 @@ export default {
   ],
   argTypes: {
     variant: {
-      options: ['primary', 'secondary', 'ternary', 'quaternary', 'box'],
+      options: [
+        'primary',
+        'secondary',
+        'ternary',
+        'quaternary',
+        'ternary-brand',
+        'quaternary-brand',
+        'box',
+      ],
       control: 'radio',
     },
     iconPosition: {

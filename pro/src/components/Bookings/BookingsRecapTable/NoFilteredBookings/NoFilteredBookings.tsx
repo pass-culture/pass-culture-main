@@ -27,7 +27,7 @@ export const NoFilteredBookings = ({
       Vous pouvez modifier vos filtres et lancer une nouvelle recherche ou
     </p>
     <Button
-      variant={ButtonVariant.TERNARYPINK}
+      variant={ButtonVariant.TERNARYBRAND}
       icon={fullRefresh}
       onClick={resetFilters}
     >
