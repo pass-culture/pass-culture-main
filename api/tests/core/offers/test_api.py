@@ -4656,16 +4656,19 @@ class EditPriceCategoryTest:
 class MoveOfferTest:
     def test_move_physical_offer_without_pricing_point(self):
         """Moving an offer from a venue without pricing point to another venue
-        without pricing point should work"""
+        without pricing point should work and the offer's location should not change."""
         offer = factories.OfferFactory()
         new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
         assert offer.venue.current_pricing_point is None
         assert new_venue.current_pricing_point is None
+        assert offer.offererAddressId != new_venue.offererAddressId
 
+        initial_offerer_address_id = offer.offererAddressId
         api.move_offer(offer, new_venue)
 
         db.session.refresh(offer)
         assert offer.venue == new_venue
+        assert offer.offererAddressId == initial_offerer_address_id
 
     def test_move_physical_offer_with_different_pricing_point(self):
         """Moving a physical offer from a venue to another venue without
