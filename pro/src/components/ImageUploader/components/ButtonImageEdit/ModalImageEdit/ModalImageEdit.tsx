@@ -22,7 +22,7 @@ export interface OnImageUploadArgs {
 
 interface ModalImageEditProps {
   mode: UploaderModeEnum
-  onImageUpload: (values: OnImageUploadArgs) => void
+  onImageSave: (values: OnImageUploadArgs) => void
   onImageDelete?: () => void
   initialValues?: UploadImageValues
   imageFile: File | undefined
@@ -32,7 +32,7 @@ interface ModalImageEditProps {
 /* istanbul ignore next: DEBT, TO FIX */
 export const ModalImageEdit = ({
   mode,
-  onImageUpload,
+  onImageSave,
   onImageDelete,
   initialValues = {},
   imageFile,
@@ -45,6 +45,8 @@ export const ModalImageEdit = ({
     credit: initialCredit,
     cropParams: initialCropParams,
   } = initialValues
+
+  console.log(imageFile)
 
   const [image, setImage] = useState<File | undefined>(imageFile)
 
@@ -108,7 +110,7 @@ export const ModalImageEdit = ({
       return
     }
 
-    onImageUpload({
+    onImageSave({
       imageFile: imageToUpload,
       imageCroppedDataUrl: imageDataUrl,
       cropParams: croppedRect,
@@ -121,23 +123,24 @@ export const ModalImageEdit = ({
   }
 
   return image ? (
-    <ModalImageCrop
-      credit={credit}
-      image={image}
-      initialPosition={editorInitialPosition}
-      initialScale={
-        initalHeightCropPercent
-          ? heightCropPercentToScale(initalHeightCropPercent)
-          : 1
-      }
-      onEditedImageSave={onEditedImageSave}
-      onReplaceImage={onReplaceImage}
-      onImageDelete={handleImageDelete}
-      onSetCredit={setCredit}
-      saveInitialPosition={setEditorInitialPosition}
-      mode={mode}
-      showPreviewInModal={false}
-    />
+    <>
+      <ModalImageCrop
+        credit={credit}
+        image={image}
+        initialPosition={editorInitialPosition}
+        initialScale={
+          initalHeightCropPercent
+            ? heightCropPercentToScale(initalHeightCropPercent)
+            : 1
+        }
+        onEditedImageSave={onEditedImageSave}
+        onReplaceImage={onReplaceImage}
+        onImageDelete={handleImageDelete}
+        onSetCredit={setCredit}
+        saveInitialPosition={setEditorInitialPosition}
+        mode={mode}
+      />
+    </>
   ) : (
     <></>
   )

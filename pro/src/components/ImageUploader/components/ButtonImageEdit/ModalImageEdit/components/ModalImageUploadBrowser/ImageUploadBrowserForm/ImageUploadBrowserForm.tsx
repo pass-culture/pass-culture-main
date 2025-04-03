@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import React, { useState } from 'react'
 import { ValidationError } from 'yup'
 
@@ -10,25 +9,24 @@ import {
   imageConstraints,
 } from 'components/ConstraintCheck/imageConstraints'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import fullMoreIcon from 'icons/full-more.svg'
 import { BaseFileInput } from 'ui-kit/form/shared/BaseFileInput/BaseFileInput'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { modeValidationConstraints } from './constants'
-import style from './ImageUploadBrowserForm.module.scss'
 import { ImageUploadBrowserFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
+
 interface ImageUploadBrowserFormProps {
   onSubmit: (values: ImageUploadBrowserFormValues) => void
   mode: UploaderModeEnum
   isReady: boolean
-  children?: never
+  children?: React.ReactNode | React.ReactNode[]
 }
 
 export const ImageUploadBrowserForm = ({
   onSubmit,
   mode,
   isReady,
+  children,
 }: ImageUploadBrowserFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
 
@@ -59,7 +57,7 @@ export const ImageUploadBrowserForm = ({
           { image: newFile },
           { abortEarly: false }
         )
-        onSubmit({ image: newFile })
+        onSubmit({ imageFile: newFile })
         logEvent(Events.CLICKED_ADD_IMAGE, {
           imageCreationStage: 'import image',
         })
@@ -75,7 +73,7 @@ export const ImageUploadBrowserForm = ({
 
   /* istanbul ignore next: DEBT, TO FIX */
   return (
-    <form onSubmit={(e) => e.preventDefault()}>
+    <div>
       <BaseFileInput
         isDisabled={!isReady}
         label={''}
@@ -84,23 +82,13 @@ export const ImageUploadBrowserForm = ({
         onChange={onChange}
         ariaDescribedBy={`${preferredOrientationCaptionId} ${constraintCheckId}`}
       >
-        <div
-          className={cn(style['button-image-add'], {
-            [style['add-image-venue']]: mode === UploaderModeEnum.VENUE,
-            [style['add-image-offer']]:
-              mode === UploaderModeEnum.OFFER ||
-              mode === UploaderModeEnum.OFFER_COLLECTIVE,
-          })}
-        >
-          <SvgIcon src={fullMoreIcon} alt="" className={style['icon']} />
-          <span className={style['label']}>Ajouter une image</span>
-        </div>
+        {children}
       </BaseFileInput>
       <ConstraintCheck
         id={constraintCheckId}
         constraints={constraints}
         failingConstraints={errors}
       />
-    </form>
+    </div>
   )
 }

@@ -123,12 +123,6 @@ export const ModalImageCrop = ({
     <section className={style['modal-image-crop']}>
       <form>
         <div>
-          <Dialog.Title asChild>
-            <h1 className={style['modal-image-crop-header']}>
-              Modifier une image
-            </h1>
-          </Dialog.Title>
-
           <p className={style['modal-image-crop-right']}>
             En utilisant ce contenu, je certifie que je suis propriétaire ou que
             je dispose des autorisations nécessaires pour l’utilisation de

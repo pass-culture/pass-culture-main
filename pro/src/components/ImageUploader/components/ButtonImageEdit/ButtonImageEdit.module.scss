@@ -1,0 +1,64 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+
+.button-image-add {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: rem.torem(16px);
+  border: none;
+  background-color: var(--color-background-subtle);
+  color: var(--color-text-default);
+  box-shadow: 0 rem.torem(1px) rem.torem(8px)
+    rgb(from var(--color-large-shadow) r g b / 15%);
+  border-radius: rem.torem(8px);
+  cursor: pointer;
+  text-align: center;
+
+  &.add-image-venue {
+    height: rem.torem(176px);
+    aspect-ratio: 3 / 2;
+  }
+
+  &.add-image-offer {
+    width: rem.torem(176px);
+    aspect-ratio: 2 / 3;
+
+    .label {
+      // Force the text to wrap
+      max-width: rem.torem(120px);
+    }
+  }
+
+  &:hover {
+    box-shadow: 0 rem.torem(1px) rem.torem(8px)
+      rgb(from var(--color-large-shadow) r g b / 30%);
+
+    .image-upload-button-label {
+      text-decoration: underline;
+    }
+  }
+
+  &:active {
+    background-color: var(--color-grey-medium);
+  }
+}
+
+.icon {
+  height: rem.torem(32px);
+  width: rem.torem(32px);
+  color: var(--color-secondary-light);
+}
+
+.label {
+  @include fonts.button;
+
+  line-height: rem.torem(20px);
+}
+
+.button-image-modal-title {
+    @include fonts.title3;
+
+    margin-bottom: rem.torem(16px);
+}

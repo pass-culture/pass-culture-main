@@ -10,7 +10,7 @@ interface BaseFileInputProps {
   isValid: boolean
   isDisabled?: boolean
   onChange: React.ChangeEventHandler<HTMLInputElement>
-  children: React.ReactNode | React.ReactNode[]
+  children?: React.ReactNode | React.ReactNode[]
   ariaDescribedBy?: string
 }
 

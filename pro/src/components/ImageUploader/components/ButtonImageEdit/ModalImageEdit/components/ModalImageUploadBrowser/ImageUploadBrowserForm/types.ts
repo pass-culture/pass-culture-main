@@ -1,3 +1,3 @@
 export interface ImageUploadBrowserFormValues {
-  image: File | null
+  imageFile: File | undefined
 }

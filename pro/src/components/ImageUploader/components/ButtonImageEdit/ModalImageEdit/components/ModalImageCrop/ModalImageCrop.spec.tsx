@@ -22,7 +22,6 @@ const defaultProps: ModalImageCropProps = {
   saveInitialPosition: vi.fn(),
   onSetCredit: vi.fn(),
   mode: UploaderModeEnum.OFFER,
-  showPreviewInModal: true,
   initialScale: 1,
 }
 
