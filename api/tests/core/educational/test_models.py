@@ -624,11 +624,44 @@ class EducationalInstitutionProgramTest:
     def test_unique_program_for_an_educational_institution(self):
         program1 = factories.EducationalInstitutionProgramFactory()
         program2 = factories.EducationalInstitutionProgramFactory()
-        institution = factories.EducationalInstitutionFactory(programs=[program1])
+        institution = factories.EducationalInstitutionFactory()
+        factories.EducationalInstitutionProgramAssociationFactory(institution=institution, program=program1)
 
         with pytest.raises(sa_exc.IntegrityError):
-            institution.programs = [program1, program2]
+            factories.EducationalInstitutionProgramAssociationFactory(institution=institution, program=program2)
             db.session.commit()
+
+    def test_programs_at_date_for_an_educational_institution(self):
+        program1 = factories.EducationalInstitutionProgramFactory()
+
+        institution = factories.EducationalInstitutionFactory()
+
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=365)
+        factories.EducationalInstitutionProgramAssociationFactory(
+            institution=institution, program=program1, timespan=db_utils.make_timerange(past, None)
+        )
+
+        assert institution.programs_at_date(datetime.datetime.utcnow()) == [program1]
+
+        before_meg_start = datetime.datetime(2020, 1, 1)
+        assert institution.programs_at_date(before_meg_start) == []
+
+    def test_programs_at_date_for_an_educational_institution_leaving_program(self):
+        program = factories.EducationalInstitutionProgramFactory()
+
+        institution = factories.EducationalInstitutionFactory()
+
+        today = datetime.datetime.utcnow()
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=365)
+        futur_date = today + datetime.timedelta(days=365)
+        factories.EducationalInstitutionProgramAssociationFactory(
+            institution=institution, program=program, timespan=(db_utils.make_timerange(start=past, end=futur_date))
+        )
+
+        assert institution.programs_at_date(today) == [program]
+
+        very_futur_date = today + datetime.timedelta(days=365 * 2)
+        assert institution.programs_at_date(very_futur_date) == []
 
 
 class CollectiveOfferDisplayedStatusTest:

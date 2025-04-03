@@ -1,3 +1,5 @@
+import datetime
+
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import favorites as educational_api_favorite
@@ -79,4 +81,7 @@ def _get_favorites_count(redactor: educational_models.EducationalRedactor | None
 def _get_programs(institution: educational_models.EducationalInstitution | None) -> list:
     if not institution:
         return []
-    return [EducationalInstitutionProgramModel.from_orm(program) for program in institution.programs]
+    return [
+        EducationalInstitutionProgramModel.from_orm(program)
+        for program in institution.programs_at_date(datetime.datetime.utcnow())
+    ]

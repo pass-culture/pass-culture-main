@@ -16,6 +16,7 @@ from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_account
 from pcapi.core.finance.backend.dummy import invoices as dummy_invoices
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.utils import db as db_utils
 
 
 pytestmark = [
@@ -384,7 +385,11 @@ class BaseBackendTest:
         )
         year = educational_factories.EducationalYearFactory()
         meg_program = educational_factories.EducationalInstitutionProgramFactory(name="marseille_en_grand")
-        educational_institution = educational_factories.EducationalInstitutionFactory(programs=[meg_program])
+        educational_institution = educational_factories.EducationalInstitutionFactory(
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(program=meg_program)
+            ]
+        )
         educational_factories.EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=year,
@@ -418,6 +423,66 @@ class BaseBackendTest:
         assert invoice_line["product_id"] == product_id
         assert invoice_line["title"] == title
 
+    @pytest.mark.parametrize(
+        "pricing_line_category,product_id,title",
+        [
+            (finance_models.PricingLineCategory.OFFERER_REVENUE, "ORCOLEDUC_NAT", "Réservations"),
+            (finance_models.PricingLineCategory.COMMERCIAL_GESTURE, "CGCOLEDUC_NAT", "Gestes commerciaux"),
+        ],
+    )
+    def test_get_invoice_line_collective_when_leaving_meg(self, pricing_line_category, product_id, title):
+        offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            pricing_point="self",
+            bank_account=bank_account,
+        )
+        year = educational_factories.EducationalYearFactory()
+        meg_program = educational_factories.EducationalInstitutionProgramFactory(name="marseille_en_grand")
+        educational_institution = educational_factories.EducationalInstitutionFactory(
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(
+                    program=meg_program,
+                    timespan=db_utils.make_timerange(
+                        start=datetime.datetime(2023, 9, 1), end=datetime.datetime(2024, 8, 31)
+                    ),
+                )
+            ]
+        )
+        educational_factories.EducationalDepositFactory(
+            educationalInstitution=educational_institution,
+            educationalYear=year,
+            ministry=educational_models.Ministry.EDUCATION_NATIONALE.name,
+        )
+        booking = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue=venue,
+            educationalInstitution=educational_institution,
+            educationalYear=year,
+        )
+        pricing = finance_factories.CollectivePricingFactory(
+            collectiveBooking=booking,
+            pricingPoint=venue,
+            status=finance_models.PricingStatus.PROCESSED,
+            amount=-538_55,
+        )
+        finance_factories.PricingLineFactory(
+            pricing=pricing,
+            category=pricing_line_category,
+            amount=-538_55,
+        )
+        cashflow = finance_factories.CashflowFactory(pricings=[pricing])
+        invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
+
+        backend = finance_backend.BaseFinanceBackend()
+        invoice_lines = backend.get_invoice_lines(invoice)
+        assert len(invoice_lines) == 1
+        invoice_line = invoice_lines[0]
+        assert len(invoice_line) == 3
+        assert invoice_line["amount"] == -538_55
+        assert invoice_line["product_id"] == product_id  # is not MEG (Marseille en grand)
+        assert invoice_line["title"] == title
+
     def test_get_debit_note_line_collective(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
@@ -428,7 +493,11 @@ class BaseBackendTest:
         )
         year = educational_factories.EducationalYearFactory()
         meg_program = educational_factories.EducationalInstitutionProgramFactory(name="marseille_en_grand")
-        educational_institution = educational_factories.EducationalInstitutionFactory(programs=[meg_program])
+        educational_institution = educational_factories.EducationalInstitutionFactory(
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(program=meg_program)
+            ]
+        )
         educational_factories.EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=year,

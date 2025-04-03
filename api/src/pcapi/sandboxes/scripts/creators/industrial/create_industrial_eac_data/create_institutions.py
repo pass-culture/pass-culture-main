@@ -2,8 +2,10 @@ import datetime
 import typing
 
 from pcapi import settings
+from pcapi.core.educational import constants as educational_constants
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.utils import db as db_utils
 
 
 def create_institutions() -> list[educational_models.EducationalInstitution]:
@@ -45,15 +47,25 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
             name="FRANCOIS MOISSON",
             city="MARSEILLE",
             postalCode="13002",
-            programs=[program],
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(
+                    program=program,
+                    timespan=db_utils.make_timerange(educational_constants.MEG_BEGINNING_DATE, None),
+                )
+            ],
         ),
         educational_factories.EducationalInstitutionFactory(
             institutionId="0130541T",
             institutionType="ECOLE ELEMENTAIRE PUBLIQUE",
             name="CANET AMBROSINI",
             city="MARSEILLE",
-            programs=[program],
             postalCode="13014",
+            programAssociations=[
+                educational_factories.EducationalInstitutionProgramAssociationFactory(
+                    program=program,
+                    timespan=db_utils.make_timerange(educational_constants.MEG_BEGINNING_DATE, None),
+                )
+            ],
         ),
         # keep one school without the expected program to allow some
         # tests
