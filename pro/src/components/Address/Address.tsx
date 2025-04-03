@@ -5,6 +5,7 @@ import { useDebouncedCallback } from 'use-debounce'
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { AdresseData } from 'apiClient/adresse/types'
 import { SelectOption } from 'commons/custom_types/form'
+import { handleAddressSelect } from 'commons/utils/handleAddressSelect'
 import { normalizeStrForAdressSearch } from 'commons/utils/searchPatternInOptions'
 import { serializeAdressData } from 'components/Address/serializer'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
@@ -16,6 +17,11 @@ interface AddressProps {
   suggestionLimit?: number
   disabled?: boolean
   className?: string
+  customHandleAddressSelect?: (
+    setFieldValue: any,
+    selectedItem?: AutocompleteItemProps,
+    searchField?: FieldInputProps<string>
+  ) => void
 }
 
 export interface AutocompleteItemProps {
@@ -30,6 +36,7 @@ export const AddressSelect = ({
   suggestionLimit,
   disabled = false,
   className,
+  customHandleAddressSelect,
 }: AddressProps) => {
   const { setFieldValue } = useFormikContext()
   const [options, setOptions] = useState<SelectOption[]>([])
@@ -41,6 +48,7 @@ export const AddressSelect = ({
   useEffect(() => {
     setOptions([{ label: selectedField.value, value: selectedField.value }])
   }, [selectedField.value])
+  const addressSelectHandler = customHandleAddressSelect ?? handleAddressSelect
 
   const onSearchFieldChange = async () => {
     if (searchField.value.length >= 3) {
@@ -62,7 +70,7 @@ export const AddressSelect = ({
       )
     } else if (searchField.value.length === 0 && searchFieldMeta.touched) {
       setOptions([])
-      handleAddressSelect(setFieldValue, undefined, searchField)
+      addressSelectHandler(setFieldValue, undefined, searchField)
     }
   }
 
@@ -77,6 +85,12 @@ export const AddressSelect = ({
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (addressesMap[searchField.value] !== undefined) {
       handleAddressSelect(
+        setFieldValue,
+        addressesMap[searchField.value],
+        searchField
+      )
+
+      addressSelectHandler(
         setFieldValue,
         addressesMap[searchField.value],
         searchField
@@ -124,20 +138,4 @@ export const AddressSelect = ({
       className={className}
     />
   )
-}
-
-export const handleAddressSelect = (
-  setFieldValue: any,
-  selectedItem?: AutocompleteItemProps,
-  searchField?: FieldInputProps<string>
-) => {
-  setFieldValue('street', selectedItem?.extraData?.address ?? '')
-  if (searchField) {
-    setFieldValue('addressAutocomplete', searchField.value)
-  }
-  setFieldValue('postalCode', selectedItem?.extraData?.postalCode ?? '')
-  setFieldValue('city', selectedItem?.extraData?.city ?? '')
-  setFieldValue('latitude', selectedItem?.extraData?.latitude ?? '')
-  setFieldValue('longitude', selectedItem?.extraData?.longitude ?? '')
-  setFieldValue('banId', selectedItem?.value ?? '')
 }
