@@ -8,6 +8,7 @@ import sqlalchemy as sqla
 import sqlalchemy.exc as sqla_exc
 
 from pcapi import repository
+from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
@@ -365,15 +366,7 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
         address_label = body.location.address_label
 
     serialized_products_stocks = _serialize_products_from_body(body.products)
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EAN.is_active():
-        _create_or_update_ean_offers_rq.delay(
-            serialized_products_stocks=serialized_products_stocks,
-            venue_id=venue.id,
-            provider_id=current_api_key.provider.id,
-            address_id=address_id,
-            address_label=address_label,
-        )
-    else:
+    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EAN_OFFERS.is_active():
         payload = CreateOrUpdateEANOffersRequest(
             serialized_products_stocks=serialized_products_stocks,
             venue_id=venue.id,
@@ -382,6 +375,14 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
             address_label=address_label,
         )
         _create_or_update_ean_offers_celery.delay(payload)
+    else:
+        _create_or_update_ean_offers_rq.delay(
+            serialized_products_stocks=serialized_products_stocks,
+            venue_id=venue.id,
+            provider_id=current_api_key.provider.id,
+            address_id=address_id,
+            address_label=address_label,
+        )
 
 
 @job(worker.low_queue)
