@@ -150,20 +150,32 @@ Cypress.Commands.add('stepLog', ({ message }) => {
 
 Cypress.Commands.add(
   'sandboxCall',
-  (method: 'GET' | 'POST', url: string, onRequest: (response: any) => void) => {
-    try {
-      cy.request({
-        method,
-        url,
-        retryOnStatusCodeFailure: true,
-        retryOnNetworkFailure: true,
-        timeout: 1000 * 120, // With test parralelization, the api could be slower, so, we'll wait a little.
-      }).then((response) => {
+  (
+    method: 'GET' | 'POST',
+    url: string,
+    onRequest: (response: any) => void,
+    retry: boolean = true
+  ) => {
+    cy.request({
+      method,
+      url,
+      retryOnNetworkFailure: true,
+      failOnStatusCode: false,
+      timeout: 1000 * 120, // With test parralelization, the api could be slower, so, we'll wait a little.
+    }).then((response) => {
+      if (response.status === 200) {
         onRequest(response)
-      })
-    } catch (error) {
-      cy.log('Error ', error)
-    }
+      } else if (retry) {
+        Cypress.log({
+          name: 'sandboxCall-error',
+          displayName: `Sandbox call error`,
+          message: JSON.stringify(response),
+        })
+        // We try to wait before doing the call again
+        cy.wait(4000)
+        cy.sandboxCall(method, url, onRequest, false)
+      }
+    })
   }
 )
 
