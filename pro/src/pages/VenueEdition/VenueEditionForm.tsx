@@ -97,7 +97,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         formErrors = error.body
       }
       const apiFieldsMap: Record<string, string> = {
-        venueLabelId: 'venueLabel',
         'contact.email': 'email',
         'contact.phoneNumber': 'phoneNumber',
         'contact.website': 'webSite',

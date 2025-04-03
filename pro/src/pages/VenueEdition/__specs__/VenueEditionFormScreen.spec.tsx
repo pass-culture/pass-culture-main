@@ -477,9 +477,6 @@ describe('VenueEditionFormScreen', () => {
           screen.queryByTestId('wrapper-description')
         ).not.toBeInTheDocument()
         expect(
-          screen.queryByTestId('wrapper-venueLabel')
-        ).not.toBeInTheDocument()
-        expect(
           screen.queryByText('Accessibilité du lieu')
         ).not.toBeInTheDocument()
         expect(
