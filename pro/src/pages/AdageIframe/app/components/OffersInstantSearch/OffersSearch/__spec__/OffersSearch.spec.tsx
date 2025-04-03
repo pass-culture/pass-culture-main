@@ -137,6 +137,7 @@ vi.mock('react-instantsearch', async () => {
           },
         },
       ],
+      refresh: vi.fn(),
     }),
     Configure: vi.fn(() => <div />),
     Index: vi.fn(({ children }) => children),
