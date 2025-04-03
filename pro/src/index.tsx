@@ -19,11 +19,10 @@ if (SENTRY_SERVER_URL) {
 // included in the bundle instead of <script> tag in index.html
 // to avoid the need of 'insafe-inline' in Content Security Policy
 if (!isAdageIframe) {
-  ;(function (h: any, o, t, j, a?: any, r?: any) {
+  ;(function (h: any, o, t, j, a?: any, r?: any, tmpl?: any) {
     h.hj =
       h.hj ||
       function () {
-         
         ;(h.hj.q = h.hj.q || []).push(arguments)
       }
     h._hjSettings = {
@@ -31,13 +30,13 @@ if (!isAdageIframe) {
       hjsv: 6,
     }
     a = o.getElementsByTagName('head')[0]
+    tmpl = o.createElement('template')
+    tmpl.setAttribute('data-purpose', 'hotjar')
     r = o.createElement('script')
     r.async = 1
-    r.setAttribute('data-src', t + h._hjSettings.hjid + j + h._hjSettings.hjsv)
-    r.setAttribute('data-type', 'application/javascript')
-    r.setAttribute('data-name', 'hotjar')
-    r.type = 'opt-in'
-    a.appendChild(r)
+    r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv
+    tmpl.content.appendChild(r)
+    a.appendChild(tmpl)
   })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=')
 }
 

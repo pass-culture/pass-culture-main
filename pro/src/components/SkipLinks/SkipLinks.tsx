@@ -18,7 +18,7 @@ export const SkipLinks = ({ shouldDisplayTopPageLink = true }: SkipLinksProps): 
         className={styles['visually-hidden']}
       />}
       <nav aria-label="Accès rapide" className={styles['skip-links']}>
-        <div id="orejime" />
+        <div id="orejimeElement" />
         <div className={styles['skip-list']}>
           <ButtonLink
             to="#content"

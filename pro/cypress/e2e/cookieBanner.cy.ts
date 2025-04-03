@@ -1,8 +1,25 @@
 import { logInAndGoToPage } from '../support/helpers.ts'
 
 describe('Cookie management with no login', () => {
+  let savedCookies: any[] = []
   beforeEach(() => {
     cy.visit('/connexion')
+
+    savedCookies.forEach((cookie) => {
+      cy.setCookie(cookie.name, cookie.value, {
+        domain: cookie.domain,
+        path: cookie.path,
+        secure: cookie.secure,
+        httpOnly: cookie.httpOnly,
+        expiry: cookie.expires,
+      })
+    })
+  })
+
+  afterEach(() => {
+    cy.getCookies().then((cookies) => {
+      savedCookies = cookies
+    })
   })
 
   it('The cookie banner should remain displayed when opening a new page', () => {
@@ -32,7 +49,7 @@ describe('Cookie management with no login', () => {
     cy.findByText('Gestion des cookies').click()
 
     cy.stepLog({ message: 'I should have 4 items checked' })
-    cy.get(".orejime-AppItem input[type='checkbox']:checked").should(
+    cy.get('.orejime-Purpose-children .orejime-Purpose-input:checked').should(
       'have.length',
       4
     )
@@ -44,9 +61,11 @@ describe('Cookie management with no login', () => {
 
     cy.stepLog({ message: 'I open the cookie management option' })
     cy.findByText('Gestion des cookies').click()
+    cy.stepLog({ message: 'I decline all cookies' })
+    cy.findByText('Tout refuser').click()
 
     cy.stepLog({ message: 'I should have 1 item checked' })
-    cy.get(".orejime-AppItem input[type='checkbox']:checked").should(
+    cy.get('.orejime-Purpose-children .orejime-Purpose-input:checked').should(
       'have.length',
       1
     )
@@ -54,7 +73,7 @@ describe('Cookie management with no login', () => {
 
   it('I should be able to choose a specific cookie, save and the status should be the same on modal re display', () => {
     cy.stepLog({ message: 'I open the choose cookies option' })
-    cy.findByText('Choisir les cookies').click()
+    cy.findByText('Gestion des cookies').click()
 
     cy.stepLog({ message: 'I select the "Beamer" cookie' })
     cy.findByText('Beamer').click()
@@ -66,12 +85,12 @@ describe('Cookie management with no login', () => {
     cy.findByText('Gestion des cookies').click()
 
     cy.stepLog({ message: 'the Beamer cookie should be checked' })
-    cy.get('#orejime-app-item-beamer').should('be.checked')
+    cy.get('#orejime-purpose-beamer').should('not.be.checked')
   })
 
   it('I should be able to choose a specific cookie, reload the page and the status should not have been changed', () => {
     cy.stepLog({ message: 'I open the choose cookies option' })
-    cy.findByText('Choisir les cookies').click()
+    cy.findByText('Gestion des cookies').click()
 
     cy.stepLog({ message: 'I select the "Beamer" cookie' })
     cy.findByText('Beamer').click()
@@ -80,15 +99,15 @@ describe('Cookie management with no login', () => {
     cy.visit('/connexion')
 
     cy.stepLog({ message: 'I open the choose cookies option' })
-    cy.findByText('Choisir les cookies').click()
+    cy.findByText('Gestion des cookies').click()
 
     cy.stepLog({ message: 'the Beamer cookie should not be checked' })
-    cy.get('#orejime-app-item-beamer').should('not.be.checked')
+    cy.get('#orejime-purpose-beamer').should('not.be.checked')
   })
 
   it('I should be able to choose a specific cookie, close the modal and the status should not have been changed', () => {
     cy.stepLog({ message: 'I open the choose cookies option' })
-    cy.findByText('Choisir les cookies').click()
+    cy.findByText('Gestion des cookies').click()
 
     cy.stepLog({ message: 'I select the "Beamer" cookie' })
     cy.findByText('Beamer').click()
@@ -97,10 +116,10 @@ describe('Cookie management with no login', () => {
     cy.get('.orejime-Modal-closeButton').click()
 
     cy.stepLog({ message: 'I open the choose cookies option' })
-    cy.findByText('Choisir les cookies').click()
+    cy.findByText('Gestion des cookies').click()
 
     cy.stepLog({ message: 'the Beamer cookie should be checked' })
-    cy.get('#orejime-app-item-beamer').should('be.checked')
+    cy.get('#orejime-purpose-beamer').should('not.be.checked')
   })
 })
 
@@ -155,7 +174,7 @@ describe('Cookie management with login', () => {
     cy.findByText('Gestion des cookies').click()
 
     cy.stepLog({ message: 'the Beamer cookie should be checked' })
-    cy.get('#orejime-app-item-beamer').should('be.checked')
+    cy.get('#orejime-purpose-beamer').should('be.checked')
   })
 
   it('I should be able to log in, choose a specific cookie, open another browser, log in again and check that specific cookie not checked', () => {
@@ -210,6 +229,6 @@ describe('Cookie management with login', () => {
     cy.findByText('Gestion des cookies').click()
 
     cy.stepLog({ message: 'the Beamer cookie should not be checked' })
-    cy.get('#orejime-app-item-beamer').should('not.be.checked')
+    cy.get('#orejime-purpose-beamer').should('not.be.checked')
   })
 })
