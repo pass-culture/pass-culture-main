@@ -25,12 +25,15 @@ from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
+from pcapi.routes.public.individual_offers.v1.products_serialization import CreateOrUpdateEANOffersRequest
 from pcapi.routes.public.services import authorization
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import image_conversion
@@ -362,16 +365,58 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
         address_label = body.location.address_label
 
     serialized_products_stocks = _serialize_products_from_body(body.products)
-    _create_or_update_ean_offers.delay(
+    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EAN.is_active():
+        _create_or_update_ean_offers_rq.delay(
+            serialized_products_stocks=serialized_products_stocks,
+            venue_id=venue.id,
+            provider_id=current_api_key.provider.id,
+            address_id=address_id,
+            address_label=address_label,
+        )
+    else:
+        payload = CreateOrUpdateEANOffersRequest(
+            serialized_products_stocks=serialized_products_stocks,
+            venue_id=venue.id,
+            provider_id=current_api_key.provider.id,
+            address_id=address_id,
+            address_label=address_label,
+        )
+        _create_or_update_ean_offers_celery.delay(payload)
+
+
+@job(worker.low_queue)
+def _create_or_update_ean_offers_rq(
+    *,
+    serialized_products_stocks: dict,
+    venue_id: int,
+    provider_id: int,
+    address_id: int | None = None,
+    address_label: str | None = None,
+) -> None:
+    _create_or_update_ean_offers(
         serialized_products_stocks=serialized_products_stocks,
-        venue_id=venue.id,
-        provider_id=current_api_key.provider.id,
+        venue_id=venue_id,
+        provider_id=provider_id,
         address_id=address_id,
         address_label=address_label,
     )
 
 
-@job(worker.low_queue)
+@celery_async_task(
+    name="tasks.offers.default.create_or_update_ean_offers",
+    autoretry_for=(),
+    model=CreateOrUpdateEANOffersRequest,
+)
+def _create_or_update_ean_offers_celery(payload: CreateOrUpdateEANOffersRequest) -> None:
+    _create_or_update_ean_offers(
+        serialized_products_stocks=payload.serialized_products_stocks,
+        venue_id=payload.venue_id,
+        provider_id=payload.provider_id,
+        address_id=payload.address_id,
+        address_label=payload.address_label,
+    )
+
+
 def _create_or_update_ean_offers(
     *,
     serialized_products_stocks: dict,
