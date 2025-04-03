@@ -632,7 +632,7 @@ class EditStockTest:
             price=110,
             offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
             offer__lastValidationPrice=decimal.Decimal("100"),
-            offer__extraData={"ean": "1234567890123"},
+            offer__ean="1234567890123",
         )
 
         # When
@@ -1734,14 +1734,13 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=provider,
             name="Offer linked to a provider",
-            extraData={"ean": "1234567890124"},
+            ean="1234567890124",
         )
-        body = offers_schemas.UpdateOffer(extraData={"ean": "1234567890125"})
+        body = offers_schemas.UpdateOffer(ean="1234567890125")
         api.update_offer(offer, body)
 
         offer = models.Offer.query.one()
         assert offer.ean == "1234567890125"
-        assert offer.extraData["ean"] == "1234567890125"
 
     def test_success_should_not_duplicate_ean_when_it_is_an_empty_string(self):
         provider = providers_factories.PublicApiProviderFactory()

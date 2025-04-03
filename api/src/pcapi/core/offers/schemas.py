@@ -111,6 +111,7 @@ class UpdateOffer(BaseModel):
     description: str | None = None
     duration_minutes: int | None = None
     external_ticket_office_url: HttpUrl | None = None
+    ean: str | None = None
     extra_data: typing.Any = None
     id_at_provider: str | None = None
     is_duo: bool | None = None
