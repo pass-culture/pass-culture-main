@@ -1,7 +1,6 @@
 import datetime
 import enum
 import logging
-from functools import partial
 
 import sqlalchemy.orm as sa_orm
 from dateutil.relativedelta import relativedelta
@@ -11,13 +10,13 @@ from pcapi import settings
 from pcapi.connectors.dms import api as ds_api
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core.finance import models as finance_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import db
-from pcapi.repository.session_management import on_commit
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number as phone_number_utils
 
@@ -193,13 +192,6 @@ def check_set_without_continuation(user_request: users_models.UserAccountUpdateR
         and data["dateLastInstructorMessage"] > last_user_action_date
     ):
         try:
-            if user_request.status == dms_models.GraphQLApplicationStates.draft:
-                update_state(
-                    user_request,
-                    new_state=dms_models.GraphQLApplicationStates.on_going,
-                    instructor=user_request.lastInstructor,
-                    disable_notification=True,
-                )
             update_state(
                 user_request,
                 new_state=dms_models.GraphQLApplicationStates.without_continuation,
@@ -211,6 +203,78 @@ def check_set_without_continuation(user_request: users_models.UserAccountUpdateR
 
         recipient_email = data["newEmail"] or (user_request.user.email if user_request.user else data["email"])
         transactional_mails.send_beneficiary_update_request_set_to_without_continuation(recipient_email)
+
+
+def _reject_user_request_with_duplicates(user_request: users_models.UserAccountUpdateRequest, data: dict) -> None:
+    motivation = ""
+    if data.get("newEmail"):
+        if user_request.user and data["oldEmail"] == data["newEmail"]:
+            motivation = "Dossier rejeté car le nouvel email et l'ancien sont identiques dans le formulaire"
+            transactional_mails.send_beneficiary_update_request_reject_for_duplicate_email(user_request)
+        else:
+            credited_user_with_same_email = (
+                db.session.query(users_models.User)
+                .join(finance_models.Deposit)
+                .filter(users_models.User.email == data["newEmail"])
+                .exists()
+            )
+            if db.session.query(credited_user_with_same_email).scalar():
+                motivation = "Dossier rejeté car l'email est déjà utilisé par un compte crédité"
+                transactional_mails.send_beneficiary_update_request_reject_for_already_used_email(user_request)
+
+    elif data.get("newPhoneNumber"):
+        if user_request.user and user_request.user.phoneNumber == data["newPhoneNumber"]:
+            motivation = "Dossier rejeté car le numéro de téléphone est déjà enregistré sur ton compte"
+            transactional_mails.send_beneficiary_update_request_reject_for_duplicate_phone_number(user_request)
+        else:
+            credited_user_with_same_phone_number = (
+                db.session.query(users_models.User)
+                .join(finance_models.Deposit)
+                .filter(users_models.User.phoneNumber == data["newPhoneNumber"])
+                .exists()
+            )
+            if db.session.query(credited_user_with_same_phone_number).scalar():
+                motivation = "Dossier rejeté car le numéro de téléphone est déjà utilisé par un compte crédité"
+                transactional_mails.send_beneficiary_update_request_reject_for_already_used_phone_number(user_request)
+
+    elif (
+        data.get("newFirstName")
+        and not data.get("newLastName")
+        and user_request.user
+        and user_request.user.firstName == data.get("newFirstName")
+    ):
+        motivation = "Dossier rejeté car le prénom est déjà celui enregistré sur ton compte"
+        transactional_mails.send_beneficiary_update_request_reject_for_duplicate_full_name(user_request)
+
+    elif (
+        data.get("newLastName")
+        and not data.get("newFirstName")
+        and user_request.user
+        and user_request.user.lastName == data.get("newLastName")
+    ):
+        motivation = "Dossier rejeté car le nom est déjà celui enregistré sur ton compte"
+        transactional_mails.send_beneficiary_update_request_reject_for_duplicate_full_name(user_request)
+
+    elif (
+        data.get("newFirstName")
+        and data.get("newLastName")
+        and user_request.user
+        and user_request.user.firstName == data.get("newFirstName")
+        and user_request.user.lastName == data.get("newLastName")
+    ):
+        motivation = "Dossier rejeté car les nom et prénom sont déjà ceux enregistrés sur ton compte"
+        transactional_mails.send_beneficiary_update_request_reject_for_duplicate_full_name(user_request)
+
+    if motivation:
+        try:
+            update_state(
+                user_request,
+                new_state=dms_models.GraphQLApplicationStates.refused,
+                instructor=user_request.lastInstructor,
+                motivation=motivation,
+            )
+        except (dms_exceptions.DmsGraphQLApiError, dms_exceptions.DmsGraphQLApiException):
+            pass
 
 
 def _sync_ds_application(
@@ -269,7 +333,8 @@ def _sync_ds_application(
                         data["newEmail"] = value
                         if not email_utils.is_valid_email(value):
                             data["flags"].add(users_models.UserAccountUpdateFlag.INVALID_VALUE)
-                        if find_user_by_email(value) is not None:
+                        already_exisiting_user = find_user_by_email(value)
+                        if already_exisiting_user is not None and not already_exisiting_user.deposit:
                             data["flags"].add(users_models.UserAccountUpdateFlag.DUPLICATE_NEW_EMAIL)
                     else:
                         data["flags"].add(users_models.UserAccountUpdateFlag.MISSING_VALUE)
@@ -330,15 +395,18 @@ def _sync_ds_application(
             else:
                 user_request_ref_email = None
                 user_request = users_models.UserAccountUpdateRequest(dsApplicationId=ds_application_id, **data)
+
             db.session.add(user_request)
             db.session.flush()
 
+            if user_request.status in (
+                dms_models.GraphQLApplicationStates.draft,
+                dms_models.GraphQLApplicationStates.on_going,
+            ):
+                _reject_user_request_with_duplicates(user_request, data)
+
             if (user_request_ref_email != ref_email) and data["user"] is None:
-                on_commit(
-                    partial(
-                        transactional_mails.send_update_request_user_account_not_found, data["email"], ds_application_id
-                    )
-                )
+                transactional_mails.send_update_request_user_account_not_found(data["email"], ds_application_id)
 
             if set_without_continuation:
                 check_set_without_continuation(user_request, node, data)
@@ -418,6 +486,7 @@ def update_state(
             instructeur_techid=instructor_id,
             motivation=motivation,
             disable_notification=disable_notification,
+            from_draft=user_request.is_draft,
         )
     elif new_state == dms_models.GraphQLApplicationStates.refused:
         assert motivation  # helps mypy

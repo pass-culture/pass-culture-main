@@ -387,6 +387,256 @@ class SyncUserAccountUpdateRequestsTest:
 
     @patch(
         "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        side_effect=[
+            ds_fixtures.DS_RESPONSE_EMAIL_CHANGED,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ON_GOING,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_REFUSED,
+        ],
+    )
+    def test_update_email_already_used(self, mocked_execute_query, instructor):
+        users_factories.BeneficiaryGrant18Factory(email="beneficiaire@example.com")
+        users_factories.BeneficiaryGrant18Factory(email="nouvelle.adresse@example.com")
+
+        users_ds.sync_user_account_update_requests(104118, None)
+
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
+
+        mocked_execute_query.assert_called()
+        assert mocked_execute_query.call_count == 3
+
+        mocked_execute_query.call_args_list[0].assert_called_once_with(
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+        )
+
+        assert mocked_execute_query.call_args_list[1].args == (dms_api.MAKE_ON_GOING_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[2].args == (dms_api.MAKE_REFUSED_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[2].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                    "motivation": "Dossier rejeté car l'email est déjà utilisé par un compte crédité",
+                }
+            }
+        }
+
+        assert uaur.status == dms_models.GraphQLApplicationStates.refused
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == "usager@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.UPDATE_REQUEST_ALREADY_USED_EMAIL.value)
+        assert mails_testing.outbox[0]["params"]["DS_APPLICATION_NUMBER"] == uaur.dsApplicationId
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        side_effect=[
+            ds_fixtures.DS_RESPONSE_EMAIL_CHANGED_DUPLICATE,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_DRAFT_TO_ON_GOING,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_REFUSED,
+        ],
+    )
+    def test_update_email_duplicate(self, mocked_execute_query, instructor):
+        users_factories.BeneficiaryGrant18Factory(email="beneficiaire@example.com")
+
+        users_ds.sync_user_account_update_requests(104118, None)
+
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
+
+        mocked_execute_query.assert_called()
+        assert mocked_execute_query.call_count == 3
+
+        mocked_execute_query.call_args_list[0].assert_called_once_with(
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+        )
+
+        assert mocked_execute_query.call_args_list[1].args == (dms_api.MAKE_ON_GOING_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[2].args == (dms_api.MAKE_REFUSED_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[2].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                    "motivation": "Dossier rejeté car le nouvel email et l'ancien sont identiques dans le formulaire",
+                }
+            }
+        }
+
+        assert uaur.status == dms_models.GraphQLApplicationStates.refused
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == "usager@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.UPDATE_REQUEST_DUPLICATE_EMAIL.value)
+        assert mails_testing.outbox[0]["params"]["DS_APPLICATION_NUMBER"] == uaur.dsApplicationId
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        side_effect=[
+            ds_fixtures.DS_RESPONSE_PHONE_NUMBER_CHANGED,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_REFUSED,
+        ],
+    )
+    def test_update_phone_number_already_used(self, mocked_execute_query, instructor):
+        users_factories.BeneficiaryGrant18Factory(email="beneficiaire@example.com")
+        users_factories.BeneficiaryGrant18Factory(phoneNumber="+33610203040")
+
+        users_ds.sync_user_account_update_requests(104118, None)
+
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
+
+        mocked_execute_query.assert_called()
+        assert mocked_execute_query.call_count == 2
+
+        mocked_execute_query.call_args_list[0].assert_called_once_with(
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+        )
+
+        assert mocked_execute_query.call_args_list[1].args == (dms_api.MAKE_REFUSED_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[1].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                    "motivation": "Dossier rejeté car le numéro de téléphone est déjà utilisé par un compte crédité",
+                }
+            }
+        }
+
+        assert uaur.status == dms_models.GraphQLApplicationStates.refused
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == "beneficiaire@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(
+            TransactionalEmail.UPDATE_REQUEST_ALREADY_USED_PHONE_NUMBER.value
+        )
+        assert mails_testing.outbox[0]["params"]["DS_APPLICATION_NUMBER"] == uaur.dsApplicationId
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        side_effect=[
+            ds_fixtures.DS_RESPONSE_PHONE_NUMBER_CHANGED,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_REFUSED,
+        ],
+    )
+    def test_update_phone_number_duplicate(self, mocked_execute_query, instructor):
+        users_factories.BeneficiaryGrant18Factory(email="beneficiaire@example.com", phoneNumber="+33610203040")
+
+        users_ds.sync_user_account_update_requests(104118, None)
+
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
+
+        mocked_execute_query.assert_called()
+        assert mocked_execute_query.call_count == 2
+
+        mocked_execute_query.call_args_list[0].assert_called_once_with(
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+        )
+
+        assert mocked_execute_query.call_args_list[1].args == (dms_api.MAKE_REFUSED_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[1].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                    "motivation": "Dossier rejeté car le numéro de téléphone est déjà enregistré sur ton compte",
+                }
+            }
+        }
+
+        assert uaur.status == dms_models.GraphQLApplicationStates.refused
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == "beneficiaire@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(
+            TransactionalEmail.UPDATE_REQUEST_DUPLICATE_PHONE_NUMBER.value
+        )
+        assert mails_testing.outbox[0]["params"]["DS_APPLICATION_NUMBER"] == uaur.dsApplicationId
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        side_effect=[
+            ds_fixtures.DS_RESPONSE_FIRSTNAME_CHANGED_DUPLICATE,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_REFUSED,
+        ],
+    )
+    def test_update_first_name_duplicate(self, mocked_execute_query, instructor):
+        users_factories.BeneficiaryGrant18Factory(email="beneficiaire@example.com", firstName="Vieux")
+
+        users_ds.sync_user_account_update_requests(104118, None)
+
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
+
+        mocked_execute_query.assert_called()
+        assert mocked_execute_query.call_count == 2
+
+        mocked_execute_query.call_args_list[0].assert_called_once_with(
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+        )
+        assert mocked_execute_query.call_args_list[1].args == (dms_api.MAKE_REFUSED_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[1].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                    "motivation": "Dossier rejeté car le prénom est déjà celui enregistré sur ton compte",
+                }
+            }
+        }
+
+        assert uaur.status == dms_models.GraphQLApplicationStates.refused
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == "beneficiaire@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(
+            TransactionalEmail.UPDATE_REQUEST_DUPLICATE_FULL_NAME.value
+        )
+        assert mails_testing.outbox[0]["params"]["DS_APPLICATION_NUMBER"] == uaur.dsApplicationId
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        side_effect=[
+            ds_fixtures.DS_RESPONSE_FIRSTNAME_LASTNAME_CHANGED_DUPLICATE,
+            ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_REFUSED,
+        ],
+    )
+    def test_update_full_name_duplicate(self, mocked_execute_query, instructor):
+        users_factories.BeneficiaryGrant18Factory(
+            email="beneficiaire@example.com", firstName="Vieux", lastName="Machin"
+        )
+
+        users_ds.sync_user_account_update_requests(104118, None)
+
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
+
+        mocked_execute_query.assert_called()
+        print(mocked_execute_query.call_args_list[0].args)
+        print(mocked_execute_query.call_args_list[1].args)
+        assert mocked_execute_query.call_count == 2
+
+        mocked_execute_query.call_args_list[0].assert_called_once_with(
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+        )
+        assert mocked_execute_query.call_args_list[1].args == (dms_api.MAKE_REFUSED_MUTATION_NAME,)
+        assert mocked_execute_query.call_args_list[1].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": uaur.dsTechnicalId,
+                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "disableNotification": False,
+                    "motivation": "Dossier rejeté car les nom et prénom sont déjà ceux enregistrés sur ton compte",
+                }
+            }
+        }
+
+        assert uaur.status == dms_models.GraphQLApplicationStates.refused
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == "beneficiaire@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(
+            TransactionalEmail.UPDATE_REQUEST_DUPLICATE_FULL_NAME.value
+        )
+        assert mails_testing.outbox[0]["params"]["DS_APPLICATION_NUMBER"] == uaur.dsApplicationId
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
         return_value=ds_fixtures.DS_RESPONSE_ARCHIVED,
     )
     def test_delete_archived(self, mocked_get_applications):
@@ -919,11 +1169,6 @@ class UpdateStateTest:
                 dms_models.GraphQLApplicationStates.refused,
                 ds_fixtures.DS_RESPONSE_UPDATE_STATE_REFUSED_TO_WITHOUT_CONTINUATION,
                 "Le dossier est déjà refusé",
-            ),
-            (
-                dms_models.GraphQLApplicationStates.draft,
-                ds_fixtures.DS_RESPONSE_UPDATE_STATE_DRAFT_TO_WITHOUT_CONTINUATION,
-                "Le dossier est déjà en\xa0construction",
             ),
         ],
     )
