@@ -1,3 +1,5 @@
+import logging
+
 from pydantic.v1 import PositiveInt
 
 from pcapi.core.offerers.models import Venue
@@ -5,6 +7,9 @@ from pcapi.core.offerers.models import VenueContact
 from pcapi.core.offerers.models import VenueLabel
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.routes.serialization import BaseModel
+
+
+logger = logging.getLogger(__name__)
 
 
 class GetRelativeVenuesQueryModel(BaseModel):
@@ -103,12 +108,20 @@ class VenueModel(BaseModel):
         result.isAdmin = venue.venueTypeCode == VenueTypeCode.ADMINISTRATIVE
         result.offerer = OffererModel.from_orm(venue.managingOfferer)
 
-        offerer_address = venue.offererAddress
-        location_model = offerer_address.address if offerer_address is not None else venue
-        result.address = location_model.street
-        result.latitude = float(location_model.latitude) if location_model.latitude is not None else None
-        result.longitude = float(location_model.longitude) if location_model.longitude is not None else None
-        result.city = location_model.city
+        if venue.offererAddress is None:
+            # we only use this model on venues with (isVirtual=False) that should have an offererAddress
+            logger.error("Found venue with id %s without offererAddress", venue.id)
+
+            result.address = None
+            result.latitude = None
+            result.longitude = None
+            result.city = None
+        else:
+            address = venue.offererAddress.address
+            result.address = address.street
+            result.latitude = float(address.latitude)
+            result.longitude = float(address.longitude)
+            result.city = address.city
 
         return result
 
