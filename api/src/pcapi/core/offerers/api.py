@@ -134,6 +134,7 @@ def update_venue(
             for field in (
                 "street",
                 "city",
+                "inseeCode",
                 "postalCode",
                 "latitude",
                 "longitude",
@@ -155,6 +156,7 @@ def update_venue(
                 is_manual_edition=is_manual_edition,
             )
         elif is_manual_edition_updated:
+            # PC-35419
             duplicate_oa(
                 venue=venue,
                 old_oa=old_oa,
@@ -280,6 +282,7 @@ def update_venue_location(  # pylint: disable=too-many-positional-arguments
     street = location_modifications.get("street", venue.offererAddress.address.street)
     city = location_modifications.get("city", venue.offererAddress.address.city)
     postal_code = location_modifications.get("postalCode", venue.offererAddress.address.postalCode)
+    inseeCode = location_modifications.get("inseeCode", venue.offererAddress.address.inseeCode)
     latitude = location_modifications.get("latitude", venue.offererAddress.address.latitude)
     longitude = location_modifications.get("longitude", venue.offererAddress.address.longitude)
     ban_id = location_modifications.get("banId", venue.offererAddress.address.banId)
@@ -288,34 +291,31 @@ def update_venue_location(  # pylint: disable=too-many-positional-arguments
         extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postal_code},
     )
 
-    if not is_manual_edition:
-        address_info = api_adresse.get_address(address=street, postcode=postal_code, city=city)
-        location_data = LocationData(
-            city=address_info.city,
-            postal_code=address_info.postcode,
-            latitude=address_info.latitude,
-            longitude=address_info.longitude,
-            street=address_info.street,
-            insee_code=address_info.citycode,
-            ban_id=address_info.id,
+    try:
+        insee_code = (
+            inseeCode
+            if not is_manual_edition
+            else api_adresse.get_municipality_centroid(city=city, postcode=postal_code).citycode
         )
-    else:
-        insee_code = None
-        if city and postal_code:
-            # Address entered manually does not provide INSEE code, find it
-            try:
-                insee_code = api_adresse.get_municipality_centroid(city, postal_code).citycode
-            except api_adresse.AdresseException:
-                pass
-
+        _ban_id = ban_id if not is_manual_edition else None
         location_data = LocationData(
-            city=typing.cast(str, city),
-            postal_code=typing.cast(str, postal_code),
-            latitude=typing.cast(float, latitude),
-            longitude=typing.cast(float, longitude),
+            city=city,
+            postal_code=postal_code,
+            latitude=float(latitude),
+            longitude=float(longitude),
             street=street,
-            ban_id=ban_id,
             insee_code=insee_code,
+            ban_id=_ban_id,
+        )
+    except api_adresse.NoResultException:
+        location_data = LocationData(
+            city=city,
+            postal_code=postal_code,
+            latitude=float(latitude),
+            longitude=float(longitude),
+            street=street,
+            insee_code=None,
+            ban_id=None,
         )
 
     address = get_or_create_address(location_data, is_manual_edition=is_manual_edition)
@@ -515,7 +515,7 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
         functools.partial(search.async_index_venue_ids, [venue.id], reason=search.IndexationReason.VENUE_CREATION)
     )
     external_attributes_api.update_external_pro(venue.bookingEmail)
-    zendesk_sell.create_venue(venue)
+    on_commit(functools.partial(zendesk_sell.create_venue, venue))
 
     return venue
 
@@ -825,7 +825,10 @@ def generate_and_save_api_key(offerer_id: int) -> str:
 def generate_offerer_api_key(offerer_id: int) -> tuple[models.ApiKey, str]:
     clear_secret = secrets.token_hex(32)
     prefix = _generate_api_key_prefix()
-    key = models.ApiKey(offererId=offerer_id, prefix=prefix, secret=crypto.hash_public_api_key(clear_secret))
+    if feature.FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM.is_active():
+        key = models.ApiKey(offererId=offerer_id, prefix=prefix, secret=crypto.hash_public_api_key(clear_secret))
+    else:
+        key = models.ApiKey(offererId=offerer_id, prefix=prefix, secret=crypto.hash_password(clear_secret))
 
     return key, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
 
@@ -837,9 +840,14 @@ def generate_provider_api_key(provider: providers_models.Provider) -> tuple[mode
 
     clear_secret = secrets.token_hex(32)
     prefix = _generate_api_key_prefix()
-    key = models.ApiKey(
-        offerer=offerer, provider=provider, prefix=prefix, secret=crypto.hash_public_api_key(clear_secret)
-    )
+    if feature.FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM.is_active():
+        key = models.ApiKey(
+            offerer=offerer, provider=provider, prefix=prefix, secret=crypto.hash_public_api_key(clear_secret)
+        )
+    else:
+        key = models.ApiKey(
+            offerer=offerer, provider=provider, prefix=prefix, secret=crypto.hash_password(clear_secret)
+        )
 
     return key, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
 
@@ -1045,7 +1053,7 @@ def create_offerer(
         )
 
     external_attributes_api.update_external_pro(user.email)
-    zendesk_sell.create_offerer(offerer)
+    on_commit(functools.partial(zendesk_sell.create_offerer, offerer))
 
     return user_offerer
 
@@ -1160,7 +1168,12 @@ def validate_offerer_attachment(
         ),
     )
 
-    transactional_mails.send_offerer_attachment_validation_email_to_pro(user_offerer)
+    on_commit(
+        functools.partial(
+            transactional_mails.send_offerer_attachment_validation_email_to_pro,
+            user_offerer,
+        ),
+    )
 
     offerer_invitation = (
         models.OffererInvitation.query.filter_by(offererId=user_offerer.offererId)
@@ -1168,9 +1181,12 @@ def validate_offerer_attachment(
         .one_or_none()
     )
     if offerer_invitation:
-        transactional_mails.send_offerer_attachment_invitation_accepted(
-            user_offerer.user,
-            offerer_invitation.user.email,
+        on_commit(
+            functools.partial(
+                transactional_mails.send_offerer_attachment_invitation_accepted,
+                user_offerer.user,
+                offerer_invitation.user.email,
+            ),
         )
 
 
@@ -1208,7 +1224,12 @@ def reject_offerer_attachment(
     )
 
     if send_email:
-        transactional_mails.send_offerer_attachment_rejection_email_to_pro(user_offerer)
+        on_commit(
+            functools.partial(
+                transactional_mails.send_offerer_attachment_rejection_email_to_pro,
+                user_offerer,
+            ),
+        )
 
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
     db.session.flush()
@@ -1260,11 +1281,22 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
     _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_VALIDATION)
 
     if applicants:
-        transactional_mails.send_new_offerer_validation_email_to_pro(offerer)
+        on_commit(
+            functools.partial(
+                transactional_mails.send_new_offerer_validation_email_to_pro,
+                offerer,
+            ),
+        )
     for managed_venue in offerer.managedVenues:
         if managed_venue.adageId:
             emails = offerers_repository.get_emails_by_venue(managed_venue)
-            transactional_mails.send_eac_offerer_activation_email(managed_venue, list(emails))
+            on_commit(
+                functools.partial(
+                    transactional_mails.send_eac_offerer_activation_email,
+                    managed_venue,
+                    list(emails),
+                ),
+            )
             break
 
 
@@ -1291,9 +1323,12 @@ def reject_offerer(
     )
 
     if applicants:
-        transactional_mails.send_new_offerer_rejection_email_to_pro(
-            offerer,
-            action_args.get("rejection_reason"),
+        on_commit(
+            functools.partial(
+                transactional_mails.send_new_offerer_rejection_email_to_pro,
+                offerer,
+                action_args.get("rejection_reason"),
+            ),
         )
 
     users_offerer = offerers_models.UserOfferer.query.filter_by(offererId=offerer.id).all()
@@ -1344,7 +1379,7 @@ def close_offerer(
     remove_pro_role_and_add_non_attached_pro_role(applicants)
 
     if applicants:
-        transactional_mails.send_offerer_closed_email_to_pro(offerer, closure_date)
+        transactional_mails.send_offerer_closed_email_to_pro(offerer, closure_date)  # on_commit inside
 
     db.session.flush()
 
@@ -1730,10 +1765,6 @@ def search_bank_account(search_query: str, *_: typing.Any) -> BaseQuery:
         pass
     else:
         filters.append(finance_models.BankAccount.iban == iban.compact)
-
-    if re.match(r"^[AF]\d{9}$", search_query):
-        bank_accounts_query = bank_accounts_query.join(finance_models.Invoice)
-        filters.append(finance_models.Invoice.reference == search_query)
 
     if not filters:
         return bank_accounts_query.filter(False)
@@ -2126,9 +2157,9 @@ def _update_external_offerer(
     offerer: models.Offerer, *, index_with_reason: search.IndexationReason | None = None
 ) -> None:
     for email in offerers_repository.get_emails_by_offerer(offerer):
-        external_attributes_api.update_external_pro(email)
+        external_attributes_api.update_external_pro(email)  # uses on_commit
 
-    zendesk_sell.update_offerer(offerer)
+    on_commit(functools.partial(zendesk_sell.update_offerer, offerer))
 
     if not index_with_reason:
         return
@@ -2283,7 +2314,9 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
             extra={"offerer": offerer.id, "invited_user": email, "invited_by": current_user.id},
         )
 
-    transactional_mails.send_offerer_attachment_invitation([email], offerer, existing_user)
+    on_commit(
+        functools.partial(transactional_mails.send_offerer_attachment_invitation, [email], offerer, existing_user)
+    )
 
 
 def get_offerer_members(offerer: models.Offerer) -> list[tuple[str, OffererMemberStatus]]:
@@ -2342,7 +2375,7 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
         else:
             db.session.commit()
         external_attributes_api.update_external_pro(user.email)
-        zendesk_sell.create_offerer(user_offerer.offerer)
+        on_commit(functools.partial(zendesk_sell.create_offerer, user_offerer.offerer))
         logger.info(
             "UserOfferer created from invitation",
             extra={"offerer": user_offerer.offerer, "invitedUserId": user.id, "inviterUserId": inviter_user.id},
@@ -2589,7 +2622,7 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
                     "analyticsSource": "app-pro",
                     "venue_id": venue.id,
                     "acceslibre_slug": slug,
-                    "slug_loss_message": "Slug not found at acceslibre, AccessibilityProvider removed for this venue",
+                    "message": "Slug not found at acceslibre, AccessibilityProvider removed for this venue",
                 },
                 technical_message_id="acceslibre.synchronisation",
             )
@@ -2968,38 +3001,31 @@ def duplicate_oa(
 
 
 def create_offerer_address_from_address_api(address: offerers_schemas.AddressBodyModel) -> geography_models.Address:
-    if address.isManualEdition:
-        try:
-            address_info = api_adresse.get_municipality_centroid(city=address.city, postcode=address.postalCode)
-            location_data = LocationData(
-                city=address.city,
-                postal_code=address.postalCode,
-                latitude=float(address.latitude),
-                longitude=float(address.longitude),
-                street=address.street,
-                insee_code=address_info.citycode,
-                ban_id=None,
-            )
-        except api_adresse.NoResultException:
-            location_data = LocationData(
-                city=address.city,
-                postal_code=address.postalCode,
-                latitude=float(address.latitude),
-                longitude=float(address.longitude),
-                street=address.street,
-                insee_code=None,
-                ban_id=None,
-            )
-    else:
-        address_info = api_adresse.get_address(address=address.street, postcode=address.postalCode, city=address.city)
+    try:
+        insee_code = (
+            address.citycode
+            if not address.isManualEdition
+            else api_adresse.get_municipality_centroid(city=address.city, postcode=address.postalCode).citycode
+        )
+        _ban_id = address.banId if not address.isManualEdition else None
         location_data = LocationData(
-            city=address_info.city,
-            postal_code=address_info.postcode,
-            latitude=address_info.latitude,
-            longitude=address_info.longitude,
-            street=address_info.street,
-            insee_code=address_info.citycode,
-            ban_id=address_info.id,
+            city=address.city,
+            postal_code=address.postalCode,
+            latitude=float(address.latitude),
+            longitude=float(address.longitude),
+            street=address.street,
+            insee_code=insee_code,
+            ban_id=_ban_id,
+        )
+    except api_adresse.NoResultException:
+        location_data = LocationData(
+            city=address.city,
+            postal_code=address.postalCode,
+            latitude=float(address.latitude),
+            longitude=float(address.longitude),
+            street=address.street,
+            insee_code=None,
+            ban_id=None,
         )
     return get_or_create_address(location_data, is_manual_edition=address.isManualEdition)
 
