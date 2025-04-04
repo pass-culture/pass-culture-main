@@ -1,181 +1,176 @@
 {% import "components/badges.html" as badges with context %}
-{% from "components/forms.html" import build_advanced_filters_form with context %}
+{% from "components/display_selector.html" import display_selector %}
+{% from "components/forms.html" import build_advanced_filters_form_ng with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{% extends "layouts/connected.html" %}
-{% block page %}
-  <div class="pt-3 px-5 table-container-collective-offer-validation">
-    <h1>Offres collectives</h1>
-    {{ build_advanced_filters_form(form, dst) }}
-    <div>
-      {% if rows %}
-        <div class="d-flex justify-content-between">
-          <p class="lead num-results">
-            {{ rows | length }}
-            résultat{{ rows | length | pluralize }}
-          </p>
-          <div class="btn-group btn-group-sm"
-               data-toggle="pc-batch-confirm-btn-group"
-               data-toggle-id="table-container-collective-offer-validation-btn-group"
-               data-pc-table-multi-select-id="table-container-collective-offer-validation"
-               data-input-ids-name="object_ids">
-            <button disabled
-                    type="button"
-                    class="btn btn-outline-primary"
-                    data-use-confirmation-modal="true"
-                    data-modal-selector="#batch-validate-modal">Valider</button>
-            <button disabled
-                    type="button"
-                    class="btn btn-outline-primary"
-                    data-use-confirmation-modal="true"
-                    data-modal-selector="#batch-reject-modal">Rejeter</button>
+{% extends "layouts/list.html" %}
+{% set rows_count = rows|length %}
+{% if rows and is_feature_active("WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION") %}
+  {% set table_class = "pc-table-manager d-none" %}
+{% endif %}
+{% block title %}Offres collectives{% endblock %}
+{% block search_block %}{{ build_advanced_filters_form_ng(form, dst) }}{% endblock %}
+{% block table_header %}
+  <th scope="col"
+      data-pc-column-name="Checkbox">
+    <input class="form-check-input"
+           type="checkbox"
+           name="pc-table-multi-select-check-all" />
+  </th>
+  <th scope="col">Actions</th>
+  <th scope="col">ID</th>
+  <th scope="col">Nom de l'offre</th>
+  <th scope="col">Formats</th>
+  {% if has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Règles de conformité</th>{% endif %}
+  <th scope="col">État</th>
+  <th scope="col">Créateur de l'offre</th>
+  <th scope="col">
+    {% if date_created_sort_url %}
+      <a href="{{ date_created_sort_url }}"
+         class="text-decoration-none"
+         title="Changer pour un tri {{ 'croissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'décroissant' }}">
+        Date de création
+        <i class="bi bi-sort-{{ 'down' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
+      </a>
+    {% else %}
+      Date de création
+    {% endif %}
+  </th>
+  <th scope="col">Date de l'évènement</th>
+  {% if has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Tarif</th>{% endif %}
+  <th scope="col">Entité juridique</th>
+  <th scope="col">Partenaire culturel</th>
+  <th scope="col">Offres du partenaire culturel</th>
+  {% if has_permission("PRO_FRAUD_ACTIONS") %}
+    <th scope="col">Ministère</th>
+    <th scope="col">Année</th>
+  {% endif %}
+{% endblock %}
+{% block table_body %}
+  {% for row in rows %}
+    {% set offer = row.Offer %}
+    {% set collective_offer = row.CollectiveOffer %}
+    <tr>
+      <td>
+        <input type="checkbox"
+               class="form-check-input"
+               name="pc-table-multi-select-check-{{ collective_offer.id }}"
+               data-id="{{ collective_offer.id }}" />
+      </td>
+      <td class="text-center">
+        {% if has_permission("PRO_FRAUD_ACTIONS") %}
+          <div class="dropdown">
+            <button type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    class="btn p-0">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <div class="btn btn-sm ms-3 px-3 fs-7 text-secondary">Actions</div>
+              <li class="dropdown-item">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   href="{{ url_for('backoffice_web.collective_offer.get_collective_offer_details', collective_offer_id=collective_offer.id) }}">Voir le détail de l’offre collective</a>
+              </li>
+              <li class="dropdown-item">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#validate-collective-offer-modal-{{ collective_offer.id }}">Valider l'offre</a>
+              </li>
+              <li class="dropdown-item">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#reject-collective-offer-modal-{{ collective_offer.id }}">Rejeter l'offre</a>
+              </li>
+            </ul>
           </div>
-        </div>
-        <table class="table mb-4"
-               data-table-multi-select-id="table-container-collective-offer-validation">
-          <thead>
-            <tr>
-              <th scope="col">
-                <input class="form-check-input"
-                       type="checkbox"
-                       name="pc-table-multi-select-check-all" />
-              </th>
-              <th scope="col"></th>
-              <th scope="col">ID</th>
-              <th scope="col">Nom de l'offre</th>
-              <th scope="col">Formats</th>
-              {% if has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Règles de conformité</th>{% endif %}
-              <th scope="col">État</th>
-              <th scope="col">Créateur de l'offre</th>
-              <th scope="col">
-                {% if date_created_sort_url %}
-                  <a href="{{ date_created_sort_url }}"
-                     class="text-decoration-none"
-                     title="Changer pour un tri {{ 'croissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'décroissant' }}">
-                    Date de création
-                    <i class="bi bi-sort-{{ 'down' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
-                  </a>
-                {% else %}
-                  Date de création
-                {% endif %}
-              </th>
-              <th scope="col">Date de l'évènement</th>
-              {% if has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Tarif</th>{% endif %}
-              <th scope="col">Entité juridique</th>
-              <th scope="col">Partenaire culturel</th>
-              <th scope="col">{# icon #}</th>
-              {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                <th scope="col">Ministère</th>
-                <th scope="col">Année</th>
-              {% endif %}
-            </tr>
-          </thead>
-          <tbody>
-            {% for row in rows %}
-              {% set collective_offer = row.CollectiveOffer %}
-              <tr>
-                <td>
-                  <input type="checkbox"
-                         class="form-check-input"
-                         name="pc-table-multi-select-check-{{ collective_offer.id }}"
-                         data-id="{{ collective_offer.id }}" />
-                </td>
-                <td>
-                  {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                    <div class="dropdown">
-                      <button type="button"
-                              data-bs-toggle="dropdown"
-                              aria-expanded="false"
-                              class="btn p-0">
-                        <i class="bi bi-three-dots-vertical"></i>
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li class="dropdown-item">
-                          <a class="btn btn-sm d-block w-100 text-start px-3"
-                             data-bs-toggle="modal"
-                             data-bs-target="#validate-collective-offer-modal-{{ collective_offer.id }}">Valider l'offre</a>
-                        </li>
-                        <li class="dropdown-item">
-                          <a class="btn btn-sm d-block w-100 text-start px-3"
-                             data-bs-toggle="modal"
-                             data-bs-target="#reject-collective-offer-modal-{{ collective_offer.id }}">Rejeter l'offre</a>
-                        </li>
-                      </ul>
-                    </div>
-                  {% endif %}
-                </td>
-                <td>{{ links.build_collective_offer_details_link(collective_offer) }}</td>
-                <td>{{ links.build_offer_name_to_pc_pro_link(collective_offer) }}</td>
-                <td>{{ collective_offer.formats | format_collective_offer_formats }}</td>
-                {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                  <td>
-                    {% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}
-                  </td>
-                {% endif %}
-                <td>
-                  {{ collective_offer.validation | format_offer_validation_status(with_badge=True) }}
-                  {% if collective_offer.rejectionReason %}
-                    <br />
-                    {{ collective_offer.rejectionReason | format_collective_offer_rejection_reason }}
-                  {% endif %}
-                </td>
-                <td>{{ links.build_pro_user_name_to_details_link(collective_offer.authorId, collective_offer.author.full_name) }}</td>
-                <td>{{ collective_offer.dateCreated | format_date }}</td>
-                <td>
-                  {% if collective_offer.collectiveStock %}
-                    {% set start_date = collective_offer.start | format_date %}
-                    {% set end_date = collective_offer.end | format_date %}
-                    {{ start_date }}
-                    {% if end_date and end_date != start_date %}→ {{ end_date }}{% endif %}
-                  {% endif %}
-                </td>
-                {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                  <td>
-                    {% if collective_offer.collectiveStock %}{{ collective_offer.collectiveStock.price | format_amount }}{% endif %}
-                  </td>
-                {% endif %}
-                <td>
-                  {{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}
-                  {% call badges.badges_container() %}
-                    {{ badges.build_offer_offerer_fraud_badges(collective_offer.venue.managingOfferer) }}
-                  {% endcall %}
-                </td>
-                <td>
-                  {{ links.build_venue_name_to_details_link(collective_offer.venue) }}
-                  {% call badges.badges_container() %}
-                    {{ badges.build_offer_venue_fraud_badges(collective_offer.venue) }}
-                  {% endcall %}
-                </td>
-                <td>{{ links.build_venue_offers_icon_link_advanced(".list_collective_offers", "Offres collectives", collective_offer.venue) }}</td>
-                {% set deposit = collective_offer.institution.deposits[0] if collective_offer.institution and collective_offer.institution.deposits else none %}
-                {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                  <td>
-                    {% if deposit %}{{ deposit.ministry.value }}{% endif %}
-                    {% if collective_offer.institution %}
-                      {% for program_association in collective_offer.institution.programAssociations %}
-                        <br />
-                        {{ program_association.program.label }}
-                      {% endfor %}
-                    {% endif %}
-                  </td>
-                  <td>
-                    {% if deposit and deposit.educationalYear %}
-                      {{ deposit.educationalYear.beginningDate | format_date("%Y") }}-{{ deposit.educationalYear.expirationDate | format_date("%Y") }}
-                    {% endif %}
-                  </td>
-                {% endif %}
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% for row in rows %}
-          {% set collective_offer = row.CollectiveOffer %}
-          {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_validate_collective_offer_form', collective_offer_id=collective_offer.id) , "validate-collective-offer-modal-" + collective_offer.id|string) }}
-          {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_reject_collective_offer_form', collective_offer_id=collective_offer.id) , "reject-collective-offer-modal-" + collective_offer.id|string) }}
-        {% endfor %}
-        {{ build_lazy_modal(url_for("backoffice_web.collective_offer.get_batch_reject_collective_offers_form") , "batch-reject-modal", "true") }}
-        {{ build_lazy_modal(url_for("backoffice_web.collective_offer.get_batch_validate_collective_offers_form") , "batch-validate-modal", "true") }}
+        {% endif %}
+      </td>
+      <td>{{ links.build_collective_offer_details_link(collective_offer) }}</td>
+      <td>{{ links.build_offer_name_to_pc_pro_link(collective_offer) }}</td>
+      <td>{{ collective_offer.formats | format_collective_offer_formats }}</td>
+      {% if has_permission("PRO_FRAUD_ACTIONS") %}
+        <td>
+          {% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}
+        </td>
       {% endif %}
-    </div>
+      <td>
+        {{ collective_offer.validation | format_offer_validation_status(with_badge=True) }}
+        {% if collective_offer.rejectionReason %}
+          <br />
+          {{ collective_offer.rejectionReason | format_collective_offer_rejection_reason }}
+        {% endif %}
+      </td>
+      <td>{{ links.build_pro_user_name_to_details_link(collective_offer.authorId, collective_offer.author.full_name) }}</td>
+      <td>{{ collective_offer.dateCreated | format_date }}</td>
+      <td>
+        {% if collective_offer.collectiveStock %}
+          {% set start_date = collective_offer.start | format_date %}
+          {% set end_date = collective_offer.end | format_date %}
+          {{ start_date }}
+          {% if end_date and end_date != start_date %}→ {{ end_date }}{% endif %}
+        {% endif %}
+      </td>
+      {% if has_permission("PRO_FRAUD_ACTIONS") %}
+        <td>
+          {% if collective_offer.collectiveStock %}{{ collective_offer.collectiveStock.price | format_amount }}{% endif %}
+        </td>
+      {% endif %}
+      <td>
+        {{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}
+        {{ badges.build_offer_offerer_fraud_badges(collective_offer.venue.managingOfferer) }}
+      </td>
+      <td>
+        {{ links.build_venue_name_to_details_link(collective_offer.venue) }}
+        {{ badges.build_offer_venue_fraud_badges(collective_offer.venue) }}
+      </td>
+      <td>{{ links.build_venue_offers_icon_link_advanced(".list_collective_offers", "Offres collectives", collective_offer.venue) }}</td>
+      {% set deposit = collective_offer.institution.deposits[0] if collective_offer.institution and collective_offer.institution.deposits else none %}
+      {% if has_permission("PRO_FRAUD_ACTIONS") %}
+        <td>
+          {% if deposit %}{{ deposit.ministry.value }}{% endif %}
+          {% if collective_offer.institution %}
+            {% for program in collective_offer.institution.programs %}
+              <br />
+              {{ program.label }}
+            {% endfor %}
+          {% endif %}
+        </td>
+        <td>
+          {% if deposit and deposit.educationalYear %}
+            {{ deposit.educationalYear.beginningDate | format_date("%Y") }}-{{ deposit.educationalYear.expirationDate | format_date("%Y") }}
+          {% endif %}
+        </td>
+      {% endif %}
+    </tr>
+  {% endfor %}
+{% endblock %}
+{% block multi_select_menu %}
+  <div class="counter-container">
+    <span class="counter">0</span> offre(s) collective(s) sélectionnée(s)
   </div>
-{% endblock page %}
+  <div data-toggle="pc-batch-confirm-btn-group"
+       data-toggle-id="table-container-collective-offer-validation-btn-group"
+       data-pc-table-multi-select-id="{{ table_name }}"
+       data-input-ids-name="object_ids">
+    <button disabled
+            type="button"
+            class="btn border-end rounded-0 border-top-0 border-bottom-0"
+            data-use-confirmation-modal="true"
+            data-modal-selector="#batch-validate-modal">Valider</button>
+    <button disabled
+            type="button"
+            class="btn rounded-0 border-0"
+            data-use-confirmation-modal="true"
+            data-modal-selector="#batch-reject-modal">Rejeter</button>
+  </div>
+{% endblock %}
+{% block after_table %}
+  {% for row in rows %}
+    {% set collective_offer = row.CollectiveOffer %}
+    {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_validate_collective_offer_form', collective_offer_id=collective_offer.id) , "validate-collective-offer-modal-" + collective_offer.id|string) }}
+    {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_reject_collective_offer_form', collective_offer_id=collective_offer.id) , "reject-collective-offer-modal-" + collective_offer.id|string) }}
+  {% endfor %}
+  {{ build_lazy_modal(url_for("backoffice_web.collective_offer.get_batch_reject_collective_offers_form") , "batch-reject-modal", "true") }}
+  {{ build_lazy_modal(url_for("backoffice_web.collective_offer.get_batch_validate_collective_offers_form") , "batch-validate-modal", "true") }}
+{% endblock %}
