@@ -258,7 +258,7 @@ def post_draft_offer(
 
     ean_code = body.extra_data.get("ean", None) if body.extra_data is not None else None
     product = (
-        models.Product.query.filter(models.Product.extraData["ean"].astext == ean_code)
+        models.Product.query.filter(models.Product.ean == ean_code)
         .filter(models.Product.id == body.product_id)
         .one_or_none()
     )
@@ -667,7 +667,7 @@ def get_active_venue_offer_by_ean(venue_id: int, ean: str) -> offers_serialize.G
 @atomic()
 def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProductInformations:
     product = (
-        models.Product.query.filter(models.Product.extraData["ean"].astext == ean)
+        models.Product.query.filter(models.Product.ean == ean)
         .options(
             load_only(
                 models.Product.id,

@@ -443,7 +443,7 @@ class ReadProductBookingCountTest:
 
     @mock.patch("pcapi.core.search.get_last_30_days_bookings_for_eans", return_value={"1234567890987": 1})
     def test_reindex_latest_computed_booking_count_only(self, _mock):
-        product = offers_factories.ProductFactory(extraData={"ean": "1234567890987"})
+        product = offers_factories.ProductFactory(ean="1234567890987")
         offer = offers_factories.OfferFactory(product=product)
         bookings_factories.BookingFactory(stock__offer=offer)
 
