@@ -195,7 +195,7 @@ def check_stock_price(
     # Cache this part to avoid N+1 when creating many stocks on the same offer.
     cache_attribute = f"_cached_checked_custom_reimbursement_rules_{offer.id}"
     if not flask.has_request_context() or not getattr(flask.request, cache_attribute, False):
-        if finance_repository.has_active_or_future_custom_reimbursement_rule(offer):
+        if finance_repository.has_active_or_future_custom_reimbursement_rule(offer_id=offer.id):
             # We obviously look for active rules, but also future ones: if
             # a reimbursement rule has been negotiated that will enter in
             # effect tomorrow, we don't want to let the offerer change its

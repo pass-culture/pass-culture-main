@@ -41,6 +41,7 @@ import pcapi.core.educational.api.adage as adage_api
 import pcapi.core.educational.api.address as educational_address_api
 from pcapi.core.external import zendesk_sell
 from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.finance import repository as finance_repository
 import pcapi.core.finance.models as finance_models
 from pcapi.core.geography import models as geography_models
 import pcapi.core.history.api as history_api
@@ -575,9 +576,12 @@ def delete_venue(venue_id: int) -> None:
     # their pricing/reimbursement point, the database will rightfully
     # raise an error. Either these venues should be deleted first, or
     # the "venue to delete" should not be deleted.
-    offerers_models.VenuePricingPointLink.query.filter_by(
-        venueId=venue_id,
-    ).delete(synchronize_session=False)
+    offerers_models.VenuePricingPointLink.query.filter_by(venueId=venue_id).delete(synchronize_session=False)
+
+    if finance_repository.has_active_or_future_custom_reimbursement_rule(venue_id=venue_id):
+        raise exceptions.CannotDeleteVenueWithActiveOrFutureCustomReimbursementRule()
+
+    finance_models.CustomReimbursementRule.query.filter_by(venueId=venue_id).delete(synchronize_session=False)
 
     offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id).delete(synchronize_session=False)
 
@@ -2190,6 +2194,17 @@ def delete_offerer(offerer_id: int) -> None:
         offerers_models.VenuePricingPointLink.venueId.in_(venue_ids)
         | offerers_models.VenuePricingPointLink.pricingPointId.in_(venue_ids),
     ).delete(synchronize_session=False)
+
+    if finance_repository.has_active_or_future_custom_reimbursement_rule(offerer_id=offerer_id):
+        raise exceptions.CannotDeleteOffererWithActiveOrFutureCustomReimbursementRule()
+
+    finance_models.CustomReimbursementRule.query.filter(
+        sa.or_(
+            finance_models.CustomReimbursementRule.offererId == offerer_id,
+            finance_models.CustomReimbursementRule.venueId.in_(venue_ids),
+        )
+    ).delete(synchronize_session=False)
+
     offerers_models.Venue.query.filter(offerers_models.Venue.managingOffererId == offerer_id).delete(
         synchronize_session=False
     )
