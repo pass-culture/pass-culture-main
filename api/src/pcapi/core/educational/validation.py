@@ -6,6 +6,7 @@ from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
+from pcapi.core.educational.api import national_program as national_program_api
 from pcapi.models import api_errors
 
 
@@ -179,3 +180,27 @@ def check_start_is_before_end(start_datetime: datetime.datetime, end_datetime: d
 
     if check_end < check_start:
         raise exceptions.EndDatetimeBeforeStartDatetime()
+
+
+def validate_national_program(
+    national_program_id: int | None,
+    domains: list[models.EducationalDomain] | None,
+    check_program_is_active: bool = True,
+) -> None:
+    if not national_program_id:
+        return
+
+    if not domains:
+        raise exceptions.MissingDomains()
+
+    national_program = national_program_api.get_national_program(national_program_id)
+
+    if not national_program:
+        raise exceptions.NationalProgramNotFound()
+
+    if check_program_is_active and not national_program.isActive:
+        raise exceptions.InactiveNationalProgram()
+
+    valid_national_program_ids = {np.id for domain in domains for np in domain.nationalPrograms}
+    if national_program_id not in valid_national_program_ids:
+        raise exceptions.IllegalNationalProgram()

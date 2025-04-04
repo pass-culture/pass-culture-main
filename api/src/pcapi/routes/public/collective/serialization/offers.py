@@ -371,7 +371,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
         educational_validation.check_collective_offer_description_length_is_valid(description)
         return description
 
-    @validator("domains", pre=True)
+    @validator("domains")
     def validate_domains(cls, domains: list[str]) -> list[str]:
         if len(domains) == 0:
             raise ValueError("domains must have at least one value")

@@ -107,14 +107,6 @@ class CollectiveStockNotFound(Exception):
     pass
 
 
-class EducationalDomainsNotFound(Exception):
-    pass
-
-
-class EducationalDomainNotFound(Exception):
-    pass
-
-
 class EducationalInstitutionNotFound(Exception):
     pass
 
@@ -211,10 +203,6 @@ class CantGetImageFromUrl(Exception):
     pass
 
 
-class NationalProgramNotFound(Exception):
-    pass
-
-
 class NoAdageInstitution(Exception):
     pass
 
@@ -249,4 +237,29 @@ class EndEducationalYearMissing(Exception):
 
 
 class EndDatetimeBeforeStartDatetime(Exception):
+    pass
+
+
+# DOMAINS / NATIONAL PROGRAMS
+class EducationalDomainsNotFound(Exception):
+    pass
+
+
+class EducationalDomainNotFound(Exception):
+    pass
+
+
+class MissingDomains(Exception):
+    pass
+
+
+class NationalProgramNotFound(Exception):
+    pass
+
+
+class IllegalNationalProgram(Exception):
+    pass
+
+
+class InactiveNationalProgram(Exception):
     pass

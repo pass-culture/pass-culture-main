@@ -213,11 +213,17 @@ def post_collective_offer_public(
             errors={"educationalInstitutionId": ["L'établissement scolaire n'est pas actif."]},
             status_code=403,
         )
+
+    # domains / national_program errors
     except educational_exceptions.EducationalDomainsNotFound:
-        raise ApiErrors(
-            errors={"domains": ["Domaine scolaire non trouvé."]},
-            status_code=404,
-        )
+        raise ApiErrors(errors={"domains": ["Domaine scolaire non trouvé."]}, status_code=404)
+    except educational_exceptions.NationalProgramNotFound:
+        raise ApiErrors(errors={"nationalProgramId": ["Dispositif national non trouvé."]}, status_code=404)
+    except educational_exceptions.IllegalNationalProgram:
+        raise ApiErrors(errors={"nationalProgramId": ["Dispositif national non valide."]}, status_code=400)
+    except educational_exceptions.InactiveNationalProgram:
+        raise ApiErrors(errors={"nationalProgramId": ["Dispositif national inactif."]}, status_code=400)
+
     except offers_exceptions.UnknownOfferSubCategory:
         raise ApiErrors(
             errors={"subcategoryId": ["Sous-catégorie non trouvée."]},
@@ -489,13 +495,17 @@ def patch_collective_offer_public(
             },
             status_code=404,
         )
+
+    # domains / national_program errors
     except educational_exceptions.EducationalDomainsNotFound:
-        raise ApiErrors(
-            errors={
-                "domains": ["Domaine scolaire non trouvé."],
-            },
-            status_code=404,
-        )
+        raise ApiErrors(errors={"domains": ["Domaine scolaire non trouvé."]}, status_code=404)
+    except educational_exceptions.NationalProgramNotFound:
+        raise ApiErrors(errors={"nationalProgramId": ["Dispositif national non trouvé."]}, status_code=404)
+    except educational_exceptions.IllegalNationalProgram:
+        raise ApiErrors(errors={"nationalProgramId": ["Dispositif national non valide."]}, status_code=400)
+    except educational_exceptions.InactiveNationalProgram:
+        raise ApiErrors(errors={"nationalProgramId": ["Dispositif national inactif."]}, status_code=400)
+
     except (
         educational_exceptions.CollectiveOfferNotEditable,
         educational_exceptions.CollectiveOfferStockBookedAndBookingNotPending,
