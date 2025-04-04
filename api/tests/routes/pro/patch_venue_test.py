@@ -76,13 +76,13 @@ class Returns200Test:
                 "street": "3 Rue de Valois",
                 "banId": "75101_9575_00003",
                 "city": "Paris",
+                "inseeCode": "75101",
                 "latitude": 48.87171,
                 "longitude": 2.308289,
                 "postalCode": "75001",
             },
             venue,
         )
-
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         # then
