@@ -20,6 +20,7 @@ class PostDraftOfferBodyModel(BaseModel):
     venue_id: int
     description: str | None = None
     url: HttpUrl | None = None
+    ean: str | None = None
     extra_data: typing.Any = None
     duration_minutes: int | None = None
     product_id: int | None
@@ -39,6 +40,7 @@ class PatchDraftOfferBodyModel(BaseModel):
     subcategory_id: str | None = None
     url: HttpUrl | None = None
     description: str | None = None
+    ean: str | None = None
     extra_data: dict[str, typing.Any] | None = None
     duration_minutes: int | None = None
 
@@ -70,6 +72,7 @@ class CreateOffer(BaseModel):
     description: str | None = None
     duration_minutes: int | None = None
     external_ticket_office_url: HttpUrl | None = None
+    ean: str | None
     extra_data: typing.Any = None
     id_at_provider: str | None = None
     is_duo: bool | None = None

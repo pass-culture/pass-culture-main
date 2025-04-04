@@ -123,14 +123,10 @@ def build_new_offer_from_product(
     provider_id: int | None,
     offerer_address_id: int | None = None,
 ) -> models.Offer:
-    product_extra_data = product.extraData or {}
-    # FIXME (jmontagnat, 2024-04-01) Temporary solution to add product EAN to offer extraData
-    #  It will be deleted when the offer uses the EAN column instead of extraData->>ean
-    offer_extra_data = offers_models.OfferExtraData(**{**product_extra_data, "ean": product.ean})
     return models.Offer(
         bookingEmail=venue.bookingEmail,
         ean=product.ean,
-        extraData=offer_extra_data,
+        extraData=product.extraData,
         idAtProvider=id_at_provider,
         lastProviderId=provider_id,
         name=product.name,
@@ -218,12 +214,9 @@ def create_draft_offer(
 
     if feature.FeatureToggle.WIP_EAN_CREATION.is_active():
         validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
-
     fields = {key: value for key, value in body.dict(by_alias=True).items() if key not in ("venueId", "callId")}
     fields.update(_get_accessibility_compliance_fields(venue))
     fields.update({"withdrawalDetails": venue.withdrawalDetails})
-    # TODO: (pcharlet, 2025-02-04): Delete next line when body schemas contains specific EAN field outside extraData
-    fields.update({"ean": body.extra_data.get("ean") if body.extra_data else None})
 
     fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
 
@@ -257,8 +250,6 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
         validation.check_offer_extra_data(
             offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api=True, offer=offer
         )
-        # TODO: (pcharlet, 2025-02-04): Delete next line when body schemas contains specific EAN field outside extraData
-        updates.update({"ean": formatted_extra_data.get("ean", None)})
 
     for key, value in updates.items():
         setattr(offer, key, value)
@@ -287,7 +278,7 @@ def create_offer(
         venue_provider=venue_provider,
     )
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
-    validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api)
+    validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api, ean=body.ean)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
     validation.check_is_duo_compliance(body.is_duo, subcategory)
     validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
@@ -296,8 +287,6 @@ def create_offer(
     validation.check_offer_name_does_not_contain_ean(body.name)
 
     fields = body.dict(by_alias=True)
-    # TODO: (pcharlet, 2025-02-04): Delete next line when body schemas contains specific EAN field outside extraData
-    fields.update({"ean": body.extra_data.get("ean") if body.extra_data else None})
 
     offerer_address = offerer_address or venue.offererAddress
 
@@ -387,10 +376,7 @@ def update_offer(
         validation.check_offer_extra_data(
             offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api, offer=offer
         )
-        # TODO: (pcharlet, 2025-02-04): Delete next line when body schemas contains specific EAN field outside extraData
-        ean = updates["extraData"].get("ean", None)
-        if ean != "":
-            updates.update({"ean": ean})
+
     if "isDuo" in updates:
         is_duo = get_field(offer, updates, "isDuo", aliases=aliases)
         validation.check_is_duo_compliance(is_duo, offer.subcategory)
@@ -848,7 +834,7 @@ def publish_offer(
     validation.check_publication_date(offer, publication_date)
 
     if offer.extraData:
-        if ean := offer.extraData.get(subcategories.ExtraDataFieldEnum.EAN.value):
+        if ean := offer.ean:
             validation.check_other_offer_with_ean_does_not_exist(ean, offer.venue, offer.id)
 
     update_offer_fraud_information(offer, user)

@@ -53,7 +53,7 @@ class ReimbursementRuleChoices(Enum):
 
 class ExtraDataFieldEnum(Enum):
     AUTHOR = "author"
-    # EAN = "ean"
+    EAN = "ean"
     MUSIC_SUB_TYPE = "musicSubType"
     MUSIC_TYPE = "musicType"
     PERFORMER = "performer"

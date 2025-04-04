@@ -398,7 +398,7 @@ class FindByProUser:
 
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
-        offer = offers_factories.ThingOfferFactory(venue=venue, extraData=dict({"ean": "9876543234"}))
+        offer = offers_factories.ThingOfferFactory(venue=venue, ean="9876543234")
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
@@ -492,7 +492,7 @@ class FindByProUser:
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
-        offer = offers_factories.ThingOfferFactory(venue=venue, extraData=dict({"ean": "9876543234"}))
+        offer = offers_factories.ThingOfferFactory(venue=venue, ean="9876543234")
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         bookings_factories.UsedBookingFactory(
@@ -720,7 +720,7 @@ class GetOfferBookingsByStatusCSVTest:
         assert data_dict["Date de l'évènement"] == str(
             convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
         )
-        assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
+        assert data_dict["EAN"] == (offer.ean if offer.ean else "")
         assert data_dict["Prénom du bénéficiaire"] == beneficiary.firstName
         assert data_dict["Nom du bénéficiaire"] == beneficiary.lastName
         assert data_dict["Email du bénéficiaire"] == beneficiary.email

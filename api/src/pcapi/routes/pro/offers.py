@@ -256,7 +256,7 @@ def post_draft_offer(
         .first_or_404()
     )
 
-    ean_code = body.extra_data.get("ean", None) if body.extra_data is not None else None
+    ean_code = body.ean if hasattr(body, "ean") else None
     product = (
         models.Product.query.filter(models.Product.ean == ean_code)
         .filter(models.Product.id == body.product_id)

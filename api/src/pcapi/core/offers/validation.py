@@ -601,6 +601,7 @@ def check_offer_extra_data(
     venue: offerers_models.Venue,
     is_from_private_api: bool,
     offer: models.Offer | None = None,
+    ean: str | None = None,
 ) -> None:
     errors = api_errors.ApiErrors()
 
@@ -615,6 +616,11 @@ def check_offer_extra_data(
         or (not is_from_private_api and conditional_field.is_required_in_external_form)
     ]
     for field in mandatory_fields:
+        if field == "ean":
+            if not ean:
+                errors.add_error(field, "Ce champ est obligatoire")
+            continue
+
         if not extra_data.get(field):
             errors.add_error(field, "Ce champ est obligatoire")
 

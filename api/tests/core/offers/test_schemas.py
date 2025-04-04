@@ -19,7 +19,7 @@ class PostDraftOfferBodyModelTest:
             venueId=venue.id,
             description="description",
             durationMinutes=12,
-            extraData={"ean": "12345678910111"},
+            ean="12345678910111",
         )
 
 

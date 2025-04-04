@@ -238,8 +238,7 @@ class ArtistProductLinkFactory(BaseFactory):
 def _check_offer_kwargs(product: models.Product, kwargs: dict[str, typing.Any]) -> None:
 
     if kwargs.get("extraData") and "ean" in kwargs.get("extraData", {}):
-        raise ValueError("'ean' key is not allowed in extraData anymore, use the column ean instead")
-
+        raise ValueError("'ean' key is no longer allowed in extraData. Use the ean column instead.")
     if kwargs.get("name") and kwargs.get("name") != product.name:
         raise ValueError("Name of the offer and the product must be the same")
     if kwargs.get("subcategoryId") and kwargs.get("subcategoryId") != product.subcategoryId:
@@ -248,13 +247,13 @@ def _check_offer_kwargs(product: models.Product, kwargs: dict[str, typing.Any]) 
         raise ValueError("DurationMinutes of the offer must be None when product is given")
     if kwargs.get("description"):
         raise ValueError("Description of the offer must be None when product is given")
-    if kwargs.get("extraData"):
-        # FIXME (jmontagnat, 2024-04-01) Remove this block of code
-        #  when the offer uses the EAN column instead of extraData->>ean
-        offer_extra_data = kwargs.get("extraData", {}).copy()
-        offer_extra_data.pop("ean", None)
-        if offer_extra_data != product.extraData:
-            raise ValueError("ExtraData of the offer and the product must be the same")
+    if kwargs.get("extraData") and kwargs.get("extraData") != product.extraData:
+        # # FIXME (jmontagnat, 2024-04-01) Remove this block of code
+        # #  when the offer uses the EAN column instead of extraData->>ean
+        # offer_extra_data = kwargs.get("extraData", {}).copy()
+        # offer_extra_data.pop("ean", None)
+        # if offer_extra_data != product.extraData:
+        raise ValueError("ExtraData of the offer and the product must be the same")
 
 
 class EventOfferFactory(OfferFactory):

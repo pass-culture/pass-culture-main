@@ -737,12 +737,7 @@ class CheckOfferExtraDataTest:
 
     def test_allow_creation_with_inactive_ean(self):
         offer = offers_factories.OfferFactory(ean="1234567891234", isActive=False)
-        assert (
-            validation.check_offer_extra_data(
-                subcategories.LIVRE_PAPIER.id, {"ean": "1234567891234"}, offer.venue, False
-            )
-            is None
-        )
+        assert validation.check_offer_extra_data(subcategories.LIVRE_PAPIER.id, {}, offer.venue, False, offer) is None
 
 
 class CheckBookingLimitDatetimeTest:

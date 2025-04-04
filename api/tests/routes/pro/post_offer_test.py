@@ -269,22 +269,19 @@ class Returns200Test:
             "venueId": venue.id,
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
-            "extraData": {
-                "ean": "1234567890112",
-            },
+            "ean": "1234567890112",
             "audioDisabilityCompliant": True,
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
         assert response.status_code == 201
         offer_id = response.json["id"]
         offer = Offer.query.get(offer_id)
         assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert offer.venue == venue
-        assert offer.extraData["ean"] == "1234567890112"
+        assert offer.extraData == {}
         assert offer.ean == "1234567890112"
 
     def test_withdrawable_event_offer_can_have_no_ticket_to_withdraw(self, client):
