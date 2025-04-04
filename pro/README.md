@@ -122,7 +122,7 @@ Une fois l’environnement installé, démarrez le backend avec la commande suiv
 ```bash
 pc start-backend
 
-# ou si vous avez configuré le proxy Netskope :
+# ou si vous avez configuré le proxy :
 pc start-proxy-backend
 
 # ⚠️ Cela peut prendre plusieurs minutes …
