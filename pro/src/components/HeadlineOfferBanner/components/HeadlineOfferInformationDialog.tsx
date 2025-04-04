@@ -28,6 +28,7 @@ export const HeadlineOfferInformationDialog = ({
       trigger={
         <Button
           className={triggerClassName}
+          iconClassName={styles['button-icon']}
           variant={ButtonVariant.TERNARY}
           icon={fullNextIcon}
           onClick={() => {
