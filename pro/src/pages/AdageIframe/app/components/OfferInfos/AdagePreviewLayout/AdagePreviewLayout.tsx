@@ -81,6 +81,7 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
       address: venue.street,
       departmentCode: venue.departementCode,
     },
+    isTemplate: !isCollectiveOffer(offer),
   }
 
   if (isBookable) {

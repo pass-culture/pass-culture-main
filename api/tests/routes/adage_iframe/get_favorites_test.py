@@ -1,12 +1,11 @@
-from datetime import datetime
-
 from flask import url_for
 import pytest
 import time_machine
 
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational.models import StudentLevels
+from pcapi.core.educational import models
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.utils.date import format_into_utc_date
 
@@ -22,38 +21,21 @@ def get_test_client(client, redactor, institution):
 
 class GetFavoriteOfferTest:
     endpoint = "adage_iframe.get_collective_favorites"
+    num_queries = 1  # fetch redactor
+    num_queries += 1  # fetch collective offer template and related data
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_get_favorite_test(self, client):
         educational_institution = educational_factories.EducationalInstitutionFactory()
-        national_program = educational_factories.NationalProgramFactory()
-        stock = educational_factories.CollectiveStockFactory(
-            startDatetime=datetime(2021, 5, 15),
-            collectiveOffer__subcategoryId=subcategories.SEANCE_CINE.id,
-            collectiveOffer__name="offer name",
-            collectiveOffer__description="offer description",
-            price=10,
-            collectiveOffer__students=[StudentLevels.GENERAL2],
-            collectiveOffer__educational_domains=[educational_factories.EducationalDomainFactory()],
-            collectiveOffer__institution=educational_institution,
-            collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(),
-            collectiveOffer__nationalProgramId=national_program.id,
-        )
-
-        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
-            subcategoryId=subcategories.EVENEMENT_CINE.id,
-        )
+        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory()
         educational_redactor = educational_factories.EducationalRedactorFactory(
             favoriteCollectiveOfferTemplates=[collective_offer_template],
         )
 
         test_client = get_test_client(client, educational_redactor, educational_institution)
-
-        # fetch redactor (1 query)
-        # fetch collective offer template (1 query)
-        # fetch collective offer template images data (1 query)
-        with assert_num_queries(3):
+        with assert_num_queries(self.num_queries):
             response = test_client.get(url_for(self.endpoint))
+
         assert response.status_code == 200
         assert response.json == {
             "favoritesTemplate": [
@@ -79,7 +61,7 @@ class GetFavoriteOfferTest:
                         "managingOfferer": {"name": collective_offer_template.venue.managingOfferer.name},
                         "name": collective_offer_template.venue.name,
                         "postalCode": "75002",
-                        "departmentCode": stock.collectiveOffer.venue.departementCode,
+                        "departmentCode": collective_offer_template.venue.departementCode,
                         "publicName": collective_offer_template.venue.publicName,
                     },
                     "students": ["Lycée - Seconde"],
@@ -94,6 +76,7 @@ class GetFavoriteOfferTest:
                         "postalCode": None,
                         "city": None,
                     },
+                    "location": None,
                     "contactEmail": "collectiveofferfactory+contact@example.com",
                     "contactPhone": collective_offer_template.contactPhone,
                     "contactUrl": collective_offer_template.contactUrl,
@@ -119,6 +102,34 @@ class GetFavoriteOfferTest:
                 }
             ],
         }
+
+    def test_location_address_venue(self, client):
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        venue = offerers_factories.VenueFactory()
+        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+            venue=venue,
+            locationType=models.CollectiveLocationType.ADDRESS,
+            locationComment=None,
+            offererAddressId=venue.offererAddressId,
+            interventionArea=None,
+        )
+        educational_redactor = educational_factories.EducationalRedactorFactory(
+            favoriteCollectiveOfferTemplates=[collective_offer_template],
+        )
+
+        test_client = get_test_client(client, educational_redactor, educational_institution)
+        with assert_num_queries(self.num_queries):
+            response = test_client.get(url_for(self.endpoint))
+
+        assert response.status_code == 200
+        [result] = response.json["favoritesTemplate"]
+        response_location = result["location"]
+        assert response_location["locationType"] == "ADDRESS"
+        assert response_location["locationComment"] is None
+        assert response_location["address"] is not None
+        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["isLinkedToVenue"] is True
+        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
 
     def test_missing_institution_id(self, client):
         educational_redactor = educational_factories.EducationalRedactorFactory()
