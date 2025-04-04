@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
-import { AdresseData } from 'apiClient/adresse/types'
+import { AdresseData, FeaturePropertyType } from 'apiClient/adresse/types'
 import { SelectOption } from 'commons/custom_types/form'
 import { normalizeStrForAdressSearch } from 'commons/utils/searchPatternInOptions'
 import { serializeAdressData } from 'components/Address/serializer'
@@ -14,6 +14,7 @@ import { DEBOUNCE_TIME_BEFORE_REQUEST } from './constants'
 interface AddressProps {
   description?: string
   suggestionLimit?: number
+  onlyTypes?: FeaturePropertyType[]
   disabled?: boolean
   className?: string
 }
@@ -28,6 +29,7 @@ export interface AutocompleteItemProps {
 export const AddressSelect = ({
   description,
   suggestionLimit,
+  onlyTypes,
   disabled = false,
   className,
 }: AddressProps) => {
@@ -88,11 +90,11 @@ export const AddressSelect = ({
   const getSuggestions = async (search: string) => {
     if (search) {
       try {
-        const adressSuggestions = await apiAdresse.getDataFromAddress(
-          search,
-          suggestionLimit
-        )
-        return serializeAdressData(adressSuggestions)
+        const addressSuggestions = await apiAdresse.getDataFromAddress(search, {
+          limit: suggestionLimit,
+          onlyTypes,
+        })
+        return serializeAdressData(addressSuggestions)
       } catch {
         return []
       }

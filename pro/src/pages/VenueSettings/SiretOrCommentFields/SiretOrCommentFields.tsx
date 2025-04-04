@@ -76,13 +76,13 @@ export const SiretOrCommentFields = ({
       )
       await setFieldValue('name', response.values?.name)
       // getSuggestions pour récupérer les adresses
-      const adressSuggestions = await apiAdresse.getDataFromAddress(address)
+      const addressSuggestions = await apiAdresse.getDataFromAddress(address)
       await setFieldValue('search-addressAutocomplete', address)
       await setFieldValue('addressAutocomplete', address)
 
       handleAddressSelect(
         setFieldValue,
-        serializeAdressData(adressSuggestions)[0]
+        serializeAdressData(addressSuggestions)[0]
       )
     } catch {
       return

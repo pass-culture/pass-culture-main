@@ -59,7 +59,6 @@ export const OffererAuthenticationForm = (): JSX.Element => {
         />
         <AddressSelect
           description="À modifier si l’adresse postale de votre structure est différente de la raison sociale."
-          suggestionLimit={5}
           disabled={manuallySetAddress.value}
         />
         <Button

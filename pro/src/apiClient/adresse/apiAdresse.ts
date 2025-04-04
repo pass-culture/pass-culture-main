@@ -2,7 +2,7 @@ import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 
 import { API_ADRESSE_BASE_URL } from './constants'
-import { AdresseApiJson, AdresseData } from './types'
+import { AdresseApiJson, AdresseData, FeaturePropertyType } from './types'
 
 const handleApiError = async (
   response: Response,
@@ -31,6 +31,15 @@ function formatAdressApiResponse(response: AdresseApiJson) {
   }))
 }
 
+type AddressDataOptions = {
+  limit?: number
+  onlyTypes?: FeaturePropertyType[]
+}
+const DEFAULTS_OPTIONS: AddressDataOptions = {
+  limit: 5,
+  onlyTypes: ['housenumber'], // Defaults will always list addresses with a number (e.g. "17 Rue de Paris …")
+}
+
 export const apiAdresse = {
   getDataFromAddressParts: async (
     street: string,
@@ -50,12 +59,25 @@ export const apiAdresse = {
     }
   },
   getDataFromAddress: async (
-    adress: string,
-    limit = 5
+    address: string,
+    {
+      limit = DEFAULTS_OPTIONS.limit,
+      onlyTypes = DEFAULTS_OPTIONS.onlyTypes,
+    }: AddressDataOptions = DEFAULTS_OPTIONS
   ): Promise<Array<AdresseData>> => {
-    const url = `${API_ADRESSE_BASE_URL}/search/?limit=${limit}&q=${adress}`
+    const url = `${API_ADRESSE_BASE_URL}/search/?limit=${limit}&q=${address}`
     const response = await handleApiError(await fetch(url), 'GET', url)
 
-    return formatAdressApiResponse(response)
+    if (!onlyTypes) return formatAdressApiResponse(response)
+
+    // Restrict results by API "types" if specifically asked
+    const filteredResponse = {
+      ...response,
+      features: response.features.filter((r) =>
+        onlyTypes.includes(r.properties.type)
+      ),
+    }
+
+    return formatAdressApiResponse(filteredResponse)
   },
 }
