@@ -3,6 +3,7 @@ from pcapi.notifications.push.backends.batch import BatchAPI
 from pcapi.notifications.push.backends.batch import UserUpdateData
 from pcapi.notifications.push.backends.logger import LoggerBackend
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
+from pcapi.notifications.push.trigger_events import TrackBatchEventRequest
 
 
 class TestingBackend(LoggerBackend):
@@ -58,6 +59,32 @@ class TestingBackend(LoggerBackend):
                 "user_id": user_id,
                 "event_name": event_name,
                 "event_payload": event_payload,
+                "can_be_asynchronously_retried": can_be_asynchronously_retried,
+            }
+        )
+
+    def track_event_bulk(
+        self, track_event_data: list[TrackBatchEventRequest], can_be_asynchronously_retried: bool = False
+    ) -> None:
+        super().track_event_bulk(track_event_data, can_be_asynchronously_retried=can_be_asynchronously_retried)
+
+        payload = [
+            {
+                "user_id": track_event.user_id,
+                "events": [
+                    {
+                        "name": f"ue.{track_event.event_name.value}",
+                        "attributes": track_event.event_payload,
+                    }
+                ],
+            }
+            for track_event in track_event_data
+        ]
+
+        testing.requests.append(
+            {
+                "user_ids": [track_event.user_id for track_event in track_event_data],
+                "payload": payload,
                 "can_be_asynchronously_retried": can_be_asynchronously_retried,
             }
         )
