@@ -49,7 +49,6 @@ class OffersTest:
         extra_data = {
             "allocineId": 12345,
             "author": "mandibule",
-            "ean": "3838",
             "musicSubType": "502",
             "musicType": "501",
             "performer": "interprète",
@@ -71,6 +70,7 @@ class OffersTest:
             description="desk cryption",
             name="l'offre du siècle",
             withdrawalDetails="modalité de retrait",
+            ean="1234567899999",
             extraData=extra_data,
             durationMinutes=33,
             visualDisabilityCompliant=True,
@@ -210,7 +210,7 @@ class OffersTest:
         assert response.json["extraData"] == {
             "allocineId": 12345,
             "author": "mandibule",
-            "ean": "3838",
+            "ean": "1234567899999",
             "durationMinutes": 33,
             "musicSubType": "Acid Jazz",
             "musicType": "Jazz",
@@ -836,7 +836,6 @@ class OffersV2Test:
         extra_data = {
             "allocineId": 12345,
             "author": "mandibule",
-            "ean": "3838",
             "musicSubType": "502",
             "musicType": "501",
             "performer": "interprète",
@@ -858,6 +857,7 @@ class OffersV2Test:
             description="desk cryption",
             name="l'offre du siècle",
             withdrawalDetails="modalité de retrait",
+            ean="1234567899999",
             extraData=extra_data,
             durationMinutes=33,
             visualDisabilityCompliant=True,
@@ -992,7 +992,7 @@ class OffersV2Test:
         assert response.json["extraData"] == {
             "allocineId": 12345,
             "author": "mandibule",
-            "ean": "3838",
+            "ean": "1234567899999",
             "durationMinutes": 33,
             "musicSubType": "Acid Jazz",
             "musicType": "Jazz",
@@ -1915,7 +1915,6 @@ class OffersStocksTest:
         extra_data = {
             "allocineId": 12345,
             "author": "mandibule",
-            "ean": "3838",
             "musicSubType": "502",
             "musicType": "501",
             "performer": "interprète",
@@ -1934,6 +1933,7 @@ class OffersStocksTest:
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             name="l'offre du siècle",
+            ean="1234567899999",
             extraData=extra_data,
             durationMinutes=33,
         )
@@ -1991,7 +1991,7 @@ class OffersStocksTest:
             "extraData": {
                 "allocineId": 12345,
                 "author": "mandibule",
-                "ean": "3838",
+                "ean": "1234567899999",
                 "durationMinutes": None,
                 "musicSubType": "Acid Jazz",
                 "musicType": "Jazz",
@@ -2103,7 +2103,6 @@ class OffersStocksV2Test:
         extra_data = {
             "allocineId": 12345,
             "author": "mandibule",
-            "ean": "3838",
             "musicSubType": "502",
             "musicType": "501",
             "performer": "interprète",
@@ -2122,6 +2121,7 @@ class OffersStocksV2Test:
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             name="l'offre du siècle",
+            ean="1234567899999",
             extraData=extra_data,
             durationMinutes=33,
         )
@@ -2263,7 +2263,7 @@ class OffersStocksV2Test:
         assert response_offer["extraData"] == {
             "allocineId": 12345,
             "author": "mandibule",
-            "ean": "3838",
+            "ean": "1234567899999",
             "durationMinutes": 33,
             "musicSubType": "Acid Jazz",
             "musicType": "Jazz",

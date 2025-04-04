@@ -125,7 +125,7 @@ def build_new_offer_from_product(
 ) -> models.Offer:
     return models.Offer(
         bookingEmail=venue.bookingEmail,
-        ean=product.extraData.get("ean") if product.extraData else None,
+        ean=product.ean,
         extraData=product.extraData,
         idAtProvider=id_at_provider,
         lastProviderId=provider_id,
@@ -214,12 +214,9 @@ def create_draft_offer(
 
     if feature.FeatureToggle.WIP_EAN_CREATION.is_active():
         validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
-
     fields = {key: value for key, value in body.dict(by_alias=True).items() if key not in ("venueId", "callId")}
     fields.update(_get_accessibility_compliance_fields(venue))
     fields.update({"withdrawalDetails": venue.withdrawalDetails})
-    # TODO: (pcharlet, 2025-02-04): Delete next line when body schemas contains specific EAN field outside extraData
-    fields.update({"ean": body.extra_data.get("ean") if body.extra_data else None})
 
     fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
 
@@ -253,8 +250,6 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
         validation.check_offer_extra_data(
             offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api=True, offer=offer
         )
-        # TODO: (pcharlet, 2025-02-04): Delete next line when body schemas contains specific EAN field outside extraData
-        updates.update({"ean": formatted_extra_data.get("ean", None)})
 
     for key, value in updates.items():
         setattr(offer, key, value)
@@ -283,7 +278,7 @@ def create_offer(
         venue_provider=venue_provider,
     )
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
-    validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api)
+    validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api, ean=body.ean)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
     validation.check_is_duo_compliance(body.is_duo, subcategory)
     validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
@@ -292,8 +287,6 @@ def create_offer(
     validation.check_offer_name_does_not_contain_ean(body.name)
 
     fields = body.dict(by_alias=True)
-    # TODO: (pcharlet, 2025-02-04): Delete next line when body schemas contains specific EAN field outside extraData
-    fields.update({"ean": body.extra_data.get("ean") if body.extra_data else None})
 
     offerer_address = offerer_address or venue.offererAddress
 
@@ -380,15 +373,13 @@ def update_offer(
             motor_disability_compliant=get_field(offer, updates, "motorDisabilityCompliant", aliases=aliases),
             visual_disability_compliant=get_field(offer, updates, "visualDisabilityCompliant", aliases=aliases),
         )
+
     if "extraData" in updates:
         formatted_extra_data = _format_extra_data(offer.subcategoryId, body.extra_data) or {}
         validation.check_offer_extra_data(
             offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api, offer=offer
         )
-        # TODO: (pcharlet, 2025-02-04): Delete next line when body schemas contains specific EAN field outside extraData
-        ean = updates["extraData"].get("ean", None)
-        if ean != "":
-            updates.update({"ean": ean})
+
     if "isDuo" in updates:
         is_duo = get_field(offer, updates, "isDuo", aliases=aliases)
         validation.check_is_duo_compliance(is_duo, offer.subcategory)
@@ -857,7 +848,7 @@ def publish_offer(
     validation.check_publication_date(offer, publication_date)
 
     if offer.extraData:
-        if ean := offer.extraData.get(subcategories.ExtraDataFieldEnum.EAN.value):
+        if ean := offer.ean:
             validation.check_other_offer_with_ean_does_not_exist(ean, offer.venue, offer.id)
 
     update_offer_fraud_information(offer, user)
@@ -1074,7 +1065,7 @@ def add_criteria_to_offers(
     query = models.Product.query
     if ean:
         ean = ean.replace("-", "").replace(" ", "")
-        query = query.filter(models.Product.extraData["ean"].astext == ean)
+        query = query.filter(models.Product.ean == ean)
     if visa:
         query = query.filter(models.Product.extraData["visa"].astext == visa)
 
@@ -1121,7 +1112,7 @@ def reject_inappropriate_products(
     send_booking_cancellation_emails: bool = True,
 ) -> bool:
     products = models.Product.query.filter(
-        models.Product.extraData["ean"].astext.in_(eans),
+        models.Product.ean.in_(eans),
         models.Product.idAtProviders.is_not(None),
         models.Product.gcuCompatibilityType != models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
     ).all()
@@ -1132,7 +1123,7 @@ def reject_inappropriate_products(
     offers_query = models.Offer.query.filter(
         sa.or_(
             models.Offer.productId.in_(product_ids),
-            models.Offer.extraData["ean"].astext.in_(eans),
+            models.Offer.ean.in_(eans),
         ),
         models.Offer.validation != models.OfferValidationStatus.REJECTED,
     )
@@ -1631,7 +1622,7 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
 def approves_provider_product_and_rejected_offers(ean: str) -> None:
     product = models.Product.query.filter(
         models.Product.gcuCompatibilityType == models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
-        models.Product.extraData["ean"].astext == ean,
+        models.Product.ean == ean,
         models.Product.idAtProviders.is_not(None),
     ).one_or_none()
 

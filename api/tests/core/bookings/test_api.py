@@ -1207,7 +1207,7 @@ class CancelByBeneficiaryTest:
         stock = offers_factories.StockFactory(
             offer__lastProvider=provider,
             offer__venue__street="1 boulevard Poissonniere",
-            offer__extraData={"ean": "1234567890123"},
+            offer__ean="1234567890123",
             dnBookedQuantity=1,
             idAtProviders="",
             lastProvider=provider,
@@ -1250,7 +1250,7 @@ class CancelByBeneficiaryTest:
         stock = offers_factories.EventStockFactory(
             offer__lastProvider=provider,
             offer__venue__street="1 boulevard Poissonniere",
-            offer__extraData={"ean": "1234567890123"},
+            offer__ean="1234567890123",
             offer__withdrawalType=offers_models.WithdrawalTypeEnum.NO_TICKET,
             dnBookedQuantity=1,
             idAtProviders="",

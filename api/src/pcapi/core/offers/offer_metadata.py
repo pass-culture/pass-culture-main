@@ -107,7 +107,7 @@ def _get_book_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
             "@type": "Person",
             "name": author,
         }
-    if ean := extra_data.get("ean"):
+    if ean := offer.ean:
         book_metadata["gtin13"] = ean
         work_example["isbn"] = ean
 

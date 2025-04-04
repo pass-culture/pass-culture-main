@@ -289,20 +289,20 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offers_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"ean": "1111111111111"},
+            ean="1111111111111",
             name="New name",
             description="description",
         )
         offer = offers_factories.OfferFactory(venue=venue)
 
-        data = {"extraData": {"ean": "1111111111111"}}
+        data = {"ean": "1111111111111"}
         response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
         updated_offer = Offer.query.get(offer.id)
-        assert updated_offer.extraData == {"ean": "1111111111111"}
+        assert updated_offer.extraData == {}
         assert updated_offer.ean == "1111111111111"
 
     @pytest.mark.features(WIP_EAN_CREATION=True)
@@ -311,20 +311,21 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"ean": "1111111111111"},
+            ean="1111111111111",
             name="New name",
             description="description",
         )
         offer = offers_factories.OfferFactory(venue=venue, product=product)
 
-        data = {"extraData": {"ean": "1111111111111"}}
+        data = {"ean": "1111111111111"}
         response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
         updated_offer = Offer.query.get(offer.id)
-        assert updated_offer.extraData == {"ean": "1111111111111"}
+        assert updated_offer.ean == "1111111111111"
+        assert updated_offer.extraData == {}
         # We do not update extraData if they are the same.
         assert updated_offer.ean is None
 
@@ -1073,7 +1074,7 @@ class Returns400Test:
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"ean": "1111111111111"},
+            ean="1111111111111",
             name="New name",
             description="description",
         )
@@ -1083,7 +1084,7 @@ class Returns400Test:
             product=product,
         )
 
-        data = {"extraData": {"ean": "2222222222222"}}
+        data = {"ean": "2222222222222"}
         response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
 
         assert response.status_code == 400

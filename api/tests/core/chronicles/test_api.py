@@ -385,9 +385,7 @@ class SaveBookClubChronicleTest:
 
     def test_save_book_club_chronicle_link_to_product(self):
         product = offers_factories.ProductFactory(
-            extraData={
-                "ean": "1234567890123",
-            }
+            ean="1234567890123",
         )
         form = typeform.TypeformResponse(
             response_id=random_string(),

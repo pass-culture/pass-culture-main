@@ -32,7 +32,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         product_provider = providers_factories.ProviderFactory()
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            extraData={"ean": ean},
+            ean=ean,
             lastProviderId=product_provider.id,
             idAtProviders=ean,
         )
@@ -99,7 +99,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         venue, _ = utils.create_offerer_provider_linked_to_venue(venue_data)
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            extraData={"ean": "1234567890123"},
+            ean="1234567890123",
             lastProviderId=product_provider.id,
             idAtProviders="1234567890123",
         )
@@ -113,7 +113,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                 "location": {"type": "physical", "venueId": venue.id},
                 "products": [
                     {
-                        "ean": product.extraData["ean"],
+                        "ean": product.ean,
                         "stock": {
                             "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
                             "price": 1234,
@@ -163,17 +163,17 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            extraData={"ean": "1234567890123"},
+            ean="1234567890123",
             lastProviderId=product_provider.id,
             idAtProviders="1234567890123",
         )
         offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            extraData={"ean": "1234567890123"},
+            ean="1234567890124",
         )
         offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            extraData={"ean": "1234567890123"},
+            ean="1234567890125",
         )
         unknown_ean = "1234567897123"
 
@@ -183,7 +183,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                 "location": {"type": "physical", "venueId": venue.id},
                 "products": [
                     {
-                        "ean": product.extraData["ean"],
+                        "ean": product.ean,
                         "stock": {
                             "bookingLimitDatetime": None,
                             "price": 1234,
@@ -215,7 +215,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         }
         venue, api_key = utils.create_offerer_provider_linked_to_venue(venue_data)
         product = offers_factories.ThingProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
 
         offer = offers_factories.ThingOfferFactory(
@@ -231,7 +231,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                 "location": {"type": "physical", "venueId": venue.id},
                 "products": [
                     {
-                        "ean": product.extraData["ean"],
+                        "ean": product.ean,
                         "stock": {
                             "bookingLimitDatetime": date_utils.format_into_utc_date(tomorrow),
                             "price": 1234,
@@ -250,7 +250,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         old_provider = providers_factories.ProviderFactory()
         product = offers_factories.ThingProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
         offer = offers_factories.ThingOfferFactory(
             product=product, venue=venue, lastProvider=old_provider, extraData=product.extraData, isActive=False
@@ -261,7 +261,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                 "location": {"type": "physical", "venueId": venue.id},
                 "products": [
                     {
-                        "ean": product.extraData["ean"],
+                        "ean": product.ean,
                         "stock": {
                             "price": 1234,
                             "quantity": 0,
@@ -274,11 +274,9 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert offer.lastProvider == api_key.provider
         assert offer.isActive == True
 
-    # TODO: remove when migration is done and no more ean are stored inside extraData
-    @pytest.mark.parametrize("offer_ean, offer_extra_data", [(None, {"ean": "1234567890123"}), ("1234567890123", {})])
-    def test_no_new_offer_created_if_ean_exists(self, client, offer_ean, offer_extra_data):
+    def test_no_new_offer_created_if_ean_exists(self, client):
         """Test that no new offer is created if the ean exists either
-        inside offer.ean or offer.extraData["ean"]
+        inside offer.ean
         """
         venue_data = {
             "audioDisabilityCompliant": True,
@@ -290,7 +288,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         ean = "1234567890123"
         product = offers_factories.ThingProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": ean}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean=ean
         )
 
         offer = offers_factories.ThingOfferFactory(
@@ -299,8 +297,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             productId=product.id,
             venue=venue,
             lastProvider=api_key.provider,
-            extraData=offer_extra_data,
-            ean=offer_ean,
+            ean=ean,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -329,7 +326,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         }
         venue, api_key = utils.create_offerer_provider_linked_to_venue(venue_data)
         product = offers_factories.ThingProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
 
         offer = offers_factories.ThingOfferFactory(
@@ -344,7 +341,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                 "location": {"type": "physical", "venueId": venue.id},
                 "products": [
                     {
-                        "ean": product.extraData["ean"],
+                        "ean": product.ean,
                         "stock": {
                             "bookingLimitDatetime": date_utils.format_into_utc_date(
                                 datetime.datetime.utcnow() + datetime.timedelta(days=1)
@@ -370,10 +367,10 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         }
         venue, api_key = utils.create_offerer_provider_linked_to_venue(venue_data)
         cd_product = offers_factories.ThingProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
         book_product = offers_factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "1234527890123"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id, ean="1234527890123"
         )
 
         cd_offer = offers_factories.ThingOfferFactory(product=cd_product, venue=venue, extraData=cd_product.extraData)
@@ -396,7 +393,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                     "location": {"type": "physical", "venueId": venue.id},
                     "products": [
                         {
-                            "ean": cd_product.extraData["ean"],
+                            "ean": cd_product.ean,
                             "stock": {
                                 "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
                                 "price": 1234,
@@ -404,7 +401,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                             },
                         },
                         {
-                            "ean": book_product.extraData["ean"],
+                            "ean": book_product.ean,
                             "stock": {
                                 "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
                                 "price": 2345,
@@ -418,7 +415,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         log = next(record for record in caplog.records if "Error while creating offer by ean" == record.message)
 
         assert log.extra == {
-            "ean": book_product.extraData["ean"],
+            "ean": book_product.ean,
             "venue_id": venue.id,
             "provider_id": api_key.provider.id,
             "exc": "RejectedOrPendingOfferNotEditable",
@@ -435,7 +432,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            extraData={"ean": "1234567890123"},
+            ean="1234567890123",
             lastProviderId=product_provider.id,
             idAtProviders="1234567890123",
         )
@@ -452,7 +449,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             json={
                 "products": [
                     {
-                        "ean": product.extraData["ean"],
+                        "ean": product.ean,
                         "stock": {
                             "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
                             "price": 1234,
@@ -478,16 +475,14 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     )
     def test_does_not_create_an_offer_of_non_compatible_product(self, client, gcu_compatibility_type):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product = offers_factories.ProductFactory(
-            extraData={"ean": "1234567890123"}, gcuCompatibilityType=gcu_compatibility_type
-        )
+        product = offers_factories.ProductFactory(ean="1234567890123", gcuCompatibilityType=gcu_compatibility_type)
 
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
                 "products": [
                     {
-                        "ean": product.extraData["ean"],
+                        "ean": product.ean,
                         "stock": {
                             "price": 1234,
                             "quantity": 3,
@@ -502,7 +497,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     def test_400_when_quantity_is_too_big(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ThingProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -510,7 +505,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             json={
                 "products": [
                     {
-                        "ean": product.extraData["ean"],
+                        "ean": product.ean,
                         "stock": {
                             "price": 1234,
                             "quantity": 1_000_001,
@@ -526,14 +521,14 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
     def test_400_when_ean_wrong_format(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product = offers_factories.ProductFactory(extraData={"ean": "123456789"})
+        offers_factories.ProductFactory(ean="1234567890123")
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
                 "products": [
                     {
-                        "ean": product.extraData["ean"],
+                        "ean": "123456789",
                         "stock": {
                             "price": 1234,
                             "quantity": 3,
@@ -550,7 +545,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     def test_400_when_price_too_high(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -558,7 +553,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             json={
                 "products": [
                     {
-                        "ean": product.extraData["ean"],
+                        "ean": product.ean,
                         "stock": {
                             "price": 300000,
                             "quantity": 3,
@@ -576,7 +571,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            extraData={"ean": "1234567890123"},
+            ean="1234567890123",
             lastProviderId=product_provider.id,
             idAtProviders="1234567890123",
         )
@@ -584,14 +579,14 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
-                "products": [{"ean": product.extraData["ean"], "stock": {"price": 1234, "quantity": 3}}],
+                "products": [{"ean": product.ean, "stock": {"price": 1234, "quantity": 3}}],
                 "location": {"type": "physical", "venueId": venue.id},
             },
         )
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
-                "products": [{"ean": product.extraData["ean"], "stock": {"price": 7890, "quantity": 3}}],
+                "products": [{"ean": product.ean, "stock": {"price": 7890, "quantity": 3}}],
                 "location": {"type": "physical", "venueId": venue.id},
             },
         )
@@ -676,13 +671,13 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         ean_to_create = "1234567897123"
         offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            extraData={"ean": ean_to_update},
+            ean=ean_to_update,
             lastProviderId=product_provider.id,
             idAtProviders=ean_to_update,
         )
         offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            extraData={"ean": ean_to_create},
+            ean=ean_to_create,
             lastProviderId=product_provider.id,
             idAtProviders=ean_to_create,
         )
@@ -727,11 +722,11 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         )
 
         [updated_offer, created_offer] = offers_models.Offer.query.order_by(offers_models.Offer.id).all()
-        assert updated_offer.extraData["ean"] == ean_to_update
+        assert updated_offer.ean == ean_to_update
         assert updated_offer.activeStocks[0].price == decimal.Decimal("12.34")
         assert updated_offer.activeStocks[0].quantity == 3
 
-        assert created_offer.extraData["ean"] == ean_to_create
+        assert created_offer.ean == ean_to_create
         assert created_offer.activeStocks[0].price == decimal.Decimal("98.76")
         assert created_offer.activeStocks[0].quantity == 22
 
@@ -744,7 +739,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                 "location": {"type": "physical", "venueId": venue.id},
                 "products": [
                     {
-                        "ean": product.extraData["ean"],
+                        "ean": product.ean,
                         "idAtProvider": "id",
                         "stock": {
                             "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",

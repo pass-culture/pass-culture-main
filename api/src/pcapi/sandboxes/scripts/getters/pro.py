@@ -211,7 +211,7 @@ def create_pro_user_with_individual_offers() -> dict:
     offer2 = offers_factories.ThingOfferFactory(
         venue=venue,
         name="Une offre avec ean",
-        extraData=dict({"ean": "1234567891234"}),
+        ean="1234567891234",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
     offers_factories.StockFactory(offer=offer2)

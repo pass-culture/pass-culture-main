@@ -41,7 +41,7 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
 
     if offer.isActive:
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
-
+    # fait en sort de pas changer la structure de retour du schema
     return serializers.OfferResponse.from_orm(offer)
 
 

@@ -62,9 +62,9 @@ def test_serialize_offer():
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
         description="Un LIVRE qu'il est bien pour le lire",
+        ean="2221001648",
         extraData={
             "author": "Author",
-            "ean": "2221001648",
             "performer": "Performer",
             "speaker": "Speaker",
             "stageDirector": "Stage Director",
@@ -158,9 +158,9 @@ def test_serialize_offer_legacy():
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
         description="Un LIVRE qu'il est bien pour le lire",
+        ean="2221001648",
         extraData={
             "author": "Author",
-            "ean": "2221001648",
             "performer": "Performer",
             "speaker": "Speaker",
             "stageDirector": "Stage Director",
@@ -307,16 +307,16 @@ def test_serialize_offer_event():
 
 
 @pytest.mark.parametrize(
-    "extra_data,expected_distinct",
+    "extra_data,ean,expected_distinct",
     (
-        [{}, "1"],
-        [{"allocineId": 12345, "visa": "56070"}, "12345"],
-        [{"visa": "56070"}, "56070"],
-        [{"ean": "12345678"}, "12345678"],
+        [{}, None, "1"],
+        [{"allocineId": 12345, "visa": "56070"}, None, "12345"],
+        [{"visa": "56070"}, None, "56070"],
+        [{}, "1234567890999", "1234567890999"],
     ),
 )
-def test_serialize_offer_distinct(extra_data, expected_distinct):
-    product = offers_factories.ProductFactory(extraData=extra_data)
+def test_serialize_offer_distinct(extra_data, ean, expected_distinct):
+    product = offers_factories.ProductFactory(extraData=extra_data, ean=ean)
     offer = offers_factories.OfferFactory(id=1, product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["distinct"] == expected_distinct

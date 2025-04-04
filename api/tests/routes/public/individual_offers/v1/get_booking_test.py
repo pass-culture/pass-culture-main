@@ -32,7 +32,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
             venue=venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
-            extraData={"ean": "1234567890123"},
+            ean="1234567890123",
         )
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         stock = offers_factories.StockFactory(offer=offer, beginningDatetime=past)

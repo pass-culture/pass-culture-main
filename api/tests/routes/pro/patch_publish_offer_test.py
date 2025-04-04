@@ -256,13 +256,13 @@ class Returns400Test:
             managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.RECORD_STORE
         )
 
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": ean})
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, ean=ean)
         offers_factories.OfferFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,
             product=product,
             validation=OfferValidationStatus.APPROVED,
-            extraData={"ean": ean},
+            ean=ean,
         )
 
         offer = offers_factories.StockFactory(
@@ -270,7 +270,7 @@ class Returns400Test:
             offer__isActive=False,
             offer__validation=OfferValidationStatus.DRAFT,
             offer__product=product,
-            offer__extraData={"ean": ean},
+            offer__ean=ean,
         ).offer
 
         client = client.with_session_auth(email)

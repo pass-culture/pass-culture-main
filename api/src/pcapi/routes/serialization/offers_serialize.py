@@ -80,6 +80,7 @@ class PostOfferBodyModel(BaseModel):
     description: str | None
     duration_minutes: int | None
     external_ticket_office_url: HttpUrl | None
+    ean: str | None
     extra_data: dict[str, typing.Any] | None
     is_duo: bool | None
     is_national: bool | None
@@ -214,7 +215,7 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             # TODO: front pro doesn't need the soft deleted stocks but maybe this could be handled in the request directly
             return [_serialize_stock(stock) for stock in self._obj.stocks if not stock.isSoftDeleted]
         if key == "productIsbn":
-            return self._obj.extraData.get("ean") if self._obj.extraData else None
+            return self._obj.ean
         if key == "venue":
             return _serialize_venue(self._obj.venue)
         if key == "isShowcase":
@@ -398,7 +399,6 @@ class IndividualOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "extraData" and self._obj.product:
             self._obj.extraData = self._obj.product.extraData
-
         return super().get(key, default)
 
 
@@ -420,6 +420,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     publicationDate: datetime.datetime | None
     description: str | None
     durationMinutes: int | None
+    ean: str | None
     extraData: Any
     hasBookingLimitDatetimesPassed: bool
     hasStocks: bool

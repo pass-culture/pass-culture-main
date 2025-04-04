@@ -209,6 +209,7 @@ def _create_product(
             bookingEmail=body.booking_email,
             description=body.description,
             externalTicketOfficeUrl=body.external_ticket_office_url,
+            ean=body.category_related_fields.ean if hasattr(body.category_related_fields, "ean") else None,
             extraData=serialization.deserialize_extra_data(body.category_related_fields, venue_id=venue.id),
             idAtProvider=body.id_at_provider,
             isDuo=body.enable_double_bookings,
@@ -296,7 +297,6 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
                     address_id=address.id,
                     label=body.location.address_label,
                 )
-
             product = _create_product(venue=venue, body=body, offerer_address=offerer_address)
 
             if body.image:
@@ -386,11 +386,10 @@ def _create_or_update_ean_offers(
     ean_to_create_or_update = set(serialized_products_stocks.keys())
 
     offers_to_update = _get_existing_offers(ean_to_create_or_update, venue)
-
     offer_to_update_by_ean = {}
     ean_list_to_update = set()
     for offer in offers_to_update:
-        offer_ean = offer.ean if offer.ean else offer.extraData["ean"]  # type: ignore[index]
+        offer_ean = offer.ean  # type: ignore[index]
         ean_list_to_update.add(offer_ean)
         offer_to_update_by_ean[offer_ean] = offer
 
@@ -409,7 +408,7 @@ def _create_or_update_ean_offers(
         if ean_list_to_create:
             created_offers = []
             existing_products = _get_existing_products(ean_list_to_create)
-            product_by_ean = {product.extraData["ean"]: product for product in existing_products}  # type: ignore[index]
+            product_by_ean = {product.ean: product for product in existing_products}
             not_found_eans = [ean for ean in ean_list_to_create if ean not in product_by_ean.keys()]
             if not_found_eans:
                 logger.warning(
@@ -419,7 +418,7 @@ def _create_or_update_ean_offers(
                 )
             for product in existing_products:
                 try:
-                    ean = product.extraData["ean"] if product.extraData else None
+                    ean = product.ean
                     stock_data = serialized_products_stocks[ean]
                     created_offer = _create_offer_from_product(
                         venue,
@@ -448,7 +447,7 @@ def _create_or_update_ean_offers(
             reloaded_offers = _get_existing_offers(ean_list_to_create, venue)
             for offer in reloaded_offers:
                 try:
-                    ean = offer.extraData["ean"]  # type: ignore[index]
+                    ean = offer.ean  # type: ignore[index]
                     stock_data = serialized_products_stocks[ean]
                     # FIXME (mageoffray, 2023-05-26): stock saving optimisation
                     # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
@@ -479,7 +478,7 @@ def _create_or_update_ean_offers(
                 offer.lastProvider = provider
                 offer.isActive = True
 
-                ean = offer.ean if offer.ean else offer.extraData["ean"]  # type: ignore[index]
+                ean = offer.ean  # type: ignore[index]
                 stock_data = serialized_products_stocks[ean]
                 # FIXME (mageoffray, 2023-05-26): stock upserting optimisation
                 # Stocks are edited one by one for now, we need to improve edit_stock to remove the repository.session.add()
@@ -518,7 +517,7 @@ ALLOWED_PRODUCT_SUBCATEGORIES = [
 
 def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:
     return offers_models.Product.query.filter(
-        offers_models.Product.extraData["ean"].astext.in_(ean_to_create),
+        offers_models.Product.ean.in_(ean_to_create),
         offers_models.Product.can_be_synchronized == True,
         offers_models.Product.subcategoryId.in_(ALLOWED_PRODUCT_SUBCATEGORIES),
         # FIXME (cepehang, 2023-09-21) remove these condition when the product table is cleaned up
@@ -537,16 +536,8 @@ def _get_existing_offers(
         )
         .filter(offers_models.Offer.isEvent == False)
         .filter(offers_models.Offer.venue == venue)
-        .filter(
-            sqla.or_(
-                # TODO: remove extraData["ean"] when migration is done
-                offers_models.Offer.extraData["ean"].astext.in_(ean_to_create_or_update),
-                offers_models.Offer.ean.in_(ean_to_create_or_update),
-            )
-        )
+        .filter(offers_models.Offer.ean.in_(ean_to_create_or_update))
         .group_by(
-            # TODO: remove extraData["ean"] when migration is done
-            offers_models.Offer.extraData["ean"],
             offers_models.Offer.ean,
             offers_models.Offer.venueId,
         )
@@ -579,7 +570,7 @@ def _create_offer_from_product(
     provider: providers_models.Provider,
     offererAddress: offerers_models.OffererAddress,
 ) -> offers_models.Offer:
-    ean = product.extraData.get("ean") if product.extraData else None
+    ean = product.ean
 
     offer = offers_api.build_new_offer_from_product(
         venue,
@@ -722,7 +713,7 @@ def check_eans_availability(
     """
     eans_to_check = set(query.eans)
     existing_products = offers_models.Product.query.filter(
-        offers_models.Product.extraData["ean"].astext.in_(eans_to_check),
+        offers_models.Product.ean.in_(eans_to_check),
     ).all()
 
     rejected_eans_because_subcategory_is_not_allowed = []
@@ -730,7 +721,7 @@ def check_eans_availability(
     available_eans = []
 
     for product in existing_products:
-        product_ean = product.extraData["ean"]
+        product_ean = product.ean
         eans_to_check.remove(product_ean)
 
         if product.subcategoryId not in ALLOWED_PRODUCT_SUBCATEGORIES:
@@ -753,7 +744,7 @@ def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Que
     return (
         utils._retrieve_offer_tied_to_user_query()
         .filter(
-            offers_models.Offer.extraData["ean"].astext.in_(eans),
+            offers_models.Offer.ean.in_(eans),
             offers_models.Offer.venueId == venueId,
         )
         .order_by(offers_models.Offer.id.desc())

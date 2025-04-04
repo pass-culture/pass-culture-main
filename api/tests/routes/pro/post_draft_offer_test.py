@@ -95,7 +95,8 @@ class Returns201Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData=dict({"ean": "9782123456803"})
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            ean="9782123456803",
         )
 
         data = {
@@ -103,7 +104,7 @@ class Returns201Test:
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
             "productId": product.id,
-            "extraData": {"ean": "9782123456803"},
+            "ean": "9782123456803",
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
@@ -117,7 +118,7 @@ class Returns201Test:
         assert response_dict["name"] == "Celeste"
         assert response_dict["id"] == offer.id
         assert response_dict["productId"] == product.id
-        assert response_dict["extraData"] == {"ean": "9782123456803"}
+        assert response_dict["extraData"] == {}
         assert offer.ean == "9782123456803"
         assert offer.product == product
         assert offer._description is None
@@ -176,14 +177,16 @@ class Returns201Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id, extraData=dict({"ean": "1234567891234"})
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
+            ean="1234567891234",
         )
 
         data = {
             "name": "Celeste",
             "subcategoryId": subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
             "venueId": venue.id,
-            "extraData": {"gtl_id": "07000000", "ean": "1234567891234"},
+            "ean": "1234567891234",
+            "extraData": {"gtl_id": "07000000"},
             "productId": product.id,
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
@@ -198,8 +201,8 @@ class Returns201Test:
         assert response_dict["name"] == "Celeste"
         assert response_dict["id"] == offer.id
         assert response_dict["productId"] == offer.productId
-        assert response_dict["extraData"] == {"ean": "1234567891234"}
         assert offer.ean == "1234567891234"
+        assert response_dict["extraData"] == {}
         assert offer.product == product
         assert offer.description == product.description
         assert offer._description is None
@@ -371,7 +374,8 @@ class Returns400Test:
             "name": "Celeste",
             "subcategoryId": subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             "venueId": venue.id,
-            "extraData": {"gtl_id": "07000000", "ean": "1234567891234"},
+            "ean": "1234567891234",
+            "extraData": {"gtl_id": "07000000"},
             "productId": 0,
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
