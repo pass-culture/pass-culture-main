@@ -54,7 +54,7 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "design-system": "https://github.com/pass-culture/design-system.git#v0.0.22",
-    "dompurify": "^3.2.4",
+    "dompurify": "^3.2.5",
     "downshift": "^9.0.9",
     "eslint-plugin-cypress": "^4.2.0",
     "formik": "^2.4.6",
