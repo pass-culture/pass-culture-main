@@ -1,3 +1,5 @@
+import { StocksOrderedBy } from 'apiClient/v1'
+
 export enum RecurrenceType {
   UNIQUE = 'UNIQUE',
   DAILY = 'DAILY',
@@ -67,4 +69,15 @@ export type StocksCalendarFormValues = {
     priceCategory: string
   }[]
   bookingLimitDateInterval?: number
+}
+
+export type StocksTableFilters = {
+  date?: string
+  time?: string
+  priceCategoryId?: string
+}
+
+export type StocksTableSort = {
+  sort?: StocksOrderedBy
+  orderByDesc?: boolean
 }
