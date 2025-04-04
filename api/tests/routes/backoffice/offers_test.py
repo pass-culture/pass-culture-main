@@ -172,6 +172,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Entité juridique"] == offers[0].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == offers[0].venue.name
         assert rows[0]["Date(s) de l'évènement"] == ""
+        assert rows[0]["Date(s) limite de réservation"] == ""
 
         if stock_data_expected:
             assert rows[0]["Stock réservé"] == "0"
@@ -1237,7 +1238,7 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Tarif"] == expected_price_2
 
-    def test_list_offers_price_with_different_stock_beginning_datetimes(self, authenticated_client):
+    def test_list_offers_with_different_stock_beginning_datetimes(self, authenticated_client):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.FESTIVAL_CINE.id)
 
         query_args = self._get_query_args_by_id(offer.id)
@@ -1264,6 +1265,26 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Date(s) de l'évènement"] == "14/06/2023 → 31/12/2023"
+
+    def test_list_offers_with_different_booking_limit_datetimes(self, authenticated_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.FESTIVAL_CINE.id)
+
+        query_args = self._get_query_args_by_id(offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["Date limite de réservation"] == ""
+
+        offers_factories.StockFactory(offer=offer, bookingLimitDatetime=datetime.datetime(2023, 10, 12, 7, 0))
+        offers_factories.StockFactory(offer=offer, bookingLimitDatetime=datetime.datetime(2023, 12, 31, 17, 0))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["Date limite de réservation"] == "12/10/2023"
 
     def test_list_offers_with_offerer_confidence_rule(self, client, pro_fraud_admin):
         rule = offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer__name="Offerer")
