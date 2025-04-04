@@ -54,8 +54,7 @@
     "unordered(venue.name)",
     "unordered(venue.publicName)",
     "unordered(offerer.name)",
-    "unordered(offer.description)",
-    "unordered(distinct)"
+    "unordered(offer.description)"
   ],
   "numericAttributesForFiltering": null
 }
