@@ -38,6 +38,10 @@ class CancelCollectiveBookingTest(PublicAPIVenueEndpointHelper):
         response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(booking_id=booking.id))
         assert response.status_code == 404
 
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 2  # Select API key + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
+
     def test_cancel_collective_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         booking = self.setup_base_resource(venue=venue_provider.venue)

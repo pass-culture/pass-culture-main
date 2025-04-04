@@ -9,6 +9,7 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.models.api_errors import ForbiddenError
+from pcapi.repository import atomic
 from pcapi.repository import on_commit
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.public import blueprints
@@ -22,6 +23,7 @@ from pcapi.validation.routes.users_authentifications import provider_api_key_req
 
 
 @blueprints.public_api.route("/v2/collective/bookings/<int:booking_id>", methods=["PATCH"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
