@@ -498,6 +498,38 @@ def _get_offers_by_ids(
         .scalar_subquery()
     )
 
+    offer_booking_limit_dates = (
+        sa.select(
+            sa.case(
+                (
+                    sa.or_(
+                        sa.not_(offers_models.Offer.isEvent),
+                        sa.func.max(offers_models.Stock.bookingLimitDatetime).cast(sa.Date).is_(None),
+                    ),
+                    sa.cast(postgresql.array([]), postgresql.ARRAY(sa.Date)),
+                ),
+                (
+                    sa.func.max(offers_models.Stock.bookingLimitDatetime).cast(sa.Date)
+                    == sa.func.min(offers_models.Stock.bookingLimitDatetime).cast(sa.Date),
+                    postgresql.array([sa.func.max(offers_models.Stock.bookingLimitDatetime).cast(sa.Date)]),
+                ),
+                else_=postgresql.array(
+                    [
+                        sa.func.min(offers_models.Stock.bookingLimitDatetime).cast(sa.Date),
+                        sa.func.max(offers_models.Stock.bookingLimitDatetime).cast(sa.Date),
+                    ]
+                ),
+            )
+        )
+        .select_from(offers_models.Stock)
+        .filter(
+            offers_models.Stock.offerId == offers_models.Offer.id,
+            offers_models.Stock.bookingLimitDatetime >= datetime.datetime.utcnow(),
+        )
+        .correlate(offers_models.Offer)
+        .scalar_subquery()
+    )
+
     # Aggregate tags as an array of names returned in a single row (joinedload would fetch 1 result row per tag)
     tags_subquery = (
         (
@@ -518,6 +550,7 @@ def _get_offers_by_ids(
             booked_quantity_subquery.label("booked_quantity"),
             remaining_quantity_case.label("remaining_quantity"),
             offer_event_dates.label("offer_event_dates"),
+            offer_booking_limit_dates.label("offer_booking_limit_dates"),
             tags_subquery.label("tags"),
             rules_subquery.label("rules"),
             min_max_prices_subquery.label("prices"),
