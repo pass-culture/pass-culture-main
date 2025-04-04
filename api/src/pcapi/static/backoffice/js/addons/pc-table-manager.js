@@ -119,9 +119,9 @@ class PcTableManager extends PcAddOn {
 
   #createMenu = ($container, configuration) => {
     const innerHTML = `
-        <button class="btn btn-outline-primary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-layout-three-columns"></i>
+        <button class="btn btn-outline-primary-subtle-bg" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           Colonnes
+          <i class="bi bi-layout-three-columns ms-2"></i>
         </button>
       <div class="dropdown-menu dropdown-menu-end mt-2 pc-table-manager-dropdown"  data-pc-target-table-id="${configuration.id}">
         <div class="pc-drop-down-header">
