@@ -481,6 +481,14 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash("Impossible de supprimer une entité juridique pour laquelle il existe des réservations", "warning")
         return _self_redirect(offerer.id)
+    except offerers_exceptions.CannotDeleteOffererWithActiveOrFutureCustomReimbursementRule:
+        mark_transaction_as_invalid()
+        flash(
+            "Impossible de supprimer une entité juridique ayant un tarif dérogatoire actif ou futur. "
+            "Veuillez d'abord mettre fin au tarif dérogatoire, en vérifiant s'il doit être reporté sur une autre entité juridique.",
+            "warning",
+        )
+        return _self_redirect(offerer.id)
 
     for email in emails:
         on_commit(

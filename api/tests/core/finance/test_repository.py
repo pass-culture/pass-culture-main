@@ -177,23 +177,68 @@ class HasReimbursementTest:
 
 
 class HasActiveOrFutureCustomRemibursementRuleTest:
-    def test_active_rule(self):
+    def test_active_rule_on_offer(self):
         now = datetime.datetime.utcnow()
         timespan = (now - datetime.timedelta(days=1), now + datetime.timedelta(days=1))
         rule = factories.CustomReimbursementRuleFactory(timespan=timespan)
         offer = rule.offer
-        assert repository.has_active_or_future_custom_reimbursement_rule(offer)
+        assert repository.has_active_or_future_custom_reimbursement_rule(offer_id=offer.id)
 
-    def test_future_rule(self):
+    def test_future_rule_on_offer(self):
         now = datetime.datetime.utcnow()
         timespan = (now + datetime.timedelta(days=1), None)
         rule = factories.CustomReimbursementRuleFactory(timespan=timespan)
         offer = rule.offer
-        assert repository.has_active_or_future_custom_reimbursement_rule(offer)
+        assert repository.has_active_or_future_custom_reimbursement_rule(offer_id=offer.id)
 
-    def test_past_rule(self):
+    def test_past_rule_on_offer(self):
         now = datetime.datetime.utcnow()
         timespan = (now - datetime.timedelta(days=2), now - datetime.timedelta(days=1))
         rule = factories.CustomReimbursementRuleFactory(timespan=timespan)
         offer = rule.offer
-        assert not repository.has_active_or_future_custom_reimbursement_rule(offer)
+        assert not repository.has_active_or_future_custom_reimbursement_rule(offer_id=offer.id)
+
+    def test_active_rule_on_venue(self):
+        now = datetime.datetime.utcnow()
+        timespan = (now - datetime.timedelta(days=1), now + datetime.timedelta(days=1))
+        venue = offerers_factories.VenueFactory()
+        factories.CustomReimbursementRuleFactory(timespan=timespan, offer=None, venue=venue)
+        assert repository.has_active_or_future_custom_reimbursement_rule(venue_id=venue.id)
+        assert repository.has_active_or_future_custom_reimbursement_rule(offerer_id=venue.managingOffererId)
+
+    def test_future_rule_on_venue(self):
+        now = datetime.datetime.utcnow()
+        timespan = (now + datetime.timedelta(days=1), None)
+        venue = offerers_factories.VenueFactory()
+        factories.CustomReimbursementRuleFactory(timespan=timespan, offer=None, venue=venue)
+        assert repository.has_active_or_future_custom_reimbursement_rule(venue_id=venue.id)
+        assert repository.has_active_or_future_custom_reimbursement_rule(offerer_id=venue.managingOffererId)
+
+    def test_past_rule_on_venue(self):
+        now = datetime.datetime.utcnow()
+        timespan = (now - datetime.timedelta(days=2), now - datetime.timedelta(days=1))
+        venue = offerers_factories.VenueFactory()
+        factories.CustomReimbursementRuleFactory(timespan=timespan, offer=None, venue=venue)
+        assert not repository.has_active_or_future_custom_reimbursement_rule(venue_id=venue.id)
+        assert not repository.has_active_or_future_custom_reimbursement_rule(offerer_id=venue.managingOffererId)
+
+    def test_active_rule_on_offerer(self):
+        now = datetime.datetime.utcnow()
+        timespan = (now - datetime.timedelta(days=1), now + datetime.timedelta(days=1))
+        offerer = offerers_factories.OffererFactory()
+        factories.CustomReimbursementRuleFactory(timespan=timespan, offer=None, offerer=offerer)
+        assert repository.has_active_or_future_custom_reimbursement_rule(offerer_id=offerer.id)
+
+    def test_future_rule_on_offerer(self):
+        now = datetime.datetime.utcnow()
+        timespan = (now + datetime.timedelta(days=1), None)
+        offerer = offerers_factories.OffererFactory()
+        factories.CustomReimbursementRuleFactory(timespan=timespan, offer=None, offerer=offerer)
+        assert repository.has_active_or_future_custom_reimbursement_rule(offerer_id=offerer.id)
+
+    def test_past_rule_on_offerer(self):
+        now = datetime.datetime.utcnow()
+        timespan = (now - datetime.timedelta(days=2), now - datetime.timedelta(days=1))
+        offerer = offerers_factories.OffererFactory()
+        factories.CustomReimbursementRuleFactory(timespan=timespan, offer=None, offerer=offerer)
+        assert not repository.has_active_or_future_custom_reimbursement_rule(offerer_id=offerer.id)

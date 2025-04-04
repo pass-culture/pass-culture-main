@@ -61,8 +61,13 @@ def has_reimbursement(booking: bookings_models.Booking | educational_models.Coll
     return db.session.query(paid_pricings.exists()).scalar()
 
 
-def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -> bool:
-    """Return whether the offer is linked to a custom reimbursement rule
+def has_active_or_future_custom_reimbursement_rule(
+    *,
+    offer_id: int | None = None,
+    venue_id: int | None = None,
+    offerer_id: int | None = None,
+) -> bool:
+    """Return whether the offer or venue or offerer is linked to a custom reimbursement rule
     that is either active or future (but not past).
 
     Only reimbursement rules that are linked to this *specific* offer
@@ -70,13 +75,25 @@ def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -
     apply to subcategories of an offerer are ignored (because they
     define a *rate*).
     """
+    if sum(int(bool(obj_id)) for obj_id in (offer_id, venue_id, offerer_id)) != 1:
+        raise ValueError("One and only one of offer, venue or offerer is expected")
     now = datetime.datetime.utcnow()
     timespan = db_utils.make_timerange(start=now, end=None)
     query = models.CustomReimbursementRule.query.filter(
-        models.CustomReimbursementRule.offerId == offer.id,
         models.CustomReimbursementRule.timespan.overlaps(timespan),
-    ).exists()
-    return db.session.query(query).scalar()
+    )
+    if offer_id:
+        query = query.filter(models.CustomReimbursementRule.offerId == offer_id)
+    if venue_id:
+        query = query.filter(models.CustomReimbursementRule.venueId == venue_id)
+    if offerer_id:
+        query = query.outerjoin(models.CustomReimbursementRule.venue).filter(
+            sqla.or_(
+                models.CustomReimbursementRule.offererId == offerer_id,
+                offerers_models.Venue.managingOffererId == offerer_id,
+            )
+        )
+    return db.session.query(query.exists()).scalar()
 
 
 def get_invoices_by_references(references: list[str]) -> list[models.Invoice]:
