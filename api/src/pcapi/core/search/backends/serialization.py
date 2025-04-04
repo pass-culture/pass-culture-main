@@ -15,16 +15,15 @@ from pcapi.core.categories.app_search_tree import SEARCH_GROUPS
 from pcapi.core.categories.genres.music import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.core.categories.genres.music import TITELIVE_MUSIC_TYPES
 from pcapi.core.categories.models import SHOW_TYPES_LABEL_BY_CODE
+from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.academies import get_academy_from_department
-import pcapi.core.educational.api.offer as educational_api_offer
-import pcapi.core.educational.models as educational_models
-import pcapi.core.offerers.api as offerers_api
-import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offers.models as offers_models
+from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.utils import get_offer_address
 from pcapi.core.providers import titelive_gtl
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
-import pcapi.utils.date as date_utils
+from pcapi.utils import date as date_utils
 from pcapi.utils.regions import get_department_code_from_city_code
 from pcapi.utils.stopwords import STOPWORDS
 
@@ -370,16 +369,20 @@ class AlgoliaSerializationMixin:
         offerer = venue.managingOfferer
         date_created = collective_offer_template.dateCreated.timestamp()
 
-        department_code = venue.offererAddress.address.departmentCode if venue.offererAddress else None
-        if department_code is None:
-            # FIXME (dramelet, 03/02/2025): This can be safely removed once Venue table sanitized
-            # and location columns dropped
+        department_code: str | None
+        if venue.offererAddress is None:
+            # a venue linked to a collective offer should be a physical one (isVirtual=False) and have an offererAddress
+            logger.error("Found venue with id %s without offererAddress", venue.id)
+            department_code = None
+        else:
+            address = venue.offererAddress.address
+            department_code = address.departmentCode
 
-            # postalCode can’t be None at this point
-            assert venue.postalCode
-            department_code = get_department_code_from_city_code(venue.postalCode)
+            if department_code is None:
+                # Address.departmentCode is nullable, if None fallback to postalCode
+                department_code = get_department_code_from_city_code(address.postalCode)
 
-        latitude, longitude = educational_api_offer.get_offer_coordinates(collective_offer_template)
+        venue_latitude, venue_longitude = _get_venue_coordinates(venue)
 
         return {
             "objectID": _transform_collective_offer_template_id(collective_offer_template.id),
@@ -406,14 +409,14 @@ class AlgoliaSerializationMixin:
                 "name": offerer.name,
             },
             "venue": {
-                "academy": get_academy_from_department(department_code),
+                "academy": get_academy_from_department(department_code) if department_code is not None else None,
                 "departmentCode": department_code,
                 "id": venue.id,
                 "name": venue.name,
                 "publicName": venue.publicName,
                 "adageId": venue.adageId,
             },
-            "_geoloc": format_coordinates(latitude, longitude),
+            "_geoloc": format_coordinates(venue_latitude, venue_longitude),
             "isTemplate": True,
             "formats": [format.value for format in collective_offer_template.formats],
         }
@@ -434,6 +437,20 @@ def position(venue: offerers_models.Venue, offer: offers_models.Offer | None = N
         latitude = venue.latitude
         longitude = venue.longitude
     return format_coordinates(latitude, longitude)
+
+
+def _get_venue_coordinates(venue: offerers_models.Venue) -> tuple[decimal.Decimal, decimal.Decimal] | tuple[None, None]:
+    # we should return a coherent value: either latitude AND longitude or empty coordinates
+    if venue.offererAddress is not None:
+        latitude = venue.offererAddress.address.latitude
+        longitude = venue.offererAddress.address.longitude
+    else:
+        latitude, longitude = None, None
+
+    if not latitude or not longitude:
+        return (None, None)
+
+    return latitude, longitude
 
 
 def format_coordinates(latitude: Numeric | None, longitude: Numeric | None) -> dict[str, float]:
