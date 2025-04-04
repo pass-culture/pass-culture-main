@@ -351,10 +351,7 @@ def _get_collective_offers(
             )
             .outerjoin(
                 educational_models.EducationalYear,
-                sa.and_(
-                    educational_models.EducationalYear.adageId
-                    == educational_models.EducationalDeposit.educationalYearId,
-                ),
+                educational_models.EducationalYear.adageId == educational_models.EducationalDeposit.educationalYearId,
             )
             .outerjoin(
                 educational_models.EducationalInstitutionProgramAssociation,
@@ -376,12 +373,8 @@ def _get_collective_offers(
                         educational_models.EducationalYear.expirationDate,
                     ),
                     sa.orm.contains_eager(educational_models.EducationalInstitution.programAssociations)
-                    .joinedload(
-                        educational_models.EducationalInstitutionProgramAssociation.program,
-                    )
-                    .load_only(
-                        educational_models.EducationalInstitutionProgram.label,
-                    ),
+                    .joinedload(educational_models.EducationalInstitutionProgramAssociation.program)
+                    .load_only(educational_models.EducationalInstitutionProgram.label),
                 )
             )
         )

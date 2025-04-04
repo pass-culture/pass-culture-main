@@ -148,9 +148,9 @@
                   <td>
                     {% if deposit %}{{ deposit.ministry.value }}{% endif %}
                     {% if collective_offer.institution %}
-                      {% for program in collective_offer.institution.programs %}
+                      {% for program_association in collective_offer.institution.programAssociations %}
                         <br />
-                        {{ program.label }}
+                        {{ program_association.program.label }}
                       {% endfor %}
                     {% endif %}
                   </td>
