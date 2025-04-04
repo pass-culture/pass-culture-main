@@ -1371,6 +1371,12 @@ class UpdateFinanceEventPricingDateTest:
         newest_event = _generate_finance_event_context(
             pricing_point, datetime.datetime.utcnow() + datetime.timedelta(days=10), datetime.datetime.utcnow()
         )
+        ignored_event = _generate_finance_event_context(
+            pricing_point,
+            datetime.datetime.utcnow() + datetime.timedelta(days=12),
+            datetime.datetime.utcnow(),
+            status=models.FinanceEventStatus.NOT_TO_BE_PRICED,
+        )
 
         unrelated_event = _generate_finance_event_context(
             offerers_factories.VenueFactory(),
@@ -1404,11 +1410,16 @@ class UpdateFinanceEventPricingDateTest:
         assert unrelated_event.status == models.FinanceEventStatus.PRICED
         assert len(unrelated_event.pricings) == 1
 
+        assert ignored_event.pricingOrderingDate == datetime.datetime.utcnow() + datetime.timedelta(days=12)
+        assert ignored_event.status == models.FinanceEventStatus.NOT_TO_BE_PRICED
+        assert len(ignored_event.pricings) == 0
+
 
 def _generate_finance_event_context(
     pricing_point: offerers_models.Venue,
     stock_beginning_datetime: datetime.datetime,
     booking_date_used: datetime.datetime,
+    status: models.FinanceEventStatus = models.FinanceEventStatus.PRICED,
 ) -> models.FinanceEvent:
     venue = offerers_factories.VenueFactory(pricing_point=pricing_point)
     stock = offers_factories.EventStockFactory(
@@ -1420,7 +1431,7 @@ def _generate_finance_event_context(
     event = factories.FinanceEventFactory(
         booking=booking,
         pricingOrderingDate=stock.beginningDatetime,
-        status=models.FinanceEventStatus.PRICED,
+        status=status,
         venue=venue,
     )
     factories.PricingFactory(event=event, booking=event.booking)

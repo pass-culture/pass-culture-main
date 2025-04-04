@@ -848,6 +848,7 @@ def update_finance_event_pricing_date(stock: offers_models.Stock) -> None:
     )
     finance_events_from_stock = (
         finance_events_from_pricing_point.filter(models.FinanceEvent.bookingId.in_(bookings_of_this_stock))
+        .filter(models.FinanceEvent.status != models.FinanceEventStatus.NOT_TO_BE_PRICED)
         .order_by(models.FinanceEvent.pricingOrderingDate)
         .all()
     )
