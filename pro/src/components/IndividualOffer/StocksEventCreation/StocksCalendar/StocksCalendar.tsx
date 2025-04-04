@@ -5,6 +5,7 @@ import { api } from 'apiClient/api'
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { GET_STOCKS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useNotification } from 'commons/hooks/useNotification'
+import { pluralize } from 'commons/utils/pluralize'
 import fullMoreIcon from 'icons/full-more.svg'
 import strokeAddCalendarIcon from 'icons/stroke-add-calendar.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -13,8 +14,11 @@ import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import { StocksTableFilters, StocksTableSort } from '../form/types'
+
 import styles from './StocksCalendar.module.scss'
 import { StocksCalendarActionsBar } from './StocksCalendarActionsBar/StocksCalendarActionsBar'
+import { StocksCalendarFilters } from './StocksCalendarFilters/StocksCalendarFilters'
 import { StocksCalendarForm } from './StocksCalendarForm/StocksCalendarForm'
 import { StocksCalendarTable } from './StocksCalendarTable/StocksCalendarTable'
 
@@ -32,18 +36,28 @@ export function StocksCalendar({
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [checkedStocks, setCheckedStocks] = useState(new Set<number>())
+  const [appliedFilters, setAppliedFilters] = useState<StocksTableFilters>({})
+  const [appliedSort, setAppliedSort] = useState<StocksTableSort>({})
   const notify = useNotification()
 
+  const queryKeys: [
+    string,
+    number,
+    number,
+    StocksTableFilters,
+    StocksTableSort,
+  ] = [GET_STOCKS_QUERY_KEY, offer.id, page, appliedFilters, appliedSort]
+
   const { data, isLoading } = useSWR(
-    [GET_STOCKS_QUERY_KEY, offer.id, page],
-    ([, offerId, pageNum]) =>
+    queryKeys,
+    ([, offerId, pageNum, filters, sortType]) =>
       api.getStocks(
         offerId,
-        null,
-        null,
-        null,
-        undefined,
-        undefined,
+        filters.date || undefined,
+        filters.time || undefined,
+        filters.priceCategoryId ? Number(filters.priceCategoryId) : undefined,
+        sortType.sort,
+        sortType.orderByDesc,
         pageNum || 1,
         STOCKS_PER_PAGE
       ),
@@ -74,7 +88,7 @@ export function StocksCalendar({
         ? 'Une date a été supprimée'
         : `${ids.length} dates ont été supprimées`
     )
-    await mutate([GET_STOCKS_QUERY_KEY, offer.id, page])
+    await mutate(queryKeys)
   }
 
   const stocks = data?.stocks || []
@@ -94,7 +108,7 @@ export function StocksCalendar({
       <StocksCalendarForm
         offer={offer}
         onAfterValidate={async () => {
-          await mutate([GET_STOCKS_QUERY_KEY, offer.id, page], data, {
+          await mutate(queryKeys, data, {
             revalidate: true,
           })
 
@@ -112,10 +126,31 @@ export function StocksCalendar({
           getDialogBuilderButton('Ajouter une ou plusieurs dates')}
       </div>
 
-      {isLoading && <Spinner className={styles['spinner']} />}
+      {isLoading && !data?.hasStocks && (
+        <Spinner className={styles['spinner']} />
+      )}
 
       {data?.hasStocks && (
         <div className={styles['content']}>
+          <div className={styles['filters']}>
+            <StocksCalendarFilters
+              priceCategories={offer.priceCategories}
+              filters={appliedFilters}
+              sortType={appliedSort}
+              onUpdateFilters={setAppliedFilters}
+              onUpdateSort={(sort, desc) => {
+                setAppliedSort({
+                  sort: sort ? sort : undefined,
+                  orderByDesc: desc,
+                })
+              }}
+            />
+          </div>
+          {data.stockCount > 0 && (
+            <div className={styles['count']}>
+              {pluralize(data.stockCount, 'date')}
+            </div>
+          )}
           <StocksCalendarTable
             stocks={stocks}
             offer={offer}
