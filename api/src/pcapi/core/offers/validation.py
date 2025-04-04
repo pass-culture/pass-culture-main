@@ -3,7 +3,6 @@ import decimal
 from io import BytesIO
 import logging
 import re
-import typing
 import warnings
 
 from PIL import Image
@@ -18,7 +17,6 @@ from pcapi.core.categories.genres import music
 from pcapi.core.categories.genres import show
 from pcapi.core.categories.subcategories import ExtraDataFieldEnum
 from pcapi.core.educational import models as educational_models
-import pcapi.core.educational.api.national_program as np_api
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.schemas import VenueTypeCode
@@ -852,50 +850,6 @@ def check_for_duplicated_price_categories(
 class OfferValidationError(Exception):
     field = "all"
     msg = "Invalid"
-
-
-class UnknownNationalProgram(OfferValidationError):
-    field = "national_program"
-    msg = "National program unknown"
-
-
-class InactiveNationalProgram(OfferValidationError):
-    field = "national_program"
-    msg = "National program inactive"
-
-
-class IllegalNationalProgram(OfferValidationError):
-    field = "national_program"
-    msg = "National program known, but can't be used in this context"
-
-
-class MissingDomains(OfferValidationError):
-    field = "domains"
-    msg = "Domains can't be null if national program is set"
-
-
-def validate_national_program(
-    national_program_id: int | None,
-    domains: typing.Sequence[educational_models.EducationalDomain] | None,
-    check_program_is_active: bool = True,
-) -> None:
-    if not national_program_id:
-        return
-
-    if not domains:
-        raise MissingDomains()
-
-    national_program = np_api.get_national_program(national_program_id)
-
-    if not national_program:
-        raise UnknownNationalProgram()
-
-    if check_program_is_active and not national_program.isActive:
-        raise InactiveNationalProgram()
-
-    valid_national_program_ids = {np.id for domain in domains for np in domain.nationalPrograms}
-    if national_program_id not in valid_national_program_ids:
-        raise IllegalNationalProgram()
 
 
 def check_offerer_is_eligible_for_headline_offers(offerer_id: int) -> None:

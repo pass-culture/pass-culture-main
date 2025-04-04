@@ -440,7 +440,17 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
-        assert "domains" in response.json
+        assert response.json == {"domains": ["Domaine scolaire non trouvé."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_unknown_national_program(self, public_client, payload):
+        payload["nationalProgramId"] = -1
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 404
+        assert response.json == {"nationalProgramId": ["Dispositif national non trouvé."]}
 
     @time_machine.travel(time_travel_str)
     def test_national_program_not_linked_to_domains(self, public_client, payload):
@@ -450,7 +460,17 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
-        assert "national_program" in response.json
+        assert response.json == {"nationalProgramId": ["Dispositif national non valide."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_national_program_inactive(self, public_client, payload):
+        payload["nationalProgramId"] = educational_factories.NationalProgramFactory(isActive=False).id
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"nationalProgramId": ["Dispositif national inactif."]}
 
     @time_machine.travel(time_travel_str)
     def test_invalid_offer_venue(self, public_client, payload, venue):

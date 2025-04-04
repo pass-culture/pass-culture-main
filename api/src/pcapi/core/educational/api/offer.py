@@ -373,7 +373,7 @@ def create_collective_offer_template(
     db.session.flush()
 
     if offer_data.nationalProgramId:
-        offer_validation.validate_national_program(
+        validation.validate_national_program(
             national_program_id=offer_data.nationalProgramId, domains=educational_domains
         )
         national_program_api.link_or_unlink_offer_to_program(offer_data.nationalProgramId, collective_offer_template)
@@ -437,10 +437,8 @@ def create_collective_offer(
     national_program_id = offer_data.nationalProgramId
     if national_program_id is not None:
         try:
-            offer_validation.validate_national_program(
-                national_program_id=national_program_id, domains=educational_domains
-            )
-        except (offer_validation.InactiveNationalProgram, offer_validation.IllegalNationalProgram):
+            validation.validate_national_program(national_program_id=national_program_id, domains=educational_domains)
+        except (exceptions.InactiveNationalProgram, exceptions.IllegalNationalProgram):
             if offer_data.template_id is not None:
                 # original offer template may have invalid national_program, in this case we set program to None
                 national_program_id = None
@@ -591,7 +589,7 @@ def create_collective_offer_public(
     educational_domains = educational_repository.get_educational_domains_from_ids(body.domains)
 
     if feature.FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API.is_active():
-        offer_validation.validate_national_program(body.nationalProgramId, educational_domains)
+        validation.validate_national_program(body.nationalProgramId, educational_domains)
 
     if len(educational_domains) != len(body.domains):
         raise exceptions.EducationalDomainsNotFound()
@@ -766,7 +764,7 @@ def edit_collective_offer_public(
                 raise exceptions.EducationalDomainsNotFound()
 
             if feature.FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API.is_active():
-                offer_validation.validate_national_program(
+                validation.validate_national_program(
                     national_program_id=new_values.get("nationalProgramId"),
                     domains=domains,
                     check_program_is_active=False,  # do not check if program is active so that existing offers with inactive program can still be patched
@@ -894,14 +892,8 @@ def duplicate_offer_and_stock(
     # original offer may have invalid national_program or domains, in this case we do not copy it
     national_program_id = original_offer.nationalProgramId
     try:
-        offer_validation.validate_national_program(
-            national_program_id=national_program_id, domains=original_offer.domains
-        )
-    except (
-        offer_validation.MissingDomains,
-        offer_validation.InactiveNationalProgram,
-        offer_validation.IllegalNationalProgram,
-    ):
+        validation.validate_national_program(national_program_id=national_program_id, domains=original_offer.domains)
+    except (exceptions.MissingDomains, exceptions.InactiveNationalProgram, exceptions.IllegalNationalProgram):
         national_program_id = None
 
     offer = educational_models.CollectiveOffer(
@@ -1385,7 +1377,7 @@ def _update_collective_offer(
         program_id_to_check = national_program_id
 
     if edit_domains or edit_national_program:
-        offer_validation.validate_national_program(national_program_id=program_id_to_check, domains=domains_to_check)
+        validation.validate_national_program(national_program_id=program_id_to_check, domains=domains_to_check)
 
     # check offerVenue
     edit_offer_venue = "offerVenue" in new_values
