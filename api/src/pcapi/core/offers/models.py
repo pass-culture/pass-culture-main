@@ -127,7 +127,8 @@ class OfferExtraData(typing.TypedDict, total=False):
     langueiso: str | None
 
 
-class TiteliveImageType(enum.Enum):
+class ImageType(enum.Enum):
+    POSTER = "POSTER"
     RECTO = "recto"
     VERSO = "verso"
 
@@ -136,7 +137,7 @@ class ProductMediation(PcObject, Base, Model):
     __tablename__ = "product_mediation"
 
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
-    imageType = sa.Column(sa.Enum(TiteliveImageType), nullable=False)
+    imageType = sa.Column(db_utils.MagicEnum(ImageType), nullable=False)
     lastProviderId = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
     lastProvider: "Provider|None" = sa.orm.relationship("Provider", foreign_keys=[lastProviderId])
     productId: int = sa.Column(
@@ -204,12 +205,9 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     def images(self) -> dict[str, str | None]:
         if self.productMediations:
             return {
-                "recto": next(
-                    (pm.url for pm in self.productMediations if pm.imageType == TiteliveImageType.RECTO), None
-                ),
-                "verso": next(
-                    (pm.url for pm in self.productMediations if pm.imageType == TiteliveImageType.VERSO), None
-                ),
+                "poster": next((pm.url for pm in self.productMediations if pm.imageType == ImageType.POSTER), None),
+                "recto": next((pm.url for pm in self.productMediations if pm.imageType == ImageType.RECTO), None),
+                "verso": next((pm.url for pm in self.productMediations if pm.imageType == ImageType.VERSO), None),
             }
         return {"recto": self.thumbUrl}
 
@@ -999,6 +997,8 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         if product_images is None:
             return None
         images = {}
+        if product_images.get("poster"):
+            images["poster"] = OfferImage(product_images.get("poster"), credit=None)
         if product_images.get("recto"):
             images["recto"] = OfferImage(product_images.get("recto"), credit=None)
         if product_images.get("verso"):
@@ -1010,7 +1010,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     @property
     def image(self) -> OfferImage | None:
         if self.images:
-            return self.images.get("recto") if self.images.get("recto") else self.images.get("verso")
+            return self.images.get("poster") or self.images.get("recto") or self.images.get("verso")
         return None
 
     @property
