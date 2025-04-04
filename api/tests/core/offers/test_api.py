@@ -4550,7 +4550,7 @@ class CreateMovieProductFromProviderTest:
         assert product.idAtProviders == "idAllocine"
         assert product.extraData == {"allocineId": 12345, "title": "Mon vieux film"}
 
-    def test_handles_coexisting_incomplete_movies(self):
+    def test_handles_coexisting_incomplete_movies(self, caplog):
         # Given
         boost_product = factories.ProductFactory(
             idAtProviders="idBoost",
@@ -4569,9 +4569,11 @@ class CreateMovieProductFromProviderTest:
         movie = self._get_movie(allocine_id="12345", visa="54321")
 
         # When
-        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocineProducts")
+        with caplog.at_level(logging.INFO):
+            api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocineProducts")
 
         # Then
+        assert caplog.records[0].extra == {"allocine_id": "12345", "visa": "54321"}
         assert offer.product == allocine_product
         assert reaction.product == allocine_product
         assert models.ProductMediation.query.filter(models.ProductMediation.productId == boost_product_id).count() == 0

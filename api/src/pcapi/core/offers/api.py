@@ -2028,10 +2028,15 @@ def upsert_movie_product_from_provider(
             and existing_product_with_visa
             and existing_product_with_allocine_id.id != existing_product_with_visa.id
         ):
+            logger.info(
+                "Merging movie products %d (to keep) and %d (to delete)",
+                existing_product_with_allocine_id.id,
+                existing_product_with_visa.id,
+                extra={"allocine_id": movie.allocine_id, "visa": movie.visa},
+            )
             existing_product = offers_repository.merge_products(
                 existing_product_with_allocine_id, existing_product_with_visa
             )
-
         if existing_product:
             if _is_allocine(provider.id) or provider.id == existing_product.lastProviderId:
                 _update_movie_product(existing_product, movie, provider.id, id_at_providers)
