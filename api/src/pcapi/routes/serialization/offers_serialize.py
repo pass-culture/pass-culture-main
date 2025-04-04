@@ -610,22 +610,3 @@ class GetProductInformations(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         orm_mode = True
-
-
-class EventTimespan(BaseModel):
-    timeSpan: list[conlist[time, min_length=2, max_length=2]]
-
-    @validator("timeSpan")
-    def validate_timespans(cls, time_spans: list[list[time]]) -> list[list[time]]:
-        if not time_spans:
-            return time_spans
-
-        for hours in time_spans:
-            if hours[0] >= hours[1]:
-                raise ValueError(f"Event time span error: start after end: {hours[0]}, {hours[1]}")
-
-
-class UpdateEventOpeningHoursBody(BaseModel):
-    startDatetime: datetime | None
-    endDatetime: datetime | None
-    weekDayOpeningHours = dict[typing.Literal[models.Weekday], EventTimespan] | None

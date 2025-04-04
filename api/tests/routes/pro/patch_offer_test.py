@@ -1,3 +1,4 @@
+from datetime import timedelta
 from datetime import datetime
 from decimal import Decimal
 from unittest.mock import patch
@@ -20,6 +21,7 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -1123,3 +1125,92 @@ class Returns404Test:
 
         # then
         assert response.status_code == 404
+
+
+@pytest.fixture(name="user_offerer")
+def user_offerer_fixture():
+    return offerers_factories.UserOffererFactory(user__email="user@example.com")
+
+
+@pytest.fixture(name="offerer")
+def offerer_fixture(user_offerer):
+    return user_offerer.offerer
+
+
+@pytest.fixture(name="user")
+def user_fixture(user_offerer):
+    return user_offerer.user
+
+
+@pytest.fixture(name="venue")
+def venue_fixture(offerer):
+    return offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+
+@pytest.fixture(name="event_opening_hours")
+def event_opening_hours_fixture(venue):
+    return offers_factories.EventOpeningHoursFactory(
+        offer__venue=venue,
+        offer__subcategoryId=subcategories.VISITE.id
+    )
+
+
+@pytest.fixture(name="auth_client")
+def auth_client_fixture(client, user):
+    return client.with_session_auth(user.email)
+
+
+def base_opening_hours():
+    return {
+        "MONDAY": [],
+        "TUESDAY": [],
+        "WEDNESDAY": [],
+        "THURSDAY": [],
+        "FRIDAY": [],
+        "SATURDAY": [],
+        "SUNDAY": [],
+    }
+
+
+class UpdateEventOpeningHoursTest:
+    endpoint = "/offers/{offer_id}/event_opening_hours/{event_opening_hour_id}"
+
+    def test_update_start_date(self, auth_client, event_opening_hours):
+        new_start_date = event_opening_hours.startDatetime + timedelta(days=2)
+        data = {"startDatetime": new_start_date.isoformat()}
+
+        offer = event_opening_hours.offer
+        url = self.endpoint.format(offer_id=offer.id, event_opening_hour_id=event_opening_hours.id)
+
+        response = auth_client.patch(url, json=data)
+        assert response.status_code == 204
+
+        db.session.refresh(event_opening_hours)
+        assert event_opening_hours.startDatetime == new_start_date
+
+    def test_update_end_date(self, auth_client, event_opening_hours):
+        new_end_date = event_opening_hours.endDatetime + timedelta(days=2)
+        data = {"endDatetime": new_end_date.isoformat()}
+
+        offer = event_opening_hours.offer
+        url = self.endpoint.format(offer_id=offer.id, event_opening_hour_id=event_opening_hours.id)
+
+        response = auth_client.patch(url, json=data)
+        assert response.status_code == 204
+
+        db.session.refresh(event_opening_hours)
+        assert event_opening_hours.endDatetime == new_end_date
+
+    def test_update_weekday_opening_hours(self, auth_client, event_opening_hours):
+        new_opening_hours = {**base_opening_hours(), "MONDAY": [["10:00", "19:00"]]}
+        data = {"openingHours": new_opening_hours}
+
+        offer = event_opening_hours.offer
+        url = self.endpoint.format(offer_id=offer.id, event_opening_hour_id=event_opening_hours.id)
+
+        breakpoint()
+        response = auth_client.patch(url, json=data)
+        assert response.status_code == 204
+
+        db.session.refresh(event_opening_hours)
+        breakpoint()
+        monday_hours = next(oh for oh in event_opening_hours.weekDayOpeningHours if oh.weekday == offers_models.Weekday.MONDAY)

@@ -14,13 +14,15 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.api as offerers_api
+
+# from pcapi.core.offers.validation import check_for_duplicated_price_categories
+# from pcapi.core.offers.validation import check_product_cgu_and_offerer
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import schemas as offers_schemas
+from pcapi.core.offers import validation
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
-from pcapi.core.offers.validation import check_for_duplicated_price_categories
-from pcapi.core.offers.validation import check_product_cgu_and_offerer
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -586,7 +588,7 @@ def post_price_categories(
     ]
 
     new_labels_and_prices = {(p.label, p.price) for p in price_categories_to_create}
-    check_for_duplicated_price_categories(new_labels_and_prices, offer_id)
+    validation.check_for_duplicated_price_categories(new_labels_and_prices, offer_id)
 
     offer = _get_offer_for_price_categories_upsert(offer_id, price_categories_to_edit)
     if not offer:
@@ -693,26 +695,29 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
         )
         .one_or_none()
     )
-    check_product_cgu_and_offerer(product, ean, offerer)
+    validation.check_product_cgu_and_offerer(product, ean, offerer)
     return offers_serialize.GetProductInformations.from_orm(product=product)
 
 
 @private_api.route("/offers/<int:offer_id>/event_opening_hours/<int:event_opening_hours_id>", methods=["PATCH"])
 @login_required
-@spectree_serialize(
-    # response_model=offers_serialize.,
-    api=blueprint.pro_private_schema,
-)
+@spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
 @atomic()
 def update_event_opening_hours(
-    offer_id: int, event_opening_hours_id: int, body: offers_serialize.UpdateEventOpeningHoursBody
+    offer_id: int, event_opening_hours_id: int, body: offers_schemas.UpdateEventOpeningHoursModel
 ) -> None:
     offer = models.Offer.query.get_or_404(offer_id)
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    opening_hours = models.EventOpeningHours.query.options(
-        sa_orm.selectinload(models.EventOpeningHours.weekDayOpeningHours)
-    ).get_or_404(event_opening_hours_id)
+    opening_hours = (
+        models.EventOpeningHours.query.filter(models.EventOpeningHours.offerId == offer_id)
+        .options(sa_orm.selectinload(models.EventOpeningHours.weekDayOpeningHours))
+        .get_or_404(event_opening_hours_id)
+    )
 
-    validation.validate_event_opening_hours_can_be_updated(offer, opening_hours, body)
+    try:
+        validation.validate_event_opening_hours_can_be_updated(opening_hours, body)
+    except validation.EventOpeningHoursError as error:
+        raise api_errors.ApiErrors(errors={error.field: [error.msg]}, status_code=400)
+
     offers_api.update_event_opening_hours(opening_hours, body)

@@ -25,6 +25,7 @@ from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
+from pcapi.core.offers import schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
@@ -929,61 +930,82 @@ def check_offer_is_eligible_to_be_headline(offer: models.Offer) -> None:
 
 
 class EventOpeningHoursError(Exception):
+    field = "global"
     msg = "event opening hours error"
 
 
-class EventOpeningHoursDoesNotBelongToOfferError(EventOpeningHoursError):
-    msg = "event opening hours does not belong to offer"
-
-
 class EventOpeningHoursIsSoftDeleted(EventOpeningHoursError):
+    field = "event"
     msg = "event opening hours has been deleted"
 
 
 class EventOpeningHoursHasBegun(EventOpeningHoursError):
+    field = "event.startDatetime"
     msg = "event opening hours cannot be updated: event has begun"
 
 
-class EventOpeningHoursNewStartBeforeEnd(EventOpeningHoursError):
+class EventOpeningHoursNewStartAfterEnd(EventOpeningHoursError):
+    field = "event.startDatetime"
     msg = "event opening hours cannot be updated: cannot start after ending (start date update)"
 
 
 class EventOpeningHoursStartsTooSoon(EventOpeningHoursError):
+    field = "event.startDatetime"
     msg = "event opening hours cannot be updated: new start is too soon (too close to current end)"
 
 
 class EventOpeningHoursEndPassed(EventOpeningHoursError):
+    field = "event.endDatetime"
     msg = "event opening hours cannot be updated: end date has already passed (end date update)"
 
 
-class EventOpeningHoursStartsTooSoon(EventOpeningHoursError):
+class EventOpeningHoursEndsTooSoon(EventOpeningHoursError):
+    field = "event.endDatetime"
     msg = "event opening hours cannot be updated: new end is too soon"
 
 
-def validate_event_opening_hours_can_be_updated(offer: models.Offer, opening_hours: models.EventOpeningHours, body: serialize.UpdateEventOpeningHoursBody) -> None:
-    now = datetime.datetime.now(datetime.timezone.utc)
+def validate_event_opening_hours_can_be_updated(
+    opening_hours: models.EventOpeningHours, body: schemas.UpdateEventOpeningHoursModel
+) -> None:
+    """Check that an event opening hours can be updated, meaning:
+    * the opening hours to be updated is not (soft) deleted
+    * the new start date can't be in the past
+    * the new start date can't be after the end date (current or old)
+    * the new start date can't be too close (less than 48 hours - because
+      users must still be able to cancel)
+    * the new end date can't be in the past
+    * the new end date can't less than 48 hours from now (same as above)
+    """
+    def _ensure_datetime_has_tz(dt: datetime.datetime | None) -> datetime.datetime | None:
+        return dt.replace(tzinfo=datetime.timezone.utc) if dt and not dt.tzinfo else dt
+
+    now = datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
     two_days_from_now = now + datetime.timedelta(hours=48)
 
+    current_end = _ensure_datetime_has_tz(opening_hours.endDatetime)
+
     # TODO(jbaudet-pass/cnormant-pass): add creation validations
-    if opening_hours.offerId != offer.id:
-        raise EventOpeningHoursDoesNotBelongToOfferError()
 
     if opening_hours.isSoftDeleted:
         raise EventOpeningHoursIsSoftDeleted()
 
     if body.startDatetime:
+        assert body.startDatetime
+
         if body.startDatetime <= now:
             raise EventOpeningHoursHasBegun()
 
-        if not body.endDatetime and body.startDatetime >= opening_hours.endDatetime:
-            raise EventOpeningHoursNewStartBeforeEnd()
-
-        has_end_date_and_is_not_updated = not body.endDatetime and opening_hours.endDatetime
-        if has_end_date_and_is_not_updated and body.startDatetime <= two_days_from_now:
+        if body.startDatetime <= two_days_from_now:
             raise EventOpeningHoursStartsTooSoon()
 
+        new_start_date_after_current_end = current_end and body.startDatetime >= current_end
+        if not body.endDatetime and new_start_date_after_current_end:
+            raise EventOpeningHoursNewStartAfterEnd()
+
     if body.endDatetime:
-        if opening_hours.endDatetime <= now:
+        assert body.endDatetime
+
+        if current_end and current_end <= now:
             raise EventOpeningHoursEndPassed()
 
         if body.endDatetime <= two_days_from_now:

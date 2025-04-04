@@ -2,9 +2,9 @@ import datetime
 import typing
 
 from psycopg2.extras import NumericRange
-from pydantic.v1 import EmailStr
 from pydantic.v1 import ConstrainedList
 from pydantic.v1 import ConstrainedStr
+from pydantic.v1 import EmailStr
 from pydantic.v1 import HttpUrl
 from pydantic.v1 import validator
 
@@ -13,10 +13,8 @@ from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
-from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 from pcapi.utils.date import time_to_int
-
-from .validation import check_offer_subcategory_is_valid
+from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
 
 class HourType(ConstrainedStr):
@@ -42,13 +40,13 @@ def _convert_to_numeric_ranges(time_spans: list[list[str]]) -> list[NumericRange
         return [NumericRange(time_to_int(start), time_to_int(end), "[]")]
 
     if len(time_spans) == 2:
-        start1, end1 = time_spans[0]
-        start2, end2 = time_spans[1]
+        raw_start1, raw_end1 = time_spans[0]
+        raw_start2, raw_end2 = time_spans[1]
 
-        start1 = time_to_int(start1)
-        end1 = time_to_int(end1)
-        start2 = time_to_int(start2)
-        end2 = time_to_int(end2)
+        start1 = time_to_int(raw_start1)
+        end1 = time_to_int(raw_end1)
+        start2 = time_to_int(raw_start2)
+        end2 = time_to_int(raw_end2)
 
         if (start2 <= start1 <= end2) or (start2 <= end1 <= end2):
             raise ValueError("Time spans overlaps")
@@ -105,6 +103,26 @@ class CreateEventOpeningHoursModel(BaseModel):
     openingHours: OpeningHoursModel
 
 
+def _format_datetime_tzinfo(dt: datetime.datetime | None) -> datetime.datetime | None:
+    if dt and not dt.tzinfo:
+        return dt.replace(tzinfo=datetime.timezone.utc)
+    return dt
+
+
+class UpdateEventOpeningHoursModel(BaseModel):
+    startDatetime: datetime.datetime | None
+    endDatetime: datetime.datetime | None
+    openingHours: OpeningHoursModel | None
+
+    @validator("startDatetime")
+    def validate_start_datetime(cls, start_datetime: datetime.datetime | None) -> datetime.datetime | None:
+        return _format_datetime_tzinfo(start_datetime)
+
+    @validator("endDatetime")
+    def validate_end_datetime(cls, end_datetime: datetime.datetime | None) -> datetime.datetime | None:
+        return _format_datetime_tzinfo(end_datetime)
+
+
 class PostDraftOfferBodyModel(BaseModel):
     name: str
     subcategory_id: str
@@ -140,6 +158,8 @@ class PatchDraftOfferBodyModel(BaseModel):
 
     @validator("subcategory_id", pre=True)
     def validate_subcategory_id(cls, subcategory_id: str, values: dict) -> str:
+        from .validation import check_offer_subcategory_is_valid
+
         check_offer_subcategory_is_valid(subcategory_id)
         return subcategory_id
 
