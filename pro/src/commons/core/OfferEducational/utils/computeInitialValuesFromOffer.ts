@@ -131,20 +131,24 @@ export const computeInitialValuesFromOffer = (
     }
   }
 
+  const isVenueAddress =
+    offer.location?.address?.id_oa === defaultVenue?.address?.id_oa
   const offerLocationFromOffer = {
     locationType:
       offer.location?.locationType ??
       DEFAULT_EAC_FORM_VALUES.location.locationType,
     address: {
-      isVenueAddress:
-        offer.location?.address?.id_oa === defaultVenue?.address?.id_oa,
+      isVenueAddress,
       city: offer.location?.address?.city ?? '',
       latitude: offer.location?.address?.latitude ?? '',
       longitude: offer.location?.address?.longitude ?? '',
       postalCode: offer.location?.address?.postalCode ?? '',
       street: offer.location?.address?.street ?? '',
+      label: offer.location?.address?.label ?? '',
     },
-    id_oa: offer.location?.address?.id_oa.toString(),
+    id_oa: isVenueAddress
+      ? offer.location?.address?.id_oa.toString()
+      : 'SPECIFIC_ADDRESS',
   }
 
   const participants = {
@@ -189,9 +193,11 @@ export const computeInitialValuesFromOffer = (
       // If the venue's OA selected at step 1 is the same than the one we have saved in offer draft,
       // then set this OA id in formik field (so it will be checked by default)
       // Else, we can assume it's an "other" address
-      offer.location?.address?.id_oa === defaultVenue?.address?.id_oa
-        ? offerLocationFromVenue
-        : offerLocationFromOffer,
+      isVenueAddress ? offerLocationFromVenue : offerLocationFromOffer,
+    addressAutocomplete: isVenueAddress
+      ? ''
+      : `${offerLocationFromOffer.address.street} ${offerLocationFromOffer.address.postalCode} ${offerLocationFromOffer.address.city}`,
+    'search-addressAutocomplete': `${offerLocationFromOffer.address.street} ${offerLocationFromOffer.address.postalCode} ${offerLocationFromOffer.address.city}`,
     priceDetail:
       isCollectiveOfferTemplate(offer) && offer.educationalPriceDetail
         ? offer.educationalPriceDetail

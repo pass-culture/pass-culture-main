@@ -84,12 +84,6 @@ export const AddressSelect = ({
     // False positive, eslint disable can be removed when noUncheckedIndexedAccess is enabled in TS config
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (addressesMap[searchField.value] !== undefined) {
-      handleAddressSelect(
-        setFieldValue,
-        addressesMap[searchField.value],
-        searchField
-      )
-
       addressSelectHandler(
         setFieldValue,
         addressesMap[searchField.value],

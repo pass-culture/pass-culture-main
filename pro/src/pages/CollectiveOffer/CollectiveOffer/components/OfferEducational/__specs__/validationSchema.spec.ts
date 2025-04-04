@@ -50,6 +50,8 @@ const defaultValues: OfferEducationalFormValues = {
     phone: false,
   },
   interventionArea: ['45'],
+  'search-addressAutocomplete': '',
+  addressAutocomplete: '',
 }
 
 describe('validationSchema OfferEducational', () => {

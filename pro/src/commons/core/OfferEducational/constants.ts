@@ -19,10 +19,22 @@ export const DEFAULT_EAC_FORM_VALUES: OfferEducationalFormValues = {
     otherAddress: '',
     venueId: 0,
   },
+  // ----------------------------- //
   location: {
     locationType: CollectiveLocationType.ADDRESS,
     id_oa: '',
+    address: {
+      label: '',
+      latitude: '',
+      longitude: '',
+      city: '',
+      postalCode: '',
+      street: '',
+    },
   },
+  'search-addressAutocomplete': '',
+  addressAutocomplete: '',
+  // ----------------------------- //
   interventionArea: [],
   participants: {
     ...buildStudentLevelsMapWithDefaultValue(false),
