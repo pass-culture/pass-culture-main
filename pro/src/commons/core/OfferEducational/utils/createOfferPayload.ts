@@ -4,7 +4,6 @@ import {
   PostCollectiveOfferTemplateBodyModel,
   PostCollectiveOfferBodyModel,
   OfferContactFormEnum,
-  CollectiveLocationType,
 } from 'apiClient/v1'
 import {
   formatBrowserTimezonedDateAsUTC,
@@ -76,8 +75,7 @@ function getCommonOfferPayload(
         }),
     domains: offer.domains.map((domainIdString) => Number(domainIdString)),
     interventionArea:
-      offer.eventAddress.addressType === OfferAddressType.OFFERER_VENUE ||
-      offer.location.locationType === CollectiveLocationType.ADDRESS
+      offer.eventAddress.addressType === OfferAddressType.OFFERER_VENUE
         ? []
         : offer.interventionArea,
     nationalProgramId: Number(offer.nationalProgramId),
