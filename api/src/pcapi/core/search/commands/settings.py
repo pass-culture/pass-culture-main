@@ -73,18 +73,19 @@ def _set_settings(index: SearchIndex, path: str, dry: bool = True) -> list[str]:
     outputs = []
 
     if dry:
-        outputs.append(f"settings wil be read from {path}")
+        outputs.append(f"settings will be read from {path}")
         outputs.append(f"settings will be applied to {index.name} Algolia index")
 
-    else:
-        old_settings = index.get_settings()
-        with open(path, "r", encoding="utf-8") as fp:
-            new_settings = json.load(fp)
+    old_settings = index.get_settings()
+    with open(path, "r", encoding="utf-8") as fp:
+        new_settings = json.load(fp)
 
-        diff = _get_dict_diff(old_settings, new_settings)
-        outputs.append(diff)
+    diff = _get_dict_diff(old_settings, new_settings)
+    outputs.append(diff)
 
+    if not dry:
         index.set_settings(new_settings)
+
     return outputs
 
 
