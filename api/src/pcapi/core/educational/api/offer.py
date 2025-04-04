@@ -1322,11 +1322,15 @@ def update_collective_offer_template(
 
     if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
         new_venue = offerers_api.get_venue_by_id(new_values["venueId"])
+
         if not new_venue:
             raise exceptions.VenueIdDontExist()
+
         offerer = offerers_repository.get_by_collective_offer_template_id(offer_to_update.id)
         if new_venue.managingOffererId != offerer.id:
             raise exceptions.OffererOfVenueDontMatchOfferer()
+
+        offer_to_update.venue = new_venue
 
     if "dates" in new_values:
         dates = new_values.pop("dates", None)
@@ -1404,7 +1408,7 @@ def _update_collective_offer(
             location_comment=location_body.locationComment,
             offerer_address=offerer_address,
             is_venue_address=location_body.address.isVenueAddress if location_body.address is not None else False,
-            venue_id=offer.venueId,
+            venue_id=offer.venue.id,
         )
         new_values["offerVenue"] = offer_venue
 
