@@ -498,6 +498,14 @@ def _get_offers_by_ids(
         .scalar_subquery()
     )
 
+    offer_min_booking_limit_date = (
+        sa.select(sa.func.min(offers_models.Stock.bookingLimitDatetime).cast(sa.Date))
+        .select_from(offers_models.Stock)
+        .filter(offers_models.Stock.offerId == offers_models.Offer.id)
+        .correlate(offers_models.Offer)
+        .scalar_subquery()
+    )
+
     # Aggregate tags as an array of names returned in a single row (joinedload would fetch 1 result row per tag)
     tags_subquery = (
         (
@@ -518,6 +526,7 @@ def _get_offers_by_ids(
             booked_quantity_subquery.label("booked_quantity"),
             remaining_quantity_case.label("remaining_quantity"),
             offer_event_dates.label("offer_event_dates"),
+            offer_min_booking_limit_date.label("offer_min_booking_limit_date"),
             tags_subquery.label("tags"),
             rules_subquery.label("rules"),
             min_max_prices_subquery.label("prices"),
