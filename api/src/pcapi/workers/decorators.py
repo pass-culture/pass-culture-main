@@ -31,7 +31,7 @@ def job(queue: Queue) -> typing.Callable:
 
             start = time.perf_counter()
             started_at = current_job.started_at.replace(tzinfo=None) if current_job.started_at else datetime.utcnow()
-            enqueued_at = current_job.enqueued_at
+            enqueued_at = current_job.enqueued_at.replace(tzinfo=None) if current_job.enqueued_at else datetime.utcnow()
             assert enqueued_at is not None  # help mypy
             logger.info(
                 "Started job %s",
