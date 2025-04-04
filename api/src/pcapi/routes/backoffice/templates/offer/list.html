@@ -40,6 +40,7 @@
   {% endif %}
   {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Tag</th>{% endif %}
   <th scope="col">Date(s) de l'évènement</th>
+  <th scope="col">Date(s) limite(s) de réservation</th>
   {% if not has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Créateur de l'offre</th>{% endif %}
   {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
     <th data-pc-column-name="Pondération"
@@ -186,6 +187,15 @@
             {{ row.offer_event_dates[0] | format_date("%d/%m/%Y") }}
           {% else %}
             {{ row.offer_event_dates[0] | format_date("%d/%m/%Y") }} → {{ row.offer_event_dates[1] | format_date("%d/%m/%Y") }}
+          {% endif %}
+        {% endif %}
+      </td>
+      <td>
+        {% if row.offer_booking_limit_dates|length > 0 %}
+          {% if row.offer_booking_limit_dates|length == 1 %}
+            {{ row.offer_booking_limit_dates[0] | format_date("%d/%m/%Y") }}
+          {% else %}
+            {{ row.offer_booking_limit_dates[0] | format_date("%d/%m/%Y") }} → {{ row.offer_booking_limit_dates[1] | format_date("%d/%m/%Y") }}
           {% endif %}
         {% endif %}
       </td>
