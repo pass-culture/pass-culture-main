@@ -64,7 +64,7 @@ const serializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
   }),
   phone: (payload, offer) => ({
     ...payload,
-    contactPhone: offer.phone,
+    contactPhone: offer.phone || null,
   }),
   email: (payload, offer) => ({
     ...payload,
@@ -122,8 +122,6 @@ export const createPatchOfferPayload = (
       changedValues = serializer[key]?.(changedValues, offer) ?? {}
     }
   })
-  // We use this to patch field when user want to make it empty
-  changedValues.contactPhone = offer.phone || null
 
   return changedValues
 }
