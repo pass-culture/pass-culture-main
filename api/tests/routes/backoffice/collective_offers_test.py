@@ -531,16 +531,17 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         }
 
     @pytest.mark.parametrize(
-        "value,expected_indexes",
+        "value,expected_indexes,check_ministry",
         [
-            ("false", [0, 1, 2, 4, 5]),
-            ("true", [3]),
+            ("false", [0, 1, 2, 4, 5], lambda ministry: "Marseille en grand" not in ministry),
+            ("true", [3], lambda ministry: ministry == "MENjs Marseille en grand"),
         ],
     )
-    def test_list_offers_by_meg(self, authenticated_client, collective_offers, value, expected_indexes):
-        meg_program = educational_factories.EducationalInstitutionProgramFactory(
+    def test_list_offers_by_meg(self, authenticated_client, collective_offers, value, expected_indexes, check_ministry):
+        # MEG program created in schema_init.sql
+        meg_program = educational_models.EducationalInstitutionProgram.query.filter_by(
             name=educational_models.PROGRAM_MARSEILLE_EN_GRAND
-        )
+        ).one()
         other_program = educational_factories.EducationalInstitutionProgramFactory(name="other")
         meg_educational_institution = educational_factories.EducationalInstitutionFactory(
             programAssociations=[
@@ -561,9 +562,20 @@ class ListCollectiveOffersTest(GetEndpointHelper):
                 )
             ]
         )
-        educational_factories.EducationalDepositFactory(educationalInstitution=meg_educational_institution)
-        educational_factories.EducationalDepositFactory(educationalInstitution=other_educational_institution)
-        educational_factories.EducationalDepositFactory(educationalInstitution=leaving_meg_educational_institution)
+        # current year created in collective_offers_fixture
+        educational_year = educational_models.EducationalYear.query.filter(
+            educational_models.EducationalYear.beginningDate <= datetime.datetime.utcnow(),
+            datetime.datetime.utcnow() <= educational_models.EducationalYear.expirationDate,
+        ).one()
+        educational_factories.EducationalDepositFactory(
+            educationalInstitution=meg_educational_institution, educationalYear=educational_year
+        )
+        educational_factories.EducationalDepositFactory(
+            educationalInstitution=other_educational_institution, educationalYear=educational_year
+        )
+        educational_factories.EducationalDepositFactory(
+            educationalInstitution=leaving_meg_educational_institution, educationalYear=educational_year
+        )
         meg_offer = educational_factories.CollectiveStockFactory(
             collectiveOffer__institution=meg_educational_institution
         ).collectiveOffer
@@ -589,6 +601,8 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert set(int(row["ID"]) for row in rows) == {
             all_offers[expected_index].id for expected_index in expected_indexes
         }
+        for row in rows:
+            assert check_ministry(row["Ministère"])
 
     def test_list_collective_offers_by_department(self, authenticated_client, collective_offers):
         query_args = {
