@@ -880,3 +880,18 @@ def check_offer_is_eligible_to_be_headline(offer: models.Offer) -> None:
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
     if subcategory.is_online_only:
         raise exceptions.VirtualOfferCanNotBeHeadline()
+
+
+def check_offer_can_have_opening_hours(
+    offer: models.Offer,
+) -> None:
+    if not offer.subcategory.can_have_opening_hours:
+        raise exceptions.OfferEditionBaseException(
+            "offer.subcategory", f"`{offer.subcategory.id}` subcategory does not allow opening hours"
+        )
+
+    if offer.hasOpeningHours:
+        raise exceptions.OfferEditionBaseException("offer", f"Offer #{offer.id} already has opening hours")
+
+    if repository.offer_has_timestamped_stocks(offer.id):
+        raise exceptions.OfferEditionBaseException("offer", f"Offer #{offer.id} already has timestamped stocks")

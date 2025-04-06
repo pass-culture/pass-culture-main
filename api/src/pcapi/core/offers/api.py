@@ -519,6 +519,35 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
     logger.info("Batch update of offers: end", extra=log_extra)
 
 
+def create_event_opening_hours(
+    body: offers_schemas.CreateEventOpeningHoursModel,
+    offer: models.Offer,
+) -> models.EventOpeningHours:
+    validation.check_offer_can_have_opening_hours(offer)
+
+    fields = body.dict()
+    event_opening_hours = models.EventOpeningHours(
+        offer=offer,
+        startDatetime=fields["startDatetime"],
+        endDatetime=fields["endDatetime"],
+    )
+    db.session.add(event_opening_hours)
+    db.session.flush()
+
+    for weekday in models.Weekday:
+        timeSpans = fields["openingHours"][weekday.name]
+        if timeSpans:
+            weekday_opening_hours = models.EventWeekDayOpeningHours(
+                eventOpeningHours=event_opening_hours,
+                weekday=weekday,
+                timeSpans=timeSpans,
+            )
+            db.session.add(weekday_opening_hours)
+            db.session.flush()
+
+    return event_opening_hours
+
+
 def activate_future_offers(publication_date: datetime.datetime | None = None) -> None:
     query = offers_repository.get_offers_by_publication_date(publication_date=publication_date)
     query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
