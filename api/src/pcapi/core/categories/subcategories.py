@@ -186,6 +186,7 @@ FESTIVAL_CINE = Subcategory(
     can_expire=False,
     can_be_duo=True,
     can_be_educational=True,
+    can_have_opening_hours=True,
     online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
     is_digital_deposit=False,
     is_physical_deposit=False,
@@ -301,6 +302,7 @@ SALON = Subcategory(
     can_expire=False,
     can_be_duo=True,
     can_be_educational=True,
+    can_have_opening_hours=True,
     online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
     is_digital_deposit=False,
     is_physical_deposit=False,
@@ -575,6 +577,7 @@ FESTIVAL_LIVRE = Subcategory(
     can_expire=False,
     can_be_duo=True,
     can_be_educational=False,
+    can_have_opening_hours=True,
     online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
     is_digital_deposit=False,
     is_physical_deposit=False,
@@ -628,6 +631,7 @@ VISITE = Subcategory(
     can_expire=False,
     can_be_duo=True,
     can_be_educational=True,
+    can_have_opening_hours=True,
     online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
     is_digital_deposit=False,
     is_physical_deposit=False,
@@ -716,6 +720,7 @@ FESTIVAL_ART_VISUEL = Subcategory(
     can_expire=False,
     can_be_duo=True,
     can_be_educational=True,
+    can_have_opening_hours=True,
     online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
     is_digital_deposit=False,
     is_physical_deposit=False,
@@ -861,6 +866,7 @@ FESTIVAL_MUSIQUE = Subcategory(
     can_expire=False,
     can_be_duo=True,
     can_be_educational=True,
+    can_have_opening_hours=True,
     online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
     is_digital_deposit=False,
     is_physical_deposit=False,
@@ -1265,6 +1271,7 @@ FESTIVAL_SPECTACLE = Subcategory(
     can_expire=False,
     can_be_duo=True,
     can_be_educational=True,
+    can_have_opening_hours=True,
     online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
     is_digital_deposit=False,
     is_physical_deposit=False,
@@ -1576,6 +1583,10 @@ COLLECTIVE_SUBCATEGORIES = {
 
 WITHDRAWABLE_SUBCATEGORIES = {
     subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.can_be_withdrawable
+}
+
+EVENT_WITH_OPENING_HOURS_SUBCATEGORIES = {
+    subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.can_have_opening_hours
 }
 
 MUSIC_SUBCATEGORIES = {
