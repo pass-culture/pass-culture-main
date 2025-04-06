@@ -5,9 +5,7 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { CollectiveOfferType } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
-import {
-  GET_VENUES_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
+import { GET_VENUES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   DEFAULT_PAGE,
@@ -43,7 +41,9 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   const navigate = useNavigate()
 
   const { data: offerer } = useOfferer(
-    offererId !== DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.offererId ? offererId : null,
+    offererId !== DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.offererId
+      ? offererId
+      : null,
     true
   )
 
@@ -118,24 +118,22 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
     { fallbackData: [] }
   )
 
-  if (offersQuery.isLoading) {
-    return <Layout>
-      <Spinner />
-    </Layout>
-  }
-
   return (
-    <Layout mainHeading='Offres vitrines'>
-      <TemplateCollectiveOffersScreen
-        currentPageNumber={currentPageNumber}
-        initialSearchFilters={apiFilters}
-        isLoading={offersQuery.isLoading}
-        offerer={offerer}
-        offers={offersQuery.data}
-        redirectWithUrlFilters={redirectWithUrlFilters}
-        urlSearchFilters={urlSearchFilters}
-        venues={venues}
-      />
+    <Layout mainHeading="Offres vitrines">
+      {offersQuery.isLoading ? (
+        <Spinner />
+      ) : (
+        <TemplateCollectiveOffersScreen
+          currentPageNumber={currentPageNumber}
+          initialSearchFilters={apiFilters}
+          isLoading={offersQuery.isLoading}
+          offerer={offerer}
+          offers={offersQuery.data}
+          redirectWithUrlFilters={redirectWithUrlFilters}
+          urlSearchFilters={urlSearchFilters}
+          venues={venues}
+        />
+      )}
     </Layout>
   )
 }

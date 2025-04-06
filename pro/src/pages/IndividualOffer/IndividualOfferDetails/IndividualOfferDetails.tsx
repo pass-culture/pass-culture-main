@@ -27,10 +27,6 @@ const IndividualOfferDetails = (): JSX.Element | null => {
     { fallbackData: { venues: [] } }
   )
 
-  if (venuesQuery.isLoading) {
-    return <Spinner />
-  }
-
   return (
     <IndividualOfferLayout
       offer={offer}
@@ -38,7 +34,11 @@ const IndividualOfferDetails = (): JSX.Element | null => {
       mode={mode}
       venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
     >
-      <IndividualOfferDetailsScreen venues={venuesQuery.data.venues} />
+      {venuesQuery.isLoading ? (
+        <Spinner />
+      ) : (
+        <IndividualOfferDetailsScreen venues={venuesQuery.data.venues} />
+      )}
     </IndividualOfferLayout>
   )
 }

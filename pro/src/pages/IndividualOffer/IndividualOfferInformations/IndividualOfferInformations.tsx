@@ -10,10 +10,6 @@ const IndividualOfferInformations = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()
 
-  if (!offer) {
-    return <Spinner />
-  }
-
   return (
     <IndividualOfferLayout
       offer={offer}
@@ -21,7 +17,11 @@ const IndividualOfferInformations = (): JSX.Element | null => {
       mode={mode}
       venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
     >
-      <IndividualOfferInformationsScreen offer={offer} />
+      {!offer ? (
+        <Spinner />
+      ) : (
+        <IndividualOfferInformationsScreen offer={offer} />
+      )}
     </IndividualOfferLayout>
   )
 }

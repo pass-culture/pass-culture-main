@@ -59,6 +59,22 @@ describe('screens:Stocks', () => {
     })
   })
 
+  it('should render a spinner while loading offer', () => {
+    contextOverride.offer = null
+    renderStocksScreen(storeOverrides, contextOverride)
+
+    expect(screen.getByTestId('spinner')).toBeInTheDocument()
+  })
+
+  it('should render a spinner while loading offer price categories', () => {
+    contextOverride.offer = getIndividualOfferFactory({
+      priceCategories: null,
+    })
+    renderStocksScreen(storeOverrides, contextOverride)
+
+    expect(screen.getByTestId('spinner')).toBeInTheDocument()
+  })
+
   it('should render stock thing', async () => {
     contextOverride.offer = getIndividualOfferFactory({
       ...contextOverride.offer,

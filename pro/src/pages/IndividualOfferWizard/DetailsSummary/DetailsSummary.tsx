@@ -11,14 +11,16 @@ const DetailsSummary = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { offer } = useIndividualOfferContext()
 
-  if (offer === null) {
-    return <Spinner />
-  }
-
   return (
     <IndividualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
-      <DetailsSummaryScreen offer={offer} />
-      <ActionBar step={OFFER_WIZARD_STEP_IDS.SUMMARY} isDisabled={false} />
+      {offer === null ? (
+        <Spinner />
+      ) : (
+        <>
+          <DetailsSummaryScreen offer={offer} />
+          <ActionBar step={OFFER_WIZARD_STEP_IDS.SUMMARY} isDisabled={false} />
+        </>
+      )}
     </IndividualOfferLayout>
   )
 }
