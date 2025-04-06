@@ -100,6 +100,7 @@ class Subcategory:
     reimbursement_rule: str
     can_be_duo: bool
     can_be_educational: bool
+    can_have_opening_hours: bool = False
     # used by pc pro to build dropdown of subcategories during offer creation
     is_selectable: bool = True
     is_bookable_by_underage_when_free: bool = True
