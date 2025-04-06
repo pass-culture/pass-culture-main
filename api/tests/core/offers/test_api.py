@@ -13,6 +13,7 @@ from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
+import pytz
 import time_machine
 
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
@@ -2008,6 +2009,66 @@ class BatchUpdateOffersTest:
 
         assert last_record.message == "Batch update of offers: end"
         assert last_record.extra == {"updated_fields": {"isActive": False}, "nb_offers": 2, "nb_venues": 2}
+
+
+_base_start_datetime = datetime.utcnow() + timedelta(days=4)
+_base_end_datetime = _base_start_datetime + timedelta(days=4)
+_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD = {
+    "startDatetime": _base_start_datetime.astimezone(pytz.utc),
+    "endDatetime": _base_end_datetime.astimezone(pytz.utc),
+    "openingHours": {
+        "MONDAY": [],
+        "TUESDAY": [],
+        "WEDNESDAY": [{"open": "10:00", "close": "14:00"}],
+        "THURSDAY": [{"open": "10:00", "close": "14:00"}, {"open": "16:00", "close": "18:00"}],
+        "FRIDAY": [],
+        "SATURDAY": [],
+        "SUNDAY": [],
+    },
+}
+
+
+@pytest.mark.usefixtures("db_session")
+class CreateEventOpeningHoursTest:
+    def test_create_event_opening_hours(self):
+        offer = factories.EventOfferFactory(subcategoryId=subcategories.FESTIVAL_SPECTACLE.id)
+        body = offers_schemas.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
+
+        event_opening_hours = api.create_event_opening_hours(body=body, offer=offer)
+
+        assert set(item.weekday for item in event_opening_hours.weekDayOpeningHours) == set(
+            [models.Weekday.WEDNESDAY, models.Weekday.THURSDAY]
+        )
+
+    def test_create_event_opening_hours_should_raise_because_invalid_category(self):
+        offer = factories.EventOfferFactory(subcategoryId=subcategories.ABO_BIBLIOTHEQUE.id)
+        body = offers_schemas.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
+
+        with pytest.raises(exceptions.OfferEditionBaseException) as error:
+            api.create_event_opening_hours(body=body, offer=offer)
+
+        assert error.value.errors["offer.subcategory"] == [
+            "`ABO_BIBLIOTHEQUE` subcategory does not allow opening hours"
+        ]
+
+    def test_create_event_opening_hours_should_raise_because_already_has_opening_hours(self):
+        offer = factories.EventOpeningHoursFactory().offer
+        body = offers_schemas.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
+
+        with pytest.raises(exceptions.OfferEditionBaseException) as error:
+            api.create_event_opening_hours(body=body, offer=offer)
+
+        assert error.value.errors["offer"] == [f"Offer #{offer.id} already has opening hours"]
+
+    def test_create_event_opening_hours_should_raise_because_already_has_timestamp_stocks(self):
+        offer = factories.EventOfferFactory(subcategoryId=subcategories.FESTIVAL_SPECTACLE.id)
+        factories.StockFactory(offer=offer)
+        body = offers_schemas.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
+
+        with pytest.raises(exceptions.OfferEditionBaseException) as error:
+            api.create_event_opening_hours(body=body, offer=offer)
+
+        assert error.value.errors["offer"] == [f"Offer #{offer.id} already has timestamped stocks"]
 
 
 @pytest.mark.usefixtures("db_session")

@@ -1521,3 +1521,13 @@ def venues_have_individual_and_collective_offers(venue_ids: list[int]) -> tuple[
 
 def get_offer_existing_stocks_count(offer_id: int) -> int:
     return models.Stock.query.filter_by(offerId=offer_id).filter(models.Stock.isSoftDeleted == False).count()
+
+
+def offer_has_timestamped_stocks(offer_id: int) -> bool:
+    return db.session.query(
+        models.Stock.query.filter(
+            models.Stock.isSoftDeleted == False,
+            models.Stock.offerId == offer_id,
+            models.Stock.beginningDatetime != None,
+        ).exists()
+    ).scalar()
