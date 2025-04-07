@@ -182,6 +182,23 @@ def test_get_siren_opening_soon():
 
 
 @pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+def test_get_siren_without_period_date():
+    siren = "333333334"
+
+    with requests_mock.Mocker() as mock:
+        mock.get(
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siren/{siren}",
+            json=sirene_test_data.RESPONSE_SIRENE_WITHOUT_PERIOD_DATE,
+        )
+        siren_info = sirene.get_siren(siren, with_address=False, raise_if_non_public=False)
+        assert siren_info.siren == siren
+        assert siren_info.active is False
+        assert siren_info.diffusible is True
+        assert siren_info.creation_date == datetime.date(1968, 1, 1)
+        assert siren_info.closure_date is None
+
+
+@pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_get_siret():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:
