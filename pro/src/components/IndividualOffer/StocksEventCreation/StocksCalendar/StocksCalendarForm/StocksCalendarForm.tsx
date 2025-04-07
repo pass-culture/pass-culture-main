@@ -39,7 +39,16 @@ export function StocksCalendarForm({
       durationType: DurationTypeOption.ONE_DAY,
       timeSlotType: TimeSlotTypeOption.SPECIFIC_TIME,
       specificTimeSlots: [{ slot: '' }],
-      pricingCategoriesQuantities: [{ isUnlimited: true, priceCategory: '' }],
+      pricingCategoriesQuantities: [
+        {
+          isUnlimited: true,
+          //  If there's only one price category, the default should be that one
+          priceCategory:
+            offer.priceCategories?.length === 1
+              ? offer.priceCategories[0].id.toString()
+              : undefined,
+        },
+      ],
       oneDayDate: '',
       multipleDaysStartDate: '',
       multipleDaysHasNoEndDate: false,
