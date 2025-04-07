@@ -543,8 +543,8 @@ class GetEventOpeningHoursResponseGetterDict(GetterDict):
             for weekDayOpeningHours in event_opening_hours.weekDayOpeningHours:
                 opening_hours_dict[weekDayOpeningHours.weekday.name] = [
                     {
-                        "open": date_utils.int_to_time(timeSpan.lower),
-                        "close": date_utils.int_to_time(timeSpan.upper),
+                        "open": date_utils.int_to_time(int(timeSpan.lower)),
+                        "close": date_utils.int_to_time(int(timeSpan.upper)),
                     }
                     for timeSpan in weekDayOpeningHours.timeSpans
                 ]
@@ -563,6 +563,10 @@ class OpeningHoursModel(BaseModel):
     SUNDAY: offers_schemas.TimeSpanListType
 
 
+def _format_time(time_to_format: datetime.time) -> str:
+    return time_to_format.strftime("%H:%M")
+
+
 class GetEventOpeningHoursResponseModel(BaseModel):
     id: int
     startDatetime: datetime.datetime
@@ -571,7 +575,7 @@ class GetEventOpeningHoursResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
+        json_encoders = {datetime.datetime: format_into_utc_date, datetime.time: _format_time}
         getter_dict = GetEventOpeningHoursResponseGetterDict
 
 
