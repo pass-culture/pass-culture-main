@@ -1374,6 +1374,31 @@ def offerer_has_ongoing_collective_bookings(offerer_id: int, include_used: bool 
     ).scalar()
 
 
+def get_offers_for_my_institution(uai: str) -> "sa_orm.Query[educational_models.CollectiveOffer]":
+    return (
+        db.session.query(educational_models.CollectiveOffer)
+        .join(educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution)
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+                educational_models.CollectiveStock.collectiveBookings
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue).options(
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer),
+                sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.institution),
+            sa_orm.joinedload(educational_models.CollectiveOffer.teacher),
+            sa_orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
+            sa_orm.joinedload(educational_models.CollectiveOffer.domains),
+            *_get_collective_offer_address_joinedload_with_expression(),
+        )
+        .filter(
+            educational_models.EducationalInstitution.institutionId == uai,
+            educational_models.CollectiveOffer.isArchived == False,
+        )
+    )
+
+
 def _get_collective_offer_template_address_joinedload_with_expression() -> tuple[sa_orm.Load, ...]:
     """
     Use this when querying CollectiveOfferTemplate and you need to load its address, including the isLinkedToVenue expression
