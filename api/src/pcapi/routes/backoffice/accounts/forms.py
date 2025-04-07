@@ -1,5 +1,4 @@
 import datetime
-import enum
 
 from flask import flash
 from flask_wtf import FlaskForm
@@ -15,17 +14,8 @@ from pcapi.routes.backoffice.forms import utils
 from pcapi.utils import string as string_utils
 
 
-class AccountSearchFilter(enum.Enum):
-    PASS_15_17 = "Ancien Pass 15-17"
-    PASS_18 = "Ancien Pass 18"
-    PASS_17_V3 = "Pass 17"
-    PASS_18_V3 = "Pass 18"
-    PUBLIC = "Non bénéficiaire"
-    SUSPENDED = "Suspendu"
-
-
 class AccountSearchForm(search.SearchForm):
-    filter = fields.PCSelectMultipleField("Filtres", choices=utils.choices_from_enum(AccountSearchFilter))
+    filter = fields.PCSelectMultipleField("Filtres", choices=utils.choices_from_enum(search.AccountSearchFilter))
 
     def validate_q(self, q: fields.PCSearchField) -> fields.PCSearchField:
         q = super().validate_q(q)

@@ -97,68 +97,6 @@ def _load_current_deposit_data(query: BaseQuery, join_needed: bool = True) -> Ba
     return query.options(sa.orm.contains_eager(users_models.User.deposits))
 
 
-def _apply_search_filters(query: BaseQuery, search_filters: list[str]) -> BaseQuery:
-    or_filters: list = []
-    query = query.outerjoin(
-        finance_models.Deposit,
-        sa.and_(
-            users_models.User.id == finance_models.Deposit.userId,
-            finance_models.Deposit.expirationDate > datetime.datetime.utcnow(),
-        ),
-    )
-
-    if account_forms.AccountSearchFilter.PASS_17_V3.name in search_filters:
-        or_filters.append(
-            sa.and_(
-                finance_models.Deposit.type == finance_models.DepositType.GRANT_17_18,
-                users_models.User.has_underage_beneficiary_role,
-                users_models.User.isActive.is_(True),
-            )
-        )
-
-    if account_forms.AccountSearchFilter.PASS_18_V3.name in search_filters:
-        or_filters.append(
-            sa.and_(
-                finance_models.Deposit.type == finance_models.DepositType.GRANT_17_18,
-                users_models.User.has_beneficiary_role,
-                users_models.User.isActive.is_(True),
-            )
-        )
-    if account_forms.AccountSearchFilter.PASS_15_17.name in search_filters:
-        or_filters.append(
-            sa.and_(
-                finance_models.Deposit.type != finance_models.DepositType.GRANT_17_18,
-                users_models.User.has_underage_beneficiary_role,
-                users_models.User.isActive.is_(True),
-            )
-        )
-
-    if account_forms.AccountSearchFilter.PASS_18.name in search_filters:
-        or_filters.append(
-            sa.and_(
-                finance_models.Deposit.type != finance_models.DepositType.GRANT_17_18,
-                users_models.User.has_beneficiary_role,
-                users_models.User.isActive.is_(True),
-            )
-        )
-
-    if account_forms.AccountSearchFilter.PUBLIC.name in search_filters:
-        or_filters.append(
-            sa.and_(
-                sa.not_(users_models.User.is_beneficiary),
-                users_models.User.isActive.is_(True),
-            )
-        )
-
-    if account_forms.AccountSearchFilter.SUSPENDED.name in search_filters:
-        or_filters.append(users_models.User.isActive.is_(False))
-
-    if not or_filters:
-        return query
-
-    return query.filter(sa.or_(*or_filters))
-
-
 @public_accounts_blueprint.route("<int:user_id>/anonymize", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT)
 def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
@@ -236,7 +174,7 @@ def search_public_accounts() -> utils.BackofficeResponse:
         return render_search_template(form), 400
 
     users_query = users_api.search_public_account(form.q.data)
-    users_query = _apply_search_filters(users_query, form.filter.data)
+    users_query = search_utils.apply_filter_on_beneficiary_status(users_query, form.filter.data)
     users_query = _load_suspension_info(users_query)
     users_query = _load_current_deposit_data(users_query, join_needed=False)
     paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
