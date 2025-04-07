@@ -583,6 +583,19 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
 
+    def test_patch_offer_with_empty_formats(self, client):
+        # Given
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com")
+        data = {"formats": []}
+
+        client = client.with_session_auth("user@example.com")
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"formats": ["formats must have at least one value"]}
+
     def test_patch_offer_with_empty_educational_domain(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory(

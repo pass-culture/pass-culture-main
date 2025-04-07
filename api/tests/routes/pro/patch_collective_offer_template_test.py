@@ -625,6 +625,19 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"subcategoryId": "this subcategory is not educational"}
 
+    def test_empty_formats(self, client):
+        offer_ctx = build_offer_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        data = {"formats": []}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"formats": ["formats must have at least one value"]}
+
     def test_empty_educational_domains(self, client):
         offer_ctx = build_offer_context()
 

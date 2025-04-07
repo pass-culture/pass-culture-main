@@ -419,6 +419,15 @@ class Returns400Test:
 
         assert models.CollectiveOfferTemplate.query.count() == 0
 
+    def test_empty_formats(self, pro_client, payload):
+        data = {**payload, "formats": []}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"formats": ["formats must have at least one value"]}
+        assert models.CollectiveOffer.query.count() == 0
+
     def test_empty_domains(self, pro_client, payload):
         data = {**payload, "domains": []}
 

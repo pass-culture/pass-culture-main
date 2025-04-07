@@ -586,6 +586,18 @@ class Returns400Test:
         assert response.json == {"interventionArea": ["intervention_area must have at least one value"]}
         assert models.CollectiveOffer.query.count() == 0
 
+    def test_create_collective_offer_no_formats(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+
+        data = {**base_offer_payload(venue=venue), "formats": []}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"formats": ["formats must have at least one value"]}
+        assert models.CollectiveOffer.query.count() == 0
+
     def test_create_collective_offer_no_domains(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
