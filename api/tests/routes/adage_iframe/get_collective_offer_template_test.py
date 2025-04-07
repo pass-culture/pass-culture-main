@@ -5,7 +5,6 @@ from operator import itemgetter
 from flask import url_for
 import pytest
 
-from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import StudentLevels
@@ -111,7 +110,6 @@ class CollectiveOfferTemplateTest:
     def test_get_collective_offer_template(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
             venue__bannerUrl=IMG_URL,
             name="offer name",
             description="offer description",
@@ -141,7 +139,6 @@ class CollectiveOfferTemplateTest:
     def test_get_collective_offer_template_if_inactive(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
             name="offer name",
             description="offer description",
             priceDetail="détail du prix",
@@ -174,7 +171,6 @@ class CollectiveOfferTemplateTest:
     def test_get_collective_offer_template_without_date_range(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
             name="offer name",
             description="offer description",
             priceDetail="détail du prix",

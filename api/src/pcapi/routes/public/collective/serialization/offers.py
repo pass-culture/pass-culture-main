@@ -8,7 +8,7 @@ from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
@@ -247,7 +247,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     imageUrl: str | None = fields.IMAGE_URL
     bookings: Sequence[CollectiveBookingResponseModel]
     nationalProgram: NationalProgramModel | None
-    formats: list[subcategories.EacFormat] = fields.COLLECTIVE_OFFER_FORMATS
+    formats: list[EacFormat] = fields.COLLECTIVE_OFFER_FORMATS
 
     class Config:
         extra = "forbid"
@@ -319,7 +319,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     venue_id: int = fields.VENUE_ID
     name: str = fields.COLLECTIVE_OFFER_NAME
     description: str = fields.COLLECTIVE_OFFER_DESCRIPTION
-    formats: list[subcategories.EacFormat] = fields.COLLECTIVE_OFFER_FORMATS
+    formats: list[EacFormat] = fields.COLLECTIVE_OFFER_FORMATS
     booking_emails: list[str] = fields.COLLECTIVE_OFFER_BOOKING_EMAILS
     contact_email: str = fields.COLLECTIVE_OFFER_CONTACT_EMAIL
     contact_phone: str = fields.COLLECTIVE_OFFER_CONTACT_PHONE
@@ -378,7 +378,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
         return domains
 
     @validator("formats")
-    def validate_formats(cls, formats: list[subcategories.EacFormat]) -> list[subcategories.EacFormat]:
+    def validate_formats(cls, formats: list[EacFormat]) -> list[EacFormat]:
         if len(formats) == 0:
             raise ValueError("formats must have at least one value")
         return formats
@@ -430,7 +430,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     name: str | None = fields.COLLECTIVE_OFFER_NAME
     description: str | None = fields.COLLECTIVE_OFFER_DESCRIPTION
     venueId: int | None = fields.VENUE_ID
-    formats: list[subcategories.EacFormat] | None = fields.COLLECTIVE_OFFER_FORMATS
+    formats: list[EacFormat] | None = fields.COLLECTIVE_OFFER_FORMATS
     bookingEmails: list[str] | None = fields.COLLECTIVE_OFFER_BOOKING_EMAILS
     contactEmail: str | None = fields.COLLECTIVE_OFFER_CONTACT_EMAIL
     contactPhone: str | None = fields.COLLECTIVE_OFFER_CONTACT_PHONE
@@ -488,7 +488,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         return domains
 
     @validator("formats")
-    def validate_formats(cls, formats: list[subcategories.EacFormat] | None) -> list[subcategories.EacFormat]:
+    def validate_formats(cls, formats: list[EacFormat] | None) -> list[EacFormat]:
         if formats is None or len(formats) == 0:
             raise ValueError("formats must have at least one value")
         return formats

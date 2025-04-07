@@ -13,7 +13,6 @@ import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferContactFormEnum } from './OfferContactFormEnum';
 import type { OfferDomain } from './OfferDomain';
 import type { StudentLevels } from './StudentLevels';
-import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 import type { TemplateDatesModel } from './TemplateDatesModel';
 export type GetCollectiveOfferTemplateResponseModel = {
   allowedActions: Array<CollectiveOfferTemplateAllowedAction>;
@@ -49,7 +48,6 @@ export type GetCollectiveOfferTemplateResponseModel = {
   offerVenue: CollectiveOfferOfferVenueResponseModel;
   status: CollectiveOfferStatus;
   students: Array<StudentLevels>;
-  subcategoryId?: (SubcategoryIdEnum | string) | null;
   venue: GetCollectiveOfferVenueResponseModel;
   visualDisabilityCompliant?: boolean | null;
 };

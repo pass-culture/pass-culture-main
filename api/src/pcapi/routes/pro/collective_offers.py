@@ -49,7 +49,6 @@ def get_collective_offers(
     capped_offers = educational_api_offer.list_collective_offers_for_pro_user(
         user_id=current_user.id,
         user_is_admin=current_user.has_admin_role,
-        category_id=query.categoryId,
         offerer_id=query.offerer_id,
         venue_id=query.venue_id,
         name_keywords=query.nameOrIsbn,
@@ -187,33 +186,6 @@ def create_collective_offer(
     except educational_exceptions.AdageException:
         logger.info("Could not create offer: Adage api call failed", extra={"venue_id": body.venue_id})
         raise ApiErrors({"adage_api": "error"}, 500)
-    except offers_exceptions.UnknownOfferSubCategory as error:
-        logger.info(
-            "Could not create offer: selected subcategory is unknown.",
-            extra={"offer_name": body.name, "venue_id": body.venue_id},
-        )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
-    except offers_exceptions.SubCategoryIsInactive as error:
-        logger.info(
-            "Could not create offer: subcategory cannot be selected.",
-            extra={"offer_name": body.name, "venue_id": body.venue_id},
-        )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
-    except offers_exceptions.SubcategoryNotEligibleForEducationalOffer as error:
-        logger.info(
-            "Could not create offer: subcategory is not eligible for educational offer.",
-            extra={"offer_name": body.name, "venue_id": body.venue_id},
-        )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
     except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not create offer: educational domains not found.",
@@ -282,8 +254,6 @@ def edit_collective_offer(
         educational_api_offer.update_collective_offer(offer_id=offer_id, body=body, user=current_user)
     except offers_exceptions.ForbiddenDestinationVenue:
         raise ApiErrors({"venueId": ["Ce partenaire culturel n'est pas éligible au transfert de l'offre"]}, 400)
-    except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
-        raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
     except offers_exceptions.OfferEventInThePast:
         raise ApiErrors({"offer": "This collective offer that has already started does not allow editing details"}, 403)
     except offers_exceptions.NoDestinationVenue:
@@ -382,8 +352,6 @@ def edit_collective_offer_template(
         raise ApiErrors({"venueId": "The venue does not exist."}, 404)
     except educational_exceptions.OffererOfVenueDontMatchOfferer:
         raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
-    except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
-        raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
     except educational_exceptions.NationalProgramNotFound:
         raise ApiErrors({"global": ["National program not found"]}, 400)
     except educational_exceptions.IllegalNationalProgram:
@@ -625,24 +593,6 @@ def create_collective_offer_template(
     except educational_exceptions.AdageException:
         logger.info("Could not create offer: Adage api call failed", extra={"venue_id": body.venue_id})
         raise ApiErrors({"adage_api": "error"}, 500)
-    except offers_exceptions.UnknownOfferSubCategory as error:
-        logger.info(
-            "Could not create offer: selected subcategory is unknown.",
-            extra={"offer_name": body.name, "venue_id": body.venue_id},
-        )
-        raise ApiErrors(error.errors, status_code=400)
-    except offers_exceptions.SubCategoryIsInactive as error:
-        logger.info(
-            "Could not create offer: subcategory cannot be selected.",
-            extra={"offer_name": body.name, "venue_id": body.venue_id},
-        )
-        raise ApiErrors(error.errors, status_code=400)
-    except offers_exceptions.SubcategoryNotEligibleForEducationalOffer as error:
-        logger.info(
-            "Could not create offer: subcategory is not eligible for educational offer.",
-            extra={"offer_name": body.name, "venue_id": body.venue_id},
-        )
-        raise ApiErrors(error.errors, status_code=400)
     except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not create offer: educational domains not found.",

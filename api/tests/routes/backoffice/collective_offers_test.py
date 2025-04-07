@@ -6,7 +6,7 @@ from unittest.mock import patch
 from flask import url_for
 import pytest
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
@@ -69,7 +69,7 @@ def collective_offers_fixture() -> tuple:
         startDatetime=datetime.date.today() + datetime.timedelta(days=1),
         collectiveOffer__author=users_factories.UserFactory(),
         collectiveOffer__institution=institution_1,
-        collectiveOffer__formats=[subcategories.EacFormat.ATELIER_DE_PRATIQUE],
+        collectiveOffer__formats=[EacFormat.ATELIER_DE_PRATIQUE],
         collectiveOffer__venue__postalCode="47000",
         collectiveOffer__venue__departementCode="47",
         price=10.1,
@@ -79,7 +79,7 @@ def collective_offers_fixture() -> tuple:
         endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=24),
         collectiveOffer__institution=institution_1,
         collectiveOffer__name="A Very Specific Name",
-        collectiveOffer__formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
+        collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
         collectiveOffer__venue__postalCode="97400",
         collectiveOffer__venue__departementCode="974",
         price=11,
@@ -91,8 +91,8 @@ def collective_offers_fixture() -> tuple:
         collectiveOffer__institution=institution_2,
         collectiveOffer__name="A Very Specific Name That Is Longer",
         collectiveOffer__formats=[
-            subcategories.EacFormat.FESTIVAL_SALON_CONGRES,
-            subcategories.EacFormat.PROJECTION_AUDIOVISUELLE,
+            EacFormat.FESTIVAL_SALON_CONGRES,
+            EacFormat.PROJECTION_AUDIOVISUELLE,
         ],
         collectiveOffer__validation=offers_models.OfferValidationStatus.REJECTED,
         collectiveOffer__rejectionReason=educational_models.CollectiveOfferRejectionReason.WRONG_DATE,
@@ -379,21 +379,21 @@ class ListCollectiveOffersTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "operator,formats,expected_offer_indexes",
         [
-            ("INTERSECTS", [subcategories.EacFormat.ATELIER_DE_PRATIQUE], [0]),
+            ("INTERSECTS", [EacFormat.ATELIER_DE_PRATIQUE], [0]),
             (
                 "INTERSECTS",
-                [subcategories.EacFormat.ATELIER_DE_PRATIQUE, subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
+                [EacFormat.ATELIER_DE_PRATIQUE, EacFormat.PROJECTION_AUDIOVISUELLE],
                 [0, 1, 2],
             ),
             (
                 "INTERSECTS",
-                [subcategories.EacFormat.FESTIVAL_SALON_CONGRES, subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
+                [EacFormat.FESTIVAL_SALON_CONGRES, EacFormat.PROJECTION_AUDIOVISUELLE],
                 [1, 2],
             ),
-            ("NOT_INTERSECTS", [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE], [0]),
+            ("NOT_INTERSECTS", [EacFormat.PROJECTION_AUDIOVISUELLE], [0]),
             (
                 "NOT_INTERSECTS",
-                [subcategories.EacFormat.ATELIER_DE_PRATIQUE, subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
+                [EacFormat.ATELIER_DE_PRATIQUE, EacFormat.PROJECTION_AUDIOVISUELLE],
                 [],
             ),
         ],
@@ -466,10 +466,10 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         query_args = {
             "search-0-search_field": "FORMATS",
             "search-0-operator": "INTERSECTS",
-            "search-0-formats": [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE.name],
+            "search-0-formats": [EacFormat.PROJECTION_AUDIOVISUELLE.name],
             "search-2-search_field": "FORMATS",
             "search-2-operator": "NOT_INTERSECTS",
-            "search-2-formats": [subcategories.EacFormat.FESTIVAL_SALON_CONGRES.name],
+            "search-2-formats": [EacFormat.FESTIVAL_SALON_CONGRES.name],
         }
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -699,7 +699,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-institution": collective_offers[0].institutionId,
             "search-1-search_field": "FORMATS",
             "search-1-operator": "INTERSECTS",
-            "search-1-formats": [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE.name],
+            "search-1-formats": [EacFormat.PROJECTION_AUDIOVISUELLE.name],
             "search-2-search_field": "DEPARTMENT",
             "search-2-operator": "IN",
             "search-2-department": "74",
@@ -790,7 +790,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         query_args = {
             "search-0-search_field": "FARMOTS",
             "search-0-operator": "INTERSECTS",
-            "search-0-formats": [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE.name],
+            "search-0-formats": [EacFormat.PROJECTION_AUDIOVISUELLE.name],
         }
         with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -838,7 +838,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         query_args = {
             "search-0-search_field": "FORMATS",
             "search-0-operator": "INTERSECTS",
-            "search-0-formats": [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE.name],
+            "search-0-formats": [EacFormat.PROJECTION_AUDIOVISUELLE.name],
             "search-2-search_field": "CREATION_DATE",
             "search-2-operator": "DATE_FROM",
             "search-4-search_field": "BOOKING_LIMIT_DATE",

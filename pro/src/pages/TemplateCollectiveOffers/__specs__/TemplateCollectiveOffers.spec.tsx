@@ -129,7 +129,6 @@ describe('route TemplateCollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
-            undefined,
             CollectiveOfferType.TEMPLATE,
             undefined
           )
@@ -161,7 +160,6 @@ describe('route TemplateCollectiveOffers', () => {
               CollectiveOfferDisplayedStatus.REJECTED,
               CollectiveOfferDisplayedStatus.ARCHIVED,
             ],
-            undefined,
             undefined,
             undefined,
             undefined,
@@ -232,7 +230,6 @@ describe('route TemplateCollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
-            undefined,
             CollectiveOfferType.TEMPLATE,
             undefined
           )
@@ -260,7 +257,6 @@ describe('route TemplateCollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
-            undefined,
             CollectiveOfferType.TEMPLATE,
             undefined
           )
@@ -280,7 +276,6 @@ describe('route TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             '1',
-            undefined,
             undefined,
             undefined,
             undefined,
@@ -304,7 +299,6 @@ describe('route TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             '1',
-            undefined,
             undefined,
             undefined,
             undefined,
@@ -429,7 +423,6 @@ describe('route TemplateCollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
         CollectiveOfferType.TEMPLATE,
         undefined
       )
@@ -447,7 +440,6 @@ describe('route TemplateCollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
         CollectiveOfferType.TEMPLATE,
         undefined
       )
@@ -462,7 +454,6 @@ describe('route TemplateCollectiveOffers', () => {
         3,
         undefined,
         '1',
-        undefined,
         undefined,
         undefined,
         undefined,
@@ -505,7 +496,6 @@ describe('route TemplateCollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
         CollectiveOfferType.TEMPLATE,
         undefined
       )
@@ -523,7 +513,6 @@ describe('route TemplateCollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
         CollectiveOfferType.TEMPLATE,
         undefined
       )
@@ -536,7 +525,6 @@ describe('route TemplateCollectiveOffers', () => {
         3,
         undefined,
         '1',
-        undefined,
         undefined,
         undefined,
         undefined,
@@ -565,7 +553,6 @@ describe('route TemplateCollectiveOffers', () => {
             expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
               nameOrIsbn,
               '1',
-              undefined,
               undefined,
               undefined,
               undefined,

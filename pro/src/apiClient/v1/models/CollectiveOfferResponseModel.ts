@@ -12,7 +12,6 @@ import type { EacFormat } from './EacFormat';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
 import type { NationalProgramModel } from './NationalProgramModel';
-import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 import type { TemplateDatesModel } from './TemplateDatesModel';
 export type CollectiveOfferResponseModel = {
   allowedActions: (Array<CollectiveOfferAllowedAction> | Array<CollectiveOfferTemplateAllowedAction>);
@@ -36,7 +35,6 @@ export type CollectiveOfferResponseModel = {
   nationalProgram?: NationalProgramModel | null;
   status: CollectiveOfferStatus;
   stocks: Array<CollectiveOffersStockResponseModel>;
-  subcategoryId?: (SubcategoryIdEnum | string) | null;
   templateId?: string | null;
   venue: ListOffersVenueResponseModel;
 };

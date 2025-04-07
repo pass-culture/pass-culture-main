@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.core import search
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
@@ -106,7 +106,6 @@ def list_collective_offers_for_pro_user(
     *,
     user_id: int,
     user_is_admin: bool,
-    category_id: str | None,
     offerer_id: int | None,
     venue_id: int | None = None,
     name_keywords: str | None = None,
@@ -114,7 +113,7 @@ def list_collective_offers_for_pro_user(
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
     offer_type: collective_offers_serialize.CollectiveOfferType | None = None,
-    formats: list[subcategories.EacFormat] | None = None,
+    formats: list[EacFormat] | None = None,
 ) -> list[educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate]:
     offers = []
     if offer_type != collective_offers_serialize.CollectiveOfferType.template:
@@ -125,7 +124,6 @@ def list_collective_offers_for_pro_user(
             offerer_id=offerer_id,
             statuses=statuses,
             venue_id=venue_id,
-            category_id=category_id,
             name_keywords=name_keywords,
             period_beginning_date=period_beginning_date,
             period_ending_date=period_ending_date,
@@ -142,7 +140,6 @@ def list_collective_offers_for_pro_user(
             offerer_id=offerer_id,
             statuses=statuses,
             venue_id=venue_id,
-            category_id=category_id,
             name_keywords=name_keywords,
             period_beginning_date=period_beginning_date,
             period_ending_date=period_ending_date,
@@ -340,7 +337,6 @@ def create_collective_offer_template(
         description=offer_data.description,
         domains=educational_domains,
         durationMinutes=offer_data.duration_minutes,
-        subcategoryId=offer_data.subcategory_id,
         students=offer_data.students,
         contactEmail=offer_data.contact_email,
         contactPhone=offer_data.contact_phone,
@@ -407,7 +403,6 @@ def create_collective_offer(
         description=offer_data.description,
         domains=educational_domains,
         durationMinutes=offer_data.duration_minutes,
-        subcategoryId=offer_data.subcategory_id,
         students=offer_data.students,
         contactEmail=offer_data.contact_email,
         contactPhone=offer_data.contact_phone,
@@ -468,8 +463,6 @@ def get_venue_and_check_access_for_offer_creation(
     if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
         raise exceptions.CulturalPartnerNotFoundException("No venue has been found for the selected siren")
 
-    offer_validation.check_offer_subcategory_is_valid(offer_data.subcategory_id)
-    offer_validation.check_offer_is_eligible_for_educational(offer_data.subcategory_id)
     return venue
 
 
@@ -754,11 +747,7 @@ def edit_collective_offer_public(
     for key, value in new_values.items():
         updated_fields.append(key)
 
-        if key == "subcategoryId":
-            # offer_validation.check_offer_subcategory_is_valid(value)
-            offer_validation.check_offer_is_eligible_for_educational(value)
-            offer.subcategoryId = value
-        elif key == "domains":
+        if key == "domains":
             domains = educational_repository.get_educational_domains_from_ids(value)
             if len(domains) != len(value):
                 raise exceptions.EducationalDomainsNotFound()
@@ -903,7 +892,6 @@ def duplicate_offer_and_stock(
         bookingEmails=original_offer.bookingEmails,
         description=original_offer.description,
         durationMinutes=original_offer.durationMinutes,
-        subcategoryId=original_offer.subcategoryId,
         students=original_offer.students,
         contactEmail=original_offer.contactEmail,
         contactPhone=original_offer.contactPhone,
@@ -1420,12 +1408,6 @@ def _update_collective_offer(
     updated_fields = []
     for key, value in new_values.items():
         updated_fields.append(key)
-
-        if key == "subcategoryId":
-            offer_validation.check_offer_is_eligible_for_educational(value.name)
-            offer.subcategoryId = value.name
-            continue
-
         setattr(offer, key, value)
 
     db.session.add(offer)

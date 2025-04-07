@@ -4,8 +4,7 @@ import datetime
 from flask import url_for
 import pytest
 
-from pcapi.core.categories import subcategories
-from pcapi.core.categories.subcategories import EacFormat
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.mails import testing as mails_testing
@@ -36,18 +35,18 @@ pytestmark = [
 def collective_offer_templates_fixture() -> tuple:
     collective_offer_template_1 = educational_factories.CollectiveOfferTemplateFactory(
         author=user_factory.ProFactory(),
-        formats=[subcategories.EacFormat.ATELIER_DE_PRATIQUE],
+        formats=[EacFormat.ATELIER_DE_PRATIQUE],
     )
     collective_offer_template_2 = educational_factories.CollectiveOfferTemplateFactory(
         name="A Very Specific Name",
-        formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
+        formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
     )
     collective_offer_template_3 = educational_factories.CollectiveOfferTemplateFactory(
         name="A Very Specific Name That Is Longer",
         dateCreated=datetime.date.today() - datetime.timedelta(days=2),
         validation=offers_models.OfferValidationStatus.REJECTED,
         rejectionReason=educational_models.CollectiveOfferRejectionReason.WRONG_DATE,
-        formats=[subcategories.EacFormat.FESTIVAL_SALON_CONGRES, subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
+        formats=[EacFormat.FESTIVAL_SALON_CONGRES, EacFormat.PROJECTION_AUDIOVISUELLE],
     )
     return collective_offer_template_1, collective_offer_template_2, collective_offer_template_3
 
@@ -219,10 +218,10 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
 
     def test_list_collective_offer_templates_by_format(self, authenticated_client):
-        target_format = subcategories.EacFormat.CONCERT
+        target_format = EacFormat.CONCERT
 
         target_offer = educational_factories.CollectiveOfferTemplateFactory(formats=[target_format])
-        educational_factories.CollectiveOfferTemplateFactory(formats=[subcategories.EacFormat.ATELIER_DE_PRATIQUE])
+        educational_factories.CollectiveOfferTemplateFactory(formats=[EacFormat.ATELIER_DE_PRATIQUE])
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, formats=str(target_format.name)))

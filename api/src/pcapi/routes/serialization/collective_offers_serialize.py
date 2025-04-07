@@ -12,7 +12,6 @@ from pydantic.v1 import root_validator
 from pydantic.v1 import utils as pydantic_utils
 from pydantic.v1 import validator
 
-from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import validation as educational_validation
@@ -79,7 +78,6 @@ class ListCollectiveOffersQueryModel(BaseModel):
         | None
     )
     venue_id: int | None
-    categoryId: str | None
     creation_mode: str | None
     period_beginning_date: date | None
     period_ending_date: date | None
@@ -139,7 +137,6 @@ class CollectiveOfferResponseModel(BaseModel):
     name: str
     stocks: list[CollectiveOffersStockResponseModel]
     booking: CollectiveOffersBookingResponseModel | None
-    subcategoryId: subcategories.SubcategoryIdEnum | EmptyStringToNone
     isShowcase: bool
     venue: base_serializers.ListOffersVenueResponseModel
     status: CollectiveOfferStatus
@@ -200,7 +197,6 @@ def _serialize_offer_paginated(
         stocks=serialized_stocks,  # type: ignore[arg-type]
         booking=last_booking,
         thumbUrl=None,
-        subcategoryId=offer.subcategoryId,  # type: ignore[arg-type]
         venue=_serialize_venue(offer.venue),  # type: ignore[arg-type]
         status=offer.status.name,
         displayedStatus=offer.displayedStatus,
@@ -405,7 +401,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     isEditable: bool
     id: int
     name: str
-    subcategoryId: subcategories.SubcategoryIdEnum | EmptyStringToNone
     venue: GetCollectiveOfferVenueResponseModel
     status: CollectiveOfferStatus
     displayedStatus: educational_models.CollectiveOfferDisplayedStatus
@@ -593,8 +588,6 @@ class EmailStrOrEmpty(EmailStr):
 
 class PostCollectiveOfferBodyModel(BaseModel):
     venue_id: int
-    # TODO(jeremieb): remove subcategory_id (replaced by formats)
-    subcategory_id: str | None
     name: str
     booking_emails: list[EmailStr]
     description: str
@@ -733,7 +726,6 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     contactEmail: EmailStr | None
     contactPhone: str | None
     durationMinutes: int | None
-    subcategoryId: subcategories.SubcategoryIdEnum | EmptyStringToNone
     domains: list[int] | None
     interventionArea: list[str] | None
     venueId: int | None

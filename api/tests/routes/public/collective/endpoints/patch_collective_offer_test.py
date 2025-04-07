@@ -8,7 +8,7 @@ import pytest
 import time_machine
 
 from pcapi import settings
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import testing as educational_testing
@@ -79,7 +79,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         payload = {
             "name": "Un nom en français ævœc des diàcrtîtïqués",
             "description": "une description d'offre",
-            "formats": [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE.value],
+            "formats": [EacFormat.PROJECTION_AUDIOVISUELLE.value],
             "venueId": venue2.id,
             "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
@@ -122,7 +122,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.name == payload["name"]
         assert offer.description == payload["description"]
         assert offer.venueId == venue2.id
-        assert offer.formats == [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE]
+        assert offer.formats == [EacFormat.PROJECTION_AUDIOVISUELLE]
         assert offer.bookingEmails == payload["bookingEmails"]
         assert offer.contactEmail == payload["contactEmail"]
         assert offer.contactPhone == "+33100992798"

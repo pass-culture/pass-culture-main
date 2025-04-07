@@ -4,7 +4,6 @@ from flask import url_for
 import pytest
 import time_machine
 
-from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.offerers import factories as offerers_factories
@@ -41,7 +40,6 @@ class CollectiveOfferTest:
         institution = educational_factories.EducationalInstitutionFactory(institutionId="12890AI")
         stock = educational_factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 5, 15),
-            collectiveOffer__subcategoryId=subcategories.SEANCE_CINE.id,
             collectiveOffer__name="offer name",
             collectiveOffer__description="offer description",
             price=10,
@@ -133,7 +131,7 @@ class CollectiveOfferTest:
                 "civility": offer.teacher.civility,
             },
             "nationalProgram": {"id": offer.nationalProgramId, "name": offer.nationalProgram.name},
-            "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
+            "formats": [fmt.value for fmt in offer.formats],
             "isTemplate": False,
         }
 

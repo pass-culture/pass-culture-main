@@ -8,7 +8,7 @@ from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1.class_validators import validator
 
-from pcapi.core.categories.subcategories import EacFormat
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.v1.serialization import common_models

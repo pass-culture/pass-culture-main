@@ -528,7 +528,6 @@ export class DefaultService {
    * @param offererId
    * @param status
    * @param venueId
-   * @param categoryId
    * @param creationMode
    * @param periodBeginningDate
    * @param periodEndingDate
@@ -542,7 +541,6 @@ export class DefaultService {
     offererId?: number | null,
     status?: (Array<CollectiveOfferDisplayedStatus> | CollectiveOfferDisplayedStatus) | null,
     venueId?: number | null,
-    categoryId?: string | null,
     creationMode?: string | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
@@ -557,7 +555,6 @@ export class DefaultService {
         'offererId': offererId,
         'status': status,
         'venueId': venueId,
-        'categoryId': categoryId,
         'creationMode': creationMode,
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,

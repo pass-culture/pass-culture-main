@@ -113,14 +113,6 @@ class OfferCannotBeDuo(OfferCreationBaseException):
         super().__init__("enableDoubleBookings", "the category chosen does not allow double bookings")
 
 
-class SubcategoryNotEligibleForEducationalOffer(OfferCreationBaseException):
-    def __init__(self) -> None:
-        super().__init__(
-            "offer",
-            "Cette catégorie d'offre n'est pas éligible aux offres éducationnelles",
-        )
-
-
 class UnknownOfferSubCategory(OfferCreationBaseException):
     def __init__(self) -> None:
         super().__init__(

@@ -3,7 +3,7 @@ import decimal
 
 from pydantic.v1.fields import Field
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
@@ -105,7 +105,7 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     imageUrl: str | None = Field(description="Url for offer image")
     venueId: int
     offererName: str
-    formats: list[subcategories.EacFormat]
+    formats: list[EacFormat]
 
     class Config:
         title = "Prebooking detailed response"

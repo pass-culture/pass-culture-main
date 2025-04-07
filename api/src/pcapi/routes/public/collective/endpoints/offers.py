@@ -1,4 +1,4 @@
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation as educational_validation
@@ -223,17 +223,6 @@ def post_collective_offer_public(
         raise ApiErrors(errors={"nationalProgramId": ["Dispositif national non valide."]}, status_code=400)
     except educational_exceptions.InactiveNationalProgram:
         raise ApiErrors(errors={"nationalProgramId": ["Dispositif national inactif."]}, status_code=400)
-
-    except offers_exceptions.UnknownOfferSubCategory:
-        raise ApiErrors(
-            errors={"subcategoryId": ["Sous-catégorie non trouvée."]},
-            status_code=404,
-        )
-    except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
-        raise ApiErrors(
-            errors={"subcategoryId": ["La sous-catégorie n'est pas éligible pour les offres collectives."]},
-            status_code=404,
-        )
     except educational_exceptions.StartAndEndEducationalYearDifferent:
         raise ApiErrors(
             errors={"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}, status_code=400
@@ -518,16 +507,6 @@ def patch_collective_offer_public(
         )
     except educational_exceptions.PriceRequesteCantBedHigherThanActualPrice:
         raise ApiErrors(errors={"price": ["Le prix ne peut pas etre supérieur au prix existant"]}, status_code=400)
-    except offers_exceptions.UnknownOfferSubCategory:
-        raise ApiErrors(
-            errors={"subcategoryId": ["Sous-catégorie non trouvée."]},
-            status_code=404,
-        )
-    except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
-        raise ApiErrors(
-            errors={"subcategoryId": ["La sous-catégorie n'est pas éligible pour les offres collectives."]},
-            status_code=404,
-        )
     except educational_exceptions.StartAndEndEducationalYearDifferent:
         raise ApiErrors(
             errors={"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}, status_code=400
@@ -574,7 +553,6 @@ def get_offers_formats() -> offers_serialization.GetCollectiveFormatListModel:
     """
     return offers_serialization.GetCollectiveFormatListModel(
         __root__=[
-            offers_serialization.GetCollectiveFormatModel(id=format.name, name=format.value)
-            for format in subcategories.EacFormat
+            offers_serialization.GetCollectiveFormatModel(id=format.name, name=format.value) for format in EacFormat
         ]
     )

@@ -6,7 +6,6 @@ from flask import url_for
 import pytest
 
 from pcapi.core import testing
-from pcapi.core.categories import subcategories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
@@ -47,7 +46,6 @@ class Returns200Test:
         national_program = educational_factories.NationalProgramFactory()
         provider = providers_factories.ProviderFactory()
         offer = educational_factories.CollectiveOfferFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
             collectiveStock=stock,
             teacher=educational_factories.EducationalRedactorFactory(),
             templateId=template.id,
@@ -88,7 +86,7 @@ class Returns200Test:
         }
         assert response_json["templateId"] == template.id
         assert response_json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
-        assert response_json["formats"] == [fmt.value for fmt in subcategories.SEANCE_CINE.formats]
+        assert response_json["formats"] == [fmt.value for fmt in offer.formats]
         assert response_json["provider"]["name"] == provider.name
         assert response_json["displayedStatus"] == "ACTIVE"
         assert response_json["isTemplate"] is False
@@ -314,25 +312,6 @@ class Returns200Test:
             "addressType": "offererVenue",
             "otherAddress": "some address",
         }
-
-    def test_offer_with_empty_string_subcategory_instead_of_none(self, client):
-        """Test that an offer with a legal but unexpected subcategory
-        (empty string instead if none) can be serialized.
-        """
-        user = users_factories.UserFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
-
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = educational_factories.CollectiveOfferFactory(venue=venue, subcategoryId="")
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        dst = url_for("Private API.get_collective_offer", offer_id=offer.id)
-        client = client.with_session_auth(user.email)
-        with assert_num_queries(self.num_queries):
-            response = client.get(dst)
-            assert response.status_code == 200
-        assert response.json["subcategoryId"] is None
 
     def test_dates_on_offer(self, client):
         beginningDate = datetime.utcnow() + timedelta(days=100)

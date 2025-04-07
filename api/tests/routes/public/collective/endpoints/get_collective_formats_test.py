@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
@@ -18,6 +18,6 @@ class GetCollectiveFormatsTest(PublicAPIEndpointBaseHelper):
         response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
 
         assert response.status_code == 200
-        assert sorted(
-            [{"name": fmt.value, "id": fmt.name} for fmt in subcategories.EacFormat], key=lambda x: x["id"]
-        ) == sorted(response.json, key=lambda x: x["id"])
+        assert sorted([{"name": fmt.value, "id": fmt.name} for fmt in EacFormat], key=lambda x: x["id"]) == sorted(
+            response.json, key=lambda x: x["id"]
+        )

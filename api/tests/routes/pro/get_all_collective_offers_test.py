@@ -516,28 +516,6 @@ class Returns200Test:
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["isShowcase"] is True
 
-    def test_offers_with_empty_string_subcategory_instead_of_none(self, client):
-        """Test that a list of offers can contain one that has a legal
-        but unexpected subcategory (empty string instead if none).
-        """
-        user = users_factories.UserFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
-
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = educational_factories.CollectiveOfferFactory(venue=venue, subcategoryId="")
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
-            response = client.get("/collective/offers")
-            assert response.status_code == 200
-
-        response_json = response.json
-        assert isinstance(response_json, list)
-        assert len(response_json) == 1
-        assert response_json[0]["subcategoryId"] is None
-
     def test_offers_sorting(self, client):
         # Given
         user = users_factories.UserFactory()

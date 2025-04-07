@@ -5,7 +5,6 @@ from unittest import mock
 import pytest
 
 from pcapi import settings
-from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import CantGetImageFromUrl
@@ -75,7 +74,6 @@ class Returns200Test:
         national_program = educational_factories.NationalProgramFactory()
         domain = educational_factories.EducationalDomainFactory(nationalPrograms=[national_program])
         offer = educational_factories.CollectiveOfferFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
             venue=venue,
             institution=institution,
             nationalProgram=national_program,
@@ -110,7 +108,6 @@ class Returns200Test:
             "isPublicApi": False,
             "id": duplicate.id,
             "name": offer.name,
-            "subcategoryId": offer.subcategoryId,
             "isNonFreeOffer": None,
             "venue": {
                 "departementCode": "75",
@@ -161,7 +158,7 @@ class Returns200Test:
             "teacher": None,
             "nationalProgram": {"id": national_program.id, "name": national_program.name},
             "provider": None,
-            "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
+            "formats": [fmt.value for fmt in duplicate.formats],
             "isTemplate": False,
             "dates": {
                 "end": format_into_utc_date(offer.collectiveStock.endDatetime),
@@ -176,23 +173,6 @@ class Returns200Test:
             ],
             "location": None,
         }
-
-    def test_duplicate_collective_offer_without_subcategoryId(self, client):
-        # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        formats = ["CONCERT"]
-        offer = educational_factories.CollectiveOfferFactory(subcategoryId=None, venue=venue, formats=formats)
-        offer_id = offer.id
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        # When
-        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
-
-        # Then
-        assert response.status_code == 201
-        assert response.json.get("formats") == ["Concert"]
 
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_DUPLIATE)
     def test_duplicate_allowed_action(self, client, status):

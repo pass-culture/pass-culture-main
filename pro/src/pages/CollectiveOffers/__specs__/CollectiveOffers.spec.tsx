@@ -121,7 +121,6 @@ describe('route CollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
-            undefined,
             undefined
           )
         })
@@ -159,7 +158,6 @@ describe('route CollectiveOffers', () => {
               CollectiveOfferDisplayedStatus.PREBOOKED,
               CollectiveOfferDisplayedStatus.BOOKED,
             ],
-            undefined,
             undefined,
             undefined,
             undefined,
@@ -230,7 +228,6 @@ describe('route CollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
-            undefined,
             undefined
           )
         })
@@ -258,7 +255,6 @@ describe('route CollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
-            undefined,
             undefined
           )
         })
@@ -277,7 +273,6 @@ describe('route CollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             '1',
-            undefined,
             undefined,
             undefined,
             undefined,
@@ -301,7 +296,6 @@ describe('route CollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             '1',
-            undefined,
             undefined,
             undefined,
             undefined,
@@ -331,7 +325,6 @@ describe('route CollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             '1',
-            undefined,
             undefined,
             undefined,
             undefined,
@@ -456,7 +449,6 @@ describe('route CollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
         undefined
       )
 
@@ -474,7 +466,6 @@ describe('route CollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
         undefined
       )
 
@@ -488,7 +479,6 @@ describe('route CollectiveOffers', () => {
         3,
         undefined,
         '1',
-        undefined,
         undefined,
         undefined,
         undefined,
@@ -531,7 +521,6 @@ describe('route CollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
         undefined
       )
 
@@ -549,7 +538,6 @@ describe('route CollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
         undefined
       )
 
@@ -561,7 +549,6 @@ describe('route CollectiveOffers', () => {
         3,
         undefined,
         '1',
-        undefined,
         undefined,
         undefined,
         undefined,
@@ -596,7 +583,6 @@ describe('route CollectiveOffers', () => {
           undefined,
           undefined,
           undefined,
-          undefined,
           undefined
         )
       })
@@ -623,7 +609,6 @@ describe('route CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
         '1',
-        undefined,
         undefined,
         undefined,
         undefined,

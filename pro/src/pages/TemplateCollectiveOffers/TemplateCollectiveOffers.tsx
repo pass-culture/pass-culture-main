@@ -107,7 +107,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
         offererId,
         status,
         venueId,
-        undefined,
         creationMode,
         periodBeginningDate,
         periodEndingDate,

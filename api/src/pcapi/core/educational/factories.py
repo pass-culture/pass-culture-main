@@ -5,8 +5,7 @@ import typing
 from dateutil.relativedelta import relativedelta
 import factory
 
-from pcapi.core.categories import models as categories_models
-from pcapi.core.categories.subcategories import COLLECTIVE_SUBCATEGORIES
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import constants
 from pcapi.core.educational import models
 from pcapi.core.educational import utils
@@ -54,7 +53,6 @@ class CollectiveOfferFactory(BaseFactory):
     class Meta:
         model = models.CollectiveOffer
 
-    subcategoryId = factory.Iterator(COLLECTIVE_SUBCATEGORIES)
     name = factory.Sequence("CollectiveOffer {}".format)
     description = factory.Sequence("A passionate description of collectiveoffer {}".format)
     venue = factory.SubFactory(offerers_factories.VenueFactory)
@@ -73,7 +71,7 @@ class CollectiveOfferFactory(BaseFactory):
         "venueId": None,
     }
     interventionArea = ["93", "94", "95"]
-    formats = [categories_models.EacFormat.PROJECTION_AUDIOVISUELLE]
+    formats = [EacFormat.PROJECTION_AUDIOVISUELLE]
 
     @classmethod
     def _create(
@@ -110,7 +108,6 @@ class CollectiveOfferTemplateFactory(BaseFactory):
     class Meta:
         model = models.CollectiveOfferTemplate
 
-    subcategoryId = factory.Iterator(COLLECTIVE_SUBCATEGORIES)
     name = factory.Sequence("CollectiveOffer {}".format)
     description = factory.Sequence("A passionate description of collectiveoffer {}".format)
     venue = factory.SubFactory(offerers_factories.VenueFactory)
@@ -135,7 +132,7 @@ class CollectiveOfferTemplateFactory(BaseFactory):
         start=datetime.datetime.utcnow() + datetime.timedelta(days=1),
         end=datetime.datetime.utcnow() + datetime.timedelta(days=7),
     )
-    formats = [categories_models.EacFormat.PROJECTION_AUDIOVISUELLE]
+    formats = [EacFormat.PROJECTION_AUDIOVISUELLE]
 
     @classmethod
     def _create(
