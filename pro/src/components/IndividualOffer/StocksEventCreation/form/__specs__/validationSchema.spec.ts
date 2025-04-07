@@ -170,7 +170,16 @@ describe('validationSchema with FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR', () => {
       expectedErrors: [
         'La date de l’évènement est obligatoire',
         'L’évènement doit être à venir',
+        "L’évènement ne doit pas être dans plus d'un an",
       ],
+    },
+    {
+      description: 'invalid form for single day date too far in the future',
+      formValues: {
+        ...defaultValues,
+        oneDayDate: addMonths(new Date(), 14).toISOString().split('T')[0],
+      },
+      expectedErrors: ["L’évènement ne doit pas être dans plus d'un an"],
     },
     {
       description: 'invalid form for missing time slot',
