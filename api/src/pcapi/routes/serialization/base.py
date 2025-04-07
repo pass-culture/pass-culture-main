@@ -7,7 +7,7 @@ from pydantic.v1 import validator
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.routes.serialization import BaseModel
-from pcapi.utils.date import time_to_int
+from pcapi.utils.date import time_str_to_int
 
 
 class VenueResponseGetterDict(pydantic_v1.utils.GetterDict):
@@ -72,7 +72,7 @@ class OpeningHoursModel(BaseModel):
     @validator("timespan", each_item=True)
     def convert_to_numeric_ranges(cls, timespan: list[str]) -> NumericRange:
         start, end = timespan
-        return NumericRange(time_to_int(start), time_to_int(end), "[]")
+        return NumericRange(time_str_to_int(start), time_str_to_int(end), "[]")
 
     @validator("weekday", each_item=True)
     def return_weekday_upper(cls, weekday: str) -> str:

@@ -186,7 +186,7 @@ def format_date_to_french_locale(date_: date | None) -> str | None:
     return date_.strftime(FRENCH_DATE_FORMAT) if date_ else None
 
 
-def int_to_time(time_as_int: int) -> str:
+def int_to_time_str(time_as_int: int) -> str:
     """
     Convert time defined by hours * 60 + minutes to the format "HH:MM"
     """
@@ -194,7 +194,7 @@ def int_to_time(time_as_int: int) -> str:
     return f"{hours:02}:{minutes:02}"
 
 
-def time_to_int(time_as_str: str) -> int:
+def time_str_to_int(time_as_str: str) -> int:
     """
     Convert time in the format "HH:MM" to int defined by hours * 60 + minutes
     """
@@ -202,18 +202,33 @@ def time_to_int(time_as_str: str) -> int:
     return hours * 60 + minutes
 
 
+def time_to_int(time_value: time) -> int:
+    """
+    Convert datetime.time object to int defined by hours * 60 + minutes
+    """
+    return time_value.hour * 60 + time_value.minute
+
+
+def int_to_time(time_as_int: int) -> time:
+    """
+    Convert time defined by hours * 60 + minutes to a datetime.time object
+    """
+    hours, minutes = divmod(time_as_int, 60)
+    return time(hours, minutes)
+
+
 def timespan_str_to_numrange(timespan_list: list[tuple[str, str]]) -> list[NumericRange]:
     """
     Convert a list of tuples (start, end) in the format [("HH:MM", "HH:MM"), ("HH:MM"), "HH:MM")] to a list of NumericRange
     """
-    return [NumericRange(time_to_int(start), time_to_int(end), bounds="[]") for start, end in timespan_list]
+    return [NumericRange(time_str_to_int(start), time_str_to_int(end), bounds="[]") for start, end in timespan_list]
 
 
 def numranges_to_timespan_str(numranges: list[NumericRange]) -> list[tuple[str, str]]:
     """
     Convert a list of NumericRange to a list of tuples (start, end) in the format [("HH:MM", "HH:MM"), ...]
     """
-    return [(int_to_time(int(numrange.lower)), int_to_time(int(numrange.upper))) for numrange in numranges]
+    return [(int_to_time_str(int(numrange.lower)), int_to_time_str(int(numrange.upper))) for numrange in numranges]
 
 
 def numranges_to_readble_str(numranges: list[NumericRange] | None) -> str:
@@ -222,7 +237,9 @@ def numranges_to_readble_str(numranges: list[NumericRange] | None) -> str:
     """
     if numranges is None:
         return ""
-    return ", ".join(f"{int_to_time(int(numrange.lower))}-{int_to_time(int(numrange.upper))}" for numrange in numranges)
+    return ", ".join(
+        f"{int_to_time_str(int(numrange.lower))}-{int_to_time_str(int(numrange.upper))}" for numrange in numranges
+    )
 
 
 def days_ago_timestamp(days: int) -> int:

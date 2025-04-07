@@ -3,7 +3,6 @@ import typing
 
 from psycopg2.extras import NumericRange
 from pydantic.v1 import ConstrainedList
-from pydantic.v1 import ConstrainedStr
 from pydantic.v1 import EmailStr
 from pydantic.v1 import HttpUrl
 from pydantic.v1 import root_validator
@@ -20,13 +19,9 @@ from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 from .validation import check_offer_subcategory_is_valid
 
 
-class HourType(ConstrainedStr):
-    regex = r"^([0-1]\d|2[0-3]):[0-5]\d$"
-
-
 class TimeSpan(BaseModel):
-    open: HourType
-    close: HourType
+    open: datetime.time
+    close: datetime.time
 
     @root_validator(pre=False)
     def validate_open_is_before_close(cls, values: dict) -> dict:
@@ -36,7 +31,7 @@ class TimeSpan(BaseModel):
         if not open_value or not close_value:
             return values
 
-        if time_to_int(open_value) > time_to_int(close_value):
+        if open_value > close_value:
             raise ValueError("`open` should be before `close`")
 
         return values
