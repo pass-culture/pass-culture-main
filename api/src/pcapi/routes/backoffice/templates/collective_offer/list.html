@@ -5,9 +5,6 @@
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% extends "layouts/list.html" %}
 {% set rows_count = rows|length %}
-{% if rows and is_feature_active("WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION") %}
-  {% set table_class = "pc-table-manager d-none" %}
-{% endif %}
 {% block title %}Offres collectives{% endblock %}
 {% block search_block %}{{ build_advanced_filters_form_ng(form, dst) }}{% endblock %}
 {% block table_header %}
@@ -63,7 +60,7 @@
             <button type="button"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
-                    class="btn p-0">
+                    class="btn p-0 btn-outline-primary-subtle-bg border-0">
               <i class="bi bi-three-dots-vertical"></i>
             </button>
             <ul class="dropdown-menu">
@@ -118,11 +115,15 @@
       {% endif %}
       <td>
         {{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}
-        {{ badges.build_offer_offerer_fraud_badges(collective_offer.venue.managingOfferer) }}
+        {% call badges.badges_container() %}
+          {{ badges.build_offer_offerer_fraud_badges(collective_offer.venue.managingOfferer) }}
+        {% endcall %}
       </td>
       <td>
         {{ links.build_venue_name_to_details_link(collective_offer.venue) }}
-        {{ badges.build_offer_venue_fraud_badges(collective_offer.venue) }}
+        {% call badges.badges_container() %}
+          {{ badges.build_offer_venue_fraud_badges(collective_offer.venue) }}
+        {% endcall %}
       </td>
       <td>{{ links.build_venue_offers_icon_link_advanced(".list_collective_offers", "Offres collectives", collective_offer.venue) }}</td>
       {% set deposit = collective_offer.institution.deposits[0] if collective_offer.institution and collective_offer.institution.deposits else none %}
@@ -130,9 +131,9 @@
         <td>
           {% if deposit %}{{ deposit.ministry.value }}{% endif %}
           {% if collective_offer.institution %}
-            {% for program in collective_offer.institution.programs %}
+            {% for program_association in collective_offer.institution.programAssociations %}
               <br />
-              {{ program.label }}
+              {{ program_association.program.label }}
             {% endfor %}
           {% endif %}
         </td>
@@ -146,21 +147,22 @@
   {% endfor %}
 {% endblock %}
 {% block multi_select_menu %}
-  <div class="counter-container">
+  <div class="counter-container text-nowrap">
     <span class="counter">0</span> offre(s) collective(s) sélectionnée(s)
   </div>
   <div data-toggle="pc-batch-confirm-btn-group"
        data-toggle-id="table-container-collective-offer-validation-btn-group"
        data-pc-table-multi-select-id="{{ table_name }}"
-       data-input-ids-name="object_ids">
+       data-input-ids-name="object_ids"
+       class="d-flex">
     <button disabled
             type="button"
-            class="btn border-end rounded-0 border-top-0 border-bottom-0"
+            class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
             data-use-confirmation-modal="true"
             data-modal-selector="#batch-validate-modal">Valider</button>
     <button disabled
             type="button"
-            class="btn rounded-0 border-0"
+            class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap"
             data-use-confirmation-modal="true"
             data-modal-selector="#batch-reject-modal">Rejeter</button>
   </div>
