@@ -88,7 +88,9 @@ class InseeBackend(BaseBackend):
     def _get_head_office(self, siren_data: dict) -> dict:
         today = datetime.date.today().isoformat()
         for periode in siren_data["periodesUniteLegale"]:
-            if periode["dateDebut"] <= today and (not periode["dateFin"] or periode["dateFin"] >= today):
+            if (not periode["dateDebut"] or periode["dateDebut"] <= today) and (
+                not periode["dateFin"] or periode["dateFin"] >= today
+            ):
                 return periode
         # In case all "periodes" are in the future (or the single period: "dateCreationUniteLegale" in the future):
         # Note that the company will be considered as active even before "dateCreationUniteLegale".
