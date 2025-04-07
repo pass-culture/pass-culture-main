@@ -258,75 +258,75 @@ jobs:
     if: ${{ github.ref == 'refs/heads/master' && needs.pcapi-init-job.outputs.pro-changed == 'true' }}
     uses: ./.github/workflows/dev_on_workflow_deploy_storybook.yml
 
-  push-pcapi:
-    name: "Push pcapi docker image to registry"
-    needs: [build-pcapi, pcapi-init-job, test-api]
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
-    with:
-      image: pcapi
-      commit-hash: ${{ github.sha }}
-      checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-      tag-latest: true
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  # push-pcapi:
+  #   name: "Push pcapi docker image to registry"
+  #   needs: [build-pcapi, pcapi-init-job, test-api]
+  #   uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
+  #   with:
+  #     image: pcapi
+  #     commit-hash: ${{ github.sha }}
+  #     checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+  #     tag-latest: true
+  #   secrets:
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  push-pcapi-console:
-    name: "Push pcapi-console docker image to registry"
-    needs: [build-pcapi-console, pcapi-init-job, test-api]
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
-    with:
-      image: pcapi-console
-      commit-hash: ${{ github.sha }}
-      checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-      tag-latest: true
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  # push-pcapi-console:
+  #   name: "Push pcapi-console docker image to registry"
+  #   needs: [build-pcapi-console, pcapi-init-job, test-api]
+  #   uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
+  #   with:
+  #     image: pcapi-console
+  #     commit-hash: ${{ github.sha }}
+  #     checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+  #     tag-latest: true
+  #   secrets:
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  deploy-to-testing:
-    name: "Deploy to testing"
-    needs: [pcapi-init-job, test-api, test-pro, push-pcapi-console, push-pcapi]
-    if: |
-      always() &&
-      github.ref == 'refs/heads/master' &&
-      contains(fromJSON('["success", "skipped"]'), needs.test-api.result) &&
-      contains(fromJSON('["success", "skipped"]'), needs.test-pro.result)
-    uses: ./.github/workflows/dev_on_workflow_deploy.yml
-    with:
-      environment: testing
-      app_version: ${{ github.sha }}
-      cluster_scope: metier
-      cluster_environment: ehp
-      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
-      apply_algolia_config: ${{ needs.pcapi-init-job.outputs.algolia-config-changed == 'true' }}
-      deploy_api: ${{ needs.test-api.result == 'success' }}
-      deploy_pro: ${{ needs.test-pro.result == 'success' }}
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  # deploy-to-testing:
+  #   name: "Deploy to testing"
+  #   needs: [pcapi-init-job, test-api, test-pro, push-pcapi-console, push-pcapi]
+  #   if: |
+  #     always() &&
+  #     github.ref == 'refs/heads/master' &&
+  #     contains(fromJSON('["success", "skipped"]'), needs.test-api.result) &&
+  #     contains(fromJSON('["success", "skipped"]'), needs.test-pro.result)
+  #   uses: ./.github/workflows/dev_on_workflow_deploy.yml
+  #   with:
+  #     environment: testing
+  #     app_version: ${{ github.sha }}
+  #     cluster_scope: metier
+  #     cluster_environment: ehp
+  #     workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
+  #     apply_algolia_config: ${{ needs.pcapi-init-job.outputs.algolia-config-changed == 'true' }}
+  #     deploy_api: ${{ needs.test-api.result == 'success' }}
+  #     deploy_pro: ${{ needs.test-pro.result == 'success' }}
+  #   secrets:
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  deploy-to-ops:
-    name: "Deploy to ops"
-    needs: [test-api, test-pro, push-pcapi-console, push-pcapi]
-    if: |
-      always() &&
-      github.ref == 'refs/heads/master' &&
-      contains(fromJSON('["success", "skipped"]'), needs.test-api.result) &&
-      contains(fromJSON('["success", "skipped"]'), needs.test-pro.result) &&
-      vars.DISABLE_PCAPI_OPS_DEPLOY == 'false'
-    uses: ./.github/workflows/dev_on_workflow_deploy.yml
-    with:
-      environment: ops
-      app_version: ${{ github.sha }}
-      cluster_scope: metier
-      cluster_environment: ops
-      workload_identity_provider_secret_name: gcp_metier_ops_workload_identity_provider
-      deploy_api: ${{ needs.test-api.result == 'success' }}
-      deploy_pro: false
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  # deploy-to-ops:
+  #   name: "Deploy to ops"
+  #   needs: [test-api, test-pro, push-pcapi-console, push-pcapi]
+  #   if: |
+  #     always() &&
+  #     github.ref == 'refs/heads/master' &&
+  #     contains(fromJSON('["success", "skipped"]'), needs.test-api.result) &&
+  #     contains(fromJSON('["success", "skipped"]'), needs.test-pro.result) &&
+  #     vars.DISABLE_PCAPI_OPS_DEPLOY == 'false'
+  #   uses: ./.github/workflows/dev_on_workflow_deploy.yml
+  #   with:
+  #     environment: ops
+  #     app_version: ${{ github.sha }}
+  #     cluster_scope: metier
+  #     cluster_environment: ops
+  #     workload_identity_provider_secret_name: gcp_metier_ops_workload_identity_provider
+  #     deploy_api: ${{ needs.test-api.result == 'success' }}
+  #     deploy_pro: false
+  #   secrets:
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-maintenance-site:
     name: "Deploy maintenance site"
