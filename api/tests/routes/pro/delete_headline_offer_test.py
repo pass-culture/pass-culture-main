@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 import pytest
 
@@ -12,7 +13,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns204Test:
-    def test_delete_headline_offer(self, client):
+
+    def test_delete_headline_offer(self, client, caplog):
         pro = users_factory.ProFactory()
         offer = offers_factories.OfferFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offer.venue.managingOfferer)
@@ -23,7 +25,8 @@ class Returns204Test:
 
         data = {"offererId": offer.venue.managingOfferer.id}
         client = client.with_session_auth(pro.email)
-        response = client.post("/offers/delete_headline", json=data)
+        with caplog.at_level(logging.INFO):
+            response = client.post("/offers/delete_headline", json=data)
 
         assert response.status_code == 204
 
@@ -32,7 +35,16 @@ class Returns204Test:
         assert not old_headline_offer.isActive
         assert old_headline_offer.timespan.upper == yesterday
 
-    def test_delete_only_offerers_headline_offer(self, client):
+        assert len([log for log in caplog.records if log.message == "Headline Offer Deactivation"]) == 1
+        log = next(log for log in caplog.records if log.message == "Headline Offer Deactivation")
+        assert log.extra == {
+            "analyticsSource": "app-pro",
+            "HeadlineOfferId": headline_offer.id,
+            "Reason": "Headline offer has been deactivated by user",
+        }
+        assert log.technical_message_id == "headline_offer_deactivation"
+
+    def test_delete_only_offerers_headline_offer(self, client, caplog):
         pro = users_factory.ProFactory()
         offer = offers_factories.OfferFactory()
         offerer = offer.venue.managingOfferer
@@ -45,16 +57,27 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=another_offerer)
         client = client.with_session_auth(pro.email)
         data = {"offererId": offerer.id}
-        response = client.post("/offers/delete_headline", json=data)
+        with caplog.at_level(logging.INFO):
+            response = client.post("/offers/delete_headline", json=data)
 
         assert response.status_code == 204
 
         assert not headline_offer.isActive
         assert another_headline_offer.isActive
 
+        assert len([log for log in caplog.records if log.message == "Headline Offer Deactivation"]) == 1
+        log = next(log for log in caplog.records if log.message == "Headline Offer Deactivation")
+        assert log.extra == {
+            "analyticsSource": "app-pro",
+            "HeadlineOfferId": headline_offer.id,
+            "Reason": "Headline offer has been deactivated by user",
+        }
+        assert log.technical_message_id == "headline_offer_deactivation"
+
 
 class Returns401Test:
-    def test_delete_headline_when_current_user_has_no_rights_on_offer(self, client):
+
+    def test_delete_headline_when_current_user_has_no_rights_on_offer(self, client, caplog):
         pro = users_factory.ProFactory()
         offer = offers_factories.OfferFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offer.venue.managingOfferer)
@@ -67,3 +90,5 @@ class Returns401Test:
 
         assert offer_models.HeadlineOffer.query.count() == 1
         assert headline_offer.isActive
+
+        assert len([log for log in caplog.records if log.message == "Headline Offer Deactivation"]) == 0

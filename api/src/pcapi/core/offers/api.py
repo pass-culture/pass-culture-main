@@ -579,7 +579,7 @@ def upsert_headline_offer(offer: models.Offer) -> models.HeadlineOffer:
     offerer_id = offer.venue.managingOffererId
     headline_offer = offers_repository.get_current_headline_offer(offerer_id)
     if headline_offer and headline_offer.offerId != offer.id:
-        remove_headline_offer(offerer_id)
+        remove_headline_offer(headline_offer)
         logger.info(
             "Headline Offer Deactivation",
             extra={
@@ -623,31 +623,19 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
     return headline_offer
 
 
-def remove_headline_offer(offerer_id: int) -> None:
-    if active_headline_offer := offers_repository.get_current_headline_offer(offerer_id):
-        try:
-            active_headline_offer.timespan = db_utils.make_timerange(
-                active_headline_offer.timespan.lower, datetime.datetime.utcnow()
-            )
-            db.session.flush()
-            logger.info(
-                "Headline Offer Deactivation",
-                extra={
-                    "analyticsSource": "app-pro",
-                    "HeadlineOfferId": active_headline_offer.id,
-                    "Reason": "Headline offer has been deactivated by user",
-                },
-                technical_message_id="headline_offer_deactivation",
-            )
-            on_commit(
-                partial(
-                    search.async_index_offer_ids,
-                    {active_headline_offer.offerId},
-                    reason=search.IndexationReason.OFFER_REINDEXATION,
-                ),
-            )
-        except sa_exc.IntegrityError:
-            raise exceptions.CannotRemoveHeadlineOffer
+def remove_headline_offer(headline_offer: offers_models.HeadlineOffer) -> None:
+    try:
+        headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
+        db.session.flush()
+        on_commit(
+            partial(
+                search.async_index_offer_ids,
+                {headline_offer.offerId},
+                reason=search.IndexationReason.OFFER_REINDEXATION,
+            ),
+        )
+    except sa_exc.IntegrityError:
+        raise exceptions.CannotRemoveHeadlineOffer
 
 
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:

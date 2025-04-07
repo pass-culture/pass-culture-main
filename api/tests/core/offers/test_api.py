@@ -2137,7 +2137,7 @@ class HeadlineOfferTest:
         offer = factories.OfferFactory(isActive=True)
         headline_offer = factories.HeadlineOfferFactory(offer=offer)
 
-        api.remove_headline_offer(offer.venue.managingOffererId)
+        api.remove_headline_offer(headline_offer)
         db.session.commit()  # see comment in make_offer_headline()
 
         assert headline_offer.timespan.upper
@@ -2276,7 +2276,7 @@ class HeadlineOfferTest:
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_set_upper_timespan_of_inactive_headline_offers(self, mocked_async_index_offer_ids):
+    def test_set_upper_timespan_of_inactive_headline_offers(self, mocked_async_index_offer_ids, caplog):
         headline_offer_1 = factories.HeadlineOfferFactory()
         headline_offer_3 = factories.HeadlineOfferFactory()
         headline_offer_2 = factories.HeadlineOfferFactory()
@@ -2289,7 +2289,19 @@ class HeadlineOfferTest:
         headline_offer_1.offer.validation = models.OfferValidationStatus.REJECTED
         headline_offer_2.offer.stocks[0].quantity = 0
 
-        api.set_upper_timespan_of_inactive_headline_offers()
+        with caplog.at_level(logging.INFO):
+            api.set_upper_timespan_of_inactive_headline_offers()
+
+        assert len(caplog.records) == 2
+        assert caplog.records[0].message == "Headline Offer Deactivation"
+        assert caplog.records[0].extra["Reason"] == "Offer is not active anymore, or image has been removed"
+        assert caplog.records[0].extra["analyticsSource"] == "app-pro"
+        assert caplog.records[0].technical_message_id == "headline_offer_deactivation"
+        assert caplog.records[1].message == "Headline Offer Deactivation"
+        assert caplog.records[1].extra["Reason"] == "Offer is not active anymore, or image has been removed"
+        assert caplog.records[1].extra["analyticsSource"] == "app-pro"
+        assert caplog.records[1].technical_message_id == "headline_offer_deactivation"
+
         assert not headline_offer_1.isActive
         assert not headline_offer_1.timespan.upper is None
         assert not headline_offer_2.isActive
@@ -2304,7 +2316,7 @@ class HeadlineOfferTest:
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_do_not_deactivate_headline_offer_with_product_mediation(self, mocked_async_index_offer_ids):
+    def test_do_not_deactivate_headline_offer_with_product_mediation(self, mocked_async_index_offer_ids, caplog):
         product_without_mediation = factories.ProductFactory()
         product_with_mediation = factories.ProductFactory()
         factories.ProductMediationFactory(product=product_with_mediation)
@@ -2320,7 +2332,17 @@ class HeadlineOfferTest:
         assert headline_offer_with_product_mediation.offer.images
         assert not headline_offer_without_product_mediation.offer.images
 
-        api.set_upper_timespan_of_inactive_headline_offers()
+        with caplog.at_level(logging.INFO):
+            api.set_upper_timespan_of_inactive_headline_offers()
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "Headline Offer Deactivation"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "app-pro",
+            "HeadlineOfferId": headline_offer_without_product_mediation.id,
+            "Reason": "Offer is not active anymore, or image has been removed",
+        }
+
         assert headline_offer_with_product_mediation.isActive
         assert headline_offer_with_product_mediation.timespan.upper is None
 
@@ -2335,12 +2357,17 @@ class HeadlineOfferTest:
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_do_not_update_upper_timespan_of_already_inactive_headline_offers(self, mocked_async_index_offer_ids):
+    def test_do_not_update_upper_timespan_of_already_inactive_headline_offers(
+        self, mocked_async_index_offer_ids, caplog
+    ):
         creation_time = datetime.utcnow() - timedelta(days=20)
         finished_timespan = (creation_time, creation_time + timedelta(days=10))
         old_headline_offer = factories.HeadlineOfferFactory(timespan=finished_timespan)
 
-        api.set_upper_timespan_of_inactive_headline_offers()
+        with caplog.at_level(logging.INFO):
+            api.set_upper_timespan_of_inactive_headline_offers()
+
+        assert len(caplog.records) == 0
         assert old_headline_offer.timespan.lower.date() == creation_time.date()
         assert old_headline_offer.timespan.upper.date() == (creation_time + timedelta(days=10)).date()
 
@@ -2350,7 +2377,7 @@ class HeadlineOfferTest:
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_should_not_change_upper_timespan_of_already_deactivated_offers(self, mocked_async_index_offer_ids):
+    def test_should_not_change_upper_timespan_of_already_deactivated_offers(self, mocked_async_index_offer_ids, caplog):
         creation_time_1 = datetime.utcnow() - timedelta(days=3)
         ending_time_1 = datetime.utcnow() - timedelta(days=2)
         creation_time_2 = datetime.utcnow() - timedelta(days=1)
@@ -2359,8 +2386,16 @@ class HeadlineOfferTest:
         old_headline_offer = factories.HeadlineOfferFactory(timespan=finished_timespan)
         current_headline_offer = factories.HeadlineOfferFactory(timespan=unfinished_timespan, without_mediation=True)
 
-        api.set_upper_timespan_of_inactive_headline_offers()
+        with caplog.at_level(logging.INFO):
+            api.set_upper_timespan_of_inactive_headline_offers()
 
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "Headline Offer Deactivation"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "app-pro",
+            "HeadlineOfferId": current_headline_offer.id,
+            "Reason": "Offer is not active anymore, or image has been removed",
+        }
         assert old_headline_offer.timespan.lower == creation_time_1
         assert old_headline_offer.timespan.upper == ending_time_1
         assert current_headline_offer.timespan.lower == creation_time_2
@@ -2374,13 +2409,22 @@ class HeadlineOfferTest:
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_set_upper_timespan_of_inactive_headline_offers_without_image(self, mocked_async_index_offer_ids):
+    def test_set_upper_timespan_of_inactive_headline_offers_without_image(self, mocked_async_index_offer_ids, caplog):
         offer = factories.OfferFactory(isActive=True)
 
         headline_offer = factories.HeadlineOfferFactory(offer=offer, without_mediation=True)
         assert not headline_offer.isActive
 
-        api.set_upper_timespan_of_inactive_headline_offers()
+        with caplog.at_level(logging.INFO):
+            api.set_upper_timespan_of_inactive_headline_offers()
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "Headline Offer Deactivation"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "app-pro",
+            "HeadlineOfferId": headline_offer.id,
+            "Reason": "Offer is not active anymore, or image has been removed",
+        }
 
         assert headline_offer.timespan.upper is not None
 
@@ -2390,15 +2434,24 @@ class HeadlineOfferTest:
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_upsert_headline_offer_on_another_offer(self, mocked_async_index_offer_ids):
+    def test_upsert_headline_offer_on_another_offer(self, mocked_async_index_offer_ids, caplog):
         offer = factories.OfferFactory(venue__venueTypeCode=VenueTypeCode.LIBRARY)
         another_offer = factories.OfferFactory(venue=offer.venue)
         factories.StockFactory(offer=another_offer)
         factories.MediationFactory(offer=another_offer)
         headline_offer = factories.HeadlineOfferFactory(offer=offer)
 
-        new_headline_offer = api.upsert_headline_offer(another_offer)
-        db.session.commit()  # see comment in make_offer_headline()
+        with caplog.at_level(logging.INFO):
+            new_headline_offer = api.upsert_headline_offer(another_offer)
+            db.session.commit()  # see comment in make_offer_headline()
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "Headline Offer Deactivation"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "app-pro",
+            "HeadlineOfferId": headline_offer.id,
+            "Reason": "User chose to replace this headline offer by another offer",
+        }
 
         assert not offer.is_headline_offer
         assert another_offer.is_headline_offer
@@ -2414,13 +2467,16 @@ class HeadlineOfferTest:
         mocked_async_index_offer_ids.assert_has_calls(expected_reindexation_calls)
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_upsert_headline_offer_on_same_offer(self, mocked_async_index_offer_ids):
+    def test_upsert_headline_offer_on_same_offer(self, mocked_async_index_offer_ids, caplog):
         offer = factories.OfferFactory(venue__venueTypeCode=VenueTypeCode.LIBRARY)
         creation_time = datetime.utcnow() - timedelta(days=20)
         finished_timespan = (creation_time, creation_time + timedelta(days=10))
         headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
-        new_headline_offer = api.upsert_headline_offer(offer)
-        db.session.commit()  # see comment in make_offer_headline()
+        with caplog.at_level(logging.INFO):
+            new_headline_offer = api.upsert_headline_offer(offer)
+            db.session.commit()  # see comment in make_offer_headline()
+
+        assert len(caplog.records) == 0
 
         assert not headline_offer.isActive
         assert headline_offer.timespan.upper is not None
