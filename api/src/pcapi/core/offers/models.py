@@ -181,7 +181,6 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     likesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
     ean = sa.Column(sa.Text, sa.CheckConstraint("ean ~ '^\\d{13}$'", name="check_ean_validity"), nullable=True)
 
-    sa.Index("product_ean_idx", extraData["ean"].astext)
     sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
     sa.Index("product_visa_idx", extraData["visa"].astext)
     sa.Index("unique_ix_product_ean", ean, unique=True)

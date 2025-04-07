@@ -46,7 +46,13 @@ class ProductFactory(BaseFactory):
     subcategoryId = subcategories.LIVRE_PAPIER.id
     name = factory.Sequence("Product {}".format)
     description = factory.Sequence("A passionate description of product {}".format)
-    ean = factory.LazyAttribute(lambda o: fake.ean13() if o.subcategoryId in THINGS_PRODUCT_SUBCATEGORIES_IDS else None)
+    ean = factory.LazyAttribute(
+        lambda o: (
+            fake.ean13()
+            if o.subcategoryId in THINGS_PRODUCT_SUBCATEGORIES_IDS or getattr(o, "set_all_fields", False)
+            else None
+        )
+    )
 
     @classmethod
     def _create(
@@ -56,9 +62,6 @@ class ProductFactory(BaseFactory):
         **kwargs: typing.Any,
     ) -> models.Product:
         # Graciously provide the required idAtProviders if lastProvider is given.
-
-        if kwargs.get("extraData") and "ean" in kwargs.get("extraData", {}):
-            raise ValueError("'ean' key is no longer allowed in extraData. Use the ean column instead.")
 
         if kwargs["subcategoryId"] not in cls.AVAILABLE_SUBCATEGORIES:
             raise ValueError(f"Events products subcategory can only be one of {cls.AVAILABLE_SUBCATEGORIES}.")
@@ -74,6 +77,9 @@ class ProductFactory(BaseFactory):
             kwargs["extraData"] = build_extra_data_from_subcategory(
                 subcategory_id, kwargs.pop("set_all_fields", False), True, is_offer=False
             )
+
+        if kwargs.get("extraData") and "ean" in kwargs.get("extraData", {}):
+            raise ValueError("'ean' key is no longer allowed in extraData. Use the ean column instead.")
 
         return super()._create(model_class, *args, **kwargs)
 
@@ -206,7 +212,7 @@ class OfferFactory(BaseFactory):
             kwargs["name"] = product.name
             kwargs["subcategoryId"] = product.subcategoryId
             kwargs["description"] = None
-            kwargs["extraData"] = product.extraData
+            kwargs["extraData"] = product.extraData.copy() if product.extraData else None
 
             # FIXME (jmontagnat, 2024-04-03) Remove this block of code
             #  when the offer uses the EAN column instead of extraData->>ean
