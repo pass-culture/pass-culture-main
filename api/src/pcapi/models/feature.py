@@ -149,9 +149,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_CLICKHOUSE_IN_BO = "Utiliser Clickhouse pour les statistiques des acteurs culturels dans le BO"
     WIP_IS_OPEN_TO_PUBLIC = "Activer l'utilisation du critère 'ouvert au public' pour les synchro"
     WIP_2025_SIGN_UP = "Activer le nouveau parcours d’inscription au portail pro"
-    WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION = (
-        "Activer la personnalisation tu tableau des offres individuelles dans le BO"
-    )
     WIP_ENABLE_BO_OFFER_DETAILS_V2 = "Afficher le nouveau design de la page `details de l'offre`"
     WIP_ENABLE_EVENT_WITH_OPENING_HOUR = "Activer la nouvelle création d'un événement sur horaires d'ouverture"
 
@@ -221,7 +218,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED,
     FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION,
     FeatureToggle.WIP_EAN_CREATION,
-    FeatureToggle.WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION,
     FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO,
     FeatureToggle.WIP_ENABLE_EVENT_WITH_OPENING_HOUR,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE,

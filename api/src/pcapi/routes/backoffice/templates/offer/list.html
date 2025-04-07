@@ -5,9 +5,6 @@
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% extends "layouts/list.html" %}
 {% set rows_count = rows|length %}
-{% if rows and is_feature_active("WIP_ENABLE_BO_OFFER_TABLE_CUSTOMIZATION") %}
-  {% set table_class = "pc-table-manager d-none" %}
-{% endif %}
 {% block title %}Offres individuelles{% endblock %}
 {% block search_block %}
   {{ display_selector("form-selector-individual-offer", (("Recherche exhaustive des offres", "Accédez à l’ensemble des offres, qu’elles soient réservables ou non, disponibles en\n database.","advanced-search", page=="offer") , ("Recherche des offres réservables sur l’app jeune", "Remonte toutes les offres réservables sur l’app Jeune, en affichant une seule offre par\n produit. Si plusieurs acteurs proposent la même, une seule sera affichée.", "algolia-search", page=="algolia")), "px-1 mb-4") }}
@@ -82,7 +79,7 @@
           <button type="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
-                  class="btn p-0">
+                  class="btn p-0 btn-outline-primary-subtle-bg border-0">
             <i class="bi bi-three-dots-vertical"></i>
           </button>
           <ul class="dropdown-menu">
@@ -224,24 +221,25 @@
   {% endfor %}
 {% endblock %}
 {% block multi_select_menu %}
-  <div class="counter-container">
+  <div class="counter-container text-nowrap">
     <span class="counter">0</span> offre(s) sélectionnée(s)
   </div>
   {% if has_permission("PRO_FRAUD_ACTIONS") %}
     <div data-toggle="pc-batch-confirm-btn-group"
          data-toggle-id="table-container-individual-offer-fraud-btn-group"
          data-pc-table-multi-select-id="{{ table_name }}"
-         data-input-ids-name="object_ids">
+         data-input-ids-name="object_ids"
+         class="d-flex">
       <button disabled
               type="button"
-              class="btn border-end rounded-0 border-top-0 border-bottom-0"
+              class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
               data-use-confirmation-modal="true"
               data-modal-selector="#batch-validate-offer-modal">
         Valider<i class="bi bi-hand-thumbs-up ps-2"></i>
       </button>
       <button disabled
               type="button"
-              class="btn border-end rounded-0 border-top-0 border-bottom-0"
+              class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
               data-use-confirmation-modal="true"
               data-modal-selector="#batch-reject-offer-modal">
         Rejeter<i class="bi bi-hand-thumbs-down ps-2"></i>
@@ -252,17 +250,18 @@
     <div data-toggle="pc-batch-confirm-btn-group"
          data-toggle-id="table-container-individual-offer-fraud-btn-group"
          data-pc-table-multi-select-id="{{ table_name }}"
-         data-input-ids-name="object_ids">
+         data-input-ids-name="object_ids"
+         class="d-flex">
       <button disabled
               type="button"
-              class="btn border-end rounded-0 border-top-0 border-bottom-0"
+              class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
               data-use-confirmation-modal="true"
               data-modal-selector="#batch-activate-offer-modal">
         Activer<i class="bi bi-check-circle ps-2"></i>
       </button>
       <button disabled
               type="button"
-              class="btn border-end rounded-0 border-top-0 border-bottom-0"
+              class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
               data-use-confirmation-modal="true"
               data-modal-selector="#batch-deactivate-offer-modal">
         Désactiver<i class="bi bi-x-circle ps-2"></i>
@@ -272,10 +271,11 @@
   <div data-toggle="pc-batch-confirm-btn-group"
        data-toggle-id="table-container-individual-offer-edit-btn-group"
        data-pc-table-multi-select-id="{{ table_name }}"
-       data-input-ids-name="object_ids">
+       data-input-ids-name="object_ids"
+       class="d-flex">
     <button disabled
             type="button"
-            class="btn rounded-0  border-top-0 border-bottom-0"
+            class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap"
             data-modal-selector="#batch-edit-offer-modal"
             data-mode="fetch"
             data-fetch-url="{{ url_for('backoffice_web.offer.get_batch_edit_offer_form') }}"

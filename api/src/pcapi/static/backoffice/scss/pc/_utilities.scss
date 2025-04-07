@@ -27,11 +27,11 @@
     label{
       background-color:$white;
       &.pc-display-selector-checked{
-        background-color: $purple-200;
+        background-color: $primary-bg-subtle;
       }
     }
     label:hover{
-      background-color:$purple-200;
+      background-color: $primary-bg-subtle;
     }
 
   }
@@ -46,16 +46,19 @@
   .btn {
     color: $white;
     padding: 10px 8px;
+    &:hover {
+      background-color: $purple-500;
+    }
   }
 }
 
-tr:has( input:checked) {
+tr:has([type="checkbox"]:checked) {
   background-color: rgba(0,0,0, 0.075);
 }
 
 .pc-offer-table-image-container {
-  height: 129px;
-  width: 96px;
+  height: 100px;
+  width: 74.41px;
 }
 
 .pc-offer-table-image{
@@ -66,7 +69,7 @@ tr:has( input:checked) {
 
 .pc-offer-table-no-image{
   background-color: $gray-100;
-  padding: 48px 32px;
+  padding: 34px 21.205px;
   i{
     width:32px;
     height:32px;
