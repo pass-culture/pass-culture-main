@@ -9,7 +9,7 @@ import pytest
 import time_machine
 
 from pcapi import settings
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
@@ -91,7 +91,7 @@ def minimal_payload_fixture(domain, institution, venue):
         "venueId": venue.id,
         "name": "Some offer with minimal payload",
         "description": "description",
-        "formats": [subcategories.EacFormat.CONCERT.value],
+        "formats": [EacFormat.CONCERT.value],
         "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
         "contactEmail": "offerer-contact@example.com",
         "contactPhone": "+33100992798",
@@ -179,7 +179,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert offer.isPublicApi
         assert offer.nationalProgramId == national_program.id
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
-        assert offer.formats == [subcategories.EacFormat.CONCERT]
+        assert offer.formats == [EacFormat.CONCERT]
 
         # stock data
         assert offer.collectiveStock.startDatetime == datetime.fromisoformat(payload["startDatetime"]).replace(

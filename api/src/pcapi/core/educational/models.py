@@ -18,8 +18,7 @@ from pcapi import models
 from pcapi import settings
 from pcapi.core import object_storage
 from pcapi.core.bookings import exceptions as booking_exceptions
-from pcapi.core.categories import pro_categories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.models import offer_mixin
@@ -528,8 +527,6 @@ class CollectiveOffer(
 
     dateArchived: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
 
-    subcategoryId: str | None = sa.Column(sa.Text, nullable=True)
-
     dateUpdated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
@@ -610,8 +607,8 @@ class CollectiveOffer(
         "OfferValidationRule", secondary="validation_rule_collective_offer_link", back_populates="collectiveOffers"
     )
 
-    formats: list[subcategories.EacFormat] = sa.Column(
-        postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=False
+    formats: list[EacFormat] = sa.Column(
+        postgresql.ARRAY(sa.Enum(EacFormat, create_constraint=False, native_enum=False)), nullable=False
     )
 
     rejectionReason: CollectiveOfferRejectionReason | None = sa.Column(
@@ -941,18 +938,6 @@ class CollectiveOffer(
         return [action for action in allowed_actions if action not in not_allowed]
 
     @property
-    def subcategory(self) -> subcategories.Subcategory | None:
-        if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
-            return None
-        return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
-
-    @property
-    def category(self) -> pro_categories.Category | None:
-        if not self.subcategory:
-            return None
-        return self.subcategory.category
-
-    @property
     def visibleText(self) -> str:  # used in validation rule, do not remove
         text_data: list[str] = [self.name, self.description]
         if self.collectiveStock and self.collectiveStock.priceDetail:
@@ -1034,8 +1019,6 @@ class CollectiveOfferTemplate(
 
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
 
-    subcategoryId: str | None = sa.Column(sa.Text, nullable=True)
-
     dateUpdated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
@@ -1100,8 +1083,8 @@ class CollectiveOfferTemplate(
 
     dateRange: DateTimeRange = sa.Column(postgresql.TSRANGE)
 
-    formats: list[subcategories.EacFormat] = sa.Column(
-        postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=False
+    formats: list[EacFormat] = sa.Column(
+        postgresql.ARRAY(sa.Enum(EacFormat, create_constraint=False, native_enum=False)), nullable=False
     )
 
     collective_playlists: list[sa_orm.Mapped["CollectivePlaylist"]] = sa_orm.relationship(
@@ -1339,12 +1322,6 @@ class CollectiveOfferTemplate(
         return (not self.isArchived, -BIG_NUMBER_FOR_SORTING_OFFERS, self.dateCreated)
 
     @property
-    def subcategory(self) -> subcategories.Subcategory | None:
-        if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
-            return None
-        return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
-
-    @property
     def visibleText(self) -> str:  # used in validation rule, do not remove
         return f"{self.name} {self.description} {self.priceDetail}"
 
@@ -1364,7 +1341,6 @@ class CollectiveOfferTemplate(
             "durationMinutes",
             "dateCreated",
             "domains",
-            "subcategoryId",
             "dateUpdated",
             "bookingEmails",
             "lastValidationDate",

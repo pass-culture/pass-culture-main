@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
@@ -15,7 +15,6 @@ from pcapi.core.users import testing as sendinblue_testing
 def base_offer_payload(
     venue,
     domain_ids=None,
-    subcategory_id=None,
     template_id=None,
     national_program_id=None,
     formats=None,
@@ -23,9 +22,6 @@ def base_offer_payload(
 ) -> dict:
     if domain_ids is None:
         domain_ids = [educational_factories.EducationalDomainFactory().id]
-
-    if not subcategory_id:
-        subcategory_id = subcategories.SPECTACLE_REPRESENTATION.id
 
     if not national_program_id and domain_ids:
         national_program_id = educational_factories.NationalProgramFactory().id
@@ -36,7 +32,7 @@ def base_offer_payload(
         )
 
     if formats is None:
-        formats = [subcategories.EacFormat.CONCERT.value]
+        formats = [EacFormat.CONCERT.value]
 
     return {
         "venueId": venue.id,
@@ -45,7 +41,6 @@ def base_offer_payload(
         "domains": domain_ids,
         "durationMinutes": 60,
         "name": "La pièce de théâtre",
-        "subcategoryId": subcategory_id,
         "contactEmail": "pouet@example.com",
         "contactPhone": "01 99 00 25 68",
         "offerVenue": {
@@ -75,7 +70,6 @@ def assert_offer_values(offer, data, user, offerer):
             assert offer.bookingEmails == []
     else:
         assert set(offer.bookingEmails) == set(data["bookingEmails"])
-    assert offer.subcategoryId == data["subcategoryId"]
     assert offer.venueId == data["venueId"]
     assert offer.durationMinutes == data["durationMinutes"]
     assert offer.venue.managingOffererId == offerer.id
@@ -497,54 +491,6 @@ class Returns403Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-    def test_create_collective_offer_unknown_category(self, client):
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
-
-        # When
-        data = base_offer_payload(venue=venue, subcategory_id="pouet")
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert models.CollectiveOffer.query.count() == 0
-
-    def test_create_collective_offer_unselectable_category(self, client):
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
-
-        # When
-        data = base_offer_payload(venue=venue, subcategory_id=subcategories.OEUVRE_ART.id)
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert models.CollectiveOffer.query.count() == 0
-
-    def test_create_collective_offer_no_collective_category(self, client):
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
-
-        # When
-        data = base_offer_payload(venue=venue, subcategory_id=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert models.CollectiveOffer.query.count() == 0
-
     def test_create_collective_offer_booking_emails_invalid(self, client):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()

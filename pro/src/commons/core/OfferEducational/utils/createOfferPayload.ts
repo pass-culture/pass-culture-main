@@ -58,7 +58,6 @@ function getCommonOfferPayload(
 ): PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel {
   return {
     venueId: Number(offer.venueId),
-    subcategoryId: null,
     name: offer.title,
     bookingEmails: offer.notificationEmails,
     description: offer.description,

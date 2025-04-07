@@ -69,9 +69,8 @@ def add_action(
         actionType=action_type,
         authorUser=author.real_user if author else None,
         user=user,
-        # FIXME remove type ignores when upgrading to sqlalchemy 2.0
-        offerer=offerer,  # type: ignore[arg-type]
-        venue=venue,  # type: ignore[arg-type]
+        offerer=offerer,
+        venue=venue,
         financeIncident=finance_incident,
         bankAccount=bank_account,
         rule=rule,  # type: ignore[arg-type]

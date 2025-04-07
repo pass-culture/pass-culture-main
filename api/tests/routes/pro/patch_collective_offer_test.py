@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 import time_machine
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
@@ -52,7 +52,6 @@ class Returns200Test:
             contactEmail="johndoe@yopmail.com",
             bookingEmails=["booking@youpi.com", "kingboo@piyou.com"],
             contactPhone="0600000000",
-            subcategoryId="CINE_PLEIN_AIR",
             educational_domains=[educational_factories.EducationalDomainFactory()],
             students=[models.StudentLevels.CAP1],
             interventionArea=["01", "07", "08"],
@@ -74,12 +73,11 @@ class Returns200Test:
             "description": "Ma super description",
             "contactEmail": "toto@example.com",
             "bookingEmails": ["pifpouf@testmail.com", "bimbam@testmail.com"],
-            "subcategoryId": "CONCERT",
             "domains": [domain.id],
             "students": ["Collège - 4e"],
             "interventionArea": ["01", "2A"],
             "nationalProgramId": national_program.id,
-            "formats": [subcategories.EacFormat.CONCERT.value],
+            "formats": [EacFormat.CONCERT.value],
         }
 
         client = client.with_session_auth("user@example.com")
@@ -92,7 +90,7 @@ class Returns200Test:
         assert response.json["contactPhone"] == "0600000000"
         assert response.json["contactEmail"] == "toto@example.com"
         assert response.json["bookingEmails"] == ["pifpouf@testmail.com", "bimbam@testmail.com"]
-        assert response.json["subcategoryId"] == "CONCERT"
+        assert response.json["formats"] == ["Concert"]
         assert response.json["students"] == ["Collège - 4e"]
         assert response.json["interventionArea"] == ["01", "2A"]
         assert response.json["description"] == "Ma super description"
@@ -105,12 +103,11 @@ class Returns200Test:
         assert updated_offer.contactEmail == "toto@example.com"
         assert updated_offer.bookingEmails == ["pifpouf@testmail.com", "bimbam@testmail.com"]
         assert updated_offer.contactPhone == "0600000000"
-        assert updated_offer.subcategoryId == "CONCERT"
         assert updated_offer.students == [models.StudentLevels.COLLEGE4]
         assert updated_offer.domains == [domain]
         assert updated_offer.interventionArea == ["01", "2A"]
         assert updated_offer.description == "Ma super description"
-        assert updated_offer.formats == [subcategories.EacFormat.CONCERT]
+        assert updated_offer.formats == [EacFormat.CONCERT]
 
         expected_payload = EducationalBookingEdition(
             **prebooking.serialize_collective_booking(booking).dict(),
@@ -122,7 +119,6 @@ class Returns200Test:
                     "bookingEmails",
                     "interventionArea",
                     "mentalDisabilityCompliant",
-                    "subcategoryId",
                     "domains",
                     "description",
                     "formats",
@@ -222,10 +218,9 @@ class Returns200Test:
             "description": "Ma super description",
             "contactEmail": "toto@example.com",
             "bookingEmails": ["pifpouf@testmail.com", "bimbam@testmail.com"],
-            "subcategoryId": "CONCERT",
             "students": ["Collège - 4e"],
             "interventionArea": ["01", "2A"],
-            "formats": [subcategories.EacFormat.CONCERT.value],
+            "formats": [EacFormat.CONCERT.value],
         }
 
         auth_client = client.with_session_auth("user@example.com")
@@ -239,10 +234,9 @@ class Returns200Test:
         assert offer.description == "Ma super description"
         assert offer.contactEmail == "toto@example.com"
         assert offer.bookingEmails == ["pifpouf@testmail.com", "bimbam@testmail.com"]
-        assert offer.subcategoryId == "CONCERT"
         assert offer.students == [models.StudentLevels.COLLEGE4]
         assert offer.interventionArea == ["01", "2A"]
-        assert offer.formats == [subcategories.EacFormat.CONCERT]
+        assert offer.formats == [EacFormat.CONCERT]
 
     def test_offer_venue_offerer_venue(self, client):
         offer = educational_factories.CollectiveOfferFactory()
@@ -566,25 +560,7 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
 
-    def test_patch_offer_with_non_educational_subcategory(self, client):
-        # Given
-        offer = educational_factories.CollectiveOfferFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-        data = {"subcategoryId": "LIVRE_PAPIER"}
-
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
-
-        # Then
-        assert response.status_code == 400
-
     def test_patch_offer_with_empty_formats(self, client):
-        # Given
         offer = educational_factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com")
         data = {"formats": []}
@@ -708,7 +684,6 @@ class Returns400Test:
             contactEmail="johndoe@yopmail.com",
             bookingEmails=["booking@youpi.com", "kingboo@piyou.com"],
             contactPhone="0600000000",
-            subcategoryId="CINE_PLEIN_AIR",
             educational_domains=None,
             students=[models.StudentLevels.CAP1],
             interventionArea=["01", "07", "08"],
@@ -725,7 +700,7 @@ class Returns400Test:
             "description": "Ma super description",
             "contactEmail": "toto@example.com",
             "bookingEmails": ["pifpouf@testmail.com", "bimbam@testmail.com"],
-            "subcategoryId": "CONCERT",
+            "formats": ["Concert"],
             "domains": [domain.id],
             "students": ["Collège - 4e"],
             "interventionArea": ["01", "2A"],

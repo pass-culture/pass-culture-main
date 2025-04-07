@@ -88,7 +88,6 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
           offererId,
           status,
           venueId,
-          undefined,
           creationMode,
           periodBeginningDate,
           periodEndingDate,

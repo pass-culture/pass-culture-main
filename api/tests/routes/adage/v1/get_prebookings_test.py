@@ -45,7 +45,6 @@ class Returns200Test:
             collectiveStock__collectiveOffer__contactPhone="0101010101",
             collectiveStock__collectiveOffer__audioDisabilityCompliant=True,
             collectiveStock__collectiveOffer__visualDisabilityCompliant=True,
-            collectiveStock__collectiveOffer__subcategoryId="SEANCE_CINE",
         )
         other_educational_year = EducationalYearFactory(adageId="adageId")
         other_educational_institution = EducationalInstitutionFactory(institutionId="institutionId")
@@ -88,7 +87,6 @@ class Returns200Test:
             educationalYear=educationalYear,
             educationalInstitution=educationalInstitution,
             status="PENDING",
-            collectiveStock__collectiveOffer__subcategoryId="SEANCE_CINE",
         )
 
         dst = f"/adage/v1/years/{booking.educationalYear.adageId}/educational_institution/{booking.educationalInstitution.institutionId}/prebookings?redactorEmail={redactor.email}"

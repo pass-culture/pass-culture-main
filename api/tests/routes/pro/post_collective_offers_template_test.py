@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
@@ -85,9 +85,8 @@ def payload_fixture(venue, domains, offer_venue, template_start, template_end):
         "dates": {"start": template_start.isoformat(), "end": template_end.isoformat()},
         "offerVenue": offer_venue,
         "domains": [domain.id for domain in domains],
-        "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
         "venueId": venue.id,
-        "formats": [subcategories.EacFormat.CONCERT.value],
+        "formats": [EacFormat.CONCERT.value],
     }
 
 
@@ -120,7 +119,6 @@ class Returns200Test:
         offer = models.CollectiveOfferTemplate.query.get(offer_id)
 
         assert offer.bookingEmails == ["offer1@example.com", "offer2@example.com"]
-        assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
         assert offer.venue == venue
         assert offer.durationMinutes == 60
         assert offer.venue.managingOffererId == offerer.id
@@ -144,6 +142,7 @@ class Returns200Test:
         assert offer.start == template_start
         assert offer.end == template_end
         assert offer.author == user
+        assert offer.formats == [EacFormat.CONCERT]
 
     def test_empty_email(self, pro_client, payload, venue):
         data = {
@@ -395,29 +394,6 @@ class Returns403Test:
 
 
 class Returns400Test:
-    def test_unselectable_category(self, pro_client, payload):
-        data = {**payload, "subcategoryId": subcategories.OEUVRE_ART.id}
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.post("/collective/offers-template", json=data)
-
-        assert response.status_code == 400
-        assert response.json == {
-            "subcategory": ["Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"]
-        }
-
-        assert models.CollectiveOfferTemplate.query.count() == 0
-
-    def test_no_collective_category(self, pro_client, payload):
-        data = {**payload, "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id}
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.post("/collective/offers-template", json=data)
-
-        assert response.status_code == 400
-        assert response.json == {"offer": ["Cette catégorie d'offre n'est pas éligible aux offres éducationnelles"]}
-
-        assert models.CollectiveOfferTemplate.query.count() == 0
 
     def test_empty_formats(self, pro_client, payload):
         data = {**payload, "formats": []}

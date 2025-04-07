@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy import orm as sa_orm
 from sqlalchemy.sql.expression import extract
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.schemas import RedactorInformation
@@ -229,7 +229,6 @@ def _get_bookings_for_adage_base_query() -> "sa_orm.Query[educational_models.Col
             educational_models.CollectiveOffer.durationMinutes,
             educational_models.CollectiveOffer.name,
             educational_models.CollectiveOffer.students,
-            educational_models.CollectiveOffer.subcategoryId,
             educational_models.CollectiveOffer.id,
             educational_models.CollectiveOffer.interventionArea,
             educational_models.CollectiveOffer.imageCredit,
@@ -521,11 +520,10 @@ def get_collective_offers_for_filters(
     offerer_id: int | None = None,
     statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
     venue_id: int | None = None,
-    category_id: str | None = None,
     name_keywords: str | None = None,
     period_beginning_date: date | None = None,
     period_ending_date: date | None = None,
-    formats: list[subcategories.EacFormat] | None = None,
+    formats: list[EacFormat] | None = None,
 ) -> list[educational_models.CollectiveOffer]:
     query = offers_repository.get_collective_offers_by_filters(
         user_id=user_id,
@@ -533,7 +531,6 @@ def get_collective_offers_for_filters(
         offerer_id=offerer_id,
         statuses=statuses,
         venue_id=venue_id,
-        category_id=category_id,
         name_keywords=name_keywords,
         period_beginning_date=period_beginning_date,
         period_ending_date=period_ending_date,
@@ -567,11 +564,10 @@ def get_collective_offers_template_for_filters(
     offerer_id: int | None = None,
     statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
     venue_id: int | None = None,
-    category_id: str | None = None,
     name_keywords: str | None = None,
     period_beginning_date: date | None = None,
     period_ending_date: date | None = None,
-    formats: list[subcategories.EacFormat] | None = None,
+    formats: list[EacFormat] | None = None,
 ) -> list[educational_models.CollectiveOfferTemplate]:
     query = offers_repository.get_collective_offers_template_by_filters(
         user_id=user_id,
@@ -579,7 +575,6 @@ def get_collective_offers_template_for_filters(
         offerer_id=offerer_id,
         statuses=statuses,
         venue_id=venue_id,
-        category_id=category_id,
         name_keywords=name_keywords,
         period_beginning_date=period_beginning_date,
         period_ending_date=period_ending_date,

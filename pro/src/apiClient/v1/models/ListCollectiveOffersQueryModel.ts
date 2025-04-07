@@ -6,7 +6,6 @@ import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedS
 import type { CollectiveOfferType } from './CollectiveOfferType';
 import type { EacFormat } from './EacFormat';
 export type ListCollectiveOffersQueryModel = {
-  categoryId?: string | null;
   collectiveOfferType?: CollectiveOfferType | null;
   creationMode?: string | null;
   format?: EacFormat | null;

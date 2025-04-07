@@ -23,7 +23,6 @@ export type PostCollectiveOfferBodyModel = {
   nationalProgramId?: number | null;
   offerVenue?: CollectiveOfferVenueBodyModel | null;
   students: Array<StudentLevels>;
-  subcategoryId?: string | null;
   templateId?: number | null;
   venueId: number;
   visualDisabilityCompliant?: boolean;

@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
@@ -76,12 +76,11 @@ def build_payload_context():
             "name": "New name",
             "mentalDisabilityCompliant": True,
             "contactEmail": "toto@example.com",
-            "subcategoryId": "CONCERT",
             "priceDetail": "pouet",
             "nationalProgramId": national_program.id,
             "dates": {"start": template_start.isoformat(), "end": template_end.isoformat()},
             "domains": [domain.id],
-            "formats": [subcategories.EacFormat.CONCERT.value],
+            "formats": [EacFormat.CONCERT.value],
         },
     )
 
@@ -102,7 +101,7 @@ class Returns200Test:
         assert response.json["mentalDisabilityCompliant"]
         assert response.json["contactPhone"] == offer_ctx.offer.contactPhone
         assert response.json["contactEmail"] == "toto@example.com"
-        assert response.json["subcategoryId"] == "CONCERT"
+        assert response.json["formats"] == ["Concert"]
         assert response.json["educationalPriceDetail"] == "pouet"
         assert response.json["nationalProgram"] == {
             "id": payload_ctx.national_program.id,
@@ -112,13 +111,12 @@ class Returns200Test:
         updated_offer = models.CollectiveOfferTemplate.query.get(offer_id)
         assert updated_offer.name == "New name"
         assert updated_offer.mentalDisabilityCompliant
-        assert updated_offer.subcategoryId == "CONCERT"
         assert updated_offer.priceDetail == "pouet"
         assert updated_offer.domains == [payload_ctx.domain]
         assert updated_offer.dateRange
         assert updated_offer.start == payload_ctx.template_start
         assert updated_offer.end == payload_ctx.template_end
-        assert updated_offer.formats == [subcategories.EacFormat.CONCERT]
+        assert updated_offer.formats == [EacFormat.CONCERT]
         assert updated_offer.contactEmail == "toto@example.com"
         assert updated_offer.contactPhone == offer_ctx.offer.contactPhone
         assert updated_offer.contactForm == models.OfferContactFormEnum.FORM
@@ -610,20 +608,6 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"name": [""]}
-
-    def test_non_educational_subcategory(self, client):
-        offer_ctx = build_offer_context()
-
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        data = {"subcategoryId": "LIVRE_PAPIER"}
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
-
-        assert response.status_code == 400
-        assert response.json == {"subcategoryId": "this subcategory is not educational"}
 
     def test_empty_formats(self, client):
         offer_ctx = build_offer_context()

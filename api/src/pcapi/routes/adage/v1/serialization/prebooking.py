@@ -6,7 +6,7 @@ from typing import Iterable
 from pydantic.v1 import PositiveInt
 from pydantic.v1.fields import Field
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.adage_backends import serialize as adage_serialize
@@ -55,7 +55,7 @@ class EducationalBookingPerYearResponse(educational_schemas.AdageBaseResponseMod
     venueId: int | None
     venueName: str | None
     offererName: str | None
-    formats: typing.Sequence[subcategories.EacFormat]
+    formats: typing.Sequence[EacFormat]
 
     class Config:
         use_enum_values = True

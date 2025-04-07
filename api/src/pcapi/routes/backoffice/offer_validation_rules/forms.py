@@ -5,9 +5,9 @@ import re
 from flask_wtf import FlaskForm
 import wtforms
 
-from pcapi.core.categories import models as categories_models
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories.genres.show import SHOW_SUB_TYPES_LABEL_BY_CODE
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers import models as offers_models
@@ -169,7 +169,7 @@ class OfferValidationSubRuleForm(FlaskForm):
         field_list_compatibility=True,
     )
     formats = fields.PCSelectMultipleField(
-        "Formats", choices=utils.choices_from_enum(categories_models.EacFormat), field_list_compatibility=True
+        "Formats", choices=utils.choices_from_enum(EacFormat), field_list_compatibility=True
     )
 
     form_field_configuration = OFFER_VALIDATION_SUB_RULE_FORM_FIELD_CONFIGURATION

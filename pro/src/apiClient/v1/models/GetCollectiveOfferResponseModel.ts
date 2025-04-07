@@ -17,7 +17,6 @@ import type { GetCollectiveOfferVenueResponseModel } from './GetCollectiveOfferV
 import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferDomain } from './OfferDomain';
 import type { StudentLevels } from './StudentLevels';
-import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 import type { TemplateDatesModel } from './TemplateDatesModel';
 export type GetCollectiveOfferResponseModel = {
   allowedActions: Array<CollectiveOfferAllowedAction>;
@@ -58,7 +57,6 @@ export type GetCollectiveOfferResponseModel = {
   provider?: GetCollectiveOfferProviderResponseModel | null;
   status: CollectiveOfferStatus;
   students: Array<StudentLevels>;
-  subcategoryId?: (SubcategoryIdEnum | string) | null;
   teacher?: EducationalRedactorResponseModel | null;
   templateId?: number | null;
   venue: GetCollectiveOfferVenueResponseModel;

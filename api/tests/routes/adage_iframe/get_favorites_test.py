@@ -2,7 +2,6 @@ from flask import url_for
 import pytest
 import time_machine
 
-from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.offerers import factories as offerers_factories
@@ -97,7 +96,7 @@ class GetFavoriteOfferTest:
                         "start": format_into_utc_date(collective_offer_template.start),
                         "end": format_into_utc_date(collective_offer_template.end),
                     },
-                    "formats": [fmt.value for fmt in subcategories.EVENEMENT_CINE.formats],
+                    "formats": [fmt.value for fmt in collective_offer_template.formats],
                     "isTemplate": True,
                 }
             ],

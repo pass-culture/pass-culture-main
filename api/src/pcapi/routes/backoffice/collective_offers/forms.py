@@ -9,7 +9,7 @@ from flask import flash
 from flask_wtf import FlaskForm
 import wtforms
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models.offer_mixin import CollectiveOfferStatus
@@ -119,7 +119,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         ],
     )
     formats = fields.PCSelectMultipleField(
-        "Formats", choices=forms_utils.choices_from_enum(subcategories.EacFormat), field_list_compatibility=True
+        "Formats", choices=forms_utils.choices_from_enum(EacFormat), field_list_compatibility=True
     )
     department = fields.PCSelectMultipleField(
         "Départements",
@@ -312,7 +312,7 @@ class GetCollectiveOfferTemplatesListForm(forms.GetOffersBaseFields):
     from_date = fields.PCDateField("Créées à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Jusqu'au", validators=(wtforms.validators.Optional(),))
     only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les offres des entités juridiques validées")
-    formats = fields.PCSelectMultipleField("Formats", choices=forms_utils.choices_from_enum(subcategories.EacFormat))
+    formats = fields.PCSelectMultipleField("Formats", choices=forms_utils.choices_from_enum(EacFormat))
     offerer = fields.PCTomSelectField(
         "Entités juridiques",
         multiple=True,
