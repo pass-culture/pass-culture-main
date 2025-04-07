@@ -68,6 +68,7 @@ export type { CollectiveStockResponseModel } from './models/CollectiveStockRespo
 export type { CombinedInvoiceListModel } from './models/CombinedInvoiceListModel';
 export type { Consent } from './models/Consent';
 export type { CookieConsentRequest } from './models/CookieConsentRequest';
+export type { CreateEventOpeningHoursModel } from './models/CreateEventOpeningHoursModel';
 export type { CreateOffererQueryModel } from './models/CreateOffererQueryModel';
 export type { CreatePriceCategoryModel } from './models/CreatePriceCategoryModel';
 export type { CreateThumbnailBodyModel } from './models/CreateThumbnailBodyModel';
@@ -114,6 +115,7 @@ export type { GetEducationalOffererResponseModel } from './models/GetEducational
 export type { GetEducationalOfferersQueryModel } from './models/GetEducationalOfferersQueryModel';
 export type { GetEducationalOfferersResponseModel } from './models/GetEducationalOfferersResponseModel';
 export type { GetEducationalOffererVenueResponseModel } from './models/GetEducationalOffererVenueResponseModel';
+export type { GetEventOpeningHoursResponseModel } from './models/GetEventOpeningHoursResponseModel';
 export type { GetIndividualOfferResponseModel } from './models/GetIndividualOfferResponseModel';
 export type { GetIndividualOfferWithAddressResponseModel } from './models/GetIndividualOfferWithAddressResponseModel';
 export type { GetMusicTypesResponse } from './models/GetMusicTypesResponse';
@@ -236,6 +238,7 @@ export type { SubcategoryResponseModel } from './models/SubcategoryResponseModel
 export type { SubmitReviewRequestModel } from './models/SubmitReviewRequestModel';
 export { Target } from './models/Target';
 export type { TemplateDatesModel } from './models/TemplateDatesModel';
+export type { TimeSpan } from './models/TimeSpan';
 export type { TopOffersResponseData } from './models/TopOffersResponseData';
 export type { TotalRevenue } from './models/TotalRevenue';
 export type { UserEmailValidationResponseModel } from './models/UserEmailValidationResponseModel';
