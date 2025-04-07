@@ -80,6 +80,11 @@ def _set_settings(index: SearchIndex, path: str, dry: bool = True) -> list[str]:
     with open(path, "r", encoding="utf-8") as fp:
         new_settings = json.load(fp)
 
+    # we define "replicas" in some files but we want to apply the setting only on an index which already has replicas
+    # e.g in testing or integration there is currently no replicas
+    if "replicas" not in old_settings and "replicas" in new_settings:
+        del new_settings["replicas"]
+
     diff = _get_dict_diff(old_settings, new_settings)
     outputs.append(diff)
 
