@@ -155,22 +155,20 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
         .scalar_subquery()
     )
 
-    response_rows = (
+    response_rows_query = (
         db.session.query(
             operations_models.SpecialEventResponse,
             full_answers_subquery.label("full_answers"),
         )
         .filter(*response_rows_filters)
         .outerjoin(operations_models.SpecialEventResponse.user)
-        .outerjoin(
-            finance_models.Deposit,
-            sa.and_(
-                users_models.User.id == finance_models.Deposit.userId,
-                finance_models.Deposit.expirationDate > sa.func.now(),
-            ),
-        )
-        .options(
-            sa.orm.joinedload(operations_models.SpecialEventResponse.user)
+    )
+    response_rows_query = search_utils.apply_filter_on_beneficiary_status(
+        response_rows_query, response_form.eligibility.data
+    )
+    response_rows = (
+        response_rows_query.options(
+            sa.orm.contains_eager(operations_models.SpecialEventResponse.user)
             .load_only(
                 users_models.User.id,
                 users_models.User.firstName,
@@ -187,7 +185,8 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
             ),
         )
         .order_by(operations_models.SpecialEventResponse.dateSubmitted.desc())
-    ).all()
+        .all()
+    )
 
     return render_template(
         "operations/details.html",

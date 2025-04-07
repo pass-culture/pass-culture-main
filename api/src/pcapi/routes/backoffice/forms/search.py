@@ -1,7 +1,18 @@
+import enum
+
 import wtforms
 
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
+
+
+class AccountSearchFilter(enum.Enum):
+    PASS_15_17 = "Ancien Pass 15-17"
+    PASS_18 = "Ancien Pass 18"
+    PASS_17_V3 = "Pass 17"
+    PASS_18_V3 = "Pass 18"
+    PUBLIC = "Non bénéficiaire"
+    SUSPENDED = "Suspendu"
 
 
 class SearchForm(utils.PCForm):

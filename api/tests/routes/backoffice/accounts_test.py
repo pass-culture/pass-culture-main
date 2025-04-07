@@ -39,7 +39,6 @@ from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.feature import DisabledFeatureError
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.repository import repository
-from pcapi.routes.backoffice.accounts import forms as account_forms
 from pcapi.routes.backoffice.accounts.blueprint import RegistrationStep
 from pcapi.routes.backoffice.accounts.blueprint import RegistrationStepStatus
 from pcapi.routes.backoffice.accounts.blueprint import TunnelType
@@ -60,6 +59,7 @@ from pcapi.routes.backoffice.accounts.blueprint import _get_tunnel_type
 from pcapi.routes.backoffice.accounts.blueprint import _set_steps_with_active_and_disabled
 from pcapi.routes.backoffice.accounts.blueprint import get_eligibility_history
 from pcapi.routes.backoffice.accounts.blueprint import get_public_account_history
+from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.utils import email as email_utils
 
 from .helpers import button as button_helpers
@@ -574,12 +574,12 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     @pytest.mark.parametrize(
         "search_filter,expected_user",
         [
-            (account_forms.AccountSearchFilter.PASS_17_V3.name, "underage_user"),
-            (account_forms.AccountSearchFilter.PASS_18_V3.name, "beneficiary_user"),
-            (account_forms.AccountSearchFilter.PASS_15_17.name, "old_underage_user"),
-            (account_forms.AccountSearchFilter.PASS_18.name, "old_beneficiary_user"),
-            (account_forms.AccountSearchFilter.PUBLIC.name, "public_user"),
-            (account_forms.AccountSearchFilter.SUSPENDED.name, "suspended_user"),
+            (search_forms.AccountSearchFilter.PASS_17_V3.name, "underage_user"),
+            (search_forms.AccountSearchFilter.PASS_18_V3.name, "beneficiary_user"),
+            (search_forms.AccountSearchFilter.PASS_15_17.name, "old_underage_user"),
+            (search_forms.AccountSearchFilter.PASS_18.name, "old_beneficiary_user"),
+            (search_forms.AccountSearchFilter.PUBLIC.name, "public_user"),
+            (search_forms.AccountSearchFilter.SUSPENDED.name, "suspended_user"),
         ],
     )
     def test_search_with_single_filter(
@@ -631,8 +631,8 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
                     self.endpoint,
                     q=common_name,
                     filter=[
-                        account_forms.AccountSearchFilter.PASS_17_V3.name,
-                        account_forms.AccountSearchFilter.SUSPENDED.name,
+                        search_forms.AccountSearchFilter.PASS_17_V3.name,
+                        search_forms.AccountSearchFilter.SUSPENDED.name,
                     ],
                 )
             )

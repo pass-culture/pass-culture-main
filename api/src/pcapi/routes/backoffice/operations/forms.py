@@ -8,6 +8,7 @@ import wtforms
 from pcapi.core.operations import models
 from pcapi.routes.backoffice.filters import format_special_event_response_status_str
 from pcapi.routes.backoffice.forms import fields
+from pcapi.routes.backoffice.forms import search
 from pcapi.routes.backoffice.forms import utils
 
 
@@ -78,4 +79,7 @@ class OperationResponseForm(utils.PCForm):
             formatter=format_special_event_response_status_str,
         ),
         coerce=models.SpecialEventResponseStatus,
+    )
+    eligibility = fields.PCSelectMultipleField(
+        "Éligibilité", choices=utils.choices_from_enum(search.AccountSearchFilter)
     )

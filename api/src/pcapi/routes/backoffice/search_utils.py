@@ -1,5 +1,13 @@
+import datetime
 import re
 import typing
+
+from flask_sqlalchemy import BaseQuery
+import sqlalchemy as sa
+
+from pcapi.core.finance import models as finance_models
+from pcapi.core.users import models as users_models
+from pcapi.routes.backoffice.forms import search as search_forms
 
 
 class UrlForPartial(typing.Protocol):
@@ -28,3 +36,66 @@ def pagination_links(partial_func: UrlForPartial, current_page: int, pages_total
 
 def split_terms(search_query: str) -> list[str]:
     return re.split(r"[,;\s]+", search_query)
+
+
+def apply_filter_on_beneficiary_status(query: BaseQuery, account_search_filters: list[str]) -> BaseQuery:
+    query = query.outerjoin(
+        finance_models.Deposit,
+        sa.and_(
+            users_models.User.id == finance_models.Deposit.userId,
+            finance_models.Deposit.expirationDate > datetime.datetime.utcnow(),
+        ),
+    )
+
+    if not account_search_filters:
+        return query
+
+    or_filters: list = []
+
+    if search_forms.AccountSearchFilter.PASS_17_V3.name in account_search_filters:
+        or_filters.append(
+            sa.and_(
+                finance_models.Deposit.type == finance_models.DepositType.GRANT_17_18,
+                users_models.User.has_underage_beneficiary_role,
+                users_models.User.isActive.is_(True),
+            )
+        )
+
+    if search_forms.AccountSearchFilter.PASS_18_V3.name in account_search_filters:
+        or_filters.append(
+            sa.and_(
+                finance_models.Deposit.type == finance_models.DepositType.GRANT_17_18,
+                users_models.User.has_beneficiary_role,
+                users_models.User.isActive.is_(True),
+            )
+        )
+    if search_forms.AccountSearchFilter.PASS_15_17.name in account_search_filters:
+        or_filters.append(
+            sa.and_(
+                finance_models.Deposit.type != finance_models.DepositType.GRANT_17_18,
+                users_models.User.has_underage_beneficiary_role,
+                users_models.User.isActive.is_(True),
+            )
+        )
+
+    if search_forms.AccountSearchFilter.PASS_18.name in account_search_filters:
+        or_filters.append(
+            sa.and_(
+                finance_models.Deposit.type != finance_models.DepositType.GRANT_17_18,
+                users_models.User.has_beneficiary_role,
+                users_models.User.isActive.is_(True),
+            )
+        )
+
+    if search_forms.AccountSearchFilter.PUBLIC.name in account_search_filters:
+        or_filters.append(
+            sa.and_(
+                sa.not_(users_models.User.is_beneficiary),
+                users_models.User.isActive.is_(True),
+            )
+        )
+
+    if search_forms.AccountSearchFilter.SUSPENDED.name in account_search_filters:
+        or_filters.append(users_models.User.isActive.is_(False))
+
+    return query.filter(sa.or_(*or_filters)) if or_filters else query

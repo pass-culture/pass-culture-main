@@ -253,7 +253,7 @@ class GetEventDetailsTest(GetEndpointHelper):
             [name_question.title, full_name_answer.text, chestnut_question.title, full_chestnut_answer.text]
         )
 
-    def test_filter_event_responses(self, authenticated_client):
+    def test_filter_event_responses_by_response_status(self, authenticated_client):
         event = operations_factories.SpecialEventFactory(
             externalId="fake00002",
             eventDate=datetime.datetime.utcnow() + datetime.timedelta(days=2),
@@ -280,44 +280,93 @@ class GetEventDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, special_event_id=event.id)
-        response = authenticated_client.get(url)
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 14
 
-        response = authenticated_client.get(url, params={"response_status": "PRESELECTED"})
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url, params={"response_status": "PRESELECTED"})
+            assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
         assert {"Préselectionnée"} == {e["État de la candidature"] for e in rows}
 
-        response = authenticated_client.get(url, params={"response_status": "NEW"})
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url, params={"response_status": "NEW"})
+            assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 4
         assert {"Nouvelle"} == {e["État de la candidature"] for e in rows}
 
-        response = authenticated_client.get(url, params={"response_status": "VALIDATED"})
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url, params={"response_status": "VALIDATED"})
+            assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 3
         assert {"Retenue"} == {e["État de la candidature"] for e in rows}
 
-        response = authenticated_client.get(url, params={"response_status": "REJECTED"})
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url, params={"response_status": "REJECTED"})
+            assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 5
         assert {"Rejetée"} == {e["État de la candidature"] for e in rows}
 
-        response = authenticated_client.get(
-            route=url,
-            params=(("response_status", "PRESELECTED"), ("response_status", "NEW")),
-        )
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                route=url,
+                params=(("response_status", "PRESELECTED"), ("response_status", "NEW")),
+            )
+            assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 6
         assert {"Préselectionnée", "Nouvelle"} == {e["État de la candidature"] for e in rows}
+
+    def test_filter_event_responses_by_eligibility(self, authenticated_client):
+        event = operations_factories.SpecialEventFactory(
+            externalId="fake00002",
+            eventDate=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+        )
+        response_pass_18 = operations_factories.SpecialEventResponseFactory(
+            event=event, user=users_factories.BeneficiaryFactory()
+        )
+        response_pass_1517 = operations_factories.SpecialEventResponseFactory(
+            event=event, user=users_factories.UnderageBeneficiaryFactory()
+        )
+        response_non_beneficiary = operations_factories.SpecialEventResponseFactory(
+            event=event, user=users_factories.UserFactory()
+        )
+        response_suspended = operations_factories.SpecialEventResponseFactory(
+            event=event, user=users_factories.BeneficiaryFactory(isActive=False)
+        )
+
+        url = url_for(self.endpoint, special_event_id=event.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url, params={"eligibility": "PASS_18_V3"})
+            assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Email"] == response_pass_18.user.email
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url, params=(("eligibility", "PASS_15_17"), ("eligibility", "PASS_18"), ("eligibility", "PASS_18_V3"))
+            )
+            assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert {row["Email"] for row in rows} == {response_pass_18.user.email, response_pass_1517.user.email}
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url, params=(("eligibility", "PUBLIC"), ("eligibility", "SUSPENDED")))
+            assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert {row["Email"] for row in rows} == {response_non_beneficiary.user.email, response_suspended.user.email}
 
     def test_only_one_line_for_multiple_deposits(self, authenticated_client):
         user = users_factories.UserFactory(roles=[users_models.UserRole.BENEFICIARY])
