@@ -225,6 +225,7 @@ class AlgoliaSerializationMixin:
                 "allocineId": extra_data.get("allocineId"),
                 "artist": " ".join(extra_data_artists).strip() or None,
                 "bookMacroSection": macro_section,
+                "chroniclesCount": offer.product.chroniclesCount if offer.product else offer.chroniclesCount,
                 "dateCreated": date_created,
                 "dates": sorted(dates),
                 "description": remove_stopwords(offer.description or ""),

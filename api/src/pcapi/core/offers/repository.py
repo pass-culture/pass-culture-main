@@ -15,6 +15,7 @@ from sqlalchemy.sql import or_
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
+from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus as DisplayedStatus
 from pcapi.core.geography import models as geography_models
@@ -1108,6 +1109,16 @@ def get_pending_bookings_subquery(offer_id: int) -> sa.sql.selectable.Exists:
     )
 
 
+def get_offer_chronicles_count_subquery() -> sa.sql.selectable.ScalarSelect:
+    return (
+        sa.select(sa.func.count(chronicles_models.OfferChronicle.id))
+        .select_from(chronicles_models.OfferChronicle)
+        .where(chronicles_models.OfferChronicle.offerId == models.Offer.id)
+        .correlate(models.Offer)
+        .scalar_subquery()
+    )
+
+
 def get_offer_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
     return (
         sa.select(sa.func.count(reactions_models.Reaction.id))
@@ -1152,6 +1163,16 @@ def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
             ),
         )
         .all()
+    )
+
+
+def get_product_chronicles_count_subquery() -> sa.sql.selectable.ScalarSelect:
+    return (
+        sa.select(sa.func.count(chronicles_models.ProductChronicle.id))
+        .select_from(chronicles_models.ProductChronicle)
+        .where(chronicles_models.ProductChronicle.productId == models.Product.id)
+        .correlate(models.Product)
+        .scalar_subquery()
     )
 
 
