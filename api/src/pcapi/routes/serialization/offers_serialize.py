@@ -17,6 +17,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.offers import schemas as offers_schemas
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -26,6 +27,7 @@ from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.address_serialize import AddressResponseIsLinkedToVenueModel
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
 from pcapi.serialization.utils import to_camel
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
@@ -522,6 +524,55 @@ class DeleteFilteredStockListBody(BaseModel):
     date: datetime.date | None
     time: datetime.time | None
     price_category_id: int | None
+
+
+def _build_base_opening_hours_dict() -> dict[str, list]:
+    base_dict: dict[str, list] = {}
+
+    for weekday in offers_models.Weekday:
+        base_dict[weekday.name] = []
+
+    return base_dict
+
+
+class GetEventOpeningHoursResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "openingHours":
+            opening_hours_dict = _build_base_opening_hours_dict()
+            event_opening_hours: offers_models.EventOpeningHours = self._obj
+            for weekDayOpeningHours in event_opening_hours.weekDayOpeningHours:
+                opening_hours_dict[weekDayOpeningHours.weekday.name] = [
+                    {
+                        "open": date_utils.int_to_time(timeSpan.lower),
+                        "close": date_utils.int_to_time(timeSpan.upper),
+                    }
+                    for timeSpan in weekDayOpeningHours.timeSpans
+                ]
+
+            return opening_hours_dict
+        return super().get(key, default)
+
+
+class OpeningHoursModel(BaseModel):
+    MONDAY: offers_schemas.TimeSpanListType
+    TUESDAY: offers_schemas.TimeSpanListType
+    WEDNESDAY: offers_schemas.TimeSpanListType
+    THURSDAY: offers_schemas.TimeSpanListType
+    FRIDAY: offers_schemas.TimeSpanListType
+    SATURDAY: offers_schemas.TimeSpanListType
+    SUNDAY: offers_schemas.TimeSpanListType
+
+
+class GetEventOpeningHoursResponseModel(BaseModel):
+    id: int
+    startDatetime: datetime.datetime
+    endDatetime: datetime.datetime | None
+    openingHours: OpeningHoursModel
+
+    class Config:
+        orm_mode = True
+        json_encoders = {datetime.datetime: format_into_utc_date}
+        getter_dict = GetEventOpeningHoursResponseGetterDict
 
 
 class ImageBodyModel(BaseModel):

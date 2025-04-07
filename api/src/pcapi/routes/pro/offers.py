@@ -142,6 +142,33 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
     return offers_serialize.GetStocksResponseModel(stocks=stocks, stock_count=stocks_count, has_stocks=has_stocks)
 
 
+@private_api.route("/offers/<int:offer_id>/event_opening_hours", methods=["POST"])
+@login_required
+@spectree_serialize(
+    on_success_status=201,
+    response_model=offers_serialize.GetEventOpeningHoursResponseModel,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
+def post_event_opening_hours(
+    offer_id: int,
+    body: offers_schemas.CreateEventOpeningHoursModel,
+) -> offers_serialize.GetEventOpeningHoursResponseModel:
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id)
+    except exceptions.OfferNotFound:
+        raise api_errors.ResourceNotFoundError(
+            errors={
+                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
+            }
+        )
+
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    event_opening_hours = offers_api.create_event_opening_hours(body=body, offer=offer)
+
+    return offers_serialize.GetEventOpeningHoursResponseModel.from_orm(event_opening_hours)
+
+
 @private_api.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])
 @login_required
 @spectree_serialize(
