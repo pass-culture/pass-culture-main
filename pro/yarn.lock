@@ -1245,10 +1245,10 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.9.tgz#50dea3616bc8191fb8e112283b49eaff03e78429"
   integrity sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==
 
-"@hookform/devtools@^4.3.3":
-  version "4.3.3"
-  resolved "https://registry.yarnpkg.com/@hookform/devtools/-/devtools-4.3.3.tgz#d306c75741d1aca1d307c36685d00fe2ad6a49a7"
-  integrity sha512-W9MipDe6P5y2XLos9coN4/fZhbt0YE2c+PaUx7tiKdc9XNQ2UOWCYTtysCnbj7fipZWEJht8J/UyQmXprWEhgw==
+"@hookform/devtools@^4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@hookform/devtools/-/devtools-4.4.0.tgz#539ff96b383e79bc32d4a78f41ea891342ca64b3"
+  integrity sha512-Mtlic+uigoYBPXlfvPBfiYYUZuyMrD3pTjDpVIhL6eCZTvQkHsKBSKeZCvXWUZr8fqrkzDg27N+ZuazLKq6Vmg==
   dependencies:
     "@emotion/react" "^11.1.5"
     "@emotion/styled" "^11.3.0"
