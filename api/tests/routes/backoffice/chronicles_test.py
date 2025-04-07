@@ -243,6 +243,28 @@ class GetChronicleDetailsTest(GetEndpointHelper):
         assert chronicle.content in content_as_text
 
 
+class GetUpdateChronicleContentFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.chronicles.get_update_chronicle_content_form"
+    endpoint_kwargs = {"chronicle_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
+
+    # session + current user + get chronicle
+    expected_num_queries = 3
+
+    def test_get_update_chronicle_content_form(self, authenticated_client, legit_user):
+        chronicle = chronicles_factories.ChronicleFactory(content="Blabla bla blabla blablabla")
+        chronicle_id = chronicle.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, chronicle_id=chronicle_id),
+            )
+            assert response.status_code == 200
+
+        content_as_text = html_parser.content_as_text(response.data)
+        assert chronicle.content in content_as_text
+
+
 class UpdateChronicleContentTest(PostEndpointHelper):
     endpoint = "backoffice_web.chronicles.update_chronicle_content"
     endpoint_kwargs = {"chronicle_id": 1}
@@ -269,7 +291,9 @@ class UpdateChronicleContentTest(PostEndpointHelper):
         content_as_text = html_parser.content_as_text(response.data)
         assert "new content" in content_as_text
         assert chronicle.content == "new content"
-        assert html_parser.extract_alerts(response.data) == ["Le texte de la chronique a été mis à jour"]
+        assert html_parser.extract_alerts(response.data) == [
+            f"Le texte de la chronique {chronicle.id} a été mis à jour"
+        ]
 
 
 class PublishChronicleTest(PostEndpointHelper):

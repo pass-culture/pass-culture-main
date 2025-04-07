@@ -51,6 +51,11 @@
                                data-bs-target="#publish-chronicle-modal-{{ chronicle.id }}-modal">Publier</a>
                           </li>
                         {% endif %}
+                        <li class="dropdown-item">
+                          <a class="btn btn-sm d-block w-100 text-start px-3"
+                             data-bs-toggle="modal"
+                             data-bs-target="#update-chronicle-content-{{ chronicle.id }}">Modifier le contenu</a>
+                        </li>
                       </ul>
                     </div>
                   {% endif %}
@@ -78,5 +83,6 @@
   {% for chronicle in rows.items %}
     {{ build_modal_form("publish-chronicle-modal-" + chronicle.id|string, url_for('backoffice_web.chronicles.publish_chronicle', chronicle_id=chronicle.id) , chronicle_publication_form, "", "Publier la chronique " + chronicle.id|string, "Publier") }}
     {{ build_modal_form("unpublish-chronicle-modal-" + chronicle.id|string, url_for('backoffice_web.chronicles.unpublish_chronicle', chronicle_id=chronicle.id) , chronicle_publication_form, "", "Dépublier la chronique " + chronicle.id|string, "Dépublier") }}
+    {{ build_lazy_modal(url_for('backoffice_web.chronicles.get_update_chronicle_content_form', chronicle_id=chronicle.id) , "update-chronicle-content-" + chronicle.id|string) }}
   {% endfor %}
 {% endblock page %}
