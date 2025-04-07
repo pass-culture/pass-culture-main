@@ -74,7 +74,6 @@ def test_update_products_booking_count_and_reindex_offers_if_same_ean(mocked_asy
     ean_2 = "9876543219876"
     product1 = offers_factories.ProductFactory(ean=ean_1)
     product2 = offers_factories.ProductFactory(ean=ean_2)
-    # probleme de extradata ici
     offer_with_ean = offers_factories.OfferFactory(product=product1, extraData={"ean": ean_1})
     offer_not_booked_with_same_ean_in_offer = offers_factories.OfferFactory(extraData={"ean": ean_1}, product=product1)
     offer_with_different_ean = offers_factories.OfferFactory(extraData={"ean": ean_2}, product=product2)

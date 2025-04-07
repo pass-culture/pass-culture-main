@@ -32,7 +32,7 @@ def create_industrial_chronicles() -> None:
 
     logger.info("create chronicles with all fields")
     for user, product, i in zip(itertools.cycle(users), itertools.cycle(products), range(30)):
-        ean = product.extraData.get("ean", "1234567890123")
+        ean = product.ean or "1234567890123"
         chronicles_factories.ChronicleFactory(
             age=(15 + (i % 5)),
             city=user.city,
@@ -50,7 +50,7 @@ def create_industrial_chronicles() -> None:
 
     logger.info("create chronicles without user")
     for product, i in zip(itertools.cycle(products), range(5)):
-        ean = product.extraData.get("ean", "1234567890123")
+        ean = product.ean or "1234567890123"
         chronicles_factories.ChronicleFactory(
             age=(15 + (i % 5)),
             city=["Paris", None][i % 2],
