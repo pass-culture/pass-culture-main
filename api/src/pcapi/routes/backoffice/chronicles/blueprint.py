@@ -148,7 +148,6 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
             product_name = product.name
             break
 
-    update_content_form = forms.UpdateContentForm(content=chronicle.content)
     attach_product_form = forms.AttachProductForm()
 
     return render_template(
@@ -157,11 +156,26 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
         product_name=product_name,
         active_tab=request.args.get("active_tab", "content"),
         chronicle_publication_form=EmptyForm(),
-        update_content_form=update_content_form,
         empty_form=EmptyForm(),
         attach_product_form=attach_product_form,
         action_history=action_history,
         comment_form=forms.CommentForm(),
+    )
+
+
+@chronicles_blueprint.route("/<int:chronicle_id>/update-content", methods=["GET"])
+@permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
+def get_update_chronicle_content_form(chronicle_id: int) -> utils.BackofficeResponse:
+    chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+    form = forms.UpdateContentForm(content=chronicle.content)
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for(".update_chronicle_content", chronicle_id=chronicle_id),
+        div_id=f"update-chronicle-content-{chronicle_id}",  # must be consistent with parameter passed to build_lazy_modal
+        title="Modifier le contenu de la chronique",
+        button_text="Enregistrer",
     )
 
 
@@ -181,9 +195,14 @@ def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
     db.session.add(chronicle)
     db.session.flush()
 
-    flash("Le texte de la chronique a été mis à jour", "success")
+    flash(
+        Markup("Le texte de la chronique <b>{chronicle_id}</b> a été mis à jour").format(chronicle_id=chronicle_id),
+        "success",
+    )
     return redirect(
-        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="content"), code=303
+        request.referrer
+        or url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="content"),
+        code=303,
     )
 
 
