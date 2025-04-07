@@ -115,4 +115,19 @@ describe('StocksCalendarFormOneDay', () => {
       screen.getByRole('heading', { name: 'Le public doit se présenter :' })
     ).toBeInTheDocument()
   })
+
+  it('should have all week days initially selected when the checkbox "no end date" is checked', () => {
+    renderStocksCalendarFormMultipleDays({
+      multipleDaysStartDate: addDays(new Date(), 1).toISOString().split('T')[0],
+      multipleDaysHasNoEndDate: true,
+    })
+
+    expect(screen.queryByLabelText('Lundi')).toBeChecked()
+    expect(screen.getByLabelText('Mardi')).toBeChecked()
+    expect(screen.getByLabelText('Mercredi')).toBeChecked()
+    expect(screen.getByLabelText('Jeudi')).toBeChecked()
+    expect(screen.getByLabelText('Vendredi')).toBeChecked()
+    expect(screen.getByLabelText('Samedi')).toBeChecked()
+    expect(screen.getByLabelText('Dimanche')).toBeChecked()
+  })
 })
