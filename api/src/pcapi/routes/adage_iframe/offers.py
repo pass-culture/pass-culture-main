@@ -8,7 +8,6 @@ from sqlalchemy.orm import exc as orm_exc
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import utils as educational_utils
-from pcapi.core.educational.api import institution as educational_institution_api
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.models import AdageFrontRoles
 from pcapi.core.educational.models import CollectiveOffer
@@ -210,7 +209,7 @@ def get_collective_offers_for_my_institution(
 
     offers = [
         offer
-        for offer in educational_institution_api.get_offers_for_my_institution(authenticated_information.uai)
+        for offer in educational_repository.get_offers_for_my_institution(authenticated_information.uai)
         if offer.isBookable
     ]
 

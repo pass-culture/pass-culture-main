@@ -17,7 +17,6 @@ from pcapi.core.educational.adage_backends.serialize import AdageEducationalInst
 from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.repository import find_educational_year_by_date
-from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.utils import db as db_utils
 from pcapi.utils import postal_code as postal_code_utils
@@ -357,37 +356,6 @@ def get_offers_count_for_my_institution(uai: str) -> int:
     )
     offer_count = len([query for query in offer_query if query.isBookable])
     return offer_count
-
-
-def get_offers_for_my_institution(uai: str) -> "sa_orm.Query[educational_models.CollectiveOffer]":
-    # TODO: this should go in educational/repository
-    return (
-        db.session.query(educational_models.CollectiveOffer)
-        .join(educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution)
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
-                educational_models.CollectiveStock.collectiveBookings
-            ),
-            sa_orm.joinedload(educational_models.CollectiveOffer.venue).options(
-                sa_orm.joinedload(offerers_models.Venue.managingOfferer),
-                sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
-            ),
-            sa_orm.joinedload(educational_models.CollectiveOffer.institution),
-            sa_orm.joinedload(educational_models.CollectiveOffer.teacher),
-            sa_orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
-            sa_orm.joinedload(educational_models.CollectiveOffer.domains),
-            sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).joinedload(
-                offerers_models.OffererAddress.address
-            ),
-            sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).with_expression(
-                offerers_models.OffererAddress._isLinkedToVenue, offerers_models.OffererAddress.isLinkedToVenue.expression  # type: ignore [attr-defined]
-            ),
-        )
-        .filter(
-            educational_models.EducationalInstitution.institutionId == uai,
-            educational_models.CollectiveOffer.isArchived == False,
-        )
-    )
 
 
 def get_playlist_max_distance(institution: educational_models.EducationalInstitution) -> int:
