@@ -2428,6 +2428,10 @@ def get_venue_opening_hours_by_weekday(venue: models.Venue, weekday: models.Week
 
 def delete_venue_accessibility_provider(venue: models.Venue) -> None:
     models.AccessibilityProvider.query.filter_by(venueId=venue.id).delete(synchronize_session=False)
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
 
 def set_accessibility_provider_id(
