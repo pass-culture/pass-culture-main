@@ -164,7 +164,10 @@ def post_event_opening_hours(
         )
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    event_opening_hours = offers_api.create_event_opening_hours(body=body, offer=offer)
+    try:
+        event_opening_hours = offers_api.create_event_opening_hours(body=body, offer=offer)
+    except exceptions.OfferEditionBaseException as error:
+        raise api_errors.ApiErrors(errors=error.errors)
 
     return offers_serialize.GetEventOpeningHoursResponseModel.from_orm(event_opening_hours)
 
