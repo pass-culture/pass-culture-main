@@ -163,4 +163,37 @@ describe('StocksCalendarForm', () => {
 
     expect(screen.queryByLabelText('Date *')).not.toBeInTheDocument()
   })
+
+  it('should set a default price category if there is only one available', async () => {
+    renderStocksCalendarForm({
+      offer: getIndividualOfferFactory({
+        priceCategories: [{ id: 1, label: 'Only price category', price: 0 }],
+      }),
+      onAfterValidate: () => {},
+    })
+    await userEvent.type(
+      screen.getByLabelText('Date *'),
+      addDays(new Date(), 1).toISOString().split('T')[0]
+    )
+
+    expect(screen.getByLabelText('Tarif *')).toHaveValue('1')
+  })
+
+  it('should not set a default price category if there are more than one available', async () => {
+    renderStocksCalendarForm({
+      offer: getIndividualOfferFactory({
+        priceCategories: [
+          { id: 1, label: 'First price category', price: 0 },
+          { id: 2, label: 'Second price category', price: 0 },
+        ],
+      }),
+      onAfterValidate: () => {},
+    })
+    await userEvent.type(
+      screen.getByLabelText('Date *'),
+      addDays(new Date(), 1).toISOString().split('T')[0]
+    )
+
+    expect(screen.getByLabelText('Tarif *')).toHaveValue('')
+  })
 })
