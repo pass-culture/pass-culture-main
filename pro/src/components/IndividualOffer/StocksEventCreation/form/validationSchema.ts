@@ -169,6 +169,11 @@ export const validationSchema = yup.object().shape({
           'L’évènement doit être à venir',
           (value) =>
             isDateValid(value) && new Date(value) > removeTime(getToday())
+        )
+        .test(
+          'is-not-more-than-a-year-from-now',
+          "L’évènement ne doit pas être dans plus d'un an",
+          (value) => new Date(value) <= addMonths(getToday(), 12)
         ),
   }),
   multipleDaysStartDate: yup.string().when('durationType', {
