@@ -525,17 +525,16 @@ def create_event_opening_hours(
 ) -> models.EventOpeningHours:
     validation.check_offer_can_have_opening_hours(offer)
 
-    fields = body.dict()
     event_opening_hours = models.EventOpeningHours(
         offer=offer,
-        startDatetime=fields["startDatetime"],
-        endDatetime=fields["endDatetime"],
+        startDatetime=body.startDatetime,
+        endDatetime=body.endDatetime,
     )
     db.session.add(event_opening_hours)
     db.session.flush()
 
     for weekday in models.Weekday:
-        timeSpans = fields["openingHours"][weekday.name]
+        timeSpans = getattr(body.openingHours, weekday.name)
         if timeSpans:
             weekday_opening_hours = models.EventWeekDayOpeningHours(
                 eventOpeningHours=event_opening_hours,
