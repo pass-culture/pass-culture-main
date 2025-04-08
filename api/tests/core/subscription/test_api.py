@@ -254,112 +254,65 @@ class NextSubscriptionStepTest:
 
             assert next_step is None
 
-    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME + relativedelta(years=1))
-    def test_17_18_transition_with_v3(self):
-        user = users_factories.BeneficiaryFactory(age=17)
+        @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME + relativedelta(years=1))
+        def test_17_18_transition_with_v3(self):
+            user = users_factories.BeneficiaryFactory(age=17)
 
-        # Assert factory does what we expect
-        assert user.deposit.amount == 50
-        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
-        next_step = subscription_api.get_user_subscription_state(user).next_step
-        assert next_step is None
-        assert user.is_beneficiary
-
-        with time_machine.travel(datetime.now() + relativedelta(years=1)):  # pylint: disable=datetime-now
-            next_step = subscription_api.get_user_subscription_state(user).next_step
-            assert next_step == subscription_models.SubscriptionStep.PHONE_VALIDATION
-
-            fraud_factories.PhoneValidationFraudCheckFactory(user=user)
-            user.phoneNumber = "+33606060606"
-
-            subscription_api.activate_beneficiary_if_no_missing_step(user)  # should not activate yet
-            next_step = subscription_api.get_user_subscription_state(user).next_step
-            assert next_step == subscription_models.SubscriptionStep.PROFILE_COMPLETION
-
-            fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-
-            subscription_api.activate_beneficiary_if_no_missing_step(user)  # should not activate yet
-            next_step = subscription_api.get_user_subscription_state(user).next_step
-            assert next_step == subscription_models.SubscriptionStep.HONOR_STATEMENT
-
-            fraud_factories.HonorStatementFraudCheckFactory(user=user)
-
+            # Assert factory does what we expect
+            assert user.deposit.amount == 50
+            assert user.deposit.type == finance_models.DepositType.GRANT_17_18
             next_step = subscription_api.get_user_subscription_state(user).next_step
             assert next_step is None
-
-            subscription_api.activate_beneficiary_if_no_missing_step(user)
-            subscription_state = subscription_api.get_user_subscription_state(user)
-            assert subscription_state.young_status.status_type == young_status.YoungStatusType.BENEFICIARY
             assert user.is_beneficiary
-            assert user.deposit.amount == 50 + 150
-            assert user.recreditAmountToShow == 150
-            assert mails_testing.outbox[0]["params"]["CREDIT"] == 150
 
-    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME + relativedelta(years=1))
-    def test_user_with_modified_birth_date_can_get_their_deposit_activated(self):
-        user = users_factories.BeneficiaryFactory(age=17)
+            with time_machine.travel(datetime.now() + relativedelta(years=1)):  # pylint: disable=datetime-now
+                next_step = subscription_api.get_user_subscription_state(user).next_step
+                assert next_step == subscription_models.SubscriptionStep.PHONE_VALIDATION
 
-        # Assert factory does what we expect
-        assert user.deposit.amount == 50
-        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
-        next_step = subscription_api.get_user_subscription_state(user).next_step
-        assert next_step is None
-        assert user.is_beneficiary
+                fraud_factories.PhoneValidationFraudCheckFactory(user=user)
+                user.phoneNumber = "+33606060606"
 
-        # then the user is 18 yo, due to an admin action
-        users_api.update_user_info(
-            user,
-            author=users_factories.AdminFactory(),
-            validated_birth_date=user.birth_date - relativedelta(years=1),
-        )
+                subscription_api.activate_beneficiary_if_no_missing_step(user)  # should not activate yet
+                next_step = subscription_api.get_user_subscription_state(user).next_step
+                assert next_step == subscription_models.SubscriptionStep.PROFILE_COMPLETION
 
-        # They should be able to finish the subscription steps
-        assert user.age == 18
-        next_step = subscription_api.get_user_subscription_state(user).next_step
-        assert next_step == subscription_models.SubscriptionStep.PHONE_VALIDATION
+                fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
-        fraud_factories.PhoneValidationFraudCheckFactory(user=user)
-        user.phoneNumber = "+33606060606"
+                subscription_api.activate_beneficiary_if_no_missing_step(user)  # should not activate yet
+                next_step = subscription_api.get_user_subscription_state(user).next_step
+                assert next_step == subscription_models.SubscriptionStep.HONOR_STATEMENT
 
-        subscription_api.activate_beneficiary_if_no_missing_step(user)  # should not activate yet
-        next_step = subscription_api.get_user_subscription_state(user).next_step
-        assert next_step == subscription_models.SubscriptionStep.PROFILE_COMPLETION
+                fraud_factories.HonorStatementFraudCheckFactory(user=user)
 
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+                next_step = subscription_api.get_user_subscription_state(user).next_step
+                assert next_step is None
 
-        subscription_api.activate_beneficiary_if_no_missing_step(user)  # should not activate yet
-        next_step = subscription_api.get_user_subscription_state(user).next_step
-        assert next_step == subscription_models.SubscriptionStep.HONOR_STATEMENT
+                subscription_api.activate_beneficiary_if_no_missing_step(user)
+                subscription_state = subscription_api.get_user_subscription_state(user)
+                assert subscription_state.young_status.status_type == young_status.YoungStatusType.BENEFICIARY
+                assert user.is_beneficiary
+                assert user.deposit.amount == 50 + 150
+                assert user.recreditAmountToShow == 150
+                assert mails_testing.outbox[0]["params"]["CREDIT"] == 150
 
-        fraud_factories.HonorStatementFraudCheckFactory(user=user)
+        @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME + relativedelta(years=1))
+        def test_user_with_modified_birth_date_can_get_their_deposit_activated(self):
+            user = users_factories.BeneficiaryFactory(age=17)
 
-        next_step = subscription_api.get_user_subscription_state(user).next_step
-        assert next_step is None
+            # Assert factory does what we expect
+            assert user.deposit.amount == 50
+            assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+            next_step = subscription_api.get_user_subscription_state(user).next_step
+            assert next_step is None
+            assert user.is_beneficiary
 
-        subscription_api.activate_beneficiary_if_no_missing_step(user)
-        subscription_state = subscription_api.get_user_subscription_state(user)
-        assert subscription_state.young_status.status_type == young_status.YoungStatusType.BENEFICIARY
-        assert user.is_beneficiary
-        assert user.deposit.amount == 200
+            # then the user is 18 yo, due to an admin action
+            users_api.update_user_info(
+                user,
+                author=users_factories.AdminFactory(),
+                validated_birth_date=user.birth_date - relativedelta(years=1),
+            )
 
-    def test_user_with_ubble_modified_birth_date_can_get_their_deposit_activated(self):
-        user = users_factories.ProfileCompletedUserFactory(age=16)
-        # Ubble sets birth_date to a year before, user is 17yo
-        ubble_birth_date = user.birth_date - relativedelta(years=1)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
-            resultContent=fraud_factories.UbbleContentFactory(birth_date=ubble_birth_date),
-        )
-        user.validatedBirthDate = ubble_birth_date
-        fraud_factories.HonorStatementFraudCheckFactory(user=user)
-        subscription_api.activate_beneficiary_if_no_missing_step(user)
-
-        assert user.age == 17
-        assert user.is_beneficiary
-
-        with time_machine.travel(datetime.now() + relativedelta(years=1)):  # pylint: disable=datetime-now
             # They should be able to finish the subscription steps
             assert user.age == 18
             next_step = subscription_api.get_user_subscription_state(user).next_step
@@ -387,6 +340,53 @@ class NextSubscriptionStepTest:
             subscription_state = subscription_api.get_user_subscription_state(user)
             assert subscription_state.young_status.status_type == young_status.YoungStatusType.BENEFICIARY
             assert user.is_beneficiary
+            assert user.deposit.amount == 200
+
+        def test_user_with_ubble_modified_birth_date_can_get_their_deposit_activated(self):
+            user = users_factories.ProfileCompletedUserFactory(age=16)
+            # Ubble sets birth_date to a year before, user is 17yo
+            ubble_birth_date = user.birth_date - relativedelta(years=1)
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.UBBLE,
+                status=fraud_models.FraudCheckStatus.OK,
+                resultContent=fraud_factories.UbbleContentFactory(birth_date=ubble_birth_date),
+            )
+            user.validatedBirthDate = ubble_birth_date
+            fraud_factories.HonorStatementFraudCheckFactory(user=user)
+            subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+            assert user.age == 17
+            assert user.is_beneficiary
+
+            with time_machine.travel(datetime.now() + relativedelta(years=1)):  # pylint: disable=datetime-now
+                # They should be able to finish the subscription steps
+                assert user.age == 18
+                next_step = subscription_api.get_user_subscription_state(user).next_step
+                assert next_step == subscription_models.SubscriptionStep.PHONE_VALIDATION
+
+                fraud_factories.PhoneValidationFraudCheckFactory(user=user)
+                user.phoneNumber = "+33606060606"
+
+                subscription_api.activate_beneficiary_if_no_missing_step(user)  # should not activate yet
+                next_step = subscription_api.get_user_subscription_state(user).next_step
+                assert next_step == subscription_models.SubscriptionStep.PROFILE_COMPLETION
+
+                fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+                subscription_api.activate_beneficiary_if_no_missing_step(user)  # should not activate yet
+                next_step = subscription_api.get_user_subscription_state(user).next_step
+                assert next_step == subscription_models.SubscriptionStep.HONOR_STATEMENT
+
+                fraud_factories.HonorStatementFraudCheckFactory(user=user)
+
+                next_step = subscription_api.get_user_subscription_state(user).next_step
+                assert next_step is None
+
+                subscription_api.activate_beneficiary_if_no_missing_step(user)
+                subscription_state = subscription_api.get_user_subscription_state(user)
+                assert subscription_state.young_status.status_type == young_status.YoungStatusType.BENEFICIARY
+                assert user.is_beneficiary
 
     class NextStepPhoneValidationTest:
         def test_next_subscription_step_phone_validation(self):
