@@ -74,6 +74,7 @@ export enum Events {
   UPDATED_EVENT_STOCK_FILTERS = 'hasUpdatedEventStockFilters',
   CLICKED_VALIDATE_ADD_RECURRENCE_DATES = 'hasClickedValidateAddRecurrenceDates',
   FAKE_DOOR_VIDEO_INTERESTED = 'fakeDoorVideoInterested',
+  CLICKED_SORT_STOCKS_TABLE = 'hasClickedSortStocksTable',
 }
 
 export enum VenueEvents {

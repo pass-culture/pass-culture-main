@@ -176,6 +176,16 @@ export const StocksEventEdition = ({
     setShouldBlockPreviousPageNavigationFormIsDirty,
   ] = useState(false)
 
+  function sortTableColumn(col: StocksOrderedBy) {
+    logEvent(Events.CLICKED_SORT_STOCKS_TABLE, {
+      formType: 'edition',
+      sortBy: col,
+      offerId: offer.id,
+      venueId: offer.venue.id,
+    })
+    onColumnHeaderClick(col)
+  }
+
   const loadStocksFromCurrentFilters = useCallback(
     () =>
       api.getStocks(
@@ -490,7 +500,7 @@ export const StocksEventEdition = ({
 
                           <SortArrow
                             onClick={() =>
-                              onColumnHeaderClick(StocksOrderedBy.DATE)
+                              sortTableColumn(StocksOrderedBy.DATE)
                             }
                             sortingMode={
                               currentSortingColumn === StocksOrderedBy.DATE
@@ -523,7 +533,7 @@ export const StocksEventEdition = ({
 
                           <SortArrow
                             onClick={() =>
-                              onColumnHeaderClick(StocksOrderedBy.TIME)
+                              sortTableColumn(StocksOrderedBy.TIME)
                             }
                             sortingMode={
                               currentSortingColumn === StocksOrderedBy.TIME
@@ -555,9 +565,7 @@ export const StocksEventEdition = ({
 
                           <SortArrow
                             onClick={() =>
-                              onColumnHeaderClick(
-                                StocksOrderedBy.PRICE_CATEGORY_ID
-                              )
+                              sortTableColumn(StocksOrderedBy.PRICE_CATEGORY_ID)
                             }
                             sortingMode={
                               currentSortingColumn ===
@@ -597,7 +605,7 @@ export const StocksEventEdition = ({
 
                           <SortArrow
                             onClick={() =>
-                              onColumnHeaderClick(
+                              sortTableColumn(
                                 StocksOrderedBy.BOOKING_LIMIT_DATETIME
                               )
                             }
@@ -626,7 +634,7 @@ export const StocksEventEdition = ({
 
                           <SortArrow
                             onClick={() =>
-                              onColumnHeaderClick(
+                              sortTableColumn(
                                 StocksOrderedBy.REMAINING_QUANTITY
                               )
                             }
@@ -655,7 +663,7 @@ export const StocksEventEdition = ({
 
                           <SortArrow
                             onClick={() =>
-                              onColumnHeaderClick(
+                              sortTableColumn(
                                 StocksOrderedBy.DN_BOOKED_QUANTITY
                               )
                             }
