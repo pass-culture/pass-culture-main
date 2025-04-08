@@ -100,76 +100,68 @@ def get_individual_bookings(user: users_models.User) -> list[models.Booking]:
     including the offer and venue data.
     """
     return (
-        models.Booking.query.filter_by(userId=user.id)
-        .options(
-            sa_orm.joinedload(models.Booking.stock).load_only(
+        models.Booking.query.filter_by(userId=user.id).options(
+            sa_orm.joinedload(models.Booking.stock)
+            .load_only(
                 offers_models.Stock.id,
                 offers_models.Stock.beginningDatetime,
                 offers_models.Stock.price,
                 offers_models.Stock.features,
+                offers_models.Stock.offerId,
             )
+            .options(
+                sa_orm.joinedload(offers_models.Stock.offer)
+                .load_only(
+                    offers_models.Offer.bookingContact,
+                    offers_models.Offer.name,
+                    offers_models.Offer.url,
+                    offers_models.Offer.subcategoryId,
+                    offers_models.Offer.withdrawalDetails,
+                    offers_models.Offer.withdrawalType,
+                    offers_models.Offer.withdrawalDelay,
+                    offers_models.Offer.extraData,
+                )
+                .options(
+                    sa_orm.joinedload(offers_models.Offer.product)
+                    .load_only(
+                        offers_models.Product.id,
+                        offers_models.Product.thumbCount,
+                    )
+                    .joinedload(offers_models.Product.productMediations),
+                    sa_orm.joinedload(offers_models.Offer.venue)
+                    .load_only(
+                        offerers_models.Venue.name,
+                        offerers_models.Venue.street,
+                        offerers_models.Venue.postalCode,
+                        offerers_models.Venue.city,
+                        offerers_models.Venue.latitude,
+                        offerers_models.Venue.longitude,
+                        offerers_models.Venue.publicName,
+                        offerers_models.Venue.timezone,
+                        offerers_models.Venue.bannerUrl,
+                        offerers_models.Venue.isOpenToPublic,
+                        offerers_models.Venue.venueTypeCode,
+                    )
+                    .options(
+                        sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
+                            offerers_models.OffererAddress.address
+                        ),
+                        sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
+                    ),
+                    sa_orm.joinedload(offers_models.Offer.mediations),
+                    sa_orm.joinedload(offers_models.Offer.offererAddress)
+                    .load_only(offerers_models.OffererAddress.addressId, offerers_models.OffererAddress.label)
+                    .joinedload(offerers_models.OffererAddress.address),
+                ),
+                sa_orm.joinedload(offers_models.Stock.priceCategory)
+                .joinedload(offers_models.PriceCategory.priceCategoryLabel)
+                .load_only(offers_models.PriceCategoryLabel.label),
+            ),
+            sa_orm.joinedload(models.Booking.activationCode),
+            sa_orm.joinedload(models.Booking.externalBookings),
+            sa_orm.joinedload(models.Booking.deposit).load_only(finance_models.Deposit.type),
+            sa_orm.joinedload(models.Booking.user).joinedload(users_models.User.reactions),
         )
-        .options(
-            sa_orm.joinedload(models.Booking.stock)
-            .joinedload(offers_models.Stock.offer)
-            .load_only(
-                offers_models.Offer.bookingContact,
-                offers_models.Offer.name,
-                offers_models.Offer.url,
-                offers_models.Offer.subcategoryId,
-                offers_models.Offer.withdrawalDetails,
-                offers_models.Offer.withdrawalType,
-                offers_models.Offer.withdrawalDelay,
-                offers_models.Offer.extraData,
-            )
-            .joinedload(offers_models.Offer.product)
-            .load_only(
-                offers_models.Product.id,
-                offers_models.Product.thumbCount,
-            )
-            .joinedload(offers_models.Product.productMediations)
-        )
-        .options(
-            sa_orm.joinedload(models.Booking.stock)
-            .joinedload(offers_models.Stock.priceCategory)
-            .joinedload(offers_models.PriceCategory.priceCategoryLabel)
-            .load_only(offers_models.PriceCategoryLabel.label)
-        )
-        .options(
-            sa_orm.joinedload(models.Booking.stock)
-            .joinedload(offers_models.Stock.offer)
-            .joinedload(offers_models.Offer.venue)
-            .load_only(
-                offerers_models.Venue.name,
-                offerers_models.Venue.street,
-                offerers_models.Venue.postalCode,
-                offerers_models.Venue.city,
-                offerers_models.Venue.latitude,
-                offerers_models.Venue.longitude,
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.timezone,
-            )
-            .joinedload(offerers_models.Venue.offererAddress)
-            .joinedload(offerers_models.OffererAddress.address)
-        )
-        .options(
-            sa_orm.joinedload(models.Booking.stock)
-            .joinedload(offers_models.Stock.offer)
-            .joinedload(offers_models.Offer.mediations)
-        )
-        .options(
-            sa_orm.joinedload(models.Booking.stock)
-            .load_only(offers_models.Stock.offerId)
-            .joinedload(offers_models.Stock.offer)
-            .load_only(offers_models.Offer.offererAddressId)
-            .joinedload(offers_models.Offer.offererAddress)
-            .load_only(offerers_models.OffererAddress.addressId, offerers_models.OffererAddress.label)
-            .joinedload(offerers_models.OffererAddress.address)
-        )
-        .options(sa_orm.joinedload(models.Booking.activationCode))
-        .options(sa_orm.joinedload(models.Booking.externalBookings))
-        .options(sa_orm.joinedload(models.Booking.deposit).load_only(finance_models.Deposit.type))
-        .options(sa_orm.joinedload(models.Booking.user).joinedload(users_models.User.reactions))
     ).all()
 
 

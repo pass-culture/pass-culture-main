@@ -883,6 +883,8 @@ class GetBookingsTest:
                         "name": used2.venue.name,
                         "publicName": used2.venue.publicName,
                         "timezone": "Europe/Paris",
+                        "bannerUrl": None,
+                        "isOpenToPublic": False,
                     },
                     "withdrawalDetails": None,
                     "withdrawalType": None,
@@ -1102,6 +1104,26 @@ class GetBookingsTest:
 
         assert response.status_code == 200
         assert response.json["ongoing_bookings"][0]["stock"]["offer"]["venue"]["name"] == "Public name"
+
+    def test_return_venue_banner_url(self, client):
+        venue = offerers_factories.VenueFactory(bannerUrl="http://bannerUrl.com")
+        booking = booking_factories.BookingFactory(stock__offer__venue=venue)
+
+        client = client.with_token(booking.user.email)
+        response = client.get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        assert response.json["ongoing_bookings"][0]["stock"]["offer"]["venue"]["bannerUrl"] == "http://bannerUrl.com"
+
+    def test_return_venue_is_open_to_public(self, client):
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
+        booking = booking_factories.BookingFactory(stock__offer__venue=venue)
+
+        client = client.with_token(booking.user.email)
+        response = client.get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        assert response.json["ongoing_bookings"][0]["stock"]["offer"]["venue"]["isOpenToPublic"] is True
 
 
 class CancelBookingTest:

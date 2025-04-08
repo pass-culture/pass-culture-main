@@ -55,6 +55,8 @@ class BookingVenueResponse(BaseModel):
     publicName: str | None
     coordinates: Coordinates
     timezone: str
+    bannerUrl: str | None
+    isOpenToPublic: bool
 
     class Config:
         orm_mode = True
