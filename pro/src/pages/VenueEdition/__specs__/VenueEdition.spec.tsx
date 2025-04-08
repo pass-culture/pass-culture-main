@@ -15,6 +15,7 @@ import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
+import * as utils from 'commons/utils/savedPartnerPageVenueId'
 
 import { VenueEdition } from '../VenueEdition'
 
@@ -61,6 +62,15 @@ vi.mock('react-router-dom', async () => ({
   }),
   useNavigate: () => vi.fn(),
 }))
+
+const mockDispatch = vi.fn()
+vi.mock('react-redux', async () => {
+  const actual = await vi.importActual('react-redux')
+  return {
+    ...actual,
+    useDispatch: () => mockDispatch,
+  }
+})
 
 const baseVenue: GetVenueResponseModel = {
   ...defaultGetVenue,
@@ -163,6 +173,48 @@ describe('VenueEdition', () => {
         '666'
       )
       expect(screen.getByText('Mon lieu diabolique')).toBeInTheDocument()
+    })
+
+    it('should save the venue id in local storage on selection', async () => {
+      const setSavedPartnerPageVenueId = vi.fn()
+      vi.spyOn(utils, 'setSavedPartnerPageVenueId').mockImplementation(() => ({
+        setSavedPartnerPageVenueId,
+      }))
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        managedVenues: [
+          {
+            ...defaultGetOffererVenueResponseModel,
+            id: 13,
+            publicName: 'Mon lieu de malheur',
+          },
+          {
+            ...defaultGetOffererVenueResponseModel,
+            id: 666,
+            publicName: 'Mon lieu diabolique',
+          },
+        ],
+      })
+      renderVenueEdition({ context: 'partnerPage' })
+
+      await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+      const selectedVenueId = '13'
+      await userEvent.selectOptions(
+        screen.getByLabelText('Sélectionnez votre page partenaire'),
+        selectedVenueId
+      )
+
+      expect(utils.setSavedPartnerPageVenueId).toHaveBeenCalled()
+      vi.spyOn(utils, 'setSavedPartnerPageVenueId').mockReset()
+
+      // We also expect dispatch to be called to update
+      // side nav partner page link.
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({
+          payload: selectedVenueId,
+        })
+      )
     })
 
     it('should not let choose an other partner page when there is only one partner page', async () => {

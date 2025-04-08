@@ -5,3 +5,6 @@ export const selectIsIndividualSectionOpen = (state: RootState) =>
 
 export const selectIsCollectiveSectionOpen = (state: RootState) =>
   state.nav.isCollectiveSectionOpen
+
+export const selectSelectedPartnerPageId = (state: RootState) =>
+  state.nav.selectedPartnerPageId

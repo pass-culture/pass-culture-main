@@ -9,6 +9,10 @@ import {
 } from 'apiClient/v1'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { SelectOption } from 'commons/custom_types/form'
+import {
+  getSavedPartnerPageVenueId,
+  setSavedPartnerPageVenueId,
+} from 'commons/utils/savedPartnerPageVenueId'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
@@ -26,8 +30,18 @@ export const PartnerPages = ({
   offerer,
   venueTypes,
 }: PartnerPagesProps) => {
+  const savedPartnerPageVenueId = getSavedPartnerPageVenueId(
+    'homepage',
+    offerer.id
+  )
+  const stillRelevantSavedPartnerPageVenueId = venues
+    .find((venue) => venue.id.toString() === savedPartnerPageVenueId)
+    ?.id.toString()
+  const initialSavedPartnerPageVenueId =
+    stillRelevantSavedPartnerPageVenueId || venues[0].id.toString() || ''
+
   const [selectedVenueId, setSelectedVenueId] = useState<string>(
-    venues.length > 0 ? venues[0].id.toString() : ''
+    initialSavedPartnerPageVenueId
   )
 
   const venuesOptions: SelectOption[] = venues.map((venue) => ({
@@ -65,6 +79,11 @@ export const PartnerPages = ({
               value={selectedVenueId}
               onChange={(e) => {
                 setSelectedVenueId(e.target.value)
+                setSavedPartnerPageVenueId(
+                  'homepage',
+                  offerer.id,
+                  e.target.value
+                )
               }}
             />
           </FieldLayout>

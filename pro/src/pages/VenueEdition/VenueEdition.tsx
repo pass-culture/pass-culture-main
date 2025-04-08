@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   generatePath,
   useLocation,
@@ -16,7 +16,9 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { SelectOption } from 'commons/custom_types/form'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
+import { setSelectedPartnerPageId } from 'commons/store/nav/reducer'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { setSavedPartnerPageVenueId } from 'commons/utils/savedPartnerPageVenueId'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
@@ -34,6 +36,7 @@ export const VenueEdition = (): JSX.Element | null => {
     offererId: string
     venueId: string
   }>()
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
   const selectedOffererId = useSelector(selectCurrentOffererId)
@@ -133,6 +136,17 @@ export const VenueEdition = (): JSX.Element | null => {
                     value={venueId ?? ''}
                     onChange={(e) => {
                       const venueId = e.target.value
+
+                      if (context === 'partnerPage') {
+                        setSavedPartnerPageVenueId(
+                          'partnerPage',
+                          offererId,
+                          venueId
+                        )
+
+                        dispatch(setSelectedPartnerPageId(venueId))
+                      }
+
                       const path = getPathToNavigateTo(
                         offererId as string,
                         venueId
