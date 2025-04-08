@@ -2747,37 +2747,6 @@ def synchronize_accessibility_with_acceslibre(
     logger.info("Accessibility data synchronization with acceslibre complete successfully")
 
 
-def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool) -> None:
-    """
-    For venues in venue_ids list, we look for a match at acceslibre and synchronize the
-    accessibility data
-    """
-    for venue_id in venue_ids:
-        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
-        if venue is None:
-            logger.warning("Venue with id %s not found", venue_id)
-            continue
-
-        set_accessibility_provider_id(venue)
-        if not venue.accessibilityProvider:
-            logger.info("No match found at acceslibre for Venue %s ", venue_id)
-            continue
-
-        set_accessibility_infos_from_provider_id(venue)
-        db.session.add(venue)
-
-    if not dry_run:
-        try:
-            db.session.commit()
-            logger.info("Synchronization complete for venues %s", venue_ids)
-        except sa.exc.SQLAlchemyError:
-            logger.exception("Could not update venues %s", venue_ids)
-            db.session.rollback()
-    else:
-        logger.info("Dry run complete successfully for synchronization")
-        db.session.rollback()
-
-
 def match_venue_with_new_entries(
     venues_list: list[models.Venue],
     results: list[accessibility_provider.AcceslibreResult],
@@ -2842,53 +2811,6 @@ def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int, n
         db.session.rollback()
     else:
         logger.info("Matching with acceslibre complete")
-
-
-def find_missing_match_at_acceslibre(batch_size: int, dry_run: bool, start_from_batch: int) -> None:
-    """
-    FIXME: ogeber, 09.09.2024 we should investigate why we're missing some match with our workflow, then delete this method
-
-    Some match have not been made using the current workflow, we use this method to fetch missing matchs.
-
-    This one should be used parsimoniously as it makes up to 4 request at acceslibre API to fetch a match, so
-    it takes a while.
-
-    If we use the --start-from-batch option, it will start synchronization from the given batch number
-    Use case: synchronization has failed with message "Could not update batch <n>"
-    """
-
-    count_before_match = count_open_to_public_venues_with_accessibility_provider()
-    logger.info("Number of venue synchronized before matching %d", count_before_match)
-    venues_list = get_open_to_public_venues_without_accessibility_provider()
-    num_batches = ceil(len(venues_list) / batch_size)
-    if start_from_batch > num_batches:
-        logger.info("Start from batch must be less than %d", num_batches)
-        return
-
-    start_batch_index = start_from_batch - 1
-    count_after_match = 0
-    for i in range(start_batch_index, num_batches):
-        batch_start = i * batch_size
-        batch_end = (i + 1) * batch_size
-        for venue in venues_list[batch_start:batch_end]:
-            try:
-                set_accessibility_provider_id(venue)  # try to find a match at acceslibre
-                if venue.accessibilityProvider:
-                    set_accessibility_infos_from_provider_id(venue)  # if match is found, fetch and write data
-            except accessibility_provider.AccesLibreApiException as e:
-                logger.error("Acceslibre API Error %s when trying to match venue %d", e, venue.id)
-                continue
-        if dry_run:
-            count_after_match = count_open_to_public_venues_with_accessibility_provider()
-        else:
-            try:
-                db.session.commit()
-            except sa.exc.SQLAlchemyError:
-                logger.exception("Could not update batch %d", i + 1)
-                db.session.rollback()
-            count_after_match = count_open_to_public_venues_with_accessibility_provider()
-
-    logger.info("Matching complete, %s new match found", count_after_match - count_before_match)
 
 
 LocationData = typing.TypedDict(
