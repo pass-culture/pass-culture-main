@@ -119,7 +119,12 @@ export const createPatchOfferPayload = (
       !key.startsWith('search-') &&
       !keysToOmmit.includes(key)
     ) {
-      changedValues = serializer[key]?.(changedValues, offer) ?? {}
+      if (key === 'addressAutocomplete') {
+        changedValues =
+          templateSerializer['location']?.(changedValues, offer) ?? {}
+      } else {
+        changedValues = templateSerializer[key]?.(changedValues, offer) ?? {}
+      }
     }
   })
 
@@ -156,7 +161,12 @@ export const createPatchOfferTemplatePayload = (
       !isEqual(offer[key], initialValues[key]) &&
       !key.startsWith('search-')
     ) {
-      changedValues = templateSerializer[key]?.(changedValues, offer) ?? {}
+      if (key === 'addressAutocomplete') {
+        changedValues =
+          templateSerializer['location']?.(changedValues, offer) ?? {}
+      } else {
+        changedValues = templateSerializer[key]?.(changedValues, offer) ?? {}
+      }
     }
   })
 
@@ -179,5 +189,6 @@ export const createPatchOfferTemplatePayload = (
     offer.endingDate
       ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
       : null
+
   return changedValues
 }

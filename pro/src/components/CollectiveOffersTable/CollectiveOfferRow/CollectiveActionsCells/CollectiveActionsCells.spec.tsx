@@ -463,7 +463,14 @@ describe('CollectiveActionsCells', () => {
         name: 'Offre de test',
         nationalProgramId: 1,
         location: {
-          id_oa: '',
+          address: {
+            city: '',
+            label: '',
+            latitude: '',
+            longitude: '',
+            postalCode: '',
+            street: '',
+          },
           locationType: 'ADDRESS',
         },
         students: ['Collège - 3e'],

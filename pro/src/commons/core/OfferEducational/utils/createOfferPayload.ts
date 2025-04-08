@@ -53,33 +53,39 @@ export const serializeDates = (
 }
 
 function getCommonOfferPayload(
-  offer: OfferEducationalFormValues,
+  offerFormValues: OfferEducationalFormValues,
   isCollectiveOaActive: boolean
 ): PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel {
+  // remove id_oa key from location object as it useful only on a form matter
+  delete offerFormValues.location.id_oa
+
   return {
-    venueId: Number(offer.venueId),
+    venueId: Number(offerFormValues.venueId),
     subcategoryId: null,
-    name: offer.title,
-    bookingEmails: offer.notificationEmails,
-    description: offer.description,
-    durationMinutes: parseDuration(offer.duration),
-    ...disabilityCompliances(offer.accessibility),
-    students: serializeParticipants(offer.participants),
+    name: offerFormValues.title,
+    bookingEmails: offerFormValues.notificationEmails,
+    description: offerFormValues.description,
+    durationMinutes: parseDuration(offerFormValues.duration),
+    ...disabilityCompliances(offerFormValues.accessibility),
+    students: serializeParticipants(offerFormValues.participants),
     ...(isCollectiveOaActive
-      ? { location: offer.location }
+      ? { location: offerFormValues.location }
       : {
           offerVenue: {
-            ...offer.eventAddress,
-            venueId: Number(offer.eventAddress.venueId),
+            ...offerFormValues.eventAddress,
+            venueId: Number(offerFormValues.eventAddress.venueId),
           },
         }),
-    domains: offer.domains.map((domainIdString) => Number(domainIdString)),
+    domains: offerFormValues.domains.map((domainIdString) =>
+      Number(domainIdString)
+    ),
     interventionArea:
-      offer.eventAddress.addressType === OfferAddressType.OFFERER_VENUE
+      offerFormValues.eventAddress.addressType ===
+      OfferAddressType.OFFERER_VENUE
         ? []
-        : offer.interventionArea,
-    nationalProgramId: Number(offer.nationalProgramId),
-    formats: offer.formats,
+        : offerFormValues.interventionArea,
+    nationalProgramId: Number(offerFormValues.nationalProgramId),
+    formats: offerFormValues.formats,
   }
 }
 

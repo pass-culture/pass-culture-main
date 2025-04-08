@@ -180,4 +180,35 @@ describe('createOfferPayload', () => {
       expect.objectContaining({ interventionArea: [] })
     )
   })
+
+  it('should create a template offer payload with address infos when the offer address type is ADDRESS and FF OA is active', () => {
+    const offerPayload = createCollectiveOfferTemplatePayload(
+      {
+        ...DEFAULT_EAC_FORM_VALUES,
+        eventAddress: {
+          addressType: OfferAddressType.OFFERER_VENUE,
+          otherAddress: '',
+          venueId: 4,
+        },
+        interventionArea: ['44'],
+      },
+      true
+    )
+
+    expect(offerPayload).toEqual(
+      expect.objectContaining({
+        location: {
+          address: {
+            city: '',
+            label: '',
+            latitude: '',
+            longitude: '',
+            postalCode: '',
+            street: '',
+          },
+          locationType: 'ADDRESS',
+        },
+      })
+    )
+  })
 })

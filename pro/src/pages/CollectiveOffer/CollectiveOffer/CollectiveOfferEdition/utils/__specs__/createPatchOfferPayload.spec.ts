@@ -53,6 +53,8 @@ describe('createPatchOfferPayload', () => {
     hour: '10:00',
     isTemplate: false,
     formats: [EacFormat.CONCERT],
+    'search-addressAutocomplete': '',
+    addressAutocomplete: '',
   }
   const offer: OfferEducationalFormValues = {
     title: 'Test Offer update',
@@ -93,6 +95,8 @@ describe('createPatchOfferPayload', () => {
     hour: '10:00',
     isTemplate: false,
     formats: [EacFormat.ATELIER_DE_PRATIQUE],
+    'search-addressAutocomplete': '',
+    addressAutocomplete: '',
   }
 
   const patchOfferPayload: PatchCollectiveOfferBodyModel = {
@@ -131,7 +135,8 @@ describe('createPatchOfferPayload', () => {
   it('should return the correct patch offer payload for a template offer', () => {
     const payload = createPatchOfferTemplatePayload(
       { ...offer, priceDetail: '123', isTemplate: true },
-      initialValues, false
+      initialValues,
+      false
     )
 
     expect(payload).toMatchObject({
