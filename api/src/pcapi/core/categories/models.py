@@ -99,7 +99,6 @@ class Subcategory:
     online_offline_platform: str
     reimbursement_rule: str
     can_be_duo: bool
-    can_be_educational: bool
     can_have_opening_hours: bool = False
     # used by pc pro to build dropdown of subcategories during offer creation
     is_selectable: bool = True

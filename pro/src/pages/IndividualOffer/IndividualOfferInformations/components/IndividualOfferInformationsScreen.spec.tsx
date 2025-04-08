@@ -85,7 +85,6 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
         isEvent: false,
         conditionalFields: ['ean'],
         canBeDuo: true,
-        canBeEducational: false,
         canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
       }),
