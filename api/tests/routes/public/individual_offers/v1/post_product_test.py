@@ -316,7 +316,8 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 200
         assert response.json["categoryRelatedFields"] == {"category": "SUPPORT_PHYSIQUE_FILM", "ean": "1234567891234"}
         created_offer = offers_models.Offer.query.one()
-        assert created_offer.extraData == {"ean": "1234567891234"}
+        assert created_offer.ean == "1234567891234"
+        assert "ean" not in created_offer.extraData
 
     @pytest.mark.usefixtures("db_session")
     def test_event_with_custom_address(self, client):

@@ -19,6 +19,7 @@ from pcapi.core.offerers.factories import OffererAddressFactory
 from pcapi.core.offerers.factories import VenueFactory
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import ImageType
+from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferReport
 from pcapi.core.providers.constants import BookFormat
 import pcapi.core.providers.factories as providers_factories
@@ -46,10 +47,10 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class OffersTest:
     @time_machine.travel("2020-01-01", tick=False)
     def test_get_event_offer(self, client):
+        ean = "1234567899999"
         extra_data = {
             "allocineId": 12345,
             "author": "mandibule",
-            "ean": "3838",
             "musicSubType": "502",
             "musicType": "501",
             "performer": "interprète",
@@ -71,6 +72,7 @@ class OffersTest:
             description="desk cryption",
             name="l'offre du siècle",
             withdrawalDetails="modalité de retrait",
+            ean=ean,
             extraData=extra_data,
             durationMinutes=33,
             visualDisabilityCompliant=True,
@@ -132,6 +134,9 @@ class OffersTest:
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
 
+        offer = Offer.query.get(offer.id)
+        assert offer.ean == ean
+        assert "ean" not in offer.extraData
         assert response.json["id"] == offer.id
         assert response.json["accessibility"] == {
             "audioDisability": False,
@@ -210,7 +215,7 @@ class OffersTest:
         assert response.json["extraData"] == {
             "allocineId": 12345,
             "author": "mandibule",
-            "ean": "3838",
+            "ean": "1234567899999",
             "durationMinutes": 33,
             "musicSubType": "Acid Jazz",
             "musicType": "Jazz",
@@ -836,7 +841,6 @@ class OffersV2Test:
         extra_data = {
             "allocineId": 12345,
             "author": "mandibule",
-            "ean": "3838",
             "musicSubType": "502",
             "musicType": "501",
             "performer": "interprète",
@@ -858,6 +862,7 @@ class OffersV2Test:
             description="desk cryption",
             name="l'offre du siècle",
             withdrawalDetails="modalité de retrait",
+            ean="1234567899999",
             extraData=extra_data,
             durationMinutes=33,
             visualDisabilityCompliant=True,
@@ -992,7 +997,7 @@ class OffersV2Test:
         assert response.json["extraData"] == {
             "allocineId": 12345,
             "author": "mandibule",
-            "ean": "3838",
+            "ean": "1234567899999",
             "durationMinutes": 33,
             "musicSubType": "Acid Jazz",
             "musicType": "Jazz",
@@ -1912,10 +1917,10 @@ class OffersStocksTest:
 
     @time_machine.travel("2024-04-01", tick=False)
     def test_return_offers_stocks(self, client):
+        ean = "1234567899999"
         extra_data = {
             "allocineId": 12345,
             "author": "mandibule",
-            "ean": "3838",
             "musicSubType": "502",
             "musicType": "501",
             "performer": "interprète",
@@ -1934,6 +1939,7 @@ class OffersStocksTest:
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             name="l'offre du siècle",
+            ean=ean,
             extraData=extra_data,
             durationMinutes=33,
         )
@@ -1981,6 +1987,11 @@ class OffersStocksTest:
         payload = {"offer_ids": [offer.id]}
         with assert_num_queries(1):
             response = client.post("/native/v1/offers/stocks", json=payload)
+
+        offer = Offer.query.get(offer.id)
+        assert offer.ean == ean
+        assert "ean" not in offer.extraData
+
         # For the test to be deterministic
         response_offer = response.json["offers"][0]
         response_offer["stocks"].sort(key=lambda stock: stock["id"])
@@ -1991,7 +2002,7 @@ class OffersStocksTest:
             "extraData": {
                 "allocineId": 12345,
                 "author": "mandibule",
-                "ean": "3838",
+                "ean": ean,
                 "durationMinutes": None,
                 "musicSubType": "Acid Jazz",
                 "musicType": "Jazz",
@@ -2100,10 +2111,10 @@ class OffersStocksV2Test:
 
     @time_machine.travel("2020-01-01", tick=False)
     def test_return_offers_stocks(self, client):
+        ean = "1234567899999"
         extra_data = {
             "allocineId": 12345,
             "author": "mandibule",
-            "ean": "3838",
             "musicSubType": "502",
             "musicType": "501",
             "performer": "interprète",
@@ -2122,6 +2133,7 @@ class OffersStocksV2Test:
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             name="l'offre du siècle",
+            ean=ean,
             extraData=extra_data,
             durationMinutes=33,
         )
@@ -2263,7 +2275,7 @@ class OffersStocksV2Test:
         assert response_offer["extraData"] == {
             "allocineId": 12345,
             "author": "mandibule",
-            "ean": "3838",
+            "ean": "1234567899999",
             "durationMinutes": 33,
             "musicSubType": "Acid Jazz",
             "musicType": "Jazz",

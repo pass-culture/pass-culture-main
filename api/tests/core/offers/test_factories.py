@@ -13,10 +13,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class OfferFactoryTest:
-    def test_default(self):
-        offer = OfferFactory(set_all_fields=True)
-        assert offer.extraData
-
     def test_extradata_is_none(self):
         offer = OfferFactory(extraData=None)
         assert offer.extraData is None
@@ -46,7 +42,7 @@ class OfferFactoryTest:
 
         assert book_offer.extraData is not None
         assert isinstance(book_offer.extraData.get("author"), str)
-        assert re.match(r"\d{13}", book_offer.extraData.get("ean"))
+        assert re.match(r"\d{13}", book_offer.ean)
 
     def test_generate_concert_extra_data(self):
         concert_offer = OfferFactory(subcategoryId=subcategories.CONCERT.id, set_all_fields=True)

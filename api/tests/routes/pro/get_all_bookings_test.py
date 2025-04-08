@@ -153,7 +153,7 @@ class Returns200Test:
     )
     def test_when_user_is_linked_to_a_valid_offerer(self, client: Any, offerer_factory):
         stock = offers_factories.StockFactory(
-            offer__extraData={"ean": "1234567891234"},
+            offer__ean="1234567891234",
             offer__venue__managingOfferer=offerer_factory(),
         )
         used_booking = bookings_factories.UsedBookingFactory(

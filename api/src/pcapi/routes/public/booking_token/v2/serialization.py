@@ -70,7 +70,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         bookingId=humanize(booking.id),  # type: ignore[arg-type]
         dateOfBirth=birth_date,
         datetime=(format_into_utc_date(booking.stock.beginningDatetime) if booking.stock.beginningDatetime else ""),
-        ean13=(extra_data.get("ean", None)),
+        ean13=booking.stock.offer.ean,
         email=booking.email,
         formula=formula,
         isUsed=booking.is_used_or_reimbursed,

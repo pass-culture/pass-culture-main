@@ -633,7 +633,7 @@ class EditStockTest:
             price=110,
             offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
             offer__lastValidationPrice=decimal.Decimal("100"),
-            offer__extraData={"ean": "1234567890123"},
+            offer__ean="1234567890123",
         )
 
         # When
@@ -1582,7 +1582,8 @@ class UpdateOfferTest:
     def test_update_offer_with_existing_ean(self):
         offer = factories.OfferFactory(
             name="Old name",
-            extraData={"ean": "1234567890123", "gtl_id": "02000000"},
+            ean="1234567890123",
+            extraData={"gtl_id": "02000000"},
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
         body = offers_schemas.UpdateOffer(name="New name", description="new Description")
@@ -1593,7 +1594,7 @@ class UpdateOfferTest:
         assert offer.description == "new Description"
 
     def test_cannot_update_with_name_too_long(self):
-        offer = factories.OfferFactory(name="Old name", extraData={"ean": "1234567890124"})
+        offer = factories.OfferFactory(name="Old name", ean="1234567890124")
         body = offers_schemas.UpdateOffer(name="Luftballons" * 99)
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_offer(offer, body)
@@ -1602,7 +1603,7 @@ class UpdateOfferTest:
         assert models.Offer.query.one().name == "Old name"
 
     def test_cannot_update_with_name_containing_ean(self):
-        offer = factories.OfferFactory(name="Old name", extraData={"ean": "1234567890124"})
+        offer = factories.OfferFactory(name="Old name", ean="1234567890124")
         body = offers_schemas.UpdateOffer(name="Luftballons 1234567890124")
         with pytest.raises(exceptions.EanInOfferNameException) as error:
             api.update_offer(offer, body)
@@ -1642,7 +1643,7 @@ class UpdateOfferTest:
             externalTicketOfficeUrl="http://example.org",
             lastProvider=provider,
             name="Old name",
-            extraData={"ean": "1234567890124"},
+            ean="1234567890124",
         )
         body = offers_schemas.UpdateOffer(externalTicketOfficeUrl="https://example.com")
         api.update_offer(offer, body)
@@ -1755,7 +1756,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=provider,
             name="Offer linked to a provider",
-            extraData={"ean": "1234567890124"},
+            ean="1234567890124",
         )
         body = offers_schemas.UpdateOffer(idAtProvider="some_id_at_provider")
         api.update_offer(offer, body)
@@ -1771,25 +1772,20 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=provider,
             name="Offer linked to a provider",
-            extraData={"ean": "1234567890124"},
+            ean="1234567890124",
         )
-        body = offers_schemas.UpdateOffer(extraData={"ean": "1234567890125"})
+        body = offers_schemas.UpdateOffer(ean="1234567890125")
         api.update_offer(offer, body)
 
         offer = models.Offer.query.one()
         assert offer.ean == "1234567890125"
-        assert offer.extraData["ean"] == "1234567890125"
 
     def test_success_should_not_duplicate_ean_when_it_is_an_empty_string(self):
         provider = providers_factories.PublicApiProviderFactory()
         offerer = offerers_factories.OffererFactory()
         providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
-        offer = factories.EventOfferFactory(
-            lastProvider=provider,
-            name="Offer linked to a provider",
-            extraData={"ean": ""},
-        )
-        body = offers_schemas.UpdateOffer(extraData={"ean": ""})
+        offer = factories.EventOfferFactory(lastProvider=provider, name="Offer linked to a provider", ean=None)
+        body = offers_schemas.UpdateOffer(ean=None)
         api.update_offer(offer, body)
 
         offer = models.Offer.query.one()
@@ -1799,7 +1795,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=None,
             name="Offer linked to a provider",
-            extraData={"ean": "1234567890124"},
+            ean="1234567890124",
         )
         body = offers_schemas.UpdateOffer(idAtProvider="some_id_at_provider")
         with pytest.raises(exceptions.CannotSetIdAtProviderWithoutAProvider) as error:
@@ -1826,7 +1822,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=provider,
             name="Offer linked to a provider",
-            extraData={"ean": "1234567890124"},
+            ean="1234567890124",
             venue=venue,
         )
 
@@ -2599,8 +2595,8 @@ class AddCriterionToOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_when_no_offers_is_found(self, mocked_async_index_offer_ids):
         # Given
-        ean = "2-221-00164-8"
-        factories.OfferFactory(extraData={"ean": "2221001647"})
+        ean = "1234567899999"
+        factories.OfferFactory(ean="1234567899999")
         criterion = criteria_factories.CriterionFactory(name="Pretty good books")
 
         # When

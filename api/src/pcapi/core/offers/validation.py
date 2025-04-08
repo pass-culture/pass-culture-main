@@ -55,6 +55,7 @@ EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER = {
     "isDuo",
     "bookingContact",
     "bookingEmail",
+    "ean",
     "extraData",
     "withdrawalDetails",
     "durationMinutes",
@@ -157,10 +158,10 @@ def check_stock_price(
     offer_price_limitation_rule = models.OfferPriceLimitationRule.query.filter(
         models.OfferPriceLimitationRule.subcategoryId == offer.subcategoryId
     ).one_or_none()
-    if (  # pylint: disable=too-many-boolean-expressions
+    if (
         offer_price_limitation_rule
         and offer.validation is not OfferValidationStatus.DRAFT
-        and (offer.extraData is not None and not offer.extraData.get("ean"))
+        and not offer.ean
         and (offer.lastValidationPrice is not None or offer.stocks)
     ):
         reference_price = (
@@ -589,6 +590,7 @@ def check_offer_extra_data(
     venue: offerers_models.Venue,
     is_from_private_api: bool,
     offer: models.Offer | None = None,
+    ean: str | None = None,
 ) -> None:
     errors = api_errors.ApiErrors()
 
@@ -603,6 +605,12 @@ def check_offer_extra_data(
         or (not is_from_private_api and conditional_field.is_required_in_external_form)
     ]
     for field in mandatory_fields:
+
+        if field == "ean":
+            if not ean:
+                errors.add_error(field, "Ce champ est obligatoire")
+            continue
+
         if not extra_data.get(field):
             errors.add_error(field, "Ce champ est obligatoire")
 
@@ -612,9 +620,8 @@ def check_offer_extra_data(
         errors.add_client_error(e)
 
     try:
-        ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
         if ean:
-            _check_ean_field(extra_data, ExtraDataFieldEnum.EAN.value)
+            _check_ean_field(ean)
 
             offer_id = offer.id if offer else None
             check_other_offer_with_ean_does_not_exist(ean, venue, offer_id)
@@ -723,16 +730,15 @@ def _check_value_is_allowed(
         raise exceptions.ExtraDataValueNotAllowed(extra_data_field.value, "should be in allowed values")
 
 
-def _check_ean_field(extra_data: models.OfferExtraData, field: str) -> None:
-    value = extra_data.get(field)
-    if not value:
+def _check_ean_field(ean: str) -> None:
+    if not ean:
         return
 
-    if not isinstance(value, str):
-        raise exceptions.EanFormatException(field, f"L'{field.upper()} doit être une chaîne de caractères")
+    if not isinstance(ean, str):
+        raise exceptions.EanFormatException("ean", "L'EAN doit être une chaîne de caractères")
 
-    if not value.isdigit() or not len(value) == 13:
-        raise exceptions.EanFormatException(field, f"L'{field.upper()} doit être composé de 13 chiffres")
+    if not ean.isdigit() or not len(ean) == 13:
+        raise exceptions.EanFormatException("ean", "L'EAN doit être composé de 13 chiffres")
 
 
 def check_offer_is_from_current_cinema_provider(offer: models.Offer) -> None:

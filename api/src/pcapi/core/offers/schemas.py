@@ -175,6 +175,7 @@ class CreateOffer(BaseModel):
     description: str | None = None
     duration_minutes: int | None = None
     external_ticket_office_url: HttpUrl | None = None
+    ean: str | None
     extra_data: typing.Any = None
     id_at_provider: str | None = None
     is_duo: bool | None = None
@@ -187,6 +188,15 @@ class CreateOffer(BaseModel):
     # can access the url field in the dict of values
     # (which contains only previously validated fields)
     is_national: bool | None = None
+
+    @root_validator(pre=True)
+    def set_ean_from_extra_data(cls, values: dict) -> dict:
+        if "extraData" in values and values["extraData"]:
+            ean = values["extraData"].get("ean")
+            if ean:
+                values["ean"] = ean
+                values["extraData"].pop("ean")
+        return values
 
     @validator("is_duo")
     def validate_is_duo(cls, is_duo: bool | None) -> bool:
@@ -216,6 +226,7 @@ class UpdateOffer(BaseModel):
     description: str | None = None
     duration_minutes: int | None = None
     external_ticket_office_url: HttpUrl | None = None
+    ean: str | None = None
     extra_data: typing.Any = None
     id_at_provider: str | None = None
     is_duo: bool | None = None

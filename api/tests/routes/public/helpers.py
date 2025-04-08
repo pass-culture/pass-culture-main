@@ -221,7 +221,7 @@ class ProductEndpointHelper:
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "description": "Un livre de contrepèterie",
             "name": "Vieux motard que jamais",
-            "extraData": {"ean": "1234567890123"},
+            "ean": "1234567890123",
         }
 
         return offers_factories.ThingOfferFactory(**{**base_kwargs, **extra})
