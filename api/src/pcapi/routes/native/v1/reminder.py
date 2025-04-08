@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.native_route("/me/reminders", methods=["GET"])
-@spectree_serialize(api=blueprint.api, on_success_status=200)
+@spectree_serialize(response_model=serialization.GetRemindersResponse, api=blueprint.api, on_success_status=200)
 @authenticated_and_active_user_required
 @atomic()
 def get_reminders(user: users_models.User) -> serialization.GetRemindersResponse:
@@ -27,7 +27,7 @@ def get_reminders(user: users_models.User) -> serialization.GetRemindersResponse
 
 
 @blueprint.native_route("/me/reminders", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_success_status=201)
+@spectree_serialize(response_model=serialization.ReminderResponse, api=blueprint.api, on_success_status=201)
 @authenticated_and_active_user_required
 @atomic()
 def post_reminder(user: users_models.User, body: serialization.PostReminderRequest) -> serialization.ReminderResponse:
