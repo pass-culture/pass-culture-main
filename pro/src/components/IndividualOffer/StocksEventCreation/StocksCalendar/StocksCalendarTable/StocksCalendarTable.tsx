@@ -5,8 +5,10 @@ import {
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { getPriceCategoryName } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
 import fullTrashIcon from 'icons/full-trash.svg'
+import strokeSearchIcon from 'icons/stroke-search.svg'
 import { Checkbox } from 'ui-kit/formV2/Checkbox/Checkbox'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './StocksCalendarTable.module.scss'
 
@@ -33,6 +35,22 @@ export function StocksCalendarTable({
       newChecked.add(stockId)
     }
     updateCheckedStocks(newChecked)
+  }
+
+  if (stocks.length === 0) {
+    return (
+      <div className={styles['no-data']}>
+        <SvgIcon
+          src={strokeSearchIcon}
+          alt=""
+          className={styles['no-data-icon']}
+        />
+        <p className={styles['bold']}>Aucune date trouvée</p>
+        <p>
+          Vous pouvez modifier vos filtres pour lancer une nouvelle recherche
+        </p>
+      </div>
+    )
   }
 
   return (

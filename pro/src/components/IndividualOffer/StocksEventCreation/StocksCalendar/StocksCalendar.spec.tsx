@@ -189,4 +189,28 @@ describe('StocksCalendar', () => {
 
     expect(screen.getByText('Page 1/3'))
   })
+
+  it('should show the total number of stocks', async () => {
+    renderStocksCalendar(
+      Array(50)
+        .fill(null)
+        .map((_, index) => getOfferStockFactory({ id: index }))
+    )
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    expect(screen.getByText('50 dates')).toBeInTheDocument()
+  })
+
+  it('should not show the total number of stocks if there is none', async () => {
+    renderStocksCalendar([])
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    expect(screen.queryByText(/ dates/)).not.toBeInTheDocument()
+  })
 })
