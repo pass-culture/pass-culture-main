@@ -221,7 +221,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert rows[0]["État"] == "En construction En attente de correction"
         assert (
             rows[0]["Modification"]
-            == f"Saisie incomplète Email en doublon Email : {update_request.oldEmail} → {update_request.newEmail} Téléphone : {update_request.user.phoneNumber} →"
+            == f"Saisie incomplèteEmail en doublon Email : {update_request.oldEmail} → {update_request.newEmail} Téléphone : {update_request.user.phoneNumber} →"
         )
 
     def test_list_filter_by_email(self, authenticated_client):

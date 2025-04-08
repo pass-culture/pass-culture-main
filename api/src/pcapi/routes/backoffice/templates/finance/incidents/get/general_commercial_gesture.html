@@ -10,7 +10,7 @@
           </div>
           <div class="h5 me-1 align-middle">
             {% if incident.isClosed %}
-              <span class="badge text-bg-light">Terminé</span>
+              {{ "Terminé" | format_badge("secondary") }}
             {% else %}
               {{ incident.status | format_finance_incident_status_badge }}
             {% endif %}

@@ -1,4 +1,3 @@
-{% from "components/badges.html" import build_user_offerer_status_badge %}
 {% from "components/forms.html" import build_filters_form with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
@@ -130,7 +129,7 @@
                 <td>{{ user_offerer.user.id }}</td>
                 <td>{{ user_offerer.user.email | empty_string_if_null }}</td>
                 <td>{{ links.build_pro_user_name_to_details_link(user_offerer.user.id, user_offerer.user.full_name) }}</td>
-                <td>{{ build_user_offerer_status_badge(user_offerer) }}</td>
+                <td>{{ user_offerer | format_user_offerer_status_badge }}</td>
                 <td>{{ item.tags | map(attribute="label") | format_as_badges }}</td>
                 <td>{{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>

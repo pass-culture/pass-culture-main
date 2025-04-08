@@ -6,9 +6,7 @@
     <h5 class="card-title">
       <a href="{{ link }}"
          class="link-primary">{{ row.label | upper }}</a>
-      <span class="fs-5 ps-4">
-        <span class="me-1 pb-1 badge rounded-pill text-bg-warning align-middle">Compte bancaire</span>
-      </span>
+      <span class="fs-5 ps-4">{{ "Compte bancaire" | format_badge("warning") }}</span>
     </h5>
     <h6 class="card-subtitle mt-4 mb-3 text-muted">Bank Account ID : {{ row.id }}</h6>
     <div class="d-flex flex-row-reverse">

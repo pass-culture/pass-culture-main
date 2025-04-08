@@ -7,15 +7,17 @@
     src: url("/static/backoffice/fonts/Inter-VariableFont_opsz,wght.ttf") format("truetype");
 }
 
+$purple: #25026c;
+
 // scss-docs-start theme-color-variables
-$primary:   #320096;
+$primary:   $purple;
 $secondary: $gray-900;
 $success:   $green-700;
 $info:      $blue-700;
 $warning:   $yellow-800;
 $danger:    $red-700;
 $light:     $white;
-$dark:      #c10046;
+$dark:      $black;
 // scss-docs-end theme-color-variables
 
 // scss-docs-start border-radius-variables

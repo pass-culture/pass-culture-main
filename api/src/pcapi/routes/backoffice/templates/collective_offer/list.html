@@ -136,11 +136,15 @@
                 {% endif %}
                 <td>
                   {{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}
-                  {{ badges.build_offer_offerer_fraud_badges(collective_offer.venue.managingOfferer) }}
+                  {% call badges.badges_container() %}
+                    {{ badges.build_offer_offerer_fraud_badges(collective_offer.venue.managingOfferer) }}
+                  {% endcall %}
                 </td>
                 <td>
                   {{ links.build_venue_name_to_details_link(collective_offer.venue) }}
-                  {{ badges.build_offer_venue_fraud_badges(collective_offer.venue) }}
+                  {% call badges.badges_container() %}
+                    {{ badges.build_offer_venue_fraud_badges(collective_offer.venue) }}
+                  {% endcall %}
                 </td>
                 <td>{{ links.build_venue_offers_icon_link_advanced(".list_collective_offers", "Offres collectives", collective_offer.venue) }}</td>
                 {% set deposit = collective_offer.institution.deposits[0] if collective_offer.institution and collective_offer.institution.deposits else none %}

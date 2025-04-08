@@ -4,7 +4,7 @@
 <div class="card my-1 border-0">
   <div class="card-body my-2">
     {% if is_invalid_siren %}
-      <span class="mr-2 pb-1 badge rounded-pill text-bg-warning"><i class="bi bi-exclamation-triangle"></i> Erreur</span>
+      {{ "Erreur" | format_badge('warning', 'exclamation-triangle') }}
       Le format du numéro SIREN est détecté comme invalide, nous ne pouvons pas récupérer de données sur l'entreprise.
       <br />
       Merci de vérifier qu'il n'y a pas erreur dans l'Annuaire des Entreprises&nbsp;:
@@ -71,7 +71,7 @@
             </div>
           </div>
         {% else %}
-          <span class="mr-2 pb-1 badge rounded-pill text-bg-warning"><i class="bi bi-exclamation-triangle"></i> Erreur</span>
+          {{ "Erreur" | format_badge('warning', 'exclamation-triangle') }}
           {{ siren_error }}
         {% endif %}
       </div>

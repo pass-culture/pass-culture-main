@@ -66,8 +66,14 @@ class FormatDepositUsedTest:
     @pytest.mark.parametrize(
         "deposit_type, expected",
         [
-            (finance_models.DepositType.GRANT_18, "<span class='badge text-bg-secondary'>Ancien Pass 18</span>"),
-            (finance_models.DepositType.GRANT_15_17, "<span class='badge text-bg-secondary'>Ancien Pass 15-17</span>"),
+            (
+                finance_models.DepositType.GRANT_18,
+                '<span class="badge text-secondary bg-secondary-subtle">Ancien Pass 18</span>',
+            ),
+            (
+                finance_models.DepositType.GRANT_15_17,
+                '<span class="badge text-secondary bg-secondary-subtle">Ancien Pass 15-17</span>',
+            ),
             (finance_models.DepositType.GRANT_17_18, "Aucune information"),  # cannot exist but it should not crash
         ],
     )
@@ -81,8 +87,14 @@ class FormatDepositUsedTest:
     @pytest.mark.parametrize(
         "recredit_type, expected",
         [
-            (bookings_models.BookingRecreditType.RECREDIT_18, "<span class='badge text-bg-secondary'>Pass 18</span>"),
-            (bookings_models.BookingRecreditType.RECREDIT_17, "<span class='badge text-bg-secondary'>Pass 17</span>"),
+            (
+                bookings_models.BookingRecreditType.RECREDIT_18,
+                '<span class="badge text-secondary bg-secondary-subtle">Pass 18</span>',
+            ),
+            (
+                bookings_models.BookingRecreditType.RECREDIT_17,
+                '<span class="badge text-secondary bg-secondary-subtle">Pass 17</span>',
+            ),
         ],
     )
     def test_new_bookings(self, recredit_type, expected):

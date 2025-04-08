@@ -120,13 +120,17 @@
               <div class="fs-6">
                 <p class="mb-1">
                   <span class="fw-bold">Entité juridique :</span> {{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}
-                  {{ badges.build_offer_offerer_fraud_badges(collective_offer.venue.managingOfferer) }}
+                  {% call badges.badges_container() %}
+                    {{ badges.build_offer_offerer_fraud_badges(collective_offer.venue.managingOfferer) }}
+                  {% endcall %}
                 </p>
               </div>
               <div class="fs-6">
                 <p class="mb-1">
                   <span class="fw-bold">Partenaire culturel :</span> {{ links.build_venue_name_to_details_link(collective_offer.venue) }}
-                  {{ badges.build_offer_venue_fraud_badges(collective_offer.venue) }}
+                  {% call badges.badges_container() %}
+                    {{ badges.build_offer_venue_fraud_badges(collective_offer.venue) }}
+                  {% endcall %}
                 </p>
               </div>
               {% if collective_offer.template %}

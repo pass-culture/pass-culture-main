@@ -70,7 +70,7 @@
                   {% endif %}
                 </td>
                 <td class="pc-mw-50-vw">{{ collapsable_text(chronicle.id, chronicle.short_content|trim, chronicle.content|trim) }}</td>
-                <td>{{ chronicle.dateCreated  | format_date }}</td>
+                <td>{{ chronicle.dateCreated | format_date }}</td>
                 <td>{{ chronicle.isActive | format_bool_badge }}</td>
                 <td>{{ chronicle.isSocialMediaDiffusible | format_bool_badge }}</td>
               </tr>

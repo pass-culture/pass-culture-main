@@ -11,14 +11,13 @@
           <h5 class="card-title">
             {{ username }}
             <span class="ms-1">{{ clipboard.copy_to_clipboard(username, "Copier l'état civil") }}</span>
-            {% for role in user.roles %}
-              <span class="me-2 badge rounded-pill text-bg-primary align-middle">{{ role | format_role(deposits=user.deposits) }}</span>
-            {% endfor %}
+            {% for role in user.roles %}{{ role | format_role(deposits=user.deposits) | format_badge("primary") }}{% endfor %}
             {% if not user.isActive %}
-              {% set suspension_reason = user.suspension_reason %}
-              <span class="badge rounded-pill text-bg-secondary align-middle">{{ user.isActive | format_state }}
-                {% if suspension_reason %}: {{ suspension_reason | format_reason_label }}{% endif %}
-              </span>
+              {% set user_label %}
+                {{ user.isActive | format_state }}
+                {% if user.suspension_reason %}: {{ user.suspension_reason | format_reason_label }}{% endif %}
+              {% endset %}
+              {{ user_label | format_badge("secondary") }}
             {% endif %}
             {% if duplicate_user_id %}
               <small><a href="{{ duplicate_user_id | pc_backoffice_public_account_link }}"

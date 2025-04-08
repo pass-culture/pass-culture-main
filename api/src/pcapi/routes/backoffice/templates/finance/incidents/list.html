@@ -69,7 +69,7 @@
                 <td>{{ links.build_finance_incident_to_details_link(incident) }}</td>
                 <td>
                   {% if incident.isClosed %}
-                    <span class="badge text-bg-light">Terminé</span>
+                    {{ "Terminé" | format_badge("secondary") }}
                   {% else %}
                     {{ incident.status | format_finance_incident_status_badge }}
                   {% endif %}

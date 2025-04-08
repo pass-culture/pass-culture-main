@@ -3,9 +3,7 @@
   <div class="row">
     <p class="mb-1">
       <span class="fw-bold">Activité commerciale :</span> {{ rcs_info.registered | format_bool_badge }}
-      {% if rcs_info.deregistration_date %}
-        <span class="mx-2 pb-1 badge rounded-pill text-bg-dark"><i class="bi bi-x-circle"></i> Radié</span>
-      {% endif %}
+      {% if rcs_info.deregistration_date %}{{ "Radié" | format_badge('dark', 'x-circle') }}{% endif %}
     </p>
     {% if rcs_info.registered %}
       <p class="mb-1">
@@ -52,7 +50,7 @@
     {% endif %}
   </div>
 {% else %}
-  <span class="mr-2 pb-1 badge rounded-pill text-bg-warning"><i class="bi bi-exclamation-triangle"></i> Erreur</span>
+  {{ "Erreur" | format_badge('warning', 'exclamation-triangle') }}
   {{ rcs_error }}
 {% endif %}
 </turbo-frame>

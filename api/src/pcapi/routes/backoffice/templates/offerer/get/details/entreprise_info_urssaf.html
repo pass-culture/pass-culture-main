@@ -17,7 +17,7 @@
     </div>
   </div>
 {% else %}
-  <span class="mr-2 pb-1 badge rounded-pill text-bg-warning"><i class="bi bi-exclamation-triangle"></i> Erreur</span>
+  {{ "Erreur" | format_badge('warning', 'exclamation-triangle') }}
   {{ urssaf_error }}
 {% endif %}
 </turbo-frame>

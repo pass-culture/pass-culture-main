@@ -3,7 +3,7 @@
 <div class="card my-1 border-0">
   <div class="card-body my-2">
     {% if is_invalid_siret %}
-      <span class="mr-2 pb-1 badge rounded-pill text-bg-warning"><i class="bi bi-exclamation-triangle"></i> Erreur</span>
+      {{ "Erreur" | format_badge('warning', 'exclamation-triangle') }}
       Le format du numéro SIRET est détecté comme invalide, nous ne pouvons pas récupérer de données sur l'établissement.
       <br />
       Merci de vérifier qu'il n'y a pas erreur dans l'Annuaire des Entreprises&nbsp;:
@@ -53,7 +53,7 @@
             </div>
           </div>
         {% else %}
-          <span class="mr-2 pb-1 badge rounded-pill text-bg-warning"><i class="bi bi-exclamation-triangle"></i> Erreur</span>
+          {{ "Erreur" | format_badge('warning', 'exclamation-triangle') }}
           {{ siret_error }}
         {% endif %}
       </div>

@@ -113,11 +113,15 @@
                 <td>{{ collective_offer_template.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>
                   {{ links.build_offerer_name_to_details_link(collective_offer_template.venue.managingOfferer) }}
-                  {{ badges.build_offer_offerer_fraud_badges(collective_offer_template.venue.managingOfferer) }}
+                  {% call badges.badges_container() %}
+                    {{ badges.build_offer_offerer_fraud_badges(collective_offer_template.venue.managingOfferer) }}
+                  {% endcall %}
                 </td>
                 <td>
                   {{ links.build_venue_name_to_details_link(collective_offer_template.venue) }}
-                  {{ badges.build_offer_venue_fraud_badges(collective_offer_template.venue) }}
+                  {% call badges.badges_container() %}
+                    {{ badges.build_offer_venue_fraud_badges(collective_offer_template.venue) }}
+                  {% endcall %}
                 </td>
                 <td>
                   {{ links.build_venue_offers_icon_link(".list_collective_offer_templates", "Offres collectives vitrine", collective_offer_template.venue) }}
