@@ -505,13 +505,13 @@ class GetCappedOffersForFiltersTest:
             # given
             user_offerer = offerers_factories.UserOffererFactory()
             expected_offer = factories.OfferFactory(
-                name="seras-tu là", venue__managingOfferer=user_offerer.offerer, extraData={"ean": "1234567891234"}
+                name="seras-tu là", venue__managingOfferer=user_offerer.offerer, ean="1234567891234"
             )
             # other offer
             factories.OfferFactory(
                 name="François, seras-tu là ?",
                 venue__managingOfferer=user_offerer.offerer,
-                extraData={"ean": "1234567891235"},
+                ean="1234567891235",
             )
 
             # when

@@ -527,6 +527,7 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
             .load_only(
                 offers_models.Product.id,
                 offers_models.Product.last_30_days_booking,
+                offers_models.Product.ean,
                 offers_models.Product.extraData,
                 offers_models.Product.description,
                 offers_models.Product.thumbCount,

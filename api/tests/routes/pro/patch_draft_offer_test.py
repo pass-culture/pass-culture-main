@@ -57,7 +57,7 @@ class Returns200Test:
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,
             description="description",
-            extraData={"ean": "1111111111111"},
+            ean="1111111111111",
         )
 
         data = {"extraData": {"ean": "2222222222222"}}
@@ -67,8 +67,8 @@ class Returns200Test:
         assert response.json["id"] == offer.id
 
         updated_offer = Offer.query.get(offer.id)
-        assert updated_offer.extraData["ean"] == "2222222222222"
         assert updated_offer.ean == "2222222222222"
+        assert updated_offer.extraData == {}
 
     @pytest.mark.features(WIP_EAN_CREATION=True)
     def test_patch_draft_offer_without_product(self, client):
@@ -153,7 +153,6 @@ class Returns200Test:
                 "speaker": "",
                 "stageDirector": "",
                 "visa": "",
-                "ean": "",
             },
         }
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
@@ -170,7 +169,6 @@ class Returns200Test:
             "speaker": "",
             "stageDirector": "",
             "visa": "",
-            "ean": "",
         }
 
     @pytest.mark.features(WIP_EAN_CREATION=False)
@@ -198,9 +196,8 @@ class Returns200Test:
         assert response.json["id"] == offer.id
 
         updated_offer = Offer.query.get(offer.id)
-        assert updated_offer.extraData == {"gtl_id": "07000000", "ean": "1111111111111"}
-        # We do not update extraData if they are the same.
-        assert updated_offer.ean is None
+        assert updated_offer.ean == "1111111111111"
+        assert updated_offer.extraData == {"gtl_id": "07000000"}
 
     def test_patch_draft_offer_with_existing_extra_data_with_new_extra_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -390,7 +387,6 @@ class Returns200Test:
             "venueId": venue.id,
             "extraData": {
                 "author": "",
-                "ean": "",
                 "gtl_id": "",
                 "performer": "",
                 "showSubType": 1202,
@@ -528,7 +524,7 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
 
         assert response.status_code == 400
-        assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifialbles"]
+        assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifiables"]
 
     def when_trying_to_patch_product(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")

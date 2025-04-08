@@ -215,7 +215,7 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             # TODO: front pro doesn't need the soft deleted stocks but maybe this could be handled in the request directly
             return [_serialize_stock(stock) for stock in self._obj.stocks if not stock.isSoftDeleted]
         if key == "productIsbn":
-            return self._obj.extraData.get("ean") if self._obj.extraData else None
+            return self._obj.ean
         if key == "venue":
             return _serialize_venue(self._obj.venue)
         if key == "isShowcase":
@@ -398,12 +398,12 @@ class PriceCategoryResponseModel(BaseModel):
 class IndividualOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "extraData" and self._obj.product:
-            # FIXME (jmontagnat, 2024-04-02) Remove this block of code
-            #  when the offer uses the EAN column instead of extraData->>ean
-            product_extra_data = self._obj.product.extraData.copy()
-            if self._obj.product.ean:
-                product_extra_data.update({"ean": self._obj.product.ean})
-            return product_extra_data
+            self._obj.extraData = self._obj.product.extraData
+            self._obj.ean = self._obj.product.ean
+        if key == "extraData" and self._obj.ean:
+            extra_data_copy = self._obj.extraData.copy() if self._obj.extraData else {}
+            extra_data_copy["ean"] = self._obj.ean
+            return extra_data_copy
         return super().get(key, default)
 
 
@@ -413,6 +413,10 @@ class IndividualOfferWithAddressResponseGetterDict(GetterDict):
             return offer_address_getter_dict_helper(self._obj)
         if key == "isHeadlineOffer":
             return self._obj.is_headline_offer
+        if key == "extraData" and self._obj.ean:
+            extra_data_copy = self._obj.extraData.copy() if self._obj.extraData else {}
+            extra_data_copy["ean"] = self._obj.ean
+            return extra_data_copy
         return super().get(key, default)
 
 

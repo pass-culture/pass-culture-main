@@ -16,22 +16,22 @@ class Returns403Test:
 
     def test_access_by_beneficiary(self, client):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
-        offer = offers_factories.ThingOfferFactory(extraData={"ean": "0123456789123"})
+        offer = offers_factories.ThingOfferFactory(ean="0123456789123")
 
         auth_client = client.with_session_auth(email=beneficiary.email)
         venue_id = offer.venueId
-        ean = offer.extraData["ean"]
+        ean = offer.ean
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{venue_id}/ean/{ean}")
             assert response.status_code == 403
 
     def test_access_by_unauthorized_pro_user(self, client):
         pro_user = users_factories.ProFactory()
-        offer = offers_factories.ThingOfferFactory(extraData={"ean": "0123456789123"})
+        offer = offers_factories.ThingOfferFactory(ean="0123456789123")
 
         auth_client = client.with_session_auth(email=pro_user.email)
         venue_id = offer.venueId
-        ean = offer.extraData["ean"]
+        ean = offer.ean
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{venue_id}/ean/{ean}")
             assert response.status_code == 403
@@ -54,12 +54,12 @@ class Returns200Test:
             venue__longitude=None,
             venue__offererAddress=offerer_address,
             venue__managingOfferer=user_offerer.offerer,
-            extraData={"ean": "0123456789123"},
+            ean="0123456789123",
         )
 
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         venue_id = offer.venueId
-        ean = offer.extraData["ean"]
+        ean = offer.ean
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{venue_id}/ean/{ean}")
             assert response.status_code == 200
@@ -86,7 +86,7 @@ class Returns404Test:
             venue__longitude=None,
             venue__offererAddress=offerer_address,
             venue__managingOfferer=user_offerer.offerer,
-            extraData={"ean": "0123456789123"},
+            ean="0123456789123",
         )
 
         auth_client = client.with_session_auth(email=user_offerer.user.email)
@@ -106,13 +106,13 @@ class Returns404Test:
             venue__longitude=None,
             venue__offererAddress=offerer_address,
             venue__managingOfferer=user_offerer.offerer,
-            extraData={"ean": "0123456789123"},
+            ean="0123456789123",
             isActive=False,
         )
 
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         venue_id = offer.venueId
-        ean = offer.extraData["ean"]
+        ean = offer.ean
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{venue_id}/ean/{ean}")
             assert response.status_code == 404

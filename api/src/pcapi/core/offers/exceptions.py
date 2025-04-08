@@ -308,7 +308,7 @@ class OfferMustHaveAccessibility(OfferEditionBaseException):
 
 class OfferWithProductShouldNotUpdateExtraData(OfferEditionBaseException):
     def __init__(self) -> None:
-        super().__init__("global", "Les extraData des offres avec produit ne sont pas modifialbles")
+        super().__init__("global", "Les extraData des offres avec produit ne sont pas modifiables")
 
 
 class MoveOfferBaseException(Exception):

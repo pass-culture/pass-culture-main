@@ -148,7 +148,10 @@ class AlgoliaSerializationMixin:
         # Field used by Algolia (not the frontend) to deduplicate results
         # https://www.algolia.com/doc/api-reference/api-parameters/distinct/
         distinct = (
-            str(extra_data.get("allocineId", "")) or extra_data.get("visa") or extra_data.get("ean") or str(offer.id)
+            str(extra_data.get("allocineId", ""))
+            or extra_data.get("visa")
+            or (offer.product.ean if offer.product else offer.ean)
+            or str(offer.id)
         )
         gtl_id = extra_data.get("gtl_id")
 
@@ -229,7 +232,7 @@ class AlgoliaSerializationMixin:
                 "dateCreated": date_created,
                 "dates": sorted(dates),
                 "description": remove_stopwords(offer.description or ""),
-                "ean": extra_data.get("ean"),
+                "ean": offer.ean,
                 "gtlCodeLevel1": gtl_code_1,
                 "gtlCodeLevel2": gtl_code_2,
                 "gtlCodeLevel3": gtl_code_3,

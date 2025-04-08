@@ -48,7 +48,7 @@ def test_partially_index_offers(app):
 def test_update_products_booking_count_and_reindex_offers(mocked_async_index_offer_ids, app):
     ean = "1234567890123"
     product = offers_factories.ProductFactory(ean=ean)
-    offer_with_ean = offers_factories.OfferFactory(extraData={"ean": ean}, product=product)
+    offer_with_ean = offers_factories.OfferFactory(ean=ean, product=product)
     offer_with_no_ean = offers_factories.OfferFactory(extraData={})
 
     bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_ean))
@@ -74,9 +74,9 @@ def test_update_products_booking_count_and_reindex_offers_if_same_ean(mocked_asy
     ean_2 = "9876543219876"
     product1 = offers_factories.ProductFactory(ean=ean_1)
     product2 = offers_factories.ProductFactory(ean=ean_2)
-    offer_with_ean = offers_factories.OfferFactory(product=product1, extraData={"ean": ean_1})
-    offer_not_booked_with_same_ean_in_offer = offers_factories.OfferFactory(extraData={"ean": ean_1}, product=product1)
-    offer_with_different_ean = offers_factories.OfferFactory(extraData={"ean": ean_2}, product=product2)
+    offer_with_ean = offers_factories.OfferFactory(product=product1, ean=ean_1)
+    offer_not_booked_with_same_ean_in_offer = offers_factories.OfferFactory(ean=ean_1, product=product1)
+    offer_with_different_ean = offers_factories.OfferFactory(ean=ean_2, product=product2)
 
     # 2 offers are booked
     bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_ean))

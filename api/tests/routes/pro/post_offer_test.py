@@ -264,13 +264,13 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
+        ean = "1234567890112"
         data = {
             "venueId": venue.id,
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "extraData": {
-                "ean": "1234567890112",
+                "ean": ean,
             },
             "audioDisabilityCompliant": True,
             "mentalDisabilityCompliant": False,
@@ -280,12 +280,15 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         assert response.status_code == 201
+        assert response.json["extraData"]["ean"] == ean
+        assert "ean" not in response.json
+
         offer_id = response.json["id"]
         offer = Offer.query.get(offer_id)
         assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert offer.venue == venue
-        assert offer.extraData["ean"] == "1234567890112"
         assert offer.ean == "1234567890112"
+        assert "ean" not in offer.extraData
 
     def test_withdrawable_event_offer_can_have_no_ticket_to_withdraw(self, client):
         # Given
