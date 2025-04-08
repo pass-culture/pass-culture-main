@@ -1,7 +1,6 @@
 import typing
 
-from flask import current_app
-
+from pcapi import settings
 from pcapi.core.search import testing
 
 from .algolia import AlgoliaBackend
@@ -38,9 +37,12 @@ class TestingBackend(AlgoliaBackend):
     external search service is faked.
     """
 
-    def __init__(self) -> None:
-        self.algolia_offers_client = FakeClient("offers")
-        self.algolia_venues_client = FakeClient("venues")
-        self.algolia_collective_offers_client = FakeClient("collective-offers")
-        self.algolia_collective_offers_templates_client = FakeClient("collective-offers-templates")
-        self.redis_client = current_app.redis_client
+    def create_algolia_clients(self) -> None:
+        assert settings.ALGOLIA_OFFERS_INDEX_NAME  # helps mypy
+        assert settings.ALGOLIA_VENUES_INDEX_NAME  # helps mypy
+        assert settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME  # helps mypy
+        self.index_mapping = {
+            settings.ALGOLIA_OFFERS_INDEX_NAME: FakeClient("offers"),
+            settings.ALGOLIA_VENUES_INDEX_NAME: FakeClient("venues"),
+            settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME: FakeClient("collective-offers-templates"),
+        }
