@@ -122,7 +122,11 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
                 institutionType="ECOLE ÉLÉMENTAIRE",
                 name="CLAIR SOLEIL",
                 city="MARSEILLE",
-                programs=[program],
+                programAssociations=[
+                    educational_factories.EducationalInstitutionProgramAssociationFactory(
+                        program=program,
+                    )
+                ],
                 postalCode="13014",
             ),
             educational_factories.EducationalInstitutionFactory(institutionId="0921935D"),
