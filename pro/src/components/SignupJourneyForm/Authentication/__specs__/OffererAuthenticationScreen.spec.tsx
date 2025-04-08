@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { apiAdresse } from 'apiClient/adresse/apiAdresse'
+import * as apiAdresse from 'apiClient/adresse/apiAdresse'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
@@ -48,7 +48,7 @@ vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
   },
 ])
 
-// Mock https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address} called by apiAdresse.getDataFromAddress
+// Mock https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address} called by getDataFromAddress
 fetchMock.mockResponse(
   JSON.stringify({
     features: [

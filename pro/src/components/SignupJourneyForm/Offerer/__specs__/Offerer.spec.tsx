@@ -26,22 +26,20 @@ fetchMock.enableMocks()
 vi.spyOn(siretApiValidate, 'siretApiValidate').mockResolvedValue(null)
 
 // Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
-// Appel fait dans apiAdresse.getDataFromAddress
+// Appel fait dans getDataFromAddress
 vi.mock('apiClient/adresse/apiAdresse', () => ({
-  apiAdresse: {
-    getDataFromAddressParts: () =>
-      Promise.resolve([
-        {
-          address: 'name',
-          city: 'city',
-          id: 'id',
-          latitude: 0,
-          longitude: 0,
-          label: 'label',
-          postalCode: 'postcode',
-        },
-      ]),
-  },
+  getDataFromAddressParts: () =>
+    Promise.resolve([
+      {
+        address: 'name',
+        city: 'city',
+        id: 'id',
+        latitude: 0,
+        longitude: 0,
+        label: 'label',
+        postalCode: 'postcode',
+      },
+    ]),
 }))
 
 const renderOffererScreen = (contextValue: SignupJourneyContextValues) => {

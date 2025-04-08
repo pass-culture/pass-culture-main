@@ -2,7 +2,7 @@ import { FieldInputProps, useField, useFormikContext } from 'formik'
 import { useEffect, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
 
-import { apiAdresse } from 'apiClient/adresse/apiAdresse'
+import { getDataFromAddress } from 'apiClient/adresse/apiAdresse'
 import { AdresseData, FeaturePropertyType } from 'apiClient/adresse/types'
 import { SelectOption } from 'commons/custom_types/form'
 import { normalizeStrForAdressSearch } from 'commons/utils/searchPatternInOptions'
@@ -90,7 +90,7 @@ export const AddressSelect = ({
   const getSuggestions = async (search: string) => {
     if (search) {
       try {
-        const addressSuggestions = await apiAdresse.getDataFromAddress(search, {
+        const addressSuggestions = await getDataFromAddress(search, {
           limit: suggestionLimit,
           onlyTypes,
         })

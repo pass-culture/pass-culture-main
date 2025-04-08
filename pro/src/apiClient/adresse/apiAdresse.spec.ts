@@ -1,6 +1,5 @@
-import '@testing-library/jest-dom'
 import { vi, type Mock } from 'vitest'
-import { apiAdresse } from './apiAdresse'
+import { getDataFromAddress, getDataFromAddressParts } from './apiAdresse'
 import { AdresseApiJson, FeaturePropertyType } from './types'
 
 const mockApiResponse: Partial<AdresseApiJson> = {
@@ -83,7 +82,7 @@ describe('apiAdresse', () => {
         json: () => Promise.resolve(mockApiResponse),
       })
 
-      const result = await apiAdresse.getDataFromAddressParts(
+      const result = await getDataFromAddressParts(
         '15 Rue des Tests',
         'Paris',
         '75001'
@@ -113,7 +112,7 @@ describe('apiAdresse', () => {
           json: () => Promise.resolve(mockCityApiResponse),
         })
 
-      const result = await apiAdresse.getDataFromAddressParts(
+      const result = await getDataFromAddressParts(
         '15 Rue Inexistante',
         'Paris',
         '75001'
@@ -140,7 +139,7 @@ describe('apiAdresse', () => {
       })
 
       await expect(
-        apiAdresse.getDataFromAddressParts('15 Rue des Tests', 'Paris', '75001')
+        getDataFromAddressParts('15 Rue des Tests', 'Paris', '75001')
       ).rejects.toThrow('Échec de la requête test-url, code: 500')
     })
   })
@@ -152,7 +151,7 @@ describe('apiAdresse', () => {
         json: () => Promise.resolve(mockApiResponse),
       })
 
-      const result = await apiAdresse.getDataFromAddress('15 Rue des Tests')
+      const result = await getDataFromAddress('15 Rue des Tests')
 
       expect(result).toEqual([
         {
@@ -188,7 +187,7 @@ describe('apiAdresse', () => {
         json: () => Promise.resolve(mixedResponse),
       })
 
-      const result = await apiAdresse.getDataFromAddress('15 Rue des Tests', {
+      const result = await getDataFromAddress('15 Rue des Tests', {
         onlyTypes: ['housenumber'],
       })
 
@@ -202,7 +201,7 @@ describe('apiAdresse', () => {
         json: () => Promise.resolve(mockApiResponse),
       })
 
-      await apiAdresse.getDataFromAddress('15 Rue des Tests', { limit: 10 })
+      await getDataFromAddress('15 Rue des Tests', { limit: 10 })
 
       expect(global.fetch).toHaveBeenCalledWith(
         expect.stringContaining('limit=10')

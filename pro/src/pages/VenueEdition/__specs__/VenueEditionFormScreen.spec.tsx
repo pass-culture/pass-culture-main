@@ -4,7 +4,7 @@ import { Route, Routes } from 'react-router-dom'
 import { expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { apiAdresse } from 'apiClient/adresse/apiAdresse'
+import * as apiAdresse from 'apiClient/adresse/apiAdresse'
 import { api } from 'apiClient/api'
 import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
@@ -103,7 +103,7 @@ vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
 ])
 
 // Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
-// Appel fait dans apiAdresse.getDataFromAddress
+// Appel fait dans getDataFromAddress
 fetchMock.mockResponse(
   JSON.stringify({
     features: [

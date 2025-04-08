@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { apiAdresse } from 'apiClient/adresse/apiAdresse'
+import * as apiAdresse from 'apiClient/adresse/apiAdresse'
 import {
   Offerer,
   SignupJourneyContext,
