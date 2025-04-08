@@ -172,13 +172,6 @@ def synchronize_accessibility_with_acceslibre(
     )
 
 
-@blueprint.cli.command("synchronize_venues_with_acceslibre")
-@click.argument("venue_ids", type=int, nargs=-1, required=True)
-@click.option("--dry-run", type=bool, default=True)
-def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool = True) -> None:
-    offerers_api.synchronize_venues_with_acceslibre(venue_ids, dry_run)
-
-
 @blueprint.cli.command("acceslibre_matching")
 @click.option("--dry-run", type=bool, default=False)
 @click.option("--batch-size", type=int, default=BATCH_SIZE, help="Size of venues batches to synchronize")
@@ -189,18 +182,4 @@ def acceslibre_matching(
 ) -> None:
     offerers_api.acceslibre_matching(
         batch_size=batch_size, dry_run=dry_run, start_from_batch=start_from_batch, n_days_to_fetch=n_days_to_fetch
-    )
-
-
-@blueprint.cli.command("find_missing_match_at_acceslibre")
-@click.option("--dry-run", type=bool, default=True)
-@click.option("--batch-size", type=int, default=BATCH_SIZE, help="Size of venues batches to synchronize")
-@click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
-def find_missing_match_at_acceslibre(
-    dry_run: bool = True,
-    batch_size: int = BATCH_SIZE,
-    start_from_batch: int = 1,
-) -> None:
-    offerers_api.find_missing_match_at_acceslibre(
-        batch_size=batch_size, dry_run=dry_run, start_from_batch=start_from_batch
     )

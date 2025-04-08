@@ -3021,24 +3021,6 @@ class AccessibilityProviderTest:
         )
         assert venue.external_accessibility_id == "mon-lieu-chez-acceslibre"
 
-    @patch("pcapi.connectors.acceslibre.get_id_at_accessibility_provider")
-    def test_synchronize_venues_with_acceslibre(self, mock_get_id_at_accessibility_provider):
-        mock_get_id_at_accessibility_provider.side_effect = [
-            None,
-            acceslibre_connector.AcceslibreInfos(slug="mon-slug", url="https://mon.adresse/mon-slug"),
-        ]
-
-        venue_1 = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
-        venue_2 = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
-        venue_ids = [venue_1.id, venue_2.id]
-
-        # match result is given by find_new_entries_by_activity in TestingBackend class in acceslibre connector
-        offerers_api.synchronize_venues_with_acceslibre(venue_ids, dry_run=False)
-
-        assert not venue_1.accessibilityProvider
-        assert venue_2.external_accessibility_url == "https://mon.adresse/mon-slug"
-        assert venue_2.external_accessibility_id == "mon-slug"
-
 
 class GetOffererConfidenceLevelTest:
     def test_no_rule(self):
@@ -3222,29 +3204,3 @@ class SendReminderEmailToIndividualOfferersTest:
         assert offerer.individualSubscription.isReminderEmailSent is True
         assert offerer.individualSubscription.dateReminderEmailSent == datetime.date.today()
         mocked_transactional_mail.assert_called_once_with(offerer.UserOfferers[0].user.email)
-
-
-class CreateActionHistoryWhenMoveOffersTest:
-    def test_create_action_history_when_move_offers(self):
-        offer_ids = [1, 2, 3]
-        origin_venue_id = offerers_factories.VenueFactory().id
-        destination_venue_id = offerers_factories.VenueFactory().id
-        offerers_api.create_action_history_when_move_offers(
-            origin_venue_id=origin_venue_id,
-            destination_venue_id=destination_venue_id,
-            offer_ids=offer_ids,
-            offers_type="individual",
-        )
-        assert history_models.ActionHistory.query.count() == 2
-        assert history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.venueId == origin_venue_id
-        ).one().extraData == {
-            "individual_offer_ids": offer_ids,
-            "destination_venue_id": destination_venue_id,
-        }
-        assert history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.venueId == destination_venue_id
-        ).one().extraData == {
-            "individual_offer_ids": offer_ids,
-            "origin_venue_id": origin_venue_id,
-        }
