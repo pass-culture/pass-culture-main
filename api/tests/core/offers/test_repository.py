@@ -3,7 +3,9 @@ import logging
 from unittest.mock import patch
 
 import pytest
+import sqlalchemy as sqla
 import sqlalchemy.exc as sa_exc
+import sqlalchemy.orm as sa_orm
 import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -2324,3 +2326,25 @@ class GetUnbookableUnbookedOldOfferIdsTest:
 
         ids = repository.get_unbookable_unbooked_old_offer_ids(offer.id + 1, offer.id + 10)
         assert not list(ids)
+
+
+@pytest.mark.usefixtures("clean_database")
+def test_lock_stocks(app):
+    venue = offerers_factories.VenueFactory()
+    stock = factories.StockFactory(offer__venue=venue)
+
+    engine = sqla.create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
+    session_factory = sa_orm.sessionmaker(bind=engine)
+    Session = sa_orm.scoped_session(session_factory)
+    session = Session()
+
+    # Ensure the new session can see the stock
+    assert session.query(models.Stock).filter(models.Stock.id == stock.id).count() == 1
+
+    repository.lock_stocks_for_venue(venue.id)
+
+    # simulate a booking lock
+    with pytest.raises(sa_exc.OperationalError):
+        session.query(models.Stock).filter(models.Stock.id == stock.id).with_for_update(
+            nowait=True,
+        ).all()
