@@ -1,5 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
@@ -23,12 +23,14 @@ const defaultProps: ModalImageCropProps = {
 }
 
 const mockLogEvent = vi.fn()
+const previewDescription =
+  /Prévisualisation de votre image dans l’application pass Culture/
 
-const renderModalImageCrop = () => {
+const renderModalImageCrop = (mode = UploaderModeEnum.OFFER) => {
   return renderWithProviders(
     <Dialog.Root defaultOpen>
       <Dialog.Content aria-describedby={undefined}>
-        <ModalImageCrop {...defaultProps} />
+        <ModalImageCrop {...defaultProps} mode={mode} />
       </Dialog.Content>
     </Dialog.Root>
   )
@@ -73,6 +75,32 @@ describe('ModalImageCrop', () => {
 
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'hasClickedAddImage', {
       imageCreationStage: 'reframe image',
+    })
+  })
+
+  it('should display preview when it is offer mode', async () => {
+    const { queryByText } = renderModalImageCrop()
+
+    await waitFor(() => {
+      expect(queryByText(previewDescription)).toBeInTheDocument()
+    })
+  })
+
+  it('should not display preview when it is collective mode', async () => {
+    const { queryByText } = renderModalImageCrop(
+      UploaderModeEnum.OFFER_COLLECTIVE
+    )
+
+    await waitFor(() => {
+      expect(queryByText(previewDescription)).not.toBeInTheDocument()
+    })
+  })
+
+  it('should not display preview when it is venue mode', async () => {
+    const { queryByText } = renderModalImageCrop(UploaderModeEnum.VENUE)
+
+    await waitFor(() => {
+      expect(queryByText(previewDescription)).not.toBeInTheDocument()
     })
   })
 })
