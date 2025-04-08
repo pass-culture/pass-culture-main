@@ -2878,20 +2878,6 @@ class AccessibilityProviderTest:
         assert venue_2.external_accessibility_url == "https://mon.adresse/mon-slug"
         assert venue_2.external_accessibility_id == "mon-slug"
 
-    def test_desynchronize_venues_with_acceslibre(self):
-        venue_1 = offerers_factories.VenueFactory(isOpenToPublic=False)
-        venue_2 = offerers_factories.VenueFactory(isOpenToPublic=True)
-        offerers_api.set_accessibility_provider_id(venue_1)
-        offerers_api.set_accessibility_provider_id(venue_2)
-
-        offerers_api.desynchronize_venues_close_to_public_with_accessibility_provider(dry_run=False)
-
-        db.session.refresh(venue_1)
-        db.session.refresh(venue_2)
-
-        assert not venue_1.accessibilityProvider
-        assert venue_2.accessibilityProvider.externalAccessibilityId == "mon-lieu-chez-acceslibre"
-
 
 class GetOffererConfidenceLevelTest:
     def test_no_rule(self):
