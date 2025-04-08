@@ -1,6 +1,8 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 
+import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import {
   CollectiveLocationType,
   VenueListItemResponseModel,
@@ -10,6 +12,27 @@ import { venueListItemFactory } from 'commons/utils/factories/individualApiFacto
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { FormLocation, FormLocationProps } from '../FormLocation'
+
+const mockAdressData = [
+  {
+    address: '10 Rue des lilas',
+    city: 'Lyon',
+    id: '1',
+    latitude: 11.1,
+    longitude: -11.1,
+    label: '10 Rue des lilas 69002 Lyon',
+    postalCode: '69002',
+  },
+]
+
+vi.mock('apiClient/adresse', async () => {
+  return {
+    ...(await vi.importActual('apiClient/adresse/apiAdresse')),
+    default: {
+      getDataFromAddress: vi.fn(),
+    },
+  }
+})
 
 const renderFormLocation = (
   props: FormLocationProps,
@@ -25,7 +48,13 @@ const renderFormLocation = (
 describe('FormLocation', () => {
   let props: FormLocationProps
   let venues: VenueListItemResponseModel[]
-  let initialValues: Pick<OfferEducationalFormValues, 'location' | 'venueId'>
+  let initialValues: Pick<
+    OfferEducationalFormValues,
+    | 'location'
+    | 'venueId'
+    | 'search-addressAutocomplete'
+    | 'addressAutocomplete'
+  >
 
   let address = {
     banId: null,
@@ -53,6 +82,8 @@ describe('FormLocation', () => {
 
     initialValues = {
       venueId: '1',
+      'search-addressAutocomplete': '',
+      addressAutocomplete: '',
       location: {
         locationType: CollectiveLocationType.ADDRESS,
         id_oa: '889',
@@ -66,6 +97,8 @@ describe('FormLocation', () => {
         },
       },
     }
+
+    vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue(mockAdressData)
   })
 
   it('should render the location form with title', () => {
@@ -85,6 +118,22 @@ describe('FormLocation', () => {
 
     const addressText = 'Venue 1 - 1 Rue de Paris 75001 Paris'
     expect(await screen.findByText(addressText)).toBeInTheDocument()
+  })
+
+  it('should update address fields when an address is selected from autocomplete', async () => {
+    renderFormLocation(props, initialValues)
+
+    await userEvent.click(screen.getByText('Autre adresse'))
+
+    const adressInput = screen.getByLabelText('Adresse postale *')
+
+    await userEvent.type(adressInput, '10 rue ')
+
+    expect(
+      await screen.findByText('10 Rue des lilas 69002 Lyon', {
+        selector: 'span',
+      })
+    )
   })
 
   it('should disable the form when disableForm prop is true', () => {
