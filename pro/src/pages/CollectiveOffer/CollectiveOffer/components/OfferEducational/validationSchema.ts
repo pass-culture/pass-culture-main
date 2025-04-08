@@ -74,6 +74,19 @@ export function getOfferEducationalValidationSchema(
             .nullable(),
         })
       : yup.mixed(),
+    addressAutocomplete: yup
+      .string()
+      .trim()
+      .when(['location.locationType', 'location.id_oa'], {
+        is: (locationType: string, id_oa: string) =>
+          locationType === CollectiveLocationType.ADDRESS &&
+          id_oa === 'SPECIFIC_ADDRESS',
+
+        then: (schema) =>
+          schema.required(
+            'Veuillez sélectionner une adresse parmi les suggestions'
+          ),
+      }),
     eventAddress: yup.object().shape({
       addressType: yup
         .string()
@@ -190,13 +203,13 @@ export function getOfferEducationalValidationSchema(
         test: () => format.length > 0,
       })
     ),
-    interventionArea: yup.array().when('eventAddress', {
+    interventionArea: isCollectiveOaActive ? yup.mixed() : yup.array().when('eventAddress', {
       is: (eventAddress: { addressType: OfferAddressType }) =>
         eventAddress.addressType !== OfferAddressType.OFFERER_VENUE,
       then: (schema) =>
         schema.min(1, 'Veuillez renseigner une zone de mobilité'),
     }),
-    'search-interventionArea': yup
+    'search-interventionArea': isCollectiveOaActive ? yup.mixed() : yup
       .string()
       .when(['interventionArea', 'eventAddress'], {
         is: (
