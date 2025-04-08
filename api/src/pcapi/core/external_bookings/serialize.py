@@ -65,7 +65,7 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
             booking_confirmation_date=booking.cancellationLimitDate,
             booking_creation_date=booking.dateCreated,
             booking_quantity=booking.quantity,
-            offer_ean=stock.offer.extraData.get("ean") if stock.offer.extraData is not None else None,
+            offer_ean=stock.offer.ean,
             offer_id=stock.offer.id,
             offer_id_at_provider=stock.offer.idAtProvider,
             offer_name=stock.offer.name,

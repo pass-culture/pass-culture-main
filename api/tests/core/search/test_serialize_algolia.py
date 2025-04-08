@@ -63,9 +63,9 @@ def test_serialize_offer():
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
         description="Un LIVRE qu'il est bien pour le lire",
+        ean="2221001648999",
         extraData={
             "author": "Author",
-            "ean": "2221001648",
             "performer": "Performer",
             "speaker": "Speaker",
             "stageDirector": "Stage Director",
@@ -84,7 +84,7 @@ def test_serialize_offer():
     offers_factories.StockFactory(offer=offer, price=10)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized == {
-        "distinct": "2221001648",
+        "distinct": "2221001648999",
         "objectID": offer.id,
         "offer": {
             "artist": "Author Performer Speaker Stage Director",
@@ -92,7 +92,7 @@ def test_serialize_offer():
             "dateCreated": offer.dateCreated.timestamp(),
             "dates": [],
             "description": "livre bien lire",
-            "ean": "2221001648",
+            "ean": "2221001648999",
             "indexedAt": "2024-01-01T00:00:00",
             "isDigital": False,
             "isDuo": False,
@@ -159,9 +159,9 @@ def test_serialize_offer_legacy():
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
         description="Un LIVRE qu'il est bien pour le lire",
+        ean="2221001648999",
         extraData={
             "author": "Author",
-            "ean": "2221001648",
             "performer": "Performer",
             "speaker": "Speaker",
             "stageDirector": "Stage Director",
@@ -179,7 +179,7 @@ def test_serialize_offer_legacy():
     offers_factories.StockFactory(offer=offer, price=10)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized == {
-        "distinct": "2221001648",
+        "distinct": "2221001648999",
         "objectID": offer.id,
         "offer": {
             "artist": "Author Performer Speaker Stage Director",
@@ -187,7 +187,7 @@ def test_serialize_offer_legacy():
             "dateCreated": offer.dateCreated.timestamp(),
             "dates": [],
             "description": "livre bien lire",
-            "ean": "2221001648",
+            "ean": "2221001648999",
             "indexedAt": "2024-01-01T00:00:00",
             "isDigital": False,
             "isDuo": False,

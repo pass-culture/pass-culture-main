@@ -338,14 +338,12 @@ class OfferMetadataTest:
                 assert metadata["workExample"]["inLanguage"] == "fr"
 
             def should_define_an_isbn(self):
-                offer = offers_factories.OfferFactory(
-                    subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": 9782371266124}
-                )
+                offer = offers_factories.OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, ean="9782371266124")
 
                 metadata = get_metadata_from_offer(offer)
 
-                assert metadata["gtin13"] == 9782371266124
-                assert metadata["workExample"]["isbn"] == 9782371266124
+                assert metadata["gtin13"] == "9782371266124"
+                assert metadata["workExample"]["isbn"] == "9782371266124"
 
             @pytest.mark.parametrize(
                 ("subcategoryId", "expectedFormat"),

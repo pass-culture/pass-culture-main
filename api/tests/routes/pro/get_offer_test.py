@@ -107,6 +107,7 @@ class Returns200Test:
 
     @time_machine.travel("2020-10-15 00:00:00")
     def test_returns_an_event_stock(self, client):
+        ean = "1111111111111"
         now = datetime.utcnow()
         user_offerer = offerers_factories.UserOffererFactory(
             offerer__dateCreated=now,
@@ -120,6 +121,7 @@ class Returns200Test:
             name="Derrick",
             description="Tatort, but slower",
             durationMinutes=60,
+            ean=ean,
             extraData=None,
             mentalDisabilityCompliant=True,
             externalTicketOfficeUrl="http://example.net",
@@ -162,7 +164,7 @@ class Returns200Test:
             "publicationDate": None,
             "description": "Tatort, but slower",
             "durationMinutes": 60,
-            "extraData": None,
+            "extraData": {"ean": "1111111111111"},
             "externalTicketOfficeUrl": "http://example.net",
             "hasBookingLimitDatetimesPassed": False,
             "hasPendingBookings": False,
