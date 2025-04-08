@@ -561,6 +561,11 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
                 )
             )
         )
+        .options(
+            sa.orm.with_expression(
+                offers_models.Offer.headlineCount, offers_repository.get_offer_headline_count_subquery()
+            )
+        )
     )
 
 
