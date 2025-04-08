@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import * as yup from 'yup'
 
-import { apiAdresse } from 'apiClient/adresse/apiAdresse'
+import * as apiAdresse from 'apiClient/adresse/apiAdresse'
 import { VenueSettingsFormValues } from 'pages/VenueSettings/types'
 import { Button } from 'ui-kit/Button/Button'
 

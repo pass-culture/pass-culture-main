@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 import { useState } from 'react'
 
-import { apiAdresse } from 'apiClient/adresse/apiAdresse'
+import { getDataFromAddress } from 'apiClient/adresse/apiAdresse'
 import { getSiretData } from 'commons/core/Venue/getSiretData'
 import { humanizeSiret, unhumanizeSiret } from 'commons/core/Venue/utils'
 import { handleAddressSelect } from 'components/Address/Address'
@@ -76,7 +76,7 @@ export const SiretOrCommentFields = ({
       )
       await setFieldValue('name', response.values?.name)
       // getSuggestions pour récupérer les adresses
-      const addressSuggestions = await apiAdresse.getDataFromAddress(address)
+      const addressSuggestions = await getDataFromAddress(address)
       await setFieldValue('search-addressAutocomplete', address)
       await setFieldValue('addressAutocomplete', address)
 

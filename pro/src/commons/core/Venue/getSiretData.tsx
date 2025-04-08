@@ -1,4 +1,5 @@
-import { api, apiAdresse } from 'apiClient/api'
+import { getDataFromAddressParts } from 'apiClient/adresse/apiAdresse'
+import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { unhumanizeSiret } from 'commons/core/Venue/utils'
 import { validateSiret } from 'commons/core/Venue/validate'
@@ -49,7 +50,7 @@ const getSiretDataRequest = async (
       throw Error('SIRET invalide')
     }
     const { street, city, postalCode } = response.address
-    const addressData = await apiAdresse.getDataFromAddressParts(
+    const addressData = await getDataFromAddressParts(
       street,
       city,
       postalCode,
