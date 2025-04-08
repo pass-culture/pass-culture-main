@@ -19,7 +19,7 @@
     display: flex;
     align-items: center;
     padding-top: rem.torem(8px);
-    padding-bottom: rem.torem(16px);
+    padding-bottom: rem.torem(8px);
 
     &-label {
       @include fonts.body-accent-xs;
