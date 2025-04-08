@@ -702,7 +702,6 @@ class GetSubcategoriesTest(GetEndpointWithoutPermissionHelper):
         assert rows[0]["online_offline_platform"] == "OFFLINE"
         assert rows[0]["reimbursement_rule"] == "STANDARD"
         assert rows[0]["can_be_duo"] == "Non"
-        assert rows[0]["can_be_educational"] == "Non"
         assert rows[0]["is_selectable"] == "Oui"
         assert rows[0]["Réservable par les 15-17 si gratuite"] == "Oui"
         assert rows[0]["Réservable par les 15-17 si payante"] == "Non"

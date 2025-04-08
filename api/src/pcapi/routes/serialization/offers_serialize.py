@@ -48,7 +48,6 @@ class SubcategoryResponseModel(BaseModel):
     conditional_fields: list[str]
     can_expire: bool
     can_be_duo: bool
-    can_be_educational: bool
     online_offline_platform: str
     is_digital_deposit: bool
     is_physical_deposit: bool

@@ -49,7 +49,6 @@ const renderDetailsSummaryScreen = (
       isEvent: false,
       conditionalFields: ['ean'],
       canBeDuo: true,
-      canBeEducational: false,
       canBeWithdrawable: false,
       onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
     }),

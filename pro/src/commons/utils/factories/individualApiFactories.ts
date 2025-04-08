@@ -272,7 +272,6 @@ export const subcategoryFactory = (
   isEvent: false,
   conditionalFields: [],
   canBeDuo: false,
-  canBeEducational: false,
   canBeWithdrawable: false,
   onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
   reimbursementRule: REIMBURSEMENT_RULES.STANDARD,

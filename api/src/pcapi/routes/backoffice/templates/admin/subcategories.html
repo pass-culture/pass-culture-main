@@ -21,7 +21,6 @@
             <th scope="col">online_offline_platform</th>
             <th scope="col">reimbursement_rule</th>
             <th scope="col">can_be_duo</th>
-            <th scope="col">can_be_educational</th>
             <th scope="col">is_selectable</th>
             <th scope="col">Réservable par les 15-17 si gratuite</th>
             <th scope="col">Réservable par les 15-17 si payante</th>
@@ -43,7 +42,6 @@
                 <td>{{ subcategory.online_offline_platform }}</td>
                 <td>{{ subcategory.reimbursement_rule }}</td>
                 <td>{{ subcategory.can_be_duo | format_bool_badge }}</td>
-                <td>{{ subcategory.can_be_educational | format_bool_badge }}</td>
                 <td>{{ subcategory.is_selectable | format_bool_badge }}</td>
                 <td>{{ subcategory.is_bookable_by_underage_when_not_free | format_bool_badge }}</td>
                 <td>{{ (not subcategory.is_bookable_by_underage_when_not_free) | format_bool_badge }}</td>
