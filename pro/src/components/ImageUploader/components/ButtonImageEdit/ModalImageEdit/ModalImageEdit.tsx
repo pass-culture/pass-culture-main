@@ -49,6 +49,10 @@ export const ModalImageEdit = ({
 
   const [image, setImage] = useState<File | undefined>()
 
+  const imageUrl = initialOriginalImageUrl
+    ? initialOriginalImageUrl
+    : initialImageUrl
+
   useEffect(() => {
     async function setImageFromUrl(url: string) {
       try {
@@ -58,9 +62,6 @@ export const ModalImageEdit = ({
       }
     }
 
-    const imageUrl = initialOriginalImageUrl
-      ? initialOriginalImageUrl
-      : initialImageUrl
     if (imageUrl) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setImageFromUrl(imageUrl)
@@ -116,7 +117,7 @@ export const ModalImageEdit = ({
       imageFile: image,
       imageCroppedDataUrl: imageDataUrl,
       cropParams: croppedRect,
-      credit,
+      credit: credit,
     })
   }
 
@@ -141,6 +142,7 @@ export const ModalImageEdit = ({
       onImageDelete={handleImageDelete}
       saveInitialPosition={setEditorInitialPosition}
       mode={mode}
+      imageUrl={initialImageUrl}
     />
   )
 }

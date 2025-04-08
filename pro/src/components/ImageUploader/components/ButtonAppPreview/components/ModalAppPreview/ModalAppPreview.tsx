@@ -27,10 +27,6 @@ export const ModalAppPreview = ({
       <Dialog.Title asChild>
         <h1 className={style['header']}>Ajouter une image</h1>
       </Dialog.Title>
-
-      <div className={style['subtitle']}>
-        Prévisualisation de votre image dans l’application pass Culture
-      </div>
       <AppPreview imageUrl={imageUrl} />
     </div>
   )

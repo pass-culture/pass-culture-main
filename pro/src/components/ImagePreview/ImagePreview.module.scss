@@ -3,44 +3,45 @@
 @use "styles/mixins/_size.scss" as size;
 
 .image-preview-previews {
-  background: var(--color-background-subtle);
-  display: flex;
-  justify-content: center;
-  padding: rem.torem(16px) 0;
-  flex-wrap: wrap;
+  padding: rem.torem(16px);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: rem.torem(8px);
 
-  &-shell {
-    height: rem.torem(600px);
-    width: rem.torem(342px);
-    margin-bottom: rem.torem(12px);
+  &-title {
+    @include fonts.body-xs;
   }
 
-  & > div {
-    text-align: center;
-    width: 50%;
+  &-container {
+    display: flex;
+    flex-direction: column;
+    place-items: center center;
+    gap: rem.torem(30px);
+    margin: rem.torem(24px) 0;
+  }
+
+  &-shell {
+    height: rem.torem(148px);
+    margin: 0 39px;
   }
 }
 
 .image-preview-previews-wrapper {
   display: flex;
   flex-direction: column;
-  margin: 0;
   position: relative;
   align-items: center;
 
   figcaption {
     @include fonts.body-accent-xs;
+
+    margin-top: rem.torem(6px);
   }
 }
 
 .image-preview-screen {
   position: absolute;
-  left: rem.torem(26px);
-  top: rem.torem(34px);
+  left: rem.torem(46px);
+  top: rem.torem(10px);
 }
 
-@media (min-width: size.$tablet) {
-  .image-preview-previews-wrapper {
-    margin: 0 rem.torem(60px);
-  }
-}
+
