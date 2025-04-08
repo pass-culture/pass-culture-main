@@ -17,11 +17,9 @@
                 {% endif %}
                 {% for role in
                   user.roles %}
-                  <span class="ms-5 me-2 badge rounded-pill text-bg-primary align-middle">{{ role | format_role }}</span>
+                  {{ role | format_role | format_badge("primary") }}
                 {% endfor %}
-                {% if not user.isActive %}
-                  <span class="badge rounded-pill text-bg-secondary align-middle">{{ user.isActive | format_state }}</span>
-                {% endif %}
+                {% if not user.isActive %}{{ user.isActive | format_state | format_badge("secondary") }}{% endif %}
               </h5>
             </div>
             <div>

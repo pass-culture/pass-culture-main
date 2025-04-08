@@ -165,9 +165,7 @@
                       <td>{{ response.user.email }}</td>
                       <td>{{ (response.phoneNumber or response.user.phoneNumber) | empty_string_if_null }}</td>
                       <td>
-                        {% for role in response.user.roles %}
-                          <span class="me-2 badge rounded-pill text-bg-primary align-middle">{{ role |  format_role(deposits=response.user.deposits) }}</span>
-                        {% endfor %}
+                        {% for role in response.user.roles %}{{ role | format_role(deposits=response.user.deposits) | format_badge("primary")  }}{% endfor %}
                       </td>
                     {% else %}
                       <td>Non trouvé</td>

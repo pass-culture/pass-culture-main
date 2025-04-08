@@ -396,7 +396,7 @@
     <div class="col-3 shadow-sm">
       <div class="vstack gap-4 py-4 px-3 overflow-y-scroll vh-100">
         <!-- BUTTONS -->
-        <div class="btn-group align-self-center">
+        <div class="btn-group align-self-start">
           <a type="button"
              class="btn btn-outline-primary-subtle-bg"
              href="{{ offer | webapp_offer_link }}"
@@ -464,13 +464,18 @@
           {% call description_detail_vertical("Entité juridique") %}
             <div class="vstack gap-1">
               <div>{{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}</div>
-              <div>{{ badges.build_offer_offerer_fraud_badges(offer.venue.managingOfferer) }}</div>
+              {% call badges.badges_container() %}
+                {{ badges.build_offer_offerer_fraud_badges(offer.venue.managingOfferer) }}
+              {% endcall %}
             </div>
           {% endcall %}
           {% call description_detail_vertical("Partenaire culturel") %}
-            {{ links.build_venue_name_to_details_link(offer.venue) }}
-            <br />
-            {{ badges.build_offer_venue_fraud_badges(offer.venue) }}
+            <div class="vstack gap-1">
+              <div>{{ links.build_venue_name_to_details_link(offer.venue) }}</div>
+              {% call badges.badges_container() %}
+                {{ badges.build_offer_venue_fraud_badges(offer.venue) }}
+              {% endcall %}
+            </div>
           {% endcall %}
           {% if offer.offererAddress %}
             {% call description_detail_vertical("Localisation") %}
@@ -503,7 +508,9 @@
           {% endset %}
           {% call description_detail_vertical(tags_title) %}
             {% if offer.criteria %}
+              {% call badges.badges_container() %}
               {{ offer.criteria | sort(attribute="name") | format_tag_object_list }}
+              {% endcall %}
             {% else %}
               Aucun tag
             {% endif %}

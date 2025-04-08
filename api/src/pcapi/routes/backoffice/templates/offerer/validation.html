@@ -1,6 +1,5 @@
 {% from "components/offerer_validation/extra_row.html" import build_offerer_validation_toggle_extra_row_button with context %}
 {% from "components/offerer_validation/extra_row.html" import build_offerer_validation_extra_row with context %}
-{% from "components/badges.html" import build_offerer_status_badge %}
 {% from "components/forms.html" import build_filters_form with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
@@ -157,7 +156,7 @@
                 </td>
                 <td>{{ offerer.id }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
-                <td>{{ build_offerer_status_badge(offerer) }}</td>
+                <td>{{ offerer | format_offerer_status_badge }}</td>
                 {% if has_validate_permission %}
                   <td>
                     {% set top_actor_checked = "top-acteur" in item.tags | map(attribute="name") %}

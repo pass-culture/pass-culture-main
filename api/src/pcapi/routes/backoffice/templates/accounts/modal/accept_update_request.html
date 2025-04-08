@@ -35,9 +35,7 @@
             <span class="fw-bold">Jeune :</span> {{ links.build_public_user_name_to_details_link(user, "history", "_blank") }}
           </div>
           <div class="col-6 block">
-            {% for role in user.roles %}
-              <span class="me-2 badge rounded-pill text-bg-primary align-middle">{{ role | format_role(deposits=user.deposits) }}</span>
-            {% endfor %}
+            {% for role in user.roles %}{{ role | format_role(deposits=user.deposits) | format_badge("primary") }}{% endfor %}
           </div>
           <div class="col-6 block">
             <span class="fw-bold">Email :</span> {{ user.email }}
@@ -116,9 +114,7 @@
               <span class="fw-bold">Doublon :</span> {{ links.build_public_user_name_to_details_link(duplicate_user, "history", "_blank") }}
             </div>
             <div class="col-6 block">
-              {% for role in duplicate_user.roles %}
-                <span class="me-2 badge rounded-pill text-bg-primary align-middle">{{ role |  format_role(deposits=user.deposits) }}</span>
-              {% endfor %}
+              {% for role in duplicate_user.roles %}{{ role | format_role(deposits=user.deposits) | format_badge("primary") }}{% endfor %}
             </div>
             <div class="col-6 block">
               <span class="fw-bold">Email :</span> {{ duplicate_user.email }}

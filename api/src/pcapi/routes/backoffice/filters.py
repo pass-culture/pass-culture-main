@@ -93,15 +93,15 @@ def format_role(role: str | None, deposits: list[finance_models.Deposit] | None 
 def format_deposit_used(booking: bookings_models.Booking) -> str:
     if booking.usedRecreditType:
         if booking.usedRecreditType == bookings_models.BookingRecreditType.RECREDIT_17:
-            return Markup("<span class='badge text-bg-secondary'>Pass 17</span>")
+            return format_badge("Pass 17", "secondary")
         if booking.usedRecreditType == bookings_models.BookingRecreditType.RECREDIT_18:
-            return Markup("<span class='badge text-bg-secondary'>Pass 18</span>")
+            return format_badge("Pass 18", "secondary")
     elif booking.deposit:
         deposit = booking.deposit
         if deposit.type == finance_models.DepositType.GRANT_18:
-            return Markup("<span class='badge text-bg-secondary'>Ancien Pass 18</span>")
+            return format_badge("Ancien Pass 18", "secondary")
         if deposit.type == finance_models.DepositType.GRANT_15_17:
-            return Markup("<span class='badge text-bg-secondary'>Ancien Pass 15-17</span>")
+            return format_badge("Ancien Pass 15-17", "secondary")
     return "Aucune information"
 
 
@@ -220,10 +220,8 @@ def format_bool_badge(data: bool | None, none_display: str = "") -> str:
         return none_display
 
     if data:
-        return Markup(
-            '<span class="mx-2 pb-1 badge rounded-pill text-bg-success"><i class="bi bi-check-circle"></i> Oui</span>'
-        )
-    return Markup('<span class="mx-2 pb-1 badge rounded-pill text-bg-dark"><i class="bi bi-x-circle"></i> Non</span>')
+        return format_badge("Oui", "success")
+    return format_badge("Non", "danger")
 
 
 def format_string_list(data: list[str] | None) -> str:
@@ -440,24 +438,24 @@ def format_booking_status_long(booking: bookings_models.Booking | educational_mo
         bookings_models.BookingStatus.REIMBURSED,
         educational_models.CollectiveBookingStatus.REIMBURSED,
     ):
-        return Markup('<span class="badge text-bg-success">AC remboursé</span>')
+        return format_badge("AC remboursé", "success")
     if booking.status in (
         bookings_models.BookingStatus.CANCELLED,
         educational_models.CollectiveBookingStatus.CANCELLED,
     ):
-        return Markup("<span class=\"badge text-bg-danger\">L'offre n'a pas eu lieu</span>")
+        return format_badge("L'offre n'a pas eu lieu", "danger")
     if booking.status in (bookings_models.BookingStatus.USED, educational_models.CollectiveBookingStatus.USED):
-        return Markup('<span class="badge text-bg-success">Le jeune a consommé l\'offre</span>')
+        return format_badge("Le jeune a consommé l'offre", "success")
     if isinstance(booking, bookings_models.Booking) and booking.isConfirmed:
-        return Markup('<span class="badge text-bg-success">Le jeune ne peut plus annuler</span>')
+        return format_badge("Le jeune ne peut plus annuler", "success")
     if (
         isinstance(booking, educational_models.CollectiveBooking)
         and booking.status == educational_models.CollectiveBookingStatus.CONFIRMED
     ):
-        return Markup('<span class="badge text-bg-success">Le chef d\'établissement a validé la réservation</span>')
+        return format_badge("Le chef d'établissement a validé la réservation", "success")
     if booking.status == educational_models.CollectiveBookingStatus.PENDING:
-        return Markup('<span class="badge text-bg-success">L\'enseignant a posé une option</span>')
-    return Markup('<span class="badge text-bg-success">Le jeune a réservé l\'offre</span>')
+        return format_badge("L'enseignant a posé une option", "success")
+    return format_badge("Le jeune a réservé l'offre", "success")
 
 
 def format_booking_validation_author_type(
@@ -481,14 +479,14 @@ def format_booking_status(
         bookings_models.BookingStatus.REIMBURSED,
         educational_models.CollectiveBookingStatus.REIMBURSED,
     ):
-        return Markup('<span class="badge text-bg-success">Remboursée</span>') if with_badge else "Remboursée"
+        return format_badge("Remboursée", "success") if with_badge else "Remboursée"
     if booking.status in (
         bookings_models.BookingStatus.CANCELLED,
         educational_models.CollectiveBookingStatus.CANCELLED,
     ):
-        return Markup('<span class="badge text-bg-danger">Annulée</span>') if with_badge else "Annulée"
+        return format_badge("Annulée", "danger") if with_badge else "Annulée"
     if booking.status in (bookings_models.BookingStatus.USED, educational_models.CollectiveBookingStatus.USED):
-        return Markup('<span class="badge text-bg-success">Validée</span>') if with_badge else "Validée"
+        return format_badge("Validée", "success") if with_badge else "Validée"
     if isinstance(booking, bookings_models.Booking) and booking.isConfirmed:
         return "Confirmée"
     if (
@@ -519,11 +517,14 @@ def format_validation_status(status: validation_status_mixin.ValidationStatus) -
             return status.value
 
 
-def format_badge(text: str, category: str = "primary") -> str:
+def format_badge(text: str, category: str = "primary", icon: str | None = None) -> str:
     # Category: primary, secondary, success, danger, warning and info
-    return Markup('<span class="badge text-{category} bg-{category}-subtle">{text}</span>').format(
-        text=text, category=category
-    )
+    span_class = f"badge text-{category} bg-{category}-subtle"
+    if icon:
+        return Markup(
+            '<span class="{span_class} d-inline-flex gap-1"><i class="bi bi-{icon}"></i>{text}</span>'
+        ).format(text=text, span_class=span_class, icon=icon)
+    return Markup('<span class="{span_class}">{text}</span>').format(text=text, span_class=span_class)
 
 
 def format_offer_validation_status(status: offer_mixin.OfferValidationStatus, with_badge: bool = False) -> str:
@@ -723,20 +724,20 @@ def format_dms_application_status_badge(
 
     match status:
         case GraphQLApplicationStates.accepted | finance_models.BankAccountApplicationStatus.ACCEPTED:
-            return Markup('<span class="badge text-bg-success">Accepté</span>')
+            return format_badge("Accepté", "success")
         case GraphQLApplicationStates.on_going | finance_models.BankAccountApplicationStatus.ON_GOING:
-            return Markup('<span class="badge text-bg-secondary">En instruction</span>')
+            return format_badge("En instruction", "secondary")
         case GraphQLApplicationStates.draft | finance_models.BankAccountApplicationStatus.DRAFT:
-            return Markup('<span class="badge text-bg-info">En construction</span>')
+            return format_badge("En construction", "info")
         case GraphQLApplicationStates.refused | finance_models.BankAccountApplicationStatus.REFUSED:
-            return Markup('<span class="badge text-bg-danger">Refusé</span>')
+            return format_badge("Refusé", "danger")
         case (
             GraphQLApplicationStates.without_continuation
             | finance_models.BankAccountApplicationStatus.WITHOUT_CONTINUATION
         ):
-            return Markup('<span class="badge text-bg-primary">Classé sans suite</span>')
+            return format_badge("Classé sans suite", "primary")
         case finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS:
-            return Markup('<span class="badge text-bg-warning">À corriger</span>')
+            return format_badge("À corriger", "warning")
         case _:
             return status.value
 
@@ -757,39 +758,23 @@ def format_user_account_update_flag(flag: users_models.UserAccountUpdateFlag) ->
             return flag.value
 
 
-def format_user_account_update_flags(
-    flags: typing.Iterable[users_models.UserAccountUpdateFlag], multiline: bool = False
-) -> str:
+def format_user_account_update_flags(flags: typing.Iterable[users_models.UserAccountUpdateFlag]) -> str:
     badges = []
     for flag in flags:
         match flag:
             case users_models.UserAccountUpdateFlag.MISSING_VALUE:
-                badges.append(
-                    Markup(
-                        '<span class="badge text-bg-warning"><i class="bi bi-exclamation-triangle"></i> Saisie incomplète</span>'
-                    )
-                )
+                badges.append(format_badge("Saisie incomplète", "warning", "exclamation-triangle"))
             case users_models.UserAccountUpdateFlag.INVALID_VALUE:
-                badges.append(
-                    Markup(
-                        '<span class="badge text-bg-warning"><i class="bi bi-exclamation-triangle"></i> Saisie invalide</span>'
-                    )
-                )
+                badges.append(format_badge("Saisie invalide", "warning", "exclamation-triangle"))
             case users_models.UserAccountUpdateFlag.DUPLICATE_NEW_EMAIL:
-                badges.append(
-                    Markup(
-                        '<span class="badge text-bg-primary"><i class="bi bi-person-plus-fill"></i> Email en doublon</span>'
-                    )
-                )
+                badges.append(format_badge("Email en doublon", "primary", "person-plus-fill"))
             case users_models.UserAccountUpdateFlag.WAITING_FOR_CORRECTION:
-                badges.append(Markup('<span class="badge text-bg-warning">En attente de correction</span>'))
+                badges.append(format_badge("En attente de correction", "warning"))
             case users_models.UserAccountUpdateFlag.CORRECTION_RESOLVED:
-                badges.append(Markup('<span class="badge text-bg-light shadow-sm">Corrigé</span>'))
+                badges.append(format_badge("Corrigé", "secondary"))
             case _:
-                badges.append(
-                    Markup('<span class="badge text-bg-light shadow-sm">{name}</span>').format(name=flag.value)
-                )
-    return (Markup("<br/>") if multiline else Markup("")).join(badges)
+                badges.append(format_badge(flag.value, "secondary"))
+    return Markup("").join(badges)
 
 
 def format_user_account_update_type(update_type: users_models.UserAccountUpdateType) -> str:
@@ -925,6 +910,38 @@ def format_confidence_level(confidence_level: offerers_models.OffererConfidenceL
             return "Suivre les règles"
 
     return confidence_level
+
+
+def format_offerer_status_badge(offerer: offerers_models.Offerer) -> str:
+    if offerer.isNew:
+        return format_badge("Nouvelle", "info")
+    if offerer.isPending:
+        return format_badge("En attente", "warning")
+    if offerer.isValidated:
+        return format_badge("Validée", "success")
+    if offerer.isRejected:
+        return format_badge("Rejetée", "danger")
+    if offerer.isDeleted:
+        return format_badge("Supprimée", "danger")
+    if offerer.isClosed:
+        return format_badge("Fermée", "danger")
+    return ""
+
+
+def format_user_offerer_status_badge(user_offerer: offerers_models.UserOfferer) -> str:
+    if user_offerer.isNew:
+        return format_badge("Nouveau", "info")
+    if user_offerer.isPending:
+        return format_badge("En attente", "warning")
+    if user_offerer.isValidated:
+        return format_badge("Validé", "success")
+    if user_offerer.isRejected:
+        return format_badge("Rejeté", "danger")
+    if user_offerer.isDeleted:
+        return format_badge("Supprimé", "danger")
+    if user_offerer.isClosed:
+        return format_badge("Fermé", "danger")
+    return ""
 
 
 def format_confidence_level_badge(
@@ -1527,18 +1544,18 @@ def format_finance_incident_status(incident_status: finance_models.IncidentStatu
 
 def format_finance_incident_nature_badge(is_partial: bool) -> str:
     if is_partial:
-        return Markup('<span class="badge text-bg-info">Partiel</span>')
-    return Markup('<span class="badge text-bg-secondary">Total</span>')
+        return format_badge("Partiel", "info")
+    return format_badge("Total", "secondary")
 
 
 def format_finance_incident_status_badge(incident_status: finance_models.IncidentStatus) -> str:
     match incident_status:
         case finance_models.IncidentStatus.CREATED:
-            return Markup('<span class="badge text-bg-secondary">Créé</span>')
+            return format_badge("Créé", "secondary")
         case finance_models.IncidentStatus.CANCELLED:
-            return Markup('<span class="badge text-bg-danger">Annulé</span>')
+            return format_badge("Annulé", "danger")
         case finance_models.IncidentStatus.VALIDATED:
-            return Markup('<span class="badge text-bg-success">Validé</span>')
+            return format_badge("Validé", "success")
 
 
 def format_finance_incident_type_str(incident_kind: finance_models.IncidentType) -> str:
@@ -1559,13 +1576,13 @@ def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> 
     kind_str = format_finance_incident_type_str(incident_kind)
     match incident_kind:
         case finance_models.IncidentType.OVERPAYMENT:
-            return Markup('<span class="badge text-bg-warning">{kind}</span>').format(kind=kind_str)
+            return format_badge(kind_str, "warning")
         case finance_models.IncidentType.FRAUD:
-            return Markup('<span class="badge text-bg-danger">{kind}</span>').format(kind=kind_str)
+            return format_badge(kind_str, "danger")
         case finance_models.IncidentType.COMMERCIAL_GESTURE:
-            return Markup('<span class="badge text-bg-success">{kind}</span>').format(kind=kind_str)
+            return format_badge(kind_str, "success")
         case finance_models.IncidentType.OFFER_PRICE_REGULATION:
-            return Markup('<span class="badge text-bg-light">{kind}</span>').format(kind=kind_str)
+            return format_badge(kind_str, "secondary")
         case _:
             return incident_kind.value
 
@@ -1588,15 +1605,13 @@ def format_special_event_response_status(response_status: operations_models.Spec
     response_status_str = format_special_event_response_status_str(response_status)
     match response_status:
         case operations_models.SpecialEventResponseStatus.NEW:
-            return Markup('<span class="badge text-bg-info">{status}</span>').format(status=response_status_str)
+            return format_badge(response_status_str, "info")
         case operations_models.SpecialEventResponseStatus.VALIDATED:
-            return Markup('<span class="badge text-bg-success">{status}</span>').format(status=response_status_str)
+            return format_badge(response_status_str, "success")
         case operations_models.SpecialEventResponseStatus.REJECTED:
-            return Markup('<span class="badge text-bg-danger">{status}</span>').format(status=response_status_str)
+            return format_badge(response_status_str, "danger")
         case operations_models.SpecialEventResponseStatus.PRESELECTED:
-            return Markup('<span class="badge border border-success text-success">{status}</span>').format(
-                status=response_status_str
-            )
+            return format_badge(response_status_str, "info")
         case _:
             return response_status_str
 
@@ -1700,6 +1715,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_offer_subcategory"] = format_offer_subcategory
     app.jinja_env.filters["format_offerer_rejection_reason"] = format_offerer_rejection_reason
+    app.jinja_env.filters["format_offerer_status_badge"] = format_offerer_status_badge
     app.jinja_env.filters["format_collective_offer_formats"] = format_collective_offer_formats
     app.jinja_env.filters["format_subcategories"] = format_subcategories
     app.jinja_env.filters["format_collective_offer_rejection_reason"] = format_collective_offer_rejection_reason
@@ -1737,6 +1753,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_music_gtl_id"] = format_music_gtl_id
     app.jinja_env.filters["format_show_type"] = format_show_type
     app.jinja_env.filters["format_show_subtype"] = format_show_subtype
+    app.jinja_env.filters["format_user_offerer_status_badge"] = format_user_offerer_status_badge
     app.jinja_env.filters["get_comparated_format_function"] = get_comparated_format_function
     app.jinja_env.filters["format_offer_types"] = format_offer_types
     app.jinja_env.filters["format_website"] = format_website

@@ -25,9 +25,9 @@
               </div>
               <h5 class="p-2">
                 {% if chronicle.isActive %}
-                  <span class="badge rounded-pill text-bg-success align-middle">Publiée</span>
+                  {{ "Publiée" | format_badge("success") }}
                 {% else %}
-                  <span class="badge rounded-pill text-bg-warning align-middle">Non publiée</span>
+                  {{ "Non publiée" | format_badge("warning") }}
                 {% endif %}
               </h5>
               <div class="p-2 d-flex justify-content-end w-50">

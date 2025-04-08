@@ -38,35 +38,25 @@
               </td>
               <td>
                 {% if fraud_action['applicableEligibilities']|length == 0 %}
-                  <span class="badge rounded-pill bg-secondary px-3 py-2">NA</span>
+                  {{ "NA" | format_badge("secondary") }}
                 {% else %}
                   {% for applicable_eligibility in fraud_action['applicableEligibilities'] %}
-                    <span class="badge rounded-pill bg-primary px-3 py-2">{{ applicable_eligibility | format_eligibility_value }}</span>
+                    {{ applicable_eligibility | format_eligibility_value | format_badge("primary") }}
                   {% endfor %}
                 {% endif %}
               </td>
               <td>
                 {% if fraud_action['status'] %}
                   {% if fraud_action['status'].lower() == 'ok' %}
-                    <span class="badge rounded-pill text-bg-success align-middle px-3 py-2">
-                      <i class="bi bi-check-circle"></i> {{ fraud_action['status'].upper() }}
-                    </span>
+                    {{ fraud_action['status'].upper() | format_badge("success", "check-circle") }}
                   {% elif fraud_action['status'].lower() == 'ko' %}
-                    <span class="badge rounded-pill text-bg-danger align-middle px-3 py-2">
-                      <i class="bi bi-exclamation-circle"></i> {{ fraud_action['status'].upper() }}
-                    </span>
+                    {{ fraud_action['status'].upper() | format_badge("danger", "exclamation-circle") }}
                   {% elif fraud_action['status'].lower() == 'suspicious' %}
-                    <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
-                      <i class="bi bi-shield-shaded"></i> {{ fraud_action['status'].upper() }}
-                    </span>
+                    {{ fraud_action['status'].upper() | format_badge("warning", "shield-shaded") }}
                   {% elif fraud_action['status'].lower() == 'redirected_to_dms' %}
-                    <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
-                      <i class="bi bi-person-circle"></i> {{ fraud_action['status'].upper() }}
-                    </span>
+                    {{ fraud_action['status'].upper() | format_badge("warning", "person-circle") }}
                   {% else %}
-                    <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
-                      <i class="bi bi-exclamation-circle"></i> {{ fraud_action['status'].upper() }}
-                    </span>
+                    {{ fraud_action['status'].upper() | format_badge("warning", "exclamation-circle") }}
                   {% endif %}
                 {% endif %}
               </td>
@@ -119,7 +109,7 @@
   <div class="card-body">
     <h5 class="card-title text-bold fs-2 m-3">
       Parcours d'inscription
-      <span class="badge rounded-pill text-bg-primary fs-6 align-middle mx-4">{{ tunnel.type.value | format_eligibility_value }}</span>
+      {{ tunnel.type.value | format_eligibility_value | format_badge("primary") }}
     </h5>
     <div class="card-body">
       <div class="row py-1"

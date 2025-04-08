@@ -15,9 +15,7 @@
         <div class="card-body">
           <div class="d-flex flex-fill align-items-center">
             <h2 class="card-title text-primary">{{ bank_account.label }}</h2>
-            <span class="fs-5 ps-4">
-              <span class="me-1 pb-1 badge rounded-pill text-bg-warning align-middle">Compte bancaire</span>
-            </span>
+            <span class="fs-5 ps-4">{{ "Compte bancaire" | format_badge("warning") }}</span>
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if edit_form %}
                 {% set edit_bank_account_aria_described_by_id = random_hash() %}

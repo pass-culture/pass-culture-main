@@ -1,62 +1,28 @@
-{% macro build_status_badge(object, new, pending, validated, rejected, deleted, closed) %}
-  {% if object.isNew %}
-    <span class="me-1 pb-1 badge rounded-pill text-bg-info">{{ new }}</span>
-  {% elif object.isPending %}
-    <span class="me-1 pb-1 badge rounded-pill text-bg-warning">{{ pending }}</span>
-  {% elif object.isValidated %}
-    <span class="me-1 pb-1 badge rounded-pill text-bg-success">{{ validated }}</span>
-  {% elif object.isRejected %}
-    <span class="me-1 pb-1 badge rounded-pill text-bg-danger">{{ rejected }}</span>
-  {% elif object.isDeleted %}
-    <span class="me-1 pb-1 badge rounded-pill text-bg-danger">{{ deleted }}</span>
-  {% elif object.isClosed %}
-    <span class="me-1 pb-1 badge rounded-pill text-bg-danger">{{ closed }}</span>
-  {% endif %}
-{% endmacro %}
 {% macro build_venue_badges(venue) %}
-  <span class="me-1 pb-1 badge rounded-pill text-bg-secondary align-middle">
+  {% call badges_container() %}
     {% if venue.isPermanent %}
-      Partenaire culturel permanent
+      {{ "Partenaire culturel permanent" | format_badge("primary") }}
     {% else %}
-      Partenaire culturel
+      {{ "Partenaire culturel" | format_badge("primary") }}
     {% endif %}
-  </span>
-  {% if venue.managingOfferer.isClosed %}
-    <span class="me-1 pb-1 badge rounded-pill text-bg-dark">
-      <i class="bi bi-x-circle"></i>
-      Fermé
-    </span>
-  {% endif %}
-  {% if not venue.managingOfferer.isActive %}
-    <span class="me-1 pb-1 badge rounded-pill text-bg-dark">
-      <i class="bi bi-x-circle"></i>
-      Suspendu
-    </span>
-  {% endif %}
-{% endmacro %}
-{% macro build_offerer_status_badge(offerer) %}
-  {{ build_status_badge(offerer, "Nouvelle", "En attente", "Validée", "Rejetée", "Supprimée", "Fermée") }}
+    {% if venue.managingOfferer.isClosed %}{{ "Fermé" | format_badge("danger") }}{% endif %}
+    {% if not venue.managingOfferer.isActive %}{{ "Suspendu" | format_badge("danger") }}{% endif %}
+  {% endcall %}
 {% endmacro %}
 {% macro build_offerer_badges(offerer) %}
-  <span class="me-1 pb-1 badge rounded-pill text-bg-secondary">Entité juridique</span>
-  {{ build_offerer_status_badge(offerer) }}
-  {% if not offerer.isActive %}
-    <span class="me-1 pb-1 badge rounded-pill text-bg-dark">
-      <i class="bi bi-x-circle"></i>
-      Suspendue
-    </span>
-  {% endif %}
-{% endmacro %}
-{% macro build_user_offerer_status_badge(user_offerer) %}
-  {{ build_status_badge(user_offerer, "Nouveau", "En attente", "Validé", "Rejeté", "Supprimé", "Fermé") }}
+  {% call badges_container() %}
+    {{ "Entité juridique" | format_badge("primary") }}
+    {{ offerer | format_offerer_status_badge }}
+    {% if not offerer.isActive %}{{ "Suspendue" | format_badge("danger") }}{% endif %}
+  {% endcall %}
 {% endmacro %}
 {% macro build_pro_user_status_badge(pro_user) %}
   {% if pro_user.proValidationStatus.value == "VALIDATED" %}
-    <span class="badge rounded-pill text-bg-success align-middle">Validé</span>
+    {{ "Validé" | format_badge("success")  }}
   {% elif pro_user.proValidationStatus.value == "PENDING" %}
-    <span class="badge rounded-pill text-bg-warning align-middle">En attente</span>
+    {{ "En attente" | format_badge("warning") }}
   {% elif pro_user.proValidationStatus.value == "NEW" %}
-    <span class="badge rounded-pill text-bg-info align-middle">Nouveau</span>
+    {{ "Nouveau" | format_badge("info") }}
   {% endif %}
 {% endmacro %}
 {% macro build_offer_offerer_fraud_badges(offerer) %}
@@ -67,4 +33,7 @@
 {% endmacro %}
 {% macro build_offer_venue_fraud_badges(venue) %}
   {% if has_permission("PRO_FRAUD_ACTIONS") %}{{ venue.confidenceLevel | format_confidence_level_badge }}{% endif %}
+{% endmacro %}
+{% macro badges_container() %}
+  <div class="d-inline-flex flex-wrap gap-2">{{ caller() }}</div>
 {% endmacro %}

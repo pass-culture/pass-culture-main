@@ -1,4 +1,3 @@
-{% from "components/badges.html" import build_user_offerer_status_badge, build_offerer_status_badge %}
 {% import "components/links.html" as links with context %}
 <table class="table table-hover my-4">
   <thead>
@@ -19,8 +18,8 @@
       <tr>
         <th scope="row"></th>
         <td>{{ user_offerer.offererId }}</td>
-        <td>{{ build_user_offerer_status_badge(user_offerer) }}</td>
-        <td>{{ build_offerer_status_badge(user_offerer.offerer) }}</td>
+        <td>{{ user_offerer | format_user_offerer_status_badge }}</td>
+        <td>{{ user_offerer.offerer | format_offerer_status_badge }}</td>
         <td class="text-break">{{ links.build_offerer_name_to_details_link(user_offerer.offerer) }}</td>
         <td>{{ links.build_siren_to_external_link(user_offerer.offerer) }}</td>
       </tr>

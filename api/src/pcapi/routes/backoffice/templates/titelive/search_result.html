@@ -77,7 +77,7 @@
                   <ul class="list-group list-group-flush">
                     {% if ineligibility_reason %}
                       <li class="list-group-item">
-                        <b>Inéligible pass Culture :</b> <span class="badge text-bg-danger shadow-sm">{{ ineligibility_reason }}</span>
+                        <b>Inéligible pass Culture :</b> {{ ineligibility_reason | format_badge("danger") }}
                       </li>
                     {% endif %}
                     <li class="list-group-item">
