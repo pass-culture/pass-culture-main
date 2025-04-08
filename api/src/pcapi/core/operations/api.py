@@ -93,6 +93,9 @@ def retrieve_special_event_from_typeform(event: models.SpecialEvent) -> None:
         update_form_title_from_typeform(event_id=event_id, event_title=event.title, form=form)
         questions = update_form_questions_from_typeform(event_id=event_id, form=form)
         download_responses_from_typeform(event_id=event_id, event_external_id=event_external_id, questions=questions)
+    except typeform.NotFoundException:
+        # form does no longer exist, ignore
+        pass
     except Exception:  # pylint: disable=broad-except
         logger.error(
             "An error happened while retrieving special event",
