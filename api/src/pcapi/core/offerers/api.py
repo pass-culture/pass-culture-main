@@ -2747,30 +2747,6 @@ def synchronize_accessibility_with_acceslibre(
     logger.info("Accessibility data synchronization with acceslibre complete successfully")
 
 
-def get_venues_close_to_public_with_accesibility_provider() -> list[models.Venue]:
-    return (
-        offerers_models.Venue.query.join(offerers_models.Venue.accessibilityProvider)
-        .filter(offerers_models.Venue.isOpenToPublic.is_(False))
-        .options(sa.orm.contains_eager(offerers_models.Venue.accessibilityProvider))
-        .all()
-    )
-
-
-def desynchronize_venues_close_to_public_with_accessibility_provider(dry_run: bool) -> None:
-    venues_to_desynchronize = get_venues_close_to_public_with_accesibility_provider()
-    for venue in venues_to_desynchronize:
-        db.session.delete(venue.accessibilityProvider)
-        if not dry_run:
-            try:
-                db.session.commit()
-            except sa.exc.SQLAlchemyError:
-                logger.exception("Could not desynchronize venue %d", venue.id)
-                db.session.rollback()
-        else:
-            db.session.rollback()
-    logger.info("Accessibility desynchronization for venues close to public complete successfully")
-
-
 def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool) -> None:
     """
     For venues in venue_ids list, we look for a match at acceslibre and synchronize the

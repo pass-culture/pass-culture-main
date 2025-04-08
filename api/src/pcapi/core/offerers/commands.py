@@ -172,12 +172,6 @@ def synchronize_accessibility_with_acceslibre(
     )
 
 
-@blueprint.cli.command("desynchronize_venues_close_to_public_accessibility_with_acceslibre")
-@click.option("--dry-run", type=bool, default=False)
-def desynchronize_venues_close_to_public_accessibility_with_acceslibre(dry_run: bool = False) -> None:
-    offerers_api.desynchronize_venues_close_to_public_with_accessibility_provider(dry_run=dry_run)
-
-
 @blueprint.cli.command("synchronize_venues_with_acceslibre")
 @click.argument("venue_ids", type=int, nargs=-1, required=True)
 @click.option("--dry-run", type=bool, default=True)
