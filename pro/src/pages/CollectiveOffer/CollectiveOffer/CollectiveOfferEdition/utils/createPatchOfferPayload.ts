@@ -1,6 +1,7 @@
 import { OfferContactFormEnum } from 'apiClient/adage'
 import {
   CollectiveLocationType,
+  DateRangeOnCreateModel,
   PatchCollectiveOfferBodyModel,
   PatchCollectiveOfferTemplateBodyModel,
 } from 'apiClient/v1'
@@ -168,21 +169,21 @@ export const createPatchOfferPayload = (
 
   const offerKeys = Object.keys(offer) as (keyof OfferEducationalFormValues)[]
 
-  const keysToOmmit = [
+  const keysToOmit = [
     'imageUrl',
     'imageCredit',
     'isTemplate',
     'addressAutocomplete',
   ]
   isCollectiveOaActive
-    ? keysToOmmit.push('eventAddress')
-    : keysToOmmit.push('location')
+    ? keysToOmit.push('eventAddress')
+    : keysToOmit.push('location')
 
   offerKeys.forEach((key) => {
     if (
       !isEqual(offer[key], initialValues[key]) &&
       !key.startsWith('search-') &&
-      !keysToOmmit.includes(key)
+      !keysToOmit.includes(key)
     ) {
       changedValues = serializer[key]?.(changedValues, offer) ?? {}
     }
@@ -195,7 +196,7 @@ export const createPatchOfferTemplatePayload = (
   initialValues: OfferEducationalFormValues,
   isCollectiveOaActive: boolean
 ): PatchCollectiveOfferTemplateBodyModel => {
-  const keysToOmmit: (keyof OfferEducationalFormValues)[] = [
+  const keysToOmit: (keyof OfferEducationalFormValues)[] = [
     'imageUrl',
     'imageCredit',
     'beginningDate',
@@ -209,8 +210,8 @@ export const createPatchOfferTemplatePayload = (
   ]
 
   isCollectiveOaActive
-    ? keysToOmmit.push('eventAddress')
-    : keysToOmmit.push('location')
+    ? keysToOmit.push('eventAddress')
+    : keysToOmit.push('location')
 
   let changedValues: PatchCollectiveOfferTemplateBodyModel = {}
 
@@ -218,7 +219,7 @@ export const createPatchOfferTemplatePayload = (
 
   offerKeys.forEach((key) => {
     if (
-      !keysToOmmit.includes(key) &&
+      !keysToOmit.includes(key) &&
       !isEqual(offer[key], initialValues[key]) &&
       !key.startsWith('search-')
     ) {
@@ -226,25 +227,59 @@ export const createPatchOfferTemplatePayload = (
     }
   })
 
-  changedValues.contactEmail =
-    (offer.contactOptions?.email && offer.email) || null
-  changedValues.contactPhone =
-    (offer.contactOptions?.phone && offer.phone) || null
-  changedValues.contactForm =
-    offer.contactOptions?.form && offer.contactFormType === 'form'
-      ? OfferContactFormEnum.FORM
-      : null
-  changedValues.contactUrl =
-    offer.contactOptions?.form && offer.contactFormType === 'url'
-      ? offer.contactUrl
-      : null
+  const newContactEmail = getEmail(offer)
+  const initialContactMail = getEmail(initialValues)
+  if (!isEqual(newContactEmail, initialContactMail)) {
+    changedValues.contactEmail = newContactEmail
+  }
 
-  changedValues.dates =
-    offer.datesType === 'specific_dates' &&
-    offer.beginningDate &&
-    offer.endingDate
-      ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
-      : null
+  const newContactPhone = getPhone(offer)
+  const initialContactPhone = getPhone(initialValues)
+  if (!isEqual(newContactPhone, initialContactPhone)) {
+    changedValues.contactPhone = newContactPhone
+  }
+
+  const newContactForm = getForm(offer)
+  const initialContactForm = getForm(initialValues)
+  if (!isEqual(newContactForm, initialContactForm)) {
+    changedValues.contactForm = newContactForm
+  }
+
+  const newContactUrl = getUrl(offer)
+  const initialContactUrl = getUrl(initialValues)
+  if (!isEqual(newContactUrl, initialContactUrl)) {
+    changedValues.contactUrl = newContactUrl
+  }
+
+  const newDates = getDates(offer)
+  const initialDates = getDates(initialValues)
+  if (!isEqual(newDates, initialDates)) {
+    changedValues.dates = newDates
+  }
 
   return changedValues
+}
+
+const getEmail = (offer: OfferEducationalFormValues): string | null => {
+  return (offer.contactOptions?.email && offer.email) || null
+}
+
+const getPhone = (offer: OfferEducationalFormValues): string | null => {
+  return (offer.contactOptions?.phone && offer.phone) || null
+}
+
+const getForm = (offer: OfferEducationalFormValues): OfferContactFormEnum | null => {
+  return offer.contactOptions?.form && offer.contactFormType === 'form' ? OfferContactFormEnum.FORM : null
+}
+
+const getUrl = (offer: OfferEducationalFormValues): string | null | undefined => {
+  return offer.contactOptions?.form && offer.contactFormType === 'url' ? offer.contactUrl : null
+}
+
+const getDates = (offer: OfferEducationalFormValues): DateRangeOnCreateModel | null => {
+  return offer.datesType === 'specific_dates' &&
+    offer.beginningDate &&
+    offer.endingDate
+    ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
+    : null
 }
