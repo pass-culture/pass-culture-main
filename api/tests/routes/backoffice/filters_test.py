@@ -48,6 +48,22 @@ class FormatRoleTest:
         result = filters.format_role(user.roles[0], user.deposits)
         assert result == expected
 
+    @pytest.mark.parametrize(
+        "age, deposit_type, expected",
+        [
+            (18, finance_models.DepositType.GRANT_18, "Ancien Pass 18 expiré"),
+            (15, finance_models.DepositType.GRANT_15_17, "Ancien Pass 15-17 expiré"),
+            (18, finance_models.DepositType.GRANT_17_18, "Pass 18 expiré"),
+            (17, finance_models.DepositType.GRANT_17_18, "Pass 17 expiré"),
+        ],
+    )
+    def test_ex_beneficiaries(self, age, deposit_type, expected):
+        user = users_factories.BeneficiaryFactory(age=age)
+        user.deposits[0].type = deposit_type
+        user.deposits[0].expirationDate = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        result = filters.format_role(user.roles[0], user.deposits)
+        assert result == expected
+
     def test_deposit_order(self):
         user = users_factories.BeneficiaryFactory(age=17)
         user.deposits[0].type = finance_models.DepositType.GRANT_17_18
