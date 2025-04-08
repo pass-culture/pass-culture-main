@@ -414,15 +414,24 @@ def test_public_api(client):
                 "BookingVenueResponse": {
                     "properties": {
                         "address": {"nullable": True, "title": "Address", "type": "string"},
+                        "bannerUrl": {
+                            "nullable": True,
+                            "title": "Bannerurl",
+                            "type": "string",
+                        },
                         "city": {"nullable": True, "title": "City", "type": "string"},
                         "coordinates": {"$ref": "#/components/schemas/Coordinates"},
                         "id": {"title": "Id", "type": "integer"},
+                        "isOpenToPublic": {
+                            "title": "Isopentopublic",
+                            "type": "boolean",
+                        },
                         "name": {"title": "Name", "type": "string"},
                         "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
                         "publicName": {"nullable": True, "title": "Publicname", "type": "string"},
                         "timezone": {"title": "Timezone", "type": "string"},
                     },
-                    "required": ["id", "name", "coordinates", "timezone"],
+                    "required": ["id", "name", "coordinates", "timezone", "isOpenToPublic"],
                     "title": "BookingVenueResponse",
                     "type": "object",
                 },
