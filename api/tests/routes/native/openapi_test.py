@@ -1029,6 +1029,22 @@ def test_public_api(client):
                     "title": "GetAvailableReactionsResponse",
                     "type": "object",
                 },
+                "GetRemindersResponse": {
+                    "properties": {
+                        "reminders": {
+                            "items": {
+                                "$ref": "#/components/schemas/ReminderResponse",
+                            },
+                            "title": "Reminders",
+                            "type": "array",
+                        },
+                    },
+                    "required": [
+                        "reminders",
+                    ],
+                    "title": "GetRemindersResponse",
+                    "type": "object",
+                },
                 "GoogleAccountRequest": {
                     "properties": {
                         "accountCreationToken": {"title": "Accountcreationtoken", "type": "string"},
@@ -1901,6 +1917,36 @@ def test_public_api(client):
                     "properties": {"accessToken": {"title": "Accesstoken", "type": "string"}},
                     "required": ["accessToken"],
                     "title": "RefreshResponse",
+                    "type": "object",
+                },
+                "ReminderOfferResponse": {
+                    "properties": {
+                        "id": {
+                            "title": "Id",
+                            "type": "integer",
+                        },
+                    },
+                    "required": [
+                        "id",
+                    ],
+                    "title": "ReminderOfferResponse",
+                    "type": "object",
+                },
+                "ReminderResponse": {
+                    "properties": {
+                        "id": {
+                            "title": "Id",
+                            "type": "integer",
+                        },
+                        "offer": {
+                            "$ref": "#/components/schemas/ReminderOfferResponse",
+                        },
+                    },
+                    "required": [
+                        "id",
+                        "offer",
+                    ],
+                    "title": "ReminderResponse",
                     "type": "object",
                 },
                 "ReportedOffer": {
@@ -3512,6 +3558,9 @@ def test_public_api(client):
                     "parameters": [],
                     "responses": {
                         "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/GetRemindersResponse"}}
+                            },
                             "description": "OK",
                         },
                         "403": {
@@ -3551,6 +3600,9 @@ def test_public_api(client):
                     },
                     "responses": {
                         "201": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ReminderResponse"}}
+                            },
                             "description": "Created",
                         },
                         "403": {
