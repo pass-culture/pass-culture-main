@@ -1,4 +1,5 @@
 import logging
+import math
 import os.path
 import pathlib
 import tempfile
@@ -71,3 +72,20 @@ def _to_wkt(geometry: fiona.Geometry, transformer: pyproj.Transformer) -> str:
         s = ", ".join(["(%s)" % _polygon(polygon) for polygon in geometry.coordinates])
         return f"MULTIPOLYGON ({s})"
     raise ValueError(f"Unsupported type of geometry: {geometry.type}")
+
+
+def compute_distance(first_point: models.Coordinates, second_point: models.Coordinates) -> float:
+    """
+    Spherical law of cosines with coordinates
+    Return the distance between two points in kilometers
+    """
+
+    earth_radius_km = 6371.01
+    first_lat = math.radians(first_point.latitude)
+    first_lon = math.radians(first_point.longitude)
+    second_lat = math.radians(second_point.latitude)
+    second_lon = math.radians(second_point.longitude)
+    return earth_radius_km * math.acos(
+        math.sin(first_lat) * math.sin(second_lat)
+        + math.cos(first_lat) * math.cos(second_lat) * math.cos(first_lon - second_lon)
+    )

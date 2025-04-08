@@ -37,6 +37,9 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         departementCode="56",
         postalCode="56000",
         city="Lorient",
+        street="30 boulevard Léon Blum",
+        latitude=47.75,
+        longitude=-3.37,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
     # eac_2
@@ -52,6 +55,9 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         departementCode="91",
         postalCode="91000",
         city="CORBEIL-ESSONNES",
+        street="10 rue Feray",
+        latitude=48.60,
+        longitude=2.48,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
         venueTypeCode=offerers_models.VenueTypeCode.LIBRARY,
     )
@@ -353,6 +359,9 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         departementCode="57",
         postalCode="57000",
         city="Lorient",
+        street="30 boulevard Léon Blum",
+        latitude=47.75,
+        longitude=-3.37,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
         pricing_point="self",
     )
@@ -367,6 +376,9 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         departementCode="57",
         postalCode="57000",
         city="Lorient",
+        street="30 boulevard Léon Blum",
+        latitude=47.75,
+        longitude=-3.37,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
         pricing_point="self",
     )
@@ -383,6 +395,9 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         departementCode="57",
         postalCode="57000",
         city="Lorient",
+        street="30 boulevard Léon Blum",
+        latitude=47.75,
+        longitude=-3.37,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
         pricing_point="self",
     )
@@ -397,6 +412,9 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         departementCode="33",
         postalCode="33000",
         city="Bordeaux",
+        street="10 rue Sainte-Colombe",
+        latitude=44.83,
+        longitude=-0.57,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
         pricing_point="self",
     )

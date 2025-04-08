@@ -459,6 +459,13 @@ def create_offers_base_list(
                 nationalProgram=next(national_program_iterator),
                 author=user_factory.ProFactory(email="eac_1_lieu@example.com"),
                 formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
+                # set the offer in school to fill the CLASSROOM adage playlist
+                offerVenue={
+                    "addressType": educational_models.OfferAddressType.SCHOOL,
+                    "venueId": None,
+                    "otherAddress": "",
+                },
+                locationType=educational_models.CollectiveLocationType.SCHOOL,
             )
             templates.append(template)
 

@@ -1,3 +1,4 @@
+import dataclasses
 from decimal import Decimal
 import typing
 
@@ -9,6 +10,12 @@ from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.date import METROPOLE_TIMEZONE
+
+
+@dataclasses.dataclass
+class Coordinates:
+    latitude: Decimal | float
+    longitude: Decimal | float
 
 
 class IrisFrance(PcObject, Base, Model):
