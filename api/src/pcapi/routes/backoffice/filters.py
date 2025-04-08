@@ -56,7 +56,7 @@ def format_state(is_active: bool) -> str:
     return "Suspendu"
 
 
-def _get_last_deposit_type(deposits: list[finance_models.Deposit] | None) -> finance_models.DepositType | None:
+def _get_last_deposit(deposits: list[finance_models.Deposit] | None) -> finance_models.Deposit | None:
     if not deposits:
         return None
     sorted_deposits = sorted(
@@ -64,7 +64,7 @@ def _get_last_deposit_type(deposits: list[finance_models.Deposit] | None) -> fin
         key=lambda d: d.expirationDate.timestamp() if d.expirationDate else 2**63,
         reverse=True,
     )
-    return sorted_deposits[0].type
+    return sorted_deposits[0]
 
 
 def format_role(role: str | None, deposits: list[finance_models.Deposit] | None = None) -> str:
@@ -79,13 +79,27 @@ def format_role(role: str | None, deposits: list[finance_models.Deposit] | None 
         case users_models.UserRole.TEST:
             return "Test"
         case users_models.UserRole.BENEFICIARY:
-            if _get_last_deposit_type(deposits) == finance_models.DepositType.GRANT_17_18:
-                return "Pass 18"
-            return "Ancien Pass 18"
+            last_deposit = _get_last_deposit(deposits)
+            if last_deposit and last_deposit.type == finance_models.DepositType.GRANT_17_18:
+                text = "Pass 18"
+            else:
+                text = "Ancien Pass 18"
+            if not last_deposit or (
+                last_deposit.expirationDate and last_deposit.expirationDate <= datetime.datetime.utcnow()
+            ):
+                text += " expiré"
+            return text
         case users_models.UserRole.UNDERAGE_BENEFICIARY:
-            if _get_last_deposit_type(deposits) == finance_models.DepositType.GRANT_17_18:
-                return "Pass 17"
-            return "Ancien Pass 15-17"
+            last_deposit = _get_last_deposit(deposits)
+            if last_deposit and last_deposit.type == finance_models.DepositType.GRANT_17_18:
+                text = "Pass 17"
+            else:
+                text = "Ancien Pass 15-17"
+            if not last_deposit or (
+                last_deposit.expirationDate and last_deposit.expirationDate <= datetime.datetime.utcnow()
+            ):
+                text += " expiré"
+            return text
         case _:
             return "Aucune information"
 
