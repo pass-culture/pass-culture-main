@@ -1,4 +1,5 @@
 import dataclasses
+import decimal
 import pathlib
 
 import pytest
@@ -61,3 +62,21 @@ def test_to_wkt_multipolygon():
         wkt
         == "MULTIPOLYGON (((40 40, 20 45, 45 30, 40 40)), ((20 35, 10 30, 10 10, 30 5, 45 20, 20 35), (30 20, 20 15, 20 25, 30 20)))"
     )
+
+
+def test_compute_distance():
+    first_point = models.Coordinates(latitude=40, longitude=40)
+    result = api.compute_distance(first_point, first_point)
+    assert result == pytest.approx(0, abs=0.01)
+
+    # float
+    first_point = models.Coordinates(latitude=48.87, longitude=2.33)
+    second_point = models.Coordinates(latitude=44.83, longitude=-0.57)
+    result = api.compute_distance(first_point, second_point)
+    assert result == pytest.approx(500, 1)  # Paris - Bordeaux
+
+    # Decimal
+    first_point = models.Coordinates(latitude=decimal.Decimal("48.87"), longitude=decimal.Decimal("2.33"))
+    second_point = models.Coordinates(latitude=decimal.Decimal("-17.77"), longitude=decimal.Decimal("-143.90"))
+    result = api.compute_distance(first_point, second_point)
+    assert result == pytest.approx(15_416, 1)  # Paris - Papeete

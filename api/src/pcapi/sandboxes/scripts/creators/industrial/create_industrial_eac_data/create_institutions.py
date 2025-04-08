@@ -38,6 +38,8 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
             name="METIER ROBERT DOISNEAU",
             city="CORBEIL-ESSONNES",
             postalCode="91100",
+            latitude=48.61,
+            longitude=2.46,
         ),
         educational_factories.EducationalInstitutionFactory(
             institutionId="0130569Y",
