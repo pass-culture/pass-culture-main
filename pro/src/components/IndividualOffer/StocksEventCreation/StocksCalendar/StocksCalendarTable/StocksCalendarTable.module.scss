@@ -2,6 +2,22 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_a11y.scss" as a11y;
 
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: rem.torem(8px);
+
+  &-icon {
+    width: rem.torem(88px);
+    color: var(--color-icon-subtle);
+  }
+}
+
+.bold {
+  @include fonts.body-accent;
+}
+
 .table {
   width: 100%;
   border-bottom: rem.torem(1px) solid var(--color-border-subtle);
