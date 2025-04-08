@@ -947,6 +947,20 @@ def is_id_at_provider_taken_by_another_offer_stock(
     return db.session.query(base_query.exists()).scalar()
 
 
+def lock_stocks_for_venue(venue_id: int) -> None:
+    """Lock all stocks for the given venue. This is used to prevent concurrent
+    modifications of stocks for the given venue.
+    """
+    (
+        db.session.query(models.Stock)
+        .join(models.Stock.offer)
+        .filter(models.Offer.venueId == venue_id)
+        .with_for_update()
+        .options(sa.orm.load_only(models.Stock.id))
+        .all()
+    )
+
+
 def get_and_lock_stock(stock_id: int) -> models.Stock:
     """Returns `stock_id` stock with a FOR UPDATE lock
     Raises StockDoesNotExist if no stock is found.
