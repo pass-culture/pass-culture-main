@@ -21,10 +21,11 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users import factories as user_factory
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data.create_collective_api_provider import (
+    create_collective_api_provider,
+)
 from pcapi.utils import db as db_utils
 from pcapi.utils.image_conversion import DO_NOT_CROP
-
-from .create_collective_api_provider import create_collective_api_provider
 
 
 class LocationOption(typing.TypedDict):
@@ -1044,10 +1045,11 @@ def create_booking_base_list(
 def create_domains(
     national_programs: typing.Sequence[educational_models.NationalProgram],
 ) -> list[educational_models.EducationalDomain]:
-    college_au_cinema = [np for np in national_programs if np.id == 1]
-    lyceens_apprentis_au_cinema = [np for np in national_programs if np.id == 3]
-    olympiade_culturelle = [np for np in national_programs if np.id == 4]
-    jeunes_en_librairie = [np for np in national_programs if np.id == 6]
+    college_au_cinema = [np for np in national_programs if np.name == "Collège au cinéma"]
+    lyceens_apprentis_au_cinema = [np for np in national_programs if np.name == "Lycéens et apprentis au cinéma"]
+    olympiade_culturelle = [np for np in national_programs if np.name == "Olympiade culturelle de PARIS 2024"]
+    jeunes_en_librairie = [np for np in national_programs if np.name == "Jeunes en librairie"]
+
     return [
         educational_factories.EducationalDomainFactory(
             name="Architecture", id=1, nationalPrograms=olympiade_culturelle
@@ -1099,11 +1101,10 @@ def create_domains(
 
 def create_national_programs() -> list[educational_models.NationalProgram]:
     return [
-        educational_factories.NationalProgramFactory(name="collège au cinéma", id=1),
-        educational_factories.NationalProgramFactory(name="Lycéens et apprentis au cinéma", id=3),
-        educational_factories.NationalProgramFactory(name="Olympiade culturelle de PARIS 2024", id=4, isActive=False),
-        educational_factories.NationalProgramFactory(name="Théâtre au collège", id=5),
-        educational_factories.NationalProgramFactory(name="Jeunes en librairie", id=6),
+        educational_factories.NationalProgramFactory(name="Collège au cinéma"),
+        educational_factories.NationalProgramFactory(name="Lycéens et apprentis au cinéma"),
+        educational_factories.NationalProgramFactory(name="Jeunes en librairie"),
+        educational_factories.NationalProgramFactory(name="Olympiade culturelle de PARIS 2024", isActive=False),
     ]
 
 
