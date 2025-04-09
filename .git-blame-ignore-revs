@@ -40,3 +40,6 @@ ccf11e339eec505edd959d650dd812b0afdcd2e6
 # fix + revert: fix timeout when using advanced search in individual offers
 bb14f634c65d872d3cabf543cd2c1ef43de49f2e
 f93b08250f940688e822f568b8ad39a0ac666fc5
+
+# chore: rename sqla imports to sa
+85048afe13240229055856c0a8c167c46b1e04e1
