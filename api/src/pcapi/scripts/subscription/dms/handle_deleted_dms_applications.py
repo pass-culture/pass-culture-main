@@ -59,6 +59,7 @@ def handle_deleted_dms_applications(procedure_number: int) -> None:
         fraud_models.BeneficiaryFraudCheck.thirdPartyId.in_(applications_to_mark_as_deleted),
         fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
         fraud_models.BeneficiaryFraudCheck.status != fraud_models.FraudCheckStatus.CANCELED,
+        fraud_models.BeneficiaryFraudCheck.status != fraud_models.FraudCheckStatus.OK,
     ).yield_per(100)
     updated_fraud_checks_count = 0
 
