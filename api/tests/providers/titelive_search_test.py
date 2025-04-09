@@ -1013,10 +1013,10 @@ class TiteliveBookSearchTest:
         product_with_verso_image = product_by_ean.get(ean_verso_image)
 
         assert product_without_verso_image is not None
-        assert product_without_verso_image.images.get("verso") is None
+        assert product_without_verso_image.images.get(offers_models.ImageType.VERSO.value) is None
 
         assert product_with_verso_image is not None
-        assert product_with_verso_image.images.get("verso") is not None
+        assert product_with_verso_image.images.get(offers_models.ImageType.VERSO.value) is not None
 
     def test_does_serialize_if_no_image(self, requests_mock, settings):
         self.setup_api_response_fixture(requests_mock, settings, fixtures.NO_IMAGE_IN_RESULT_FIXTURE)

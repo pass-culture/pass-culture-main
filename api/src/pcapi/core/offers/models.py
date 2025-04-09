@@ -128,9 +128,9 @@ class OfferExtraData(typing.TypedDict, total=False):
 
 
 class ImageType(enum.Enum):
-    POSTER = "POSTER"
-    RECTO = "RECTO"
-    VERSO = "VERSO"
+    POSTER = "poster"
+    RECTO = "recto"
+    VERSO = "verso"
 
 
 class ProductMediation(PcObject, Base, Model):
@@ -205,7 +205,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     @hybrid_property
     def images(self) -> dict[str, str | None]:
         if self.productMediations:
-            return {pm.imageType.value: pm.imageType for pm in self.productMediations if pm.imageType in ImageType}
+            return {pm.imageType.value: pm.url for pm in self.productMediations if pm.imageType in ImageType}
         return {ImageType.RECTO.value: self.thumbUrl}
 
 
