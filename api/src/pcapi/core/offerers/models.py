@@ -1281,9 +1281,9 @@ class OffererStats(PcObject, Base, Model):
 class OffererAddress(PcObject, Base, Model):
     __tablename__ = "offerer_address"
     label: str | None = sa.Column(sa.Text(), nullable=True)
-    addressId = sa.Column(sa.BigInteger, sa.ForeignKey("address.id"), index=True)
+    addressId = sa.Column(sa.BigInteger, sa.ForeignKey("address.id"), index=True, nullable=False)
     address: sa_orm.Mapped[geography_models.Address] = sa_orm.relationship("Address", foreign_keys=[addressId])
-    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True)
+    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
     offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
     venues: sa_orm.Mapped[typing.Sequence["Venue"]] = sa.orm.relationship("Venue", back_populates="offererAddress")
 
