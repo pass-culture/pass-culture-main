@@ -4,7 +4,7 @@ from functools import partial
 import logging
 
 from pydantic.v1.error_wrappers import ValidationError
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import adage_backends as adage_client
@@ -29,8 +29,6 @@ from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.routes.adage.v1.serialization import prebooking
-from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
-from pcapi.routes.adage.v1.serialization.prebooking import serialize_reimbursement_notification
 from pcapi.routes.serialization import collective_bookings_serialize
 
 
@@ -231,30 +229,30 @@ def get_collective_booking_by_id(booking_id: int) -> educational_models.Collecti
     collective_booking = (
         educational_models.CollectiveBooking.query.filter(educational_models.CollectiveBooking.id == booking_id)
         .options(
-            sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock).load_only(
+            sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock).load_only(
                 educational_models.CollectiveStock.price,
                 educational_models.CollectiveStock.startDatetime,
                 educational_models.CollectiveStock.endDatetime,
                 educational_models.CollectiveStock.numberOfTickets,
             ),
-            sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
+            sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
             .joinedload(educational_models.CollectiveStock.collectiveOffer)
             .load_only(educational_models.CollectiveOffer.offerVenue, educational_models.CollectiveOffer.students),
-            sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
+            sa_orm.joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
                 educational_models.EducationalRedactor.id,
                 educational_models.EducationalRedactor.email,
                 educational_models.EducationalRedactor.civility,
                 educational_models.EducationalRedactor.firstName,
                 educational_models.EducationalRedactor.lastName,
             ),
-            sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution),
-            sa.orm.joinedload(educational_models.CollectiveBooking.venue).load_only(
+            sa_orm.joinedload(educational_models.CollectiveBooking.educationalInstitution),
+            sa_orm.joinedload(educational_models.CollectiveBooking.venue).load_only(
                 offerers_models.Venue.postalCode,
                 offerers_models.Venue.managingOffererId,
             ),
         )
         .options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 educational_models.CollectiveBooking.id,
                 educational_models.CollectiveBooking.venueId,
                 educational_models.CollectiveBooking.offererId,
@@ -272,7 +270,7 @@ def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_
     collective_offer: educational_models.CollectiveOffer | None = (
         educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == offer_id)
         .options(
-            sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
                 educational_models.CollectiveStock.collectiveBookings
             )
         )
@@ -300,7 +298,7 @@ def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_
     on_commit(
         partial(
             notify_redactor_that_booking_has_been_cancelled,
-            serialize_collective_booking(cancelled_booking),
+            prebooking.serialize_collective_booking(cancelled_booking),
         ),
     )
     notify_pro_that_booking_has_been_cancelled(cancelled_booking)
@@ -448,7 +446,7 @@ def notify_reimburse_collective_booking(
     on_commit(
         partial(
             adage_client.notify_reimburse_collective_booking,
-            data=serialize_reimbursement_notification(
+            data=prebooking.serialize_reimbursement_notification(
                 collective_booking=collective_booking,
                 reason=reason,
                 value=value,

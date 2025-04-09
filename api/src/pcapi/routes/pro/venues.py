@@ -3,7 +3,7 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 import pydantic.v1 as pydantic_v1
-import sqlalchemy.orm as sqla_orm
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors.entreprise import sirene
@@ -33,17 +33,15 @@ from . import blueprint
 def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
     venue = (
         models.Venue.query.filter(models.Venue.id == venue_id)
-        .options(sqla_orm.joinedload(models.Venue.contact))
-        .options(sqla_orm.joinedload(models.Venue.managingOfferer))
+        .options(sa_orm.joinedload(models.Venue.contact))
+        .options(sa_orm.joinedload(models.Venue.managingOfferer))
         .options(
-            sqla_orm.selectinload(models.Venue.pricing_point_links).joinedload(
-                models.VenuePricingPointLink.pricingPoint
-            )
+            sa_orm.selectinload(models.Venue.pricing_point_links).joinedload(models.VenuePricingPointLink.pricingPoint)
         )
-        .options(sqla_orm.joinedload(models.Venue.collectiveDomains))
-        .options(sqla_orm.joinedload(models.Venue.collectiveDmsApplications))
-        .options(sqla_orm.joinedload(models.Venue.bankAccountLinks).joinedload(models.VenueBankAccountLink.bankAccount))
-        .options(sqla_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
+        .options(sa_orm.joinedload(models.Venue.collectiveDomains))
+        .options(sa_orm.joinedload(models.Venue.collectiveDmsApplications))
+        .options(sa_orm.joinedload(models.Venue.bankAccountLinks).joinedload(models.VenueBankAccountLink.bankAccount))
+        .options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
     ).one_or_none()
     if not venue:
         flask.abort(404)

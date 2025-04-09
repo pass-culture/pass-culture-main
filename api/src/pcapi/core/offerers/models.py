@@ -37,7 +37,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import Case
-import sqlalchemy.sql.functions as sqla_func
+import sqlalchemy.sql.functions as sa_func
 from sqlalchemy.sql.selectable import Exists
 from sqlalchemy.sql.sqltypes import LargeBinary
 
@@ -660,7 +660,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     @common_name.expression  # type: ignore[no-redef]
     def common_name(cls) -> str:  # pylint: disable=no-self-argument
-        return sqla_func.coalesce(func.nullif(cls.publicName, ""), cls.name)
+        return sa_func.coalesce(func.nullif(cls.publicName, ""), cls.name)
 
     @property
     def web_presence(self) -> str | None:

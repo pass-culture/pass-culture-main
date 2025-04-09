@@ -22,6 +22,7 @@ from markupsafe import Markup
 from markupsafe import escape
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+import sqlalchemy.orm as sa_orm
 from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 
@@ -562,7 +563,7 @@ def _get_offers_by_ids(
         .join(offers_models.Offer.venue)
         .join(offerers_models.Venue.managingOfferer)
         .options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 offers_models.Offer.id,
                 offers_models.Offer.name,
                 offers_models.Offer.subcategoryId,
@@ -574,37 +575,37 @@ def _get_offers_by_ids(
                 offers_models.Offer.isActive,
                 offers_models.Offer.extraData,
             ),
-            sa.orm.contains_eager(offers_models.Offer.venue).options(
-                sa.orm.load_only(
+            sa_orm.contains_eager(offers_models.Offer.venue).options(
+                sa_orm.load_only(
                     offerers_models.Venue.id,
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
                     offerers_models.Venue.departementCode,
                 ),
-                sa.orm.contains_eager(offerers_models.Venue.managingOfferer).options(
-                    sa.orm.load_only(
+                sa_orm.contains_eager(offerers_models.Venue.managingOfferer).options(
+                    sa_orm.load_only(
                         offerers_models.Offerer.id,
                         offerers_models.Offerer.name,
                         offerers_models.Offerer.siren,
                         offerers_models.Offerer.postalCode,
                     ),
-                    sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                    sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
                         offerers_models.OffererConfidenceRule.confidenceLevel
                     ),
-                    sa.orm.with_expression(
+                    sa_orm.with_expression(
                         offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
                     ),
                 ),
-                sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+                sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
                     offerers_models.OffererConfidenceRule.confidenceLevel
                 ),
             ),
-            sa.orm.joinedload(offers_models.Offer.author).load_only(
+            sa_orm.joinedload(offers_models.Offer.author).load_only(
                 users_models.User.id,
                 users_models.User.firstName,
                 users_models.User.lastName,
             ),
-            sa.orm.joinedload(offers_models.Offer.compliance),
+            sa_orm.joinedload(offers_models.Offer.compliance),
         )
     )
 
@@ -716,7 +717,7 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = (
         offers_models.Offer.query.filter_by(id=offer_id)
         .options(
-            sa.orm.joinedload(offers_models.Offer.criteria).load_only(
+            sa_orm.joinedload(offers_models.Offer.criteria).load_only(
                 criteria_models.Criterion.id, criteria_models.Criterion.name
             )
         )
@@ -809,7 +810,7 @@ def get_batch_edit_offer_form() -> utils.BackofficeResponse:
         offers = (
             offers_models.Offer.query.filter(offers_models.Offer.id.in_(form.object_ids_list))
             .options(
-                sa.orm.joinedload(offers_models.Offer.criteria).load_only(
+                sa_orm.joinedload(offers_models.Offer.criteria).load_only(
                     criteria_models.Criterion.id, criteria_models.Criterion.name
                 )
             )
@@ -841,7 +842,7 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 
     offers = (
         offers_models.Offer.query.filter(offers_models.Offer.id.in_(form.object_ids_list))
-        .options(sa.orm.joinedload(offers_models.Offer.criteria))
+        .options(sa_orm.joinedload(offers_models.Offer.criteria))
         .all()
     )
     criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
@@ -982,15 +983,15 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
         .outerjoin(offers_models.Offer.futureOffer)
         .filter(offers_models.Offer.id.in_(offer_ids))
         .options(
-            sa.orm.joinedload(offers_models.Offer.venue).load_only(
+            sa_orm.joinedload(offers_models.Offer.venue).load_only(
                 offerers_models.Venue.bookingEmail, offerers_models.Venue.name, offerers_models.Venue.publicName
             ),
-            sa.orm.joinedload(offers_models.Offer.offererAddress).options(
-                sa.orm.joinedload(offerers_models.OffererAddress.address),
-                sa.orm.selectinload(offerers_models.OffererAddress.venues),
+            sa_orm.joinedload(offers_models.Offer.offererAddress).options(
+                sa_orm.joinedload(offerers_models.OffererAddress.address),
+                sa_orm.selectinload(offerers_models.OffererAddress.venues),
             ),
         )
-        .options(sa.orm.contains_eager(offers_models.Offer.futureOffer))
+        .options(sa_orm.contains_eager(offers_models.Offer.futureOffer))
     ).all()
 
     for offer, max_price in offers:
@@ -1097,15 +1098,15 @@ def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> Of
 @utils.permission_required(perm_models.Permissions.READ_OFFERS)
 def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
     offer_query = offers_models.Offer.query.filter(offers_models.Offer.id == offer_id).options(
-        sa.orm.joinedload(offers_models.Offer.venue).options(
-            sa.orm.load_only(
+        sa_orm.joinedload(offers_models.Offer.venue).options(
+            sa_orm.load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.managingOffererId,
             ),
-            sa.orm.joinedload(offerers_models.Venue.managingOfferer).options(
-                sa.orm.load_only(
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer).options(
+                sa_orm.load_only(
                     offerers_models.Offerer.id,
                     offerers_models.Offerer.name,
                     offerers_models.Offerer.isActive,
@@ -1113,34 +1114,34 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
                     offerers_models.Offerer.siren,
                     offerers_models.Offerer.postalCode,
                 ),
-                sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
                     offerers_models.OffererConfidenceRule.confidenceLevel
                 ),
-                sa.orm.with_expression(
+                sa_orm.with_expression(
                     offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
                 ),
             ),
-            sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+            sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
                 offerers_models.OffererConfidenceRule.confidenceLevel
             ),
         ),
-        sa.orm.joinedload(offers_models.Offer.stocks)
+        sa_orm.joinedload(offers_models.Offer.stocks)
         .joinedload(offers_models.Stock.priceCategory)
         .load_only(offers_models.PriceCategory.price)
         .joinedload(offers_models.PriceCategory.priceCategoryLabel)
         .load_only(offers_models.PriceCategoryLabel.label),
-        sa.orm.joinedload(offers_models.Offer.lastValidationAuthor).load_only(
+        sa_orm.joinedload(offers_models.Offer.lastValidationAuthor).load_only(
             users_models.User.firstName, users_models.User.lastName
         ),
-        sa.orm.joinedload(offers_models.Offer.criteria),
-        sa.orm.joinedload(offers_models.Offer.flaggingValidationRules),
-        sa.orm.joinedload(offers_models.Offer.mediations),
-        sa.orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations),
-        sa.orm.joinedload(offers_models.Offer.lastProvider).load_only(providers_models.Provider.name),
-        sa.orm.joinedload(offers_models.Offer.offererAddress)
+        sa_orm.joinedload(offers_models.Offer.criteria),
+        sa_orm.joinedload(offers_models.Offer.flaggingValidationRules),
+        sa_orm.joinedload(offers_models.Offer.mediations),
+        sa_orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations),
+        sa_orm.joinedload(offers_models.Offer.lastProvider).load_only(providers_models.Provider.name),
+        sa_orm.joinedload(offers_models.Offer.offererAddress)
         .load_only(offerers_models.OffererAddress.label)
         .joinedload(offerers_models.OffererAddress.address),
-        sa.orm.joinedload(offers_models.Offer.compliance),
+        sa_orm.joinedload(offers_models.Offer.compliance),
     )
     offer = offer_query.one_or_none()
 
@@ -1277,7 +1278,7 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
             offers_models.Stock.id == stock_id,
         )
         .options(
-            sa.orm.joinedload(offers_models.Stock.priceCategory).joinedload(
+            sa_orm.joinedload(offers_models.Stock.priceCategory).joinedload(
                 offers_models.PriceCategory.priceCategoryLabel
             ),
         )
@@ -1478,7 +1479,7 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
 
     offer = (
         offers_models.Offer.query.filter_by(id=offer_id)
-        .options(sa.orm.joinedload(offers_models.Offer.venue))
+        .options(sa_orm.joinedload(offers_models.Offer.venue))
         .one_or_none()
     )
     if not offer:
@@ -1501,11 +1502,11 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
                 ),
             )
             .options(
-                sa.orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
+                sa_orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
                     offerers_models.VenuePricingPointLink.pricingPointId, offerers_models.VenuePricingPointLink.timespan
                 ),
             )
-            .options(sa.orm.joinedload(offerers_models.Venue.offererAddress))
+            .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
         ).one()
 
         offers_api.move_event_offer(offer, destination_venue, notify_beneficiary=form.notify_beneficiary.data)
@@ -1536,7 +1537,7 @@ def move_offer(offer_id: int) -> utils.BackofficeResponse:
 
     offer = (
         offers_models.Offer.query.filter_by(id=offer_id)
-        .options(sa.orm.joinedload(offers_models.Offer.venue))
+        .options(sa_orm.joinedload(offers_models.Offer.venue))
         .one_or_none()
     )
     if not offer:
@@ -1559,11 +1560,11 @@ def move_offer(offer_id: int) -> utils.BackofficeResponse:
                 ),
             )
             .options(
-                sa.orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
+                sa_orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
                     offerers_models.VenuePricingPointLink.pricingPointId, offerers_models.VenuePricingPointLink.timespan
                 ),
             )
-            .options(sa.orm.joinedload(offerers_models.Venue.offererAddress))
+            .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
         ).one()
 
         offers_api.move_offer(offer, destination_venue)

@@ -7,6 +7,7 @@ import typing
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.core import search
@@ -1214,11 +1215,11 @@ def move_collective_offer_venue(
             ),
         )
         .options(
-            sa.orm.load_only(educational_models.CollectiveBooking.status),
-            sa.orm.contains_eager(educational_models.CollectiveBooking.finance_events).load_only(
+            sa_orm.load_only(educational_models.CollectiveBooking.status),
+            sa_orm.contains_eager(educational_models.CollectiveBooking.finance_events).load_only(
                 finance_models.FinanceEvent.status
             ),
-            sa.orm.contains_eager(educational_models.CollectiveBooking.pricings).load_only(
+            sa_orm.contains_eager(educational_models.CollectiveBooking.pricings).load_only(
                 finance_models.Pricing.pricingPointId, finance_models.Pricing.status
             ),
         )

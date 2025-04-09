@@ -5,7 +5,7 @@ from flask_login import current_user
 from flask_login import login_required
 from pypdf import PdfReader
 from pypdf import PdfWriter
-import sqlalchemy.orm as sqla_orm
+import sqlalchemy.orm as sa_orm
 
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
@@ -36,7 +36,7 @@ def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance
         offerer_id=query.offererId,
     )
     invoices = invoices.options(
-        sqla_orm.joinedload(finance_models.Invoice.cashflows).joinedload(finance_models.Cashflow.batch)
+        sa_orm.joinedload(finance_models.Invoice.cashflows).joinedload(finance_models.Cashflow.batch)
     )
     invoices = invoices.order_by(finance_models.Invoice.date.desc())
 

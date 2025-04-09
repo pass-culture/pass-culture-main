@@ -3,9 +3,8 @@ import logging
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
-import sqlalchemy as sqla
-from sqlalchemy.orm import joinedload
-from sqlalchemy.orm import load_only
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
@@ -282,7 +281,7 @@ def post_draft_offer(
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     venue: offerers_models.Venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
-        .options(sqla.orm.joinedload(offerers_models.Venue.offererAddress))
+        .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
         .first_or_404()
     )
 
@@ -313,9 +312,9 @@ def patch_draft_offer(
     offer_id: int, body: offers_schemas.PatchDraftOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     offer = models.Offer.query.options(
-        sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
-        sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
-        sqla.orm.joinedload(models.Offer.product),
+        sa_orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
+        sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
+        sa_orm.joinedload(models.Offer.product),
     ).get(offer_id)
     if not offer:
         raise api_errors.ResourceNotFoundError
@@ -342,7 +341,7 @@ def patch_draft_offer(
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
     venue: offerers_models.Venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
-        .options(sqla.orm.joinedload(offerers_models.Venue.offererAddress))
+        .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
         .first_or_404()
     )
     offerer_address: offerers_models.OffererAddress | None = None
@@ -575,18 +574,16 @@ def _get_offer_for_price_categories_upsert(
     offer_id: int, price_category_edition_payload: list[offers_serialize.EditPriceCategoryModel]
 ) -> models.Offer | None:
     return (
-        models.Offer.query.outerjoin(models.Offer.stocks.and_(sqla.not_(models.Stock.isEventExpired)))
+        models.Offer.query.outerjoin(models.Offer.stocks.and_(sa.not_(models.Stock.isEventExpired)))
         .outerjoin(
             models.Offer.priceCategories.and_(
                 models.PriceCategory.id.in_([price_category.id for price_category in price_category_edition_payload])
             )
         )
         .outerjoin(models.PriceCategoryLabel, models.PriceCategory.priceCategoryLabel)
-        .options(sqla.orm.contains_eager(models.Offer.stocks))
+        .options(sa_orm.contains_eager(models.Offer.stocks))
         .options(
-            sqla.orm.contains_eager(models.Offer.priceCategories).contains_eager(
-                models.PriceCategory.priceCategoryLabel
-            )
+            sa_orm.contains_eager(models.Offer.priceCategories).contains_eager(models.PriceCategory.priceCategoryLabel)
         )
         .filter(models.Offer.id == offer_id)
         .one_or_none()
@@ -699,7 +696,7 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
     product = (
         models.Product.query.filter(models.Product.extraData["ean"].astext == ean)
         .options(
-            load_only(
+            sa_orm.load_only(
                 models.Product.id,
                 models.Product.extraData,
                 models.Product.gcuCompatibilityType,
@@ -709,14 +706,14 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
                 models.Product.thumbCount,
             )
         )
-        .options(joinedload(models.Product.productMediations))
+        .options(sa_orm.joinedload(models.Product.productMediations))
         .one_or_none()
     )
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
-        .options(load_only(offerers_models.Offerer.id))
+        .options(sa_orm.load_only(offerers_models.Offerer.id))
         .options(
-            joinedload(offerers_models.Offerer.managedVenues).load_only(
+            sa_orm.joinedload(offerers_models.Offerer.managedVenues).load_only(
                 offerers_models.Venue.id, offerers_models.Venue.isVirtual
             )
         )

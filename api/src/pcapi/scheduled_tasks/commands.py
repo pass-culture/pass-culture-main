@@ -3,7 +3,7 @@ import logging
 import typing
 
 import click
-import sqlalchemy.orm as sqla_orm
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 import pcapi.connectors.big_query.queries as big_query_queries
@@ -230,7 +230,7 @@ def send_today_events_notifications_overseas_france(utc_mean_offset: int, depart
 @log_cron_with_transaction
 def send_email_reminder_7_days_before_event() -> None:
     """Triggers email to be sent for events happening in 7 days"""
-    stocks = find_event_stocks_happening_in_x_days(7).options(sqla_orm.joinedload(Stock.offer).joinedload(Offer.venue))
+    stocks = find_event_stocks_happening_in_x_days(7).options(sa_orm.joinedload(Stock.offer).joinedload(Offer.venue))
     for stock in stocks:
         transactional_mails.send_reminder_7_days_before_event_to_pro(stock)
 

@@ -180,7 +180,7 @@ class Booking(PcObject, Base, Model):
     cancellationUser: sa_orm.Mapped["users_models.User | None"] = sa_orm.relationship(
         "User", foreign_keys=[cancellationUserId]
     )
-    # sa.Index avoids timeout when any user is deleted (because of foreign key)
+    # Index avoids timeout when any user is deleted (because of foreign key)
     sa.Index("ix_booking_cancellationUserId", cancellationUserId, postgresql_where=cancellationUserId.is_not(None))
 
     status: BookingStatus = sa.Column(sa.Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)

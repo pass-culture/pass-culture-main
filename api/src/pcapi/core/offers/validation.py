@@ -10,7 +10,7 @@ from PIL import UnidentifiedImageError
 from dateutil.relativedelta import relativedelta
 import flask
 from pydantic.v1 import HttpUrl
-import sqlalchemy as sqla
+import sqlalchemy as sa
 
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
@@ -828,7 +828,7 @@ def check_for_duplicated_price_categories(
     existing_price_category = (
         models.PriceCategory.query.filter_by(offerId=offer_id)
         .join(models.PriceCategoryLabel)
-        .filter(sqla.func.ROW(models.PriceCategoryLabel.label, models.PriceCategory.price).in_(new_labels_and_prices))
+        .filter(sa.func.ROW(models.PriceCategoryLabel.label, models.PriceCategory.price).in_(new_labels_and_prices))
         .first()
     )
 

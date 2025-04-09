@@ -2,7 +2,7 @@ import datetime
 from functools import partial
 import logging
 
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
@@ -36,7 +36,7 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> edu
 
     collective_offer = (
         educational_models.CollectiveOffer.query.filter_by(id=offer_id)
-        .options(sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock))
+        .options(sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock))
         .one()
     )
 

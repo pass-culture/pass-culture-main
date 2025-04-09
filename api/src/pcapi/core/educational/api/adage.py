@@ -7,6 +7,7 @@ import typing
 
 from pydantic.v1 import parse_obj_as
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
@@ -206,7 +207,7 @@ def synchronize_adage_ids_on_venues(debug: bool = False, since_date: datetime | 
                 offerers_models.Venue.id.in_(searched_ids),
             )
         )
-        .options(sa.orm.joinedload(offerers_models.Venue.adage_addresses))
+        .options(sa_orm.joinedload(offerers_models.Venue.adage_addresses))
         .all()
     )
 

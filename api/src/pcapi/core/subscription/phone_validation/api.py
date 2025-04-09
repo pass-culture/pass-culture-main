@@ -4,7 +4,7 @@ import time
 
 from flask import current_app as app
 from redis import Redis
-from sqlalchemy.orm import exc as sqla_exc
+from sqlalchemy.orm import exc as sa_exc
 
 from pcapi import settings
 from pcapi.core import token as token_utils
@@ -70,7 +70,7 @@ def _ensure_phone_number_unicity(
         user_with_same_validated_number = users_models.User.query.filter(
             users_models.User.phoneNumber == phone_number, users_models.User.is_phone_validated
         ).one_or_none()
-    except sqla_exc.MultipleResultsFound:
+    except sa_exc.MultipleResultsFound:
         logger.exception("Multiple users with the same validated phone number", extra={"phone_number": phone_number})
         raise exceptions.PhoneAlreadyExists()
 

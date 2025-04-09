@@ -10,6 +10,7 @@ from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.bookings import models as bookings_models
@@ -139,7 +140,7 @@ def _get_incidents(
             query = query.filter(sa.false)
 
     query = query.options(
-        sa.orm.contains_eager(finance_models.FinanceIncident.venue)
+        sa_orm.contains_eager(finance_models.FinanceIncident.venue)
         .load_only(offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.publicName)
         .joinedload(offerers_models.Venue.managingOfferer)
         .load_only(
@@ -148,16 +149,16 @@ def _get_incidents(
             offerers_models.Offerer.siren,
             offerers_models.Offerer.postalCode,
         ),
-        sa.orm.contains_eager(finance_models.FinanceIncident.booking_finance_incidents)
+        sa_orm.contains_eager(finance_models.FinanceIncident.booking_finance_incidents)
         .load_only(finance_models.BookingFinanceIncident.id, finance_models.BookingFinanceIncident.newTotalAmount)
         .contains_eager(finance_models.BookingFinanceIncident.booking)
         .load_only(bookings_models.Booking.amount, bookings_models.Booking.quantity),
-        sa.orm.contains_eager(finance_models.FinanceIncident.booking_finance_incidents)
+        sa_orm.contains_eager(finance_models.FinanceIncident.booking_finance_incidents)
         .contains_eager(finance_models.BookingFinanceIncident.collectiveBooking)
         .load_only(educational_models.CollectiveBooking.id)
         .contains_eager(educational_models.CollectiveBooking.collectiveStock)
         .load_only(educational_models.CollectiveStock.price),
-        sa.orm.contains_eager(finance_models.FinanceIncident.booking_finance_incidents)
+        sa_orm.contains_eager(finance_models.FinanceIncident.booking_finance_incidents)
         .joinedload(finance_models.BookingFinanceIncident.finance_events)  # because of: isClosed
         .load_only(finance_models.FinanceEvent.id),
     )
@@ -296,10 +297,10 @@ def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
         history_models.ActionHistory.query.filter_by(financeIncidentId=finance_incident_id)
         .order_by(history_models.ActionHistory.actionDate.desc())
         .options(
-            sa.orm.joinedload(history_models.ActionHistory.user).load_only(
+            sa_orm.joinedload(history_models.ActionHistory.user).load_only(
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName
             ),
-            sa.orm.joinedload(history_models.ActionHistory.authorUser).load_only(
+            sa_orm.joinedload(history_models.ActionHistory.authorUser).load_only(
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName
             ),
         )
@@ -324,17 +325,17 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
     if form.object_ids.data:
         bookings = (
             bookings_models.Booking.query.options(
-                sa.orm.joinedload(bookings_models.Booking.user).load_only(
+                sa_orm.joinedload(bookings_models.Booking.user).load_only(
                     users_models.User.firstName, users_models.User.lastName, users_models.User.email
                 ),
-                sa.orm.joinedload(bookings_models.Booking.pricings).load_only(
+                sa_orm.joinedload(bookings_models.Booking.pricings).load_only(
                     finance_models.Pricing.status, finance_models.Pricing.amount, finance_models.Pricing.creationDate
                 ),
-                sa.orm.joinedload(bookings_models.Booking.stock)
+                sa_orm.joinedload(bookings_models.Booking.stock)
                 .load_only(offers_models.Stock.id)
                 .joinedload(offers_models.Stock.offer)
                 .load_only(offers_models.Offer.name),
-                sa.orm.joinedload(bookings_models.Booking.venue)
+                sa_orm.joinedload(bookings_models.Booking.venue)
                 .load_only(offerers_models.Venue.publicName, offerers_models.Venue.name)
                 .joinedload(offerers_models.Venue.managingOfferer)
                 .load_only(offerers_models.Offerer.siren, offerers_models.Offerer.postalCode),
@@ -389,17 +390,17 @@ def get_individual_bookings_commercial_gesture_creation_form() -> utils.Backoffi
     if form.object_ids.data:
         bookings = (
             bookings_models.Booking.query.options(
-                sa.orm.joinedload(bookings_models.Booking.user).load_only(
+                sa_orm.joinedload(bookings_models.Booking.user).load_only(
                     users_models.User.firstName, users_models.User.lastName, users_models.User.email
                 ),
-                sa.orm.joinedload(bookings_models.Booking.pricings).load_only(
+                sa_orm.joinedload(bookings_models.Booking.pricings).load_only(
                     finance_models.Pricing.status, finance_models.Pricing.amount, finance_models.Pricing.creationDate
                 ),
-                sa.orm.joinedload(bookings_models.Booking.stock)
+                sa_orm.joinedload(bookings_models.Booking.stock)
                 .load_only(offers_models.Stock.id)
                 .joinedload(offers_models.Stock.offer)
                 .load_only(offers_models.Offer.name),
-                sa.orm.joinedload(bookings_models.Booking.venue)
+                sa_orm.joinedload(bookings_models.Booking.venue)
                 .load_only(offerers_models.Venue.publicName, offerers_models.Venue.name)
                 .joinedload(offerers_models.Venue.managingOfferer)
                 .load_only(offerers_models.Offerer.siren, offerers_models.Offerer.postalCode),
@@ -445,13 +446,13 @@ def get_collective_booking_overpayment_creation_form(collective_booking_id: int)
     collective_booking: educational_models.CollectiveBooking = (
         educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id)
         .options(
-            sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
+            sa_orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
                 educational_models.EducationalInstitution.name
             ),
-            sa.orm.joinedload(educational_models.CollectiveBooking.pricings).load_only(
+            sa_orm.joinedload(educational_models.CollectiveBooking.pricings).load_only(
                 finance_models.Pricing.amount,
             ),
-            sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
+            sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
             .load_only(
                 educational_models.CollectiveStock.startDatetime, educational_models.CollectiveStock.numberOfTickets
             )
@@ -498,13 +499,13 @@ def get_collective_booking_commercial_gesture_creation_form(collective_booking_i
     collective_booking: educational_models.CollectiveBooking = (
         educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id)
         .options(
-            sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
+            sa_orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
                 educational_models.EducationalInstitution.name
             ),
-            sa.orm.joinedload(educational_models.CollectiveBooking.pricings).load_only(
+            sa_orm.joinedload(educational_models.CollectiveBooking.pricings).load_only(
                 finance_models.Pricing.amount,
             ),
-            sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
+            sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
             .load_only(
                 educational_models.CollectiveStock.startDatetime, educational_models.CollectiveStock.numberOfTickets
             )
@@ -556,9 +557,9 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
 
     bookings = (
         bookings_models.Booking.query.options(
-            sa.orm.joinedload(bookings_models.Booking.pricings).load_only(finance_models.Pricing.amount),
-            sa.orm.joinedload(bookings_models.Booking.deposit).load_only(finance_models.Deposit.amount),
-            sa.orm.joinedload(bookings_models.Booking.deposit)
+            sa_orm.joinedload(bookings_models.Booking.pricings).load_only(finance_models.Pricing.amount),
+            sa_orm.joinedload(bookings_models.Booking.deposit).load_only(finance_models.Deposit.amount),
+            sa_orm.joinedload(bookings_models.Booking.deposit)
             .joinedload(finance_models.Deposit.user)
             .load_only(users_models.User.id),
         )
@@ -615,8 +616,8 @@ def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
 
     bookings = (
         bookings_models.Booking.query.options(
-            sa.orm.joinedload(bookings_models.Booking.pricings).load_only(finance_models.Pricing.amount),
-            sa.orm.joinedload(bookings_models.Booking.deposit)
+            sa_orm.joinedload(bookings_models.Booking.pricings).load_only(finance_models.Pricing.amount),
+            sa_orm.joinedload(bookings_models.Booking.deposit)
             .load_only(finance_models.Deposit.amount)
             .joinedload(finance_models.Deposit.user)
             .load_only(users_models.User.id),
@@ -1288,19 +1289,19 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
         .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)
         .options(
             # Venue info
-            sa.orm.joinedload(offerers_models.Venue, finance_models.FinanceIncident.venue)
+            sa_orm.joinedload(offerers_models.Venue, finance_models.FinanceIncident.venue)
             .load_only(offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.publicName)
             .options(
-                sa.orm.contains_eager(offerers_models.Venue.bankAccountLinks)
+                sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
                 .load_only(offerers_models.VenueBankAccountLink.timespan)
                 .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
                 .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
-                sa.orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
                     offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
                 ),
             ),
             # Booking incidents info
-            sa.orm.joinedload(
+            sa_orm.joinedload(
                 finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
             )
             .load_only(
@@ -1313,7 +1314,7 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
             )
             .options(
                 # Bookings info
-                sa.orm.joinedload(finance_models.BookingFinanceIncident.booking)
+                sa_orm.joinedload(finance_models.BookingFinanceIncident.booking)
                 .load_only(
                     bookings_models.Booking.id,
                     bookings_models.Booking.quantity,
@@ -1328,24 +1329,24 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                 )
                 .options(
                     # Booking venue info
-                    sa.orm.joinedload(bookings_models.Booking.venue).load_only(offerers_models.Venue.bookingEmail),
+                    sa_orm.joinedload(bookings_models.Booking.venue).load_only(offerers_models.Venue.bookingEmail),
                     # Booking user info
-                    sa.orm.joinedload(bookings_models.Booking.user).load_only(
+                    sa_orm.joinedload(bookings_models.Booking.user).load_only(
                         users_models.User.id,
                         users_models.User.firstName,
                         users_models.User.lastName,
                         users_models.User.email,
                     ),
                     # Booking deposit info
-                    sa.orm.joinedload(bookings_models.Booking.deposit).load_only(finance_models.Deposit.type),
+                    sa_orm.joinedload(bookings_models.Booking.deposit).load_only(finance_models.Deposit.type),
                     # Booking pricing info
-                    sa.orm.joinedload(bookings_models.Booking.pricings).load_only(
+                    sa_orm.joinedload(bookings_models.Booking.pricings).load_only(
                         finance_models.Pricing.amount,
                         finance_models.Pricing.status,
                         finance_models.Pricing.creationDate,
                     ),
                     # booking stock info
-                    sa.orm.joinedload(bookings_models.Booking.stock)
+                    sa_orm.joinedload(bookings_models.Booking.stock)
                     .load_only(
                         offers_models.Stock.beginningDatetime,
                         offers_models.Stock.price,
@@ -1359,7 +1360,7 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                     ),
                 ),
                 # Batch infos
-                sa.orm.joinedload(finance_models.BookingFinanceIncident.finance_events)
+                sa_orm.joinedload(finance_models.BookingFinanceIncident.finance_events)
                 .load_only(finance_models.FinanceEvent.id)
                 .joinedload(finance_models.FinanceEvent.pricings)
                 .load_only(finance_models.Pricing.id, finance_models.Pricing.amount, finance_models.Pricing.status)
@@ -1367,16 +1368,16 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                 .load_only(finance_models.Cashflow.id)
                 .options(
                     # Cashflow batch label
-                    sa.orm.joinedload(finance_models.Cashflow.batch).load_only(finance_models.CashflowBatch.label),
+                    sa_orm.joinedload(finance_models.Cashflow.batch).load_only(finance_models.CashflowBatch.label),
                     # Invoice url
-                    sa.orm.joinedload(finance_models.Cashflow.invoices).load_only(
+                    sa_orm.joinedload(finance_models.Cashflow.invoices).load_only(
                         finance_models.Invoice.token,
                         finance_models.Invoice.date,
                         finance_models.Invoice.reference,
                     ),
                 ),
                 # collective booking info
-                sa.orm.joinedload(finance_models.BookingFinanceIncident.collectiveBooking)
+                sa_orm.joinedload(finance_models.BookingFinanceIncident.collectiveBooking)
                 .load_only(
                     educational_models.CollectiveBooking.id,
                     educational_models.CollectiveBooking.status,
@@ -1387,16 +1388,16 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                 )
                 .options(
                     # collective booking educational redactor info
-                    sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
+                    sa_orm.joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
                         educational_models.EducationalRedactor.firstName,
                         educational_models.EducationalRedactor.lastName,
                     ),
                     # collective booking education institution info
-                    sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
+                    sa_orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
                         educational_models.EducationalInstitution.name
                     ),
                     # collective booking offer info
-                    sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
+                    sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
                     .load_only(
                         educational_models.CollectiveStock.startDatetime, educational_models.CollectiveStock.price
                     )
@@ -1406,7 +1407,7 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                         educational_models.CollectiveOffer.name,
                         educational_models.CollectiveOffer.formats,
                     ),
-                    sa.orm.joinedload(educational_models.CollectiveBooking.pricings).load_only(
+                    sa_orm.joinedload(educational_models.CollectiveBooking.pricings).load_only(
                         finance_models.Pricing.amount,
                     ),
                 ),

@@ -2,7 +2,7 @@ import datetime
 import logging
 
 from dateutil.relativedelta import relativedelta
-from sqlalchemy.orm import exc as sqla_exc
+from sqlalchemy.orm import exc as sa_exc
 
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_api
@@ -109,7 +109,7 @@ def _mark_cancel_dms_fraud_check(application_number: int, email: str) -> None:
             fraud_models.BeneficiaryFraudCheck.resultContent.is_not(None),
             fraud_models.BeneficiaryFraudCheck.resultContent.contains({"email": email}),
         ).one_or_none()
-    except sqla_exc.MultipleResultsFound:
+    except sa_exc.MultipleResultsFound:
         logger.exception("[DMS] Multiple fraud checks found for application %s", application_number)
         return
 

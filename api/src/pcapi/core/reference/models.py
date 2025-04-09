@@ -1,8 +1,8 @@
 import logging
 
 import psycopg2.errors
-import sqlalchemy as sqla
-import sqlalchemy.exc as sqla_exc
+import sqlalchemy as sa
+import sqlalchemy.exc as sa_exc
 
 from pcapi.core.logging import log_elapsed
 from pcapi.models import Base
@@ -42,23 +42,23 @@ class ReferenceScheme(Base, Model):
     was used twice.
     """
 
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
     # known names and prefixes are:
     #   - invoice.reference: F
     #   - debit_note.reference: A
-    name: str = sqla.Column(sqla.Text, nullable=False)
-    prefix: str = sqla.Column(sqla.Text, nullable=False)
-    year = sqla.Column(sqla.Integer)
-    nextNumber = sqla.Column(sqla.Integer, default=1)
-    numberPadding = sqla.Column(sqla.Integer, default=7)
+    name: str = sa.Column(sa.Text, nullable=False)
+    prefix: str = sa.Column(sa.Text, nullable=False)
+    year = sa.Column(sa.Integer)
+    nextNumber = sa.Column(sa.Integer, default=1)
+    numberPadding = sa.Column(sa.Integer, default=7)
 
     __table_args__ = (
-        sqla.UniqueConstraint(
+        sa.UniqueConstraint(
             "name",
             "year",
             name="unique_name_year",
         ),
-        sqla.UniqueConstraint(
+        sa.UniqueConstraint(
             "prefix",
             "year",
             name="unique_prefix_year",
@@ -93,7 +93,7 @@ class ReferenceScheme(Base, Model):
             self.query.with_for_update(nowait=True).filter_by(id=self.id).update(
                 {"nextNumber": ReferenceScheme.nextNumber + 1}
             )
-        except sqla_exc.OperationalError as exc:
+        except sa_exc.OperationalError as exc:
             if isinstance(exc.orig, psycopg2.errors.LockNotAvailable):
                 msg = f"Could not acquire lock on reference {self.id}"
                 raise exceptions.ReferenceIncrementWithoutLock(msg) from exc

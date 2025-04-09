@@ -11,6 +11,7 @@ from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
@@ -138,10 +139,10 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .outerjoin(offerers_models.UserOfferer, offerers_models.UserOfferer.id == creator_user_offerer_id_query)
         .outerjoin(offerers_models.UserOfferer.user)
         .options(
-            sa.orm.joinedload(offerers_models.Offerer.individualSubscription).load_only(
+            sa_orm.joinedload(offerers_models.Offerer.individualSubscription).load_only(
                 offerers_models.IndividualOffererSubscription.id
             ),
-            sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+            sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
                 offerers_models.OffererConfidenceRule.confidenceLevel
             ),
         )
@@ -312,7 +313,7 @@ def get_stats_data(offerer: offerers_models.Offerer) -> dict:
 def get_stats(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
-        .options(sa.orm.joinedload(offerers_models.Offerer.managedVenues).load_only(offerers_models.Venue.id))
+        .options(sa_orm.joinedload(offerers_models.Offerer.managedVenues).load_only(offerers_models.Venue.id))
         .one_or_none()
     )
     if not offerer:
@@ -329,7 +330,7 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
 def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
-        .options(sa.orm.joinedload(offerers_models.Offerer.managedVenues).load_only(offerers_models.Venue.id))
+        .options(sa_orm.joinedload(offerers_models.Offerer.managedVenues).load_only(offerers_models.Venue.id))
         .one_or_none()
     )
     if not offerer:
@@ -546,7 +547,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 def update_for_fraud(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
-        .options(sa.orm.joinedload(offerers_models.Offerer.confidenceRule))
+        .options(sa_orm.joinedload(offerers_models.Offerer.confidenceRule))
         .one_or_none()
     )
     if not offerer:
@@ -586,10 +587,10 @@ def get_history(offerer_id: int) -> utils.BackofficeResponse:
         .order_by(history_models.ActionHistory.actionDate.desc())
         .limit(max_actions_count)
         .options(
-            sa.orm.joinedload(history_models.ActionHistory.user).load_only(
+            sa_orm.joinedload(history_models.ActionHistory.user).load_only(
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName
             ),
-            sa.orm.joinedload(history_models.ActionHistory.authorUser).load_only(
+            sa_orm.joinedload(history_models.ActionHistory.authorUser).load_only(
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName
             ),
         )
@@ -619,7 +620,7 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
         .distinct()
     )
 
-    options = sa.orm.joinedload(offerers_models.OffererInvitation.user).load_only(
+    options = sa_orm.joinedload(offerers_models.OffererInvitation.user).load_only(
         users_models.User.id,
         users_models.User.firstName,
         users_models.User.lastName,
@@ -732,7 +733,7 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
 def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = (
         offerers_models.UserOfferer.query.options(
-            sa.orm.joinedload(offerers_models.UserOfferer.offerer).load_only(
+            sa_orm.joinedload(offerers_models.UserOfferer.offerer).load_only(
                 offerers_models.Offerer.id,
                 offerers_models.Offerer.name,
             ),
@@ -765,11 +766,11 @@ def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.Backoffi
         offerers_models.UserOfferer.query.join(offerers_models.UserOfferer.offerer)
         .join(offerers_models.UserOfferer.user)
         .options(
-            sa.orm.contains_eager(offerers_models.UserOfferer.offerer).load_only(
+            sa_orm.contains_eager(offerers_models.UserOfferer.offerer).load_only(
                 offerers_models.Offerer.id,
                 offerers_models.Offerer.name,
             ),
-            sa.orm.contains_eager(offerers_models.UserOfferer.user).load_only(users_models.User.email),
+            sa_orm.contains_eager(offerers_models.UserOfferer.user).load_only(users_models.User.email),
         )
         .filter(
             offerers_models.UserOfferer.offererId == offerer_id,
@@ -891,7 +892,7 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
             ),
         )
         .options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
@@ -902,17 +903,17 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
                 offerers_models.Venue.isVirtual,
                 offerers_models.Venue.managingOffererId,
             ),
-            sa.orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
+            sa_orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
                 educational_models.CollectiveDmsApplication.state,
                 educational_models.CollectiveDmsApplication.lastChangeDate,
                 educational_models.CollectiveDmsApplication.application,
                 educational_models.CollectiveDmsApplication.procedure,
             ),
-            sa.orm.joinedload(offerers_models.Venue.registration).load_only(
+            sa_orm.joinedload(offerers_models.Venue.registration).load_only(
                 offerers_models.VenueRegistration.target,
                 offerers_models.VenueRegistration.webPresence,
             ),
-            sa.orm.contains_eager(offerers_models.Venue.bankAccountLinks)
+            sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
             .joinedload(offerers_models.VenueBankAccountLink.bankAccount)
             .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
         )
@@ -979,7 +980,7 @@ def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse
             .scalar_subquery()
         )
         .options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 educational_models.CollectiveDmsApplication.siret,
                 educational_models.CollectiveDmsApplication.state,
                 educational_models.CollectiveDmsApplication.depositDate,
@@ -987,7 +988,7 @@ def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse
                 educational_models.CollectiveDmsApplication.application,
                 educational_models.CollectiveDmsApplication.procedure,
             ),
-            sa.orm.joinedload(educational_models.CollectiveDmsApplication.venue).load_only(
+            sa_orm.joinedload(educational_models.CollectiveDmsApplication.venue).load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
@@ -1008,7 +1009,7 @@ def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
     bank_accounts = (
         finance_models.BankAccount.query.filter_by(offererId=offerer_id)
         .options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 finance_models.BankAccount.id,
                 finance_models.BankAccount.label,
                 finance_models.BankAccount.status,
@@ -1054,16 +1055,16 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
         .options(
-            sa.orm.load_only(offerers_models.Offerer.id),
-            sa.orm.joinedload(offerers_models.Offerer.individualSubscription),
-            sa.orm.joinedload(offerers_models.Offerer.managedVenues)
+            sa_orm.load_only(offerers_models.Offerer.id),
+            sa_orm.joinedload(offerers_models.Offerer.individualSubscription),
+            sa_orm.joinedload(offerers_models.Offerer.managedVenues)
             .load_only(offerers_models.Venue.id)
             .joinedload(offerers_models.Venue.collectiveDmsApplications)
             .load_only(
                 educational_models.CollectiveDmsApplication.state,
                 educational_models.CollectiveDmsApplication.lastChangeDate,
             ),
-            sa.orm.joinedload(offerers_models.Offerer.tags),
+            sa_orm.joinedload(offerers_models.Offerer.tags),
         )
         .one_or_none()
     )
@@ -1119,10 +1120,10 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
 def create_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.options(
-            sa.orm.joinedload(offerers_models.Offerer.UserOfferers)
+            sa_orm.joinedload(offerers_models.Offerer.UserOfferers)
             .joinedload(offerers_models.UserOfferer.user)
             .load_only(users_models.User.email),
-            sa.orm.joinedload(offerers_models.Offerer.individualSubscription),
+            sa_orm.joinedload(offerers_models.Offerer.individualSubscription),
         )
         .filter(offerers_models.Offerer.id == offerer_id)
         .one_or_none()
@@ -1153,7 +1154,7 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
         .options(
-            sa.orm.joinedload(offerers_models.Offerer.individualSubscription).load_only(
+            sa_orm.joinedload(offerers_models.Offerer.individualSubscription).load_only(
                 offerers_models.IndividualOffererSubscription.id
             )
         )

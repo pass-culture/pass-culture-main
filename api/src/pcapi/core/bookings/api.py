@@ -6,23 +6,14 @@ import typing
 
 from flask import current_app
 import sqlalchemy as sa
-from sqlalchemy.orm import joinedload
+import sqlalchemy.orm as sa_orm
 
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.core import search
 from pcapi.core.achievements import api as achievements_api
-from pcapi.core.bookings import exceptions as bookings_exceptions
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingCancellationReasons
-from pcapi.core.bookings.models import BookingRecreditType
-from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.models import BookingValidationAuthorType
-from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.bookings.repository import generate_booking_token
+from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import utils as educational_utils
-from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.external import batch
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
@@ -36,21 +27,15 @@ import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.offerers.models import OffererAddress
-from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import PriceCategory
-from pcapi.core.offers.models import PriceCategoryLabel
-from pcapi.core.offers.models import Product
-from pcapi.core.offers.models import Stock
 import pcapi.core.offers.validation as offers_validation
 import pcapi.core.providers.repository as providers_repository
-from pcapi.core.users.constants import SuspensionReason
-from pcapi.core.users.models import User
+from pcapi.core.users import constants as users_constants
+from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import get_and_lock_user
 from pcapi.core.users.utils import get_age_at_date
 from pcapi.models import db
@@ -70,19 +55,18 @@ from pcapi.workers import user_emails_job
 
 from . import constants
 from . import exceptions
+from . import models
 from . import utils
 from . import validation
-from .exceptions import BookingIsAlreadyCancelled
-from .exceptions import BookingIsAlreadyUsed
 
 
 logger = logging.getLogger(__name__)
 
 
-def _is_ended_booking(booking: Booking) -> bool:
+def _is_ended_booking(booking: models.Booking) -> bool:
     if (
         booking.stock.beginningDatetime
-        and booking.status != BookingStatus.CANCELLED
+        and booking.status != models.BookingStatus.CANCELLED
         and booking.stock.beginningDatetime >= datetime.datetime.utcnow()
     ):
         # consider future events as "ongoing" even if they are used
@@ -96,11 +80,11 @@ def _is_ended_booking(booking: Booking) -> bool:
     return (
         not booking.stock.offer.isPermanent
         if booking.is_used_or_reimbursed
-        else booking.status == BookingStatus.CANCELLED
+        else booking.status == models.BookingStatus.CANCELLED
     )
 
 
-def is_booking_by_18_user(booking: Booking) -> bool:
+def is_booking_by_18_user(booking: models.Booking) -> bool:
     if not booking.deposit:
         return False
     if booking.deposit.type == finance_models.DepositType.GRANT_18:
@@ -110,77 +94,88 @@ def is_booking_by_18_user(booking: Booking) -> bool:
     return False
 
 
-def get_individual_bookings(user: User) -> list[Booking]:
+def get_individual_bookings(user: users_models.User) -> list[models.Booking]:
     """
     Get all bookings for a user, with all the data needed for the bookings page
     including the offer and venue data.
     """
     return (
-        Booking.query.filter_by(userId=user.id)
-        .options(joinedload(Booking.stock).load_only(Stock.id, Stock.beginningDatetime, Stock.price, Stock.features))
+        models.Booking.query.filter_by(userId=user.id)
         .options(
-            joinedload(Booking.stock)
-            .joinedload(Stock.offer)
-            .load_only(
-                Offer.bookingContact,
-                Offer.name,
-                Offer.url,
-                Offer.subcategoryId,
-                Offer.withdrawalDetails,
-                Offer.withdrawalType,
-                Offer.withdrawalDelay,
-                Offer.extraData,
+            sa_orm.joinedload(models.Booking.stock).load_only(
+                offers_models.Stock.id,
+                offers_models.Stock.beginningDatetime,
+                offers_models.Stock.price,
+                offers_models.Stock.features,
             )
-            .joinedload(Offer.product)
+        )
+        .options(
+            sa_orm.joinedload(models.Booking.stock)
+            .joinedload(offers_models.Stock.offer)
             .load_only(
-                Product.id,
-                Product.thumbCount,
+                offers_models.Offer.bookingContact,
+                offers_models.Offer.name,
+                offers_models.Offer.url,
+                offers_models.Offer.subcategoryId,
+                offers_models.Offer.withdrawalDetails,
+                offers_models.Offer.withdrawalType,
+                offers_models.Offer.withdrawalDelay,
+                offers_models.Offer.extraData,
             )
-            .joinedload(Product.productMediations)
-        )
-        .options(
-            joinedload(Booking.stock)
-            .joinedload(Stock.priceCategory)
-            .joinedload(PriceCategory.priceCategoryLabel)
-            .load_only(PriceCategoryLabel.label)
-        )
-        .options(
-            joinedload(Booking.stock)
-            .joinedload(Stock.offer)
-            .joinedload(Offer.venue)
+            .joinedload(offers_models.Offer.product)
             .load_only(
-                Venue.name,
-                Venue.street,
-                Venue.postalCode,
-                Venue.city,
-                Venue.latitude,
-                Venue.longitude,
-                Venue.publicName,
-                Venue.timezone,
+                offers_models.Product.id,
+                offers_models.Product.thumbCount,
             )
-            .joinedload(Venue.offererAddress)
-            .joinedload(OffererAddress.address)
+            .joinedload(offers_models.Product.productMediations)
         )
-        .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.mediations))
         .options(
-            joinedload(Booking.stock)
-            .load_only(Stock.offerId)
-            .joinedload(Stock.offer)
-            .load_only(Offer.offererAddressId)
-            .joinedload(Offer.offererAddress)
-            .load_only(OffererAddress.addressId, OffererAddress.label)
-            .joinedload(OffererAddress.address)
+            sa_orm.joinedload(models.Booking.stock)
+            .joinedload(offers_models.Stock.priceCategory)
+            .joinedload(offers_models.PriceCategory.priceCategoryLabel)
+            .load_only(offers_models.PriceCategoryLabel.label)
         )
-        .options(joinedload(Booking.activationCode))
-        .options(joinedload(Booking.externalBookings))
-        .options(joinedload(Booking.deposit).load_only(finance_models.Deposit.type))
-        .options(joinedload(Booking.user).joinedload(User.reactions))
+        .options(
+            sa_orm.joinedload(models.Booking.stock)
+            .joinedload(offers_models.Stock.offer)
+            .joinedload(offers_models.Offer.venue)
+            .load_only(
+                offerers_models.Venue.name,
+                offerers_models.Venue.street,
+                offerers_models.Venue.postalCode,
+                offerers_models.Venue.city,
+                offerers_models.Venue.latitude,
+                offerers_models.Venue.longitude,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.timezone,
+            )
+            .joinedload(offerers_models.Venue.offererAddress)
+            .joinedload(offerers_models.OffererAddress.address)
+        )
+        .options(
+            sa_orm.joinedload(models.Booking.stock)
+            .joinedload(offers_models.Stock.offer)
+            .joinedload(offers_models.Offer.mediations)
+        )
+        .options(
+            sa_orm.joinedload(models.Booking.stock)
+            .load_only(offers_models.Stock.offerId)
+            .joinedload(offers_models.Stock.offer)
+            .load_only(offers_models.Offer.offererAddressId)
+            .joinedload(offers_models.Offer.offererAddress)
+            .load_only(offerers_models.OffererAddress.addressId, offerers_models.OffererAddress.label)
+            .joinedload(offerers_models.OffererAddress.address)
+        )
+        .options(sa_orm.joinedload(models.Booking.activationCode))
+        .options(sa_orm.joinedload(models.Booking.externalBookings))
+        .options(sa_orm.joinedload(models.Booking.deposit).load_only(finance_models.Deposit.type))
+        .options(sa_orm.joinedload(models.Booking.user).joinedload(users_models.User.reactions))
     ).all()
 
 
 def classify_and_sort_bookings(
-    individual_bookings: list[Booking],
-) -> tuple[list[Booking], list[Booking]]:
+    individual_bookings: list[models.Booking],
+) -> tuple[list[models.Booking], list[models.Booking]]:
     """
     Classify bookings between ended and ongoing bookings
     """
@@ -210,10 +205,10 @@ def classify_and_sort_bookings(
 
 
 def _book_offer(
-    beneficiary: User,
+    beneficiary: users_models.User,
     stock_id: int,
     quantity: int,
-) -> Booking:
+) -> models.Booking:
     """
     Return a booking or raise an exception if it's not possible.
     Update a user's credit information on Batch.
@@ -238,7 +233,7 @@ def _book_offer(
         if is_activation_code_applicable:
             validation.check_activation_code_available(stock)
 
-        booking = Booking(
+        booking = models.Booking(
             userId=beneficiary.id,
             stockId=stock.id,
             amount=stock.price,
@@ -249,7 +244,7 @@ def _book_offer(
             priceCategoryLabel=(
                 stock.priceCategory.priceCategoryLabel.label if getattr(stock, "priceCategory") else None  # type: ignore[union-attr]
             ),
-            status=BookingStatus.CONFIRMED,
+            status=models.BookingStatus.CONFIRMED,
             depositId=(
                 beneficiary.deposit.id if (beneficiary.has_active_deposit and beneficiary.deposit is not None) else None
             ),
@@ -262,15 +257,15 @@ def _book_offer(
         if beneficiary.deposit is not None and beneficiary.deposit_type == finance_models.DepositType.GRANT_17_18:
             recredit_types = [recredit.recreditType for recredit in beneficiary.deposit.recredits]
             if finance_models.RecreditType.RECREDIT_18 in recredit_types:
-                booking.usedRecreditType = BookingRecreditType.RECREDIT_18
+                booking.usedRecreditType = models.BookingRecreditType.RECREDIT_18
             elif finance_models.RecreditType.RECREDIT_17 in recredit_types:
-                booking.usedRecreditType = BookingRecreditType.RECREDIT_17
+                booking.usedRecreditType = models.BookingRecreditType.RECREDIT_17
 
         if is_activation_code_applicable:
             booking.activationCode = offers_repository.get_available_activation_code(stock)
-            booking.mark_as_used(BookingValidationAuthorType.AUTO)
+            booking.mark_as_used(models.BookingValidationAuthorType.AUTO)
         if stock.is_automatically_used:
-            booking.mark_as_used(BookingValidationAuthorType.AUTO)
+            booking.mark_as_used(models.BookingValidationAuthorType.AUTO)
 
         is_cinema_external_ticket_applicable = providers_repository.is_cinema_external_ticket_applicable(stock.offer)
 
@@ -283,7 +278,7 @@ def _book_offer(
                 beneficiary=beneficiary,
             )
             booking.externalBookings = [
-                ExternalBooking(
+                models.ExternalBooking(
                     barcode=ticket.barcode,
                     seat=ticket.seat_number,
                     additional_information=ticket.additional_information,
@@ -294,7 +289,7 @@ def _book_offer(
         if stock.offer.isEventLinkedToTicketingService:
             tickets, remaining_quantity = external_bookings_api.book_event_ticket(booking, stock, beneficiary)
             booking.externalBookings = [
-                ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets
+                models.ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets
             ]
             if remaining_quantity is None:
                 stock.quantity = None
@@ -315,7 +310,7 @@ def _book_offer(
         db.session.add_all((booking, stock))
         db.session.flush()  # to setup relations on `booking` for `add_event()` below.
 
-        if booking.status == BookingStatus.USED:
+        if booking.status == models.BookingStatus.USED:
             finance_api.add_event(
                 finance_models.FinanceEventMotive.BOOKING_USED,
                 booking=booking,
@@ -325,10 +320,10 @@ def _book_offer(
 
 
 def book_offer(
-    beneficiary: User,
+    beneficiary: users_models.User,
     stock_id: int,
     quantity: int,
-) -> Booking:
+) -> models.Booking:
     """
     Return a booking or raise an exception if it's not possible.
     Update a user's credit information on Batch.
@@ -336,11 +331,13 @@ def book_offer(
     stock = (
         offers_models.Stock.query.filter_by(id=stock_id)
         .options(
-            joinedload(Stock.offer)
-            .joinedload(Offer.venue)
-            .joinedload(Venue.offererAddress)
-            .joinedload(OffererAddress.address),
-            joinedload(Stock.offer).joinedload(Offer.offererAddress).joinedload(OffererAddress.address),
+            sa_orm.joinedload(offers_models.Stock.offer)
+            .joinedload(offers_models.Offer.venue)
+            .joinedload(offerers_models.Venue.offererAddress)
+            .joinedload(offerers_models.OffererAddress.address),
+            sa_orm.joinedload(offers_models.Stock.offer)
+            .joinedload(offers_models.Offer.offererAddress)
+            .joinedload(offerers_models.OffererAddress.address),
         )
         .one_or_none()
     )
@@ -348,7 +345,7 @@ def book_offer(
         raise offers_exceptions.StockDoesNotExist()
 
     first_venue_booking = not db.session.query(
-        Booking.query.filter(Booking.venueId == stock.offer.venueId).exists()
+        models.Booking.query.filter(models.Booking.venueId == stock.offer.venueId).exists()
     ).scalar()
 
     try:
@@ -409,18 +406,18 @@ def book_offer(
     return booking
 
 
-def cancel_booking_for_finance_incident(booking: Booking) -> None:
+def cancel_booking_for_finance_incident(booking: models.Booking) -> None:
     try:
         _execute_cancel_booking(
             booking=booking,
-            reason=BookingCancellationReasons.FINANCE_INCIDENT,
+            reason=models.BookingCancellationReasons.FINANCE_INCIDENT,
             raise_if_error=True,
             cancel_related_finance_event=False,
             cancel_even_if_reimbursed=True,
         )
     except external_bookings_exceptions.ExternalBookingAlreadyCancelledError as error:
         booking.cancel_booking(
-            reason=BookingCancellationReasons.FINANCE_INCIDENT,
+            reason=models.BookingCancellationReasons.FINANCE_INCIDENT,
             cancel_even_if_reimbursed=True,
         )
         if error.remainingQuantity is None:
@@ -432,7 +429,7 @@ def cancel_booking_for_finance_incident(booking: Booking) -> None:
         "Booking has been cancelled",
         extra={
             "booking_id": booking.id,
-            "reason": str(BookingCancellationReasons.FINANCE_INCIDENT),
+            "reason": str(models.BookingCancellationReasons.FINANCE_INCIDENT),
             "booking_token": booking.token,
             "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
         },
@@ -449,8 +446,8 @@ def cancel_booking_for_finance_incident(booking: Booking) -> None:
 
 
 def _cancel_booking(
-    booking: Booking,
-    reason: BookingCancellationReasons,
+    booking: models.Booking,
+    reason: models.BookingCancellationReasons,
     *,
     cancel_even_if_used: bool = False,
     raise_if_error: bool = False,
@@ -485,12 +482,14 @@ def _cancel_booking(
     # After UPDATE query, objet is refreshed when accessed.
     # Force refresh with joinedload to avoid N+1 queries below.
     booking = (
-        Booking.query.filter_by(id=booking.id)
+        models.Booking.query.filter_by(id=booking.id)
         .options(
-            sa.orm.joinedload(Booking.externalBookings),
-            sa.orm.joinedload(Booking.stock, innerjoin=True).joinedload(Stock.offer, innerjoin=True),
-            sa.orm.joinedload(Booking.user, innerjoin=True)
-            .selectinload(User.deposits)
+            sa_orm.joinedload(models.Booking.externalBookings),
+            sa_orm.joinedload(models.Booking.stock, innerjoin=True).joinedload(
+                offers_models.Stock.offer, innerjoin=True
+            ),
+            sa_orm.joinedload(models.Booking.user, innerjoin=True)
+            .selectinload(users_models.User.deposits)
             .selectinload(finance_models.Deposit.recredits),
         )
         .one()
@@ -522,8 +521,8 @@ def _cancel_booking(
 
 
 def _execute_cancel_booking(
-    booking: Booking,
-    reason: BookingCancellationReasons,
+    booking: models.Booking,
+    reason: models.BookingCancellationReasons,
     *,
     cancel_even_if_used: bool = False,
     cancel_even_if_reimbursed: bool = False,
@@ -559,8 +558,8 @@ def _execute_cancel_booking(
                 if not one_side_cancellation and booking.isExternal:
                     _cancel_external_booking(booking, stock)
             except (
-                BookingIsAlreadyUsed,
-                BookingIsAlreadyCancelled,
+                exceptions.BookingIsAlreadyUsed,
+                exceptions.BookingIsAlreadyCancelled,
                 finance_exceptions.NonCancellablePricingError,
             ) as e:
                 if raise_if_error:
@@ -586,7 +585,7 @@ def _execute_cancel_booking(
     return True
 
 
-def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
+def _cancel_external_booking(booking: models.Booking, stock: offers_models.Stock) -> None:
     offer = stock.offer
     barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
 
@@ -604,23 +603,23 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
 
 def _cancel_bookings_from_stock(
     stock: offers_models.Stock,
-    reason: BookingCancellationReasons,
+    reason: models.BookingCancellationReasons,
     one_side_cancellation: bool = False,
     author_id: int | None = None,
-) -> list[Booking]:
+) -> list[models.Booking]:
     """
     Cancel multiple bookings and update the users' credit information on Batch.
     Note that this will not reindex the stock.offer in Algolia
     """
-    cancelled_bookings: list[Booking] = []
+    cancelled_bookings: list[models.Booking] = []
     for booking in stock.bookings:
         # Do not make several SQL queries per booking then rollback to savepoint for those which cannot be cancelled.
         # This optimization could avoid timeout in the backoffice when an EAN is rejected with many past bookings.
-        if booking.status in (BookingStatus.REIMBURSED, BookingStatus.CANCELLED):
+        if booking.status in (models.BookingStatus.REIMBURSED, models.BookingStatus.CANCELLED):
             continue
 
         cancel_even_if_used = stock.offer.isEvent
-        if booking.status == BookingStatus.USED and not cancel_even_if_used:
+        if booking.status == models.BookingStatus.USED and not cancel_even_if_used:
             continue
 
         if _cancel_booking(
@@ -635,17 +634,17 @@ def _cancel_bookings_from_stock(
     return cancelled_bookings
 
 
-def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
+def cancel_booking_by_beneficiary(user: users_models.User, booking: models.Booking) -> None:
     if not user.is_beneficiary:
         raise RuntimeError("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s" % user)
     validation.check_beneficiary_can_cancel_booking(user, booking)
-    _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY, raise_if_error=True)
+    _cancel_booking(booking, models.BookingCancellationReasons.BENEFICIARY, raise_if_error=True)
     user_emails_job.send_booking_cancellation_emails_to_user_and_offerer_job.delay(booking.id)
 
 
-def cancel_booking_by_offerer(booking: Booking) -> None:
+def cancel_booking_by_offerer(booking: models.Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
-    _cancel_booking(booking, BookingCancellationReasons.OFFERER, raise_if_error=True)
+    _cancel_booking(booking, models.BookingCancellationReasons.OFFERER, raise_if_error=True)
     if not FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION.is_active():
         push_notification_job.send_cancel_booking_notification.delay([booking.id])
     user_emails_job.send_booking_cancellation_emails_to_user_and_offerer_job.delay(booking.id)
@@ -653,18 +652,20 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
 
 def cancel_bookings_from_stock_by_offerer(
     stock: offers_models.Stock, author_id: int | None = None, user_connect_as: bool | None = None
-) -> list[Booking]:
+) -> list[models.Booking]:
     if user_connect_as:
-        cancellation_reason = BookingCancellationReasons.OFFERER_CONNECT_AS
+        cancellation_reason = models.BookingCancellationReasons.OFFERER_CONNECT_AS
     else:
-        cancellation_reason = BookingCancellationReasons.OFFERER
+        cancellation_reason = models.BookingCancellationReasons.OFFERER
     return _cancel_bookings_from_stock(stock, cancellation_reason, one_side_cancellation=True, author_id=author_id)
 
 
-def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Booking]:
+def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[models.Booking]:
     cancelled_bookings = []
     for stock in offer.stocks:
-        cancelled_bookings.extend(_cancel_bookings_from_stock(stock, BookingCancellationReasons.FRAUD_INAPPROPRIATE))
+        cancelled_bookings.extend(
+            _cancel_bookings_from_stock(stock, models.BookingCancellationReasons.FRAUD_INAPPROPRIATE)
+        )
     logger.info(
         "Cancelled bookings for rejected offer",
         extra={
@@ -676,14 +677,14 @@ def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Book
     return cancelled_bookings
 
 
-def cancel_booking_for_fraud(booking: Booking, reason: SuspensionReason) -> None:
+def cancel_booking_for_fraud(booking: models.Booking, reason: users_constants.SuspensionReason) -> None:
     validation.check_booking_can_be_cancelled(booking)
     cancelled = _cancel_booking(
         booking,
         (
-            BookingCancellationReasons.FRAUD_SUSPICION
-            if reason == SuspensionReason.FRAUD_SUSPICION
-            else BookingCancellationReasons.FRAUD
+            models.BookingCancellationReasons.FRAUD_SUSPICION
+            if reason == users_constants.SuspensionReason.FRAUD_SUSPICION
+            else models.BookingCancellationReasons.FRAUD
         ),
     )
     if not cancelled:
@@ -692,9 +693,9 @@ def cancel_booking_for_fraud(booking: Booking, reason: SuspensionReason) -> None
     transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
 
 
-def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> None:
+def cancel_booking_on_user_requested_account_suspension(booking: models.Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
-    cancelled = _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
+    cancelled = _cancel_booking(booking, models.BookingCancellationReasons.BENEFICIARY)
     if not cancelled:
         return
     logger.info(
@@ -704,17 +705,17 @@ def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> Non
     transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
 
 
-def cancel_booking_on_closed_offerer(booking: Booking, author_id: int | None = None) -> None:
+def cancel_booking_on_closed_offerer(booking: models.Booking, author_id: int | None = None) -> None:
     validation.check_booking_can_be_cancelled(booking)
     try:
-        cancelled = _cancel_booking(booking, BookingCancellationReasons.OFFERER_CLOSED, author_id=author_id)
+        cancelled = _cancel_booking(booking, models.BookingCancellationReasons.OFFERER_CLOSED, author_id=author_id)
     except external_bookings_exceptions.ExternalBookingException as exc:
         logger.info(
             "API error while cancelling external booking, try to cancel unilaterally",
             extra={"exc": exc, "booking": booking.id},
         )
         cancelled = _cancel_booking(
-            booking, BookingCancellationReasons.OFFERER_CLOSED, one_side_cancellation=True, author_id=author_id
+            booking, models.BookingCancellationReasons.OFFERER_CLOSED, one_side_cancellation=True, author_id=author_id
         )
     if not cancelled:
         return
@@ -722,7 +723,7 @@ def cancel_booking_on_closed_offerer(booking: Booking, author_id: int | None = N
     transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
 
 
-def mark_as_used(booking: Booking, validation_author_type: BookingValidationAuthorType) -> None:
+def mark_as_used(booking: models.Booking, validation_author_type: models.BookingValidationAuthorType) -> None:
     validation.check_is_usable(booking)
 
     booking.mark_as_used(validation_author_type)
@@ -741,7 +742,9 @@ def mark_as_used(booking: Booking, validation_author_type: BookingValidationAuth
     update_external_user(booking.user)
 
 
-def mark_as_used_with_uncancelling(booking: Booking, validation_author_type: BookingValidationAuthorType) -> None:
+def mark_as_used_with_uncancelling(
+    booking: models.Booking, validation_author_type: models.BookingValidationAuthorType
+) -> None:
     """Mark a booking as used from cancelled status.
 
     This function should be called only if the booking
@@ -760,9 +763,9 @@ def mark_as_used_with_uncancelling(booking: Booking, validation_author_type: Boo
         and booking.deposit.expirationDate
         and booking.deposit.expirationDate < datetime.datetime.utcnow()
     ):
-        raise bookings_exceptions.BookingDepositCreditExpired()
+        raise exceptions.BookingDepositCreditExpired()
 
-    if booking.status == BookingStatus.CANCELLED:
+    if booking.status == models.BookingStatus.CANCELLED:
         booking.uncancel_booking_set_used()
         stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
         stock.dnBookedQuantity += booking.quantity
@@ -784,8 +787,8 @@ def mark_as_used_with_uncancelling(booking: Booking, validation_author_type: Boo
 
 
 def mark_as_cancelled(
-    booking: Booking,
-    reason: BookingCancellationReasons,
+    booking: models.Booking,
+    reason: models.BookingCancellationReasons,
     one_side_cancellation: bool = False,
     author_id: int | None = None,
 ) -> None:
@@ -799,7 +802,7 @@ def mark_as_cancelled(
     One side cancellation. Mainly to be used from the backoffice. The external provider API
     is not called and the booking is cancelled on our side.
     """
-    if booking.status == BookingStatus.CANCELLED:
+    if booking.status == models.BookingStatus.CANCELLED:
         raise exceptions.BookingIsAlreadyCancelled()
 
     if finance_repository.has_reimbursement(booking):
@@ -807,7 +810,7 @@ def mark_as_cancelled(
 
     if one_side_cancellation:
         if (
-            not BookingCancellationReasons.is_from_backoffice(reason)
+            not models.BookingCancellationReasons.is_from_backoffice(reason)
             or (
                 booking.stock.offer.lastProvider
                 and booking.stock.offer.lastProvider.localClass
@@ -840,7 +843,7 @@ def mark_as_cancelled(
         transactional_mails.send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
 
-def mark_as_unused(booking: Booking) -> None:
+def mark_as_unused(booking: models.Booking) -> None:
     validation.check_can_be_mark_as_unused(booking)
     finance_api.cancel_latest_event(booking)
     finance_api.add_event(
@@ -876,8 +879,8 @@ def compute_booking_cancellation_limit_date(
 
 
 def update_cancellation_limit_dates(
-    bookings_to_update: list[Booking], new_beginning_datetime: datetime.datetime
-) -> list[Booking]:
+    bookings_to_update: list[models.Booking], new_beginning_datetime: datetime.datetime
+) -> list[models.Booking]:
     for booking in bookings_to_update:
         booking.cancellationLimitDate = _compute_edition_cancellation_limit_date(
             event_beginning=new_beginning_datetime,
@@ -909,7 +912,7 @@ def recompute_dnBookedQuantity(stock_ids: list[int]) -> None:
         -- stocks that only have cancelled bookings.
         LEFT OUTER JOIN booking
           ON booking."stockId" = stock.id
-          AND booking.status != '{BookingStatus.CANCELLED.value}'
+          AND booking.status != '{models.BookingStatus.CANCELLED.value}'
         WHERE stock.id IN :stock_ids
         GROUP BY stock.id
       )
@@ -945,21 +948,21 @@ def auto_mark_as_used_after_event() -> None:
     #
     # In SQLAlchemy:
     #     individual_updated = (
-    #         sa.update(Booking)
-    #         .returning(Booking.id)
+    #         sa.update(models.Booking)
+    #         .returning(models.Booking.id)
     #         .where(
-    #             Booking.status == BookingStatus.CONFIRMED,
-    #             Booking.stockId == offers_models.Stock.id,
+    #             models.Booking.status == models.BookingStatus.CONFIRMED,
+    #             models.Booking.stockId == offers_models.Stock.id,
     #             offers_models.Stock.beginningDatetime < threshold,
     #         )
-    #         .values(dateUsed=now, status=BookingStatus.USED)
+    #         .values(dateUsed=now, status=models.BookingStatus.USED)
     #     )
-    #     individual_select = sa.select(Booking).options(
-    #         sa.orm.joinedload(Booking.stock, innerjoin=True),
-    #         sa.orm.joinedload(Booking.venue, innerjoin=True),
+    #     individual_select = sa.select(models.Booking).options(
+    #         sa_orm.joinedload(models.Booking.stock, innerjoin=True),
+    #         sa_orm.joinedload(models.Booking.venue, innerjoin=True),
     #     )
     #     individual_bookings = db.session.execute(
-    #         individual_select.where(Booking.id.in_(sa.select([individual_updated.cte(name="updated").c.id]))),
+    #         individual_select.where(models.Booking.id.in_(sa.select([individual_updated.cte(name="updated").c.id]))),
     #         execution_options={"synchronize_session": True},
     #     )
     #
@@ -969,20 +972,22 @@ def auto_mark_as_used_after_event() -> None:
     # error).
     #
     # I think that it might be possible to make it work by using
-    # `returning(Booking)` instead of `returning(Booking.id)`, and
+    # `returning(models.Booking)` instead of `returning(models.Booking.id)`, and
     # joining related tables. SQLAlchemy would know that what it gets
-    # from the CTE must be used to populate `Booking` objects.
+    # from the CTE must be used to populate `models.Booking` objects.
     # However, this is only possible in SQLAlchemy 2.
 
     # Individual bookings: update and add a finance event for each one.
     db.session.execute(
-        sa.update(Booking)
+        sa.update(models.Booking)
         .where(
-            Booking.status == BookingStatus.CONFIRMED,
-            Booking.stockId == offers_models.Stock.id,
+            models.Booking.status == models.BookingStatus.CONFIRMED,
+            models.Booking.stockId == offers_models.Stock.id,
             offers_models.Stock.beginningDatetime < threshold,
         )
-        .values(dateUsed=now, status=BookingStatus.USED, validationAuthorType=BookingValidationAuthorType.AUTO),
+        .values(
+            dateUsed=now, status=models.BookingStatus.USED, validationAuthorType=models.BookingValidationAuthorType.AUTO
+        ),
         execution_options={"synchronize_session": False},
     )
     # `dateUsed` is precise enough that it's very unlikely to get a
@@ -990,10 +995,10 @@ def auto_mark_as_used_after_event() -> None:
     # would already have an event). If it happened, `add_event` would
     # fail because of the PostgreSQL partially unique constraint on
     # `bookingId`.
-    individual_bookings = Booking.query.filter_by(dateUsed=now).options(
-        sa.orm.joinedload(Booking.stock, innerjoin=True).joinedload(Stock.offer),
-        sa.orm.joinedload(Booking.venue, innerjoin=True),
-        sa.orm.joinedload(Booking.user).selectinload(User.achievements),
+    individual_bookings = models.Booking.query.filter_by(dateUsed=now).options(
+        sa_orm.joinedload(models.Booking.stock, innerjoin=True).joinedload(offers_models.Stock.offer),
+        sa_orm.joinedload(models.Booking.venue, innerjoin=True),
+        sa_orm.joinedload(models.Booking.user).selectinload(users_models.User.achievements),
     )
     n_individual_bookings_updated = 0
     for booking in individual_bookings:
@@ -1008,18 +1013,18 @@ def auto_mark_as_used_after_event() -> None:
     # one. We do the same as above, except that we add a log for data
     # analysis.
     db.session.execute(
-        sa.update(CollectiveBooking)
+        sa.update(educational_models.CollectiveBooking)
         .where(
-            CollectiveBooking.status == CollectiveBookingStatus.CONFIRMED,
-            CollectiveBooking.collectiveStockId == CollectiveStock.id,
-            CollectiveStock.endDatetime < threshold,
+            educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CONFIRMED,
+            educational_models.CollectiveBooking.collectiveStockId == educational_models.CollectiveStock.id,
+            educational_models.CollectiveStock.endDatetime < threshold,
         )
-        .values(dateUsed=now, status=CollectiveBookingStatus.USED),
+        .values(dateUsed=now, status=educational_models.CollectiveBookingStatus.USED),
         execution_options={"synchronize_session": False},
     )
-    collective_bookings = CollectiveBooking.query.filter_by(dateUsed=now).options(
-        sa.orm.joinedload(CollectiveBooking.collectiveStock, innerjoin=True),
-        sa.orm.joinedload(CollectiveBooking.venue, innerjoin=True),
+    collective_bookings = educational_models.CollectiveBooking.query.filter_by(dateUsed=now).options(
+        sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True),
+        sa_orm.joinedload(educational_models.CollectiveBooking.venue, innerjoin=True),
     )
     n_collective_bookings_updated = 0
     for booking in collective_bookings:
@@ -1049,38 +1054,40 @@ def auto_mark_as_used_after_event() -> None:
 
 def get_individual_bookings_from_stock(
     stock_id: int,
-) -> typing.Generator[Booking, None, None]:
+) -> typing.Generator[models.Booking, None, None]:
     query = (
-        Booking.query.filter(Booking.stockId == stock_id, Booking.status != BookingStatus.CANCELLED)
-        .with_entities(Booking.id, Booking.userId)
+        models.Booking.query.filter(
+            models.Booking.stockId == stock_id, models.Booking.status != models.BookingStatus.CANCELLED
+        )
+        .with_entities(models.Booking.id, models.Booking.userId)
         .distinct()
     )
     yield from query.yield_per(1_000)
 
 
 def archive_old_bookings() -> None:
-    date_condition = Booking.dateCreated < datetime.datetime.utcnow() - constants.ARCHIVE_DELAY
+    date_condition = models.Booking.dateCreated < datetime.datetime.utcnow() - constants.ARCHIVE_DELAY
 
     query_old_booking_ids = (
-        Booking.query.join(Booking.stock)
-        .join(Stock.offer)
-        .join(Booking.activationCode)
+        models.Booking.query.join(models.Booking.stock)
+        .join(offers_models.Stock.offer)
+        .join(models.Booking.activationCode)
         .filter(date_condition)
         .filter(
             offers_models.Offer.isDigital,
             offers_models.ActivationCode.id.is_not(None),
         )
-        .with_entities(Booking.id)
+        .with_entities(models.Booking.id)
         .union(
-            Booking.query.join(Booking.stock)
-            .join(Stock.offer)
+            models.Booking.query.join(models.Booking.stock)
+            .join(offers_models.Stock.offer)
             .filter(date_condition)
-            .filter(Booking.display_even_if_used)
-            .with_entities(Booking.id)
+            .filter(models.Booking.display_even_if_used)
+            .with_entities(models.Booking.id)
         )
     )
 
-    number_updated = Booking.query.filter(Booking.id.in_(query_old_booking_ids)).update(
+    number_updated = models.Booking.query.filter(models.Booking.id.in_(query_old_booking_ids)).update(
         {"displayAsEnded": True},
         synchronize_session=False,
     )
@@ -1120,7 +1127,7 @@ def cancel_unstored_external_bookings() -> None:
             break
 
         barcode = external_booking_info["barcode"]
-        external_bookings = ExternalBooking.query.filter_by(barcode=barcode).all()
+        external_bookings = models.ExternalBooking.query.filter_by(barcode=barcode).all()
         if not external_bookings:
             booking_type = external_booking_info.get("booking_type")
             if booking_type == constants.RedisExternalBookingType.EVENT:

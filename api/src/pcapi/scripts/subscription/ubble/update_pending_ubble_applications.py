@@ -6,7 +6,7 @@ We want to be able to retrieve the processed applications and update the status 
 import datetime
 import logging
 
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import models as fraud_models
@@ -29,7 +29,7 @@ def update_pending_ubble_applications(dry_run: bool = True) -> None:
             fraud_models.BeneficiaryFraudCheck.dateCreated < TWELVE_HOURS_AGO,
         )
         .options(
-            sa.orm.joinedload(fraud_models.BeneficiaryFraudCheck.user)
+            sa_orm.joinedload(fraud_models.BeneficiaryFraudCheck.user)
             .selectinload(users_models.User.deposits)
             .selectinload(finance_models.Deposit.recredits)
         )

@@ -6,7 +6,7 @@ from typing import Iterable
 import pydantic.v1 as pydantic_v1
 from pydantic.v1.utils import GetterDict
 from sqlalchemy.engine import Row
-import sqlalchemy.orm as sqla_orm
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.core.offerers import schemas as offerers_schemas
@@ -134,9 +134,9 @@ class GetOffererResponseModel(BaseModel):
         }
         venues = (
             offerers_models.Venue.query.filter_by(managingOffererId=offerer.id)
-            .options(sqla_orm.joinedload(offerers_models.Venue.collectiveDmsApplications))
-            .options(sqla_orm.joinedload(offerers_models.Venue.venueProviders))
-            .options(sqla_orm.joinedload(offerers_models.Venue.googlePlacesInfo))
+            .options(sa_orm.joinedload(offerers_models.Venue.collectiveDmsApplications))
+            .options(sa_orm.joinedload(offerers_models.Venue.venueProviders))
+            .options(sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo))
             .order_by(offerers_models.Venue.common_name)
             .all()
         )

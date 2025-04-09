@@ -139,7 +139,7 @@ def token_exists(token: str) -> bool:
 def get_booking_by_token(token: str, load_options: BOOKING_LOAD_OPTIONS = ()) -> models.Booking | None:
     query = models.Booking.query.filter_by(token=token.upper())
     if "offerer" in load_options:
-        query = query.options(sa.orm.joinedload(models.Booking.offerer))
+        query = query.options(sa_orm.joinedload(models.Booking.offerer))
     return query.one_or_none()
 
 
@@ -315,9 +315,9 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
         .join(VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id)
         .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
     )
-    # NB: unfortunatly, we still have to use offerers_models.Venue.timezone for digital offers
+    # NB: unfortunatly, we still have to use Venue.timezone for digital offers
     # as they are still on virtual venues that don't have assocaited OA.
-    # offerers_models.Venue.timezone removal here requires that all venues have their OA
+    # Venue.timezone removal here requires that all venues have their OA
     timezone_column = sa.func.coalesce(Address.timezone, VenueAddress.timezone, offerers_models.Venue.timezone)
 
     query = (
@@ -408,7 +408,7 @@ def get_pro_user_timezones(user: User) -> set[str]:
 
 
 def field_to_venue_timezone(
-    field: sa_orm.InstrumentedAttribute, column: sa.orm.Mapped[typing.Any] | sa.sql.functions.Function
+    field: sa_orm.InstrumentedAttribute, column: sa_orm.Mapped[typing.Any] | sa.sql.functions.Function
 ) -> sa.cast:
     return sa.cast(sa.func.timezone(column, sa.func.timezone("UTC", field)), sa.Date)
 
@@ -443,9 +443,9 @@ def _get_filtered_bookings_query(
         .outerjoin(VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id)
         .outerjoin(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
     )
-    # NB: unfortunatly, we still have to use offerers_models.Venue.timezone for digital offers
+    # NB: unfortunately, we still have to use Venue.timezone for digital offers
     # as they are still on virtual venues that don't have assocaited OA.
-    # offerers_models.Venue.timezone removal here requires that all venues have their OA
+    # Venue.timezone removal here requires that all venues have their OA
     timezone_column = sa.func.coalesce(Address.timezone, VenueAddress.timezone, offerers_models.Venue.timezone)
     for join_key, *join_conditions in extra_joins:
         if join_conditions:
@@ -538,9 +538,9 @@ def _get_offer_timezone(offer_id: int) -> str:
     return (
         offers_models.Offer.query.with_entities(
             # TODO: Simplify when the virtual venues are removed
-            # Unfortunately, we still have to use offerers_models.Venue.timezone for digital offers
+            # Unfortunately, we still have to use Venue.timezone for digital offers
             # as they are still on virtual venues that don't have associated OA.
-            # offerers_models.Venue.timezone removal here requires that all venues have their OA
+            # Venue.timezone removal here requires that all venues have their OA
             sa.func.coalesce(Address.timezone, VenueAddress.timezone, offerers_models.Venue.timezone)
         )
         .join(offers_models.Offer.venue)

@@ -3,7 +3,7 @@ import datetime
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
-import sqlalchemy.sql.functions as sqla_func
+import sqlalchemy.sql.functions as sa_func
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
@@ -163,7 +163,7 @@ class BaseFinanceBackend:
                     bookings_models.Booking.usedRecreditType.cast(sa.String),
                     finance_models.Deposit.type.cast(sa.String),
                 ).label("origin_of_credit"),
-                sqla_func.sum(finance_models.PricingLine.amount).label("pricing_amount"),
+                sa_func.sum(finance_models.PricingLine.amount).label("pricing_amount"),
             )
             .all()
         )
@@ -221,7 +221,7 @@ class BaseFinanceBackend:
                     educational_models.EducationalInstitutionProgram.name,
                     educational_models.EducationalDeposit.ministry.cast(sa.String),
                 ).label("ministry"),
-                sqla_func.sum(finance_models.PricingLine.amount).label("pricing_amount"),
+                sa_func.sum(finance_models.PricingLine.amount).label("pricing_amount"),
             )
             .all()
         )

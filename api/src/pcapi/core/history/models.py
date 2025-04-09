@@ -126,7 +126,7 @@ class ActionHistory(PcObject, Base, Model):
     # nullable because of old actions without known author migrated here or lines which must be kept in case an admin
     # author is removed; but the author is mandatory for any new action
     authorUserId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
-    authorUser: users_models.User | None = sa.orm.relationship("User", foreign_keys=[authorUserId])
+    authorUser: users_models.User | None = sa_orm.relationship("User", foreign_keys=[authorUserId])
 
     extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
 
@@ -134,64 +134,64 @@ class ActionHistory(PcObject, Base, Model):
     userId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=True
     )
-    user: users_models.User | None = sa.orm.relationship(
+    user: users_models.User | None = sa_orm.relationship(
         "User",
         foreign_keys=[userId],
-        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
     # ActionHistory.offererId.is_(None) is used in a query, keep non-conditional index
     offererId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=True
     )
-    offerer: sa.orm.Mapped["offerers_models.Offerer | None"] = sa.orm.relationship(
+    offerer: sa_orm.Mapped["offerers_models.Offerer | None"] = sa_orm.relationship(
         "Offerer",
         foreign_keys=[offererId],
-        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
     venueId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=True)
-    venue: sa.orm.Mapped["offerers_models.Venue | None"] = sa.orm.relationship(
+    venue: sa_orm.Mapped["offerers_models.Venue | None"] = sa_orm.relationship(
         "Venue",
         foreign_keys=[venueId],
-        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
     financeIncidentId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("finance_incident.id", ondelete="CASCADE"), nullable=True
     )
-    financeIncident: sa.orm.Mapped["finance_models.FinanceIncident | None"] = sa.orm.relationship(
+    financeIncident: sa_orm.Mapped["finance_models.FinanceIncident | None"] = sa_orm.relationship(
         "FinanceIncident",
         foreign_keys=[financeIncidentId],
-        backref=sa.orm.backref("action_history", order_by="ActionHistory.actionDate.asc()", passive_deletes=True),
+        backref=sa_orm.backref("action_history", order_by="ActionHistory.actionDate.asc()", passive_deletes=True),
     )
 
     bankAccountId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("bank_account.id", ondelete="CASCADE"), nullable=True
     )
 
-    bankAccount: sa.orm.Mapped["finance_models.BankAccount | None"] = sa.orm.relationship(
+    bankAccount: sa_orm.Mapped["finance_models.BankAccount | None"] = sa_orm.relationship(
         "BankAccount",
         foreign_keys=[bankAccountId],
-        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
     ruleId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=True
     )
 
-    rule: sa.orm.Mapped["offers_models.OfferValidationRule | None"] = sa.orm.relationship(
+    rule: sa_orm.Mapped["offers_models.OfferValidationRule | None"] = sa_orm.relationship(
         "OfferValidationRule",
         foreign_keys=[ruleId],
-        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
     chronicleId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("chronicle.id", ondelete="CASCADE"), nullable=True)
 
-    chronicle: sa.orm.Mapped[chronicles_models.Chronicle | None] = sa.orm.relationship(
+    chronicle: sa_orm.Mapped[chronicles_models.Chronicle | None] = sa_orm.relationship(
         "Chronicle",
         foreign_keys=[chronicleId],
-        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
     comment = sa.Column(sa.Text(), nullable=True)
