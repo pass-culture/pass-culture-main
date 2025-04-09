@@ -14,6 +14,7 @@ describe('StocksCalendarTable', () => {
         onDeleteStocks={vi.fn()}
         updateCheckedStocks={vi.fn()}
         stocks={[]}
+        readonly={false}
       />
     )
 

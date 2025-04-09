@@ -4,6 +4,7 @@ import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Button } from 'ui-kit/Button/Button'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './StocksCalendarActionsBar.module.scss'
@@ -15,6 +16,7 @@ export type StocksCalendarActionsBarProps = {
   deleteStocks: (ids: number[]) => void
   handlePreviousStep: () => void
   handleNextStep: () => void
+  readonly: boolean
 }
 
 export function StocksCalendarActionsBar({
@@ -24,8 +26,19 @@ export function StocksCalendarActionsBar({
   deleteStocks,
   handlePreviousStep,
   handleNextStep,
+  readonly,
 }: StocksCalendarActionsBarProps) {
   const notify = useNotification()
+
+  if (readonly) {
+    return (
+      <ActionsBarSticky className={styles['sticky']}>
+        <ButtonLink to="/offres" variant={ButtonVariant.PRIMARY}>
+          Retour à la liste des offres
+        </ButtonLink>
+      </ActionsBarSticky>
+    )
+  }
 
   return (
     <>
