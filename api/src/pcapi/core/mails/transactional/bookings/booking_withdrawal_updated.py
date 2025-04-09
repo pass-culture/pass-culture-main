@@ -1,47 +1,52 @@
-import sqlalchemy as sqla
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core import mails
-import pcapi.core.bookings.models as bookings_models
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offerers.models import OffererAddress
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import ActivationCode
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
-from pcapi.core.users.models import User
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
+from pcapi.core.users import models as users_models
 from pcapi.tasks.mails_tasks import send_withdrawal_detail_changed_emails
 from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailBookingDetail
 from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailRequest
 from pcapi.utils.date import format_time_in_second_to_human_readable
 
 
-def send_email_for_each_ongoing_booking(offer: Offer) -> None:
+def send_email_for_each_ongoing_booking(offer: offers_models.Offer) -> None:
     ongoing_bookings = (
         bookings_models.Booking.query.join(bookings_models.Booking.stock)
-        .join(Stock.offer)
+        .join(offers_models.Stock.offer)
         .filter(
-            Offer.id == offer.id,
-            Stock.isSoftDeleted.is_(False),
-            Stock.beginningDatetime.is_(None) | (Stock.beginningDatetime > sqla.func.now()),
+            offers_models.Offer.id == offer.id,
+            offers_models.Stock.isSoftDeleted.is_(False),
+            offers_models.Stock.beginningDatetime.is_(None) | (offers_models.Stock.beginningDatetime > sa.func.now()),
             bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
         )
         .options(
-            sqla.orm.joinedload(bookings_models.Booking.user).load_only(User.firstName, User.email),
-            sqla.orm.joinedload(bookings_models.Booking.stock)
-            .joinedload(Stock.offer)
-            .load_only(Offer.id, Offer.withdrawalDelay, Offer.withdrawalDetails, Offer.withdrawalType)
-            .joinedload(Offer.venue)
-            .load_only(Venue.street),
-            sqla.orm.joinedload(bookings_models.Booking.activationCode).load_only(ActivationCode.code),
-            sqla.orm.joinedload(bookings_models.Booking.stock)
-            .load_only(Stock.id)
-            .joinedload(Stock.offer)
-            .load_only(Offer.id)
-            .joinedload(Offer.offererAddress)
+            sa_orm.joinedload(bookings_models.Booking.user).load_only(
+                users_models.User.firstName, users_models.User.email
+            ),
+            sa_orm.joinedload(bookings_models.Booking.stock)
+            .joinedload(offers_models.Stock.offer)
+            .load_only(
+                offers_models.Offer.id,
+                offers_models.Offer.withdrawalDelay,
+                offers_models.Offer.withdrawalDetails,
+                offers_models.Offer.withdrawalType,
+            )
+            .joinedload(offers_models.Offer.venue)
+            .load_only(offerers_models.Venue.street),
+            sa_orm.joinedload(bookings_models.Booking.activationCode).load_only(offers_models.ActivationCode.code),
+            sa_orm.joinedload(bookings_models.Booking.stock)
+            .load_only(offers_models.Stock.id)
+            .joinedload(offers_models.Stock.offer)
+            .load_only(offers_models.Offer.id)
+            .joinedload(offers_models.Offer.offererAddress)
             .options(
-                sqla.orm.joinedload(OffererAddress.address),
-                sqla.orm.selectinload(OffererAddress.venues),
+                sa_orm.joinedload(offerers_models.OffererAddress.address),
+                sa_orm.selectinload(offerers_models.OffererAddress.venues),
             ),
         )
     )

@@ -2,7 +2,7 @@ import logging
 
 from flask_login import current_user
 from flask_login import login_required
-import sqlalchemy.orm as sqla_orm
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors.api_recaptcha import ReCaptchaException
@@ -55,7 +55,7 @@ def list_offerers_names(
         offerers = offerers.distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
 
     offerers = offerers.options(
-        sqla_orm.load_only(
+        sa_orm.load_only(
             offerers_models.Offerer.id, offerers_models.Offerer.name, offerers_models.Offerer.allowedOnAdage
         )
     )
@@ -138,7 +138,7 @@ def delete_api_key(api_key_prefix: str) -> None:
     with transaction():
         try:
             api.delete_api_key_by_user(current_user, api_key_prefix)
-        except (sqla_orm.exc.NoResultFound, offerers_exceptions.ApiKeyDeletionDenied):
+        except (sa_orm.exc.NoResultFound, offerers_exceptions.ApiKeyDeletionDenied):
             raise ApiErrors({"prefix": "not found"}, 404)
 
 

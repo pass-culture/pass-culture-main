@@ -1123,8 +1123,8 @@ def remove_pro_role_and_add_non_attached_pro_role(users: list[users_models.User]
     users_with_offerers = (
         users_models.User.query.filter(users_models.User.id.in_([user.id for user in users]))
         .options(
-            sa.orm.load_only(users_models.User.roles),
-            sa.orm.joinedload(users_models.User.UserOfferers)
+            sa_orm.load_only(users_models.User.roles),
+            sa_orm.joinedload(users_models.User.UserOfferers)
             .load_only(models.UserOfferer.validationStatus)
             .joinedload(models.UserOfferer.offerer)
             .load_only(models.Offerer.validationStatus),
@@ -1379,7 +1379,7 @@ def _cancel_individual_bookings_on_offerer_closure(offerer_id: int, author_id: i
             bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
         )
         .options(
-            sa.orm.joinedload(bookings_models.Booking.stock)
+            sa_orm.joinedload(bookings_models.Booking.stock)
             .load_only(offers_models.Stock.beginningDatetime)
             .joinedload(offers_models.Stock.offer)
             .load_only(offers_models.Offer.subcategoryId)
@@ -1424,7 +1424,7 @@ def _cancel_collective_bookings_on_offerer_closure(offerer_id: int, author_id: i
             ),
         )
         .options(
-            sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock).load_only(
+            sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock).load_only(
                 educational_models.CollectiveStock.endDatetime
             )
         )
@@ -1624,7 +1624,7 @@ def get_educational_offerers(offerer_id: int | None, current_user: users_models.
                 models.Offerer.isActive.is_(True),
                 models.Offerer.id == offerer_id,
             )
-            .options(sa.orm.joinedload(models.Offerer.managedVenues))
+            .options(sa_orm.joinedload(models.Offerer.managedVenues))
             .all()
         )
     else:
@@ -1633,7 +1633,7 @@ def get_educational_offerers(offerer_id: int | None, current_user: users_models.
                 user=current_user,
                 validated=True,
             )
-            .options(sa.orm.joinedload(models.Offerer.managedVenues))
+            .options(sa_orm.joinedload(models.Offerer.managedVenues))
             .distinct(models.Offerer.id)
             .all()
         )
@@ -1732,8 +1732,8 @@ def get_offerer_base_query(offerer_id: int) -> BaseQuery:
 
 def search_venue(search_query: str, departments: typing.Iterable[str] = ()) -> BaseQuery:
     venues = models.Venue.query.outerjoin(models.VenueContact).options(
-        sa.orm.joinedload(models.Venue.contact),
-        sa.orm.joinedload(models.Venue.managingOfferer),
+        sa_orm.joinedload(models.Venue.contact),
+        sa_orm.joinedload(models.Venue.managingOfferer),
     )
 
     search_query = search_query.strip()
@@ -1812,7 +1812,7 @@ def get_bank_account_base_query(bank_account_id: int) -> BaseQuery:
 
 def search_bank_account(search_query: str, *_: typing.Any) -> BaseQuery:
     bank_accounts_query = finance_models.BankAccount.query.options(
-        sa.orm.joinedload(finance_models.BankAccount.offerer)
+        sa_orm.joinedload(finance_models.BankAccount.offerer)
     )
 
     search_query = search_query.strip()
@@ -2343,7 +2343,7 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
     existing_user = (
         users_models.User.query.filter(users_models.User.email == email)
         .outerjoin(users_models.User.UserOfferers)
-        .options(sa.orm.joinedload(users_models.User.UserOfferers).load_only(models.UserOfferer.offererId))
+        .options(sa_orm.joinedload(users_models.User.UserOfferers).load_only(models.UserOfferer.offererId))
         .one_or_none()
     )
 
@@ -2397,7 +2397,7 @@ def get_offerer_members(offerer: models.Offerer) -> list[tuple[str, OffererMembe
             sa.not_(models.UserOfferer.isRejected),
             sa.not_(models.UserOfferer.isDeleted),
         )
-        .options(sa.orm.joinedload(models.UserOfferer.user).load_only(users_models.User.email))
+        .options(sa_orm.joinedload(models.UserOfferer.user).load_only(users_models.User.email))
         .all()
     )
     invited_members = (
@@ -2594,7 +2594,7 @@ def get_open_to_public_venues_with_accessibility_provider(batch_size: int, batch
             sa.or_(offerers_models.Venue.isOpenToPublic.is_(True)),
             offerers_models.Venue.isVirtual.is_(False),
         )
-        .options(sa.orm.contains_eager(offerers_models.Venue.accessibilityProvider))
+        .options(sa_orm.contains_eager(offerers_models.Venue.accessibilityProvider))
         .order_by(offerers_models.Venue.id.asc())
         .limit(batch_size)
         .offset(batch_num * batch_size)
@@ -2611,12 +2611,12 @@ def get_open_to_public_venues_without_accessibility_provider() -> list[models.Ve
             offerers_models.AccessibilityProvider.id.is_(None),
         )
         .options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.siret,
             ),
-            sa.orm.joinedload(offerers_models.Venue.offererAddress)
+            sa_orm.joinedload(offerers_models.Venue.offererAddress)
             .joinedload(offerers_models.OffererAddress.address)
             .load_only(
                 geography_models.Address.street,
@@ -3169,11 +3169,11 @@ def send_reminder_email_to_individual_offerers() -> None:
                 offerers_models.IndividualOffererSubscription.offererId == offerers_models.Offerer.id,
             )
             .options(
-                sa.orm.load_only(offerers_models.Offerer.id),
-                sa.orm.contains_eager(offerers_models.Offerer.individualSubscription).load_only(
+                sa_orm.load_only(offerers_models.Offerer.id),
+                sa_orm.contains_eager(offerers_models.Offerer.individualSubscription).load_only(
                     offerers_models.IndividualOffererSubscription.dateReminderEmailSent
                 ),
-                sa.orm.joinedload(offerers_models.Offerer.UserOfferers)
+                sa_orm.joinedload(offerers_models.Offerer.UserOfferers)
                 .load_only(offerers_models.UserOfferer.userId)
                 .joinedload(offerers_models.UserOfferer.user)
                 .load_only(users_models.User.email),

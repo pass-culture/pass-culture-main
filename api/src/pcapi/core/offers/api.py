@@ -13,7 +13,8 @@ import sentry_sdk
 import sqlalchemy as sa
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert
-import sqlalchemy.exc as sqla_exc
+import sqlalchemy.exc as sa_exc
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import BadRequest
 
 from pcapi import settings
@@ -612,7 +613,7 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
                 reason=search.IndexationReason.OFFER_REINDEXATION,
             ),
         )
-    except sqla_exc.IntegrityError as error:
+    except sa_exc.IntegrityError as error:
         if "exclude_offer_timespan" in str(error.orig):
             raise exceptions.OfferHasAlreadyAnActiveHeadlineOffer
         if "exclude_venue_timespan" in str(error.orig):
@@ -645,7 +646,7 @@ def remove_headline_offer(offerer_id: int) -> None:
                     reason=search.IndexationReason.OFFER_REINDEXATION,
                 ),
             )
-        except sqla_exc.IntegrityError:
+        except sa_exc.IntegrityError:
             raise exceptions.CannotRemoveHeadlineOffer
 
 
@@ -1165,7 +1166,7 @@ def reject_inappropriate_products(
         models.Offer.validation != models.OfferValidationStatus.REJECTED,
     )
 
-    offers = offers_query.options(sa.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings)).all()
+    offers = offers_query.options(sa_orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings)).all()
 
     offer_updated_counts = offers_query.update(
         values={
@@ -1292,7 +1293,7 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
 
     offer_validation_rules = (
         models.OfferValidationRule.query.options(
-            sa.orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules)
+            sa_orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules)
         )
         .filter(models.OfferValidationRule.isActive.is_(True))
         .all()
@@ -1363,7 +1364,7 @@ def report_offer(
         with transaction():
             report = models.OfferReport(user=user, offer=offer, reason=reason, customReasonContent=custom_reason)
             db.session.add(report)
-    except sqla_exc.IntegrityError as error:
+    except sa_exc.IntegrityError as error:
         if error.orig.pgcode == UNIQUE_VIOLATION:
             raise exceptions.OfferAlreadyReportedError() from error
         if error.orig.pgcode == CHECK_VIOLATION:
@@ -1482,7 +1483,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         if remaining_places is None or remaining_places <= 0:
             try:
                 offers_repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
-            except sqla_exc.InternalError:
+            except sa_exc.InternalError:
                 # The SQLAlchemy session is invalidated as soon as an InternalError is raised
                 db.session.rollback()
                 logger.info(
@@ -1676,7 +1677,7 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
                 models.Offer.productId == product.id,
                 models.Offer.validation == models.OfferValidationStatus.REJECTED,
                 models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
-            ).options(sa.orm.load_only(models.Offer.id))
+            ).options(sa_orm.load_only(models.Offer.id))
 
             offers = offers_query.all()
 
@@ -1846,9 +1847,9 @@ def move_offer(
             ),
         )
         .options(
-            sa.orm.load_only(bookings_models.Booking.status),
-            sa.orm.contains_eager(bookings_models.Booking.finance_events).load_only(finance_models.FinanceEvent.status),
-            sa.orm.contains_eager(bookings_models.Booking.pricings).load_only(
+            sa_orm.load_only(bookings_models.Booking.status),
+            sa_orm.contains_eager(bookings_models.Booking.finance_events).load_only(finance_models.FinanceEvent.status),
+            sa_orm.contains_eager(bookings_models.Booking.pricings).load_only(
                 finance_models.Pricing.pricingPointId, finance_models.Pricing.status
             ),
         )
@@ -1935,9 +1936,9 @@ def move_event_offer(
             ),
         )
         .options(
-            sa.orm.load_only(bookings_models.Booking.status),
-            sa.orm.contains_eager(bookings_models.Booking.finance_events).load_only(finance_models.FinanceEvent.status),
-            sa.orm.contains_eager(bookings_models.Booking.pricings).load_only(
+            sa_orm.load_only(bookings_models.Booking.status),
+            sa_orm.contains_eager(bookings_models.Booking.finance_events).load_only(finance_models.FinanceEvent.status),
+            sa_orm.contains_eager(bookings_models.Booking.pricings).load_only(
                 finance_models.Pricing.pricingPointId, finance_models.Pricing.status
             ),
         )
@@ -2025,7 +2026,7 @@ def update_used_stock_price(
             finance_models.FinanceEvent.id,
         )
         .options(
-            sa.orm.joinedload(finance_models.FinanceEvent.booking),
+            sa_orm.joinedload(finance_models.FinanceEvent.booking),
         )
         .first()
     )

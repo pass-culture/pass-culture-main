@@ -9,10 +9,10 @@ import typing
 
 import psycopg2.extras
 import pytz
-import sqlalchemy as sqla
-import sqlalchemy.dialects.postgresql as sqla_postgresql
-import sqlalchemy.engine as sqla_engine
-import sqlalchemy.types as sqla_types
+import sqlalchemy as sa
+import sqlalchemy.dialects.postgresql as sa_postgresql
+import sqlalchemy.engine as sa_engine
+import sqlalchemy.types as sa_types
 
 from pcapi import settings
 from pcapi.connectors import googledrive
@@ -26,7 +26,7 @@ blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
 
-class MagicEnum(sqla_types.TypeDecorator):
+class MagicEnum(sa_types.TypeDecorator):
     """A column type that stores an instance of a Python Enum object as a
     string or integer (depending on the type of the enum).
 
@@ -41,7 +41,7 @@ class MagicEnum(sqla_types.TypeDecorator):
              BLUE = "blue"
 
          class Wall(Base, Model):
-             color = sqla.Column(MagicEnum(Color))
+             color = sa.Column(MagicEnum(Color))
 
          wall = Wall(color=Color.RED)  # not `Color.RED.value`
          wall = Wall.query.first()
@@ -57,15 +57,15 @@ class MagicEnum(sqla_types.TypeDecorator):
         self.enum_class = enum_class
         first_value = list(enum_class)[0].value
         if isinstance(first_value, str):
-            self.impl = sqla_types.Text()
+            self.impl = sa_types.Text()
         elif isinstance(first_value, int):
-            self.impl = sqla_types.Integer()
+            self.impl = sa_types.Integer()
         else:
             raise ValueError(f"Unsupported type of value for {enum_class}")
 
     # Avoid pylint `abstract-method` warning. It's not actually required
     # to implement this method.
-    process_literal_param = sqla_types.TypeDecorator.process_literal_param
+    process_literal_param = sa_types.TypeDecorator.process_literal_param
 
     @property
     def python_type(self) -> type[enum.Enum]:
@@ -77,7 +77,7 @@ class MagicEnum(sqla_types.TypeDecorator):
     def process_bind_param(
         self,
         value: typing.Any,
-        dialect: sqla_engine.Dialect,
+        dialect: sa_engine.Dialect,
     ) -> str | None:
         if value is None:
             return None
@@ -86,15 +86,15 @@ class MagicEnum(sqla_types.TypeDecorator):
     def process_result_value(
         self,
         value: typing.Any,
-        dialect: sqla_engine.Dialect,
+        dialect: sa_engine.Dialect,
     ) -> enum.Enum | None:
         if value is None:
             return None
         return self.enum_class(value)
 
 
-class TSVector(sqla_types.TypeDecorator):  # pylint: disable=abstract-method
-    impl = sqla_postgresql.TSVECTOR
+class TSVector(sa_types.TypeDecorator):  # pylint: disable=abstract-method
+    impl = sa_postgresql.TSVECTOR
     cache_ok = True
 
 
@@ -135,7 +135,7 @@ def acquire_lock(name: str) -> None:
     lock_bytestring = name.encode()
     lock_id = int(hashlib.sha256(lock_bytestring).hexdigest()[:14], 16)
     with log_elapsed(logger, "Waited to acquire advisory lock", extra={"lock_name": name}):
-        db.session.execute(sqla.select(sqla.func.pg_advisory_xact_lock(lock_id)))
+        db.session.execute(sa.select(sa.func.pg_advisory_xact_lock(lock_id)))
 
 
 @blueprint.cli.command("detect_invalid_indexes")

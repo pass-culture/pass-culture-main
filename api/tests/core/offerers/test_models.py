@@ -1,8 +1,8 @@
 import datetime
 
 import pytest
-import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.core.educational import factories as educational_factories
@@ -382,7 +382,7 @@ class CurrentPricingPointTest:
         return (
             models.Venue.query.filter_by(id=venue_id)
             .options(
-                sa.orm.joinedload(models.Venue.pricing_point_links).joinedload(
+                sa_orm.joinedload(models.Venue.pricing_point_links).joinedload(
                     models.VenuePricingPointLink.pricingPoint
                 )
             )
@@ -425,7 +425,7 @@ class CurrentBankAccountTest:
         return (
             models.Venue.query.filter_by(id=venue_id)
             .options(
-                sa.orm.joinedload(models.Venue.bankAccountLinks).joinedload(models.VenueBankAccountLink.bankAccount)
+                sa_orm.joinedload(models.Venue.bankAccountLinks).joinedload(models.VenueBankAccountLink.bankAccount)
             )
             .one()
         )

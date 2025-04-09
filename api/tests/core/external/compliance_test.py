@@ -2,7 +2,7 @@ import logging
 from unittest import mock
 
 import pytest
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.categories import subcategories
 from pcapi.core.external import compliance
@@ -134,7 +134,7 @@ class GetPayloadForComplianceApiTest:
 
         offer_in_db = (
             offers_models.Offer.query.filter(offers_models.Offer.id == offer.id)
-            .options(sa.orm.joinedload(offers_models.Offer.stocks), sa.orm.joinedload(offers_models.Offer.mediations))
+            .options(sa_orm.joinedload(offers_models.Offer.stocks), sa_orm.joinedload(offers_models.Offer.mediations))
             .one()
         )
 

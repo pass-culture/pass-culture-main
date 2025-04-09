@@ -1,4 +1,4 @@
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
@@ -14,7 +14,7 @@ def get_redactor_favorites_count(redactor_id: int) -> int:
     redactor = (
         educational_models.EducationalRedactor.query.filter_by(id=redactor_id)
         .options(
-            sa.orm.joinedload(educational_models.EducationalRedactor.favoriteCollectiveOfferTemplates)
+            sa_orm.joinedload(educational_models.EducationalRedactor.favoriteCollectiveOfferTemplates)
             .load_only(
                 educational_models.CollectiveOfferTemplate.id,
                 educational_models.CollectiveOfferTemplate.venueId,

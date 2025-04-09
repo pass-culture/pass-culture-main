@@ -4,8 +4,8 @@ import logging
 
 from flask import request
 from psycopg2.errorcodes import UNIQUE_VIOLATION
-import sqlalchemy as sqla
-import sqlalchemy.exc as sqla_exc
+import sqlalchemy as sa
+import sqlalchemy.exc as sa_exc
 
 from pcapi import repository
 from pcapi.core import search
@@ -225,7 +225,7 @@ def _create_product(
         # To create stocks or publishing the offer we need to flush
         # the session to get the offer id
         db.session.flush()
-    except sqla_exc.IntegrityError as error:
+    except sa_exc.IntegrityError as error:
         # a unique constraint violation can only mean that the venueId/idAtProvider
         # already exists
         is_offer_table = error.orig.diag.table_name == offers_models.Offer.__tablename__
@@ -236,7 +236,7 @@ def _create_product(
             raise ExistingVenueWithIdAtProviderError() from error
         # Other error are unlikely, but we still need to manage them.
         raise CreateProductDBError() from error
-    except sqla_exc.SQLAlchemyError as error:
+    except sa_exc.SQLAlchemyError as error:
         raise CreateProductDBError() from error
 
     return created_product
@@ -254,7 +254,7 @@ def _create_stock(product: offers_models.Offer, body: serialization.ProductOffer
             booking_limit_datetime=body.stock.booking_limit_datetime,
             creating_provider=current_api_key.provider,
         )
-    except sqla_exc.SQLAlchemyError as error:
+    except sa_exc.SQLAlchemyError as error:
         raise CreateStockDBError() from error
     except Exception as error:
         raise CreateStockError() from error
@@ -533,12 +533,12 @@ def _get_existing_offers(
 ) -> list[offers_models.Offer]:
     subquery = (
         db.session.query(
-            sqla.func.max(offers_models.Offer.id).label("max_id"),
+            sa.func.max(offers_models.Offer.id).label("max_id"),
         )
         .filter(offers_models.Offer.isEvent == False)
         .filter(offers_models.Offer.venue == venue)
         .filter(
-            sqla.or_(
+            sa.or_(
                 # TODO: remove extraData["ean"] when migration is done
                 offers_models.Offer.extraData["ean"].astext.in_(ean_to_create_or_update),
                 offers_models.Offer.ean.in_(ean_to_create_or_update),
@@ -635,7 +635,7 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(product_id))
-        .filter(sqla.not_(offers_models.Offer.isEvent))
+        .filter(sa.not_(offers_models.Offer.isEvent))
         .one_or_none()
     )
     if not offer:
@@ -669,7 +669,7 @@ def get_product_by_ean(
     utils.check_venue_id_is_tied_to_api_key(query.venueId)
     offers: list[offers_models.Offer] | None = (
         utils.retrieve_offer_relations_query(_retrieve_offer_by_eans_query(query.eans, query.venueId))  # type: ignore[arg-type]
-        .filter(sqla.not_(offers_models.Offer.isEvent))
+        .filter(sa.not_(offers_models.Offer.isEvent))
         .all()
     )
 
@@ -749,7 +749,7 @@ def check_eans_availability(
     )
 
 
-def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Query:
+def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sa.orm.Query:
     return (
         utils._retrieve_offer_tied_to_user_query()
         .filter(
@@ -835,7 +835,7 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
     query = utils.retrieve_offer_query(body.offer_id)
     query = utils.retrieve_offer_relations_query(query)
     query = utils.load_venue_and_provider_query(query)
-    query = query.filter(sqla.not_(offers_models.Offer.isEvent))
+    query = query.filter(sa.not_(offers_models.Offer.isEvent))
 
     offer = query.one_or_none()
 

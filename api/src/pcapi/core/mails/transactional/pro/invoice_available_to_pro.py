@@ -1,5 +1,5 @@
 import sqlalchemy as sa
-import sqlalchemy.orm as sqla_orm
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core import mails
 import pcapi.core.finance.api as finance_api
@@ -38,7 +38,7 @@ def send_invoice_available_to_pro_email(invoice: finance_models.Invoice, batch: 
         )
         .join(offerers_models.Venue, offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId)
         .options(
-            sqla_orm.contains_eager(finance_models.BankAccount.venueLinks)
+            sa_orm.contains_eager(finance_models.BankAccount.venueLinks)
             .contains_eager(offerers_models.VenueBankAccountLink.venue)
             .load_only(offerers_models.Venue.bookingEmail)
         )

@@ -1,5 +1,5 @@
 import pytest
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import models as perm_models
@@ -28,7 +28,7 @@ class ButtonHelper:
         user = users_factories.UserFactory()
         perm_api.create_backoffice_profile(user)
 
-        query = perm_models.Role.query.options(sa.orm.joinedload(perm_models.Role.permissions))
+        query = perm_models.Role.query.options(sa_orm.joinedload(perm_models.Role.permissions))
         roles_without_needed_permission = [
             perm_models.Roles(role.name) for role in query if not role.has_permission(self.needed_permission)
         ]

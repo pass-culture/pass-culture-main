@@ -5,7 +5,7 @@ import pathlib
 from unittest import mock
 
 import pytest
-import sqlalchemy.exc as sqla_exc
+import sqlalchemy.exc as sa_exc
 
 from pcapi import settings
 from pcapi.core.geography import factories as geography_factories
@@ -673,7 +673,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         patch_path = "pcapi.routes.public.individual_offers.v1.products.db"
         with mock.patch(patch_path) as mocked_db:
             orig = mock.MagicMock()
-            err = sqla_exc.IntegrityError(statement="oops", params="none", orig=orig)
+            err = sa_exc.IntegrityError(statement="oops", params="none", orig=orig)
             mocked_db.session.flush.side_effect = err
 
             payload = build_base_payload(venue_provider.venue)

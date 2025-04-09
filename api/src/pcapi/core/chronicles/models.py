@@ -41,12 +41,12 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
     isSocialMediaDiffusible: bool = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
-    products: list[sa_orm.Mapped["Product"]] = sa.orm.relationship(
+    products: list[sa_orm.Mapped["Product"]] = sa_orm.relationship(
         "Product", backref="chronicles", secondary="product_chronicle"
     )
-    offers: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="chronicles", secondary="offer_chronicle")
+    offers: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", backref="chronicles", secondary="offer_chronicle")
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True, index=True)
-    user: sa_orm.Mapped["User"] = sa.orm.relationship("User", foreign_keys=[userId], backref="chronicles")
+    user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], backref="chronicles")
 
     __content_ts_vector__ = db.Column(
         db_utils.TSVector(),

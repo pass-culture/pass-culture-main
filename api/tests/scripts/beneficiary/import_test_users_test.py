@@ -3,7 +3,7 @@ import io
 import logging
 
 import pytest
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.core.finance import conf as finance_conf
@@ -124,7 +124,7 @@ class ReadFileTest:
                 assert not bank_account.venueLinks
 
         offerer_addresses = offerers_models.OffererAddress.query.options(
-            sa.orm.joinedload(offerers_models.OffererAddress.address)
+            sa_orm.joinedload(offerers_models.OffererAddress.address)
         ).all()
         assert len(offerer_addresses) == 4
         assert {oa.address.postalCode for oa in offerer_addresses} == {"75001", "06400"}

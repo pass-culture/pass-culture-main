@@ -13,6 +13,7 @@ from flask_login import current_user
 from markupsafe import Markup
 from markupsafe import escape
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
@@ -73,16 +74,16 @@ def _can_edit_siret() -> bool:
 
 def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
     base_query = offerers_models.Venue.query.options(
-        sa.orm.load_only(
+        sa_orm.load_only(
             offerers_models.Venue.id,
             offerers_models.Venue.name,
             offerers_models.Venue.publicName,
             offerers_models.Venue.dateCreated,
             offerers_models.Venue.isPermanent,
         ),
-        sa.orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.name),
-        sa.orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
-        sa.orm.joinedload(offerers_models.Venue.venueLabel).load_only(offerers_models.VenueLabel.label),
+        sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.name),
+        sa_orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
+        sa_orm.joinedload(offerers_models.Venue.venueLabel).load_only(offerers_models.VenueLabel.label),
     )
 
     if form.q.data:
@@ -140,16 +141,16 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
 def get_venue(venue_id: int) -> offerers_models.Venue:
 
     venue_query = offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id).options(
-        sa.orm.joinedload(offerers_models.Venue.managingOfferer)
+        sa_orm.joinedload(offerers_models.Venue.managingOfferer)
         .joinedload(offerers_models.Offerer.confidenceRule)
         .load_only(offerers_models.OffererConfidenceRule.confidenceLevel)
     )
 
     venue_query = venue_query.options(
-        sa.orm.joinedload(offerers_models.Venue.contact),
-        sa.orm.joinedload(offerers_models.Venue.venueLabel),
-        sa.orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
-        sa.orm.joinedload(offerers_models.Venue.venueProviders)
+        sa_orm.joinedload(offerers_models.Venue.contact),
+        sa_orm.joinedload(offerers_models.Venue.venueLabel),
+        sa_orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
+        sa_orm.joinedload(offerers_models.Venue.venueProviders)
         .load_only(
             providers_models.VenueProvider.id,
             providers_models.VenueProvider.lastSyncDate,
@@ -162,13 +163,13 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
             providers_models.Provider.localClass,
             providers_models.Provider.isActive,
         ),
-        sa.orm.joinedload(offerers_models.Venue.accessibilityProvider).load_only(
+        sa_orm.joinedload(offerers_models.Venue.accessibilityProvider).load_only(
             offerers_models.AccessibilityProvider.externalAccessibilityId
         ),
-        sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+        sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
             offerers_models.OffererConfidenceRule.confidenceLevel
         ),
-        sa.orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
+        sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
     )
 
     venue = venue_query.one_or_none()
@@ -368,7 +369,7 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
     venue_query = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
         .options(
-            sa.orm.joinedload(offerers_models.Venue.pricing_point_links).joinedload(
+            sa_orm.joinedload(offerers_models.Venue.pricing_point_links).joinedload(
                 offerers_models.VenuePricingPointLink.pricingPoint
             )
         )
@@ -381,11 +382,11 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
         )
         .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)
         .options(
-            sa.orm.contains_eager(offerers_models.Venue.bankAccountLinks)
+            sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
             .load_only(offerers_models.VenueBankAccountLink.timespan)
             .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
             .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
-            sa.orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
                 offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
             ),
         )
@@ -410,8 +411,8 @@ def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
     venue = (
         offerers_models.Venue.query.filter_by(id=venue_id)
         .options(
-            sa.orm.load_only(offerers_models.Venue.id),
-            sa.orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+            sa_orm.load_only(offerers_models.Venue.id),
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
                 offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
             ),
         )
@@ -465,8 +466,8 @@ def _fetch_venue_provider(venue_id: int, provider_id: int) -> providers_models.V
             providers_models.VenueProvider.venueId == venue_id,
         )
         .options(
-            sa.orm.joinedload(providers_models.VenueProvider.venue).load_only(offerers_models.Venue.id),
-            sa.orm.joinedload(providers_models.VenueProvider.provider).load_only(providers_models.Provider.localClass),
+            sa_orm.joinedload(providers_models.VenueProvider.venue).load_only(offerers_models.Venue.id),
+            sa_orm.joinedload(providers_models.VenueProvider.provider).load_only(providers_models.Provider.localClass),
         )
         .one_or_none()
     )
@@ -525,8 +526,8 @@ def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
         .outerjoin(history_models.ActionHistory, history_filter)
         .options(
-            sa.orm.contains_eager(offerers_models.Venue.action_history).joinedload(history_models.ActionHistory.user),
-            sa.orm.contains_eager(offerers_models.Venue.action_history).joinedload(
+            sa_orm.contains_eager(offerers_models.Venue.action_history).joinedload(history_models.ActionHistory.user),
+            sa_orm.contains_eager(offerers_models.Venue.action_history).joinedload(
                 history_models.ActionHistory.authorUser
             ),
         )
@@ -592,7 +593,7 @@ def get_collective_dms_applications(venue_id: int) -> utils.BackofficeResponse:
             == sa.select(offerers_models.Venue.siret).filter(offerers_models.Venue.id == venue_id).scalar_subquery()
         )
         .options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 educational_models.CollectiveDmsApplication.state,
                 educational_models.CollectiveDmsApplication.depositDate,
                 educational_models.CollectiveDmsApplication.lastChangeDate,
@@ -804,7 +805,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
 def update_for_fraud(venue_id: int) -> utils.BackofficeResponse:
     venue = (
         offerers_models.Venue.query.filter_by(id=venue_id)
-        .options(sa.orm.joinedload(offerers_models.Venue.confidenceRule))
+        .options(sa_orm.joinedload(offerers_models.Venue.confidenceRule))
         .one_or_none()
     )
     if not venue:
@@ -857,8 +858,8 @@ def get_batch_edit_venues_form() -> utils.BackofficeResponse:
         venues = (
             offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(form.object_ids_list))
             .options(
-                sa.orm.load_only(offerers_models.Venue.id),
-                sa.orm.joinedload(offerers_models.Venue.criteria).load_only(
+                sa_orm.load_only(offerers_models.Venue.id),
+                sa_orm.joinedload(offerers_models.Venue.criteria).load_only(
                     criteria_models.Criterion.id, criteria_models.Criterion.name
                 ),
             )
@@ -964,8 +965,8 @@ def _load_venue_for_removing_pricing_point(venue_id: int) -> offerers_models.Ven
     venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
         .options(
-            sa.orm.load_only(offerers_models.Venue.name, offerers_models.Venue.publicName, offerers_models.Venue.siret),
-            sa.orm.joinedload(offerers_models.Venue.pricing_point_links)
+            sa_orm.load_only(offerers_models.Venue.name, offerers_models.Venue.publicName, offerers_models.Venue.siret),
+            sa_orm.joinedload(offerers_models.Venue.pricing_point_links)
             .joinedload(offerers_models.VenuePricingPointLink.pricingPoint)
             .load_only(offerers_models.Venue.name, offerers_models.Venue.publicName, offerers_models.Venue.siret),
         )
@@ -1060,7 +1061,7 @@ def remove_pricing_point(venue_id: int) -> utils.BackofficeResponse:
 @venue_blueprint.route("/<int:venue_id>/set-pricing-point", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_set_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
-    aliased_venue = sa.orm.aliased(offerers_models.Venue)
+    aliased_venue = sa_orm.aliased(offerers_models.Venue)
     venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
         .join(offerers_models.Venue.managingOfferer)
@@ -1072,7 +1073,7 @@ def get_set_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
             ),
         )
         .options(
-            sa.orm.contains_eager(offerers_models.Venue.managingOfferer)
+            sa_orm.contains_eager(offerers_models.Venue.managingOfferer)
             .contains_eager(offerers_models.Offerer.managedVenues.of_type(aliased_venue))
             .load_only(
                 aliased_venue.id,
@@ -1101,7 +1102,7 @@ def get_set_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
 @venue_blueprint.route("/<int:venue_id>/set-pricing-point", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def set_pricing_point(venue_id: int) -> utils.BackofficeResponse:
-    aliased_venue = sa.orm.aliased(offerers_models.Venue)
+    aliased_venue = sa_orm.aliased(offerers_models.Venue)
     venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
         .join(offerers_models.Venue.managingOfferer)
@@ -1113,7 +1114,7 @@ def set_pricing_point(venue_id: int) -> utils.BackofficeResponse:
             ),
         )
         .options(
-            sa.orm.contains_eager(offerers_models.Venue.managingOfferer)
+            sa_orm.contains_eager(offerers_models.Venue.managingOfferer)
             .contains_eager(offerers_models.Offerer.managedVenues.of_type(aliased_venue))
             .load_only(
                 aliased_venue.id,
@@ -1154,8 +1155,8 @@ def _load_venue_for_removing_siret(venue_id: int) -> offerers_models.Venue:
     venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
         .options(
-            sa.orm.load_only(offerers_models.Venue.name, offerers_models.Venue.publicName, offerers_models.Venue.siret),
-            sa.orm.joinedload(offerers_models.Venue.managingOfferer)
+            sa_orm.load_only(offerers_models.Venue.name, offerers_models.Venue.publicName, offerers_models.Venue.siret),
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer)
             .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name)
             .joinedload(offerers_models.Offerer.managedVenues)
             .load_only()

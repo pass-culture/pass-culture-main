@@ -12,6 +12,7 @@ from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 from markupsafe import escape
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 
@@ -49,7 +50,7 @@ blueprint = utils.child_backoffice_blueprint(
 )
 
 
-aliased_stock = sa.orm.aliased(educational_models.CollectiveStock)
+aliased_stock = sa_orm.aliased(educational_models.CollectiveStock)
 
 SEARCH_FIELD_TO_PYTHON = {
     "FORMATS": {
@@ -285,7 +286,7 @@ def _get_collective_offers(
         .outerjoin(educational_models.CollectiveOffer.collectiveStock)
         .outerjoin(educational_models.CollectiveOffer.institution)
         .options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 educational_models.CollectiveOffer.id,
                 educational_models.CollectiveOffer.name,
                 educational_models.CollectiveOffer.dateCreated,
@@ -294,43 +295,43 @@ def _get_collective_offers(
                 educational_models.CollectiveOffer.authorId,
                 educational_models.CollectiveOffer.rejectionReason,
             ),
-            sa.orm.contains_eager(educational_models.CollectiveOffer.collectiveStock).load_only(
+            sa_orm.contains_eager(educational_models.CollectiveOffer.collectiveStock).load_only(
                 educational_models.CollectiveStock.startDatetime,
                 educational_models.CollectiveStock.endDatetime,
                 educational_models.CollectiveStock.price,
             ),
-            sa.orm.contains_eager(educational_models.CollectiveOffer.venue).options(
-                sa.orm.load_only(
+            sa_orm.contains_eager(educational_models.CollectiveOffer.venue).options(
+                sa_orm.load_only(
                     offerers_models.Venue.managingOffererId,
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
                     offerers_models.Venue.departementCode,
                 ),
-                sa.orm.contains_eager(offerers_models.Venue.managingOfferer).options(
-                    sa.orm.load_only(
+                sa_orm.contains_eager(offerers_models.Venue.managingOfferer).options(
+                    sa_orm.load_only(
                         offerers_models.Offerer.name,
                         # needed to check if stock is bookable and compute initial/remaining stock:
                         offerers_models.Offerer.isActive,
                         offerers_models.Offerer.validationStatus,
                     ),
-                    sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                    sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
                         offerers_models.OffererConfidenceRule.confidenceLevel
                     ),
-                    sa.orm.with_expression(
+                    sa_orm.with_expression(
                         offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
                     ),
                 ),
-                sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+                sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
                     offerers_models.OffererConfidenceRule.confidenceLevel
                 ),
             ),
-            sa.orm.contains_eager(educational_models.CollectiveOffer.institution).load_only(
+            sa_orm.contains_eager(educational_models.CollectiveOffer.institution).load_only(
                 educational_models.EducationalInstitution.name,
                 educational_models.EducationalInstitution.institutionId,
                 educational_models.EducationalInstitution.institutionType,
                 educational_models.EducationalInstitution.city,
             ),
-            sa.orm.joinedload(educational_models.CollectiveOffer.author).load_only(
+            sa_orm.joinedload(educational_models.CollectiveOffer.author).load_only(
                 users_models.User.id,
                 users_models.User.firstName,
                 users_models.User.lastName,
@@ -364,15 +365,15 @@ def _get_collective_offers(
                 ),
             )
             .options(
-                sa.orm.contains_eager(educational_models.CollectiveOffer.institution).options(
-                    sa.orm.contains_eager(educational_models.EducationalInstitution.deposits)
+                sa_orm.contains_eager(educational_models.CollectiveOffer.institution).options(
+                    sa_orm.contains_eager(educational_models.EducationalInstitution.deposits)
                     .load_only(educational_models.EducationalDeposit.ministry)
                     .contains_eager(educational_models.EducationalDeposit.educationalYear)
                     .load_only(
                         educational_models.EducationalYear.beginningDate,
                         educational_models.EducationalYear.expirationDate,
                     ),
-                    sa.orm.contains_eager(educational_models.EducationalInstitution.programAssociations)
+                    sa_orm.contains_eager(educational_models.EducationalInstitution.programAssociations)
                     .joinedload(educational_models.EducationalInstitutionProgramAssociation.program)
                     .load_only(educational_models.EducationalInstitutionProgram.label),
                 )
@@ -680,34 +681,34 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
     collective_offer_query = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.id == collective_offer_id
     ).options(
-        sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock),
-        sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+        sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock),
+        sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
             educational_models.CollectiveStock.collectiveBookings
         ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.venue).options(
-            sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+        sa_orm.joinedload(educational_models.CollectiveOffer.venue).options(
+            sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
                 offerers_models.OffererConfidenceRule.confidenceLevel
             ),
-            sa.orm.joinedload(offerers_models.Venue.managingOfferer).options(
-                sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer).options(
+                sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
                     offerers_models.OffererConfidenceRule.confidenceLevel
                 ),
-                sa.orm.with_expression(
+                sa_orm.with_expression(
                     offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
                 ),
             ),
         ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.lastValidationAuthor).load_only(
+        sa_orm.joinedload(educational_models.CollectiveOffer.lastValidationAuthor).load_only(
             users_models.User.firstName, users_models.User.lastName
         ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.teacher).load_only(
+        sa_orm.joinedload(educational_models.CollectiveOffer.teacher).load_only(
             educational_models.EducationalRedactor.firstName,
             educational_models.EducationalRedactor.lastName,
         ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
+        sa_orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
             educational_models.EducationalInstitution.name
         ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.template).load_only(
+        sa_orm.joinedload(educational_models.CollectiveOffer.template).load_only(
             educational_models.CollectiveOfferTemplate.name,
         ),
     )
@@ -748,12 +749,12 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
     collective_offer = (
         educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == collective_offer_id)
         .options(
-            sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock),
-            sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock),
+            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
                 educational_models.CollectiveStock.collectiveBookings
             ),
-            sa.orm.joinedload(educational_models.CollectiveOffer.venue),
-            sa.orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue),
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(
                 offerers_models.Venue.managingOfferer
             ),
         )
@@ -897,11 +898,11 @@ def move_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
             ),
         )
         .options(
-            sa.orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
+            sa_orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
                 offerers_models.VenuePricingPointLink.pricingPointId, offerers_models.VenuePricingPointLink.timespan
             ),
         )
-        .options(sa.orm.joinedload(offerers_models.Venue.offererAddress))
+        .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
     ).one()
 
     collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)

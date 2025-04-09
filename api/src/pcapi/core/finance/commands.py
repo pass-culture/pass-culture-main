@@ -3,7 +3,7 @@ import decimal
 import logging
 
 import click
-import sqlalchemy.orm as sqla_orm
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors.dms.utils import import_ds_applications
@@ -140,8 +140,8 @@ def add_custom_offer_reimbursement_rule(
 
     offer = (
         offers_models.Offer.query.options(
-            sqla_orm.joinedload(offers_models.Offer.stocks, innerjoin=True),
-            sqla_orm.joinedload(offers_models.Offer.venue, innerjoin=True),
+            sa_orm.joinedload(offers_models.Offer.stocks, innerjoin=True),
+            sa_orm.joinedload(offers_models.Offer.venue, innerjoin=True),
         )
         .filter_by(id=offer_id)
         .one_or_none()
