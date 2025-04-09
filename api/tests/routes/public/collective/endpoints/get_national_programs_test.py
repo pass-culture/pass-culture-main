@@ -14,6 +14,10 @@ class GetNationalProgramsTest(PublicAPIEndpointBaseHelper):
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # select national_program
 
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 2  # Select API key + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
+
     def test_list_national_programs(self, client):
         plain_api_key, _ = self.setup_provider()
         active_programs = educational_factories.NationalProgramFactory.create_batch(2)

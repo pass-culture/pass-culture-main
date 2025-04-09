@@ -9,7 +9,9 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public import utils
@@ -24,6 +26,7 @@ from pcapi.validation.routes.users_authentifications import provider_api_key_req
 
 
 @blueprints.public_api.route("/v2/collective/offers/", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -63,6 +66,7 @@ def get_collective_offers_public(
 
 
 @blueprints.public_api.route("/v2/collective/offers/<int:offer_id>", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -78,9 +82,7 @@ def get_collective_offers_public(
         )
     ),
 )
-def get_collective_offer_public(
-    offer_id: int,
-) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
+def get_collective_offer_public(offer_id: int) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
     """
     Get Collective Offer
 
@@ -89,21 +91,11 @@ def get_collective_offer_public(
     try:
         offer = educational_repository.get_collective_offer_by_id(offer_id)
     except educational_exceptions.CollectiveOfferNotFound:
-        raise ApiErrors(
-            errors={
-                "global": ["L'offre collective n'existe pas"],
-            },
-            status_code=404,
-        )
+        raise ApiErrors(errors={"global": ["L'offre collective n'existe pas"]}, status_code=404)
 
     if not offer.collectiveStock:
         # if the offer does not have any stock pretend it doesn't exists
-        raise ApiErrors(
-            errors={
-                "global": ["L'offre collective n'existe pas"],
-            },
-            status_code=404,
-        )
+        raise ApiErrors(errors={"global": ["L'offre collective n'existe pas"]}, status_code=404)
 
     if offer.providerId != current_api_key.providerId:
         msg = "Vous n'avez pas le droit d'accéder à une ressource que vous n'avez pas créée via cette API"
@@ -113,6 +105,7 @@ def get_collective_offer_public(
 
 
 @blueprints.public_api.route("/v2/collective/offers/", methods=["POST"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -146,6 +139,7 @@ def post_collective_offer_public(
             image_as_bytes = utils.get_bytes_from_base64_string(body.image_file)
         except utils.InvalidBase64Exception:
             raise ApiErrors(errors={"imageFile": ["La valeur ne semble pas être du base 64 valide."]})
+
         try:
             offers_validation.check_image(
                 image_as_bytes,
@@ -175,43 +169,20 @@ def post_collective_offer_public(
             )
 
     try:
-        offer = educational_api_offer.create_collective_offer_public(
-            requested_id=current_api_key.providerId,
-            body=body,
-        )
+        offer = educational_api_offer.create_collective_offer_public(requested_id=current_api_key.providerId, body=body)
 
+    # venue errors
     except educational_exceptions.CulturalPartnerNotFoundException:
-        raise ApiErrors(
-            errors={
-                "global": ["Non éligible pour les offres collectives."],
-            },
-            status_code=403,
-        )
+        raise ApiErrors(errors={"global": ["Non éligible pour les offres collectives."]}, status_code=403)
     except offerers_exceptions.VenueNotFoundException:
-        raise ApiErrors(
-            errors={
-                "venueId": ["Ce lieu n'à pas été trouvé."],
-            },
-            status_code=404,
-        )
-    except educational_exceptions.InvalidInterventionArea as exc:
-        raise ApiErrors(
-            errors={
-                "interventionArea": [f"Les valeurs {exc.errors} ne sont pas valides."],
-            },
-            status_code=404,
-        )
+        raise ApiErrors(errors={"venueId": ["Ce lieu n'à pas été trouvé."]}, status_code=404)
+
+    # institution errors
     except educational_exceptions.EducationalInstitutionUnknown:
-        raise ApiErrors(
-            errors={
-                "educationalInstitutionId": ["Établissement scolaire non trouvé."],
-            },
-            status_code=404,
-        )
+        raise ApiErrors(errors={"educationalInstitutionId": ["Établissement scolaire non trouvé."]}, status_code=404)
     except educational_exceptions.EducationalInstitutionIsNotActive:
         raise ApiErrors(
-            errors={"educationalInstitutionId": ["L'établissement scolaire n'est pas actif."]},
-            status_code=403,
+            errors={"educationalInstitutionId": ["L'établissement scolaire n'est pas actif."]}, status_code=403
         )
 
     # domains / national_program errors
@@ -227,20 +198,28 @@ def post_collective_offer_public(
         raise ApiErrors(
             errors={"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}, status_code=400
         )
+
+    # dates errors
     except educational_exceptions.StartEducationalYearMissing:
         raise ApiErrors(errors={"startDatetime": ["Année scolaire manquante pour la date de début."]}, status_code=400)
     except educational_exceptions.EndEducationalYearMissing:
         raise ApiErrors(errors={"endDatetime": ["Année scolaire manquante pour la date de fin."]}, status_code=400)
+
     except offers_validation.OfferValidationError as err:
         raise ApiErrors(errors={err.field: err.msg}, status_code=400)
 
-    offer_id = offer.id  # store id here to avoid re-querying it after commit from attach_image
     if image_as_bytes and body.image_credit is not None:
         educational_api_offer.attach_image(
             obj=offer, image=image_as_bytes, crop_params=DO_NOT_CROP, credit=body.image_credit
         )
 
-    offer = educational_repository.get_collective_offer_by_id(offer_id)
+    # this is needed to have date fields without TZ, for comparison in the serializer
+    db.session.expire(offer)
+    db.session.expire(offer.collectiveStock)
+
+    # re-fetch related data for the serializer
+    offer = educational_repository.get_collective_offer_by_id(offer.id)
+
     return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
 
@@ -302,10 +281,7 @@ def patch_collective_offer_public(
     for field in non_nullable_fields:
         if field in new_values and new_values[field] is None:
             raise ApiErrors(
-                errors={
-                    field: ["Ce champ peut ne pas être présent mais ne peut pas être null."],
-                },
-                status_code=400,
+                errors={field: ["Ce champ peut ne pas être présent mais ne peut pas être null."]}, status_code=400
             )
 
     if "educationalPriceDetail" in new_values:
@@ -315,21 +291,11 @@ def patch_collective_offer_public(
     try:
         offer = educational_repository.get_collective_offer_by_id(offer_id)
     except educational_exceptions.CollectiveOfferNotFound:
-        raise ApiErrors(
-            errors={
-                "global": ["L'offre collective n'existe pas"],
-            },
-            status_code=404,
-        )
+        raise ApiErrors(errors={"global": ["L'offre collective n'existe pas"]}, status_code=404)
 
     if not offer.collectiveStock:
         # if the offer does not have any stock pretend it doesn't exists
-        raise ApiErrors(
-            errors={
-                "global": ["L'offre collective n'existe pas"],
-            },
-            status_code=404,
-        )
+        raise ApiErrors(errors={"global": ["L'offre collective n'existe pas"]}, status_code=404)
 
     if not offer.provider or offer.provider.id != current_api_key.provider.id:
         raise ApiErrors(
@@ -342,35 +308,21 @@ def patch_collective_offer_public(
     if new_values.get("venueId"):
         venue = offerers_repository.find_venue_and_provider_by_id(new_values["venueId"])
         if not venue:
-            raise ApiErrors(
-                errors={
-                    "venueId": ["Ce lieu n'a pas été trouvé."],
-                },
-                status_code=404,
-            )
+            raise ApiErrors(errors={"venueId": ["Ce lieu n'a pas été trouvé."]}, status_code=404)
+
         list_venueproviders = [
             venue_provider
             for venue_provider in venue.venueProviders
             if venue_provider.providerId == current_api_key.provider.id
         ]
         if not list_venueproviders:
-            raise ApiErrors(
-                errors={
-                    "venueId": ["aucun lieu de fournisseur n'a été trouvé."],
-                },
-                status_code=403,
-            )
+            raise ApiErrors(errors={"venueId": ["aucun lieu de fournisseur n'a été trouvé."]}, status_code=403)
 
     if new_values.get("offerVenue"):
         if new_values["offerVenue"] == OfferAddressType.OFFERER_VENUE.value:
             venue = offerers_repository.find_venue_by_id(new_values["offerVenue"]["venuId"])
             if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):
-                raise ApiErrors(
-                    errors={
-                        "offerVenue.venueId": ["Ce lieu n'a pas été trouvé."],
-                    },
-                    status_code=404,
-                )
+                raise ApiErrors(errors={"offerVenue.venueId": ["Ce lieu n'a pas été trouvé."]}, status_code=404)
 
     # validate image_data
     if "imageCredit" in new_values:
@@ -404,6 +356,7 @@ def patch_collective_offer_public(
                 },
                 status_code=400,
             )
+
         if body.imageFile:
             try:
                 image_as_bytes = utils.get_bytes_from_base64_string(body.imageFile)
@@ -445,45 +398,20 @@ def patch_collective_offer_public(
     # real edition
     try:
         offer = educational_api_offer.edit_collective_offer_public(
-            provider_id=current_api_key.providerId,
-            new_values=new_values,
-            offer=offer,
+            provider_id=current_api_key.providerId, new_values=new_values, offer=offer
         )
-    except educational_exceptions.EducationalInstitutionIsNotActive:
-        raise ApiErrors(
-            errors={
-                "global": ["cet institution est expiré."],
-            },
-            status_code=403,
-        )
+
+    # venue errors
     except educational_exceptions.CulturalPartnerNotFoundException:
-        raise ApiErrors(
-            errors={
-                "global": ["Non éligible pour les offres collectives."],
-            },
-            status_code=403,
-        )
+        raise ApiErrors(errors={"global": ["Non éligible pour les offres collectives."]}, status_code=403)
     except offerers_exceptions.VenueNotFoundException:
-        raise ApiErrors(
-            errors={
-                "venueId": ["Ce lieu n'a pas été trouvé."],
-            },
-            status_code=404,
-        )
-    except educational_exceptions.InvalidInterventionArea as exc:
-        raise ApiErrors(
-            errors={
-                "interventionArea": [f"Les valeurs {exc.errors} ne sont pas valides."],
-            },
-            status_code=404,
-        )
+        raise ApiErrors(errors={"venueId": ["Ce lieu n'a pas été trouvé."]}, status_code=404)
+
+    # institution errors
+    except educational_exceptions.EducationalInstitutionIsNotActive:
+        raise ApiErrors(errors={"global": ["cet institution est expiré."]}, status_code=403)
     except educational_exceptions.EducationalInstitutionUnknown:
-        raise ApiErrors(
-            errors={
-                "educationalInstitutionId": ["Établissement scolaire non trouvé."],
-            },
-            status_code=404,
-        )
+        raise ApiErrors(errors={"educationalInstitutionId": ["Établissement scolaire non trouvé."]}, status_code=404)
 
     # domains / national_program errors
     except educational_exceptions.EducationalDomainsNotFound:
@@ -495,6 +423,7 @@ def patch_collective_offer_public(
     except educational_exceptions.InactiveNationalProgram:
         raise ApiErrors(errors={"nationalProgramId": ["Dispositif national inactif."]}, status_code=400)
 
+    # edition errors
     except (
         educational_exceptions.CollectiveOfferNotEditable,
         educational_exceptions.CollectiveOfferStockBookedAndBookingNotPending,
@@ -511,6 +440,8 @@ def patch_collective_offer_public(
         raise ApiErrors(
             errors={"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}, status_code=400
         )
+
+    # dates errors
     except educational_exceptions.StartEducationalYearMissing:
         raise ApiErrors(errors={"startDatetime": ["Année scolaire manquante pour la date de début."]}, status_code=400)
     except educational_exceptions.EndEducationalYearMissing:
@@ -527,6 +458,7 @@ def patch_collective_offer_public(
             errors={"global": ["La date de fin de l'évènement ne peut précéder la date de début."]},
             status_code=400,
         )
+
     except offers_validation.OfferValidationError as err:
         raise ApiErrors(errors={err.field: err.msg}, status_code=400)
 
@@ -537,10 +469,18 @@ def patch_collective_offer_public(
     elif image_file is None:
         educational_api_offer.delete_image(obj=offer)
 
+    # this is needed to have date fields without TZ, for comparison in the serializer
+    db.session.expire(offer)
+    db.session.expire(offer.collectiveStock)
+
+    # re-fetch related data for the serializer
+    offer = educational_repository.get_collective_offer_by_id(offer.id)
+
     return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
 
 @blueprints.public_api.route("/v2/collective/offers/formats", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,

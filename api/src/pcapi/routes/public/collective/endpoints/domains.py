@@ -1,4 +1,5 @@
 from pcapi.core.educational import repository as educational_repository
+from pcapi.repository import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.serialization import domains as domains_serialization
@@ -11,6 +12,7 @@ from pcapi.validation.routes.users_authentifications import provider_api_key_req
 
 
 @blueprints.public_api.route("/v2/collective/educational-domains", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,

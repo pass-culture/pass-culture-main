@@ -19,6 +19,10 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # select offers and bookings
 
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 2  # Select API key + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
+
     def test_get_offers(self, client):
         venue_provider = provider_factories.VenueProviderFactory()
 
@@ -213,7 +217,7 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         offer_id = educational_factories.CollectiveStockFactory().collectiveOffer.id
 
         api_client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries + 1):  # rollback
             response = api_client.get(f"/v2/collective/offers/{offer_id}")
             assert response.status_code == 403
 

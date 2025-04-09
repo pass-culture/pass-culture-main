@@ -21,3 +21,7 @@ class GetCollectiveFormatsTest(PublicAPIEndpointBaseHelper):
         assert sorted([{"name": fmt.value, "id": fmt.name} for fmt in EacFormat], key=lambda x: x["id"]) == sorted(
             response.json, key=lambda x: x["id"]
         )
+
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 2  # Select API key + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)

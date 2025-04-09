@@ -12,6 +12,10 @@ class CollectiveOffersGetStudentsLevelsTest(PublicAPIEndpointBaseHelper):
     endpoint_url = "/v2/collective/student-levels"
     endpoint_method = "get"
 
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 2  # Select API key + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
+
     def test_list_students_levels(self, client):
         plain_api_key, _ = self.setup_provider()
 
@@ -32,6 +36,6 @@ class CollectiveOffersGetStudentsLevelsTest(PublicAPIEndpointBaseHelper):
         offerers_factories.ApiKeyFactory(offerer=user_offerer.offerer)
 
         client = client.with_session_auth(user_offerer.user.email)
-        with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
+        with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES + 1):  # rollback
             response = client.get(self.endpoint_url)
             assert response.status_code == 401
