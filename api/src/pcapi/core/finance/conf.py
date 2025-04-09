@@ -61,13 +61,8 @@ RECREDIT_TYPE_AGE_MAPPING = {
     15: models.RecreditType.RECREDIT_15,
     16: models.RecreditType.RECREDIT_16,
     17: models.RecreditType.RECREDIT_17,
+    18: models.RecreditType.RECREDIT_18,
 }
-
-
-def get_recredit_mapping() -> dict[int, models.RecreditType]:
-    if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-        RECREDIT_TYPE_AGE_MAPPING[18] = models.RecreditType.RECREDIT_18
-    return RECREDIT_TYPE_AGE_MAPPING
 
 
 RECREDIT_TYPE_AMOUNT_MAPPING = {

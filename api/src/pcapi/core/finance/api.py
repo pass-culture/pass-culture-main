@@ -3140,7 +3140,7 @@ def _recredit_user_v2(user: users_models.User) -> models.Recredit | None:
     for age in range(min_age_between_deposit_and_now, user.age + 1):
         if not _can_be_recredited(user, age):
             continue
-        latest_recredit = _recredit_deposit(deposit, age, recredit_type=conf.get_recredit_mapping()[age])
+        latest_recredit = _recredit_deposit(deposit, age, recredit_type=conf.RECREDIT_TYPE_AGE_MAPPING[age])
 
     return latest_recredit
 
@@ -3164,7 +3164,7 @@ def _recredit_grant_17_18_deposit_using_age(user: users_models.User) -> models.R
     latest_age_related_recredit: models.Recredit | None = None
     starting_age, end_age = sorted([age_at_first_registration or current_age, current_age])
     for age_to_recredit in range(starting_age, end_age + 1):
-        recredit_type_to_create = conf.get_recredit_mapping().get(age_to_recredit)
+        recredit_type_to_create = conf.RECREDIT_TYPE_AGE_MAPPING.get(age_to_recredit)
         if not recredit_type_to_create:
             continue
 
@@ -3396,7 +3396,7 @@ def _can_be_recredited(user: users_models.User, age: int | None = None) -> bool:
 
 def _can_be_recredited_v2(user: users_models.User, age: int | None = None) -> bool:
     return (
-        age in conf.get_recredit_mapping()
+        age in conf.RECREDIT_TYPE_AGE_MAPPING
         and _has_celebrated_birthday_since_credit_or_registration(user)
         and not _has_been_recredited(user, age)
     )
@@ -3407,7 +3407,7 @@ def _can_be_recredited_v3(user: users_models.User, age: int | None = None) -> bo
         return False
     if age < 16:
         return False
-    if age not in conf.get_recredit_mapping():
+    if age not in conf.RECREDIT_TYPE_AGE_MAPPING:
         return False
 
     if not user.has_active_deposit:
@@ -3426,7 +3426,7 @@ def _can_be_recredited_v3(user: users_models.User, age: int | None = None) -> bo
         return _can_be_recredited_v2(user, age)
 
     has_been_recredited = any(
-        recredit.recreditType == conf.get_recredit_mapping()[age] for recredit in user.deposit.recredits
+        recredit.recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[age] for recredit in user.deposit.recredits
     )
     return not has_been_recredited
 
@@ -3465,7 +3465,7 @@ def _has_been_recredited(user: users_models.User, age: int | None = None) -> boo
     if len(user.deposit.recredits) == 0:
         return False
 
-    has_been_recredited = conf.get_recredit_mapping()[age] in [
+    has_been_recredited = conf.RECREDIT_TYPE_AGE_MAPPING[age] in [
         recredit.recreditType for recredit in user.deposit.recredits
     ]
     if has_been_recredited:
