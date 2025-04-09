@@ -1,0 +1,109 @@
+{% extends "layouts/connected_v2.html" %}
+{% import "components/badges.html" as badges with context %}
+{% macro action_bar_button(icon, title, modal_id=none, submit_form=none) %}
+  <button class="btn btn-outline-primary-subtle-bg d-flex align-items-center gap-2"
+          {% if modal_id %}data-bs-toggle="modal" data-bs-target="{{ modal_id }}"{% endif %}
+          {% if submit_form %}href="#" data-submit-form="{{ submit_form  }}"{% endif %}
+          type="button">
+    {{ title }}
+    <i class="bi bi-{{ icon }}"></i>
+  </button>
+{% endmacro %}
+{% macro action_bar_additional_button(icon, title, modal_id=none, submit_form=none) %}
+  <button class="dropdown-item d-flex align-items-center gap-2"
+          {% if modal_id %}data-bs-toggle="modal" data-bs-target="{{ modal_id }}"{% endif %}
+          {% if submit_form %}href="#" data-submit-form="{{ submit_form  }}"{% endif %}
+          type="button">
+    <i class="bi bi-{{ icon }}"></i>
+    {{ title }}
+  </button>
+{% endmacro %}
+{% macro description_detail_vertical(title) %}
+  <dl>
+    <dt>{{ title }}</dt>
+    <dd>
+      {{ caller() }}
+    </dd>
+  </dl>
+{% endmacro %}
+{% macro description_detail_horizontal(title) %}
+  <dl class="row">
+    <dt class="col-sm-3">{{ title }}</dt>
+    <dd class="col-sm-9">
+      {{ caller() }}
+    </dd>
+  </dl>
+{% endmacro %}
+{% macro content_navbar(navbar_name) %}
+  <nav id="{{ navbar_name }}-navbar"
+       class="navbar p-0">
+    <ul class="nav nav-underline w-100">
+      {{ caller() }}
+      <li class="nav-item flex-grow-1 nav-link disabled"></li>
+    </ul>
+  </nav>
+{% endmacro %}
+{% macro content_navbar_element(section_name, section_title) %}
+  <li class="nav-item">
+    <a class="nav-link px-3 py-2"
+       href="#{{ section_name }}-section">{{ section_title }}</a>
+  </li>
+{% endmacro %}
+{% macro details_content_wrapper(navbar_name) %}
+  <div data-bs-spy="scroll"
+       data-bs-target="#{{ navbar_name }}-navbar"
+       data-bs-smooth-scroll="true"
+       tabindex="0"
+       class="py-3 vh-100 overflow-y-scroll"
+       id="{{ navbar_name }}-container">
+    <div class="vstack gap-1">
+      {# wrap sections in divs to separate them with gaps #}
+      {{ caller() }}
+    </div>
+  </div>
+{% endmacro %}
+{% macro nav_section(section_name, title) %}
+  <div>
+    <h4 class="pb-2{{ ' focus' if (active_tab == section_name) else ''}}"
+        id="{{ section_name }}-section">{{ title }}</h4>
+    {{ caller() }}
+  </div>
+{% endmacro %}
+{% block main_content %}
+  <div class="d-flex container-fluid h-100 p-0 overflow-y-hidden">
+    <!-- MAIN COLUMN -->
+    <div class="col-9 px-5 py-3">
+      <div class="vstack gap-3">
+        <!-- TITLE + TAGS -->
+        <div class="d-flex">
+          <!-- OFFER NAME -->
+          <h2 class="flex-fill">
+            {% block title %}
+            {% endblock title %}
+          </h2>
+          <!-- TAGS -->
+          {% block header_extra %}{% endblock %}
+        </div>
+        <!-- ACTION BAR -->
+        <div class="btn-group align-self-start"
+             role="group">
+          {% block action_buttons %}{% endblock %}
+        </div>
+        {% block extra_title_bar %}{% endblock %}
+      </div>
+      <!-- DETAILS -->
+      {% block details_container %}
+      {% endblock details_container %}
+    </div>
+    <!-- SIDE COLUMN -->
+    <div class="col-3 shadow-sm">
+      {% block side_column_container %}
+        <div class="vstack gap-4 py-4 px-3 overflow-y-scroll vh-100">
+          {% block side_column %}
+          {% endblock side_column %}
+        </div>
+      {% endblock side_column_container %}
+    </div>
+  </div>
+  {% block extra_main_content %}{% endblock %}
+{% endblock main_content %}

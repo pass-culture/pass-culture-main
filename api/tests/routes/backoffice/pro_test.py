@@ -583,7 +583,7 @@ class SearchVenueTest:
 
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 2  # 4 * Librairie but only odd indexes in venues have contact email
-        sorted_cards_text = sorted(cards_text, key=lambda text: re.findall(r"Venue ID : \d+ ", text)[0])
+        sorted_cards_text = sorted(cards_text, key=lambda text: int(re.findall(r"Venue ID : (\d+) ", text)[0]))
         assert_venue_equals(sorted_cards_text[0], self.venues[3])  # Librairie Delta / du Centaure
         assert_venue_equals(sorted_cards_text[1], self.venues[9])  # Librairie Beta / de la Plage
 
@@ -609,7 +609,7 @@ class SearchVenueTest:
 
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 3
-        sorted_cards_text = sorted(cards_text, key=lambda text: re.findall(r"Venue ID : \d+ ", text)[0])
+        sorted_cards_text = sorted(cards_text, key=lambda text: int(re.findall(r"Venue ID : (\d+) ", text)[0]))
         assert_venue_equals(sorted_cards_text[0], self.venues[0])  # Librairie Alpha
         assert_venue_equals(sorted_cards_text[1], self.venues[4])  # Cinéma Alpha
         assert_venue_equals(sorted_cards_text[2], self.venues[8])  # Théâtre Alpha
