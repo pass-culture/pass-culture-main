@@ -79,9 +79,20 @@ export const SignIn = (): JSX.Element => {
         captchaToken,
       })
 
-      const inisializeOffererIsOnboarded = async (offererId: number) => {
-        const response = await api.getOfferer(offererId)
-        dispatch(updateOffererIsOnboarded(response.isOnboarded))
+      const initializeOffererIsOnboarded = async (offererId: number) => {
+        try {
+          const response = await api.getOfferer(offererId)
+          dispatch(updateOffererIsOnboarded(response.isOnboarded))
+        } catch (e: unknown) {
+          if (isErrorAPIError(e) && e.status === 403) {
+            // Do nothing at this point,
+            // Because a 403 means that the user is waiting for a "rattachement" to the offerer,
+            // But we must let him sign in
+            return
+          }
+          // Else it's another error we should handle here at sign in
+          throw e
+        }
       }
 
       const offerers = await api.listOfferersNames()
@@ -97,12 +108,12 @@ export const SignIn = (): JSX.Element => {
               savedOffererId ? Number(savedOffererId) : firstOffererId
             )
           )
-          await inisializeOffererIsOnboarded(
+          await initializeOffererIsOnboarded(
             savedOffererId ? Number(savedOffererId) : firstOffererId
           )
         } else {
           dispatch(updateSelectedOffererId(firstOffererId))
-          await inisializeOffererIsOnboarded(firstOffererId)
+          await initializeOffererIsOnboarded(firstOffererId)
         }
       }
 
@@ -164,9 +175,10 @@ export const SignIn = (): JSX.Element => {
   ) : (
     <Layout
       layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}
-      mainHeading={is2025SignUpEnabled
-        ? 'Connexion'
-        : 'Bienvenue sur l’espace partenaires culturels'
+      mainHeading={
+        is2025SignUpEnabled
+          ? 'Connexion'
+          : 'Bienvenue sur l’espace partenaires culturels'
       }
     >
       <MandatoryInfo areAllFieldsMandatory={true} />
