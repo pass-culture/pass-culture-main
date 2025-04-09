@@ -7,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.functions import func
 
 import pcapi.core.offerers.models as offerers_models
@@ -163,7 +164,7 @@ def get_single_sign_on(sso_provider: str, sso_user_id: str) -> models.SingleSign
             models.SingleSignOn.ssoProvider == sso_provider,
             models.SingleSignOn.ssoUserId == sso_user_id,
         )
-        .options(sa.orm.joinedload(models.SingleSignOn.user))
+        .options(sa_orm.joinedload(models.SingleSignOn.user))
         .one_or_none()
     )
 

@@ -6,6 +6,7 @@ from datetime import datetime
 import re
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.educational import models as educational_models
@@ -23,14 +24,14 @@ from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.regions import get_department_codes_for_region
 
 
-def _join_venue(query: sa.orm.Query, is_venue_table_joined: bool = False) -> tuple[sa.orm.Query, bool]:
+def _join_venue(query: sa_orm.Query, is_venue_table_joined: bool = False) -> tuple[sa_orm.Query, bool]:
     if not is_venue_table_joined:
         query = query.join(offerers_models.Venue)
     return query, True
 
 
 def _apply_query_filters(
-    query: sa.orm.Query,
+    query: sa_orm.Query,
     *,
     q: str | None,  # search query
     regions: list[str] | None,
@@ -40,8 +41,8 @@ def _apply_query_filters(
     from_datetime: datetime | None,
     to_datetime: datetime | None,
     cls: type[offerers_models.Offerer | offerers_models.UserOfferer],
-    offerer_id_column: sa.orm.InstrumentedAttribute,
-) -> sa.orm.Query:
+    offerer_id_column: sa_orm.InstrumentedAttribute,
+) -> sa_orm.Query:
     is_venue_table_joined = False
 
     if status:
@@ -187,7 +188,7 @@ def list_offerers_to_be_validated(
     dms_adage_status: list[GraphQLApplicationStates] | None = None,
     from_datetime: datetime | None = None,
     to_datetime: datetime | None = None,
-) -> sa.orm.Query:
+) -> sa_orm.Query:
     # Fetch only the single last comment to avoid loading the full history (joinedload would fetch 1 row per action)
     # This replaces lookup for last comment in offerer.action_history after joining with all actions
     last_comment_subquery = (
@@ -288,7 +289,7 @@ def list_offerers_to_be_validated(
     query = query.outerjoin(
         offerers_models.IndividualOffererSubscription, offerers_models.Offerer.individualSubscription
     ).options(
-        sa.orm.contains_eager(offerers_models.Offerer.individualSubscription).load_only(
+        sa_orm.contains_eager(offerers_models.Offerer.individualSubscription).load_only(
             offerers_models.IndividualOffererSubscription.isEmailSent,
             offerers_models.IndividualOffererSubscription.isCriminalRecordReceived,
             offerers_models.IndividualOffererSubscription.isExperienceReceived,
@@ -337,7 +338,7 @@ def list_users_offerers_to_be_validated(
     offerer_status: list[ValidationStatus] | None = None,
     from_datetime: datetime | None = None,
     to_datetime: datetime | None = None,
-) -> sa.orm.Query:
+) -> sa_orm.Query:
     # Fetch only the single last comment to avoid loading the full history (joinedload would fetch 1 row per action)
     last_comment_subquery = (
         db.session.query(history_models.ActionHistory.comment)
@@ -383,8 +384,8 @@ def list_users_offerers_to_be_validated(
         )
         .options(
             # 1-1 relationship so joinedload will not increase the number of SQL rows
-            sa.orm.joinedload(offerers_models.UserOfferer.user),
-            sa.orm.joinedload(offerers_models.UserOfferer.offerer),
+            sa_orm.joinedload(offerers_models.UserOfferer.user),
+            sa_orm.joinedload(offerers_models.UserOfferer.offerer),
         )
         .join(offerers_models.UserOfferer.user)
         .join(offerers_models.UserOfferer.offerer)

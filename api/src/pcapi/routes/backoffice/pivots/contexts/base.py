@@ -2,6 +2,7 @@ import typing
 
 from flask_login import current_user
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.history import api as history_api
@@ -31,7 +32,7 @@ class PivotContext:
         """
         pivot_class = cls.pivot_class()
         query = pivot_class.query.options(
-            sa.orm.joinedload(pivot_class.cinemaProviderPivot)
+            sa_orm.joinedload(pivot_class.cinemaProviderPivot)
             .load_only(providers_models.CinemaProviderPivot.idAtProvider)
             .joinedload(providers_models.CinemaProviderPivot.venue)
             .load_only(
@@ -79,7 +80,7 @@ class PivotContext:
         pivot_model = cls.pivot_class()
         pivot = (
             pivot_model.query.options(
-                sa.orm.joinedload(pivot_model.cinemaProviderPivot).joinedload(
+                sa_orm.joinedload(pivot_model.cinemaProviderPivot).joinedload(
                     providers_models.CinemaProviderPivot.venue
                 )
             )

@@ -9,6 +9,7 @@ from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.fraud import models as fraud_models
@@ -46,7 +47,7 @@ def render_domain_names_list(form: forms.BlacklistDomainNameForm | None = None) 
         .order_by(history_models.ActionHistory.actionDate.desc())
         .limit(50)
         .options(
-            sa.orm.joinedload(history_models.ActionHistory.authorUser).load_only(
+            sa_orm.joinedload(history_models.ActionHistory.authorUser).load_only(
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName, users_models.User.email
             )
         )
@@ -54,7 +55,7 @@ def render_domain_names_list(form: forms.BlacklistDomainNameForm | None = None) 
 
     blacklist = fraud_models.BlacklistedDomainName.query.order_by(
         fraud_models.BlacklistedDomainName.dateCreated.desc()
-    ).options(sa.orm.load_only(fraud_models.BlacklistedDomainName.id, fraud_models.BlacklistedDomainName.domain))
+    ).options(sa_orm.load_only(fraud_models.BlacklistedDomainName.id, fraud_models.BlacklistedDomainName.domain))
 
     active_tab = request.args.get("active_tab", "blacklist")
     return render_template(
@@ -78,7 +79,7 @@ def _filter_non_pro_by_domain_name_query(domain_name: str) -> BaseQuery:
 
 def _list_non_pro_suspensions(domain_name: str) -> list[str]:
     query = _filter_non_pro_by_domain_name_query(domain_name).options(
-        sa.orm.load_only(users_models.User.id, users_models.User.email)
+        sa_orm.load_only(users_models.User.id, users_models.User.email)
     )
 
     return sorted(query, key=attrgetter("email"))
@@ -91,7 +92,7 @@ def _list_untouched_pro_accounts(domain_name: str) -> list[str]:
             users_models.User.has_non_attached_pro_role,
         ),
         sa.func.email_domain(users_models.User.email) == domain_name.lower(),
-    ).options(sa.orm.load_only(users_models.User.id, users_models.User.email))
+    ).options(sa_orm.load_only(users_models.User.id, users_models.User.email))
 
     return sorted(query, key=attrgetter("email"))
 

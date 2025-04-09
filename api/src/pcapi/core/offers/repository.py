@@ -102,7 +102,7 @@ def get_capped_offers_for_filters(
 
     offers = (
         query.options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 models.Offer.id,
                 models.Offer.name,
                 models.Offer.isActive,
@@ -386,7 +386,7 @@ def get_offers_by_filters(
     if status is not None:
         query = _filter_by_status(query, status)
     if period_beginning_date is not None or period_ending_date is not None:
-        offer_alias = sa.orm.aliased(models.Offer)
+        offer_alias = sa_orm.aliased(models.Offer)
         stock_query = (
             models.Stock.query.join(offer_alias)
             .outerjoin(
@@ -944,7 +944,7 @@ def get_and_lock_stock(stock_id: int) -> models.Stock:
         models.Stock.query.filter_by(id=stock_id)
         .populate_existing()
         .with_for_update()
-        .options(sa.orm.joinedload(models.Stock.offer, innerjoin=True))
+        .options(sa_orm.joinedload(models.Stock.offer, innerjoin=True))
         .one_or_none()
     )
     if not stock:

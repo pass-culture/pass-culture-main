@@ -9,7 +9,7 @@ from flask import send_file
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.connectors.dms import api as dms_api
@@ -75,7 +75,7 @@ def get(bank_account_id: int) -> utils.BackofficeResponse:
     bank_account = (
         finance_models.BankAccount.query.filter(finance_models.BankAccount.id == bank_account_id)
         .options(
-            sa.orm.joinedload(finance_models.BankAccount.offerer),
+            sa_orm.joinedload(finance_models.BankAccount.offerer),
         )
         .one_or_none()
     )
@@ -92,7 +92,7 @@ def get_linked_venues(bank_account_id: int) -> utils.BackofficeResponse:
             offerers_models.VenueBankAccountLink.bankAccountId == bank_account_id,
             offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
         ).options(
-            sa.orm.joinedload(offerers_models.VenueBankAccountLink.venue).load_only(
+            sa_orm.joinedload(offerers_models.VenueBankAccountLink.venue).load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
@@ -113,12 +113,12 @@ def get_history(bank_account_id: int) -> utils.BackofficeResponse:
         history_models.ActionHistory.query.filter_by(bankAccountId=bank_account_id)
         .order_by(history_models.ActionHistory.actionDate.desc())
         .options(
-            sa.orm.joinedload(history_models.ActionHistory.authorUser).load_only(
+            sa_orm.joinedload(history_models.ActionHistory.authorUser).load_only(
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName
             ),
         )
         .options(
-            sa.orm.joinedload(history_models.ActionHistory.venue).load_only(
+            sa_orm.joinedload(history_models.ActionHistory.venue).load_only(
                 offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.publicName
             )
         )
@@ -136,11 +136,11 @@ def get_invoices(bank_account_id: int) -> utils.BackofficeResponse:
     invoices = (
         finance_models.Invoice.query.filter(finance_models.Invoice.bankAccountId == bank_account_id)
         .options(
-            sa.orm.joinedload(finance_models.Invoice.cashflows)
+            sa_orm.joinedload(finance_models.Invoice.cashflows)
             .load_only(finance_models.Cashflow.batchId)
             .joinedload(finance_models.Cashflow.batch)
             .load_only(finance_models.CashflowBatch.label),
-            sa.orm.joinedload(finance_models.Invoice.bankAccount, innerjoin=True)
+            sa_orm.joinedload(finance_models.Invoice.bankAccount, innerjoin=True)
             .load_only(finance_models.BankAccount.id)
             .joinedload(finance_models.BankAccount.offerer, innerjoin=True)
             .load_only(offerers_models.Offerer.siren, offerers_models.Offerer.postalCode),

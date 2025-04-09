@@ -2,7 +2,7 @@ import argparse
 import time
 import traceback
 
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core import mails as mails_api
 from pcapi.core.offerers import models as offerers_models
@@ -22,7 +22,7 @@ def delete_external_suspended_users(min_id: int = 0, do_update: bool = False) ->
         )
         .order_by(users_models.User.id)
         .options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 users_models.User.id, users_models.User.email, users_models.User.roles, users_models.User.dateCreated
             )
         )

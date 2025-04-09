@@ -8,6 +8,7 @@ user was already PRO because of existing validated attachment to another validat
 import argparse
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
@@ -26,7 +27,7 @@ def fix_users_who_should_be_pro(do_update: bool = False) -> None:
             offerers_models.UserOfferer.isValidated,
             offerers_models.Offerer.isValidated,
         )
-        .options(sa.orm.load_only(users_models.User.id, users_models.User.email, users_models.User.roles))
+        .options(sa_orm.load_only(users_models.User.id, users_models.User.email, users_models.User.roles))
     )
 
     for user in users:
@@ -67,8 +68,8 @@ def fix_users_who_should_be_non_attached_pro(do_update: bool = False) -> None:
             ),
         )
         .options(
-            sa.orm.load_only(users_models.User.roles),
-            sa.orm.joinedload(users_models.User.UserOfferers)
+            sa_orm.load_only(users_models.User.roles),
+            sa_orm.joinedload(users_models.User.UserOfferers)
             .load_only(offerers_models.UserOfferer.validationStatus)
             .joinedload(offerers_models.UserOfferer.offerer)
             .load_only(offerers_models.Offerer.validationStatus),

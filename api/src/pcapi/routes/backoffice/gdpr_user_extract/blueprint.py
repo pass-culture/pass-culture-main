@@ -7,6 +7,7 @@ from flask import redirect
 from flask import render_template
 from flask import url_for
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import joinedload
 
 from pcapi import settings
@@ -32,12 +33,12 @@ def _get_gdpr_data() -> list[users_models.GdprUserDataExtract]:
 
     query = (
         users_models.GdprUserDataExtract.query.options(
-            sa.orm.joinedload(users_models.GdprUserDataExtract.user).load_only(
+            sa_orm.joinedload(users_models.GdprUserDataExtract.user).load_only(
                 users_models.User.id,
                 users_models.User.firstName,
                 users_models.User.lastName,
             ),
-            sa.orm.joinedload(users_models.GdprUserDataExtract.authorUser).load_only(
+            sa_orm.joinedload(users_models.GdprUserDataExtract.authorUser).load_only(
                 users_models.User.firstName,
                 users_models.User.lastName,
             ),

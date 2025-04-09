@@ -14,6 +14,7 @@ from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
@@ -64,7 +65,7 @@ def _get_individual_bookings(
         .join(offers_models.Offer)
         .join(users_models.User, bookings_models.Booking.user)
         .options(
-            sa.orm.joinedload(bookings_models.Booking.stock)
+            sa_orm.joinedload(bookings_models.Booking.stock)
             .load_only(
                 offers_models.Stock.quantity,
                 offers_models.Stock.offerId,
@@ -78,16 +79,16 @@ def _get_individual_bookings(
                 offers_models.Offer.isDuo,
                 offers_models.Offer.subcategoryId,
             ),
-            sa.orm.joinedload(bookings_models.Booking.user).load_only(
+            sa_orm.joinedload(bookings_models.Booking.user).load_only(
                 users_models.User.id,
                 users_models.User.firstName,
                 users_models.User.lastName,
                 users_models.User.postalCode,
             ),
-            sa.orm.joinedload(bookings_models.Booking.offerer).load_only(
+            sa_orm.joinedload(bookings_models.Booking.offerer).load_only(
                 offerers_models.Offerer.id, offerers_models.Offerer.name
             ),
-            sa.orm.joinedload(bookings_models.Booking.venue).load_only(
+            sa_orm.joinedload(bookings_models.Booking.venue).load_only(
                 # for name and link (build_pc_pro_venue_link)
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
@@ -95,7 +96,7 @@ def _get_individual_bookings(
                 offerers_models.Venue.isVirtual,
                 offerers_models.Venue.managingOffererId,
             ),
-            sa.orm.joinedload(bookings_models.Booking.pricings)
+            sa_orm.joinedload(bookings_models.Booking.pricings)
             .load_only(
                 finance_models.Pricing.amount, finance_models.Pricing.status, finance_models.Pricing.creationDate
             )
@@ -103,10 +104,10 @@ def _get_individual_bookings(
             .load_only(finance_models.Cashflow.batchId)
             .joinedload(finance_models.Cashflow.batch)
             .load_only(finance_models.CashflowBatch.label),
-            sa.orm.joinedload(bookings_models.Booking.incidents)
+            sa_orm.joinedload(bookings_models.Booking.incidents)
             .joinedload(finance_models.BookingFinanceIncident.incident)
             .load_only(finance_models.FinanceIncident.id, finance_models.FinanceIncident.status),
-            sa.orm.joinedload(bookings_models.Booking.deposit).load_only(finance_models.Deposit.expirationDate),
+            sa_orm.joinedload(bookings_models.Booking.deposit).load_only(finance_models.Deposit.expirationDate),
         )
     )
 
@@ -245,10 +246,10 @@ def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
     )
 
 
-def _get_booking_query_for_validation() -> sa.orm.Query:
+def _get_booking_query_for_validation() -> sa_orm.Query:
     return bookings_models.Booking.query.options(
-        sa.orm.joinedload(bookings_models.Booking.user).selectinload(users_models.User.achievements)
-    ).options(sa.orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer))
+        sa_orm.joinedload(bookings_models.Booking.user).selectinload(users_models.User.achievements)
+    ).options(sa_orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer))
 
 
 @individual_bookings_blueprint.route("/<int:booking_id>/mark-as-used", methods=["POST"])
@@ -268,7 +269,7 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
     booking = (
         bookings_models.Booking.query.filter_by(id=booking_id)
         .options(
-            sa.orm.joinedload(bookings_models.Booking.stock)
+            sa_orm.joinedload(bookings_models.Booking.stock)
             .load_only(offers_models.Stock.id)
             .joinedload(offers_models.Stock.offer)
             .load_only(offers_models.Offer.id)

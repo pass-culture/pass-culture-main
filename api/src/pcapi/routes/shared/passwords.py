@@ -1,6 +1,6 @@
 import logging
 
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors.api_recaptcha import ReCaptchaException
@@ -62,7 +62,7 @@ def post_new_password(body: NewPasswordBodyModel) -> None:
         token = token_utils.Token.load_and_check(token_value, token_utils.TokenType.RESET_PASSWORD)
         token.expire()
         user = users_models.User.query.options(
-            sa.orm.selectinload(users_models.User.deposits).selectinload(finance_models.Deposit.recredits)
+            sa_orm.selectinload(users_models.User.deposits).selectinload(finance_models.Deposit.recredits)
         ).get(token.user_id)
     except users_exceptions.InvalidToken:
         errors = ApiErrors()

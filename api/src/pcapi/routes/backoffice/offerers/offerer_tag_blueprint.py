@@ -5,6 +5,7 @@ from flask import request
 from flask import url_for
 from markupsafe import Markup
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.offerers import api as offerers_api
@@ -34,7 +35,7 @@ def get_offerer_tag_categories() -> list[offerers_models.OffererTagCategory]:
 def list_offerer_tags() -> utils.BackofficeResponse:
     categories = get_offerer_tag_categories()
     offerer_tags = (
-        offerers_models.OffererTag.query.options(sa.orm.joinedload(offerers_models.OffererTag.categories))
+        offerers_models.OffererTag.query.options(sa_orm.joinedload(offerers_models.OffererTag.categories))
         .order_by(offerers_models.OffererTag.name)
         .all()
     )

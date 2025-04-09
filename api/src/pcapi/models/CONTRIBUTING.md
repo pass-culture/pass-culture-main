@@ -43,7 +43,7 @@
 
   - Exemple :
     ```python
-    product: Product = sa.orm.relationship(Product, back_populates="offers") # product est de type Product
+    product: Product = sa_orm.relationship(Product, back_populates="offers") # product est de type Product
     ```
 
 ### Quand utiliser Mapped ?

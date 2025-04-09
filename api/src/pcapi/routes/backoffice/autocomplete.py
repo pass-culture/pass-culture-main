@@ -3,6 +3,7 @@ import re
 from flask import request
 from flask_login import login_required
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.connectors import api_adresse
 from pcapi.core.criteria import models as criteria_models
@@ -38,9 +39,9 @@ def _get_offerer_choice_label(offerer: offerers_models.Offerer) -> str:
     return f"{offerer.id} - {offerer.name} ({offerer.identifier})"
 
 
-def _get_offerers_base_query() -> sa.orm.Query:
+def _get_offerers_base_query() -> sa_orm.Query:
     return offerers_models.Offerer.query.options(
-        sa.orm.load_only(
+        sa_orm.load_only(
             offerers_models.Offerer.id,
             offerers_models.Offerer.name,
             offerers_models.Offerer.siren,
@@ -94,9 +95,9 @@ def _get_institution_choice_label(institution: educational_models.EducationalIns
     )
 
 
-def _get_institutions_base_query() -> sa.orm.Query:
+def _get_institutions_base_query() -> sa_orm.Query:
     return educational_models.EducationalInstitution.query.options(
-        sa.orm.load_only(
+        sa_orm.load_only(
             educational_models.EducationalInstitution.id,
             educational_models.EducationalInstitution.name,
             educational_models.EducationalInstitution.institutionId,
@@ -160,9 +161,9 @@ def _get_venue_choice_label(venue: offerers_models.Venue) -> str:
     return f"{venue.id} - {venue.common_name} ({venue.identifier or 'Pas de SIRET'})"
 
 
-def _get_venues_base_query() -> sa.orm.Query:
+def _get_venues_base_query() -> sa_orm.Query:
     return offerers_models.Venue.query.options(
-        sa.orm.load_only(
+        sa_orm.load_only(
             offerers_models.Venue.id,
             offerers_models.Venue.name,
             offerers_models.Venue.publicName,
@@ -179,7 +180,7 @@ def prefill_providers_choices(autocomplete_field: fields.PCTomSelectField) -> No
                 providers_models.Provider.isActive,
             )
             .order_by(providers_models.Provider.name)
-            .options(sa.orm.load_only(providers_models.Provider.id, providers_models.Provider.name))
+            .options(sa_orm.load_only(providers_models.Provider.id, providers_models.Provider.name))
         )
         autocomplete_field.choices = [(provider.id, f"{provider.id} - {provider.name}") for provider in providers]
 
@@ -249,7 +250,7 @@ def autocomplete_providers() -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
 
     query = providers_models.Provider.query.filter(providers_models.Provider.isActive).options(
-        sa.orm.load_only(providers_models.Provider.id, providers_models.Provider.name)
+        sa_orm.load_only(providers_models.Provider.id, providers_models.Provider.name)
     )
     if string_utils.is_numeric(query_string):
         query = query.filter(providers_models.Provider.id == int(query_string))
@@ -274,9 +275,9 @@ def _get_criterion_choice_label(criterion: criteria_models.Criterion) -> str:
     return label
 
 
-def _get_criteria_base_query() -> sa.orm.Query:
+def _get_criteria_base_query() -> sa_orm.Query:
     return criteria_models.Criterion.query.options(
-        sa.orm.load_only(
+        sa_orm.load_only(
             criteria_models.Criterion.id,
             criteria_models.Criterion.name,
             criteria_models.Criterion.startDateTime,
@@ -321,9 +322,9 @@ def autocomplete_criteria() -> AutocompleteResponse:
     )
 
 
-def _get_cashflow_batches_base_query() -> sa.orm.Query:
+def _get_cashflow_batches_base_query() -> sa_orm.Query:
     return finance_models.CashflowBatch.query.options(
-        sa.orm.load_only(
+        sa_orm.load_only(
             finance_models.CashflowBatch.id,
             finance_models.CashflowBatch.label,
         )
@@ -358,9 +359,9 @@ def autocomplete_cashflow_batches() -> AutocompleteResponse:
     )
 
 
-def _get_bo_users_base_query() -> sa.orm.Query:
+def _get_bo_users_base_query() -> sa_orm.Query:
     return users_models.User.query.join(users_models.User.backoffice_profile).options(
-        sa.orm.load_only(users_models.User.id, users_models.User.firstName, users_models.User.lastName)
+        sa_orm.load_only(users_models.User.id, users_models.User.firstName, users_models.User.lastName)
     )
 
 
@@ -400,9 +401,9 @@ def _get_address_choice_label(address: geography_models.Address) -> str:
     return f"{address.street} {address.postalCode} {address.city}"
 
 
-def _get_addresses_base_query() -> sa.orm.Query:
+def _get_addresses_base_query() -> sa_orm.Query:
     return geography_models.Address.query.options(
-        sa.orm.load_only(
+        sa_orm.load_only(
             geography_models.Address.id,
             geography_models.Address.street,
             geography_models.Address.postalCode,

@@ -1,7 +1,7 @@
 from flask import flash
 from flask import url_for
 from markupsafe import Markup
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 from werkzeug.utils import redirect
 
@@ -66,7 +66,7 @@ def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
 def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
-        .options(sa.orm.joinedload(offerers_models.Offerer.managedVenues))
+        .options(sa_orm.joinedload(offerers_models.Offerer.managedVenues))
         .one()
     )
     url = url_for("backoffice_web.offerer.get", offerer_id=offerer_id)

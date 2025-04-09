@@ -14,11 +14,11 @@ from uuid import UUID
 
 import sqlalchemy as sa
 from sqlalchemy import func
-from sqlalchemy import orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
+import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
@@ -166,7 +166,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
     dateOfBirth = sa.Column(sa.DateTime, nullable=True)  # declared at signup
     departementCode = sa.Column(sa.String(3), nullable=True)
-    discordUser: DiscordUser = orm.relationship(
+    discordUser: DiscordUser = sa_orm.relationship(
         "DiscordUser", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True
     )
     email: str = sa.Column(sa.String(120), nullable=False, unique=True)
@@ -180,7 +180,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     idPieceNumber = sa.Column(sa.String, nullable=True, unique=True)
     ineHash = sa.Column(sa.Text(), nullable=True, unique=True)
     irisFranceId = sa.Column(sa.BigInteger, sa.ForeignKey("iris_france.id"), nullable=True)
-    irisFrance: sa.orm.Mapped[IrisFrance] = orm.relationship(IrisFrance, foreign_keys=[irisFranceId])
+    irisFrance: sa_orm.Mapped[IrisFrance] = sa_orm.relationship(IrisFrance, foreign_keys=[irisFranceId])
     isEmailValidated = sa.Column(sa.Boolean, nullable=True, server_default=expression.false())
     lastConnectionDate = sa.Column(sa.DateTime, nullable=True)
     lastName = sa.Column(sa.String(128), nullable=True)
@@ -197,26 +197,26 @@ class User(PcObject, Base, Model, DeactivableMixin):
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
     postalCode = sa.Column(sa.String(5), nullable=True)
     recreditAmountToShow = sa.Column(sa.Numeric(10, 2), nullable=True)
-    UserOfferers: list["UserOfferer"] = orm.relationship("UserOfferer", back_populates="user")
+    UserOfferers: list["UserOfferer"] = sa_orm.relationship("UserOfferer", back_populates="user")
     roles: list[UserRole] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(UserRole, native_enum=False, create_constraint=False))),
         nullable=False,
         server_default="{}",
     )
     schoolType = sa.Column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
-    trusted_devices: list["TrustedDevice"] = orm.relationship("TrustedDevice", back_populates="user")
-    login_device_history: list["LoginDeviceHistory"] = orm.relationship("LoginDeviceHistory", back_populates="user")
-    single_sign_ons: list["SingleSignOn"] = orm.relationship("SingleSignOn", back_populates="user", cascade="delete")
+    trusted_devices: list["TrustedDevice"] = sa_orm.relationship("TrustedDevice", back_populates="user")
+    login_device_history: list["LoginDeviceHistory"] = sa_orm.relationship("LoginDeviceHistory", back_populates="user")
+    single_sign_ons: list["SingleSignOn"] = sa_orm.relationship("SingleSignOn", back_populates="user", cascade="delete")
     validatedBirthDate = sa.Column(sa.Date, nullable=True)  # validated by an Identity Provider
-    backoffice_profile: orm.Mapped["BackOfficeUserProfile"] = orm.relationship(
+    backoffice_profile: sa_orm.Mapped["BackOfficeUserProfile"] = sa_orm.relationship(
         "BackOfficeUserProfile", uselist=False, back_populates="user"
     )
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
 
-    gdprUserDataExtract: orm.Mapped["GdprUserDataExtract"] = orm.relationship(
+    gdprUserDataExtract: sa_orm.Mapped["GdprUserDataExtract"] = sa_orm.relationship(
         "GdprUserDataExtract", back_populates="user", foreign_keys="GdprUserDataExtract.userId"
     )
-    reactions: list["Reaction"] = orm.relationship("Reaction", back_populates="user", uselist=True)
+    reactions: list["Reaction"] = sa_orm.relationship("Reaction", back_populates="user", uselist=True)
     # unaccent is not immutable, so it can't be used for an index.
     # Searching by sa.func.unaccent(something) does not use the index and causes a sequential scan.
     # immutable_unaccent is a wrapper so that index uses an immutable function.
@@ -525,7 +525,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
             .scalar_subquery()
         )
 
-    suspension_reason_expression: sa.orm.Mapped["str | None"] = sa.orm.query_expression()
+    suspension_reason_expression: sa_orm.Mapped["str | None"] = sa_orm.query_expression()
 
     @hybrid_property
     def suspension_date(self) -> datetime | None:
@@ -564,7 +564,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
             .scalar_subquery()
         )
 
-    suspension_date_expression: sa.orm.Mapped["datetime | None"] = sa.orm.query_expression()
+    suspension_date_expression: sa_orm.Mapped["datetime | None"] = sa_orm.query_expression()
 
     @property
     def account_state(self) -> AccountState:
@@ -750,7 +750,7 @@ class DiscordUser(PcObject, Base, Model):
     __tablename__ = "discord_user"
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), primary_key=True)
-    user: orm.Mapped["User"] = orm.relationship("User", back_populates="discordUser")
+    user: sa_orm.Mapped["User"] = sa_orm.relationship("User", back_populates="discordUser")
     discordId = sa.Column(sa.Text, nullable=True, unique=True)
     hasAccess = sa.Column(sa.Boolean, nullable=False, server_default=expression.true())
     isBanned = sa.Column(sa.Boolean, nullable=False, server_default=expression.false(), default=False)
@@ -819,11 +819,11 @@ class Favorite(PcObject, Base, Model):
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    user: orm.Mapped["User"] = orm.relationship("User", foreign_keys=[userId], backref="favorites")
+    user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], backref="favorites")
 
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
-    offer: orm.Mapped["Offer"] = orm.relationship("Offer", foreign_keys=[offerId], backref="favorites")
+    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", foreign_keys=[offerId], backref="favorites")
 
     dateCreated = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
@@ -856,8 +856,8 @@ class UserEmailHistory(PcObject, Base, Model):
     __tablename__ = "user_email_history"
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True)
-    user: sa.orm.Mapped["User"] = orm.relationship(
-        "User", foreign_keys=[userId], backref=orm.backref("email_history", passive_deletes=True)
+    user: sa_orm.Mapped["User"] = sa_orm.relationship(
+        "User", foreign_keys=[userId], backref=sa_orm.backref("email_history", passive_deletes=True)
     )
 
     oldUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False)
@@ -981,9 +981,9 @@ class UserAccountUpdateRequest(PcObject, Base, Model):
     birthDate = sa.Column(sa.Date, nullable=True)
     # User found from his/her email - may be null in case of wrong email
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
-    user: orm.Mapped[User] = orm.relationship(User, foreign_keys=[userId], backref="accountUpdateRequests")
+    user: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[userId], backref="accountUpdateRequests")
     # One or several changes may be requested
-    updateTypes: sa.orm.Mapped[list[UserAccountUpdateType]] = sa.Column(
+    updateTypes: sa_orm.Mapped[list[UserAccountUpdateType]] = sa.Column(
         postgresql.ARRAY(MagicEnum(UserAccountUpdateType)), nullable=False, server_default="{}"
     )
     oldEmail: str = sa.Column(sa.Text, nullable=True)
@@ -994,11 +994,11 @@ class UserAccountUpdateRequest(PcObject, Base, Model):
     # Ensures that all checkboxes are checked (GCU, sworn statement)
     allConditionsChecked: bool = sa.Column(sa.Boolean, nullable=False, default=False)
     lastInstructorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
-    lastInstructor: orm.Mapped[User] = orm.relationship(User, foreign_keys=[lastInstructorId])
+    lastInstructor: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[lastInstructorId])
     dateLastUserMessage: datetime = sa.Column(sa.DateTime, nullable=True)
     dateLastInstructorMessage: datetime = sa.Column(sa.DateTime, nullable=True)
     # Additional information to filter and/or show icons, badges...
-    flags: sa.orm.Mapped[list[UserAccountUpdateFlag]] = sa.Column(
+    flags: sa_orm.Mapped[list[UserAccountUpdateFlag]] = sa.Column(
         postgresql.ARRAY(MagicEnum(UserAccountUpdateFlag)), nullable=False, server_default="{}"
     )
 
@@ -1098,7 +1098,7 @@ class TrustedDevice(PcObject, Base, Model):
     __tablename__ = "trusted_device"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
-    user: User = orm.relationship(User, foreign_keys=[userId], back_populates="trusted_devices")
+    user: User = sa_orm.relationship(User, foreign_keys=[userId], back_populates="trusted_devices")
 
     deviceId: str = sa.Column(sa.Text, nullable=False, index=True)
 
@@ -1111,7 +1111,7 @@ class LoginDeviceHistory(PcObject, Base, Model):
     __tablename__ = "login_device_history"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
-    user: User = orm.relationship(User, foreign_keys=[userId], back_populates="login_device_history")
+    user: User = sa_orm.relationship(User, foreign_keys=[userId], back_populates="login_device_history")
 
     deviceId: str = sa.Column(sa.Text, nullable=False, index=True)
 
@@ -1125,7 +1125,7 @@ class SingleSignOn(PcObject, Base, Model):
     __tablename__ = "single_sign_on"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
-    user: User = orm.relationship(User, foreign_keys=[userId], back_populates="single_sign_ons")
+    user: User = sa_orm.relationship(User, foreign_keys=[userId], back_populates="single_sign_ons")
 
     ssoProvider: str = sa.Column(sa.Text, nullable=False)
     ssoUserId: str = sa.Column(sa.Text, nullable=False)
@@ -1152,10 +1152,10 @@ class GdprUserDataExtract(PcObject, Base, Model):
     dateProcessed: datetime = sa.Column(sa.DateTime, nullable=True)
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
-    user: orm.Mapped[User] = orm.relationship(User, foreign_keys=[userId])
+    user: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[userId])
 
     authorUserId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
-    authorUser: orm.Mapped[User] = orm.relationship(User, foreign_keys=[authorUserId])
+    authorUser: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[authorUserId])
 
     @hybrid_property
     def expirationDate(self) -> datetime:
@@ -1175,4 +1175,4 @@ class GdprUserAnonymization(PcObject, Base, Model):
 
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
-    user: orm.Mapped[User] = orm.relationship(User, foreign_keys=[userId])
+    user: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[userId])

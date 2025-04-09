@@ -2,7 +2,7 @@ from contextlib import suppress
 from datetime import datetime
 import logging
 
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.educational import exceptions
@@ -336,13 +336,13 @@ def _get_offer_or_raise_404(offer_id: int) -> models.CollectiveOffer:
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
         .filter(providers_models.VenueProvider.isActive == True)
-        .options(sa.orm.joinedload(models.CollectiveOffer.institution))
+        .options(sa_orm.joinedload(models.CollectiveOffer.institution))
         .options(
-            sa.orm.selectinload(models.CollectiveOffer.collectiveStock).joinedload(
+            sa_orm.selectinload(models.CollectiveOffer.collectiveStock).joinedload(
                 models.CollectiveStock.collectiveBookings
             )
         )
-        .options(sa.orm.selectinload(models.CollectiveOffer.venue).joinedload(offerers_models.Venue.managingOfferer))
+        .options(sa_orm.selectinload(models.CollectiveOffer.venue).joinedload(offerers_models.Venue.managingOfferer))
         .one_or_none()
     )
 
@@ -361,7 +361,7 @@ def _get_booking_or_raise_404(booking_id: int) -> models.CollectiveBooking:
         .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
         .filter(providers_models.VenueProvider.isActive == True)
         .options(
-            sa.orm.joinedload(models.CollectiveBooking.collectiveStock)
+            sa_orm.joinedload(models.CollectiveBooking.collectiveStock)
             .load_only(
                 models.CollectiveStock.id, models.CollectiveStock.startDatetime, models.CollectiveStock.endDatetime
             )

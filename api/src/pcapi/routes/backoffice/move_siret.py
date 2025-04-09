@@ -8,6 +8,7 @@ from flask_login import current_user
 from markupsafe import Markup
 from markupsafe import escape
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import siret_api
@@ -42,7 +43,7 @@ def _validate_move_siret_form() -> (
     source_venue = (
         offerers_models.Venue.query.filter_by(id=form.source_venue.data)
         .options(
-            sa.orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
                 offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
             )
         )
@@ -60,7 +61,7 @@ def _validate_move_siret_form() -> (
     target_venue = (
         offerers_models.Venue.query.filter_by(id=form.target_venue.data)
         .options(
-            sa.orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
                 offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
             )
         )

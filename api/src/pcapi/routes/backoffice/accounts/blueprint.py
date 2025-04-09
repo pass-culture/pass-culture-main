@@ -15,6 +15,7 @@ from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
@@ -77,8 +78,8 @@ def _load_suspension_info(query: BaseQuery) -> BaseQuery:
     # So these expressions use a subquery so that result count is accurate, and the redirection well forced when a
     # single card would be displayed.
     return query.options(
-        sa.orm.with_expression(users_models.User.suspension_reason_expression, users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
-        sa.orm.with_expression(users_models.User.suspension_date_expression, users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
+        sa_orm.with_expression(users_models.User.suspension_reason_expression, users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
+        sa_orm.with_expression(users_models.User.suspension_date_expression, users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
     )
 
 
@@ -94,7 +95,7 @@ def _load_current_deposit_data(query: BaseQuery, join_needed: bool = True) -> Ba
                 finance_models.Deposit.expirationDate > datetime.datetime.utcnow(),
             ),
         )
-    return query.options(sa.orm.contains_eager(users_models.User.deposits))
+    return query.options(sa_orm.contains_eager(users_models.User.deposits))
 
 
 @public_accounts_blueprint.route("<int:user_id>/anonymize", methods=["POST"])
@@ -103,8 +104,8 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
         users_models.User.query.filter_by(id=user_id)
         .options(
-            sa.orm.joinedload(users_models.User.deposits),
-            sa.orm.joinedload(users_models.User.gdprUserDataExtract),
+            sa_orm.joinedload(users_models.User.deposits),
+            sa_orm.joinedload(users_models.User.gdprUserDataExtract),
         )
         .one_or_none()
     )
@@ -262,29 +263,29 @@ def render_public_account_details(
     user = (
         users_models.User.query.filter_by(id=user_id)
         .options(
-            sa.orm.joinedload(users_models.User.deposits).joinedload(finance_models.Deposit.recredits),
-            sa.orm.subqueryload(users_models.User.userBookings).options(
-                sa.orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer),
-                sa.orm.joinedload(bookings_models.Booking.incidents).joinedload(
+            sa_orm.joinedload(users_models.User.deposits).joinedload(finance_models.Deposit.recredits),
+            sa_orm.subqueryload(users_models.User.userBookings).options(
+                sa_orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer),
+                sa_orm.joinedload(bookings_models.Booking.incidents).joinedload(
                     finance_models.BookingFinanceIncident.incident
                 ),
-                sa.orm.joinedload(bookings_models.Booking.offerer).load_only(offerers_models.Offerer.name),
-                sa.orm.joinedload(bookings_models.Booking.venue)
+                sa_orm.joinedload(bookings_models.Booking.offerer).load_only(offerers_models.Offerer.name),
+                sa_orm.joinedload(bookings_models.Booking.venue)
                 .load_only(offerers_models.Venue.bookingEmail)
                 .joinedload(offerers_models.Venue.contact)
                 .load_only(offerers_models.VenueContact.email),
             ),
-            sa.orm.joinedload(users_models.User.beneficiaryFraudChecks),
-            sa.orm.joinedload(users_models.User.beneficiaryFraudReviews),
-            sa.orm.joinedload(users_models.User.beneficiaryImports)
+            sa_orm.joinedload(users_models.User.beneficiaryFraudChecks),
+            sa_orm.joinedload(users_models.User.beneficiaryFraudReviews),
+            sa_orm.joinedload(users_models.User.beneficiaryImports)
             .joinedload(BeneficiaryImport.statuses)
             .joinedload(BeneficiaryImportStatus.author)
             .load_only(users_models.User.firstName, users_models.User.lastName),
-            sa.orm.joinedload(users_models.User.action_history)
+            sa_orm.joinedload(users_models.User.action_history)
             .joinedload(history_models.ActionHistory.authorUser)
             .load_only(users_models.User.firstName, users_models.User.lastName),
-            sa.orm.joinedload(users_models.User.email_history),
-            sa.orm.joinedload(users_models.User.gdprUserDataExtract),
+            sa_orm.joinedload(users_models.User.email_history),
+            sa_orm.joinedload(users_models.User.gdprUserDataExtract),
         )
         .one_or_none()
     )
@@ -1846,7 +1847,7 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
         users_models.User.query.filter_by(id=user_id)
         .populate_existing()
         .with_for_update(key_share=True)
-        .options(sa.orm.selectinload(users_models.User.deposits).selectinload(finance_models.Deposit.recredits))
+        .options(sa_orm.selectinload(users_models.User.deposits).selectinload(finance_models.Deposit.recredits))
         .one_or_none()
     )
     if not user:
@@ -2083,8 +2084,8 @@ def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
             users_models.User.id == user_id,
         )
         .options(
-            sa.orm.load_only(users_models.User.firstName, users_models.User.lastName, users_models.User.roles),
-            sa.orm.joinedload(users_models.User.gdprUserDataExtract),
+            sa_orm.load_only(users_models.User.firstName, users_models.User.lastName, users_models.User.roles),
+            sa_orm.joinedload(users_models.User.gdprUserDataExtract),
         )
         .one_or_none()
     )

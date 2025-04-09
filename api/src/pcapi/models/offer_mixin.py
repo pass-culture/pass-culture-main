@@ -3,8 +3,7 @@ from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import declarative_mixin
+import sqlalchemy.orm as sa_orm
 
 
 if TYPE_CHECKING:
@@ -50,7 +49,7 @@ class OfferValidationType(enum.Enum):
     CGU_INCOMPATIBLE_PRODUCT = "CGU_INCOMPATIBLE_PRODUCT"
 
 
-@declarative_mixin
+@sa_orm.declarative_mixin
 class ValidationMixin:
     lastValidationDate = sa.Column(sa.DateTime, nullable=True)
 
@@ -69,12 +68,12 @@ class ValidationMixin:
         return self.validation == OfferValidationStatus.APPROVED
 
     @declared_attr
-    def lastValidationAuthorUserId(self) -> Mapped[int | None]:
+    def lastValidationAuthorUserId(self) -> sa_orm.Mapped[int | None]:
         return sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
 
     @declared_attr
-    def lastValidationAuthor(self) -> Mapped["User | None"]:
-        return sa.orm.relationship("User", foreign_keys=[self.lastValidationAuthorUserId])
+    def lastValidationAuthor(self) -> sa_orm.Mapped["User | None"]:
+        return sa_orm.relationship("User", foreign_keys=[self.lastValidationAuthorUserId])
 
     @declared_attr
     def __table_args__(self):
