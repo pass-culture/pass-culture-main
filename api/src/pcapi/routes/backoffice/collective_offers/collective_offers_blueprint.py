@@ -38,6 +38,7 @@ from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.collective_offers import forms
+from pcapi.routes.backoffice.connect_as import generate_connect_as_link
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils import regions as regions_utils
 
@@ -733,10 +734,15 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
 
     is_collective_offer_price_editable = _is_collective_offer_price_editable(collective_offer)
     return render_template(
-        "collective_offer/details.html",
+        (
+            "collective_offer/details_v2.html"
+            if feature.FeatureToggle.WIP_ENABLE_BO_COLLECTIVE_OFFER_DETAILS_V2
+            else "collective_offer/details.html"
+        ),
         collective_offer=collective_offer,
         is_collective_offer_price_editable=is_collective_offer_price_editable,
         move_offer_form=move_offer_form,
+        connect_as=generate_connect_as_link(collective_offer),
     )
 
 
