@@ -1,10 +1,10 @@
 from datetime import datetime
 import logging
-import textwrap
 
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
+from pcapi.core.external.batch_utils import shorten_for_batch
 import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offers.models as offers_models
@@ -122,7 +122,7 @@ def _format_offer_attributes(offer: offers_models.Offer) -> dict:
 
     offer_attributes = {
         "offer_id": offer.id,
-        "offer_name": textwrap.shorten(offer.name, width=64, placeholder="..."),
+        "offer_name": shorten_for_batch(offer.name, max_length=64, placeholder="...", preserve_words=True),
         "offer_category": offer.categoryId,
         "offer_subcategory": offer.subcategoryId,
         "offer_type": "duo" if offer.isDuo else "solo",
@@ -192,7 +192,7 @@ def track_booking_cancellation(booking: bookings_models.Booking) -> None:
     event_payload = {
         "credit": domains_credit.all.remaining,  # type: ignore[union-attr]
         "offer_id": offer.id,
-        "offer_name": textwrap.shorten(offer.name, width=64, placeholder="..."),
+        "offer_name": shorten_for_batch(offer.name, max_length=64, placeholder="...", preserve_words=True),
         "offer_price": booking.total_amount,
     }
     payload = TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user.id)
