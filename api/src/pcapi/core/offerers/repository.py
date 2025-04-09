@@ -215,9 +215,7 @@ def find_venue_by_siret(siret: str, load_address: bool = False) -> models.Venue 
     query = db.session.query(models.Venue).filter_by(siret=siret)
 
     if load_address:
-        query = query.options(
-            sqla_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address)
-        )
+        query = query.options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
 
     return query.one_or_none()
 
