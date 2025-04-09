@@ -235,43 +235,7 @@ class UserTest:
             with time_machine.travel(today):
                 assert user_models._get_latest_birthday(birth_date) == latest_birthday
 
-    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     class EligibilityTest:
-        def test_received_pass_15_17(self):
-            dateOfBirth = datetime.utcnow() - relativedelta(years=16, days=1)
-            user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
-            user.add_beneficiary_role()
-            yesterday = datetime.utcnow() - timedelta(days=1)
-            users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
-            assert user.received_pass_15_17 is True
-            assert user.received_pass_18 is False
-
-        def test_received_pass_18(self):
-            dateOfBirth = datetime.utcnow() - relativedelta(years=18, days=1)
-            user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
-            user.add_beneficiary_role()
-            yesterday = datetime.utcnow() - timedelta(days=1)
-            users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
-
-            assert user.received_pass_15_17 is False
-            assert user.received_pass_18 is True
-
-        def test_received_pass_15_17_and_18(self):
-            dateOfBirth16 = datetime.utcnow() - relativedelta(years=16, days=1)
-            dateOfBirth18 = datetime.utcnow() - relativedelta(years=18, days=1)
-            user = users_factories.UserFactory(dateOfBirth=dateOfBirth16, validatedBirthDate=dateOfBirth16)
-            user.add_beneficiary_role()
-            yesterday = datetime.utcnow() - timedelta(days=1)
-            users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
-
-            assert user.received_pass_15_17 is True
-
-            user.dateOfBirth = dateOfBirth18
-            user.validatedBirthDate = dateOfBirth18
-
-            users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
-            assert user.received_pass_18 is True
-
         def test_not_eligible_when_19(self):
             user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=19, days=1))
             assert user.eligibility is None
@@ -425,7 +389,6 @@ class UserWalletBalanceTest:
         assert user.wallet_balance == 0
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 @pytest.mark.usefixtures("db_session")
 class SQLFunctionsTest:
     def test_wallet_balance(self):
@@ -539,11 +502,12 @@ class SQLFunctionsTest:
 
         # All bookings that are not cancelled
         assert (
-            db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 205
-        )  # 300 - 20 - 45 - 35 - 40 + 35 + 10
+            db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0]
+            == 150 - 20 - 45 - 35 - 40 + 35 + 10
+        )
         assert (
-            db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 225
-        )  # 300 - 45 - 35 - 40 + 35 + 10
+            db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 150 - 45 - 35 - 40 + 35 + 10
+        )
 
         assert booking_reimbursed.status == bookings_models.BookingStatus.CANCELLED
         assert booking_reimbursed_2.status == bookings_models.BookingStatus.REIMBURSED
@@ -563,8 +527,8 @@ class SQLFunctionsTest:
 
         # Then
         assert incident.status == finance_models.IncidentStatus.VALIDATED
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 210  # 300 - 20 - 40 - 30
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 230  # 300 - 40 - 30
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 150 - 20 - 40 - 30
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 150 - 40 - 30
 
     def test_deposit_bookings_when_incident_is_cancelled(self):
         deposit = users_factories.BeneficiaryFactory(age=18).deposit
@@ -587,11 +551,9 @@ class SQLFunctionsTest:
         assert incident.status == finance_models.IncidentStatus.CANCELLED
 
         assert (
-            db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 250
-        )  # 300 -20 - 35 - 40  + 35 + 10
-        assert (
-            db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 270
-        )  # 300 - 35 - 40 + 35 + 10
+            db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 150 - 20 - 35 - 40 + 35 + 10
+        )
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 150 - 35 - 40 + 35 + 10
 
 
 class UserLoginTest:

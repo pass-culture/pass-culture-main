@@ -217,13 +217,11 @@ class AccountTest:
         assert response.status_code == 200
         assert "activity" not in response.json
 
-    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
-    def test_get_user_profile_recredit_amount_to_show(self, client, app):
-        with time_machine.travel("2018-01-01"):
-            users_factories.UnderageBeneficiaryFactory(email=self.identifier)
+    def test_get_user_profile_recredit_amount_to_show(self, client):
+        with time_machine.travel(datetime.today() - relativedelta(years=1)):
+            user = users_factories.BeneficiaryFactory(email=self.identifier, age=16)
 
-        with time_machine.travel("2019-01-02"):
-            finance_api.recredit_users()
+        finance_api.recredit_users()
 
         expected_num_queries = 1  # user
         expected_num_queries += 1  # achievements
@@ -237,7 +235,9 @@ class AccountTest:
         client.with_token(email=self.identifier)
         with assert_num_queries(expected_num_queries):
             me_response = client.get("/native/v1/me")
-            assert me_response.json["recreditAmountToShow"] == 3000
+
+        assert user.age == 17
+        assert me_response.json["recreditAmountToShow"] == 5000
 
     @pytest.mark.features(ENABLE_UBBLE=False)
     def test_maintenance_message(self, client):

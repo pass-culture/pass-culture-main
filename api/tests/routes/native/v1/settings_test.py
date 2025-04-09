@@ -16,7 +16,6 @@ class SettingsTest:
         ENABLE_PHONE_VALIDATION=True,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=True,
         APP_ENABLE_AUTOCOMPLETE=True,
-        WIP_ENABLE_CREDIT_V3=True,
     )
     def test_get_settings_feature_combination_1(self, client):
         with assert_num_queries(1):  # feature
@@ -48,7 +47,6 @@ class SettingsTest:
         ENABLE_PHONE_VALIDATION=False,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
         APP_ENABLE_AUTOCOMPLETE=False,
-        WIP_ENABLE_CREDIT_V3=False,
     )
     def test_get_settings_feature_combination_2(self, client):
         with assert_num_queries(1):  # feature
@@ -58,7 +56,7 @@ class SettingsTest:
         assert response.json == {
             "accountCreationMinimumAge": 15,
             "appEnableAutocomplete": False,
-            "depositAmountsByAge": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
+            "depositAmountsByAge": {"age_15": 0, "age_16": 0, "age_17": 5000, "age_18": 15000},
             "displayDmsRedirection": False,
             "enableFrontImageResizing": False,
             "enableNativeCulturalSurvey": False,
@@ -68,6 +66,6 @@ class SettingsTest:
             "objectStorageUrl": "http://localhost/storage",
             "accountUnsuspensionLimit": 60,
             "rates": {"pacificFrancToEuro": 0.00838},
-            "wipEnableCreditV3": False,
+            "wipEnableCreditV3": True,
             "ineligiblePostalCodes": INELIGIBLE_POSTAL_CODES,
         }
