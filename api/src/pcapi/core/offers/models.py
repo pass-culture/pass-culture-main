@@ -128,8 +128,8 @@ class OfferExtraData(typing.TypedDict, total=False):
 
 
 class ImageType(enum.Enum):
-    RECTO = "recto"
-    VERSO = "verso"
+    RECTO = "RECTO"
+    VERSO = "VERSO"
 
 
 class ProductMediation(PcObject, Base, Model):
@@ -204,11 +204,8 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     @hybrid_property
     def images(self) -> dict[str, str | None]:
         if self.productMediations:
-            return {
-                "recto": next((pm.url for pm in self.productMediations if pm.imageType == ImageType.RECTO), None),
-                "verso": next((pm.url for pm in self.productMediations if pm.imageType == ImageType.VERSO), None),
-            }
-        return {"recto": self.thumbUrl}
+            return {pm.imageType.value: pm.imageType for pm in self.productMediations if pm.imageType in ImageType}
+        return {ImageType.RECTO.value: self.thumbUrl}
 
 
 class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
@@ -992,16 +989,16 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         if activeMediation:
             url = activeMediation.thumbUrl
             if url:
-                return {"recto": OfferImage(url, activeMediation.credit)}
+                return {ImageType.RECTO.value: OfferImage(url, activeMediation.credit)}
 
         product_images = self.product.images if self.product else None
         if product_images is None:
             return None
         images = {}
-        if product_images.get("recto"):
-            images["recto"] = OfferImage(product_images.get("recto"), credit=None)
-        if product_images.get("verso"):
-            images["verso"] = OfferImage(product_images.get("verso"), credit=None)
+        if product_images.get(ImageType.RECTO.value):
+            images[ImageType.RECTO.value] = OfferImage(product_images.get(ImageType.RECTO.value), credit=None)
+        if product_images.get(ImageType.VERSO.value):
+            images[ImageType.VERSO.value] = OfferImage(product_images.get(ImageType.VERSO.value), credit=None)
         if images:
             return images
         return None
@@ -1009,7 +1006,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     @property
     def image(self) -> OfferImage | None:
         if self.images:
-            return self.images.get("recto") if self.images.get("recto") else self.images.get("verso")
+            return (
+                self.images.get(ImageType.RECTO.value)
+                if self.images.get(ImageType.RECTO.value)
+                else self.images.get(ImageType.VERSO.value)
+            )
         return None
 
     @property
