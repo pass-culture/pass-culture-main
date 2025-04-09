@@ -4296,7 +4296,6 @@ class EditReimbursementRuleTest:
             api.edit_reimbursement_rule(rule, end_date=end)
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 class CreateDepositTest:
     @time_machine.travel("2021-02-05 09:00:00")
     @pytest.mark.parametrize("age,expected_amount", [(15, Decimal(20)), (16, Decimal(30)), (17, Decimal(30))])
@@ -4325,51 +4324,6 @@ class CreateDepositTest:
         assert deposit.user.id == beneficiary.id
         assert deposit.expirationDate == datetime.datetime(2021 - (age + 1) + 18, 12, 5, 0, 0, 0)
 
-    @time_machine.travel("2021-02-05 09:00:00")
-    @pytest.mark.parametrize("age, expected_amount", [(15, Decimal(50)), (16, Decimal(60)), (17, Decimal(300))])
-    def test_create_underage_deposit_and_recredit_after_validation(self, age, expected_amount):
-        with time_machine.travel(
-            datetime.datetime.combine(datetime.datetime.utcnow(), datetime.time(0, 0))
-            - relativedelta(years=age + 1, months=1)  # 16 (or 17) years and 1 month ago, user was born
-        ):
-            beneficiary = users_factories.UserFactory(validatedBirthDate=datetime.datetime.utcnow())
-
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(months=2)):
-            # User starts registration at 15 (or 16) years and 11 months old
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                user=beneficiary,
-                status=fraud_models.FraudCheckStatus.STARTED,
-                type=fraud_models.FraudCheckType.EDUCONNECT,
-                eligibilityType=users_models.EligibilityType.UNDERAGE,
-                resultContent=fraud_factories.EduconnectContentFactory(
-                    registration_datetime=datetime.datetime.utcnow()
-                ),
-            )
-
-        # Registration is completed 2 months later, when user is 16 (or 17) years and 1 months old
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=beneficiary,
-            status=fraud_models.FraudCheckStatus.OK,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-            resultContent=fraud_factories.EduconnectContentFactory(
-                registration_datetime=datetime.datetime.utcnow(), age=age
-            ),
-        )
-
-        # Deposit is created right after the validation of the registration
-        deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility, age_at_registration=age)
-
-        if age < 17:
-            assert deposit.type == models.DepositType.GRANT_15_17
-            assert deposit.version == 1
-        else:
-            assert deposit.type == models.DepositType.GRANT_18
-            assert deposit.version == 2
-        assert deposit.amount == expected_amount
-        assert deposit.user.id == beneficiary.id
-
-    @time_machine.travel("2021-02-05 09:00:00")
     def test_create_underage_deposit_with_two_birthdays_since_registration(self):
         age = 15
         with time_machine.travel(
@@ -4402,9 +4356,8 @@ class CreateDepositTest:
         # Deposit is created right after the validation of the registration
         deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility, age_at_registration=age)
 
-        assert deposit.type == models.DepositType.GRANT_15_17
+        assert deposit.type == models.DepositType.GRANT_17_18
         assert deposit.version == 1
-        assert deposit.amount == Decimal(20 + 30 + 30)
         assert deposit.user.id == beneficiary.id
 
     def test_create_underage_deposit_with_birthday_since_registration(self):
@@ -4422,17 +4375,11 @@ class CreateDepositTest:
             ),
         )
 
-        with db.session.no_autoflush:
-            deposit = api.create_deposit(
-                beneficiary, "created by test", beneficiary.eligibility, age_at_registration=15
-            )
+        deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility, age_at_registration=15)
+        assert deposit.type == models.DepositType.GRANT_17_18
 
-        assert deposit.type == models.DepositType.GRANT_15_17
-        assert deposit.amount == Decimal(20 + 30)
-
-    @time_machine.travel("2022-09-05 09:00:00")
     def test_create_18_years_old_deposit(self):
-        beneficiary = users_factories.UserFactory()
+        beneficiary = users_factories.UserFactory(age=18)
 
         deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
 
@@ -4440,104 +4387,7 @@ class CreateDepositTest:
         assert deposit.version == 2
         assert deposit.amount == Decimal(300)
         assert deposit.user.id == beneficiary.id
-        # We use time_machine to ensure this test is not flaky. Otherwise, the expiration date would be dependant on the daylight saving time.
-        assert deposit.expirationDate == datetime.datetime(2024, 9, 5, 23, 59, 59, 999999)
-
-    def test_tahiti_grant_18_expiration_is_2_years_after_at_EOD(self):
-        tahiti_tz = datetime.timezone(datetime.timedelta(hours=-10))
-        tahiti_datetime = datetime.datetime(2023, 5, 29, tzinfo=tahiti_tz)
-        with time_machine.travel(tahiti_datetime.replace(hour=0, minute=0, second=0)):
-            beneficiary = users_factories.UserFactory()
-            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
-        assert deposit.type == models.DepositType.GRANT_18
-        assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
-            tzinfo=None
-        )
-        with time_machine.travel(tahiti_datetime.replace(hour=23, minute=59, second=59)):
-            beneficiary = users_factories.UserFactory()
-            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
-        assert deposit.type == models.DepositType.GRANT_18
-        assert deposit.expirationDate == datetime.datetime(2025, 5, 30, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
-            tzinfo=None
-        )
-        with time_machine.travel(tahiti_datetime.replace(hour=13, minute=59, second=59)):
-            beneficiary = users_factories.UserFactory()
-            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
-        assert deposit.type == models.DepositType.GRANT_18
-        assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
-            tzinfo=None
-        )
-        with time_machine.travel(tahiti_datetime.replace(hour=14, minute=0, second=0)):
-            beneficiary = users_factories.UserFactory()
-            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
-        assert deposit.type == models.DepositType.GRANT_18
-        assert deposit.expirationDate == datetime.datetime(2025, 5, 30, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
-            tzinfo=None
-        )
-
-    def test_wallis_grant_18_expiration_is_2_years_after_at_EOD(self):
-        wallis_tz = datetime.timezone(datetime.timedelta(hours=12))
-        wallis_datetime = datetime.datetime(2023, 5, 29, tzinfo=wallis_tz)
-        with time_machine.travel(wallis_datetime.replace(hour=0, minute=0, second=0)):
-            beneficiary = users_factories.UserFactory()
-            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
-        assert deposit.type == models.DepositType.GRANT_18
-        assert deposit.expirationDate == datetime.datetime(2025, 5, 28, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
-            tzinfo=None
-        )
-        with time_machine.travel(wallis_datetime.replace(hour=23, minute=59, second=59)):
-            beneficiary = users_factories.UserFactory()
-            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
-        assert deposit.type == models.DepositType.GRANT_18
-        assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
-            tzinfo=None
-        )
-        with time_machine.travel(wallis_datetime.replace(hour=11, minute=59, second=59)):
-            beneficiary = users_factories.UserFactory()
-            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
-        assert deposit.type == models.DepositType.GRANT_18
-        assert deposit.expirationDate == datetime.datetime(2025, 5, 28, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
-            tzinfo=None
-        )
-        with time_machine.travel(wallis_datetime.replace(hour=12, minute=00, second=00)):
-            beneficiary = users_factories.UserFactory()
-            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
-        assert deposit.type == models.DepositType.GRANT_18
-        assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
-            tzinfo=None
-        )
-
-    def test_metropole_grant_18_expiration_is_2_years_after_at_EOD(self):
-        metropole_tz = datetime.timezone(datetime.timedelta(hours=1))
-        metropole_datetime = datetime.datetime(2023, 5, 29, tzinfo=metropole_tz)
-        with time_machine.travel(metropole_datetime.replace(hour=0, minute=0, second=0)):
-            beneficiary = users_factories.UserFactory()
-            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
-        assert deposit.type == models.DepositType.GRANT_18
-        assert deposit.expirationDate == datetime.datetime(2025, 5, 28, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
-            tzinfo=None
-        )
-        with time_machine.travel(metropole_datetime.replace(hour=23, minute=59, second=59)):
-            beneficiary = users_factories.UserFactory()
-            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
-        assert deposit.type == models.DepositType.GRANT_18
-        assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
-            tzinfo=None
-        )
-        with time_machine.travel(metropole_datetime.replace(hour=0, minute=59, second=59)):
-            beneficiary = users_factories.UserFactory()
-            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
-        assert deposit.type == models.DepositType.GRANT_18
-        assert deposit.expirationDate == datetime.datetime(2025, 5, 28, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
-            tzinfo=None
-        )
-        with time_machine.travel(metropole_datetime.replace(hour=1, minute=0, second=0)):
-            beneficiary = users_factories.UserFactory()
-            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
-        assert deposit.type == models.DepositType.GRANT_18
-        assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
-            tzinfo=None
-        )
+        assert deposit.expirationDate.date() == (beneficiary.dateOfBirth + relativedelta(years=21)).date()
 
     def test_deposit_created_when_another_type_already_exist_for_user(self):
         with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=3)):
@@ -4558,16 +4408,12 @@ class CreateDepositTest:
         beneficiary = users_factories.BeneficiaryGrant18Factory(validatedBirthDate=AGE18_ELIGIBLE_BIRTH_DATE)
 
         # When
-        with pytest.raises(exceptions.DepositTypeAlreadyGrantedException) as error:
+        with pytest.raises(exceptions.UserHasAlreadyActiveDeposit):
             api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
 
         # Then
         assert models.Deposit.query.filter(models.Deposit.userId == beneficiary.id).count() == 1
-        assert error.value.errors["user"] == ['Cet utilisateur a déjà été crédité de la subvention "GRANT_18".']
 
-
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
-class CreateDepositV3Test:
     @time_machine.travel("2025-03-03")
     def test_compute_deposit_expiration_date_v3(self):
         user = users_models.User(validatedBirthDate=datetime.date(2007, 1, 1))
@@ -4634,8 +4480,7 @@ class CreateDepositV3Test:
         assert deposit.amount == 30
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
-class LegacyUserRecreditTest:
+class UserRecreditTest:
     @time_machine.travel("2021-07-01")
     @pytest.mark.parametrize(
         "birth_date,registration_datetime,expected_result",
@@ -4660,59 +4505,6 @@ class LegacyUserRecreditTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
         assert api._has_celebrated_birthday_since_credit_or_registration(user) == expected_result
-
-    def test_can_be_recredited(self):
-        with time_machine.travel("2020-05-02"):
-            user = users_factories.UnderageBeneficiaryFactory(
-                subscription_age=15, dateOfBirth=datetime.date(2005, 5, 1)
-            )
-
-            # User turned 15. They are credited a first time
-            content = fraud_factories.UbbleContentFactory(
-                user=user, birth_date="2005-05-01", registration_datetime=datetime.datetime.utcnow()
-            )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                user=user,
-                type=fraud_models.FraudCheckType.UBBLE,
-                status=fraud_models.FraudCheckStatus.OK,
-                resultContent=content,
-                dateCreated=datetime.datetime(2020, 5, 1),
-                eligibilityType=users_models.EligibilityType.UNDERAGE,
-            )
-            assert user.deposit.recredits == []
-            assert api._can_be_recredited(user) is False
-
-        with time_machine.travel("2021-05-02"):
-            # User turned 16. They can be recredited
-            assert api._can_be_recredited(user) is True
-
-            api.recredit_users()
-            assert user.deposit.amount == 50
-            assert user.deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_16
-            assert user.recreditAmountToShow == 30
-            assert api._can_be_recredited(user) is False
-
-        with time_machine.travel("2022-05-02"):
-            # User turned 17. They can be recredited
-            assert api._can_be_recredited(user) is True
-
-            api.recredit_users()
-            assert user.deposit.amount == 80
-            assert user.deposit.recredits[1].recreditType == models.RecreditType.RECREDIT_17
-            assert user.recreditAmountToShow == 30
-            assert api._can_be_recredited(user) is False
-
-    @pytest.mark.parametrize("validated_age", [15, 16])
-    def test_can_be_recredited_after_age_substraction(self, validated_age):
-        user = users_factories.UnderageBeneficiaryFactory(subscription_age=17)
-
-        validated_birth_date = datetime.datetime.utcnow() - relativedelta(years=validated_age)
-        users_api.update_user_info(
-            user, author=users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=validated_birth_date.date()
-        )
-
-        can_be_recredited_for_validated_age = api._can_be_recredited(user)
-        assert can_be_recredited_for_validated_age
 
     def test_cannot_be_recredited_for_deposit_using_identity_provider_checks(self):
         user = users_factories.UnderageBeneficiaryFactory(subscription_age=17)
@@ -4770,16 +4562,6 @@ class LegacyUserRecreditTest:
         user = users_factories.BeneficiaryFactory(age=15)
         factories.RecreditFactory(deposit=user.deposit, recreditType=models.RecreditType.RECREDIT_16)
         factories.RecreditFactory(deposit=user.deposit, recreditType=models.RecreditType.RECREDIT_17)
-
-        next_year = datetime.datetime.utcnow() + relativedelta(years=1)
-        with time_machine.travel(next_year):
-            can_be_recredited_for_16 = api._can_be_recredited(user)
-            assert not can_be_recredited_for_16
-
-    def test_cannot_be_recredited_when_recredit_16_was_already_applied_but_not_created(self):
-        user = users_factories.BeneficiaryFactory(age=15)
-        factories.RecreditFactory(deposit=user.deposit, recreditType=models.RecreditType.RECREDIT_17)
-        user.deposit.amount = Decimal(20 + 30 + 30)
 
         next_year = datetime.datetime.utcnow() + relativedelta(years=1)
         with time_machine.travel(next_year):
@@ -4881,244 +4663,6 @@ class LegacyUserRecreditTest:
             assert api._has_been_recredited(user) is False
             assert caplog.records[0].extra["user_id"] == user.id
 
-    def test_recredit_users(self):
-        # This test aims to check all the possible use cases for recredit_users
-        # We create users with different ages (15, 16, 17) with different stages of activation
-        # Each user that is credited is supposed to have the corresponding fraud_checks.
-        # - We create the fraud_checks manually to override the registration_datetime
-
-        with time_machine.travel("2020-01-01"):
-            # Create users, with their fraud checks
-            last_year = datetime.datetime.utcnow() - relativedelta(years=1)
-
-            # Already beneficiary users
-            user_15 = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
-            user_16_not_recredited = users_factories.UnderageBeneficiaryFactory(
-                subscription_age=16, dateCreated=last_year
-            )
-            user_16_already_recredited = users_factories.UnderageBeneficiaryFactory(
-                subscription_age=16, dateCreated=last_year
-            )
-            user_17_not_recredited = users_factories.UnderageBeneficiaryFactory(
-                subscription_age=17, dateCreated=last_year
-            )
-            user_17_only_recredited_at_16 = users_factories.UnderageBeneficiaryFactory(
-                subscription_age=17, dateCreated=last_year
-            )
-            user_17_already_recredited = users_factories.UnderageBeneficiaryFactory(
-                subscription_age=17, dateCreated=last_year
-            )
-            user_17_already_recredited_twice = users_factories.UnderageBeneficiaryFactory(
-                subscription_age=17, dateCreated=last_year
-            )
-
-            id_check_application_date = datetime.datetime(2019, 7, 31)  # Asked for credit before birthday
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                dateCreated=datetime.datetime(2019, 12, 31),
-                user=user_15,
-                type=fraud_models.FraudCheckType.EDUCONNECT,
-                status=fraud_models.FraudCheckStatus.OK,
-                resultContent=fraud_factories.EduconnectContentFactory(
-                    user=user_15, birth_date="2004-08-01", registration_datetime=id_check_application_date
-                ),
-                eligibilityType=users_models.EligibilityType.UNDERAGE,
-            )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                dateCreated=datetime.datetime(2019, 12, 31),
-                user=user_16_not_recredited,
-                type=fraud_models.FraudCheckType.EDUCONNECT,
-                status=fraud_models.FraudCheckStatus.OK,
-                resultContent=fraud_factories.EduconnectContentFactory(
-                    user=user_16_not_recredited,
-                    birth_date="2003-08-01",
-                    registration_datetime=id_check_application_date,
-                ),
-                eligibilityType=users_models.EligibilityType.UNDERAGE,
-            )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                dateCreated=datetime.datetime(2019, 12, 31),
-                user=user_16_already_recredited,
-                type=fraud_models.FraudCheckType.EDUCONNECT,
-                status=fraud_models.FraudCheckStatus.OK,
-                resultContent=fraud_factories.EduconnectContentFactory(
-                    user=user_16_already_recredited,
-                    birth_date="2003-08-01",
-                    registration_datetime=id_check_application_date,
-                ),
-                eligibilityType=users_models.EligibilityType.UNDERAGE,
-            )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                dateCreated=datetime.datetime(2019, 12, 31),
-                user=user_17_not_recredited,
-                type=fraud_models.FraudCheckType.EDUCONNECT,
-                status=fraud_models.FraudCheckStatus.OK,
-                resultContent=fraud_factories.EduconnectContentFactory(
-                    user=user_17_not_recredited,
-                    birth_date="2002-08-01",
-                    registration_datetime=id_check_application_date,
-                ),
-                eligibilityType=users_models.EligibilityType.UNDERAGE,
-            )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                dateCreated=datetime.datetime(2019, 12, 31),
-                user=user_17_only_recredited_at_16,
-                type=fraud_models.FraudCheckType.EDUCONNECT,
-                status=fraud_models.FraudCheckStatus.OK,
-                resultContent=fraud_factories.EduconnectContentFactory(
-                    user=user_17_only_recredited_at_16,
-                    birth_date="2002-08-01",
-                    registration_datetime=id_check_application_date,
-                ),
-                eligibilityType=users_models.EligibilityType.UNDERAGE,
-            )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                dateCreated=datetime.datetime(2019, 12, 31),
-                user=user_17_already_recredited,
-                type=fraud_models.FraudCheckType.EDUCONNECT,
-                status=fraud_models.FraudCheckStatus.OK,
-                resultContent=fraud_factories.EduconnectContentFactory(
-                    user=user_17_already_recredited,
-                    birth_date="2002-08-01",
-                    registration_datetime=id_check_application_date,
-                ),
-                eligibilityType=users_models.EligibilityType.UNDERAGE,
-            )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                dateCreated=datetime.datetime(2019, 12, 31),
-                user=user_17_already_recredited_twice,
-                type=fraud_models.FraudCheckType.EDUCONNECT,
-                status=fraud_models.FraudCheckStatus.OK,
-                resultContent=fraud_factories.EduconnectContentFactory(
-                    user=user_17_already_recredited_twice,
-                    birth_date="2002-08-01",
-                    registration_datetime=id_check_application_date,
-                ),
-                eligibilityType=users_models.EligibilityType.UNDERAGE,
-            )
-
-            # Not beneficiary user
-            user_17_not_activated = users_factories.UserFactory(dateOfBirth=datetime.datetime(2004, 5, 1))
-            user_17_not_activated.add_underage_beneficiary_role()
-
-            # Create the recredits that already happened
-            factories.RecreditFactory(
-                deposit=user_16_already_recredited.deposit, recreditType=models.RecreditType.RECREDIT_16
-            )
-            factories.RecreditFactory(
-                deposit=user_17_only_recredited_at_16.deposit,
-                recreditType=models.RecreditType.RECREDIT_16,
-                dateCreated=datetime.datetime(2020, 1, 1),
-            )
-            factories.RecreditFactory(
-                deposit=user_17_already_recredited.deposit, recreditType=models.RecreditType.RECREDIT_17
-            )
-            factories.RecreditFactory(
-                deposit=user_17_already_recredited_twice.deposit,
-                recreditType=models.RecreditType.RECREDIT_16,
-                dateCreated=datetime.datetime(2019, 5, 1),
-            )
-            factories.RecreditFactory(
-                deposit=user_17_already_recredited_twice.deposit,
-                recreditType=models.RecreditType.RECREDIT_17,
-                dateCreated=datetime.datetime(2020, 5, 1),
-            )
-
-        # Check the initial conditions
-        assert models.Recredit.query.count() == 5
-
-        assert user_17_not_activated.deposit is None
-
-        assert user_15.deposit.amount == 20
-        assert user_16_not_recredited.deposit.amount == 30
-        assert user_16_already_recredited.deposit.amount == 30
-        assert user_17_not_recredited.deposit.amount == 30
-        assert user_17_only_recredited_at_16.deposit.amount == 30
-        assert user_17_already_recredited.deposit.amount == 30
-        assert user_17_already_recredited_twice.deposit.amount == 30
-
-        assert user_15.recreditAmountToShow is None
-        assert user_16_not_recredited.recreditAmountToShow is None
-        assert user_16_already_recredited.recreditAmountToShow is None
-        assert user_17_not_recredited.recreditAmountToShow is None
-        assert user_17_only_recredited_at_16.recreditAmountToShow is None
-        assert user_17_already_recredited.recreditAmountToShow is None
-        assert user_17_already_recredited_twice.recreditAmountToShow is None
-
-        # Run the task
-        with time_machine.travel("2020, 5, 2"):
-            api.recredit_users()
-
-        # Check the results:
-        # Assert we created new Recredits for user_16_not_recredited, user_17_not_recredited and user_17_only_recredited_at_16
-        assert models.Recredit.query.count() == 8
-        assert user_15.deposit.recredits == []
-        assert user_16_not_recredited.deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_16
-        assert user_17_not_recredited.deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_17
-        assert len(user_17_only_recredited_at_16.deposit.recredits) == 2
-        assert user_17_only_recredited_at_16.deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_17
-
-        assert user_15.deposit.amount == 20
-        assert user_16_not_recredited.deposit.amount == 30 + 30
-        assert user_16_already_recredited.deposit.amount == 30
-        assert user_17_not_recredited.deposit.amount == 30 + 30
-        assert user_17_only_recredited_at_16.deposit.amount == 30 + 30
-        assert user_17_already_recredited.deposit.amount == 30
-        assert user_17_already_recredited_twice.deposit.amount == 30
-
-        assert user_15.recreditAmountToShow is None
-        assert user_16_not_recredited.recreditAmountToShow == 30
-        assert user_16_already_recredited.recreditAmountToShow is None
-        assert user_17_not_recredited.recreditAmountToShow == 30
-        assert user_17_only_recredited_at_16.recreditAmountToShow == 30
-        assert user_17_already_recredited.recreditAmountToShow is None
-        assert user_17_already_recredited_twice.recreditAmountToShow is None
-
-    def test_recredit_around_the_year(self):
-        with time_machine.travel("2015-05-01"):
-            user_activated_at_15 = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
-            user_activated_at_16 = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
-            user_activated_at_17 = users_factories.UnderageBeneficiaryFactory(subscription_age=17)
-
-        assert user_activated_at_15.deposit.amount == 20
-        assert user_activated_at_16.deposit.amount == 30
-        assert user_activated_at_17.deposit.amount == 30
-        assert user_activated_at_15.recreditAmountToShow is None
-        assert user_activated_at_16.recreditAmountToShow is None
-        assert user_activated_at_17.recreditAmountToShow is None
-
-        # recredit the following year
-        with time_machine.travel("2016-05-01"):
-            api.recredit_users()
-
-        assert user_activated_at_15.deposit.amount == 50
-        assert user_activated_at_16.deposit.amount == 60
-        assert user_activated_at_17.deposit.amount == 30
-        assert user_activated_at_15.recreditAmountToShow == 30
-        assert user_activated_at_16.recreditAmountToShow == 30
-        assert user_activated_at_17.recreditAmountToShow is None
-
-        # recrediting the day after does not affect the amount
-        with time_machine.travel("2016-05-02"):
-            api.recredit_users()
-
-        assert user_activated_at_15.deposit.amount == 50
-        assert user_activated_at_16.deposit.amount == 60
-        assert user_activated_at_17.deposit.amount == 30
-        assert user_activated_at_15.recreditAmountToShow == 30
-        assert user_activated_at_16.recreditAmountToShow == 30
-        assert user_activated_at_17.recreditAmountToShow is None
-
-        # recredit the following year
-        with time_machine.travel("2017-05-01"):
-            api.recredit_users()
-
-        assert user_activated_at_15.deposit.amount == 80
-        assert user_activated_at_16.deposit.amount == 60
-        assert user_activated_at_17.deposit.amount == 30
-        assert user_activated_at_15.recreditAmountToShow == 30
-        assert user_activated_at_16.recreditAmountToShow == 30  # Was not reset
-        assert user_activated_at_17.recreditAmountToShow is None
-
     def test_recredit_when_account_activated_on_the_birthday(self):
         with time_machine.travel("2020-05-01"):
             user = users_factories.UnderageBeneficiaryFactory(
@@ -5132,69 +4676,22 @@ class LegacyUserRecreditTest:
             assert user.deposit.amount == 30
             assert user.recreditAmountToShow is None
 
-    def test_recredit_with_two_birthdays_since_registration(self):
-        seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17)
-        beneficiary = users_factories.UserFactory(
-            validatedBirthDate=seventeen_years_ago, dateOfBirth=seventeen_years_ago.date()
-        )
-        beneficiary.add_underage_beneficiary_role()
-        thirteen_months_ago = datetime.datetime.utcnow() - relativedelta(years=1, months=1)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=beneficiary,
-            status=fraud_models.FraudCheckStatus.STARTED,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-            resultContent=fraud_factories.EduconnectContentFactory(
-                birth_date=seventeen_years_ago,
-                registration_datetime=thirteen_months_ago,  # beneficiary is 15 during registration
-            ),
-        )
-        granted_deposit = api.get_granted_deposit(
-            beneficiary,
-            users_models.EligibilityType.UNDERAGE,
-            age_at_registration=15,
-        )
-        deposit = models.Deposit(
-            version=granted_deposit.version,
-            type=granted_deposit.type,
-            amount=granted_deposit.amount,
-            source="test",
-            user=beneficiary,
-            expirationDate=granted_deposit.expiration_date,
-        )
-        db.session.add(deposit)
-        db.session.flush()
-
-        api.recredit_users()
-
-        assert set(recredit.recreditType for recredit in deposit.recredits) == {
-            models.RecreditType.RECREDIT_16,
-            models.RecreditType.RECREDIT_17,
-        }
-        assert len(deposit.recredits) == 2
-
     def test_notify_user_on_recredit(self):
         with time_machine.travel("2020-05-01"):
-            user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
-            assert user.deposit.amount == 20
+            user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
 
         with time_machine.travel("2021-05-01"):
             api.recredit_users()
-            assert user.deposit.amount == 50
 
         push_data = push_testing.requests[-1]
         assert push_data["can_be_asynchronously_retried"] is True
         assert push_data["event_name"] == "recredited_account"
         assert push_data["user_id"] == user.id
         payload = push_data["event_payload"]
-        assert payload["deposit_amount"] == 50
+        assert payload["deposit_amount"] == 30 + 50
         assert payload["deposit_type"] == "GRANT_15_17"
         assert payload["deposits_count"] == 1
         assert payload["deposit_expiration_date"] == user.deposit.expirationDate.isoformat()
-
-
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
-class UserRecreditAfterDecreeTest:
 
     def test_user_with_finished_age_18_process_is_credited_with_correct_role(self):
         """
@@ -5497,7 +4994,6 @@ class UserRecreditAfterDecreeTest:
         assert outbox[0]["template"]["id_prod"] == 1509
 
 
-@pytest.mark.feature(WIP_ENABLE_CREDIT_V3=True)
 class CanBeRecreditedTest:
     @pytest.mark.parametrize("age", (14, 15, 16, 19))
     def test_users_not_eligible_cannot_be_recredited(self, age):
@@ -5569,7 +5065,6 @@ class CanBeRecreditedTest:
         assert not api._can_be_recredited(user)
 
 
-@pytest.mark.feature(WIP_ENABLE_CREDIT_V3=True)
 class LastAgeRelatedRecreditTest:
     def test_last_recredit_17(self):
         user = users_factories.BeneficiaryFactory(age=17)

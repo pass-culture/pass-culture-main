@@ -1098,13 +1098,12 @@ class FindExpiringBookingsTest:
         assert bookings == {book_booking_old_enough, movie_booking_old_enough}
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 def test_get_bookings_from_deposit():
     deposit1 = users_factories.BeneficiaryFactory().deposit
     deposit2 = users_factories.BeneficiaryFactory().deposit
     booking1 = bookings_factories.BookingFactory(deposit=deposit1)
     booking2 = bookings_factories.BookingFactory(deposit=deposit2)
-    _cancelled_booking = bookings_factories.CancelledBookingFactory(deposit=deposit2)
+    bookings_factories.CancelledBookingFactory(deposit=deposit2)  # cancelled bookings are ignored
 
     assert get_bookings_from_deposit(deposit1.id) == [booking1]
     assert get_bookings_from_deposit(deposit2.id) == [booking2]

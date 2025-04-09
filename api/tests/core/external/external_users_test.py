@@ -374,27 +374,6 @@ def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18
     assert attributes.deposits_count == 1
 
 
-# This test will be removed when WIP_ENABLE_CREDIT_V3 is removed.
-# It is not the expected behavior anymore, the underage deposits no longer expire at 18 years old.
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
-def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18_on_time():
-    # At 17 years old
-    with time_machine.travel(datetime.utcnow() - relativedelta(years=2)):
-        user = UnderageBeneficiaryFactory(
-            subscription_age=17, deposit__expirationDate=datetime.utcnow() + relativedelta(years=1)
-        )
-
-    # At 19 years old
-    user = User.query.get(user.id)
-    attributes = get_user_attributes(user)
-
-    assert attributes.is_beneficiary
-    assert not attributes.is_current_beneficiary
-    assert attributes.is_former_beneficiary  # because it's too late to claim any credit
-    assert attributes.roles == [UserRole.UNDERAGE_BENEFICIARY.value]
-    assert attributes.deposits_count == 1
-
-
 def test_get_user_attributes_double_beneficiary():
     # At 17 years old
     with time_machine.travel(datetime.utcnow() - relativedelta(years=1)):
