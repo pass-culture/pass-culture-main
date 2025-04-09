@@ -103,6 +103,7 @@ import strokePageNotFoundIcon from 'icons/stroke-page-not-found.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
+import strokePictureIcon from 'icons/stroke-picture.svg'
 import strokePriceIcon from 'icons/stroke-price.svg'
 import strokeRepaymentIcon from 'icons/stroke-repayment.svg'
 import strokeRightIcon from 'icons/stroke-right.svg'
@@ -255,6 +256,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokePageNotFoundIcon },
   { src: strokeVisualArtIcon },
   { src: strokeAddCalendarIcon },
+  { src: strokePictureIcon, viewBox: '0 0 58 58' },
 ]
 
 export const otherIcons: IconListItem[] = [
