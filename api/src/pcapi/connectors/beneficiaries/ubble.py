@@ -135,18 +135,27 @@ def create_identity_verification(
 @log_and_handle_ubble_response("identity-verifications-attempt")
 def create_identity_verification_attempt(identification_id: str, redirect_url: str) -> str:
     session = _configure_v2_session()
-    response = session.post(
-        build_url(f"/v2/identity-verifications/{identification_id}/attempts"),
-        json={"redirect_url": redirect_url},
-        timeout=60,
-    )
-    response.raise_for_status()
+    try:
+        response = session.post(
+            build_url(f"/v2/identity-verifications/{identification_id}/attempts"),
+            json={"redirect_url": redirect_url},
+            timeout=60,
+        )
+        response.raise_for_status()
 
-    identification_attempt = parse_obj_as(ubble_serializers.UbbleV2AttemptResponse, response.json())
+        identification_attempt = parse_obj_as(ubble_serializers.UbbleV2AttemptResponse, response.json())
 
-    logger.info("Ubble identification attempted", extra={"identification_id": identification_attempt.id})
+        logger.info("Ubble identification attempted", extra={"identification_id": identification_attempt.id})
 
-    return identification_attempt.links.verification_url.href
+        return identification_attempt.links.verification_url.href
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 409:
+            logger.info(
+                "An attempt already exists for this verification", extra={"identification_id": identification_id}
+            )
+            content = get_identity_verification(identification_id)
+            return content.identification_url
+        raise
 
 
 @log_and_handle_ubble_response("create-and-start-idv")
@@ -271,7 +280,11 @@ def start_identification(
     }
 
     try:
-        response = session.post(build_url("/identifications/", user_id), json=data, cert=None)
+        response = session.post(
+            build_url("/identifications/", user_id),
+            json=data,
+            cert=None,
+        )
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
         logger.error(
             "Ubble start-identification: Network error",
@@ -336,11 +349,14 @@ def get_content(identification_id: str) -> fraud_models.UbbleContent:
     base_extra_log = {"request_type": "get-content", "identification_id": identification_id}
 
     try:
-        response = session.get(build_url(f"/identifications/{identification_id}/", identification_id), cert=None)
+        response = session.get(
+            build_url(f"/identifications/{identification_id}/", identification_id),
+            cert=None,
+        )
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
         logger.error(
             "Ubble get-content: Network error",
-            extra=typing.cast(dict[str, typing.Any], {"exception": e, "error_type": "http"} | base_extra_log),
+            extra={"exception": e, "error_type": "http"} | base_extra_log,
         )
         raise requests.ExternalAPIException(is_retryable=True) from e
 
@@ -354,30 +370,25 @@ def get_content(identification_id: str) -> fraud_models.UbbleContent:
             )
             raise requests.ExternalAPIException(is_retryable=True)
 
-        logger.error(  # pylint: disable=logging-fstring-interpolation
-            # ungroup errors on sentry
-            f"Ubble get-content: Unexpected error: {response.status_code}, {response.text}",
-            extra=typing.cast(
-                dict[str, typing.Any],
-                {"response_text": response.text, "status_code": response.status_code, "error_type": "http"}
-                | base_extra_log,
-            ),
+        logger.error(
+            "Ubble get-content: Unexpected error: %s, %s",
+            response.status_code,
+            response.text,
+            extra={"response_text": response.text, "status_code": response.status_code, "error_type": "http"}
+            | base_extra_log,
         )
         raise requests.ExternalAPIException(is_retryable=False)
 
     content = _extract_useful_content_from_response(response.json())
     logger.info(
         "Valid response from Ubble",
-        extra=typing.cast(
-            dict[str, typing.Any],
-            {
-                "status_code": response.status_code,
-                "score": content.score,
-                "status": content.status.value if content.status else None,
-                "document_type": content.document_type,
-            }
-            | base_extra_log,
-        ),
+        extra={
+            "status_code": response.status_code,
+            "score": content.score,
+            "status": content.status.value if content.status else None,
+            "document_type": content.document_type,
+        }
+        | base_extra_log,
     )
     return content
 
