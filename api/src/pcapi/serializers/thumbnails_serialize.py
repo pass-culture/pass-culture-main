@@ -42,5 +42,5 @@ class CreateThumbnailBodyModel(BaseModel):
 
 class CreateThumbnailResponseModel(BaseModel):
     id: int
-    url: str
+    url: str | None
     credit: str | None

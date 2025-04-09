@@ -15,7 +15,6 @@ from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.api as offerers_api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
-from pcapi.core.offers import schemas as offers_schemas
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
@@ -25,10 +24,9 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository import atomic
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization import offers_serialize
-from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
-from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.serializers import offers_serialize
+from pcapi.serializers import thumbnails_serialize
 from pcapi.utils import rest
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
@@ -152,7 +150,7 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
 @atomic()
 def post_event_opening_hours(
     offer_id: int,
-    body: offers_schemas.CreateEventOpeningHoursModel,
+    body: offers_serialize.CreateEventOpeningHoursModel,
 ) -> offers_serialize.GetEventOpeningHoursResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
@@ -278,7 +276,7 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
 )
 @atomic()
 def post_draft_offer(
-    body: offers_schemas.PostDraftOfferBodyModel,
+    body: offers_serialize.PostDraftOfferBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     venue: offerers_models.Venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
@@ -310,7 +308,7 @@ def post_draft_offer(
 )
 @atomic()
 def patch_draft_offer(
-    offer_id: int, body: offers_schemas.PatchDraftOfferBodyModel
+    offer_id: int, body: offers_serialize.PatchDraftOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     offer = models.Offer.query.options(
         sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
@@ -358,7 +356,7 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
         fields.pop("address")
         fields["extraData"] = offers_api.deserialize_extra_data(fields["extraData"], fields["subcategoryId"])
 
-        offer_body = offers_schemas.CreateOffer(**fields)
+        offer_body = offers_serialize.CreateOffer(**fields)
         offer = offers_api.create_offer(
             offer_body, venue=venue, offerer_address=offerer_address, is_from_private_api=True
         )
@@ -477,7 +475,7 @@ def patch_offer(
         if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
             updates["extraData"] = body_extra_data
 
-        offer_body = offers_schemas.UpdateOffer(**updates)
+        offer_body = offers_serialize.UpdateOffer(**updates)
 
         offer = offers_api.update_offer(offer, offer_body, is_from_private_api=True)
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
@@ -490,11 +488,13 @@ def patch_offer(
 @login_required
 @spectree_serialize(
     on_success_status=201,
-    response_model=CreateThumbnailResponseModel,
+    response_model=thumbnails_serialize.CreateThumbnailResponseModel,
     api=blueprint.pro_private_schema,
 )
 @atomic()
-def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseModel:
+def create_thumbnail(
+    form: thumbnails_serialize.CreateThumbnailBodyModel,
+) -> thumbnails_serialize.CreateThumbnailResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(form.offer_id)
     except exceptions.OfferNotFound:
@@ -516,7 +516,9 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
         crop_params=form.crop_params,
     )
 
-    return CreateThumbnailResponseModel(id=thumbnail.id, url=thumbnail.thumbUrl, credit=thumbnail.credit)  # type: ignore[arg-type]
+    return thumbnails_serialize.CreateThumbnailResponseModel(
+        id=thumbnail.id, url=thumbnail.thumbUrl, credit=thumbnail.credit
+    )
 
 
 @private_api.route("/offers/thumbnails/<int:offer_id>", methods=["DELETE"])
