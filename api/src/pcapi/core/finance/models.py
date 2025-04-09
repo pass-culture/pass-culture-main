@@ -993,7 +993,7 @@ class FinanceIncident(PcObject, Base, Model):
 
     @relates_to_collective_bookings.expression  # type: ignore[no-redef]
     def relates_to_collective_bookings(cls) -> sa.sql.elements.UnaryExpression:  # pylint: disable=no-self-argument
-        aliased_booking_finance_incident = sa.orm.aliased(BookingFinanceIncident)
+        aliased_booking_finance_incident = sa_orm.aliased(BookingFinanceIncident)
         return sa.exists().where(
             aliased_booking_finance_incident.incidentId == cls.id,
             aliased_booking_finance_incident.collectiveBookingId.is_not(None),

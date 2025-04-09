@@ -1,5 +1,3 @@
-from operator import or_
-
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
@@ -73,7 +71,7 @@ def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
     name = clean_accents(name)
     venues = (
         offerers_models.Venue.query.filter(
-            or_(
+            sa.or_(
                 sa.func.immutable_unaccent(offerers_models.Venue.name).ilike(f"%{name}%"),
                 sa.func.immutable_unaccent(offerers_models.Venue.publicName).ilike(f"%{name}%"),
             ),
@@ -99,7 +97,7 @@ def get_relative_venues_by_name(name: str) -> list[offerers_models.Venue]:
         sa.not_(offerers_models.Venue.isVirtual),
         # constraint on searched venue
         sa.not_(aliased_venue.isVirtual),
-        or_(
+        sa.or_(
             sa.func.immutable_unaccent(aliased_venue.name).ilike(f"%{name}%"),
             sa.func.immutable_unaccent(aliased_venue.publicName).ilike(f"%{name}%"),
         ),

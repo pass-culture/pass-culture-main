@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
@@ -26,11 +27,11 @@ def get_first_venue_approved_offer_email_data(offer: Offer) -> models.Transactio
         )
         .outerjoin(finance_models.BankAccount, VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id)
         .options(
-            sa.orm.contains_eager(Venue.bankAccountLinks)
+            sa_orm.contains_eager(Venue.bankAccountLinks)
             .load_only(VenueBankAccountLink.timespan)
             .contains_eager(VenueBankAccountLink.bankAccount)
             .load_only(finance_models.BankAccount.id, finance_models.BankAccount.status),
-            sa.orm.joinedload(Venue.offererAddress).joinedload(OffererAddress.address),
+            sa_orm.joinedload(Venue.offererAddress).joinedload(OffererAddress.address),
         )
         .one()
     )

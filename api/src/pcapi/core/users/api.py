@@ -20,8 +20,7 @@ from flask_jwt_extended import create_refresh_token
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy import func
-from sqlalchemy.orm import Query
-from sqlalchemy.orm import joinedload
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors import api_adresse
@@ -46,7 +45,6 @@ from pcapi.core.geography.repository import get_iris_from_address
 import pcapi.core.history.api as history_api
 from pcapi.core.history.api import add_action
 import pcapi.core.history.models as history_models
-from pcapi.core.history.models import ActionType
 from pcapi.core.mails import get_raw_contact_data
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.object_storage import store_public_object
@@ -1175,10 +1173,10 @@ def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
     )
 
     return _filter_user_accounts(pro_accounts, search_query).options(
-        sa.orm.with_expression(models.User.suspension_reason_expression, models.User.suspension_reason.expression),  # type: ignore[attr-defined]
-        sa.orm.with_expression(models.User.suspension_date_expression, models.User.suspension_date.expression),  # type: ignore[attr-defined]
-        sa.orm.joinedload(models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
-        sa.orm.contains_eager(models.User.deposits),
+        sa_orm.with_expression(models.User.suspension_reason_expression, models.User.suspension_reason.expression),  # type: ignore[attr-defined]
+        sa_orm.with_expression(models.User.suspension_date_expression, models.User.suspension_date.expression),  # type: ignore[attr-defined]
+        sa_orm.joinedload(models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
+        sa_orm.contains_eager(models.User.deposits),
     )
 
 
@@ -1194,8 +1192,8 @@ def get_pro_account_base_query(pro_id: int) -> BaseQuery:
 
 def search_backoffice_accounts(search_query: str) -> BaseQuery:
     bo_accounts = models.User.query.join(models.User.backoffice_profile).options(
-        sa.orm.with_expression(models.User.suspension_reason_expression, models.User.suspension_reason.expression),  # type: ignore[attr-defined]
-        sa.orm.with_expression(models.User.suspension_date_expression, models.User.suspension_date.expression),  # type: ignore[attr-defined]
+        sa_orm.with_expression(models.User.suspension_reason_expression, models.User.suspension_reason.expression),  # type: ignore[attr-defined]
+        sa_orm.with_expression(models.User.suspension_date_expression, models.User.suspension_date.expression),  # type: ignore[attr-defined]
     )
 
     if not search_query:
@@ -1386,7 +1384,7 @@ def delete_old_login_device_history() -> None:
     db.session.commit()
 
 
-def _get_users_with_suspended_account() -> Query:
+def _get_users_with_suspended_account() -> sa_orm.Query:
     # distinct keeps the first row if duplicates are found. Since rows
     # are ordered by userId and eventDate, this query will fetch the
     # latest event for each userId.
@@ -1401,7 +1399,7 @@ def _get_users_with_suspended_account() -> Query:
     )
 
 
-def _get_users_with_suspended_account_to_notify(expiration_delta_in_days: int) -> Query:
+def _get_users_with_suspended_account_to_notify(expiration_delta_in_days: int) -> sa_orm.Query:
     start = datetime.date.today() - datetime.timedelta(days=expiration_delta_in_days)
     user_ids_and_latest_action = (
         _get_users_with_suspended_account()
@@ -1423,7 +1421,7 @@ def _get_users_with_suspended_account_to_notify(expiration_delta_in_days: int) -
     )
 
 
-def get_suspended_upon_user_request_accounts_since(expiration_delta_in_days: int) -> Query:
+def get_suspended_upon_user_request_accounts_since(expiration_delta_in_days: int) -> sa_orm.Query:
     start = datetime.date.today() - datetime.timedelta(days=expiration_delta_in_days)
     user_ids_and_latest_action = (
         _get_users_with_suspended_account()
@@ -1720,9 +1718,9 @@ def anonymize_pro_users() -> None:
         ~models.User.roles.contains([models.UserRole.UNDERAGE_BENEFICIARY]),
     ]
 
-    aliased_offerer = sa.orm.aliased(offerers_models.Offerer)
-    aliased_user_offerer = sa.orm.aliased(offerers_models.UserOfferer)
-    aliased_user = sa.orm.aliased(models.User)
+    aliased_offerer = sa_orm.aliased(offerers_models.Offerer)
+    aliased_user_offerer = sa_orm.aliased(offerers_models.UserOfferer)
+    aliased_user = sa_orm.aliased(models.User)
 
     offerers = (
         db.session.query(aliased_offerer.id)
@@ -1872,7 +1870,7 @@ def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.Gdpr
     chronicles_data = chronicles_models.Chronicle.query.filter(
         chronicles_models.Chronicle.userId == user.id,
     ).options(
-        joinedload(chronicles_models.Chronicle.products).load_only(
+        sa_orm.joinedload(chronicles_models.Chronicle.products).load_only(
             offers_models.Product.extraData,
             offers_models.Product.name,
         )
@@ -2087,9 +2085,9 @@ def _extract_gdpr_booking_data(user: models.User) -> list[users_serialization.Gd
             bookings_models.Booking.user == user,
         )
         .options(
-            joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer),
-            joinedload(bookings_models.Booking.venue),
-            joinedload(bookings_models.Booking.venue).joinedload(offerers_models.Venue.managingOfferer),
+            sa_orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer),
+            sa_orm.joinedload(bookings_models.Booking.venue),
+            sa_orm.joinedload(bookings_models.Booking.venue).joinedload(offerers_models.Venue.managingOfferer),
         )
         .order_by(bookings_models.Booking.id)
     )
@@ -2184,7 +2182,7 @@ def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
         name=f"{extract.id}.zip",
         archive=archive.getvalue(),
     )
-    add_action(ActionType.USER_EXTRACT_DATA, author=extract.authorUser, user=extract.user)
+    add_action(history_models.ActionType.USER_EXTRACT_DATA, author=extract.authorUser, user=extract.user)
     db.session.flush()
 
 
@@ -2221,8 +2219,8 @@ def extract_beneficiary_data_command() -> bool:
             models.GdprUserDataExtract.expirationDate > datetime.datetime.utcnow(),  # type: ignore [operator]
         )
         .options(
-            joinedload(models.GdprUserDataExtract.user),
-            joinedload(models.GdprUserDataExtract.authorUser),
+            sa_orm.joinedload(models.GdprUserDataExtract.user),
+            sa_orm.joinedload(models.GdprUserDataExtract.authorUser),
         )
         .limit(10)
         .all()

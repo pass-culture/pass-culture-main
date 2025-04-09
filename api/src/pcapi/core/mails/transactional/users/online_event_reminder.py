@@ -1,7 +1,7 @@
 import datetime
 import logging
 
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core import mails
 from pcapi.core.bookings import models as booking_models
@@ -63,7 +63,7 @@ def _get_online_reminder_data(data: OnlineEventReminderData) -> TransactionalEma
     )
 
 
-def _get_online_bookings_happening_soon() -> sa.orm.query.Query:
+def _get_online_bookings_happening_soon() -> sa_orm.query.Query:
     """
     'Soon' means in the next hour but not in the next 30 minutes.
     This is to send the reminder at least 30 minutes before the event starts.
@@ -80,8 +80,8 @@ def _get_online_bookings_happening_soon() -> sa.orm.query.Query:
         .join(Offer)
         .join(Venue)
         .options(
-            sa.orm.joinedload(booking_models.Booking.user, innerjoin=True),
-            sa.orm.contains_eager(booking_models.Booking.stock).contains_eager(Stock.offer).contains_eager(Offer.venue),
+            sa_orm.joinedload(booking_models.Booking.user, innerjoin=True),
+            sa_orm.contains_eager(booking_models.Booking.stock).contains_eager(Stock.offer).contains_eager(Offer.venue),
         )
         .filter(
             booking_models.Booking.status == booking_models.BookingStatus.CONFIRMED,
@@ -95,7 +95,7 @@ def _get_online_bookings_happening_soon() -> sa.orm.query.Query:
     return bookings_query
 
 
-def _get_email_data_by_stock(bookings_query: sa.orm.query.Query) -> dict[str, OnlineEventReminderData]:
+def _get_email_data_by_stock(bookings_query: sa_orm.query.Query) -> dict[str, OnlineEventReminderData]:
     email_data_by_stock = {}
     for booking in bookings_query:
         if booking.stockId not in email_data_by_stock:
