@@ -705,14 +705,7 @@ def update_user_info(
         if validated_birth_date != user.validatedBirthDate:
             snapshot.set("validatedBirthDate", old=user.validatedBirthDate, new=validated_birth_date)
             user.validatedBirthDate = validated_birth_date
-            if _has_underage_deposit(user) and not FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-                _update_underage_beneficiary_deposit_expiration_date(user)
-            if (
-                FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active()
-                and user.deposit
-                and user.has_active_deposit
-                and validated_birth_date is not None
-            ):
+            if user.deposit and user.has_active_deposit and validated_birth_date is not None:
                 twenty_first_birthday = validated_birth_date + relativedelta(years=21)
                 user.deposit.expirationDate = datetime.datetime.combine(twenty_first_birthday, datetime.time.min)
 
@@ -746,45 +739,6 @@ def update_user_info(
     external_attributes_api.update_external_user(user, batch_extra_data=batch_extra_data)
 
     return snapshot
-
-
-def _has_underage_deposit(user: models.User) -> bool:
-    return user.deposit is not None and user.deposit.type == finance_models.DepositType.GRANT_15_17
-
-
-def _update_underage_beneficiary_deposit_expiration_date(user: models.User) -> None:
-    if user.birth_date is None:
-        raise ValueError("User has no birth_date")
-    if not (user.deposit and user.deposit.expirationDate):
-        raise ValueError("Trying to update underage beneficiary deposit expiration date but user has no deposit")
-
-    current_deposit_expiration_datetime = user.deposit.expirationDate
-    new_deposit_expiration_datetime = finance_api.compute_underage_deposit_expiration_datetime(user.birth_date)
-
-    if current_deposit_expiration_datetime == new_deposit_expiration_datetime:
-        return
-
-    logger.info(
-        "Updating deposit expiration date for underage beneficiary %s",
-        user.id,
-        extra={
-            "user": user.id,
-            "deposit": user.deposit.id,
-            "current_expiration_date": current_deposit_expiration_datetime,
-            "new_expiration_date": new_deposit_expiration_datetime,
-        },
-    )
-
-    if new_deposit_expiration_datetime > datetime.datetime.utcnow():
-        user.deposit.expirationDate = new_deposit_expiration_datetime
-    else:
-        if current_deposit_expiration_datetime < datetime.datetime.utcnow():
-            # no need to update the deposit expirationDate because it is already passed
-            return
-        # Else, reduce to now and not to the theoretical new date in case there are bookings made between these dates
-        user.deposit.expirationDate = datetime.datetime.utcnow()
-
-    repository.save(user.deposit)
 
 
 def add_comment_to_user(user: models.User, author_user: models.User, comment: str) -> None:
