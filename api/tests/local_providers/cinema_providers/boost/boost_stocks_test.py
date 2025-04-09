@@ -22,7 +22,6 @@ from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import BoostStocks
 from pcapi.models import db
-from pcapi.utils.human_ids import humanize
 
 import tests
 from tests.local_providers.provider_test_utils import create_finance_event_to_update
@@ -454,7 +453,7 @@ class BoostStocksTest:
         for last_pricingOrderingDate, event in to_compare:
             assert event.pricingOrderingDate != last_pricingOrderingDate
 
-    def should_create_offer_with_correct_thumb(self, requests_mock):
+    def test_should_create_product_mediation(self, requests_mock):
         venue_provider = self._create_cinema_and_pivot()
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -475,14 +474,10 @@ class BoostStocksTest:
         boost_stocks.updateObjects()
 
         created_offer = db.session.query(Offer).one()
-        assert (
-            created_offer.thumbUrl
-            == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
-        )
-        assert created_offer.activeMediation.thumbCount == 1
 
+        assert created_offer.image.url == created_offer.product.productMediations[0].url
+        assert boost_stocks.createdThumbs == 1
         assert boost_stocks.erroredThumbs == 0
-
         assert get_cinema_attr_adapter.call_count == 1
 
     def should_create_offer_even_if_incorrect_thumb(self, requests_mock):

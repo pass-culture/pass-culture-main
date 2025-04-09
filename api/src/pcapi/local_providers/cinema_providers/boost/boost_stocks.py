@@ -2,7 +2,11 @@ from datetime import datetime
 import decimal
 import logging
 from typing import Iterator
+import uuid
 
+import PIL
+
+from pcapi.connectors import thumb_storage
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
@@ -124,19 +128,28 @@ class BoostStocks(LocalProvider):
 
         if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
             if self.showtime_details.film.posterUrl:
-                if image := self._get_boost_movie_poster(self.showtime_details.film.posterUrl):
+                image = self._get_boost_movie_poster(self.showtime_details.film.posterUrl)
+                if image and self.product and not self.product.productMediations:
                     try:
-                        offers_api.create_mediation(
-                            user=None,
-                            offer=offer,
-                            credit=None,
-                            image_as_bytes=image,
-                            keep_ratio=True,
-                            min_height=None,
-                            min_width=None,
+                        image_id = str(uuid.uuid4())
+                        mediation = offers_models.ProductMediation(
+                            productId=self.product.id,
+                            lastProvider=self.provider,
+                            imageType=offers_models.ImageType.POSTER,
+                            uuid=image_id,
                         )
+                        db.session.add(mediation)
+                        thumb_storage.create_thumb(
+                            self.product,
+                            image,
+                            storage_id_suffix_str="",
+                            keep_ratio=True,
+                            object_id=image_id,
+                        )
+                        db.session.flush()
+
                         self.createdThumbs += 1
-                    except offers_exceptions.ImageValidationError as e:
+                    except (offers_exceptions.ImageValidationError, PIL.UnidentifiedImageError) as e:
                         self.erroredThumbs += 1
                         logger.warning("Error: Offer image could not be created. Reason: %s", e)
         self.last_offer = offer
