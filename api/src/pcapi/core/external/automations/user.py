@@ -6,6 +6,7 @@ from math import ceil
 from dateutil.relativedelta import relativedelta
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.core.external.attributes import api as attributes_api
@@ -104,7 +105,7 @@ def get_users_whose_credit_expired_today() -> list[User]:
             finance_models.Deposit.expirationDate <= datetime.combine(date.today(), datetime.min.time()),
         )
         .options(
-            sa.orm.selectinload(User.deposits).selectinload(finance_models.Deposit.recredits),
+            sa_orm.selectinload(User.deposits).selectinload(finance_models.Deposit.recredits),
         )
         .yield_per(YIELD_COUNT_PER_DB_QUERY)
     )
@@ -121,7 +122,7 @@ def get_ex_underage_beneficiaries_who_can_no_longer_recredit() -> list[User]:
             User.dateOfBirth <= datetime.combine(date.today() - relativedelta(days=days_19y), datetime.min.time()),
         )
         .options(
-            sa.orm.selectinload(User.deposits).selectinload(finance_models.Deposit.recredits),
+            sa_orm.selectinload(User.deposits).selectinload(finance_models.Deposit.recredits),
         )
         .yield_per(YIELD_COUNT_PER_DB_QUERY)
     )

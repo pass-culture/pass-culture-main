@@ -8,6 +8,7 @@ from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.history import api as history_api
@@ -49,7 +50,7 @@ def _get_offerers_data_for_rules(rules: list[offers_models.OfferValidationRule])
 
     offerers_from_rules = (
         offerers_models.Offerer.query.options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 offerers_models.Offerer.id,
                 offerers_models.Offerer.name,
                 offerers_models.Offerer.siren,
@@ -77,7 +78,7 @@ def _get_venues_data_for_rules(rules: list[offers_models.OfferValidationRule]) -
 
     venues_from_rules = (
         offerers_models.Venue.query.options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
@@ -97,7 +98,7 @@ def list_rules() -> utils.BackofficeResponse:
 
     query = (
         offers_models.OfferValidationRule.query.outerjoin(offers_models.OfferValidationSubRule)
-        .options(sa.orm.contains_eager(offers_models.OfferValidationRule.subRules))
+        .options(sa_orm.contains_eager(offers_models.OfferValidationRule.subRules))
         .filter(offers_models.OfferValidationRule.isActive.is_(True))
         .order_by(offers_models.OfferValidationRule.name)
     )
@@ -219,10 +220,10 @@ def get_rules_history() -> utils.BackofficeResponse:
         history_models.ActionHistory.query.filter(history_models.ActionHistory.ruleId.is_not(None))
         .order_by(history_models.ActionHistory.actionDate.desc())
         .options(
-            sa.orm.joinedload(history_models.ActionHistory.authorUser).load_only(
+            sa_orm.joinedload(history_models.ActionHistory.authorUser).load_only(
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName
             ),
-            sa.orm.joinedload(history_models.ActionHistory.rule).load_only(offers_models.OfferValidationRule.name),
+            sa_orm.joinedload(history_models.ActionHistory.rule).load_only(offers_models.OfferValidationRule.name),
         )
         .all()
     )
@@ -267,7 +268,7 @@ def _get_offerers_data_for_rule_history(rules_history: list[history_models.Actio
 
     offerers_from_history = (
         offerers_models.Offerer.query.options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 offerers_models.Offerer.id,
                 offerers_models.Offerer.name,
                 offerers_models.Offerer.siren,
@@ -288,7 +289,7 @@ def _get_venues_data_for_rule_history(rules_history: list[history_models.ActionH
 
     venues_from_history = (
         offerers_models.Venue.query.options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,

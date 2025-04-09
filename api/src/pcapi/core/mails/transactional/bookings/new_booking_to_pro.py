@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
@@ -36,12 +37,12 @@ def get_new_booking_to_pro_email_data(
             offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
         )
         .options(
-            sa.orm.contains_eager(offerers_models.Venue.bankAccountLinks)
+            sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
             .load_only(offerers_models.VenueBankAccountLink.timespan)
             .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
             .load_only(finance_models.BankAccount.id, finance_models.BankAccount.status),
             # fetch offerer info to check if caledonian or not
-            sa.orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True).load_only(
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True).load_only(
                 offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
             ),
         )

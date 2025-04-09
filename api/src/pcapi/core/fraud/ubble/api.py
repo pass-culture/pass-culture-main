@@ -1,7 +1,7 @@
 import logging
 import re
 
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
@@ -170,7 +170,7 @@ def get_ubble_fraud_check(identification_id: str) -> fraud_models.BeneficiaryFra
         )
         .filter(fraud_models.BeneficiaryFraudCheck.thirdPartyId == identification_id)
         .options(
-            sa.orm.joinedload(fraud_models.BeneficiaryFraudCheck.user)
+            sa_orm.joinedload(fraud_models.BeneficiaryFraudCheck.user)
             .selectinload(users_models.User.deposits)
             .selectinload(finance_models.Deposit.recredits)
         )

@@ -585,7 +585,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         postgresql.ARRAY(sa.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
         nullable=True,
     )
-    resultContent: sa.orm.Mapped[dict | None] = sa.Column(
+    resultContent: sa_orm.Mapped[dict | None] = sa.Column(
         sa.ext.mutable.MutableDict.as_mutable(sa.dialects.postgresql.JSONB(none_as_null=True))
     )
     status: FraudCheckStatus = sa.Column(sa.Enum(FraudCheckStatus, create_constraint=False), nullable=True)
@@ -595,7 +595,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=sa.func.now()
     )
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-    user: users_models.User = sa.orm.relationship(
+    user: users_models.User = sa_orm.relationship(
         "User", foreign_keys=[userId], backref="beneficiaryFraudChecks", order_by=dateCreated
     )
 
@@ -676,7 +676,7 @@ class OrphanDmsApplication(PcObject, Base, Model):
 class BeneficiaryFraudReview(PcObject, Base, Model):
     __tablename__ = "beneficiary_fraud_review"
     authorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-    author: users_models.User = sa.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")
+    author: users_models.User = sa_orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")
     dateReviewed: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     eligibilityType: users_models.EligibilityType | None = sa.Column(
         sa.Enum(users_models.EligibilityType, create_constraint=False), nullable=True
@@ -684,8 +684,8 @@ class BeneficiaryFraudReview(PcObject, Base, Model):
     reason = sa.Column(sa.Text)
     review = sa.Column(sa.Enum(FraudReviewStatus, create_constraint=False))
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-    user: users_models.User = sa.orm.relationship(
-        "User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudReviews")
+    user: users_models.User = sa_orm.relationship(
+        "User", foreign_keys=[userId], backref=sa_orm.backref("beneficiaryFraudReviews")
     )
 
 
@@ -730,4 +730,4 @@ class ProductWhitelist(PcObject, Base, Model):
     )
     comment: str = sa.Column(sa.Text, nullable=False)
     authorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
-    author: sa_orm.Mapped["User"] = sa.orm.relationship("User", foreign_keys=[authorId])
+    author: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[authorId])

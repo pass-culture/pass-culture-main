@@ -4,6 +4,7 @@ import typing
 from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.models import Base
 from pcapi.models import Model
@@ -95,7 +96,7 @@ class Permissions(enum.Enum):
 
 
 def sync_enum_with_db_field(
-    session: sa.orm.Session, py_enum: type[enum.Enum], py_attr: str, db_class: type[Model]
+    session: sa_orm.Session, py_enum: type[enum.Enum], py_attr: str, db_class: type[Model]
 ) -> None:
     db_values = set(p.name for p in session.query(db_class.name).all())
     py_values = set(getattr(e, py_attr) for e in py_enum)
@@ -120,7 +121,7 @@ def sync_enum_with_db_field(
         )
 
 
-def sync_db_permissions(session: sa.orm.Session) -> None:
+def sync_db_permissions(session: sa_orm.Session) -> None:
     """
     Automatically synchronize `permission` table in database from the
     `Permissions` Python Enum.
@@ -146,7 +147,7 @@ class Permission(PcObject, Base, Model):
 
     name: str = sa.Column(sa.String(length=140), nullable=False, unique=True)
     category = sa.Column(sa.String(140), nullable=True, default=None)
-    roles: sa.orm.Mapped["Role"] = sa.orm.relationship(
+    roles: sa_orm.Mapped["Role"] = sa_orm.relationship(
         "Role", secondary="role_permission", back_populates="permissions"
     )
 
@@ -181,7 +182,7 @@ class Roles(enum.Enum):
     CONNECT_AS_PRO = "connect_as_pro"
 
 
-def sync_db_roles(session: sa.orm.Session) -> None:
+def sync_db_roles(session: sa_orm.Session) -> None:
     """
     Automatically synchronize `role` table in database from the
     `Roles` Python Enum.
@@ -205,10 +206,10 @@ class Role(PcObject, Base, Model):
     __tablename__ = "role"
 
     name: str = sa.Column(sa.String(140), nullable=False, unique=True)
-    permissions: sa.orm.Mapped["Permission"] = sa.orm.relationship(
+    permissions: sa_orm.Mapped["Permission"] = sa_orm.relationship(
         Permission, secondary="role_permission", back_populates="roles"
     )
-    profiles: sa.orm.Mapped["BackOfficeUserProfile"] = sa.orm.relationship(
+    profiles: sa_orm.Mapped["BackOfficeUserProfile"] = sa_orm.relationship(
         "BackOfficeUserProfile", secondary=role_backoffice_profile_table, back_populates="roles"
     )
 
@@ -227,14 +228,14 @@ class BackOfficeUserProfile(Base, Model):
     userId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
     )
-    user: sa.orm.Mapped["User"] = sa.orm.relationship(
+    user: sa_orm.Mapped["User"] = sa_orm.relationship(
         "User", foreign_keys=[userId], uselist=False, back_populates="backoffice_profile"
     )
-    roles: sa.orm.Mapped["list[Role]"] = sa.orm.relationship(
+    roles: sa_orm.Mapped["list[Role]"] = sa_orm.relationship(
         "Role", secondary=role_backoffice_profile_table, back_populates="profiles"
     )
 
-    preferences: sa.orm.Mapped[dict] = sa.Column(
+    preferences: sa_orm.Mapped[dict] = sa.Column(
         sa.ext.mutable.MutableDict.as_mutable(sa.dialects.postgresql.JSONB),
         nullable=False,
         default={},

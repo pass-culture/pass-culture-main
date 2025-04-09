@@ -3,6 +3,7 @@ import logging
 
 import click
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.connectors.entreprise import sirene
@@ -43,7 +44,7 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
             offerers_models.Offerer.siren.is_not(None),
             sa.not_(offerers_models.Offerer.siren.like(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}%")),
         )
-        .options(sa.orm.load_only(offerers_models.Offerer.siren))
+        .options(sa_orm.load_only(offerers_models.Offerer.siren))
         .all()
     )
 

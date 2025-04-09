@@ -388,8 +388,8 @@ def _get_events_to_price(window: tuple[datetime.datetime, datetime.datetime]) ->
         )
         .order_by(models.FinanceEvent.pricingOrderingDate, models.FinanceEvent.id)
         .options(
-            sa.orm.joinedload(models.FinanceEvent.booking),
-            sa.orm.joinedload(models.FinanceEvent.collectiveBooking),
+            sa_orm.joinedload(models.FinanceEvent.booking),
+            sa_orm.joinedload(models.FinanceEvent.collectiveBooking),
         )
     )
 
@@ -841,7 +841,7 @@ def update_finance_event_pricing_date(stock: offers_models.Stock) -> None:
     """
     pricing_point_id = stock.offer.venue.current_pricing_point_id
     finance_events_from_pricing_point = models.FinanceEvent.query.options(
-        sa.orm.joinedload(models.FinanceEvent.pricings)
+        sa_orm.joinedload(models.FinanceEvent.pricings)
     ).filter(models.FinanceEvent.pricingPointId == pricing_point_id)
     bookings_of_this_stock = bookings_models.Booking.query.with_entities(bookings_models.Booking.id).filter(
         bookings_models.Booking.stockId == stock.id

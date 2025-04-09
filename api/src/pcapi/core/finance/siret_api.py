@@ -4,6 +4,7 @@ from decimal import Decimal
 
 import pytz
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import models as history_models
@@ -292,7 +293,7 @@ def remove_siret(
             offerers_models.VenuePricingPointLink.pricingPointId == venue.id,
             offerers_models.VenuePricingPointLink.timespan.contains(now),
         )
-        .options(sa.orm.joinedload(offerers_models.VenuePricingPointLink.venue))
+        .options(sa_orm.joinedload(offerers_models.VenuePricingPointLink.venue))
         .all()
     )
     for pricing_point_link in pricing_point_links:
