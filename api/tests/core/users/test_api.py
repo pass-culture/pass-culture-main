@@ -725,19 +725,17 @@ class UpdateUserInfoTest:
             "lastName": {"new_info": "Bonisseur de la Bath", "old_info": "Flantier"},
         }
 
-    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     def test_update_user_info_also_updates_underage_deposit_expiration_date(self):
         # Given a user with an underage deposit
         underaged_beneficiary_birthday = datetime.datetime.utcnow() - relativedelta(years=17, months=4)
         underaged_beneficiary_expiration_date = underaged_beneficiary_birthday + relativedelta(
-            years=18, hour=0, minute=0, second=0, microsecond=0
+            years=21, hour=0, minute=0, second=0, microsecond=0
         )
         user = users_factories.BeneficiaryFactory(age=17)
         users_api.update_user_info(user, author=user, validated_birth_date=underaged_beneficiary_birthday)
 
         assert user.deposits[0].expirationDate == underaged_beneficiary_expiration_date
 
-    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
     def test_update_user_info_also_updates_deposit_expiration_date(self):
         user = users_factories.BeneficiaryFactory()
         previous_deposit_expiration_date = user.deposit.expirationDate
@@ -748,10 +746,11 @@ class UpdateUserInfoTest:
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=0)
 class DomainsCreditTest:
     def test_get_domains_credit_v1(self):
-        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1, deposit__amount=500)
+        user = users_factories.BeneficiaryFactory(
+            deposit__version=1, deposit__amount=500, deposit__type=finance_models.DepositType.GRANT_18
+        )
 
         # booking only in all domains
         bookings_factories.BookingFactory(
@@ -794,7 +793,7 @@ class DomainsCreditTest:
         )
 
     def test_get_domains_credit(self):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory(deposit__type=finance_models.DepositType.GRANT_18)
 
         # booking in physical domain
         bookings_factories.BookingFactory(
@@ -810,12 +809,12 @@ class DomainsCreditTest:
         )
 
     def test_get_domains_credit_deposit_expired(self):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory()
         deposit_expiration_date = user.deposit.expirationDate
         deposit_initial_amount = user.deposit.amount
         bookings_factories.BookingFactory(
             user=user,
-            amount=250,
+            amount=deposit_initial_amount - 10,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
@@ -858,7 +857,9 @@ class DomainsCreditTest:
             siret="85331845900023",
         )
         author_user = users_factories.UserFactory()
-        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1, deposit__amount=500)
+        user = users_factories.BeneficiaryGrant18Factory(
+            deposit__version=1, deposit__amount=500, deposit__type=finance_models.DepositType.GRANT_18
+        )
 
         # booking1 (20€ → 20€) + booking2 (6€ → 0€) + booking3 (15€ → 10€) = 30€
 
@@ -1075,7 +1076,9 @@ class DomainsCreditTest:
             siret="85331845900023",
         )
         author_user = users_factories.UserFactory()
-        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1, deposit__amount=500)
+        user = users_factories.BeneficiaryFactory(
+            deposit__version=1, deposit__amount=500, deposit__type=finance_models.DepositType.GRANT_18
+        )
 
         # booking1 (9€ → 9€) + booking2 (45€ → 0€) + booking3 (24€ → 15€) = 24€
 
@@ -1170,7 +1173,9 @@ class DomainsCreditTest:
             siret="85331845900023",
         )
         author_user = users_factories.UserFactory()
-        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1, deposit__amount=500)
+        user = users_factories.BeneficiaryFactory(
+            deposit__version=1, deposit__amount=500, deposit__type=finance_models.DepositType.GRANT_18
+        )
 
         # booking1 (68€ → 68€) + booking2 (32€ → 0€) + booking3 (39€ → 27€) = 95€
 
@@ -2762,7 +2767,6 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             users_constants.SuspensionReason.SUSPENSION_FOR_INVESTIGATION_TEMP,
         ],
     )
-    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     def test_do_not_anonymize_user_tagged_when_he_is_21_and_recently_tagged_as_fraud(self, reason) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
             lastConnectionDate=datetime.datetime.utcnow(),
@@ -2782,7 +2786,6 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         assert user_to_anonymize.firstName != f"Anonymous_{user_to_anonymize.id}"
         assert users_models.GdprUserAnonymization.query.count() == 1
 
-    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     def test_do_not_anonymize_user_tagged_when_he_is_21_and_tagged_as_fraud_5_years_ago(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
             lastConnectionDate=datetime.datetime.utcnow(),

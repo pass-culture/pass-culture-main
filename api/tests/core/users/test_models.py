@@ -235,7 +235,6 @@ class UserTest:
             with time_machine.travel(today):
                 assert user_models._get_latest_birthday(birth_date) == latest_birthday
 
-    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     class EligibilityTest:
         def test_received_pass_15_17(self):
             dateOfBirth = datetime.utcnow() - relativedelta(years=16, days=1)
@@ -425,7 +424,6 @@ class UserWalletBalanceTest:
         assert user.wallet_balance == 0
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 @pytest.mark.usefixtures("db_session")
 class SQLFunctionsTest:
     def test_wallet_balance(self):
