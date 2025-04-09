@@ -296,3 +296,96 @@ class HelperFunctionsTest:
     )
     def test_parse_ubble_gender(self, ubble_gender, expected):
         assert ubble._parse_ubble_gender(ubble_gender) == expected
+
+
+class CreateIdentityVerificationAttemptTest:
+    @pytest.mark.features(WIP_UBBLE_V2=True)
+    def test_create_attempt_success(self, requests_mock, caplog):
+        identification_id = "idv_01j9kndq7ry69dkd8j7hxrqfa8"
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{identification_id}/attempts",
+            json={
+                "id": "att_01j9kndq7ry69dkd8j7hxrqfa8",
+                "_links": {
+                    "verification_url": {"href": "https://id.ubble.example.com/new-attempt"},
+                    "self": {
+                        "href": f"https://api.ubble.example.com/v2/identity-verifications/{identification_id}/attempts/att_01j9kndq7ry69dkd8j7hxrqfa8"
+                    },
+                },
+            },
+        )
+
+        with caplog.at_level(logging.INFO):
+            url = ubble.create_identity_verification_attempt(
+                identification_id=identification_id,
+                redirect_url="https://redirect.example.com",
+            )
+
+        assert url == "https://id.ubble.example.com/new-attempt"
+        assert requests_mock.call_count == 1
+        assert requests_mock.last_request.json() == {"redirect_url": "https://redirect.example.com"}
+
+        assert len(caplog.records) >= 2
+        record = caplog.records[1]
+        assert record.extra["identification_id"] == "att_01j9kndq7ry69dkd8j7hxrqfa8"
+        assert record.message == "Ubble identification attempted"
+
+    @pytest.mark.features(WIP_UBBLE_V2=True)
+    def test_create_attempt_conflict(self, requests_mock, caplog):
+        identification_id = "idv_01j9kndq7ry69dkd8j7hxrqfa8"
+        # Mock the 409 error on attempt creation
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{identification_id}/attempts",
+            status_code=409,
+        )
+        # Mock the get verification response
+        requests_mock.get(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{identification_id}",
+            json={
+                "id": identification_id,
+                "user_journey_id": "usj_01h13smebsb2y1tyyrzx1sgma7",
+                "applicant_id": "aplt_01j9kndq6gcbj26jwh9b3njmhn",
+                "webhook_url": "https://webhook.example.com",
+                "redirect_url": "https://redirect.example.com",
+                "declared_data": {"name": "John Doe"},
+                "created_on": "2024-10-07T14:16:38.908026Z",
+                "modified_on": "2024-10-07T14:16:39.106564Z",
+                "status": "pending",
+                "response_codes": [],
+                "documents": [],
+                "_links": {
+                    "self": {"href": f"https://api.ubble.example.com/v2/identity-verifications/{identification_id}"},
+                    "verification_url": {"href": "https://id.ubble.example.com/existing-attempt"},
+                },
+            },
+        )
+
+        with caplog.at_level(logging.INFO):
+            url = ubble.create_identity_verification_attempt(
+                identification_id=identification_id,
+                redirect_url="https://redirect.example.com",
+            )
+
+        assert url == "https://id.ubble.example.com/existing-attempt"
+        assert requests_mock.call_count == 2  # One POST attempt + one GET for existing verification
+
+        assert len(caplog.records) >= 2
+        record = caplog.records[1]
+        assert record.message == "An attempt already exists for this verification"
+        assert record.extra["identification_id"] == identification_id
+
+    @pytest.mark.features(WIP_UBBLE_V2=True)
+    def test_create_attempt_other_error(self, requests_mock, caplog):
+        identification_id = "idv_01j9kndq7ry69dkd8j7hxrqfa8"
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{identification_id}/attempts",
+            status_code=500,
+        )
+
+        with pytest.raises(requests.ExternalAPIException):
+            ubble.create_identity_verification_attempt(
+                identification_id=identification_id,
+                redirect_url="https://redirect.example.com",
+            )
+
+        assert requests_mock.call_count == 1
