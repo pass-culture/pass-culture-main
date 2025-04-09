@@ -658,7 +658,7 @@ def create_collective_offer_public(
 
     db.session.add(collective_offer)
     db.session.add(collective_stock)
-    db.session.commit()
+    db.session.flush()
 
     logger.info("Collective offer has been created", extra={"offerId": collective_offer.id})
 
@@ -796,9 +796,15 @@ def edit_collective_offer_public(
         start_datetime_has_changed="startDatetime" in new_values,
     )
 
-    db.session.commit()
+    db.session.flush()
 
-    notify_educational_redactor_on_collective_offer_or_stock_edit(offer.id, updated_fields)
+    on_commit(
+        partial(
+            notify_educational_redactor_on_collective_offer_or_stock_edit,
+            offer.id,
+            updated_fields,
+        )
+    )
     return offer
 
 
@@ -832,11 +838,7 @@ def publish_collective_offer_template(
 
 def delete_image(obj: educational_models.HasImageMixin) -> None:
     obj.delete_image()
-
-    if is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
+    db.session.flush()
 
 
 def attach_image(
@@ -853,10 +855,7 @@ def attach_image(
         keep_original=False,
     )
 
-    if is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
+    db.session.flush()
 
 
 def _get_expired_or_archived_collective_offer_template_ids(

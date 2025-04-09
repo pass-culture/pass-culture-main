@@ -1394,6 +1394,12 @@ def get_offers_for_my_institution(uai: str) -> "sa_orm.Query[educational_models.
     )
 
 
+def get_active_national_programs() -> "sa_orm.Query[educational_models.NationalProgram]":
+    return db.session.query(educational_models.NationalProgram).filter(
+        educational_models.NationalProgram.isActive.is_(True)
+    )
+
+
 def _get_collective_offer_template_address_joinedload_with_expression() -> tuple[sa_orm.Load, ...]:
     """
     Use this when querying CollectiveOfferTemplate and you need to load its address, including the isLinkedToVenue expression

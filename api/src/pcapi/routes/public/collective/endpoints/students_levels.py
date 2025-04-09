@@ -1,4 +1,5 @@
 from pcapi.core.educational import models as educational_models
+from pcapi.repository import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.serialization import students_levels as students_levels_serialization
@@ -10,6 +11,7 @@ from pcapi.validation.routes.users_authentifications import provider_api_key_req
 
 
 @blueprints.public_api.route("/v2/collective/student-levels", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,

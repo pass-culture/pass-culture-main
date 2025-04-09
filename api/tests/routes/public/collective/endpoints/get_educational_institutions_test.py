@@ -15,6 +15,10 @@ class CollectiveOffersGetEducationalInstitutionTest(PublicAPIEndpointBaseHelper)
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # select educational_institution
 
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 2  # Select API key + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
+
     def test_list_educational_institutions(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()
         expected_json = []

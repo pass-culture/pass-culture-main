@@ -173,12 +173,6 @@ class CollectiveBookingIsAlreadyUsed(Exception):
     pass
 
 
-class InvalidInterventionArea(Exception):
-    def __init__(self, errors: list[str]):
-        self.errors = errors
-        super().__init__()
-
-
 class NoCollectiveBookingToCancel(Exception):
     pass
 

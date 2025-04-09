@@ -71,7 +71,7 @@ class CollectiveOffersGetVenuesTest:
     def test_list_venues_anonymous_returns_401(self, client):
         offerers_factories.VenueFactory()
 
-        with assert_num_queries(0):
+        with assert_num_queries(1):  # rollback
             response = client.get("/v2/collective/venues")
             assert response.status_code == 401
 

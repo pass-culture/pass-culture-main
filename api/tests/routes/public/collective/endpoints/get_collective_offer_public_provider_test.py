@@ -18,6 +18,11 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
 
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # select collective_offer and collective_stock
+    num_queries_error = num_queries + 1  # rollback
+
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 2  # Select API key + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
 
     def test_get_offer(self, client):
         venue_provider = provider_factories.VenueProviderFactory()
@@ -52,7 +57,7 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        with assert_num_queries(self.num_queries):
+        with assert_num_queries(self.num_queries_error):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
                 "/v2/collective/offers/25"
             )
@@ -72,7 +77,7 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         offer = educational_factories.CollectiveOfferFactory()
         offer_id = offer.id
 
-        with assert_num_queries(self.num_queries):
+        with assert_num_queries(self.num_queries_error):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
                 f"/v2/collective/offers/{offer_id}"
             )
@@ -81,7 +86,7 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
     def test_user_not_logged_in(self, client):
         offer = educational_factories.CollectiveStockFactory().collectiveOffer
 
-        with assert_num_queries(0):
+        with assert_num_queries(1):  # rollback
             response = client.get(f"/v2/collective/offers/{offer.id}")
             assert response.status_code == 401
 
@@ -95,7 +100,7 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         )
         offer_id = stock.collectiveOffer.id
 
-        with assert_num_queries(self.num_queries):
+        with assert_num_queries(self.num_queries_error):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
                 f"/v2/collective/offers/{offer_id}"
             )

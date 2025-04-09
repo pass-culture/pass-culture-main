@@ -1,6 +1,5 @@
-import typing
-
-from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import repository
+from pcapi.repository import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -12,6 +11,7 @@ from pcapi.validation.routes.users_authentifications import provider_api_key_req
 
 
 @blueprints.public_api.route("/v2/collective/national-programs/", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -29,9 +29,7 @@ def get_national_programs() -> serialization.ListNationalProgramsResponseModel:
 
     List national programs (for instance: `Collège au cinéma`, `Jeunes en librairie`...)
     """
-    programs: typing.Iterable[educational_models.NationalProgram] = educational_models.NationalProgram.query.filter(
-        educational_models.NationalProgram.isActive.is_(True)
-    )
+    programs = repository.get_active_national_programs()
 
     return serialization.ListNationalProgramsResponseModel(
         __root__=[serialization.NationalProgramModel(id=program.id, name=program.name) for program in programs]
