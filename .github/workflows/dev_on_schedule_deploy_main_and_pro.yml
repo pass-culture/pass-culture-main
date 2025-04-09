@@ -160,7 +160,7 @@ jobs:
 
   deploy-to-ops:
     name: "Deploy to ops"
-    needs: [pcapi-init-job, push-pcapi-console, push-pcapi]
+    needs: [pcapi-init-job, push-pcapi-console, push-pcapi, deploy-to-testing]
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: ops
