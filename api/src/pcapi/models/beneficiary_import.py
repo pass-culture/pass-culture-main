@@ -103,7 +103,7 @@ class BeneficiaryImport(PcObject, Base, Model):
             .filter(BeneficiaryImportStatus.beneficiaryImportId == cls.id)
             .order_by(sa.desc(BeneficiaryImportStatus.date))
             .limit(1)
-            .as_scalar()
+            .scalar()
         )
 
     def _last_status(self) -> BeneficiaryImportStatus:
