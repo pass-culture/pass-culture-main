@@ -31,6 +31,9 @@ class HandleDeletedDmsApplicationsTest:
         fraud_check_to_delete_with_empty_result_content = fraud_factories.BeneficiaryFraudCheckFactory(
             thirdPartyId="4", type=fraud_models.FraudCheckType.DMS, resultContent=None
         )
+        ok_fraud_check_not_to_mark_as_deleted = fraud_factories.BeneficiaryFraudCheckFactory(
+            thirdPartyId="5", type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
+        )
 
         procedure_number = 1
         execute_query.return_value = make_graphql_deleted_applications(procedure_number, [2, 3, 4])
@@ -41,6 +44,7 @@ class HandleDeletedDmsApplicationsTest:
         assert fraud_check_to_mark_as_deleted.status == fraud_models.FraudCheckStatus.CANCELED
         assert fraud_check_already_marked_as_deleted.status == fraud_models.FraudCheckStatus.CANCELED
         assert fraud_check_to_delete_with_empty_result_content.status == fraud_models.FraudCheckStatus.CANCELED
+        assert ok_fraud_check_not_to_mark_as_deleted.status == fraud_models.FraudCheckStatus.OK
 
         assert (
             fraud_check_to_delete_with_empty_result_content.reason
