@@ -1,0 +1,106 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_a11y.scss" as a11y;
+
+.image-drag-and-drop {
+  display: flex;
+  height: rem.torem(240px);
+  padding: rem.torem(24px);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: rem.torem(8px);
+  align-self: stretch;
+  position: relative;
+  border-radius: rem.torem(4.437px);
+
+  &-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    color: rgb(0 0 0 / 0%);
+    border-radius: rem.torem(4.437px);
+    border: rem.torem(1px) dashed var(--color-border-default);
+    z-index: 1;
+
+    &:not(&-error) {
+      &:hover,
+      &:focus,
+      &:focus-visible {
+        border: rem.torem(1px) dashed var(--color-border-brand-primary);
+      }
+    }
+
+    &-error {
+      border: rem.torem(1px) dashed var(--color-border-error);
+    }
+
+    &::-webkit-file-upload-button {
+      visibility: hidden;
+    }
+  }
+
+  &-dragged-over {
+    border: rem.torem(1px) dashed var(--color-border-brand-primary);
+  }
+
+  &-dragged-over,
+  &-hovered,
+  &-focused {
+    background-color: var(--color-background-subtle);
+  }
+
+  &-error {
+    background: none;
+  }
+
+  &-text {
+    @include fonts.body-s;
+
+    display: flex;
+    flex-direction: column;
+    color: var(--color-text-subtle);
+    text-align: center;
+
+    &-highlight {
+      @include fonts.button;
+
+      color: var(--color-text-default);
+      text-decoration-line: underline;
+    }
+  }
+
+  &-description {
+    @include fonts.body-accent-s;
+
+    margin-top: rem.torem(8px);
+    color: var(--color-text-default);
+    display: flex;
+    flex-direction: column;
+
+    &-error {
+      color: var(--color-text-error);
+    }
+
+    &-values {
+      @include fonts.body-s;
+    }
+  }
+
+  &-preview {
+    object-fit: cover;
+    border: rem.torem(1px) solid var(--color-border-subtle);
+    border-radius: rem.torem(4px);
+    box-shadow: 0 rem.torem(1px) rem.torem(8px)
+      rgb(from var(--color-large-shadow) r g b / 15%);
+    width: rem.torem(176px);
+    aspect-ratio: 2 / 3;
+  }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
