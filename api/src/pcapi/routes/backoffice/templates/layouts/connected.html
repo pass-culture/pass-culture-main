@@ -1,61 +1,15 @@
-{% import "components/logo.html" as logo %}
-{% import "components/menu/menu.html"  as menu with context %}
 {% extends "layouts/base.html" %}
 {% block content %}
-  {% set pc_collapse_menu_id = random_hash() %}
-  {% set pc_collapse_menu_label_id = random_hash() %}
-  <nav class="navbar text-bg-primary p-3 pc-header-top">
-    <button class="btn"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target=".pc-collapse-menu"
-            aria-controls="{{ pc_collapse_menu_id }}">
-      <i class="bi bi-list text-white h4"></i>
-    </button>
-    <a href="{{ url_for('backoffice_web.home') }}"
-       class="card-link">
-      <p class="my-0 ms-5 navbar-brand text-white btn">
-        {{ logo.passculture() }}
-        Back Office
-      </p>
-    </a>
-    <form action="{{ url_for('backoffice_web.logout') }}"
-          name="{{ url_for('backoffice_web.logout') | action_to_name }}"
-          method="post">
-      {{ csrf_token }}
-      <button type="submit"
-              class="btn btn-link text-white">
-        <i class="bi bi-box-arrow-right fs-5 me-2"></i>
-      </button>
-    </form>
-  </nav>
-  <div class="container-fluid row">
-    <div class="row flex-nowrap">
-      {{ menu.menu() }}
-      <div class="row flex-fill">
-        <div class="col g-0 overflow-auto min-vh-100">
-          {% with messages = get_flashed_messages(with_categories=True) %}
-            {% if messages %}
-              <div class="mb-3">
-                {% for category, message in messages %}
-                  <div class="alert alert-{{ category }} alert-dismissible fade show mb-0 px-5 rounded-0"
-                       role="alert">
-                    <p class="mx-3 mb-0">
-                      {{ message | safe }}
-                      <button type="button"
-                              class="btn-close"
-                              data-bs-dismiss="alert"
-                              aria-label="Close"></button>
-                    </p>
-                  </div>
-                {% endfor %}
-              </div>
-            {% endif %}
-          {% endwith %}
-          {% block page %}
-          {% endblock page %}
-        </div>
-      </div>
+  {% block header %}
+    <header>
+      {% include "components/navbar.html" %}
+    </header>
+  {% endblock header %}
+  {% block page_wrapper %}
+    <div class="page-wrapper">
+      {% include "components/messages.html" %}
+      {% block page %}
+      {% endblock page %}
     </div>
-  </div>
+  {% endblock page_wrapper %}
 {% endblock content %}

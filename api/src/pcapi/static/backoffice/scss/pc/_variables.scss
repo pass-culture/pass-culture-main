@@ -177,3 +177,8 @@ $box-shadow-sm:               0px 0px 12px 0px #0000000D;
 // scss-docs-start border-variables
 $border-color:                #cbcdd2;
 // scss-docs-end border-variables
+
+// scss-docs-start modal-variables
+$modal-content-border-radius:       var(--#{$prefix}border-radius-sm);
+$modal-footer-border-width:         0;
+// scss-docs-end modal-variables

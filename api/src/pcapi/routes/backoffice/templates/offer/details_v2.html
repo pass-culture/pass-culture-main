@@ -185,7 +185,14 @@
                   </div>
                 </object>
               </div>
-              {% if offer.image.credit %}<figcaption class="figure-caption">Crédits: {{ offer.image.credit }}</figcaption>{% endif %}
+              <figcaption class="figure-caption">
+                Crédits&nbsp;:
+                {% if offer.image.credit %}
+                  {{ offer.image.credit }}
+                {% else %}
+                  Non renseigné
+                {% endif %}
+              </figcaption>
             </figure>
           {% else %}
             <div class="d-flex bg-secondary-subtle justify-content-center align-items-center offer-no-image">
@@ -302,6 +309,9 @@
     <a type="button"
        class="btn btn-outline-primary-subtle-bg"
        href="{{ offer | webapp_offer_link }}"
+       data-bs-toggle="tooltip"
+       data-bs-placement="top"
+       data-bs-title="Prévisualiser l’offre sur l’app jeune"
        target="_blank">
       Voir app Jeune
       <i class="bi bi-phone"></i>

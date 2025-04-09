@@ -1,4 +1,4 @@
-{% extends "layouts/connected_v2.html" %}
+{% extends "layouts/connected.html" %}
 {% import "components/badges.html" as badges with context %}
 {% macro action_bar_button(icon, title, modal_id=none, submit_form=none) %}
   <button class="btn btn-outline-primary-subtle-bg d-flex align-items-center gap-2"
@@ -69,7 +69,7 @@
     {{ caller() }}
   </div>
 {% endmacro %}
-{% block main_content %}
+{% block page %}
   <div class="d-flex container-fluid h-100 p-0 overflow-y-hidden">
     <!-- MAIN COLUMN -->
     <div class="col-9 px-5 py-3">
@@ -106,4 +106,4 @@
     </div>
   </div>
   {% block extra_main_content %}{% endblock %}
-{% endblock main_content %}
+{% endblock page %}
