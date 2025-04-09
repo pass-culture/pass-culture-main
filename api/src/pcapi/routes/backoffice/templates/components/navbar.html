@@ -1,7 +1,7 @@
 {% import "components/logo.html" as logo %}
 <nav class="navbar py-1 px-5 border-bottom">
   <div class="container-fluid d-flex p-0 gap-1 justify-content-start">
-    <button class="btn"
+    <button class="btn btn-outline-primary-subtle-bg border-0"
             type="button"
             data-bs-toggle="offcanvas"
             data-bs-target="#offcanvas_navbar_main_menu"
@@ -21,14 +21,17 @@
          aria-labelledby="offcanvasNavbarLabel">
       <div class="offcanvas-body">
         <div class="d-flex justify-content-between align-items-center p-3">
-          <div class="text-primary">
+          <a href="{{ url_for('backoffice_web.home') }}"
+             class="btn text-primary p-0">
             {{ logo.passculture() }}
             Back Office
-          </div>
+          </a>
           <button type="button"
-                  class="btn-close"
+                  class="btn btn-outline-primary-subtle-bg border-0"
                   data-bs-dismiss="offcanvas"
-                  aria-label="Close"></button>
+                  aria-label="Close">
+            <i class="bi bi-x-lg fs-5"></i>
+          </button>
         </div>
         <ul class="nav nav-pills flex-column gap-1">
           {% for menu_section in menu %}
@@ -39,7 +42,7 @@
                    href="{{ menu_item.url }}">{{ menu_item.label }}</a>
               </li>
             {% endfor %}
-            <hr />
+            <hr class="border border-tertiary" />
           {% endfor %}
           <li class="nav-item">
             <form action="{{ url_for('backoffice_web.logout') }}"
@@ -47,7 +50,7 @@
                   method="post">
               {{ csrf_token }}
               <button type="submit"
-                      class="btn d-flex align-items-center gap-2">
+                      class="btn d-flex align-items-center gap-2 nav-link w-100">
                 <i class="bi bi-box-arrow-right fs-5"></i>
                 Se déconnecter
               </button>
