@@ -14,7 +14,6 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import CGRStocks
 from pcapi.models import db
-from pcapi.utils.human_ids import humanize
 
 import tests
 from tests.connectors.cgr import soap_definitions
@@ -460,7 +459,7 @@ class CGRStocksTest:
         for last_pricingOrderingDate, event in to_compare:
             assert event.pricingOrderingDate != last_pricingOrderingDate
 
-    def should_create_product_with_correct_thumb(self, requests_mock):
+    def test_should_create_product_mediation(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
 
         cgr_provider = get_provider_by_local_class("CGRStocks")
@@ -485,11 +484,8 @@ class CGRStocksTest:
         cgr_stocks.updateObjects()
 
         created_offer = db.session.query(offers_models.Offer).one()
-        assert (
-            created_offer.image.url
-            == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
-        )
-        assert created_offer.activeMediation.thumbCount == 1
+        assert created_offer.image.url == created_offer.product.productMediations[0].url
+        assert cgr_stocks.createdThumbs == 1
 
     def should_create_product_even_if_thumb_is_incorrect(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
@@ -562,20 +558,14 @@ class CGRStocksTest:
             "https://cgr-cinema-0.example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
         )
 
-        file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
-        with open(file_path, "rb") as thumb_file:
-            seagull_poster = thumb_file.read()
-        requests_mock.get("https://example.com/149341.jpg", content=seagull_poster)
+        requests_mock.get("https://example.com/149341.jpg", status_code=404)
 
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
         created_offer = db.session.query(offers_models.Offer).one()
-        assert (
-            created_offer.image.url
-            == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
-        )
-        assert created_offer.activeMediation.thumbCount == 1
+        assert created_offer.image is None
+        assert created_offer.activeMediation is None
 
     def should_link_offer_with_known_visa_to_product(self, requests_mock):
         requests_mock.get("https://example.com/149341.jpg", content=bytes())
