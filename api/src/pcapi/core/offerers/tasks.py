@@ -5,7 +5,7 @@ import time
 import typing
 
 from flask import current_app
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors import googledrive
@@ -89,7 +89,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
 
     offerer = (
         offerers_models.Offerer.query.filter_by(siren=payload.siren)
-        .options(sa.orm.joinedload(offerers_models.Offerer.tags).load_only(offerers_models.OffererTag.name))
+        .options(sa_orm.joinedload(offerers_models.Offerer.tags).load_only(offerers_models.OffererTag.name))
         .one_or_none()
     )
     if not offerer:

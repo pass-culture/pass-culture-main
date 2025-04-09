@@ -2,7 +2,7 @@ import re
 import typing
 
 from flask_wtf import FlaskForm
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 import wtforms
 
 from pcapi.connectors.dms.models import GraphQLApplicationStates
@@ -21,15 +21,15 @@ TAG_NAME_REGEX = r"^[^\s]+$"
 DIGITS_AND_WHITESPACES_REGEX = re.compile(r"^[\d\s]+$")
 
 
-def _get_all_tags_query() -> sa.orm.Query:
+def _get_all_tags_query() -> sa_orm.Query:
     return offerers_models.OffererTag.query.order_by(offerers_models.OffererTag.label).options(
-        sa.orm.load_only(
+        sa_orm.load_only(
             offerers_models.OffererTag.id, offerers_models.OffererTag.name, offerers_models.OffererTag.label
         )
     )
 
 
-def _get_validation_tags_query() -> sa.orm.Query:
+def _get_validation_tags_query() -> sa_orm.Query:
     return (
         offerers_models.OffererTag.query.join(offerers_models.OffererTagCategoryMapping)
         .join(offerers_models.OffererTagCategory)

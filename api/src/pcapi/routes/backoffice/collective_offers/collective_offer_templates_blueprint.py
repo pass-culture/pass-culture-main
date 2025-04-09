@@ -8,6 +8,7 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core import search
@@ -47,7 +48,7 @@ def _get_collective_offer_templates(
         educational_models.CollectiveOfferTemplate.query.join(offerers_models.Venue)
         .join(offerers_models.Offerer)
         .options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 educational_models.CollectiveOfferTemplate.id,
                 educational_models.CollectiveOfferTemplate.name,
                 educational_models.CollectiveOfferTemplate.formats,
@@ -56,34 +57,34 @@ def _get_collective_offer_templates(
                 educational_models.CollectiveOfferTemplate.authorId,
                 educational_models.CollectiveOfferTemplate.rejectionReason,
             ),
-            sa.orm.contains_eager(educational_models.CollectiveOfferTemplate.venue).options(
-                sa.orm.load_only(
+            sa_orm.contains_eager(educational_models.CollectiveOfferTemplate.venue).options(
+                sa_orm.load_only(
                     offerers_models.Venue.managingOffererId,
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
                 ),
-                sa.orm.contains_eager(offerers_models.Venue.managingOfferer).options(
-                    sa.orm.load_only(
+                sa_orm.contains_eager(offerers_models.Venue.managingOfferer).options(
+                    sa_orm.load_only(
                         offerers_models.Offerer.name,
                         # needed to check if stock is bookable and compute initial/remaining stock:
                         offerers_models.Offerer.isActive,
                         offerers_models.Offerer.validationStatus,
                     ),
-                    sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                    sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
                         offerers_models.OffererConfidenceRule.confidenceLevel
                     ),
-                    sa.orm.with_expression(
+                    sa_orm.with_expression(
                         offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
                     ),
                 ),
-                sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+                sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
                     offerers_models.OffererConfidenceRule.confidenceLevel
                 ),
             ),
-            sa.orm.joinedload(educational_models.CollectiveOfferTemplate.flaggingValidationRules).load_only(
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.flaggingValidationRules).load_only(
                 offers_models.OfferValidationRule.name
             ),
-            sa.orm.joinedload(educational_models.CollectiveOfferTemplate.author).load_only(
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.author).load_only(
                 users_models.User.id,
                 users_models.User.firstName,
                 users_models.User.lastName,
@@ -410,15 +411,15 @@ def get_collective_offer_template_details(collective_offer_template_id: int) -> 
     collective_offer_template_query = educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.id == collective_offer_template_id
     ).options(
-        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue).options(
-            sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+        sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).options(
+            sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
                 offerers_models.OffererConfidenceRule.confidenceLevel
             ),
-            sa.orm.joinedload(offerers_models.Venue.managingOfferer).options(
-                sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer).options(
+                sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
                     offerers_models.OffererConfidenceRule.confidenceLevel
                 ),
-                sa.orm.with_expression(
+                sa_orm.with_expression(
                     offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
                 ),
             ),

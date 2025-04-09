@@ -10,7 +10,7 @@ from flask import send_file
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
@@ -46,7 +46,7 @@ def _get_collective_bookings(
         .join(educational_models.CollectiveOffer)
         .join(educational_models.EducationalInstitution, educational_models.CollectiveBooking.educationalInstitution)
         .options(
-            sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
+            sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
             .load_only(
                 educational_models.CollectiveStock.collectiveOfferId,
                 educational_models.CollectiveStock.startDatetime,
@@ -62,20 +62,20 @@ def _get_collective_bookings(
                 educational_models.CollectiveOffer.name,
                 educational_models.CollectiveOffer.formats,
             ),
-            sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
+            sa_orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
                 educational_models.EducationalInstitution.id,
                 educational_models.EducationalInstitution.name,
                 educational_models.EducationalInstitution.institutionId,
                 educational_models.EducationalInstitution.institutionType,
                 educational_models.EducationalInstitution.city,
             ),
-            sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
+            sa_orm.joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
                 educational_models.EducationalRedactor.firstName, educational_models.EducationalRedactor.lastName
             ),
-            sa.orm.joinedload(educational_models.CollectiveBooking.offerer).load_only(
+            sa_orm.joinedload(educational_models.CollectiveBooking.offerer).load_only(
                 offerers_models.Offerer.id, offerers_models.Offerer.name
             ),
-            sa.orm.joinedload(educational_models.CollectiveBooking.venue).load_only(
+            sa_orm.joinedload(educational_models.CollectiveBooking.venue).load_only(
                 # for name and link (build_pc_pro_venue_link)
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
@@ -83,7 +83,7 @@ def _get_collective_bookings(
                 offerers_models.Venue.isVirtual,
                 offerers_models.Venue.managingOffererId,
             ),
-            sa.orm.joinedload(educational_models.CollectiveBooking.pricings)
+            sa_orm.joinedload(educational_models.CollectiveBooking.pricings)
             .load_only(
                 finance_models.Pricing.amount, finance_models.Pricing.status, finance_models.Pricing.creationDate
             )
@@ -91,7 +91,7 @@ def _get_collective_bookings(
             .load_only(finance_models.Cashflow.batchId)
             .joinedload(finance_models.Cashflow.batch)
             .load_only(finance_models.CashflowBatch.label),
-            sa.orm.joinedload(educational_models.CollectiveBooking.incidents)
+            sa_orm.joinedload(educational_models.CollectiveBooking.incidents)
             .joinedload(finance_models.BookingFinanceIncident.incident)
             .load_only(finance_models.FinanceIncident.id, finance_models.FinanceIncident.status),
         )

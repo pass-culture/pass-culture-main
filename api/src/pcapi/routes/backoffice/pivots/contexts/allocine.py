@@ -2,6 +2,7 @@ import typing
 
 from flask_login import current_user
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.history import api as history_api
@@ -28,7 +29,7 @@ class AllocineContext(PivotContext):
     @classmethod
     def list_pivots(cls, query_string: str | None = None) -> list[providers_models.AllocinePivot]:
         query = providers_models.AllocinePivot.query.options(
-            sa.orm.joinedload(providers_models.AllocinePivot.venue).load_only(
+            sa_orm.joinedload(providers_models.AllocinePivot.venue).load_only(
                 offerers_models.Venue.name,
             )
         )

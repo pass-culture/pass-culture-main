@@ -1,6 +1,7 @@
 import copy
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi import repository
 from pcapi.core.bookings import exceptions as booking_exceptions
@@ -457,7 +458,7 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
     """
     offer = (
         utils.retrieve_offer_query(event_id)
-        .options(sa.orm.joinedload(offers_models.Offer.priceCategories))
+        .options(sa_orm.joinedload(offers_models.Offer.priceCategories))
         .filter(offers_models.Offer.isEvent)
         .one_or_none()
     )
@@ -548,7 +549,7 @@ def get_event_stocks(event_id: int, query: serialization.GetEventStocksQueryPara
     stocks = (
         offers_models.Stock.query.filter(offers_models.Stock.id.in_(total_stock_ids))
         .options(
-            sa.orm.joinedload(offers_models.Stock.priceCategory).joinedload(
+            sa_orm.joinedload(offers_models.Stock.priceCategory).joinedload(
                 offers_models.PriceCategory.priceCategoryLabel
             )
         )
@@ -587,7 +588,7 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
     offer = (
         utils.retrieve_offer_query(event_id)
         .filter(offers_models.Offer.isEvent)
-        .options(sa.orm.joinedload(offers_models.Offer.stocks))
+        .options(sa_orm.joinedload(offers_models.Offer.stocks))
         .one_or_none()
     )
     if not offer:

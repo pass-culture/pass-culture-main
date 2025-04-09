@@ -8,6 +8,7 @@ from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.external import zendesk_sell
@@ -61,7 +62,7 @@ def list_providers() -> utils.BackofficeResponse:
     rows = (
         db.session.query(providers_models.Provider, is_active_count.label("is_active_count"))
         .options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 providers_models.Provider.id,
                 providers_models.Provider.name,
                 providers_models.Provider.logoUrl,
@@ -70,11 +71,11 @@ def list_providers() -> utils.BackofficeResponse:
             )
         )
         .options(
-            sa.orm.joinedload(providers_models.Provider.offererProvider)
+            sa_orm.joinedload(providers_models.Provider.offererProvider)
             .joinedload(offerers_models.OffererProvider.offerer)
             .load_only(offerers_models.Offerer.city, offerers_models.Offerer.postalCode, offerers_models.Offerer.siren)
         )
-        .options(sa.orm.joinedload(providers_models.Provider.apiKeys).load_only(offerers_models.ApiKey.id))
+        .options(sa_orm.joinedload(providers_models.Provider.apiKeys).load_only(offerers_models.ApiKey.id))
         .order_by(sa.func.lower(sa.func.unaccent(providers_models.Provider.name)))
         .all()
     )
@@ -200,11 +201,11 @@ def get_provider(provider_id: int) -> utils.BackofficeResponse:
     provider = (
         providers_models.Provider.query.filter(providers_models.Provider.id == provider_id)
         .options(
-            sa.orm.joinedload(providers_models.Provider.offererProvider)
+            sa_orm.joinedload(providers_models.Provider.offererProvider)
             .joinedload(offerers_models.OffererProvider.offerer)
             .load_only(offerers_models.Offerer.city, offerers_models.Offerer.postalCode, offerers_models.Offerer.siren)
         )
-        .options(sa.orm.joinedload(providers_models.Provider.apiKeys).load_only(offerers_models.ApiKey.id))
+        .options(sa_orm.joinedload(providers_models.Provider.apiKeys).load_only(offerers_models.ApiKey.id))
         .one_or_none()
     )
 
@@ -256,7 +257,7 @@ def get_venues(provider_id: int) -> utils.BackofficeResponse:
             ),
         )
         .options(
-            sa.orm.load_only(
+            sa_orm.load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
@@ -264,7 +265,7 @@ def get_venues(provider_id: int) -> utils.BackofficeResponse:
                 offerers_models.Venue.managingOffererId,
                 offerers_models.Venue.siret,
             ),
-            sa.orm.contains_eager(offerers_models.Venue.venueProviders).load_only(
+            sa_orm.contains_eager(offerers_models.Venue.venueProviders).load_only(
                 providers_models.VenueProvider.isActive, providers_models.VenueProvider.lastSyncDate
             ),
         )

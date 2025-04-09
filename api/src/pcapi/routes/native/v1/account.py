@@ -3,7 +3,7 @@ import logging
 
 from flask import current_app as app
 import pydantic.v1 as pydantic_v1
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import google_oauth
@@ -492,7 +492,7 @@ def suspend_account_for_suspicious_login(body: serializers.SuspendAccountForSusp
     try:
         token = token_utils.Token.load_and_check(body.token, token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN)
         user = users_models.User.query.filter_by(id=token.user_id).one()
-    except sa.orm.exc.NoResultFound:
+    except sa_orm.exc.NoResultFound:
         raise api_errors.ResourceNotFoundError()
     except exceptions.ExpiredToken:
         raise api_errors.ApiErrors({"reason": "Le token a expiré."}, status_code=401)

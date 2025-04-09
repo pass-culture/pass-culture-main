@@ -3,7 +3,7 @@ import enum
 import logging
 
 from dateutil.relativedelta import relativedelta
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors.dms import api as ds_api
@@ -71,8 +71,8 @@ def sync_instructor_ids(procedure_number: int) -> None:
             perm_models.BackOfficeUserProfile.id.is_not(None),
         )
         .options(
-            sa.orm.load_only(users_models.User.email),
-            sa.orm.contains_eager(users_models.User.backoffice_profile).load_only(
+            sa_orm.load_only(users_models.User.email),
+            sa_orm.contains_eager(users_models.User.backoffice_profile).load_only(
                 perm_models.BackOfficeUserProfile.dsInstructorId
             ),
         )

@@ -7,6 +7,7 @@ from flask import request
 from flask import url_for
 from markupsafe import Markup
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.criteria import models as criteria_models
@@ -42,7 +43,7 @@ def list_tags() -> utils.BackofficeResponse:
         else None
     )
 
-    query = criteria_models.Criterion.query.options(sa.orm.joinedload(criteria_models.Criterion.categories))
+    query = criteria_models.Criterion.query.options(sa_orm.joinedload(criteria_models.Criterion.categories))
 
     if not form.validate():
         code = 400

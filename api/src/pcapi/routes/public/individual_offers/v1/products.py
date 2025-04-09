@@ -6,6 +6,7 @@ from flask import request
 from psycopg2.errorcodes import UNIQUE_VIOLATION
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
+import sqlalchemy.orm as sa_orm
 
 from pcapi import repository
 from pcapi.core import search
@@ -749,7 +750,7 @@ def check_eans_availability(
     )
 
 
-def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sa.orm.Query:
+def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sa_orm.Query:
     return (
         utils._retrieve_offer_tied_to_user_query()
         .filter(

@@ -7,7 +7,7 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core import mails as mails_api
@@ -50,7 +50,7 @@ def get(user_id: int) -> utils.BackofficeResponse:
     user = (
         users_api.get_pro_account_base_query(user_id)
         .options(
-            sa.orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
+            sa_orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
         )
         .one_or_none()
     )
@@ -104,7 +104,7 @@ def get_details(user_id: int) -> utils.BackofficeResponse:
     user_offerers = (
         offerers_models.UserOfferer.query.filter_by(userId=user_id)
         .order_by(offerers_models.UserOfferer.dateCreated)
-        .options(sa.orm.joinedload(offerers_models.UserOfferer.offerer))
+        .options(sa_orm.joinedload(offerers_models.UserOfferer.offerer))
         .all()
     )
 

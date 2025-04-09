@@ -12,6 +12,7 @@ from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.history import models as history_models
@@ -194,7 +195,7 @@ def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
         .options(
-            sa.orm.joinedload(offerers_models.Offerer.tags)
+            sa_orm.joinedload(offerers_models.Offerer.tags)
             .joinedload(offerers_models.OffererTag.categories)
             .load_only(offerers_models.OffererTagCategory.name)
         )
@@ -359,8 +360,8 @@ def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
         offerers = (
             offerers_models.Offerer.query.filter(offerers_models.Offerer.id.in_(form.object_ids_list))
             .options(
-                sa.orm.load_only(offerers_models.Offerer.id),
-                sa.orm.joinedload(offerers_models.Offerer.tags).load_only(
+                sa_orm.load_only(offerers_models.Offerer.id),
+                sa_orm.joinedload(offerers_models.Offerer.tags).load_only(
                     offerers_models.OffererTag.id, offerers_models.OffererTag.label
                 ),
             )
@@ -537,8 +538,8 @@ def _load_user_offerer(user_offerer_id: int) -> offerers_models.UserOfferer:
     user_offerer = (
         offerers_models.UserOfferer.query.filter_by(id=user_offerer_id)
         .options(
-            sa.orm.joinedload(offerers_models.UserOfferer.user).load_only(users_models.User.email),
-            sa.orm.joinedload(offerers_models.UserOfferer.offerer).load_only(
+            sa_orm.joinedload(offerers_models.UserOfferer.user).load_only(users_models.User.email),
+            sa_orm.joinedload(offerers_models.UserOfferer.offerer).load_only(
                 offerers_models.Offerer.id, offerers_models.Offerer.name
             ),
         )

@@ -1,7 +1,7 @@
 import typing
 
 from flask_wtf import FlaskForm
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 import wtforms
 from wtforms import validators
 
@@ -190,7 +190,7 @@ class CommentForm(FlaskForm):
     comment = fields.PCCommentField("Commentaire interne pour le partenaire culturel")
 
 
-def _get_all_venue_labels_query() -> sa.orm.Query:
+def _get_all_venue_labels_query() -> sa_orm.Query:
     return offerers_models.VenueLabel.query.order_by(offerers_models.VenueLabel.label)
 
 

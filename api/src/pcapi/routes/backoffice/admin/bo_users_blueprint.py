@@ -9,7 +9,7 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
-import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import NotFound
 
@@ -58,9 +58,9 @@ def search_bo_users() -> utils.BackofficeResponse:
 
     users = users.options(
         # suspension_reason is shown in result card; joinedload to avoid N+1 query
-        sa.orm.joinedload(users_models.User.action_history),
+        sa_orm.joinedload(users_models.User.action_history),
         # deposits is used to compute the role tag in the card; joinedload to avoid N+1 query
-        sa.orm.joinedload(users_models.User.deposits),
+        sa_orm.joinedload(users_models.User.deposits),
     )
 
     paginated_rows = users.paginate(
@@ -101,14 +101,14 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
     user = (
         _get_bo_user_query(user_id)
         .options(
-            sa.orm.joinedload(users_models.User.action_history)
+            sa_orm.joinedload(users_models.User.action_history)
             .joinedload(history_models.ActionHistory.authorUser)
             .load_only(users_models.User.firstName, users_models.User.lastName),
-            sa.orm.joinedload(users_models.User.email_history),
-            sa.orm.joinedload(users_models.User.backoffice_profile)
+            sa_orm.joinedload(users_models.User.email_history),
+            sa_orm.joinedload(users_models.User.backoffice_profile)
             .joinedload(perm_models.BackOfficeUserProfile.roles)
             .joinedload(perm_models.Role.permissions),
-            sa.orm.joinedload(users_models.User.deposits),
+            sa_orm.joinedload(users_models.User.deposits),
         )
         .one_or_none()
     )

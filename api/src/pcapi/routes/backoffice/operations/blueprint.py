@@ -8,6 +8,7 @@ from flask import request
 from flask import url_for
 from markupsafe import Markup
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.connectors import typeform
@@ -133,7 +134,7 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
     special_event_query = operations_models.SpecialEvent.query.filter(
         operations_models.SpecialEvent.id == special_event_id
     ).options(
-        sa.orm.joinedload(operations_models.SpecialEvent.questions).load_only(
+        sa_orm.joinedload(operations_models.SpecialEvent.questions).load_only(
             operations_models.SpecialEventQuestion.id,
             operations_models.SpecialEventQuestion.externalId,
             operations_models.SpecialEventQuestion.title,
@@ -168,7 +169,7 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
     )
     response_rows = (
         response_rows_query.options(
-            sa.orm.contains_eager(operations_models.SpecialEventResponse.user)
+            sa_orm.contains_eager(operations_models.SpecialEventResponse.user)
             .load_only(
                 users_models.User.id,
                 users_models.User.firstName,

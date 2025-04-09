@@ -10,6 +10,7 @@ from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import NotFound
 
@@ -57,7 +58,7 @@ account_update_blueprint = utils.child_backoffice_blueprint(
 
 def _get_filtered_account_update_requests(form: account_forms.AccountUpdateRequestSearchForm) -> BaseQuery:
 
-    aliased_instructor = sa.orm.aliased(users_models.User)
+    aliased_instructor = sa_orm.aliased(users_models.User)
 
     query = (
         users_models.UserAccountUpdateRequest.query.outerjoin(
@@ -72,7 +73,7 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
         )
         .outerjoin(aliased_instructor, users_models.UserAccountUpdateRequest.lastInstructorId == aliased_instructor.id)
         .options(
-            sa.orm.contains_eager(users_models.UserAccountUpdateRequest.user).load_only(
+            sa_orm.contains_eager(users_models.UserAccountUpdateRequest.user).load_only(
                 users_models.User.id,
                 users_models.User.firstName,
                 users_models.User.lastName,
@@ -84,7 +85,7 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
                 users_models.User.civility,
                 users_models.User.roles,
             ),
-            sa.orm.contains_eager(
+            sa_orm.contains_eager(
                 users_models.UserAccountUpdateRequest.lastInstructor.of_type(aliased_instructor)
             ).load_only(
                 aliased_instructor.id,
@@ -92,7 +93,7 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
                 aliased_instructor.firstName,
                 aliased_instructor.lastName,
             ),
-            sa.orm.contains_eager(users_models.UserAccountUpdateRequest.user).contains_eager(
+            sa_orm.contains_eager(users_models.UserAccountUpdateRequest.user).contains_eager(
                 users_models.User.deposits
             ),
         )
@@ -281,7 +282,7 @@ def _find_duplicate(update_request: users_models.UserAccountUpdateRequest) -> us
 
     return (
         users_models.User.query.filter_by(email=update_request.newEmail)
-        .options(sa.orm.joinedload(users_models.User.deposits))
+        .options(sa_orm.joinedload(users_models.User.deposits))
         .one_or_none()
     )
 
@@ -302,7 +303,7 @@ def get_accept_form(ds_application_id: int) -> utils.BackofficeResponse:
             ),
         )
         .options(
-            sa.orm.contains_eager(users_models.UserAccountUpdateRequest.user).contains_eager(
+            sa_orm.contains_eager(users_models.UserAccountUpdateRequest.user).contains_eager(
                 users_models.User.deposits
             ),
         )

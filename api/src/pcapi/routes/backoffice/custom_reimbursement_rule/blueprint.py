@@ -10,6 +10,7 @@ from flask import url_for
 from markupsafe import Markup
 import pytz
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.categories import subcategories
@@ -56,12 +57,12 @@ def _get_custom_reimbursement_rules(
         .outerjoin(offerers_models.Venue, offers_models.Offer.venue)
         .outerjoin(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
         .options(
-            sa.orm.joinedload(finance_models.CustomReimbursementRule.offerer).load_only(
+            sa_orm.joinedload(finance_models.CustomReimbursementRule.offerer).load_only(
                 offerers_models.Offerer.id,
                 offerers_models.Offerer.name,
                 offerers_models.Offerer.siren,
             ),
-            sa.orm.joinedload(finance_models.CustomReimbursementRule.venue)
+            sa_orm.joinedload(finance_models.CustomReimbursementRule.venue)
             .load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
@@ -76,7 +77,7 @@ def _get_custom_reimbursement_rules(
                 offerers_models.Offerer.name,
                 offerers_models.Offerer.siren,
             ),
-            sa.orm.joinedload(finance_models.CustomReimbursementRule.offer)
+            sa_orm.joinedload(finance_models.CustomReimbursementRule.offer)
             .load_only(offers_models.Offer.id, offers_models.Offer.name)
             .joinedload(offers_models.Offer.venue)
             .load_only(
@@ -108,7 +109,7 @@ def _get_custom_reimbursement_rules(
     if form.offerer.data:
         # search on offererId for custom rules on offerers, on offer's venue's offerer id
         # for custom rules on venues and on offer's offerer id for custom rules on offers
-        aliased_venue = sa.orm.aliased(offerers_models.Venue)
+        aliased_venue = sa_orm.aliased(offerers_models.Venue)
         base_query = base_query.outerjoin(aliased_venue, finance_models.CustomReimbursementRule.venue).filter(
             sa.or_(
                 finance_models.CustomReimbursementRule.offererId.in_(form.offerer.data),

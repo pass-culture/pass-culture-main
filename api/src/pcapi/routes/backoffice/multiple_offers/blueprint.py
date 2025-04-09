@@ -7,6 +7,7 @@ from flask import render_template
 from flask import url_for
 from flask_login import current_user
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.offers import api as offers_api
@@ -75,10 +76,10 @@ def search_multiple_offers() -> utils.BackofficeResponse:
             sa.or_(offers_models.Offer.ean == ean, offers_models.Offer.productId == product.id)
         )
         .options(
-            sa.orm.load_only(offers_models.Offer.isActive, offers_models.Offer.validation)
+            sa_orm.load_only(offers_models.Offer.isActive, offers_models.Offer.validation)
             .joinedload(offers_models.Offer.criteria)
             .load_only(criteria_models.Criterion.name),
-            sa.orm.joinedload(offers_models.Offer.product),
+            sa_orm.joinedload(offers_models.Offer.product),
         )
         .all()
     )

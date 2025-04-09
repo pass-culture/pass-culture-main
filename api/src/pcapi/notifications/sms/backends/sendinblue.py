@@ -56,7 +56,7 @@ class SendinblueBackend:
 class ToDevSendinblueBackend(SendinblueBackend):
     def send_transactional_sms(self, recipient: str, content: str) -> None:
         # No need to import in production
-        import sqlalchemy as sa
+        import sqlalchemy.orm as sa_orm
 
         from pcapi.core.users import models as users_models
 
@@ -76,7 +76,7 @@ class ToDevSendinblueBackend(SendinblueBackend):
 
         try:
             user = users_models.User.query.filter(users_models.User.phoneNumber == recipient).one_or_none()
-        except sa.orm.exc.MultipleResultsFound:
+        except sa_orm.exc.MultipleResultsFound:
             logger.error("Several user accounts with the same phone number", extra={"phone_number": recipient})
         else:
             # Imported test users are whitelisted (Internal users, Bug Bounty, audit, etc.)
