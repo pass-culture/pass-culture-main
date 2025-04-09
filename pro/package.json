@@ -42,7 +42,7 @@
     "@firebase/remote-config": "0.6.0",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-dialog": "1.1.6",
-    "@radix-ui/react-dropdown-menu": "2.1.6",
+    "@radix-ui/react-dropdown-menu": "2.1.7",
     "@radix-ui/react-tabs": "^1.1.4",
     "@reduxjs/toolkit": "^2.6.1",
     "@sentry/browser": "^8.55.0",
