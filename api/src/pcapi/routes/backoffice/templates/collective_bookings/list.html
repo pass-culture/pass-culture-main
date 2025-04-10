@@ -1,10 +1,11 @@
+{% extends "layouts/connected.html" %}
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
 {% from "components/bookings/extra_row.html" import build_collective_booking_extra_row with context %}
 {% import "components/forms.html" as forms with context %}
 {% import "components/links.html" as links with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{% extends "layouts/connected.html" %}
+{% from "components/connect_as.html" import build_connect_as_link %}
 {% set pc_validate_booking_modal_id = random_hash() %}
 {% set pc_cancel_booking_modal_id = random_hash() %}
 {% block page %}
@@ -174,7 +175,7 @@
                   ({{ collective_booking.educationalInstitution.id }})
                 </td>
                 <td>{{ collective_booking.educationalRedactor.firstName }} {{ collective_booking.educationalRedactor.lastName }}</td>
-                <td>{{ links.build_offer_name_to_pc_pro_link(collective_offer) }}</td>
+                <td>{{ build_connect_as_link(connect_as[collective_offer.id], collective_offer.name, "link-primary") }}</td>
                 <td>{{ links.build_collective_offer_name_to_details_link(collective_offer, text_attr="id") }}</td>
                 <td>{{ collective_booking.total_amount | format_amount }}</td>
                 <td>{{ collective_booking | format_booking_status(with_badge=True) }}</td>

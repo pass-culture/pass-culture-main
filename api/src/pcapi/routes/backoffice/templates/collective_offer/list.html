@@ -1,9 +1,11 @@
+{% extends "layouts/list.html" %}
 {% import "components/badges.html" as badges with context %}
 {% from "components/display_selector.html" import display_selector %}
 {% from "components/forms.html" import build_advanced_filters_form_ng with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{% extends "layouts/list.html" %}
+{% from "components/connect_as.html" import build_connect_as_link %}
+{{ build_connect_as_link(connect_as[venue.id], (public_name or venue.name) , "link-primary") }}
 {% set rows_count = rows|length %}
 {% block title %}Offres collectives{% endblock %}
 {% block search_block %}{{ build_advanced_filters_form_ng(form, dst) }}{% endblock %}
@@ -84,7 +86,7 @@
         {% endif %}
       </td>
       <td>{{ links.build_collective_offer_details_link(collective_offer) }}</td>
-      <td>{{ links.build_offer_name_to_pc_pro_link(collective_offer) }}</td>
+      <td>{{ build_connect_as_link(connect_as[collective_offer.id], collective_offer.name, "link-primary") }}</td>
       <td>{{ collective_offer.formats | format_collective_offer_formats }}</td>
       {% if has_permission("PRO_FRAUD_ACTIONS") %}
         <td>

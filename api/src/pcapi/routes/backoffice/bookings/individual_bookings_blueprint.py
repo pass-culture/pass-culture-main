@@ -41,6 +41,8 @@ from pcapi.routes.backoffice.bookings import forms as booking_forms
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.utils import urls
 
 
 logger = logging.getLogger(__name__)
@@ -192,10 +194,21 @@ def list_individual_bookings() -> utils.BackofficeResponse:
     autocomplete.prefill_venues_choices(form.venue)
     autocomplete.prefill_cashflow_batch_choices(form.cashflow_batches)
 
+    connect_as = {}
+
+    for booking in bookings:
+        offer = booking.stock.offer
+        connect_as[booking.id] = get_connect_as(
+            object_id=offer.id,
+            object_type="offer",
+            pc_pro_path=urls.build_pc_pro_offer_path(offer),
+        )
+
     return render_template(
         "individual_bookings/list.html",
         rows=bookings,
         form=form,
+        connect_as=connect_as,
         mark_as_used_booking_form=empty_forms.EmptyForm(),
         cancel_booking_form=booking_forms.CancelIndividualBookingForm(),
         pro_visualisation_link=pro_visualisation_link,

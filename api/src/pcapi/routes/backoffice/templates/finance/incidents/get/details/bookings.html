@@ -1,5 +1,6 @@
 {% import "components/links.html" as links with context %}
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
+{% from "components/connect_as.html" import build_connect_as_link %}
 {% if incident.booking_finance_incidents %}
   <table class="table mb-4 get-details-bookings-view">
     <thead>
@@ -23,7 +24,9 @@
           </td>
           <td>{{ links.build_public_user_name_to_details_link(booking_finance_incident.beneficiary) }}</td>
           <td>{{ booking_finance_incident.booking | format_booking_status(with_badge=True) }}</td>
-          <td>{{ links.build_offer_name_to_pc_pro_link(booking_finance_incident.booking.stock.offer) }}</td>
+          <td>
+            {{ build_connect_as_link(connect_as[booking_finance_incident.booking.id], booking_finance_incident.booking.stock.offer.name, "link-primary") }}
+          </td>
           <td>{{ booking_finance_incident.booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
         </tr>
         <tr class="collapse accordion-collapse pc-booking-{{ booking_finance_incident.booking.id }}"

@@ -1,7 +1,8 @@
+{% extends "layouts/connected.html" %}
 {% import "components/badges.html" as badges with context %}{% from "components/forms.html" import build_filters_form with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{% extends "layouts/connected.html" %}
+{% from "components/connect_as.html" import build_connect_as_link %}
 {% block page %}
   <div class="pt-3 px-5 table-container-collective-offer-template-validation">
     <h1>Offres collectives vitrine</h1>
@@ -97,7 +98,7 @@
                   {% endif %}
                 </td>
                 <td>{{ links.build_collective_offer_template_details_link(collective_offer_template, text_attr="id") }}</td>
-                <td>{{ links.build_offer_name_to_pc_pro_link(collective_offer_template) }}</td>
+                <td>{{ build_connect_as_link(connect_as[collective_offer_template.id], collective_offer_template.name, "link-primary") }}</td>
                 <td>{{ collective_offer_template.formats | format_collective_offer_formats }}</td>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
                   <td>{{ collective_offer_template.flaggingValidationRules | format_offer_validation_rule_list }}</td>

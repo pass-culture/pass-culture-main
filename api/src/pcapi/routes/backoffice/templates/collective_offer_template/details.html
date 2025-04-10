@@ -1,7 +1,8 @@
+{% extends "layouts/standard.html" %}
 {% import "components/badges.html" as badges with context %}
 {% import "components/links.html" as links with context %}
-{% extends "layouts/standard.html" %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/connect_as.html" import build_connect_as_link %}
 {% block main_content %}
   <div class="row row-cols-1 g-4 py-3">
     <div class="col">
@@ -9,7 +10,7 @@
         <div class="card-body">
           <div class="row justify-content-start align-items-center">
             <div class="col d-flex align-items-center justify-content-start">
-              <h2 class="card-title mb-3 text-primary">{{ links.build_offer_name_to_pc_pro_link(collective_offer_template) }}</h2>
+              <h2 class="card-title mb-3 text-primary">{{ build_connect_as_link(connect_as, collective_offer_template.name, "link-primary") }}</h2>
               {% if has_permission("PRO_FRAUD_ACTIONS") %}
                 <div class="d-flex row-reverse justify-content-start">
                   <a class=" px-3"

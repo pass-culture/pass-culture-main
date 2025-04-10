@@ -1,3 +1,4 @@
+{% extends "layouts/standard.html" %}
 {% import "components/badges.html" as badges with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% import "components/links.html" as links with context %}
@@ -8,8 +9,8 @@
 {% from "components/presentation/details/tabs.html" import build_details_tab_content %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
 {% from "components/turbo/spinner.html" import build_loading_spinner with context %}
-{% extends "layouts/standard.html" %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/connect_as.html" import build_connect_as_link %}
 {% block main_content %}
   {% set extra_data = offer.product.extraData if offer.product else offer.extraData %}
   <div class="row row-cols-1 g-4 py-3">
@@ -18,7 +19,7 @@
         <div class="card-body">
           <div class="row justify-content-start align-items-center">
             <div class="col d-flex align-items-center justify-content-start">
-              <h2 class="card-title mb-3 text-primary">{{ links.build_offer_name_to_pc_pro_link(offer) }}</h2>
+              <h2 class="card-title mb-3 text-primary">{{ build_connect_as_link(connect_as, offer.name, "link-primary") }}</h2>
               <span class="fs-5 ps-4">
                 {% if offer.lastProviderId %}
                   <span class="me-2 badge rounded-pill text-bg-secondary align-middle">

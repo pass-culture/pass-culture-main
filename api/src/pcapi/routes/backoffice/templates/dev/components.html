@@ -1,5 +1,5 @@
 {% extends "layouts/connected.html" %}
-{% from "components/links.html" import  build_connect_as_pseudo_link with context %}
+{% from "components/connect_as.html" import build_connect_as_link %}
 {% block page %}
   <div class="pt-3 px-5">
     <h1>Liste des composants du backoffice</h1>
@@ -87,7 +87,7 @@
       </tr>
       <tr>
         <td>lien connect as</td>
-        <td>{{ build_connect_as_pseudo_link(25, 'user', '/home', 'lien avec connect as') }}</td>
+        <td>{{ build_connect_as_link(connect_as, "lien avec connect as") }}</td>
       </tr>
       <tr>
         <td>Voir le compte sur Brevo</td>

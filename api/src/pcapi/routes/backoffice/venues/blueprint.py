@@ -49,8 +49,10 @@ from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
+from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
+from pcapi.utils import urls
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.siren import is_valid_siret
 from pcapi.utils.string import to_camelcase
@@ -244,6 +246,12 @@ def render_venue_details(
         ),
     )
 
+    connect_as = get_connect_as(
+        object_type="venue",
+        object_id=venue.id,
+        pc_pro_path=urls.build_pc_pro_venue_path(venue),
+    )
+
     return render_template(
         "venue/get.html",
         search_form=search_form,
@@ -255,6 +263,7 @@ def render_venue_details(
         delete_form=delete_form,
         fraud_form=fraud_form,
         active_tab=request.args.get("active_tab", "history"),
+        connect_as=connect_as,
         zendesk_sell_synchronisation_form=(
             empty_forms.EmptyForm()
             if venue.isOpenToPublic
