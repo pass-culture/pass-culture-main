@@ -116,6 +116,7 @@ export const getIndividualOfferFactory = (
     mentalDisabilityCompliant: true,
     hasPendingBookings: false,
     priceCategories: [priceCategoryFactory()],
+    eventOpeningHours: null,
     extraData: {
       author: 'Chuck Norris',
       performer: 'Le Poing de Chuck',
