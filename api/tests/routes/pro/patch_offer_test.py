@@ -768,9 +768,6 @@ class Returns200Test:
         assert [mail["params"]["OFFER_WITHDRAWAL_DETAILS"] for mail in outbox] == ["conditions de retrait"] * 3
         assert [mail["params"]["OFFER_WITHDRAWAL_TYPE"] for mail in outbox] == ["no_ticket"] * 3
         assert [mail["params"]["OFFERER_NAME"] for mail in outbox] == [offer.venue.managingOfferer.name] * 3
-        assert [mail["params"]["VENUE_ADDRESS"] for mail in outbox] == [
-            f"{offer.venue.street} {offer.venue.postalCode} {offer.venue.city}"
-        ] * 3
 
     def test_withdrawal_update_does_not_send_email_if_not_specified_so(self, client):
         # given

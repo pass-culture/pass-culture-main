@@ -19,6 +19,5 @@ def send_withdrawal_detail_changed_emails(payload: WithdrawalChangedMailRequest)
             offer_withdrawal_details=payload.offer_withdrawal_details,
             offer_withdrawal_type=payload.offer_withdrawal_type,
             offerer_name=payload.offerer_name,
-            venue_address=payload.venue_address,
             offer_address=booker.offer_address,
         )

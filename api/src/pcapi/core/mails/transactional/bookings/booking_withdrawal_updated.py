@@ -51,7 +51,6 @@ def send_email_for_each_ongoing_booking(offer: offers_models.Offer) -> None:
         )
     )
 
-    venue_address = " ".join(filter(None, (offer.venue.street, offer.venue.postalCode, offer.venue.city)))
     mails_request = WithdrawalChangedMailRequest(
         offer_withdrawal_delay=(
             format_time_in_second_to_human_readable(offer.withdrawalDelay) if offer.withdrawalDelay else None
@@ -59,7 +58,6 @@ def send_email_for_each_ongoing_booking(offer: offers_models.Offer) -> None:
         offer_withdrawal_details=offer.withdrawalDetails,
         offer_withdrawal_type=getattr(offer.withdrawalType, "value", None),
         offerer_name=offer.venue.managingOfferer.name,
-        venue_address=venue_address,
         bookers=[],
     )
     for booking in ongoing_bookings:
@@ -85,7 +83,6 @@ def send_booking_withdrawal_updated(
     offer_withdrawal_details: str | None,
     offer_withdrawal_type: str | None,
     offerer_name: str,
-    venue_address: str,
     offer_address: str | None,
 ) -> None:
     data = get_booking_withdrawal_updated_email_data(
@@ -96,7 +93,6 @@ def send_booking_withdrawal_updated(
         offer_withdrawal_details=offer_withdrawal_details,
         offer_withdrawal_type=offer_withdrawal_type,
         offerer_name=offerer_name,
-        venue_address=venue_address,
         offer_address=offer_address,
     )
     mails.send(recipients=recipients, data=data)
@@ -111,7 +107,6 @@ def get_booking_withdrawal_updated_email_data(
     offer_withdrawal_details: str | None,
     offer_withdrawal_type: str | None,
     offerer_name: str,
-    venue_address: str,
     offer_address: str | None,
 ) -> models.TransactionalEmailData:
     return models.TransactionalEmailData(
@@ -124,7 +119,6 @@ def get_booking_withdrawal_updated_email_data(
             "OFFER_WITHDRAWAL_TYPE": offer_withdrawal_type,
             "OFFERER_NAME": offerer_name,
             "USER_FIRST_NAME": user_first_name,
-            "VENUE_ADDRESS": venue_address,
             "OFFER_ADDRESS": offer_address,
         },
     )

@@ -25,7 +25,6 @@ class SendBookingWithdrawalUpdatedTest:
                 offer_withdrawal_details="my withdrawal details",
                 offer_withdrawal_type="no_ticket",
                 offerer_name="my offerer name",
-                venue_address="my awesome address",
                 offer_address="my awesome offer address",
             )
 
@@ -40,7 +39,6 @@ class SendBookingWithdrawalUpdatedTest:
         assert email["params"]["OFFER_WITHDRAWAL_TYPE"] == "no_ticket"
         assert email["params"]["OFFERER_NAME"] == "my offerer name"
         assert email["params"]["USER_FIRST_NAME"] == "Georges"
-        assert email["params"]["VENUE_ADDRESS"] == "my awesome address"
         assert email["params"]["OFFER_ADDRESS"] == "my awesome offer address"
 
     def test_send_email_for_each_ongoing_booking(

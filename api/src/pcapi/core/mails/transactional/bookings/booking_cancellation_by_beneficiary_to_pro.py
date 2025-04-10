@@ -36,7 +36,6 @@ def get_booking_cancellation_by_beneficiary_to_pro_email_data(
     return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value,
         params={
-            "DEPARTMENT_CODE": booking.stock.offer.venue.departementCode or "numérique",
             "EVENT_DATE": (
                 get_date_formatted_for_email(get_event_datetime(booking.stock))
                 if booking.stock.beginningDatetime

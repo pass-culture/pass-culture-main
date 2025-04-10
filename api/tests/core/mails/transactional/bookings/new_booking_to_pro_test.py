@@ -43,7 +43,6 @@ def get_expected_base_email_data(booking, **overrides):
     email_data_params = {
         "CAN_EXPIRE": False,
         "COUNTERMARK": "ABC123",
-        "DEPARTMENT_CODE": "75",
         "EVENT_DATE": "mercredi 6 novembre 2019",
         "EVENT_HOUR": "15h59",
         "IS_BOOKING_AUTOVALIDATED": False,
@@ -112,11 +111,7 @@ class OffererBookingRecapTest:
             stock__offer__name="Le récit de voyage",
             stock__offer__extraData={"ean": "123456789"},
             stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-            stock__offer__venue__street=None,
-            stock__offer__venue__city=None,
-            stock__offer__venue__departementCode=None,
             stock__offer__venue__isVirtual=True,
-            stock__offer__venue__postalCode=None,
             stock__offer__venue__siret=None,
             stock__offer__venue__offererAddress=None,
         )
@@ -125,7 +120,6 @@ class OffererBookingRecapTest:
 
         expected = get_expected_base_email_data(
             booking,
-            DEPARTMENT_CODE=None,
             EVENT_DATE="",
             EVENT_HOUR="",
             IS_EVENT=False,
@@ -142,11 +136,7 @@ class OffererBookingRecapTest:
             stock__offer__name="Le récit de voyage",
             stock__offer__extraData={},  # no EAN
             stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
-            stock__offer__venue__street=None,
-            stock__offer__venue__city=None,
-            stock__offer__venue__departementCode=None,
             stock__offer__venue__isVirtual=True,
-            stock__offer__venue__postalCode=None,
             stock__offer__venue__siret=None,
             stock__offer__venue__offererAddress=None,
         )
@@ -155,7 +145,6 @@ class OffererBookingRecapTest:
 
         expected = get_expected_base_email_data(
             booking,
-            DEPARTMENT_CODE=None,
             EVENT_DATE="",
             EVENT_HOUR="",
             IS_EVENT=False,
@@ -185,7 +174,6 @@ class OffererBookingRecapTest:
         # Then
         expected = get_expected_base_email_data(
             booking,
-            DEPARTMENT_CODE="numérique",
             EVENT_DATE="",
             EVENT_HOUR="",
             IS_EVENT=False,
@@ -270,7 +258,6 @@ class OffererBookingRecapTest:
         # Then
         expected = get_expected_base_email_data(
             booking,
-            DEPARTMENT_CODE="numérique",
             EVENT_DATE="",
             EVENT_HOUR="",
             IS_EVENT=False,
@@ -311,7 +298,6 @@ class OffererBookingRecapTest:
         # Then
         expected = get_expected_base_email_data(
             booking,
-            DEPARTMENT_CODE="numérique",
             EVENT_DATE="",
             EVENT_HOUR="",
             IS_EVENT=False,
