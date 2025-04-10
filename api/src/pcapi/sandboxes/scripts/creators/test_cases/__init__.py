@@ -15,6 +15,7 @@ from pcapi.core.artist import factories as artist_factories
 from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.finance.factories import RecreditFactory
 from pcapi.core.finance.models import DepositType
@@ -59,6 +60,7 @@ def save_test_cases_sandbox() -> None:
     create_offers_with_gtls()
     create_offers_with_same_ean()
     create_cinema_data()
+    create_offers_interactions()
     create_venues_across_cities()
     create_offers_for_each_subcategory()
     create_offers_with_same_author()
@@ -586,6 +588,77 @@ def _create_allocine_venues() -> list[offerers_models.Venue]:
         venues.append(allocine_synchonized_venue)
 
     return venues
+
+
+def create_offers_interactions() -> None:
+    venue_with_headlined_and_liked_books_1 = offerers_factories.VenueFactory(
+        name="Librairie des interactions 1", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
+    )
+    venue_with_headlined_and_liked_books_2 = offerers_factories.VenueFactory(
+        name="Librairie des interactions 2", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
+    )
+    venue_with_headlined_and_liked_books_3 = offerers_factories.VenueFactory(
+        name="Librairie des interactions 3", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
+    )
+    venue_with_headlined_and_liked_books_4 = offerers_factories.VenueFactory(
+        name="Librairie des interactions 4", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
+    )
+
+    product_1_likes_1_headline = offers_factories.ProductFactory(
+        name="Livre 1 headline 1 like dans vos Librairies des interactions",
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
+    )
+    product_2_likes_2_headline_1_chronicle = offers_factories.ProductFactory(
+        name="Livre 2 headline 1 chronique 2 likes dans vos Librairies des interactions",
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
+    )
+    product_5_likes_1_headline_1_chronicle = offers_factories.ProductFactory(
+        name="Livre 1 headline 1 chronique 5 likes dans vos Librairies des interactions",
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
+    )
+
+    offer_1_likes_headline = offers_factories.OfferFactory(
+        product=product_1_likes_1_headline, venue=venue_with_headlined_and_liked_books_1
+    )
+    offer_1_likes_no_headline = offers_factories.OfferFactory(
+        product=product_1_likes_1_headline, venue=venue_with_headlined_and_liked_books_4
+    )
+
+    offer_2_likes_headline_1 = offers_factories.OfferFactory(
+        product=product_2_likes_2_headline_1_chronicle, venue=venue_with_headlined_and_liked_books_2
+    )
+    offer_2_likes_headline_2 = offers_factories.OfferFactory(
+        product=product_2_likes_2_headline_1_chronicle, venue=venue_with_headlined_and_liked_books_3
+    )
+
+    offer_5_likes_headline = offers_factories.OfferFactory(
+        product=product_2_likes_2_headline_1_chronicle, venue=venue_with_headlined_and_liked_books_4
+    )
+    offer_5_likes_no_headline = offers_factories.OfferFactory(
+        product=product_2_likes_2_headline_1_chronicle, venue=venue_with_headlined_and_liked_books_1
+    )
+
+    offers_factories.StockFactory(offer=offer_1_likes_headline)
+    offers_factories.StockFactory(offer=offer_1_likes_no_headline)
+    offers_factories.StockFactory(offer=offer_2_likes_headline_1)
+    offers_factories.StockFactory(offer=offer_2_likes_headline_2)
+    offers_factories.StockFactory(offer=offer_5_likes_headline)
+    offers_factories.StockFactory(offer=offer_5_likes_no_headline)
+
+    ReactionFactory.create_batch(1, offer=offer_1_likes_headline, reactionType=ReactionTypeEnum.LIKE)
+    ReactionFactory.create_batch(1, offer=offer_1_likes_no_headline, reactionType=ReactionTypeEnum.LIKE)
+    ReactionFactory.create_batch(2, offer=offer_2_likes_headline_1, reactionType=ReactionTypeEnum.LIKE)
+    ReactionFactory.create_batch(2, offer=offer_2_likes_headline_2, reactionType=ReactionTypeEnum.LIKE)
+    ReactionFactory.create_batch(5, offer=offer_5_likes_headline, reactionType=ReactionTypeEnum.LIKE)
+    ReactionFactory.create_batch(5, offer=offer_5_likes_no_headline, reactionType=ReactionTypeEnum.LIKE)
+
+    chronicles_factories.ChronicleFactory(products=[product_2_likes_2_headline_1_chronicle])
+    chronicles_factories.ChronicleFactory(products=[product_5_likes_1_headline_1_chronicle])
+
+    offers_factories.HeadlineOfferFactory(offer=offer_1_likes_headline)
+    offers_factories.HeadlineOfferFactory(offer=offer_2_likes_headline_1)
+    offers_factories.HeadlineOfferFactory(offer=offer_2_likes_headline_2)
+    offers_factories.HeadlineOfferFactory(offer=offer_5_likes_headline)
 
 
 def create_venues_across_cities() -> None:
