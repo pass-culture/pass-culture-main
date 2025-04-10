@@ -85,7 +85,10 @@ export const AllocineProviderForm = ({
     <FormikProvider value={formik}>
       {!isLoading && (
         <>
-          <div className={styles['form-content']}>
+          <div
+            className={styles['form-content']}
+            data-testid="allocine-provider-form"
+          >
             <FormLayout.Row className={styles['form-layout-row']}>
               <TextInput
                 name="price"

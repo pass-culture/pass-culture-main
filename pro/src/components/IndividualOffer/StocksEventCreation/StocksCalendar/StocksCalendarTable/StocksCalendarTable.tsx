@@ -2,13 +2,13 @@ import {
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
 } from 'apiClient/v1'
+import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { getPriceCategoryName } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Checkbox } from 'ui-kit/formV2/Checkbox/Checkbox'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 import styles from './StocksCalendarTable.module.scss'
-import { formatLocalTimeDateString } from 'commons/utils/timezone'
 
 export function StocksCalendarTable({
   stocks,
