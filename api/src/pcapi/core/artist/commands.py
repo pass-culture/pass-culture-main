@@ -3,6 +3,8 @@ import logging
 import typing
 from typing import Iterable
 
+from sqlalchemy import exc as sa_exc
+
 from pcapi.connectors.big_query import queries as big_query_queries
 from pcapi.connectors.big_query.queries.artist import ArtistAliasModel
 from pcapi.connectors.big_query.queries.artist import ArtistModel
@@ -52,11 +54,14 @@ class BaseImportTemplate(abc.ABC, typing.Generic[BigQueryModel, Model]):
         if not inserted_data:
             return
 
-        with transaction():
-            db.session.bulk_save_objects(inserted_data)
-
         name_of_class = type(inserted_data[0]).__name__
-        logger.info("Successfully imported %s %s", len(inserted_data), name_of_class)
+        try:
+            with transaction():
+                db.session.bulk_save_objects(inserted_data)
+        except sa_exc.IntegrityError:
+            logger.error("Failed to import ids of %s from %s to %s", name_of_class, inserted_data[0], inserted_data[-1])
+        else:
+            logger.info("Successfully imported %s %s", len(inserted_data), name_of_class)
 
     @abc.abstractmethod
     def get_all(self) -> Iterable[BigQueryModel]:
