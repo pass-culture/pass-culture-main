@@ -58,15 +58,16 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
     @time_machine.travel(time_travel_str)
     def test_patch_offer(self, client):
         educational_factories.EducationalCurrentYearFactory()
-
         venue_provider = provider_factories.VenueProviderFactory()
-        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-        venue2 = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+        venue = venue_provider.venue
+        other_venue_provider = provider_factories.VenueProviderFactory(
+            provider=venue_provider.provider, venue__managingOfferer=venue.managingOfferer, venue__pricing_point=venue
+        )
+        other_venue = other_venue_provider.venue
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
         national_program = educational_factories.NationalProgramFactory()
-
         domain = educational_factories.EducationalDomainFactory(nationalPrograms=[national_program])
         educational_institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(
@@ -84,7 +85,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "name": "Un nom en français ævœc des diàcrtîtïqués",
             "description": "une description d'offre",
             "formats": [EacFormat.PROJECTION_AUDIOVISUELLE.value],
-            "venueId": venue2.id,
+            "venueId": other_venue.id,
             "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
             "contactPhone": "01 00 99 27.98",
@@ -125,7 +126,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert offer.name == payload["name"]
         assert offer.description == payload["description"]
-        assert offer.venueId == venue2.id
+        assert offer.venueId == other_venue.id
         assert offer.formats == [EacFormat.PROJECTION_AUDIOVISUELLE]
         assert offer.bookingEmails == payload["bookingEmails"]
         assert offer.contactEmail == payload["contactEmail"]
@@ -157,45 +158,62 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert educational_institution.isActive is True
 
     def test_change_venue(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
-        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-        venue2 = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+        venue = venue_provider.venue
+        other_venue_provider = provider_factories.VenueProviderFactory(
+            provider=venue_provider.provider, venue__managingOfferer=venue.managingOfferer, venue__pricing_point=venue
+        )
+        other_venue = other_venue_provider.venue
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        offer = educational_factories.CollectiveOfferFactory(
-            imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
-        )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
 
         payload = {
-            "venueId": venue2.id,
+            "venueId": other_venue.id,
             "offerVenue": {
-                "venueId": venue2.id,
+                "venueId": other_venue.id,
                 "addressType": "offererVenue",
                 "otherAddress": None,
             },
         }
-
-        # When
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{offer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
-
-        assert offer.venueId == venue2.id
+        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
+        assert offer.venueId == other_venue.id
         assert offer.offerVenue == {
-            "venueId": venue2.id,
+            "venueId": other_venue.id,
             "addressType": "offererVenue",
             "otherAddress": "",
         }
+
+    def test_change_venue_error(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+        venue = venue_provider.venue
+        # venue with different pricing point
+        other_venue_provider = provider_factories.VenueProviderFactory(
+            provider=venue_provider.provider, venue__managingOfferer=venue.managingOfferer
+        )
+        other_venue = other_venue_provider.venue
+
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+
+        payload = {"venueId": other_venue.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{offer.id}", json=payload
+            )
+
+        assert response.status_code == 400
+        assert response.json == {"venueId": ["L'offre ne peut pas être déplacée sur ce lieu."]}
+
+        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
+        assert offer.venueId == venue.id
 
     def test_partial_patch_offer(self, client):
         # Given

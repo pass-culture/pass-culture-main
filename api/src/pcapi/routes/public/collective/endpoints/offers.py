@@ -319,6 +319,11 @@ def patch_collective_offer_public(
         if not list_venueproviders:
             raise ApiErrors(errors={"venueId": ["aucun lieu de fournisseur n'a été trouvé."]}, status_code=403)
 
+        try:
+            educational_api_offer.move_collective_offer_venue(offer, venue)
+        except offers_exceptions.MoveOfferBaseException:
+            raise ApiErrors(errors={"venueId": ["L'offre ne peut pas être déplacée sur ce lieu."]}, status_code=400)
+
     if new_values.get("offerVenue"):
         if new_values["offerVenue"] == OfferAddressType.OFFERER_VENUE.value:
             venue = offerers_repository.find_venue_by_id(new_values["offerVenue"]["venuId"])
