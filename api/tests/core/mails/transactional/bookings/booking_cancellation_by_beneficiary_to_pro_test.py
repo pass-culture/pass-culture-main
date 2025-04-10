@@ -84,7 +84,6 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
             TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
         )
         assert mails_testing.outbox[0]["params"] == {
-            "DEPARTMENT_CODE": booking.venue.departementCode,
             "EVENT_DATE": "mercredi 9 octobre 2019",
             "EVENT_HOUR": event_hour,
             "EXTERNAL_BOOKING_INFORMATION": "barcode: 123456789, additional_information: {'num_ope': 147149, "
@@ -117,7 +116,6 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
         venue = stock.offer.venue
         assert email_data.template == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
         assert email_data.params == {
-            "DEPARTMENT_CODE": venue.departementCode,
             "EVENT_DATE": "mercredi 9 octobre 2019",
             "EVENT_HOUR": "12h20",
             "EXTERNAL_BOOKING_INFORMATION": None,
@@ -147,7 +145,6 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
         venue = stock.offer.venue
         assert email_data.template == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
         assert email_data.params == {
-            "DEPARTMENT_CODE": venue.departementCode,
             "EVENT_DATE": "mercredi 9 octobre 2019",
             "EVENT_HOUR": "12h20",
             "EXTERNAL_BOOKING_INFORMATION": None,
@@ -177,7 +174,6 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
         # Then
         assert email_data.template == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
         assert email_data.params == {
-            "DEPARTMENT_CODE": "numérique",
             "EVENT_DATE": "",
             "EVENT_HOUR": "",
             "EXTERNAL_BOOKING_INFORMATION": None,

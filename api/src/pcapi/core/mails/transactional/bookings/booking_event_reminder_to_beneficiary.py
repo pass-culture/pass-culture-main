@@ -27,7 +27,9 @@ def get_booking_event_reminder_to_beneficiary_email_data(
         return None
 
     department_code = (
-        booking.stock.offer.venue.departementCode if not booking.stock.offer.isDigital else booking.user.departementCode
+        booking.stock.offer.offererAddress.address.departmentCode
+        if not booking.stock.offer.isDigital and booking.stock.offer.offererAddress is not None
+        else booking.user.departementCode
     )
 
     event_beginning_date_in_tz = utc_datetime_to_department_timezone(booking.stock.beginningDatetime, department_code)
@@ -58,10 +60,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
             "QR_CODE": bookings_utils.get_qr_code_data(booking.token),
             "SUBCATEGORY": booking.stock.offer.subcategoryId,
             "USER_FIRST_NAME": booking.user.firstName,
-            "VENUE_ADDRESS": bookings_common.get_venue_street(booking),
-            "VENUE_CITY": booking.stock.offer.venue.city,
             "VENUE_NAME": booking.stock.offer.venue.common_name,
-            "VENUE_POSTAL_CODE": booking.stock.offer.venue.postalCode,
             "OFFER_ADDRESS": booking.stock.offer.fullAddress,
         },
     )

@@ -14,5 +14,4 @@ class WithdrawalChangedMailRequest(BaseModel):
     offer_withdrawal_details: str | None
     offer_withdrawal_type: str | None
     offerer_name: str
-    venue_address: str
     bookers: list[WithdrawalChangedMailBookingDetail]
