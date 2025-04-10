@@ -4,11 +4,13 @@ on:
   workflow_dispatch:
   schedule:
     # This cron is defined in UTC timezone. It means that it will run :
-    # - during summer hours between 8:30am - 7:30pm
-    # - during winter hours between 7:30am - 6:30pm
+    # - during summer hours between 8:28am - 7:28pm
+    # - during winter hours between 7:28am - 6:28pm
     # we cannot yet specify timezone : 
     # https://github.com/orgs/community/discussions/13454
-    - cron: "30 6-17 * * 1-5"
+    # Why 28? Choosing an exact hour or half-hour is discouraged by GitHub due to high load.
+    # Cron jobs might be delayed or even completely skipped.
+    - cron: "28 6-17 * * 1-5"
 
 permissions: write-all
 
