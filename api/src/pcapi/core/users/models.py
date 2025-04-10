@@ -453,7 +453,11 @@ class User(PcObject, Base, Model, DeactivableMixin):
 
     @property
     def has_active_deposit(self) -> bool:
-        return self.deposit.expirationDate > datetime.utcnow() if self.deposit else False  # type: ignore[operator]
+        if not self.deposit:
+            return False
+        if not self.deposit.expirationDate:
+            return True
+        return self.deposit.expirationDate > datetime.utcnow()
 
     @property
     def is_eligible(self) -> bool:
@@ -615,15 +619,6 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def is_beneficiary(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return expression.or_(
             cls.roles.contains([UserRole.BENEFICIARY]), cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
-        )
-
-    @property
-    def has_remaining_credit(self) -> bool:
-        today = datetime.combine(date.today(), datetime.min.time())
-        return (
-            self.deposit is not None
-            and (self.deposit.expirationDate is None or self.deposit.expirationDate > today)
-            and self.wallet_balance > 0
         )
 
     @property
