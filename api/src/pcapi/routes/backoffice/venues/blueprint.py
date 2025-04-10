@@ -634,6 +634,15 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
             "warning",
         )
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+    except offerers_exceptions.CannotDeleteVenueWithActiveOrFutureCustomReimbursementRule:
+        mark_transaction_as_invalid()
+        flash(
+            Markup(
+                'Impossible de supprimer un point de valorisation ayant un <a href="{url}">tarif dérogatoire</a> (passé, actif ou futur)'
+            ).format(url=url_for("backoffice_web.reimbursement_rules.list_custom_reimbursement_rules", venue=venue_id)),
+            "warning",
+        )
+        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
     for email in emails:
         external_attributes_api.update_external_pro(email)

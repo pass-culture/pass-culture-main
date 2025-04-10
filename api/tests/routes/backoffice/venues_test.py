@@ -867,6 +867,20 @@ class DeleteVenueTest(PostEndpointHelper):
             == "Impossible de supprimer un partenaire culturel utilisé comme point de valorisation d'un autre partenaire culturel"
         )
 
+    def test_cant_delete_venue_with_custom_reimbursement_rule(self, legit_user, authenticated_client):
+        venue_to_delete = offerers_factories.VenueFactory(pricing_point="self")
+        finance_factories.CustomReimbursementRuleFactory(offer=None, venue=venue_to_delete)
+        venue_to_delete_id = venue_to_delete.id
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue_to_delete.id, follow_redirects=True)
+        assert response.status_code == 200  # after redirect
+        assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
+
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Impossible de supprimer un point de valorisation ayant un tarif dérogatoire (passé, actif ou futur)"
+        )
+
     def test_no_script_injection_in_venue_name(self, legit_user, authenticated_client):
         venue_id = offerers_factories.VenueFactory(name="Lieu <script>alert('coucou')</script>").id
 
