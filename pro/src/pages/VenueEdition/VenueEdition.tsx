@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   generatePath,
@@ -54,11 +54,56 @@ export const VenueEdition = (): JSX.Element | null => {
   )
   const venueTypes = venueTypesQuery.data
 
+  const context = location.pathname.includes('collectif')
+    ? 'collective'
+    : location.pathname.includes('page-partenaire')
+      ? 'partnerPage'
+      : 'address'
+
+  const filteredVenues = useMemo(() => {
+    if (context === 'partnerPage') {
+      return (
+        offerer?.managedVenues?.filter((venue) => venue.hasPartnerPage) ?? []
+      )
+    }
+
+    return offerer?.managedVenues?.filter((venue) => venue.isPermanent) ?? []
+  }, [context, offerer?.managedVenues])
+
+  const venuesOptions: SelectOption[] = filteredVenues.map((venue) => ({
+    label: venue.publicName || venue.name,
+    value: venue.id.toString(),
+  }))
+
   useEffect(() => {
     if (selectedOffererId?.toString() !== offererId) {
       navigate('/accueil')
     }
   }, [selectedOffererId, offererId])
+
+  useEffect(() => {
+    if (context === 'partnerPage' && offerer) {
+      // Selected venue is no longer in the list of hasPartnerPage venues.
+      // On browser tab return, data is revalidated, and offerer.managedVenues
+      // is updated - but venueId is not. In SelectInput, there is a
+      // natural fallback to the first element of the list - but the rest
+      // of the page still needs to be updated, just like the side nav link.
+      const selectedVenue = filteredVenues.find(
+        (venue) => venue.id === Number(venueId)
+      )
+
+      if (!selectedVenue) {
+        if (filteredVenues.length > 0) {
+          const fallbackVenueId = filteredVenues[0]?.id.toString()
+
+          navigate(getPathToNavigateTo(offerer.id, fallbackVenueId))
+          dispatch(setSelectedPartnerPageId(fallbackVenueId))
+        } else {
+          navigate('/accueil')
+        }
+      }
+    }
+  }, [context, venueId, filteredVenues, offerer, navigate, dispatch])
 
   if (
     venueQuery.isLoading ||
@@ -93,22 +138,6 @@ export const VenueEdition = (): JSX.Element | null => {
       }),
     },
   ]
-
-  const context = location.pathname.includes('collectif')
-    ? 'collective'
-    : location.pathname.includes('page-partenaire')
-      ? 'partnerPage'
-      : 'address'
-
-  const filteredVenues =
-    offerer.managedVenues?.filter((venue) =>
-      context === 'partnerPage' ? venue.hasPartnerPage : venue.isPermanent
-    ) ?? []
-
-  const venuesOptions: SelectOption[] = filteredVenues.map((venue) => ({
-    label: venue.publicName || venue.name,
-    value: venue.id.toString(),
-  }))
 
   const titleText =
     context === 'collective'
