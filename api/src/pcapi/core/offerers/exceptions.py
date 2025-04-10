@@ -105,6 +105,14 @@ class CannotDeleteOffererWithBookingsException(ClientError):
         )
 
 
+class CannotDeleteOffererWithActiveOrFutureCustomReimbursementRule(ClientError):
+    def __init__(self) -> None:
+        super().__init__(
+            "CannotDeleteOffererWithActiveOrFutureCustomReimbursementRule",
+            "Entité juridique non supprimable car elle est associée à un tarif dérogatoire",
+        )
+
+
 class CannotDeleteVenueWithBookingsException(ClientError):
     def __init__(self) -> None:
         super().__init__(
@@ -118,6 +126,14 @@ class CannotDeleteVenueUsedAsPricingPointException(ClientError):
         super().__init__(
             "cannotDeleteVenueUsedAsPricingPointException",
             "Partenaire culturel non supprimable car il est utilisé comme point de valorisation d'un autre partenaire culturel",
+        )
+
+
+class CannotDeleteVenueWithActiveOrFutureCustomReimbursementRule(ClientError):
+    def __init__(self) -> None:
+        super().__init__(
+            "CannotDeleteVenueWithActiveOrFutureCustomReimbursementRule",
+            "Partenaire culturel non supprimable car il est associé à un tarif dérogatoire",
         )
 
 
