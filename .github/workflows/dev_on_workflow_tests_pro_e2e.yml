@@ -9,7 +9,7 @@ on:
       image:
         type: string
         required: false
-        default: pcapi
+        default: pcapi-tests
       tag:
         type: string
         required: true

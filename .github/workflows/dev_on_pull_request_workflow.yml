@@ -26,7 +26,6 @@ jobs:
       push-tags: ${{ steps.pcapi-tags.outputs.push-tags }}
       checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
       checksum-tag-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
-      checksum-console-tag-exists: ${{ steps.check-console-checksum-tag.outputs.tag-exists }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -109,13 +108,6 @@ jobs:
           image: pcapi
           tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
           token: ${{ steps.openid-auth.outputs.access_token }}
-      - name: "pcapi-console"
-        id: check-console-checksum-tag
-        run: bash ./.github/workflows/scripts/check-image-tag-exists.sh
-        env:
-          image: pcapi-console
-          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-          token: ${{ steps.openid-auth.outputs.access_token }}
       - name: "Publish Summary"
         run: |
           {
@@ -129,21 +121,7 @@ jobs:
             echo "| [dependencies] content changed       | ${{ steps.check-dependencies-changes.outputs.any_modified }} |"
             echo "| [pcapi] image tag                    | ${{ steps.pcapi-tags.outputs.checksum-tag }} |"
             echo "| [pcapi] image already exists         | ${{ steps.check-checksum-tag.outputs.tag-exists }} |"
-            echo "| [pcapi-console] image already exists | ${{ steps.check-console-checksum-tag.outputs.tag-exists }} |"
           } >> $GITHUB_STEP_SUMMARY
-
-  build-pcapi:
-    name: "[pcapi] build docker image."
-    needs: [pcapi-init-job]
-    if: needs.pcapi-init-job.outputs.api-changed == 'true' && needs.pcapi-init-job.outputs.checksum-tag-exists == 'false'
-    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
-    with:
-      ref: ${{ github.event.pull_request.head.sha }}
-      image: pcapi
-      tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   # Always build pcapi-tests image if api changed
   build-pcapi-tests:
@@ -159,19 +137,6 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  build-pcapi-console:
-    name: "[pcapi-console] build docker image."
-    needs: [pcapi-init-job]
-    if: (needs.pcapi-init-job.outputs.api-changed == 'true' || needs.pcapi-init-job.outputs.pro-changed == 'true') && needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'false'
-    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
-    with:
-      ref: ${{ github.event.pull_request.head.sha }}
-      image: pcapi-console
-      tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
   run-mypy-cop:
     name: "MyPy cop"
     needs: [pcapi-init-job]
@@ -182,7 +147,7 @@ jobs:
 
   update-api-client-template:
     name: "Update api client template"
-    needs: [pcapi-init-job, build-pcapi]
+    needs: [pcapi-init-job, build-pcapi-tests]
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     concurrency:
       group: update-api-client-template-${{ github.ref }}
@@ -230,7 +195,7 @@ jobs:
 
   test-pro-e2e:
     name: "Pro E2E Tests"
-    needs: [pcapi-init-job, build-pcapi]
+    needs: [pcapi-init-job, build-pcapi-tests]
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
     if: always() &&
       !cancelled() &&
@@ -238,7 +203,7 @@ jobs:
       needs.pcapi-init-job.outputs.pro-changed == 'true'
     with:
       ENV: "development"
-      tag: ${{ needs.build-pcapi.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
+      tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -265,29 +230,3 @@ jobs:
       CHANNEL: ""
       REF: "${{ github.ref }}"
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-
-  # Push docker images to registry
-  push-pcapi:
-    name: "Push pcapi docker image to registry"
-    needs: [pcapi-init-job, test-api, test-pro-e2e]
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
-    with:
-      image: pcapi
-      commit-hash: ${{ github.event.pull_request.head.sha }}
-      checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
-  push-pcapi-console:
-    name: "Push pcapi-console docker image to registry"
-    needs: [pcapi-init-job, test-api, test-pro-e2e]
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
-    with:
-      image: pcapi-console
-      commit-hash: ${{ github.event.pull_request.head.sha }}
-      checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
