@@ -1,15 +1,13 @@
-import { useEffect, useState } from 'react'
-import { useSelector , useDispatch } from 'react-redux'
-import { useParams, Navigate } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Navigate, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
-import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { updateOffererIsOnboarded, updateOffererNames, updateSelectedOffererId } from 'commons/store/offerer/reducer'
-import { updateUser } from 'commons/store/user/reducer'
+import { AppDispatch } from 'commons/store/store'
 import { selectCurrentUser } from 'commons/store/user/selectors'
-import { storageAvailable } from 'commons/utils/storageAvailable'
+import { initializeUserThunk } from 'commons/store/user/thunks'
 
 type Params = { token: string }
 
@@ -18,50 +16,28 @@ export const SignupValidation = (): JSX.Element | null => {
   const currentUser = useSelector(selectCurrentUser)
   const [urlToRedirect, setUrlToRedirect] = useState<string>()
   const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
+
+  const tokenConsumed = useRef(false)
 
   useEffect(() => {
     const validateTokenAndRedirect = async () => {
       if (currentUser?.id) {
         setUrlToRedirect('/')
-      } else if (token) {
+      } else if (token && !tokenConsumed.current) {
         try {
+          // Ensure that we call only 1 time the API upon different re-renders
+          tokenConsumed.current = true
           await api.validateUser(token)
           if (isNewSignupEnabled) {
-            // TODO: Make util function with signin
-            const inisializeOffererIsOnboarded = async (offererId: number) => {
-              const response = await api.getOfferer(offererId)
-              dispatch(updateOffererIsOnboarded(response.isOnboarded))
-            }
-
-            const offerers = await api.listOfferersNames()
-            const firstOffererId = offerers.offerersNames[0]?.id
-
-            if (firstOffererId) {
-              dispatch(updateOffererNames(offerers.offerersNames))
-
-              if (storageAvailable('localStorage')) {
-                const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
-                dispatch(
-                  updateSelectedOffererId(
-                    savedOffererId ? Number(savedOffererId) : firstOffererId
-                  )
-                )
-                await inisializeOffererIsOnboarded(
-                  savedOffererId ? Number(savedOffererId) : firstOffererId
-                )
-              } else {
-                dispatch(updateSelectedOffererId(firstOffererId))
-                await inisializeOffererIsOnboarded(firstOffererId)
-              }
-            }
-
             const user = await api.getProfile()
-            dispatch(updateUser(user))
+            const result = await dispatch(initializeUserThunk(user)).unwrap()
+            if (result.success) {
+              setUrlToRedirect('/')
+            }
           } else {
             setUrlToRedirect('/connexion?accountValidation=true')
           }
-
         } catch (error) {
           if (isErrorAPIError(error)) {
             const errors = getError(error)
@@ -78,7 +54,7 @@ export const SignupValidation = (): JSX.Element | null => {
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     validateTokenAndRedirect()
-  }, [token, currentUser?.id])
+  }, [token, currentUser?.id, isNewSignupEnabled, dispatch])
 
   return urlToRedirect ? <Navigate to={urlToRedirect} replace /> : null
 }
