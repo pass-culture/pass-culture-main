@@ -169,11 +169,11 @@ class BatchBackend:
     def track_event_bulk(
         self, track_event_data: list[TrackBatchEventRequest], can_be_asynchronously_retried: bool = False
     ) -> None:
-        """https://doc.batch.com/api/trigger-events-api/track-events/"""
+        """https://doc.batch.com/developer/api/mep/trigger-events-api/track-events#bulk-tracking"""
 
         payload = [
             {
-                "user_id": track_event.user_id,
+                "id": track_event.user_id,
                 "events": [
                     {
                         "name": f"ue.{track_event.event_name.value}",
