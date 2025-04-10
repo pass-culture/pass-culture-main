@@ -17,3 +17,5 @@ export const createStore = (initialState = {}) => {
 
   return { store }
 }
+
+export type AppDispatch = ReturnType<typeof createStore>['store']['dispatch']
