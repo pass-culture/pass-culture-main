@@ -374,9 +374,9 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
             address_id=address_id,
             address_label=address_label,
         )
-        _create_or_update_ean_offers_celery.delay(payload)
+        create_or_update_ean_offers_celery.delay(payload.dict())
     else:
-        _create_or_update_ean_offers_rq.delay(
+        create_or_update_ean_offers_rq.delay(
             serialized_products_stocks=serialized_products_stocks,
             venue_id=venue.id,
             provider_id=current_api_key.provider.id,
@@ -386,7 +386,7 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
 
 
 @job(worker.low_queue)
-def _create_or_update_ean_offers_rq(
+def create_or_update_ean_offers_rq(
     *,
     serialized_products_stocks: dict,
     venue_id: int,
@@ -408,7 +408,7 @@ def _create_or_update_ean_offers_rq(
     autoretry_for=(),
     model=CreateOrUpdateEANOffersRequest,
 )
-def _create_or_update_ean_offers_celery(payload: CreateOrUpdateEANOffersRequest) -> None:
+def create_or_update_ean_offers_celery(payload: CreateOrUpdateEANOffersRequest) -> None:
     _create_or_update_ean_offers(
         serialized_products_stocks=payload.serialized_products_stocks,
         venue_id=payload.venue_id,
