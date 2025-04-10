@@ -77,7 +77,10 @@ export const StocksProviderForm = ({
 
   return (
     <>
-      <div className={styles['stocks-provider-form']}>
+      <div
+        className={styles['stocks-provider-form']}
+        data-testid="stocks-provider-form"
+      >
         {!hasOffererProvider && (
           <div className={styles['account-section']}>
             <div>Compte</div>

@@ -66,7 +66,10 @@ export const CinemaProviderForm = ({
   return (
     <FormikProvider value={formik}>
       {!isLoading && (
-        <Form className={styles['cinema-provider-form']}>
+        <Form
+          className={styles['cinema-provider-form']}
+          data-testid="cinema-provider-form"
+        >
           <FormLayout.Row className={styles['cinema-provider-form-content']}>
             <DuoCheckbox isChecked={formik.values.isDuo} />
           </FormLayout.Row>

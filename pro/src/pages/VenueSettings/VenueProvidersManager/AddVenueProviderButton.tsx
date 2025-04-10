@@ -126,6 +126,7 @@ export const AddVenueProviderButton = ({
           name="provider"
           options={providersOptions}
           value={String(selectedProviderId)}
+          data-testid="provider-select"
         />
       </FieldLayout>
 
