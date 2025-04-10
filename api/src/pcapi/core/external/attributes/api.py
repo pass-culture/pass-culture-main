@@ -435,13 +435,12 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     booking_venues_count = len({booking.venueId for booking in user_bookings})
     last_recredit = finance_api.get_latest_age_related_user_recredit(user)
 
-    # Call only once to limit to one get_wallet_balance query
-    has_remaining_credit = user.has_remaining_credit
-
-    # A user becomes a former beneficiary only after the last credit is expired or spent or can no longer be claimed
+    has_remaining_credit = user.has_active_deposit and domains_credit is not None and bool(domains_credit.all.remaining)
     is_former_beneficiary = (user.has_beneficiary_role and not has_remaining_credit) or (
         user.has_underage_beneficiary_role and user.eligibility is None
     )
+    is_current_beneficiary = user.is_beneficiary and has_remaining_credit
+
     user_birth_date = datetime.combine(user.birth_date, datetime.min.time()) if user.birth_date else None
 
     return models.UserAttributes(
@@ -463,7 +462,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         user_id=user.id,
         is_active=user.isActive,
         is_beneficiary=user.is_beneficiary,
-        is_current_beneficiary=user.is_beneficiary and has_remaining_credit,
+        is_current_beneficiary=is_current_beneficiary,
         is_former_beneficiary=is_former_beneficiary,
         is_eligible=user.is_eligible,
         is_email_validated=user.isEmailValidated,
