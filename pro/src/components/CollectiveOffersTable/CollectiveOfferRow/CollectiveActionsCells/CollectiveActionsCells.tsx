@@ -443,7 +443,7 @@ export const CollectiveActionsCells = ({
                 >
                   <Button
                     icon={fullClearIcon}
-                    variant={ButtonVariant.QUATERNARYPINK}
+                    variant={ButtonVariant.TERNARYBRAND}
                     className={styles['button-cancel-booking']}
                   >
                     Annuler la réservation
