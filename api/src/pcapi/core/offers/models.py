@@ -709,6 +709,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     headlineOffers: sa_orm.Mapped[list["HeadlineOffer"]] = sa_orm.relationship(
         "HeadlineOffer", back_populates="offer", uselist=True, cascade="all, delete-orphan", passive_deletes=True
     )
+    # eventOpeningHours is a list, but will only contain at most ONE element that is not soft deleted
     eventOpeningHours: sa_orm.Mapped[list["EventOpeningHours"]] = relationship(
         "EventOpeningHours", passive_deletes=True
     )
