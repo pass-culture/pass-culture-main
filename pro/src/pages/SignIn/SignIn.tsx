@@ -10,20 +10,15 @@ import { Layout } from 'app/App/layout/Layout'
 import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
-  SAVED_OFFERER_ID_KEY,
 } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
-import {
-  updateOffererIsOnboarded,
-  updateOffererNames,
-  updateSelectedOffererId,
-} from 'commons/store/offerer/reducer'
+import { AppDispatch } from 'commons/store/store'
 import { updateUser } from 'commons/store/user/reducer'
+import { initializeUserThunk } from 'commons/store/user/thunks'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
-import { storageAvailable } from 'commons/utils/storageAvailable'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
@@ -45,10 +40,10 @@ interface SigninApiErrorResponse {
 export const SignIn = (): JSX.Element => {
   useRedirectLoggedUser()
   const notify = useNotification()
-  const dispatch = useDispatch()
   const [searchParams, setSearchParams] = useSearchParams()
   const [shouldRedirect, setshouldRedirect] = useState(false)
   const [hasApiError, setHasApiError] = useState(false)
+  const dispatch = useDispatch<AppDispatch>()
 
   const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
 
@@ -79,49 +74,14 @@ export const SignIn = (): JSX.Element => {
         captchaToken,
       })
 
-      const initializeOffererIsOnboarded = async (offererId: number) => {
-        try {
-          const response = await api.getOfferer(offererId)
-          dispatch(updateOffererIsOnboarded(response.isOnboarded))
-        } catch (e: unknown) {
-          if (isErrorAPIError(e) && e.status === 403) {
-            // Do nothing at this point,
-            // Because a 403 means that the user is waiting for a "rattachement" to the offerer,
-            // But we must let him sign in
-            return
-          }
-          // Else it's another error we should handle here at sign in
-          throw e
-        }
+      const result = await dispatch(initializeUserThunk(user)).unwrap()
+
+      if (result.success) {
+        setshouldRedirect(true)
       }
-
-      const offerers = await api.listOfferersNames()
-      const firstOffererId = offerers.offerersNames[0]?.id
-
-      if (firstOffererId) {
-        dispatch(updateOffererNames(offerers.offerersNames))
-
-        if (storageAvailable('localStorage')) {
-          const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
-          dispatch(
-            updateSelectedOffererId(
-              savedOffererId ? Number(savedOffererId) : firstOffererId
-            )
-          )
-          await initializeOffererIsOnboarded(
-            savedOffererId ? Number(savedOffererId) : firstOffererId
-          )
-        } else {
-          dispatch(updateSelectedOffererId(firstOffererId))
-          await initializeOffererIsOnboarded(firstOffererId)
-        }
-      }
-
-      dispatch(updateUser(user))
-      setshouldRedirect(true)
     } catch (error) {
       if (isErrorAPIError(error) || error === RECAPTCHA_ERROR) {
-        updateUser(null)
+        dispatch(updateUser(null))
         if (isErrorAPIError(error)) {
           onHandleFail({ status: error.status, errors: error.body })
         } else {
