@@ -3,6 +3,8 @@ import logging
 import typing
 from typing import Iterable
 
+from sqlalchemy import exc as sa_exc
+
 from pcapi.connectors.big_query import queries as big_query_queries
 from pcapi.connectors.big_query.queries.artist import ArtistAliasModel
 from pcapi.connectors.big_query.queries.artist import ArtistModel
@@ -52,11 +54,24 @@ class BaseImportTemplate(abc.ABC, typing.Generic[BigQueryModel, Model]):
         if not inserted_data:
             return
 
-        with transaction():
-            db.session.bulk_save_objects(inserted_data)
+        class_name = type(inserted_data[0]).__name__
+        try:
+            with transaction():
+                db.session.bulk_save_objects(inserted_data)
+        except sa_exc.IntegrityError as exc:
+            logger.info("Failed to import batch of %s: %s. Importing one by one.", class_name, exc)
+            self._save_one_by_one(inserted_data)
+        else:
+            logger.info("Successfully imported %s %s", len(inserted_data), class_name)
 
-        name_of_class = type(inserted_data[0]).__name__
-        logger.info("Successfully imported %s %s", len(inserted_data), name_of_class)
+    def _save_one_by_one(self, inserted_data: list) -> None:
+        class_name = type(inserted_data[0]).__name__
+        for item in inserted_data:
+            try:
+                with transaction():
+                    db.session.add(item)
+            except sa_exc.IntegrityError as exc:
+                logger.error("Failed to import %s: %s", class_name, exc)
 
     @abc.abstractmethod
     def get_all(self) -> Iterable[BigQueryModel]:
