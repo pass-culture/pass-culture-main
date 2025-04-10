@@ -25,7 +25,9 @@ from pcapi.models import db
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
+from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.routes.serialization import reimbursement_csv_serialize
+from pcapi.utils import urls
 from pcapi.utils.human_ids import humanize
 
 from . import forms
@@ -102,8 +104,19 @@ def get_linked_venues(bank_account_id: int) -> utils.BackofficeResponse:
         )
     ).all()
 
+    connect_as = {}
+    for linked_venue in linked_venues:
+        connect_as[linked_venue.venue.id] = get_connect_as(
+            object_type="venue",
+            object_id=linked_venue.venue.id,
+            pc_pro_path=urls.build_pc_pro_venue_path(linked_venue.venue),
+        )
+
     return render_template(
-        "bank_account/get/linked_venues.html", linked_venues=linked_venues, bank_account_id=bank_account_id
+        "bank_account/get/linked_venues.html",
+        bank_account_id=bank_account_id,
+        connect_as=connect_as,
+        linked_venues=linked_venues,
     )
 
 

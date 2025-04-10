@@ -1,0 +1,26 @@
+{% macro build_connect_as(connect_as_object, force=False) %}
+  {% if connect_as_object %}
+    <form name="{{ connect_as_object.formName }}"
+          class="d-none"
+          target="_blank"
+          rel="noopener"
+          action="{{ url_for('backoffice_web.pro.connect_as') }}"
+          method="post">
+      {% for field in connect_as_object.form %}{{ field }}{% endfor %}
+    </form>
+  {% endif %}
+  {% if connect_as_object or force %}{{ caller() }}{% endif %}
+{% endmacro %}
+{% macro build_connect_as_link(connect_as_object, link_text, class='') %}
+  {% call build_connect_as(connect_as_object, force=True) %}
+    {% if connect_as_object %}
+      <a href="{{ connect_as_object.href }}"
+         class="{{ class }}"
+         data-submit-form="{{ connect_as_object.formName }}">
+        {{ link_text }} <i class="bi bi-box-arrow-up-right ms-2"></i>
+      </a>
+    {% else %}
+      {{ link_text }}
+    {% endif %}
+  {% endcall %}
+{% endmacro %}

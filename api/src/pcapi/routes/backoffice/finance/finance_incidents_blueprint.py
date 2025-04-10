@@ -38,8 +38,10 @@ from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.finance import forms
 from pcapi.routes.backoffice.finance import validation
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
+from pcapi.utils import urls
 
 
 TOKEN_LENGTH = 6
@@ -259,6 +261,23 @@ def get_incident_overpayment(finance_incident_id: int) -> utils.BackofficeRespon
         (booking_incident.booking or booking_incident.collectiveBooking)
         for booking_incident in incident.booking_finance_incidents
     ]
+    connect_as = {}
+    for booking in bookings:
+        if isinstance(booking, bookings_models.Booking):
+            offer = booking.stock.offer
+            connect_as[booking.id] = get_connect_as(
+                object_type="offer",
+                object_id=offer.id,
+                pc_pro_path=urls.build_pc_pro_offer_path(offer),
+            )
+        else:
+            offer = booking.collectiveStock.collectiveOffer
+            connect_as[booking.id] = get_connect_as(
+                object_type="collective_offer",
+                object_id=offer.id,
+                pc_pro_path=urls.build_pc_pro_offer_path(offer),
+            )
+
     bookings_total_amount = sum(booking.total_amount for booking in bookings)
     reimbursement_pricings = [booking.reimbursement_pricing for booking in bookings if booking.reimbursement_pricing]
     initial_reimbursement_amount = sum(pricing.amount for pricing in reimbursement_pricings) * -1
@@ -266,6 +285,7 @@ def get_incident_overpayment(finance_incident_id: int) -> utils.BackofficeRespon
     return render_template(
         "finance/incidents/get_overpayment.html",
         incident=incident,
+        connect_as=connect_as,
         active_tab=request.args.get("active_tab", "bookings"),
         bookings_total_amount=bookings_total_amount,
         initial_reimbursement_amount=initial_reimbursement_amount,
@@ -276,14 +296,32 @@ def get_incident_overpayment(finance_incident_id: int) -> utils.BackofficeRespon
 @utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
 def get_commercial_gesture(finance_incident_id: int) -> utils.BackofficeResponse:
     incident = _get_incident(finance_incident_id, kind=finance_models.IncidentType.COMMERCIAL_GESTURE)
-    bookings_total_amount = sum(
-        (booking_incident.booking or booking_incident.collectiveBooking).total_amount
+    bookings = [
+        (booking_incident.booking or booking_incident.collectiveBooking)
         for booking_incident in incident.booking_finance_incidents
-    )
+    ]
+    connect_as = {}
+    for booking in bookings:
+        if isinstance(booking, bookings_models.Booking):
+            offer = booking.stock.offer
+            connect_as[offer.id] = get_connect_as(
+                object_type="offer",
+                object_id=offer.id,
+                pc_pro_path=urls.build_pc_pro_offer_path(offer),
+            )
+        else:
+            offer = booking.collectiveStock.collectiveOffer
+            connect_as[offer.id] = get_connect_as(
+                object_type="collective_offer",
+                object_id=offer.id,
+                pc_pro_path=urls.build_pc_pro_offer_path(offer),
+            )
+    bookings_total_amount = sum(booking.total_amount for booking in bookings)
 
     return render_template(
         "finance/incidents/get_commercial_gesture.html",
         incident=incident,
+        connect_as=connect_as,
         commercial_gesture_amount=incident.due_amount_by_offerer,
         bookings_total_amount=bookings_total_amount,
         active_tab=request.args.get("active_tab", "bookings"),

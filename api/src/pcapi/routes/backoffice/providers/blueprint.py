@@ -23,6 +23,8 @@ from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import mark_transaction_as_invalid
+from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.utils import urls
 
 from . import forms
 from .. import utils
@@ -273,7 +275,20 @@ def get_venues(provider_id: int) -> utils.BackofficeResponse:
         .all()
     )
 
-    return render_template("providers/get/venues.html", venues=venues, provider_id=provider_id)
+    connect_as = {}
+    for venue in venues:
+        connect_as[venue.id] = get_connect_as(
+            object_type="venue",
+            object_id=venue.id,
+            pc_pro_path=urls.build_pc_pro_venue_parameters_path(venue),
+        )
+
+    return render_template(
+        "providers/get/venues.html",
+        connect_as=connect_as,
+        provider_id=provider_id,
+        venues=venues,
+    )
 
 
 @providers_blueprint.route("/<int:provider_id>/update", methods=["POST"])

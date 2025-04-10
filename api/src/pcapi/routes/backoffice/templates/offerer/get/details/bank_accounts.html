@@ -1,4 +1,5 @@
 {% import "components/links.html" as links with context %}
+{% from "components/connect_as.html" import build_connect_as_link %}
 <turbo-frame id="offerer_bank_accounts_frame">
 <table class="table table-hover my-4">
   <thead>
@@ -14,7 +15,7 @@
       <tr>
         <th scope="row"></th>
         <td class="fw-bolder">{{ links.build_bank_account_name_to_details_link(bank_account, text_attr="id") }}</td>
-        <td class="text-break">{{ links.build_bank_account_name_to_pc_pro_link(bank_account) }}</td>
+        <td class="text-break">{{ build_connect_as_link(connect_as[bank_account.id], bank_account.label, "link-primary") }}</td>
         <td>{{ bank_account.status | format_dms_application_status_badge }}</td>
       </tr>
     {% endfor %}

@@ -3,12 +3,13 @@
 {% import "components/links.html" as links with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% import "components/logo.html" as logo %}
+{% from "components/connect_as.html" import build_connect_as %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% from "components/generic_modal.html" import build_simple_modal_form with context %}
 {% macro accessibility_indicator(icon, value, title) %}
   <figure class="figure p-2 accessibility-logo-container d-flex flex-column align-items-center gap-3">
     <div class="accessibility-logo d-flex justify-content-center align-items-center position-relative border rounded-xs">
-      {{ icon }}
+      {{ icon }}
       <div class="position-absolute top-100 start-50 translate-middle">
         {% if value is true %}
           <i class="bi bi-check-circle-fill small text-success"></i>
@@ -17,7 +18,7 @@
         {% endif %}
       </div>
     </div>
-    <figcaption class="figure-caption text-center fw-semibold">{{ title }}</figcaption>
+    <figcaption class="figure-caption text-center fw-semibold">{{ title }}</figcaption>
   </figure>
 {% endmacro %}
 {% block title %}{{ offer.name }}{% endblock %}
@@ -25,7 +26,7 @@
   <div>
     {% call badges.badges_container() %}
       {% if offer.lastProviderId %}{{ offer.lastProvider.name | format_badge("primary") }}{% endif %}
-      {{ offer.validation | format_offer_validation_status(with_badge=True)   }}
+      {{ offer.validation | format_offer_validation_status(with_badge=True) }}
     {% endcall %}
   </div>
 {% endblock %}
@@ -102,7 +103,7 @@
 {% block details_container %}
   {% call details_content_wrapper("offer-details") %}
     <!-- INFO -->
-    {% call nav_section("info", "Détails de l'offre")  %}
+    {% call nav_section("info", "Détails de l'offre") %}
       <div class="d-flex gap-1">
         <div class="flex-grow-1">
           {% if offer.idAtProvider or offer.ean %}
@@ -175,7 +176,7 @@
             <figure class="figure">
               <div class="d-flex justify-content-center align-items-center">
                 <object class="d-block offer-image"
-                        data="{{ offer.image.url }}"
+                        data="{{ offer.image.url }}"
                         type="image/jpeg">
                   <div class="d-flex bg-secondary-subtle justify-content-center align-items-center offer-no-image">
                     <i class="bi bi-file-image fs-2"
@@ -207,7 +208,7 @@
     {% endcall %}
     {# section info #}
     <!-- STOCKS Table -->
-    {% call nav_section("stocks", "Stocks") %}
+    {% call nav_section("stocks", "Stocks") %}
       <table class="table table-borderless table-hover">
         {% set show_price_category = offer.stocks | map(attribute="priceCategory") | any %}
         <thead class="table-light">
@@ -280,28 +281,28 @@
     {% endcall %}
     {# section stocks #}
     <!-- DOWNLOAD BOOKINGS CSV -->
-    {% call nav_section("bookings", "Réservations") %}
-    <span>Choisissez le format pour exporter les réservations&nbsp;:</span>
-    <div class="hstack gap-4 py-2">
-      <a href="{{ url_for('backoffice_web.offer.download_bookings_csv', offer_id=offer.id) }}"
-         data-bs-toggle="tooltip"
-         data-bs-placement="top"
-         data-bs-title="Télécharger au format CSV"
-         class="btn btn-outline-primary-subtle-bg border rounded-xs">
-        <i class="bi bi-filetype-csv fs-2 text-body"></i>
-      </a>
-      <a href="{{ url_for('backoffice_web.offer.download_bookings_xlsx', offer_id=offer.id) }}"
-         class="btn btn-outline-primary-subtle-bg border rounded-xs"
-         data-bs-toggle="tooltip"
-         data-bs-placement="top"
-         data-bs-title="Télécharger au format Excel">
-        <i class="bi bi-filetype-xlsx fs-2 text-body"></i>
-      </a>
-    </div>
+    {% call nav_section("bookings", "Réservations") %}
+      <span>Choisissez le format pour exporter les réservations&nbsp;:</span>
+      <div class="hstack gap-4 py-2">
+        <a href="{{ url_for('backoffice_web.offer.download_bookings_csv', offer_id=offer.id) }}"
+           data-bs-toggle="tooltip"
+           data-bs-placement="top"
+           data-bs-title="Télécharger au format CSV"
+           class="btn btn-outline-primary-subtle-bg border rounded-xs">
+          <i class="bi bi-filetype-csv fs-2 text-body"></i>
+        </a>
+        <a href="{{ url_for('backoffice_web.offer.download_bookings_xlsx', offer_id=offer.id) }}"
+           class="btn btn-outline-primary-subtle-bg border rounded-xs"
+           data-bs-toggle="tooltip"
+           data-bs-placement="top"
+           data-bs-title="Télécharger au format Excel">
+          <i class="bi bi-filetype-xlsx fs-2 text-body"></i>
+        </a>
+      </div>
+    {% endcall %}
+    {# section bookings #}
   {% endcall %}
-  {# section bookings #}
-{% endcall %}
-{# details_content_container #}
+  {# details_content_container #}
 {% endblock details_container %}
 {% block side_column %}
   <!-- BUTTONS -->
@@ -316,30 +317,22 @@
       Voir app Jeune
       <i class="bi bi-phone"></i>
     </a>
-    {% if connect_as %}
-      <form name="{{ connect_as.form_name }}"
-            class="d-none"
-            target="_blank"
-            rel="noopener"
-            action="{{ url_for('backoffice_web.pro.connect_as') }}"
-            method="post">
-        {% for field in connect_as.form %}{{ field  }}{% endfor %}
-      </form>
+    {% call build_connect_as(connect_as) %}
       <button type="button"
               class="btn btn-outline-primary-subtle-bg"
-              href="{{ connect_as.href }}"
+              href="{{ connect_as.href }}"
               data-bs-toggle="tooltip"
               data-bs-placement="top"
               data-bs-title="Accéder à l'offre sur PC Pro"
-              data-submit-form="{{ connect_as.form_name }}">
+              data-submit-form="{{ connect_as.formName }}">
         Accéder PC Pro
         <i class="bi bi-briefcase"></i>
       </button>
-    {% endif %}
+    {% endcall %}
   </div>
   <div>
     {% call description_detail_vertical("Offer ID") %}
-      {{ offer.id }}
+      {{ offer.id }}
       {{ clipboard.copy_to_clipboard(offer.id, "Copier") }}
     {% endcall %}
     {% call description_detail_vertical("Catégorie") %}
@@ -412,7 +405,7 @@
                 data-bs-placement="top"
                 data-bs-title="Taguer l'offre">
           <span data-bs-toggle="modal"
-                data-bs-target="#edit-offer-modal-{{ offer.id }}">
+                data-bs-target="#edit-offer-modal-{{ offer.id }}">
             <i class="bi bi-pencil-square"></i>
           </span>
         </button>

@@ -20,6 +20,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.pro.utils import get_connect_as
 
 from . import forms
 
@@ -39,11 +40,18 @@ def components() -> utils.BackofficeResponse:
     if not settings.ENABLE_BO_COMPONENT_PAGE:
         raise NotFound()
 
+    connect_as = get_connect_as(
+        object_type="user",
+        object_id=12,
+        pc_pro_path="/home",
+    )
+
     return render_template(
         "dev/components.html",
         simple_form=forms.SimpleComponentsForm(),
         rows={"pages": 5},
         next_pages_urls=[(i, str(i)) for i in range(6)],
+        connect_as=connect_as,
     )
 
 
