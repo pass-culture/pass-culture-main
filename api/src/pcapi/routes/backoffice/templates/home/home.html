@@ -26,6 +26,14 @@
   </div>
 {% endmacro %}
 {% extends "layouts/connected.html" %}
+{% block head %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const offcanvas = new bootstrap.Offcanvas("#offcanvas_navbar_main_menu")
+      offcanvas.show()
+    })
+  </script>
+{% endblock head %}
 {% block page %}
   <div class="py-4 px-5">
     <div class="mt-5">
