@@ -5,10 +5,10 @@ export const getPathToNavigateTo = (
 ) => {
   const basePath = `/structures/${offererId}/lieux/${venueId}`
   const context = location.pathname.includes('collectif')
-    ? 'collectif/'
+    ? '/collectif'
     : location.pathname.includes('page-partenaire')
-      ? 'page-partenaire/'
+      ? '/page-partenaire'
       : ''
 
-  return `${basePath}/${context}${isEdition ? 'edition' : ''}`
+  return `${basePath}${context}${isEdition ? '/edition' : ''}`
 }

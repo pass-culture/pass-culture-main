@@ -37,7 +37,7 @@ describe('VenueFormActionBar', () => {
 
     expect(screen.getByText('Annuler')).toHaveAttribute(
       'href',
-      `/structures/${defaultGetVenue.managingOfferer.id}/lieux/${defaultGetVenue.id}/`
+      `/structures/${defaultGetVenue.managingOfferer.id}/lieux/${defaultGetVenue.id}`
     )
   })
 })
