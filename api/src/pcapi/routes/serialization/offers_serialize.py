@@ -395,6 +395,59 @@ class PriceCategoryResponseModel(BaseModel):
         orm_mode = True
 
 
+def _build_base_opening_hours_dict() -> dict[str, list]:
+    base_dict: dict[str, list] = {}
+
+    for weekday in offers_models.Weekday:
+        base_dict[weekday.name] = []
+
+    return base_dict
+
+
+class GetEventOpeningHoursResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "openingHours":
+            opening_hours_dict = _build_base_opening_hours_dict()
+            event_opening_hours: offers_models.EventOpeningHours = self._obj
+            for weekDayOpeningHours in event_opening_hours.weekDayOpeningHours:
+                opening_hours_dict[weekDayOpeningHours.weekday.name] = [
+                    {
+                        "open": date_utils.int_to_time(int(timeSpan.lower)),
+                        "close": date_utils.int_to_time(int(timeSpan.upper)),
+                    }
+                    for timeSpan in weekDayOpeningHours.timeSpans
+                ]
+
+            return opening_hours_dict
+        return super().get(key, default)
+
+
+class OpeningHoursModel(BaseModel):
+    MONDAY: offers_schemas.TimeSpanListType
+    TUESDAY: offers_schemas.TimeSpanListType
+    WEDNESDAY: offers_schemas.TimeSpanListType
+    THURSDAY: offers_schemas.TimeSpanListType
+    FRIDAY: offers_schemas.TimeSpanListType
+    SATURDAY: offers_schemas.TimeSpanListType
+    SUNDAY: offers_schemas.TimeSpanListType
+
+
+def _format_time(time_to_format: datetime.time) -> str:
+    return time_to_format.strftime("%H:%M")
+
+
+class GetEventOpeningHoursResponseModel(BaseModel):
+    id: int
+    startDatetime: datetime.datetime
+    endDatetime: datetime.datetime | None
+    openingHours: OpeningHoursModel
+
+    class Config:
+        orm_mode = True
+        json_encoders = {datetime.datetime: format_into_utc_date, datetime.time: _format_time}
+        getter_dict = GetEventOpeningHoursResponseGetterDict
+
+
 class IndividualOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "extraData" and self._obj.product:
@@ -413,6 +466,8 @@ class IndividualOfferWithAddressResponseGetterDict(GetterDict):
             return offer_address_getter_dict_helper(self._obj)
         if key == "isHeadlineOffer":
             return self._obj.is_headline_offer
+        if key == "eventOpeningHours":
+            return self._obj.eventOpeningHours or []
         return super().get(key, default)
 
 
@@ -451,6 +506,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalType: offers_models.WithdrawalTypeEnum | None
     status: OfferStatus
     isNonFreeOffer: bool | None
+    eventOpeningHours: list[GetEventOpeningHoursResponseModel]
 
     class Config:
         orm_mode = True
@@ -527,59 +583,6 @@ class DeleteFilteredStockListBody(BaseModel):
     date: datetime.date | None
     time: datetime.time | None
     price_category_id: int | None
-
-
-def _build_base_opening_hours_dict() -> dict[str, list]:
-    base_dict: dict[str, list] = {}
-
-    for weekday in offers_models.Weekday:
-        base_dict[weekday.name] = []
-
-    return base_dict
-
-
-class GetEventOpeningHoursResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "openingHours":
-            opening_hours_dict = _build_base_opening_hours_dict()
-            event_opening_hours: offers_models.EventOpeningHours = self._obj
-            for weekDayOpeningHours in event_opening_hours.weekDayOpeningHours:
-                opening_hours_dict[weekDayOpeningHours.weekday.name] = [
-                    {
-                        "open": date_utils.int_to_time(int(timeSpan.lower)),
-                        "close": date_utils.int_to_time(int(timeSpan.upper)),
-                    }
-                    for timeSpan in weekDayOpeningHours.timeSpans
-                ]
-
-            return opening_hours_dict
-        return super().get(key, default)
-
-
-class OpeningHoursModel(BaseModel):
-    MONDAY: offers_schemas.TimeSpanListType
-    TUESDAY: offers_schemas.TimeSpanListType
-    WEDNESDAY: offers_schemas.TimeSpanListType
-    THURSDAY: offers_schemas.TimeSpanListType
-    FRIDAY: offers_schemas.TimeSpanListType
-    SATURDAY: offers_schemas.TimeSpanListType
-    SUNDAY: offers_schemas.TimeSpanListType
-
-
-def _format_time(time_to_format: datetime.time) -> str:
-    return time_to_format.strftime("%H:%M")
-
-
-class GetEventOpeningHoursResponseModel(BaseModel):
-    id: int
-    startDatetime: datetime.datetime
-    endDatetime: datetime.datetime | None
-    openingHours: OpeningHoursModel
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date, datetime.time: _format_time}
-        getter_dict = GetEventOpeningHoursResponseGetterDict
 
 
 class ImageBodyModel(BaseModel):
