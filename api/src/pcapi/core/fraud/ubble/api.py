@@ -14,7 +14,6 @@ from pcapi.core.subscription.ubble import errors as ubble_errors
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
-from pcapi.models.feature import FeatureToggle
 
 
 UBBLE_TEST_EMAIL_RE = re.compile(r"^.+(\+ubble_test@.+|@yeswehack.ninja)$")
@@ -135,7 +134,7 @@ def _ubble_not_eligible_fraud_item(
     assert birth_date and registration_datetime
 
     age = users_utils.get_age_at_date(birth_date, registration_datetime, user.departementCode)
-    if registration_datetime >= settings.CREDIT_V3_DECREE_DATETIME and FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
+    if registration_datetime >= settings.CREDIT_V3_DECREE_DATETIME:
         minimum_age = 17
     else:
         minimum_age = min(users_constants.ELIGIBILITY_UNDERAGE_RANGE)

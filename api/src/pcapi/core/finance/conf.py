@@ -2,7 +2,6 @@ import decimal
 
 import pcapi.core.offers.models as offers_models
 from pcapi.core.users import models as users_models
-from pcapi.models.feature import FeatureToggle
 
 from . import models
 
@@ -61,13 +60,8 @@ RECREDIT_TYPE_AGE_MAPPING = {
     15: models.RecreditType.RECREDIT_15,
     16: models.RecreditType.RECREDIT_16,
     17: models.RecreditType.RECREDIT_17,
+    18: models.RecreditType.RECREDIT_18,
 }
-
-
-def get_recredit_mapping() -> dict[int, models.RecreditType]:
-    if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-        RECREDIT_TYPE_AGE_MAPPING[18] = models.RecreditType.RECREDIT_18
-    return RECREDIT_TYPE_AGE_MAPPING
 
 
 RECREDIT_TYPE_AMOUNT_MAPPING = {
@@ -78,10 +72,7 @@ RECREDIT_TYPE_AMOUNT_MAPPING = {
 
 
 def get_credit_amount_per_age(age: int) -> decimal.Decimal | None:
-    if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-        return _get_deposit_17_18_credit_amount_per_age(age)
-
-    return _get_pre_decree_credit_amount_per_age(age)
+    return _get_deposit_17_18_credit_amount_per_age(age)
 
 
 def get_credit_amount_per_age_and_eligibility(

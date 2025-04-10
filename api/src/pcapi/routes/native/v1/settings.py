@@ -29,7 +29,6 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_PHONE_VALIDATION,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
         FeatureToggle.APP_ENABLE_AUTOCOMPLETE,
-        FeatureToggle.WIP_ENABLE_CREDIT_V3,
     )
 
     return serializers.SettingsResponse(
@@ -44,8 +43,7 @@ def get_settings() -> serializers.SettingsResponse:
         ineligible_postal_codes=postal_code.INELIGIBLE_POSTAL_CODES,
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],
         object_storage_url=OBJECT_STORAGE_URL,
-        wip_enable_credit_v3=features[FeatureToggle.WIP_ENABLE_CREDIT_V3],
-        deposit_amounts_by_age=serializers.get_deposit_amounts_by_age(
-            enable_credit_v3=features[FeatureToggle.WIP_ENABLE_CREDIT_V3]
-        ),
+        # TODO: remove when the app does not use the feature flag anymore PC-35597
+        wip_enable_credit_v3=True,
+        deposit_amounts_by_age=serializers.get_deposit_amounts_by_age(),
     )

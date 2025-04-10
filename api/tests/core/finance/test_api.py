@@ -4296,7 +4296,6 @@ class EditReimbursementRuleTest:
             api.edit_reimbursement_rule(rule, end_date=end)
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 class CreateDepositTest:
     @time_machine.travel("2021-02-05 09:00:00")
     @pytest.mark.parametrize("age,expected_amount", [(15, Decimal(20)), (16, Decimal(30)), (17, Decimal(30))])
@@ -4566,7 +4565,6 @@ class CreateDepositTest:
         assert error.value.errors["user"] == ['Cet utilisateur a déjà été crédité de la subvention "GRANT_18".']
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
 class CreateDepositV3Test:
     @time_machine.travel("2025-03-03")
     def test_compute_deposit_expiration_date_v3(self):
@@ -4634,7 +4632,6 @@ class CreateDepositV3Test:
         assert deposit.amount == 30
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
 class LegacyUserRecreditTest:
     @time_machine.travel("2021-07-01")
     @pytest.mark.parametrize(
@@ -5193,7 +5190,6 @@ class LegacyUserRecreditTest:
         assert payload["deposit_expiration_date"] == user.deposit.expirationDate.isoformat()
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
 class UserRecreditAfterDecreeTest:
 
     def test_user_with_finished_age_18_process_is_credited_with_correct_role(self):
@@ -5497,7 +5493,6 @@ class UserRecreditAfterDecreeTest:
         assert outbox[0]["template"]["id_prod"] == 1509
 
 
-@pytest.mark.feature(WIP_ENABLE_CREDIT_V3=True)
 class CanBeRecreditedTest:
     @pytest.mark.parametrize("age", (14, 15, 16, 19))
     def test_users_not_eligible_cannot_be_recredited(self, age):
@@ -5569,7 +5564,6 @@ class CanBeRecreditedTest:
         assert not api._can_be_recredited(user)
 
 
-@pytest.mark.feature(WIP_ENABLE_CREDIT_V3=True)
 class LastAgeRelatedRecreditTest:
     def test_last_recredit_17(self):
         user = users_factories.BeneficiaryFactory(age=17)

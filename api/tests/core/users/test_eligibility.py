@@ -18,8 +18,7 @@ from pcapi.core.users import models as users_models
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
-class DecideV3CreditEligibilityTest:
+class DecideEligibilityTest:
     @pytest.mark.parametrize("age", [17, 18])
     def test_eligible_age(self, age):
         birth_date = date.today() - relativedelta(years=age, months=1)
@@ -175,29 +174,6 @@ class DecideV3CreditEligibilityTest:
 
         assert eligibility is None
 
-
-@pytest.mark.usefixtures("db_session")
-class EligibilityForNextRecreditActivationStepsTest:
-    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
-    @pytest.mark.parametrize("age", [15, 16])
-    def test_user_underage_activation_when_registered_before_decree(self, age):
-        birth_date = date.today() - relativedelta(years=age, months=1)
-        user = users_factories.UserFactory(dateOfBirth=birth_date)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-            dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1),
-        )
-
-        can_do_next_activation_steps = eligibility_api.is_eligible_for_next_recredit_activation_steps(user)
-
-        assert can_do_next_activation_steps
-
-
-@pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
-class DecideEligibilityTest:
     def test_19yo_is_eligible_if_application_at_18_yo(self):
         today = date.today()
         birth_date = today - relativedelta(years=19, days=1)
@@ -279,6 +255,7 @@ class DecideEligibilityTest:
         )
         assert result == users_models.EligibilityType.AGE18
 
+    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.utcnow() - relativedelta(years=1))
     def test_18yo_underage_eligible(self):
         today = date.today()
         birth_date = today - relativedelta(years=18, days=1)
@@ -294,7 +271,7 @@ class DecideEligibilityTest:
         result = eligibility_api.decide_eligibility(
             user, dms_content.get_birth_date(), dms_content.get_registration_datetime()
         )
-        assert result == users_models.EligibilityType.AGE18
+        assert result == users_models.EligibilityType.AGE17_18
 
     @time_machine.travel("2022-03-01")
     def test_decide_eligibility_for_underage_users(self):
@@ -308,33 +285,6 @@ class DecideEligibilityTest:
                 eligibility_api.decide_eligibility(user, birth_date, registration_datetime)
                 == users_models.EligibilityType.UNDERAGE
             )
-
-    @time_machine.travel("2022-03-01 13:45:00")  # 2022-03-02 00:45 in Noumea timezone
-    def test_decide_underage_eligibility_with_timezone(self):
-        today = date.today()
-        march_2nd_fifteen_years_ago = today - relativedelta(years=15, days=-1)
-        new_caledonian_user = users_factories.UserFactory(
-            dateOfBirth=march_2nd_fifteen_years_ago, departementCode="988"
-        )
-
-        eligibility = eligibility_api.decide_eligibility(new_caledonian_user, march_2nd_fifteen_years_ago, today)
-
-        assert eligibility == users_models.EligibilityType.UNDERAGE
-
-    @time_machine.travel("2022-01-01")
-    def test_decide_eligibility_for_18_yo_users_is_always_age_18(self):
-        # 18 users are always eligible
-        birth_date = datetime.utcnow() - relativedelta(years=18)
-        user = users_factories.UserFactory()
-
-        assert (
-            eligibility_api.decide_eligibility(user, birth_date, datetime.today()) == users_models.EligibilityType.AGE18
-        )
-        assert eligibility_api.decide_eligibility(user, birth_date, None) == users_models.EligibilityType.AGE18
-        assert (
-            eligibility_api.decide_eligibility(user, birth_date, datetime.utcnow() - relativedelta(years=1))
-            == users_models.EligibilityType.AGE18
-        )
 
     @time_machine.travel("2022-07-01")
     @pytest.mark.parametrize(
@@ -375,10 +325,29 @@ class DecideEligibilityTest:
                 registration_datetime=None,
                 birth_date=birth_date,
             ),
-            dateCreated=today - relativedelta(days=3),
+            dateCreated=datetime.utcnow() - relativedelta(days=3),
         )
 
-        assert eligibility_api.decide_eligibility(user, birth_date, None) == users_models.EligibilityType.AGE18
+        assert eligibility_api.decide_eligibility(user, birth_date, None) == users_models.EligibilityType.AGE17_18
+
+
+@pytest.mark.usefixtures("db_session")
+class EligibilityForNextRecreditActivationStepsTest:
+    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
+    @pytest.mark.parametrize("age", [15, 16])
+    def test_user_underage_activation_when_registered_before_decree(self, age):
+        birth_date = date.today() - relativedelta(years=age, months=1)
+        user = users_factories.UserFactory(dateOfBirth=birth_date)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1),
+        )
+
+        can_do_next_activation_steps = eligibility_api.is_eligible_for_next_recredit_activation_steps(user)
+
+        assert can_do_next_activation_steps
 
 
 class EligibilityStartTest:

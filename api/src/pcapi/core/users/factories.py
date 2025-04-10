@@ -30,7 +30,6 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.utils import crypto
 
@@ -994,15 +993,8 @@ class DepositGrantFactory(BaseFactory):
             age = 18  # The calling functions are responsible for setting the correct age. If age is not in the range, we generate a deposit for 18yo.
 
         if "type" not in kwargs:
-            date_created = kwargs.get("dateCreated", datetime.utcnow())
-            if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and date_created >= settings.CREDIT_V3_DECREE_DATETIME:
-                kwargs["type"] = finance_models.DepositType.GRANT_17_18
-            else:
-                kwargs["type"] = (
-                    finance_models.DepositType.GRANT_15_17
-                    if age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
-                    else finance_models.DepositType.GRANT_18
-                )
+            kwargs["type"] = finance_models.DepositType.GRANT_17_18
+
         if "amount" not in kwargs:
             if kwargs["type"] == finance_models.DepositType.GRANT_17_18:
                 amount = {17: Decimal(50), 18: Decimal(150)}.get(age, Decimal(150))

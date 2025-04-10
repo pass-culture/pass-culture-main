@@ -2995,12 +2995,7 @@ def compute_deposit_expiration_date(
     if deposit_type == models.DepositType.GRANT_15_17:
         return compute_underage_deposit_expiration_datetime(beneficiary.birth_date)
 
-    if feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-        return compute_deposit_expiration_date_v3(beneficiary)
-
-    expiration_date = datetime.datetime.utcnow().date() + relativedelta(years=conf.GRANT_18_VALIDITY_IN_YEARS)
-    expiration_datetime = datetime.datetime.combine(expiration_date, datetime.time.max)
-    return expiration_datetime
+    return compute_deposit_expiration_date_v3(beneficiary)
 
 
 def compute_deposit_expiration_date_v3(beneficiary: users_models.User) -> datetime.datetime:
@@ -3046,16 +3041,6 @@ def get_granted_deposit(
 
 
 def _recredit_user(user: users_models.User) -> models.Recredit | None:
-    if (
-        feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active()
-        and datetime.datetime.utcnow() > settings.CREDIT_V3_DECREE_DATETIME
-    ):
-        return _recredit_user_v3(user)
-    return _recredit_user_v2(user)
-
-
-def _recredit_user_v3(user: users_models.User) -> models.Recredit | None:
-
     if not user.deposit or not user.age:
         return None
     if not (user_eligibility := user.eligibility):
@@ -3140,7 +3125,7 @@ def _recredit_user_v2(user: users_models.User) -> models.Recredit | None:
     for age in range(min_age_between_deposit_and_now, user.age + 1):
         if not _can_be_recredited(user, age):
             continue
-        latest_recredit = _recredit_deposit(deposit, age, recredit_type=conf.get_recredit_mapping()[age])
+        latest_recredit = _recredit_deposit(deposit, age, recredit_type=conf.RECREDIT_TYPE_AGE_MAPPING[age])
 
     return latest_recredit
 
@@ -3164,7 +3149,7 @@ def _recredit_grant_17_18_deposit_using_age(user: users_models.User) -> models.R
     latest_age_related_recredit: models.Recredit | None = None
     starting_age, end_age = sorted([age_at_first_registration or current_age, current_age])
     for age_to_recredit in range(starting_age, end_age + 1):
-        recredit_type_to_create = conf.get_recredit_mapping().get(age_to_recredit)
+        recredit_type_to_create = conf.RECREDIT_TYPE_AGE_MAPPING.get(age_to_recredit)
         if not recredit_type_to_create:
             continue
 
@@ -3286,10 +3271,7 @@ def create_deposit(
     age_at_registration: int | None = None,
 ) -> models.Deposit:
     """Create a new deposit for the user if there is no deposit yet."""
-    if feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-        return create_deposit_v3(beneficiary, deposit_source, eligibility, age_at_registration)
-
-    return create_deposit_v2(beneficiary, deposit_source, eligibility, age_at_registration)
+    return create_deposit_v3(beneficiary, deposit_source, eligibility, age_at_registration)
 
 
 def create_deposit_v3(
@@ -3389,14 +3371,12 @@ def expire_current_deposit_for_user(user: users_models.User) -> None:
 def _can_be_recredited(user: users_models.User, age: int | None = None) -> bool:
     if age is None:
         age = user.age
-    if feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-        return _can_be_recredited_v3(user, age)
-    return _can_be_recredited_v2(user, age)
+    return _can_be_recredited_v3(user, age)
 
 
 def _can_be_recredited_v2(user: users_models.User, age: int | None = None) -> bool:
     return (
-        age in conf.get_recredit_mapping()
+        age in conf.RECREDIT_TYPE_AGE_MAPPING
         and _has_celebrated_birthday_since_credit_or_registration(user)
         and not _has_been_recredited(user, age)
     )
@@ -3407,7 +3387,7 @@ def _can_be_recredited_v3(user: users_models.User, age: int | None = None) -> bo
         return False
     if age < 16:
         return False
-    if age not in conf.get_recredit_mapping():
+    if age not in conf.RECREDIT_TYPE_AGE_MAPPING:
         return False
 
     if not user.has_active_deposit:
@@ -3426,7 +3406,7 @@ def _can_be_recredited_v3(user: users_models.User, age: int | None = None) -> bo
         return _can_be_recredited_v2(user, age)
 
     has_been_recredited = any(
-        recredit.recreditType == conf.get_recredit_mapping()[age] for recredit in user.deposit.recredits
+        recredit.recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[age] for recredit in user.deposit.recredits
     )
     return not has_been_recredited
 
@@ -3465,7 +3445,7 @@ def _has_been_recredited(user: users_models.User, age: int | None = None) -> boo
     if len(user.deposit.recredits) == 0:
         return False
 
-    has_been_recredited = conf.get_recredit_mapping()[age] in [
+    has_been_recredited = conf.RECREDIT_TYPE_AGE_MAPPING[age] in [
         recredit.recreditType for recredit in user.deposit.recredits
     ]
     if has_been_recredited:
@@ -3505,15 +3485,8 @@ def _get_known_age_at_deposit(user: users_models.User) -> int | None:
 
 
 def recredit_users() -> None:
-    if (
-        feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active()
-        and datetime.datetime.utcnow() > settings.CREDIT_V3_DECREE_DATETIME
-    ):
-        upper_date = datetime.datetime.utcnow() - relativedelta(years=17)
-        lower_date = datetime.datetime.utcnow() - relativedelta(years=19)
-    else:
-        upper_date = datetime.datetime.utcnow() - relativedelta(years=16)
-        lower_date = datetime.datetime.utcnow() - relativedelta(years=18)
+    upper_date = datetime.datetime.utcnow() - relativedelta(years=16)
+    lower_date = datetime.datetime.utcnow() - relativedelta(years=18)
 
     user_ids = [
         result
@@ -3585,18 +3558,8 @@ def recredit_user_if_no_missing_step(user: users_models.User) -> None:
 
     external_attributes_api.update_external_user(user)
     push_notifications.track_account_recredited(user.id, user.deposit, len(user.deposits))
-    if feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and recredit.amount > 0:
-        if user.age and user.age >= users_constants.ELIGIBILITY_AGE_18:
-            # After the decree, send email to 18 years old users only
-            # This email will hold information about the recredit after 18 years old specifics
-            transactional_mails.send_recredit_email_to_18_years_old(user)
-    if not feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and recredit.amount > 0:
-        # This email will not be sent after the decree.
-        # It will be handled by the email sent to the user for their birthday
-        from pcapi.core.users import api as users_api
-
-        domains_credit = users_api.get_domains_credit(user)
-        transactional_mails.send_recredit_email_to_underage_beneficiary(user, recredit.amount, domains_credit)
+    if recredit.amount > 0 and user.age and user.age >= users_constants.ELIGIBILITY_AGE_18:
+        transactional_mails.send_recredit_email_to_18_years_old(user)
 
 
 def get_latest_age_related_user_recredit(user: users_models.User) -> models.Recredit | None:

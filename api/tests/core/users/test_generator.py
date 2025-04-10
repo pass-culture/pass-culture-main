@@ -132,24 +132,15 @@ class UserGeneratorTest:
         user = users_generator.generate_user(user_data)
         self.has_fraud_check_validated(user, id_provider.value)
 
-    @pytest.mark.parametrize(
-        "age",
-        [
-            users_constants.ELIGIBILITY_UNDERAGE_RANGE[0],
-            users_constants.ELIGIBILITY_UNDERAGE_RANGE[1],
-            users_constants.ELIGIBILITY_UNDERAGE_RANGE[2],
-        ],
-    )
-    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
-    def test_generate_underage_beneficiary_user(self, age):
+    def test_generate_underage_beneficiary_user(self):
         user_data = users_generator.GenerateUserData(
-            age=age,
+            age=17,
             step=users_generator.GeneratedSubscriptionStep.BENEFICIARY,
         )
         user = users_generator.generate_user(user_data)
 
-        assert user.age == age
-        self.assert_user_is_beneficiary(user, expected_deposit_type=users_models.DepositType.GRANT_15_17)
+        assert user.age == 17
+        self.assert_user_is_beneficiary(user, expected_deposit_type=users_models.DepositType.GRANT_17_18)
 
     def test_email_is_consistent_with_user_data_when_no_names(self):
         user_data = users_generator.GenerateUserData(
@@ -200,13 +191,12 @@ class UserGeneratorTest:
         assert identity_check.resultContent["last_name"] == user.lastName
         assert identity_check.resultContent["birth_date"] == str(user.birth_date)
 
-    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     def test_user_in_transition_17_18(self):
         user_data = users_generator.GenerateUserData(transition_17_18=True)
         user = users_generator.generate_user(user_data)
         assert user.age == users_constants.ELIGIBILITY_AGE_18
         assert user.has_underage_beneficiary_role
-        assert user.deposit.type == finance_models.DepositType.GRANT_15_17
+        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
         assert user.deposit.expirationDate < datetime.datetime.utcnow()
         user_subscription_state = subscription_api.get_user_subscription_state(user)
         assert user_subscription_state.next_step == subscription_models.SubscriptionStep.PHONE_VALIDATION

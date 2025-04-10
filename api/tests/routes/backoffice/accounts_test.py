@@ -2159,8 +2159,7 @@ class GetPublicAccountHistoryTest:
         assert datetimes == sorted(datetimes, reverse=True)
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
-class GetUserRegistrationStepCreditV3Test(GetEndpointHelper):
+class GetUserRegistrationStepTest(GetEndpointHelper):
     endpoint = "backoffice_web.public_accounts.get_public_account"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
@@ -3722,175 +3721,6 @@ class GetUserRegistrationStepCreditV3Test(GetEndpointHelper):
         assert text_views[1].text == "Non éligible"
 
 
-@pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
-@pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + relativedelta(years=1))
-class GetUserRegistrationStepTest(GetEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.get_public_account"
-    endpoint_kwargs = {"user_id": 1}
-    needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
-
-    # - session
-    # - current user
-    # - displayed user
-    # - check if user is waiting to be anonymized
-    # - user bookings separately
-    expected_num_queries = 5
-    expected_num_queries_with_ff = expected_num_queries + 1
-
-    @pytest.mark.parametrize(
-        "age,id_check_type,expected_items_status_18,expected_id_check_status_18",
-        [
-            (18, fraud_models.FraudCheckType.EDUCONNECT, SubscriptionItemStatus.TODO, SubscriptionItemStatus.TODO),
-            (19, fraud_models.FraudCheckType.EDUCONNECT, SubscriptionItemStatus.VOID, SubscriptionItemStatus.VOID),
-            (18, fraud_models.FraudCheckType.UBBLE, SubscriptionItemStatus.TODO, SubscriptionItemStatus.OK),
-            (19, fraud_models.FraudCheckType.UBBLE, SubscriptionItemStatus.VOID, SubscriptionItemStatus.OK),
-            (18, fraud_models.FraudCheckType.DMS, SubscriptionItemStatus.TODO, SubscriptionItemStatus.OK),
-        ],
-    )
-    def test_registration_step_underage_ok_age18_void(
-        self, authenticated_client, age, id_check_type, expected_items_status_18, expected_id_check_status_18
-    ):
-        date_of_birth = datetime.datetime.utcnow() - relativedelta(years=age, months=3)
-        user = users_factories.UserFactory(
-            dateCreated=date_of_birth + relativedelta(years=17, days=5),
-            dateOfBirth=date_of_birth,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.UNVALIDATED,
-            roles=[users_models.UserRole.UNDERAGE_BENEFICIARY],
-            validatedBirthDate=date_of_birth,
-        )
-        users_factories.DepositGrantFactory(user=user, amount=30_00, type="GRANT_15_17")
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=id_check_type,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-        )
-
-        user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
-            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
-            assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="underage+age-18-old"]')
-        assert len(step_icon_views) == 10
-        assert len(step_icon_titles) == 10
-        assert len(text_views) == 10
-
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == SubscriptionItemStatus.OK.value
-        assert text_views[4].text == "Ancien Pass 15-17"
-
-        assert step_icon_titles[5] == expected_items_status_18.value
-        assert text_views[5].text == "Validation N° téléphone"
-
-        assert step_icon_titles[6] == expected_items_status_18.value
-        assert text_views[6].text == "Profil Complet"
-
-        assert step_icon_titles[7] == expected_id_check_status_18.value
-        assert text_views[7].text == "ID Check"
-
-        assert step_icon_titles[8] == expected_items_status_18.value
-        assert text_views[8].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[9] == SubscriptionItemStatus.VOID.value
-        assert text_views[9].text == "Ancien Pass 18"
-
-    def test_registration_step_underage_ko_age18_void(self, authenticated_client):
-        date_of_birth = datetime.datetime(2004, 4, 16)
-        user = users_factories.UserFactory(
-            dateCreated=datetime.datetime(2022, 2, 21),
-            dateOfBirth=date_of_birth,
-            roles=[users_models.UserRole.UNDERAGE_BENEFICIARY],
-            validatedBirthDate=date_of_birth,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            status=fraud_models.FraudCheckStatus.KO,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-        )
-
-        user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
-            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
-            assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="underage+age-18-old"]')
-        assert len(step_icon_views) == 10
-        assert len(step_icon_titles) == 10
-
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == SubscriptionItemStatus.KO.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == SubscriptionItemStatus.VOID.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == SubscriptionItemStatus.VOID.value
-        assert text_views[4].text == "Ancien Pass 15-17"
-
-        assert step_icon_titles[5] == SubscriptionItemStatus.VOID.value
-        assert text_views[5].text == "Validation N° téléphone"
-
-        assert step_icon_titles[6] == SubscriptionItemStatus.VOID.value
-        assert text_views[6].text == "Profil Complet"
-
-        assert step_icon_titles[7] == SubscriptionItemStatus.VOID.value
-        assert text_views[7].text == "ID Check"
-
-        assert step_icon_titles[8] == SubscriptionItemStatus.VOID.value
-        assert text_views[8].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[9] == SubscriptionItemStatus.VOID.value
-        assert text_views[9].text == "Ancien Pass 18"
-
-
 @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + datetime.timedelta(days=30))
 class RegistrationStepTest:
     @pytest.mark.parametrize(
@@ -4178,7 +4008,6 @@ class RegistrationStepTest:
         assert before_ids != after_ids
         assert sorted(before_ids, reverse=True) == after_ids
 
-    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=False)
     def test_get_steps_tunnel_age18_old(self):
         dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1)
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
@@ -4214,10 +4043,9 @@ class RegistrationStepTest:
         assert steps[5].step_id == 6
         assert steps[5].description == "Ancien Pass 18"
 
-    @pytest.mark.features(WIP_ENABLE_CREDIT_V3=True)
     @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() - relativedelta(years=1))
     def test_get_steps_tunnel_age18(self):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryFactory()
         eligibility_history = get_eligibility_history(user)
         id_check_histories = _get_id_check_histories_desc(eligibility_history)
         fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
