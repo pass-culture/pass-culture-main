@@ -26,37 +26,37 @@ import style from './ModalImageCrop.module.scss'
 
 export type ModalImageCropProps = {
   image: File
-  credit: string
-  onSetCredit: (credit: string) => void
+  initialCredit?: string | null
   children?: never
   onReplaceImage: () => void
   onImageDelete: () => void
   initialPosition?: Position
   initialScale?: number
   saveInitialPosition: (position: Position) => void
-  onEditedImageSave: (dataUrl: string, croppedRect: CroppedRect) => void
+  onEditedImageSave: (
+    credit: string | null,
+    dataUrl: string,
+    croppedRect: CroppedRect
+  ) => void
   mode: UploaderModeEnum
-  showPreviewInModal: boolean
 }
 
 export const ModalImageCrop = ({
+  image,
+  initialCredit,
   onReplaceImage,
   onImageDelete,
-  image,
-  credit,
-  onSetCredit,
   onEditedImageSave,
   saveInitialPosition,
   initialPosition,
   initialScale,
   mode,
-  showPreviewInModal,
 }: ModalImageCropProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const { width, height } = useGetImageBitmap(image)
   const editorRef = useRef<AvatarEditor>(null)
   const notification = useNotification()
-  const [creditInput, setCreditInput] = useState(credit || '')
+  const [credit, setCredit] = useState(initialCredit || '')
 
   const minWidth = modeValidationConstraints[mode].minWidth
 
@@ -99,7 +99,7 @@ export const ModalImageCrop = ({
     },
   }[mode]
 
-  const handleNext = () => {
+  const handleSave = () => {
     logEvent(Events.CLICKED_ADD_IMAGE, {
       imageCreationStage: 'reframe image',
     })
@@ -113,9 +113,8 @@ export const ModalImageCrop = ({
           x: coordonateToPosition(croppingRect.x, croppingRect.width),
           y: coordonateToPosition(croppingRect.y, croppingRect.height),
         })
-        onEditedImageSave(canvas.toDataURL(), croppingRect)
+        onEditedImageSave(credit, canvas.toDataURL(), croppingRect)
       }
-      onSetCredit(creditInput)
     } catch {
       notification.error(
         'Une erreur est survenue. Merci de réessayer plus tard'
@@ -170,12 +169,12 @@ export const ModalImageCrop = ({
           </div>
 
           <TextInput
-            count={creditInput.length}
+            count={credit.length}
             className={style['modal-image-crop-credit']}
             label="Crédit de l’image"
             maxLength={255}
-            value={creditInput}
-            onChange={(e) => setCreditInput(e.target.value)}
+            value={credit}
+            onChange={(e) => setCredit(e.target.value)}
             name="credit"
             type="text"
           />
@@ -188,10 +187,10 @@ export const ModalImageCrop = ({
             type="submit"
             onClick={(e) => {
               e.preventDefault()
-              handleNext()
+              handleSave()
             }}
           >
-            {showPreviewInModal ? 'Suivant' : 'Enregistrer'}
+            Enregistrer
           </Button>
         </div>
       </form>

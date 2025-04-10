@@ -14,13 +14,12 @@ import { UploadImageValues } from '../types'
 
 import { ModalImageCrop } from './components/ModalImageCrop/ModalImageCrop'
 import { ModalImageUploadBrowser } from './components/ModalImageUploadBrowser/ModalImageUploadBrowser'
-import { ModalImageUploadConfirm } from './components/ModalImageUploadConfirm/ModalImageUploadConfirm'
 
 export interface OnImageUploadArgs {
   imageFile: File
   imageCroppedDataUrl?: string
-  credit: string | null
   cropParams?: CroppedRect
+  credit: string | null
 }
 
 interface ModalImageEditProps {
@@ -49,6 +48,7 @@ export const ModalImageEdit = ({
   } = initialValues
 
   const [image, setImage] = useState<File | undefined>()
+
   useEffect(() => {
     async function setImageFromUrl(url: string) {
       try {
@@ -67,12 +67,6 @@ export const ModalImageEdit = ({
     }
     setIsReady(true)
   }, [])
-
-  const [credit, setCredit] = useState(initialCredit || '')
-  const [croppingRect, setCroppingRect] = useState<CroppedRect>()
-
-  const [editedImageDataUrl, setEditedImageDataUrl] = useState('')
-  const [isUploading, setIsUploading] = useState(false)
 
   // First version of the back don't use width_crop_percent which is needed to display the original image with the correct crop
   const {
@@ -93,10 +87,6 @@ export const ModalImageEdit = ({
         : 0.5,
   })
 
-  const navigateFromPreviewToEdit = () => {
-    setEditedImageDataUrl('')
-  }
-
   const onImageClientUpload = (values: ImageUploadBrowserFormValues) => {
     setImage(values.image || undefined)
   }
@@ -113,29 +103,21 @@ export const ModalImageEdit = ({
     }
   }
 
-  const handleOnUpload = (
-    croppedRect?: CroppedRect,
-    imageToUpload?: File,
-    imageDataUrl?: string
+  const onEditedImageSave = (
+    credit: string | null,
+    imageDataUrl?: string,
+    croppedRect?: CroppedRect
   ) => {
-    if (croppedRect === undefined || imageToUpload === undefined) {
+    if (croppedRect === undefined || image === undefined) {
       return
     }
 
     onImageUpload({
-      imageFile: imageToUpload,
+      imageFile: image,
       imageCroppedDataUrl: imageDataUrl,
       cropParams: croppedRect,
       credit,
     })
-    setIsUploading(false)
-  }
-
-  const onEditedImageSave = (dataUrl: string, croppedRect: CroppedRect) => {
-    setCroppingRect(croppedRect)
-    setEditedImageDataUrl(dataUrl)
-
-    handleOnUpload(croppedRect, image, dataUrl)
   }
 
   return !image ? (
@@ -144,9 +126,9 @@ export const ModalImageEdit = ({
       mode={mode}
       isReady={isReady}
     />
-  ) : !croppingRect || !editedImageDataUrl ? (
+  ) : (
     <ModalImageCrop
-      credit={credit}
+      initialCredit={initialCredit}
       image={image}
       initialPosition={editorInitialPosition}
       initialScale={
@@ -157,19 +139,7 @@ export const ModalImageEdit = ({
       onEditedImageSave={onEditedImageSave}
       onReplaceImage={onReplaceImage}
       onImageDelete={handleImageDelete}
-      onSetCredit={setCredit}
       saveInitialPosition={setEditorInitialPosition}
-      mode={mode}
-      showPreviewInModal={false}
-    />
-  ) : (
-    <ModalImageUploadConfirm
-      isUploading={isUploading}
-      onGoBack={navigateFromPreviewToEdit}
-      onUploadImage={() =>
-        handleOnUpload(croppingRect, image, editedImageDataUrl)
-      }
-      imageUrl={editedImageDataUrl}
       mode={mode}
     />
   )

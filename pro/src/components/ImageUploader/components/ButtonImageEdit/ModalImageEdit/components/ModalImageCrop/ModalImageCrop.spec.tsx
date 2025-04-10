@@ -1,5 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { userEvent } from '@testing-library/user-event'
+import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
@@ -7,26 +8,23 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 
 import { ModalImageCrop, ModalImageCropProps } from './ModalImageCrop'
 
-const mockReplaceImage = vi.fn()
-const mockDeleteImage = vi.fn()
-const mockLogEvent = vi.fn()
+const credit = 'John Doe'
+const onReplaceImage = vi.fn()
+const onImageDelete = vi.fn()
 
 const defaultProps: ModalImageCropProps = {
-  image: new File([], 'toto.png', {
-    type: 'image/png',
-  }),
-  onReplaceImage: mockReplaceImage,
-  onImageDelete: mockDeleteImage,
-  credit: 'Credits',
+  image: new File(['dummy content'], 'test.png', { type: 'image/png' }),
+  onReplaceImage: onReplaceImage,
+  onImageDelete: onImageDelete,
+  initialCredit: credit,
   onEditedImageSave: vi.fn(),
   saveInitialPosition: vi.fn(),
-  onSetCredit: vi.fn(),
   mode: UploaderModeEnum.OFFER,
-  showPreviewInModal: true,
-  initialScale: 1,
 }
 
-function renderModalImageCrop() {
+const mockLogEvent = vi.fn()
+
+const renderModalImageCrop = () => {
   return renderWithProviders(
     <Dialog.Root defaultOpen>
       <Dialog.Content aria-describedby={undefined}>
@@ -36,17 +34,30 @@ function renderModalImageCrop() {
   )
 }
 
-describe('venue image edit', () => {
-  it('calls the callback on remplacer button click', async () => {
-    const { getByText } = renderModalImageCrop()
-    await userEvent.click(getByText('Remplacer l’image'))
-    expect(mockReplaceImage).toHaveBeenCalledTimes(1)
+describe('ModalImageCrop', () => {
+  it('handles credit input change', async () => {
+    const { getByLabelText } = renderModalImageCrop()
+
+    const input = getByLabelText('Crédit de l’image')
+    await userEvent.clear(input)
+
+    await userEvent.type(input, 'Jane Smith')
+
+    expect(input).toHaveValue('Jane Smith')
   })
 
-  it('calls the callback on supprimer button click', async () => {
-    const { getByText } = renderModalImageCrop()
-    await userEvent.click(getByText('Supprimer l’image'))
-    expect(mockDeleteImage).toHaveBeenCalledTimes(1)
+  it('calls onReplaceImage when replace button is clicked', async () => {
+    renderModalImageCrop()
+
+    await userEvent.click(screen.getByText('Remplacer l’image'))
+    expect(onReplaceImage).toHaveBeenCalled()
+  })
+
+  it('calls onImageDelete when delete button is clicked', async () => {
+    renderModalImageCrop()
+
+    await userEvent.click(screen.getByText('Supprimer l’image'))
+    expect(onImageDelete).toHaveBeenCalled()
   })
 
   it('log event on click', async () => {
@@ -55,23 +66,13 @@ describe('venue image edit', () => {
     }))
 
     const { getByText } = renderModalImageCrop()
-    await userEvent.click(getByText('Suivant'))
+
+    await userEvent.click(getByText('Enregistrer'))
+
     expect(mockLogEvent).toHaveBeenCalledOnce()
+
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'hasClickedAddImage', {
       imageCreationStage: 'reframe image',
     })
-  })
-
-  it('should change credit when typing', async () => {
-    const screen = renderModalImageCrop()
-    const input = screen.getByRole('textbox')
-
-    expect(input).toHaveValue('Credits')
-
-    await userEvent.clear(input)
-
-    await userEvent.type(input, 'New Credits')
-
-    expect(input).toHaveValue('New Credits')
   })
 })
