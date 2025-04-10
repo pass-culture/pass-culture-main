@@ -137,7 +137,7 @@ class ProductMediation(PcObject, Base, Model):
     __tablename__ = "product_mediation"
 
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
-    imageType = sa.Column(db_utils.MagicEnum(ImageType), nullable=False)
+    imageType = sa.Column(sa.Enum(ImageType), nullable=False)
     lastProviderId = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
     lastProvider: "Provider|None" = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
     productId: int = sa.Column(
