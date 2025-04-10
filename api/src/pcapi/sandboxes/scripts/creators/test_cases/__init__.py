@@ -1,8 +1,11 @@
 import datetime
+from functools import wraps
 import itertools
+import logging
 import pathlib
 import random
-import uuid
+import time
+import typing
 
 from dateutil.relativedelta import relativedelta
 from factory.faker import faker
@@ -54,7 +57,22 @@ from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_lab
 
 Fake = faker.Faker(locale="fr_FR")
 
+logger = logging.getLogger(__name__)
 
+
+def log_func_duration(func: typing.Callable) -> typing.Callable:
+    @wraps(func)
+    def wrapper(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        logger.info("Executed %s in %.2fs", func.__name__, time.time() - start_time)
+
+        return result
+
+    return wrapper
+
+
+@log_func_duration
 def save_test_cases_sandbox() -> None:
     create_artists()
     create_offers_with_gtls()
@@ -84,6 +102,7 @@ def save_test_cases_sandbox() -> None:
     create_users_for_credit_v3_tests()
 
 
+@log_func_duration
 def create_users_for_credit_v3_tests() -> None:
     ### 'static' users
 
@@ -271,6 +290,7 @@ def create_users_for_credit_v3_tests() -> None:
     user_16_after_decree.validatedBirthDate = (one_day_after_decree - relativedelta(years=16)).date()
 
 
+@log_func_duration
 def create_artists() -> None:
     venue = offerers_factories.VenueFactory(
         name="Lieu avec artistes", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
@@ -381,6 +401,7 @@ def _create_library_with_writers() -> None:
             offers_factories.StockFactory(offer=offer)
 
 
+@log_func_duration
 def create_offers_with_gtls() -> None:
     librairie_gtl = offerers_factories.VenueFactory(
         name="Librairie des GTls",
@@ -393,10 +414,10 @@ def create_offers_with_gtls() -> None:
         departementCode="63",
         banId="63103_0040_00013",
     )
-    create_offers_for_each_gtl_level_1(10, librairie_gtl)
-    create_offers_with_gtl_id("01030000", 10, librairie_gtl)  # littérature, Œuvres classiques
-    create_offers_with_gtl_id("01030100", 10, librairie_gtl)  # littérature, Œuvres classiques, Antiquité
-    create_offers_with_gtl_id(
+    _create_offers_for_each_gtl_level_1(10, librairie_gtl)
+    _create_offers_with_gtl_id("01030000", 10, librairie_gtl)  # littérature, Œuvres classiques
+    _create_offers_with_gtl_id("01030100", 10, librairie_gtl)  # littérature, Œuvres classiques, Antiquité
+    _create_offers_with_gtl_id(
         "01030102", 10, librairie_gtl
     )  # littérature, Œuvres classiques, Antiquité, Littérature grecque antique
 
@@ -413,20 +434,20 @@ def create_offers_with_gtls() -> None:
         departementCode="85",
         banId="85191_0940_00011",
     )
-    create_offers_with_gtl_id("03050300", 10, librairie_manga)  # 10 mangas
+    _create_offers_with_gtl_id("03050300", 10, librairie_manga)  # 10 mangas
 
 
-def create_offers_for_each_gtl_level_1(size_per_gtl_level_1: int, venue: offerers_models.Venue) -> None:
+def _create_offers_for_each_gtl_level_1(size_per_gtl_level_1: int, venue: offerers_models.Venue) -> None:
     for gtl_id_prefix in range(1, 14):
         gtl_id_prefix_str = str(gtl_id_prefix).zfill(2)
         gtl_ids = [gtl_id for gtl_id in GTLS if gtl_id.startswith(gtl_id_prefix_str)]
 
         for _ in range(size_per_gtl_level_1):
             gtl_id = random.choice(gtl_ids)
-            create_offers_with_gtl_id(gtl_id, 1, venue)
+            _create_offers_with_gtl_id(gtl_id, 1, venue)
 
 
-def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_models.Venue) -> None:
+def _create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_models.Venue) -> None:
     ean = Fake.ean13()
     product = offers_factories.ProductFactory(
         subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -444,6 +465,7 @@ def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_mo
         offers_factories.StockFactory(offer=offer)
 
 
+@log_func_duration
 def create_offers_with_same_ean() -> None:
     offers = []
     product = offers_factories.ProductFactory(
@@ -534,6 +556,7 @@ def create_offer_and_stocks_for_cinemas(
                 bookings_factories.BookingFactory(stock=product_stocks[stock_idx % len(product_stocks)])
 
 
+@log_func_duration
 def create_cinema_data() -> None:
     venues = _create_allocine_venues()
     products = create_movie_products()
@@ -590,6 +613,7 @@ def _create_allocine_venues() -> list[offerers_models.Venue]:
     return venues
 
 
+@log_func_duration
 def create_offers_interactions() -> None:
     venue_with_headlined_and_liked_books_1 = offerers_factories.VenueFactory(
         name="Librairie des interactions 1", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
@@ -661,6 +685,7 @@ def create_offers_interactions() -> None:
     offers_factories.HeadlineOfferFactory(offer=offer_5_likes_headline)
 
 
+@log_func_duration
 def create_venues_across_cities() -> None:
     venues_by_city = [venues_mock.paris_venues, venues_mock.lyon_venues, venues_mock.mayotte_venues]
     for venues_list in venues_by_city:
@@ -711,6 +736,7 @@ def create_venues_across_cities() -> None:
                     )
 
 
+@log_func_duration
 def create_offers_for_each_subcategory() -> None:
     for subcategory in subcategories.ALL_SUBCATEGORIES:
         for i in range(1, 11):
@@ -742,6 +768,7 @@ def create_offers_for_each_subcategory() -> None:
             store_public_object_from_sandbox_assets("thumbs", mediation, subcategory.id)
 
 
+@log_func_duration
 def create_offers_with_same_author() -> None:
     venues = [
         offerers_factories.VenueFactory(
@@ -756,14 +783,14 @@ def create_offers_with_same_author() -> None:
         )
         for venue in random.choices(venues_mock.venues, k=4)
     ]
-    create_books_with_same_author(venues)
-    create_single_book_author(venues)
-    create_book_in_multiple_venues(venues)
-    create_books_with_the_same_author_duplicated_in_multiple_venues(venues)
-    create_multiauthors_books(venues)
+    _create_books_with_same_author(venues)
+    _create_single_book_author(venues)
+    _create_book_in_multiple_venues(venues)
+    _create_books_with_the_same_author_duplicated_in_multiple_venues(venues)
+    _create_multiauthors_books(venues)
 
 
-def create_books_with_same_author(venues: list[offerers_models.Venue]) -> None:
+def _create_books_with_same_author(venues: list[offerers_models.Venue]) -> None:
     # an author with 16 different books
     author = Fake.name()
     for venue in venues:
@@ -771,13 +798,13 @@ def create_books_with_same_author(venues: list[offerers_models.Venue]) -> None:
             create_offer_with_ean(Fake.ean13(), venue, author=author)
 
 
-def create_single_book_author(venues: list[offerers_models.Venue]) -> None:
+def _create_single_book_author(venues: list[offerers_models.Venue]) -> None:
     # an author with a single book in  a single venue
     author = Fake.name()
     create_offer_with_ean(Fake.ean13(), venues[0], author=author)
 
 
-def create_book_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
+def _create_book_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
     # an author with 1 book in multiple venues
     product = offers_factories.ProductFactory(
         subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -790,7 +817,7 @@ def create_book_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
         offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
 
 
-def create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
+def _create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
     # an author with multiple books but some in all venues
     author = Fake.name()
     for tome in range(1, 11):
@@ -823,7 +850,7 @@ def create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list
         offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
 
 
-def create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
+def _create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
     # multiple authors
     authors = [Fake.name() for _ in range(4)]
     ean = Fake.ean13()
@@ -848,6 +875,7 @@ def create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
         create_offer_with_ean(Fake.ean13(), random.choice(venues), author=author)
 
 
+@log_func_duration
 def create_venues_with_gmaps_image() -> None:
     venue_with_user_image_and_gmaps_image = offerers_factories.VenueFactory(
         isPermanent=True,
@@ -907,6 +935,7 @@ def create_venues_with_gmaps_image() -> None:
     )
 
 
+@log_func_duration
 def create_app_beneficiaries() -> None:
     users_factories.BeneficiaryGrant18Factory(
         email="dev-tests-e2e@passculture.team",
@@ -940,6 +969,7 @@ def create_app_beneficiaries() -> None:
     )
 
 
+@log_func_duration
 def create_venues_with_practical_info_graphical_edge_cases() -> None:
     offerers_factories.VenueFactory(
         name="Lieu avec un nom très long, qui atteint presque la limite de caractères en base de données et qui prend vraiment toute la place sur l'écran",
@@ -1034,6 +1064,7 @@ def create_venues_with_practical_info_graphical_edge_cases() -> None:
     )
 
 
+@log_func_duration
 @atomic()
 def create_institutional_website_offer_playlist() -> None:
     criterion = criteria_factories.CriterionFactory(name="home_site_instit")
@@ -1053,6 +1084,7 @@ def create_institutional_website_offer_playlist() -> None:
         )
 
 
+@log_func_duration
 def create_product_with_multiple_images() -> None:
     product = offers_factories.ProductFactory(
         name="multiple thumbs",
@@ -1073,6 +1105,7 @@ def create_product_with_multiple_images() -> None:
     )
 
 
+@log_func_duration
 def create_discord_users() -> None:
     for i in range(10, 20):
         user = users_factories.BeneficiaryFactory(
@@ -1081,6 +1114,7 @@ def create_discord_users() -> None:
         users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True)
 
 
+@log_func_duration
 def create_users_with_reactions() -> None:
     # Test case 1 : a user booked an offer and reacted to it
     #   - user_1 booked and reacted to offers linked to a product
@@ -1104,6 +1138,7 @@ def create_users_with_reactions() -> None:
             ReactionFactory(user=user_2, offer=stock.offer, reactionType=reaction_type)
 
 
+@log_func_duration
 def create_user_that_booked_some_cinema() -> None:
     seance_cine_start = datetime.datetime.utcnow() - datetime.timedelta(hours=25)
     stock = offers_factories.StockFactory(
