@@ -7,9 +7,7 @@ import pytz
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.exceptions as offers_exceptions
-from pcapi.core.offers.schemas import CreateEventOpeningHoursModel
-from pcapi.core.offers.schemas import PatchDraftOfferBodyModel
-from pcapi.core.offers.schemas import PostDraftOfferBodyModel
+from pcapi.serializers import offers_serialize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -18,7 +16,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class PostDraftOfferBodyModelTest:
     def test_post_draft_offer_body_model(self):
         venue = offerers_factories.VirtualVenueFactory()
-        _ = PostDraftOfferBodyModel(
+        _ = offers_serialize.PostDraftOfferBodyModel(
             name="Name",
             subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
             venueId=venue.id,
@@ -48,7 +46,7 @@ _FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD = {
 
 class CreateEventOpeningHoursModelTest:
     def test_create_event_opening_hours_model(self):
-        _ = CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
+        _ = offers_serialize.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
 
     @pytest.mark.parametrize(
         "input_dict,expected_error",
@@ -75,7 +73,7 @@ class CreateEventOpeningHoursModelTest:
         json_dict.update(**input_dict)
 
         with pytest.raises(ValueError) as error:
-            _ = CreateEventOpeningHoursModel(**json_dict)
+            _ = offers_serialize.CreateEventOpeningHoursModel(**json_dict)
 
         assert expected_error in str(error.value.errors)
 
@@ -104,20 +102,20 @@ class CreateEventOpeningHoursModelTest:
         json_dict["openingHours"].update(**input_dict)
 
         with pytest.raises(ValueError) as error:
-            _ = CreateEventOpeningHoursModel(**json_dict)
+            _ = offers_serialize.CreateEventOpeningHoursModel(**json_dict)
 
         assert expected_error in str(error.value.errors)
 
 
 class PatchDraftOfferBodyModelTest:
     def test_patch_draft_offer_body_model(self):
-        _ = PatchDraftOfferBodyModel(
+        _ = offers_serialize.PatchDraftOfferBodyModel(
             name="Name", description="description", extraData={"artist": "An-2"}, durationMinutes=12
         )
 
     def test_patch_offer_with_invalid_subcategory(self):
         with pytest.raises(offers_exceptions.UnknownOfferSubCategory) as error:
-            _ = PatchDraftOfferBodyModel(
+            _ = offers_serialize.PatchDraftOfferBodyModel(
                 name="I solemnly swear that my intentions are evil",
                 subcategoryId="Misconduct fullfield",
             )
