@@ -9,7 +9,7 @@ import { selectActiveFeatures } from 'commons/store/features/selectors'
 import { ErrorBoundary } from './ErrorBoundary'
 
 const sentryCreateBrowserRouter =
-  Sentry.wrapCreateBrowserRouter(createBrowserRouter)
+  Sentry.wrapCreateBrowserRouterV6(createBrowserRouter)
 
 export const AppRouter = (): JSX.Element => {
   const activeFeatures = useSelector(selectActiveFeatures)
