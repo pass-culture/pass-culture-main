@@ -11,7 +11,6 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -22,6 +21,7 @@ from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.public.services import authorization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
+from pcapi.serializers import offers_serialize
 from pcapi.utils.custom_keys import get_field
 from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.validation.routes.users_authentifications import provider_api_key_required
@@ -87,7 +87,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                     label=body.location.address_label,
                 )
 
-            offer_body = offers_schemas.CreateOffer(
+            offer_body = offers_serialize.CreateOffer(
                 name=body.name,
                 subcategoryId=body.category_related_fields.subcategory_id,
                 audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
@@ -249,7 +249,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
             extra_data = copy.deepcopy(offer.extraData)
             is_active = get_field(offer, updates, "isActive")
 
-            offer_body = offers_schemas.UpdateOffer(
+            offer_body = offers_serialize.UpdateOffer(
                 audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
                 mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
                 motorDisabilityCompliant=get_field(offer, dc, "motorDisabilityCompliant"),

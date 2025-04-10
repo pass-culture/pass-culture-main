@@ -18,7 +18,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
@@ -33,6 +32,7 @@ from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.public.services import authorization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
+from pcapi.serializers import offers_serialize
 from pcapi.utils import image_conversion
 from pcapi.utils.custom_keys import get_field
 from pcapi.validation.routes.users_authentifications import current_api_key
@@ -198,7 +198,7 @@ def _create_product(
     offerer_address: offerers_models.OffererAddress | None,
 ) -> offers_models.Offer:
     try:
-        offer_body = offers_schemas.CreateOffer(
+        offer_body = offers_serialize.CreateOffer(
             name=body.name,
             subcategoryId=body.category_related_fields.subcategory_id,
             audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
@@ -852,7 +852,7 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
             updates = body.dict(by_alias=True, exclude_unset=True)
             dc = updates.get("accessibility", {})
             extra_data = copy.deepcopy(offer.extraData)
-            offer_body = offers_schemas.UpdateOffer(
+            offer_body = offers_serialize.UpdateOffer(
                 name=get_field(offer, updates, "name"),
                 audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
                 mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),

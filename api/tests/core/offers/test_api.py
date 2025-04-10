@@ -37,7 +37,6 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
 from pcapi.core.providers.allocine import get_allocine_products_provider
@@ -53,6 +52,7 @@ from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.notifications.push import testing as push_testing
+from pcapi.serializers import offers_serialize
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -1165,7 +1165,7 @@ class CreateMediationV2Test:
 class CreateDraftOfferTest:
     def test_create_draft_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_serialize.PostDraftOfferBodyModel(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -1183,7 +1183,7 @@ class CreateDraftOfferTest:
 
     def test_cannot_create_draft_offer_with_ean_in_name(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_serialize.PostDraftOfferBodyModel(
             name="A pretty good offer 4759217254634",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -1215,7 +1215,7 @@ class CreateDraftOfferTest:
             venue=venue,
         )
 
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_serialize.PostDraftOfferBodyModel(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -1229,7 +1229,7 @@ class CreateDraftOfferTest:
     def test_create_draft_offer_with_withrawal_details_from_venue(self):
         venue = offerers_factories.VenueFactory(withdrawalDetails="Details from my venue")
 
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_serialize.PostDraftOfferBodyModel(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -1240,7 +1240,7 @@ class CreateDraftOfferTest:
 
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_serialize.PostDraftOfferBodyModel(
             name="An offer he can't refuse",
             subcategoryId=subcategories.ACTIVATION_EVENT.id,
             venueId=venue.id,
@@ -1253,7 +1253,7 @@ class CreateDraftOfferTest:
 
     def test_cannot_create_offer_when_invalid_subcategory(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_serialize.PostDraftOfferBodyModel(
             name="An offer he can't refuse",
             subcategoryId="TOTO",
             venueId=venue.id,
@@ -1272,7 +1272,7 @@ class UpdateDraftOfferTest:
             subcategoryId=subcategories.ESCAPE_GAME.id,
             description="description",
         )
-        body = offers_schemas.PatchDraftOfferBodyModel(
+        body = offers_serialize.PatchDraftOfferBodyModel(
             name="New name",
             description="New description",
         )
@@ -1288,7 +1288,7 @@ class UpdateDraftOfferTest:
             subcategoryId=subcategories.ESCAPE_GAME.id,
             description="description",
         )
-        body = offers_schemas.PatchDraftOfferBodyModel(
+        body = offers_serialize.PatchDraftOfferBodyModel(
             name="New name 4759217254634",
             description="New description",
         )
@@ -1311,7 +1311,7 @@ class CreateOfferTest:
         venue = offerers_factories.VenueFactory(isVirtual=True, offererAddress=None, siret=None)
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
 
-        body = offers_schemas.CreateOffer(
+        body = offers_serialize.CreateOffer(
             name="A pretty good offer",
             externalTicketOfficeUrl="http://example.net",
             audioDisabilityCompliant=True,
@@ -1330,7 +1330,7 @@ class CreateOfferTest:
         venue = offerers_factories.VenueFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
 
-        body = offers_schemas.CreateOffer(
+        body = offers_serialize.CreateOffer(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             externalTicketOfficeUrl="http://example.net",
@@ -1370,7 +1370,7 @@ class CreateOfferTest:
         venue = offerers_factories.VenueFactory()
         provider = providers_factories.PublicApiProviderFactory()
 
-        body = offers_schemas.CreateOffer(
+        body = offers_serialize.CreateOffer(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             audioDisabilityCompliant=True,
@@ -1391,7 +1391,7 @@ class CreateOfferTest:
 
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.CreateOffer(
+        body = offers_serialize.CreateOffer(
             name="An offer he can't refuse",
             subcategoryId=subcategories.ACTIVATION_EVENT.id,
             audioDisabilityCompliant=True,
@@ -1408,7 +1408,7 @@ class CreateOfferTest:
 
     def test_cannot_create_offer_when_invalid_subcategory(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.CreateOffer(
+        body = offers_serialize.CreateOffer(
             name="An offer he can't refuse",
             subcategoryId="TOTO",
             audioDisabilityCompliant=True,
@@ -1423,7 +1423,7 @@ class CreateOfferTest:
 
     def test_cannot_create_offer_with_ean_in_name(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.CreateOffer(
+        body = offers_serialize.CreateOffer(
             name="An offer he can't refuse - 4759217254634",
             subcategoryId=subcategories.SEANCE_CINE.id,
             audioDisabilityCompliant=True,
@@ -1453,7 +1453,7 @@ class CreateOfferTest:
     )
     def test_raise_error_if_url_not_coherent_with_subcategory(self, url, subcategory_id, expected_error):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.CreateOffer(
+        body = offers_serialize.CreateOffer(
             name="An offer he can't refuse",
             subcategoryId=subcategory_id,
             url=url,
@@ -1469,7 +1469,7 @@ class CreateOfferTest:
 
     def test_raise_error_if_extra_data_mandatory_fields_not_provided(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.CreateOffer(
+        body = offers_serialize.CreateOffer(
             name="A pretty good offer",
             subcategoryId=subcategories.CONCERT.id,
             audioDisabilityCompliant=True,
@@ -1498,7 +1498,7 @@ class CreateOfferTest:
             venue=venue,
             idAtProvider=id_at_provider,
         )
-        body = offers_schemas.CreateOffer(
+        body = offers_serialize.CreateOffer(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             externalTicketOfficeUrl="http://example.net",
@@ -1526,7 +1526,7 @@ class UpdateOfferTest:
             isDuo=False, bookingEmail="old@example.com", subcategoryId=subcategories.ESCAPE_GAME.id
         )
 
-        body = offers_schemas.UpdateOffer(isDuo=True, bookingEmail="new@example.com")
+        body = offers_serialize.UpdateOffer(isDuo=True, bookingEmail="new@example.com")
         with caplog.at_level(logging.DEBUG):
             offer = api.update_offer(offer, body)
         db.session.flush()
@@ -1555,7 +1555,7 @@ class UpdateOfferTest:
 
     def test_update_extra_data_should_raise_error_when_mandatory_field_not_provided(self):
         offer = factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
-        body = offers_schemas.UpdateOffer(extraData={"author": "Asimov"})
+        body = offers_serialize.UpdateOffer(extraData={"author": "Asimov"})
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_offer(offer, body)
 
@@ -1568,7 +1568,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, extraData={"showType": 200}
         )
-        body = offers_schemas.UpdateOffer(extraData=None)
+        body = offers_serialize.UpdateOffer(extraData=None)
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_offer(offer, body)
         assert error.value.errors == {
@@ -1582,7 +1582,7 @@ class UpdateOfferTest:
             extraData={"ean": "1234567890123", "gtl_id": "02000000"},
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
-        body = offers_schemas.UpdateOffer(name="New name", description="new Description")
+        body = offers_serialize.UpdateOffer(name="New name", description="new Description")
         offer = api.update_offer(offer, body)
         db.session.flush()
 
@@ -1591,7 +1591,7 @@ class UpdateOfferTest:
 
     def test_cannot_update_with_name_too_long(self):
         offer = factories.OfferFactory(name="Old name", extraData={"ean": "1234567890124"})
-        body = offers_schemas.UpdateOffer(name="Luftballons" * 99)
+        body = offers_serialize.UpdateOffer(name="Luftballons" * 99)
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_offer(offer, body)
 
@@ -1600,7 +1600,7 @@ class UpdateOfferTest:
 
     def test_cannot_update_with_name_containing_ean(self):
         offer = factories.OfferFactory(name="Old name", extraData={"ean": "1234567890124"})
-        body = offers_schemas.UpdateOffer(name="Luftballons 1234567890124")
+        body = offers_serialize.UpdateOffer(name="Luftballons 1234567890124")
         with pytest.raises(exceptions.EanInOfferNameException) as error:
             api.update_offer(offer, body)
 
@@ -1612,7 +1612,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=provider, name="Old name", subcategoryId=subcategories.SEANCE_CINE.id
         )
-        body = offers_schemas.UpdateOffer(name="Old name", isDuo=True)
+        body = offers_serialize.UpdateOffer(name="Old name", isDuo=True)
         api.update_offer(offer, body)
 
         offer = models.Offer.query.one()
@@ -1624,7 +1624,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=provider, durationMinutes=90, subcategoryId=subcategories.SEANCE_CINE.id
         )
-        body = offers_schemas.UpdateOffer(durationMinutes=120, isDuo=True)
+        body = offers_serialize.UpdateOffer(durationMinutes=120, isDuo=True)
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_offer(offer, body)
 
@@ -1641,7 +1641,7 @@ class UpdateOfferTest:
             name="Old name",
             extraData={"ean": "1234567890124"},
         )
-        body = offers_schemas.UpdateOffer(externalTicketOfficeUrl="https://example.com")
+        body = offers_serialize.UpdateOffer(externalTicketOfficeUrl="https://example.com")
         api.update_offer(offer, body)
 
         offer = models.Offer.query.one()
@@ -1658,7 +1658,7 @@ class UpdateOfferTest:
             motorDisabilityCompliant=False,
             mentalDisabilityCompliant=True,
         )
-        body = offers_schemas.UpdateOffer(
+        body = offers_serialize.UpdateOffer(
             name="Old name",
             audioDisabilityCompliant=False,
             visualDisabilityCompliant=True,
@@ -1690,7 +1690,7 @@ class UpdateOfferTest:
             motorDisabilityCompliant=False,
             mentalDisabilityCompliant=True,
         )
-        body = offers_schemas.UpdateOffer(
+        body = offers_serialize.UpdateOffer(
             name="Old name",
             audioDisabilityCompliant=False,
             visualDisabilityCompliant=True,
@@ -1715,7 +1715,7 @@ class UpdateOfferTest:
             audioDisabilityCompliant=True,
             subcategoryId=subcategories.SEANCE_CINE.id,
         )
-        body = offers_schemas.UpdateOffer(
+        body = offers_serialize.UpdateOffer(
             durationMinutes=120,
             isDuo=True,
             audioDisabilityCompliant=False,
@@ -1734,7 +1734,7 @@ class UpdateOfferTest:
 
     def test_update_non_approved_offer_fails(self):
         pending_offer = factories.OfferFactory(name="Soliloquy", validation=models.OfferValidationStatus.PENDING)
-        body = offers_schemas.UpdateOffer(name="Monologue")
+        body = offers_serialize.UpdateOffer(name="Monologue")
         with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable) as error:
             api.update_offer(pending_offer, body)
 
@@ -1753,7 +1753,7 @@ class UpdateOfferTest:
             name="Offer linked to a provider",
             extraData={"ean": "1234567890124"},
         )
-        body = offers_schemas.UpdateOffer(idAtProvider="some_id_at_provider")
+        body = offers_serialize.UpdateOffer(idAtProvider="some_id_at_provider")
         api.update_offer(offer, body)
 
         offer = models.Offer.query.one()
@@ -1769,7 +1769,7 @@ class UpdateOfferTest:
             name="Offer linked to a provider",
             extraData={"ean": "1234567890124"},
         )
-        body = offers_schemas.UpdateOffer(extraData={"ean": "1234567890125"})
+        body = offers_serialize.UpdateOffer(extraData={"ean": "1234567890125"})
         api.update_offer(offer, body)
 
         offer = models.Offer.query.one()
@@ -1785,7 +1785,7 @@ class UpdateOfferTest:
             name="Offer linked to a provider",
             extraData={"ean": ""},
         )
-        body = offers_schemas.UpdateOffer(extraData={"ean": ""})
+        body = offers_serialize.UpdateOffer(extraData={"ean": ""})
         api.update_offer(offer, body)
 
         offer = models.Offer.query.one()
@@ -1797,7 +1797,7 @@ class UpdateOfferTest:
             name="Offer linked to a provider",
             extraData={"ean": "1234567890124"},
         )
-        body = offers_schemas.UpdateOffer(idAtProvider="some_id_at_provider")
+        body = offers_serialize.UpdateOffer(idAtProvider="some_id_at_provider")
         with pytest.raises(exceptions.CannotSetIdAtProviderWithoutAProvider) as error:
             api.update_offer(offer, body)
 
@@ -1826,7 +1826,7 @@ class UpdateOfferTest:
             venue=venue,
         )
 
-        body = offers_schemas.UpdateOffer(idAtProvider=id_at_provider)
+        body = offers_serialize.UpdateOffer(idAtProvider=id_at_provider)
         with pytest.raises(exceptions.IdAtProviderAlreadyTakenByAnotherVenueOffer) as error:
             api.update_offer(offer, body)
 
@@ -1847,7 +1847,7 @@ class UpdateOfferTest:
             url="http://example.com" if isDigital else None,
             subcategoryId=subcategories.VOD.id if isDigital else subcategories.SPECTACLE_REPRESENTATION.id,
         )
-        body = offers_schemas.UpdateOffer(name="New name", offererAddress=offerer_address)
+        body = offers_serialize.UpdateOffer(name="New name", offererAddress=offerer_address)
         if isDigital:
             with pytest.raises(api_errors.ApiErrors) as error:
                 api.update_offer(offer, body)
@@ -1868,7 +1868,7 @@ class UpdateOfferTest:
             offererAddress=venue_oa,
         )
         venue_oa_id = new_venue.offererAddressId
-        body = offers_schemas.UpdateOffer()
+        body = offers_serialize.UpdateOffer()
         assert offer_oa_id != venue_oa_id
 
         updated_offer = api.update_offer(offer, body, venue=new_venue)
@@ -1888,7 +1888,7 @@ class UpdateOfferTest:
             address__city="Lille",
         )
         offer = factories.OfferFactory()
-        body = offers_schemas.UpdateOffer()
+        body = offers_serialize.UpdateOffer()
 
         updated_offer = api.update_offer(offer, body, offerer_address=new_offerer_address)
 
@@ -1907,7 +1907,7 @@ class UpdateOfferTest:
         )
         offer = factories.OfferFactory()
         new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
-        body = offers_schemas.UpdateOffer()
+        body = offers_serialize.UpdateOffer()
 
         updated_offer = api.update_offer(offer, body, venue=new_venue, offerer_address=new_offerer_address)
 
@@ -2032,7 +2032,7 @@ _FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD = {
 class CreateEventOpeningHoursTest:
     def test_create_event_opening_hours(self):
         offer = factories.EventOfferFactory(subcategoryId=subcategories.FESTIVAL_SPECTACLE.id)
-        body = offers_schemas.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
+        body = offers_serialize.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
 
         event_opening_hours = api.create_event_opening_hours(body=body, offer=offer)
 
@@ -2042,7 +2042,7 @@ class CreateEventOpeningHoursTest:
 
     def test_create_event_opening_hours_should_raise_because_invalid_category(self):
         offer = factories.EventOfferFactory(subcategoryId=subcategories.ABO_BIBLIOTHEQUE.id)
-        body = offers_schemas.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
+        body = offers_serialize.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
 
         with pytest.raises(exceptions.OfferEditionBaseException) as error:
             api.create_event_opening_hours(body=body, offer=offer)
@@ -2053,7 +2053,7 @@ class CreateEventOpeningHoursTest:
 
     def test_create_event_opening_hours_should_raise_because_already_has_opening_hours(self):
         offer = factories.EventOpeningHoursFactory().offer
-        body = offers_schemas.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
+        body = offers_serialize.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
 
         with pytest.raises(exceptions.OfferEditionBaseException) as error:
             api.create_event_opening_hours(body=body, offer=offer)
@@ -2063,7 +2063,7 @@ class CreateEventOpeningHoursTest:
     def test_create_event_opening_hours_should_raise_because_already_has_timestamp_stocks(self):
         offer = factories.EventOfferFactory(subcategoryId=subcategories.FESTIVAL_SPECTACLE.id)
         factories.StockFactory(offer=offer)
-        body = offers_schemas.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
+        body = offers_serialize.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
 
         with pytest.raises(exceptions.OfferEditionBaseException) as error:
             api.create_event_opening_hours(body=body, offer=offer)

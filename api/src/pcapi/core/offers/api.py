@@ -67,6 +67,7 @@ from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.serializers import offers_serialize
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
 from pcapi.utils.chunks import get_chunks
@@ -79,7 +80,6 @@ from pcapi.workers import push_notification_job
 from . import exceptions
 from . import models
 from . import repository as offers_repository
-from . import schemas as offers_schemas
 from . import validation
 
 
@@ -199,7 +199,7 @@ def _get_internal_accessibility_compliance(venue: offerers_models.Venue) -> dict
 
 
 def create_draft_offer(
-    body: offers_schemas.PostDraftOfferBodyModel,
+    body: offers_serialize.PostDraftOfferBodyModel,
     venue: offerers_models.Venue,
     product: offers_models.Product | None = None,
     is_from_private_api: bool = True,
@@ -238,7 +238,7 @@ def create_draft_offer(
     return offer
 
 
-def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
+def update_draft_offer(offer: models.Offer, body: offers_serialize.PatchDraftOfferBodyModel) -> models.Offer:
     fields = body.dict(by_alias=True, exclude_unset=True)
 
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
@@ -264,7 +264,7 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
 
 
 def create_offer(
-    body: offers_schemas.CreateOffer,
+    body: offers_serialize.CreateOffer,
     *,
     venue: offerers_models.Venue,
     offerer_address: offerers_models.OffererAddress | None = None,
@@ -339,7 +339,7 @@ def get_offerer_address_from_address_body(
 
 def update_offer(
     offer: models.Offer,
-    body: offers_schemas.UpdateOffer,
+    body: offers_serialize.UpdateOffer,
     venue: offerers_models.Venue | None = None,
     offerer_address: offerers_models.OffererAddress | None = None,
     is_from_private_api: bool = False,
@@ -520,7 +520,7 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
 
 
 def create_event_opening_hours(
-    body: offers_schemas.CreateEventOpeningHoursModel,
+    body: offers_serialize.CreateEventOpeningHoursModel,
     offer: models.Offer,
 ) -> models.EventOpeningHours:
     validation.check_offer_can_have_opening_hours(offer)
