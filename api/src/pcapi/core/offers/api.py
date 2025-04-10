@@ -74,6 +74,7 @@ from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import is_managed_transaction
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
+from pcapi.serializers import offers_serialize
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
 from pcapi.utils.chunks import get_chunks
@@ -86,7 +87,6 @@ from pcapi.workers import push_notification_job
 from . import exceptions
 from . import models
 from . import repository as offers_repository
-from . import schemas as offers_schemas
 from . import validation
 
 
@@ -202,7 +202,7 @@ def _get_internal_accessibility_compliance(venue: offerers_models.Venue) -> dict
 
 
 def create_draft_offer(
-    body: offers_schemas.PostDraftOfferBodyModel,
+    body: offers_serialize.PostDraftOfferBodyModel,
     venue: offerers_models.Venue,
     product: offers_models.Product | None = None,
     is_from_private_api: bool = True,
@@ -241,7 +241,7 @@ def create_draft_offer(
     return offer
 
 
-def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
+def update_draft_offer(offer: models.Offer, body: offers_serialize.PatchDraftOfferBodyModel) -> models.Offer:
     fields = body.dict(by_alias=True, exclude_unset=True)
     body_ean = body.extra_data.get("ean", None) if body.extra_data else None
     if body_ean:
@@ -271,7 +271,7 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
 
 
 def create_offer(
-    body: offers_schemas.CreateOffer,
+    body: offers_serialize.CreateOffer,
     *,
     venue: offerers_models.Venue,
     offerer_address: offerers_models.OffererAddress | None = None,
@@ -344,7 +344,7 @@ def get_offerer_address_from_address_body(
 
 def update_offer(
     offer: models.Offer,
-    body: offers_schemas.UpdateOffer,
+    body: offers_serialize.UpdateOffer,
     venue: offerers_models.Venue | None = None,
     offerer_address: offerers_models.OffererAddress | None = None,
     is_from_private_api: bool = False,
@@ -526,7 +526,7 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
 
 
 def create_event_opening_hours(
-    body: offers_schemas.CreateEventOpeningHoursModel,
+    body: offers_serialize.CreateEventOpeningHoursModel,
     offer: models.Offer,
 ) -> models.EventOpeningHours:
     validation.check_offer_can_have_opening_hours(offer)
@@ -2128,7 +2128,7 @@ def _update_product_extra_data(product: offers_models.Product, movie: offers_mod
 
 
 def update_event_opening_hours(
-    event: offers_models.EventOpeningHours, update_body: offers_schemas.UpdateEventOpeningHoursModel
+    event: offers_models.EventOpeningHours, update_body: offers_serialize.UpdateEventOpeningHoursModel
 ) -> None:
     """Update an event opening hours information: start and end dates,
     opening hours.
@@ -2143,7 +2143,9 @@ def update_event_opening_hours(
 
     Warning: no update nor insert will be committed by this function.
     """
-    offers_validation.check_event_opening_hours_can_be_updated(event.offer, event, update_body)
+    offers_validation.check_event_opening_hours_can_be_updated(
+        event.offer, event, update_body.endDatetime, update_body.startDatetime
+    )
 
     if update_body.startDatetime:
         event.startDatetime = update_body.startDatetime

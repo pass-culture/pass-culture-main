@@ -23,7 +23,6 @@ from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
-from pcapi.core.offers import schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -872,7 +871,10 @@ def check_offer_can_have_opening_hours(
 
 
 def check_event_opening_hours_can_be_updated(
-    offer: models.Offer, opening_hours: models.EventOpeningHours, body: schemas.UpdateEventOpeningHoursModel
+    offer: models.Offer,
+    opening_hours: models.EventOpeningHours,
+    end_datetime: datetime.datetime | None,
+    start_datetime: datetime.datetime | None,
 ) -> None:
     """Check that an event opening hours can be updated, meaning:
     * the opening hours to be updated is not (soft) deleted
@@ -890,8 +892,8 @@ def check_event_opening_hours_can_be_updated(
     two_days_from_now = now + datetime.timedelta(hours=48)
 
     current_end = _ensure_datetime_has_tz(opening_hours.endDatetime)
-    new_end = _ensure_datetime_has_tz(body.endDatetime)
-    new_start = _ensure_datetime_has_tz(body.startDatetime)
+    new_end = _ensure_datetime_has_tz(end_datetime)
+    new_start = _ensure_datetime_has_tz(start_datetime)
 
     _opening_hours_base_checks(offer)
 
