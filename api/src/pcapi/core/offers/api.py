@@ -1876,11 +1876,12 @@ def move_offer(
 
             finance_event = booking.finance_events[0] if booking.finance_events else None
             if finance_event:
+                pricingOrderingDate = finance_api.get_pricing_ordering_date(booking)
                 finance_event.venueId = destination_venue.id
                 finance_event.pricingPointId = destination_pricing_point_id
                 if finance_event.status == finance_models.FinanceEventStatus.PENDING:
                     finance_event.status = finance_models.FinanceEventStatus.READY
-                    finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(booking)
+                    finance_event.pricingOrderingDate = pricingOrderingDate
                 db.session.add(finance_event)
             db.session.add(booking)
 

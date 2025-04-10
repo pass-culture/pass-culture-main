@@ -4920,3 +4920,25 @@ class MoveOfferTest:
         ):
             assert bookings_models.Booking.query.count() == 1
             assert bookings_models.Booking.query.all()[0].venue == new_venue
+
+    def test_move_offer_with_booking_with_pending_finance_event(self):
+        new_venue = offerers_factories.VenueFactory(pricing_point="self")
+        venue = offerers_factories.VenueFactory(pricing_point=new_venue, managingOfferer=new_venue.managingOfferer)
+
+        offer = factories.OfferFactory(venue=venue)
+        stock = factories.StockFactory(offer=offer, quantity=2)
+        booking = bookings_factories.UsedBookingFactory(stock=stock)
+        finance_factories.FinanceEventFactory(
+            booking=booking,
+            pricingOrderingDate=stock.beginningDatetime,
+            status=finance_models.FinanceEventStatus.PENDING,
+            venue=venue,
+            pricingPoint=None,
+        )
+
+        api.move_offer(offer, new_venue)
+
+        db.session.refresh(offer)
+        assert offer.venue == new_venue
+        assert bookings_models.Booking.query.count() == 1
+        assert bookings_models.Booking.query.all()[0].venue == new_venue
