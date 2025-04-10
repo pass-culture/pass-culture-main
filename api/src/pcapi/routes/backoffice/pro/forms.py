@@ -21,6 +21,8 @@ from pcapi.routes.backoffice.forms.constants import area_choices
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import string as string_utils
 
+from .utils import CONNECT_AS_OBJECT_TYPES
+
 
 DIGITS_AND_WHITESPACES_REGEX = re.compile(r"^[\d\s]+$")
 
@@ -143,26 +145,21 @@ class CreateOffererForm(FlaskForm):
 
 
 class ConnectAsForm(FlaskForm):
-    object_id = fields.PCStringField()
-    object_type = fields.PCSelectField(
-        choices=(
-            ("bank_account", "bank_account"),
-            ("collective_offer", "collective_offer"),
-            ("collective_offer_template", "collective_offer_template"),
-            ("offer", "offer"),
-            ("offerer", "offerer"),
-            ("user", "user"),
-            ("venue", "venue"),
-        ),
-    )
-    redirect = fields.PCStringField(
+    object_id = fields.PCHiddenField()
+    object_type = fields.PCHiddenField()
+    redirect = fields.PCHiddenField(
         validators=[
             wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.Length(min=1, max=512, message="doit contenir entre %(min)d et %(max)d caractères"),
         ],
     )
 
-    def validate_redirect(self, redirect: fields.PCOptStringField) -> fields.PCOptStringField:
+    def validate_object_type(self, object_type: fields.PCHiddenField) -> fields.PCHiddenField:
+        if object_type.data not in CONNECT_AS_OBJECT_TYPES:
+            raise wtforms.validators.ValidationError("object type invalide")
+        return object_type
+
+    def validate_redirect(self, redirect: fields.PCHiddenField) -> fields.PCHiddenField:
         if not redirect.data.startswith("/"):
             raise wtforms.validators.ValidationError("doit être un chemin commençant par /")
         redirect.data = urllib.parse.quote(redirect.data, safe="/?=&")

@@ -1,38 +1,3 @@
-{# ----- utils for connect-as links ----- #}
-{# djlint:off #}
-{# this macro must be on one line or it breaks the connect as feature #}
-{% macro _random() %}{{ range(1000000000000) |random }}{% endmacro %}
-{# djlint:on #}
-{% macro build_connect_as_pseudo_link(object_id, object_type, redirect, text_link, class) %}
-  {% if has_permission("CONNECT_AS_PRO") %}
-    {# add some randomness to ids to avoid collisions #}
-    {% set randomness = _random() %}
-    <form id="connect-as-form-{{ object_type }}-{{ object_id }}-{{ randomness }}"
-          class="d-none"
-          target="_blank"
-          rel="noopener"
-          action="{{ url_for('backoffice_web.pro.connect_as') }}"
-          method="post">
-      {{ csrf_token }}
-      <input type="hidden"
-             name="object_type"
-             value="{{ object_type }}" />
-      <input type="hidden"
-             name="object_id"
-             value="{{ object_id }}" />
-      <input type="hidden"
-             name="redirect"
-             value="{{ redirect }}" />
-    </form>
-    <a href="{{ redirect | build_pro_link }}"
-       class="{{ class }}"
-       onclick="document.getElementById('connect-as-form-{{ object_type }}-{{ object_id }}-{{ randomness }}').submit(); return false;">
-      {{ text_link }} <i class="bi bi-box-arrow-up-right"></i>
-    </a>
-  {% else %}
-    {{ text_link }}
-  {% endif %}
-{% endmacro %}
 {# ----- internal links (backoffice) ----- #}
 {% macro build_public_user_name_to_details_link(user, active_tab=none, target="_top") %}
   {% if user %}
@@ -125,31 +90,6 @@
   <a href="{{ url_for('backoffice_web.operations.get_event_details', special_event_id=special_event.id) }}"
      class="link-primary"
      target="_top">{{ special_event[text_attr] }}</a>
-{% endmacro %}
-{# ----- PC Pro links ----- #}
-{% macro build_offerer_name_to_pc_pro_link(offerer) %}
-  {{ build_connect_as_pseudo_link(offerer.id, "offerer", "/accueil?structure="~offerer.id~"&from-bo=true", offerer.name, "link-primary") }}
-{% endmacro %}
-{% macro build_venue_name_to_pc_pro_link(venue, public_name=true, siret=false) %}
-  {% if venue.isVirtual %}
-    {{ build_connect_as_pseudo_link(venue.id, "venue", "/accueil?structure="~venue.managingOffererId~"&from-bo=true", (((public_name and venue.publicName) or venue.name) + ((" - " + venue.siret) if (siret and venue.siret) else "")), "link-primary") }}
-  {% else %}
-    {{ build_connect_as_pseudo_link(venue.id, "venue", "/structures/"~venue.managingOffererId~"/lieux/"~venue.id~"", (((public_name and venue.publicName) or venue.name) + ((" - " + venue.siret) if (siret and venue.siret) else "")), "link-primary") }}
-  {% endif %}
-{% endmacro %}
-{% macro build_venue_parameters_name_to_pc_pro_link(venue) %}
-  {{ build_connect_as_pseudo_link(venue.id, "venue", "/structures/"~venue.managingOffererId~"/lieux/"~venue.id~"/parametres", (public_name or venue.name) , "link-primary") }}
-{% endmacro %}
-{% macro build_offer_name_to_pc_pro_link(offer) %}
-  {# this macro must be on one line or it breaks the connect as feature #}
-  {# djlint:off #}{% macro build_offer_name_to_pc_pro_url(offer) %}{{ offer | pc_pro_offer_link }}{% endmacro %}{# djlint:on #}
-  {% set offer_name_to_pc_pro_url = build_offer_name_to_pc_pro_url(offer) %}
-  {# djlint:off #}{% macro offer_type(offer) %}{{ offer | offer_type }}{% endmacro %}{# djlint:on #}
-  {% set offer_type = offer_type(offer) %}
-  {{ build_connect_as_pseudo_link(offer.id, offer_type, offer_name_to_pc_pro_url, offer.name , "link-primary") }}
-{% endmacro %}
-{% macro build_bank_account_name_to_pc_pro_link(bank_account) %}
-  {{ build_connect_as_pseudo_link(bank_account.id, "bank_account", "/remboursements/informations-bancaires?structure="~bank_account.offererId~"&from-bo=true", bank_account.label , "link-primary") }}
 {% endmacro %}
 {# ----- webapp links ----- #}
 {% macro build_offer_webapp_link(offer) %}

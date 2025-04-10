@@ -27,8 +27,10 @@ from pcapi.repository import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
+from pcapi.utils import urls
 
 from . import forms as collective_offer_forms
 
@@ -152,10 +154,19 @@ def list_collective_offer_templates() -> utils.BackofficeResponse:
     autocomplete.prefill_offerers_choices(form.offerer)
     autocomplete.prefill_venues_choices(form.venue)
 
+    connect_as = {}
+    for collective_offer_template in collective_offer_templates:
+        connect_as[collective_offer_template.id] = get_connect_as(
+            object_type="collective_offer_template",
+            object_id=collective_offer_template.id,
+            pc_pro_path=urls.build_pc_pro_offer_path(collective_offer_template),
+        )
+
     return render_template(
         "collective_offer_template/list.html",
         rows=collective_offer_templates,
         form=form,
+        connect_as=connect_as,
         date_created_sort_url=form.get_sort_link(".list_collective_offer_templates") if form.sort.data else None,
     )
 
@@ -426,9 +437,18 @@ def get_collective_offer_template_details(collective_offer_template_id: int) -> 
         )
     )
     collective_offer_template = collective_offer_template_query.one_or_none()
+
     if not collective_offer_template:
         raise NotFound()
+
+    connect_as = get_connect_as(
+        object_type="collective_offer_template",
+        object_id=collective_offer_template_id,
+        pc_pro_path=urls.build_pc_pro_offer_path(collective_offer_template),
+    )
+
     return render_template(
         "collective_offer_template/details.html",
         collective_offer_template=collective_offer_template,
+        connect_as=connect_as,
     )

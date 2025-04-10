@@ -3,7 +3,8 @@
 {% import "components/badges.html" as badges with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% import "components/links.html" as links with context %}
-{% block title %}{{ collective_offer.name }}{% endblock %}
+{% from "components/connect_as.html" import build_connect_as %}
+{% block title %}{{ collective_offer.name }}{% endblock %}
 {% block header_extra %}<div>{{ collective_offer.validation | format_offer_validation_status(with_badge=True) }}</div>{% endblock %}
 {% block action_buttons %}
   {% if is_collective_offer_price_editable and has_permission("ADVANCED_PRO_SUPPORT") %}
@@ -25,7 +26,7 @@
 {% block details_container %}
   {% call details_content_wrapper("offer-details") %}
     <!-- INFO -->
-    {% call nav_section("info", "Détails de l'offre")  %}
+    {% call nav_section("info", "Détails de l'offre") %}
       {% call description_detail_horizontal("Formats") %}
         {{ collective_offer.formats | format_collective_offer_formats }}
       {% endcall %}
@@ -50,7 +51,7 @@
         {% endcall %}
       {% endif %}
       {% call description_detail_horizontal("Date de création") %}
-        {{ collective_offer.dateCreated | format_date }}
+        {{ collective_offer.dateCreated | format_date }}
       {% endcall %}
       {% call description_detail_horizontal("Date de l'évènement") %}
         {% if collective_offer.collectiveStock %}
@@ -64,31 +65,21 @@
   {% endcall %}
 {% endblock details_container %}
 {% block side_column %}
-  {% if connect_as %}
-    <form name="{{ connect_as.form_name }}"
-          class="d-none"
-          target="_blank"
-          rel="noopener"
-          action="{{ url_for('backoffice_web.pro.connect_as') }}"
-          method="post">
-      {% for field in connect_as.form %}{{ field  }}{% endfor %}
-    </form>
-    <div class="btn-group align-self-start">
-      <button type="button"
-              class="btn btn-outline-primary-subtle-bg"
-              href="{{ connect_as.href }}"
-              data-bs-toggle="tooltip"
-              data-bs-placement="top"
-              data-bs-title="Accéder à l'offre sur PC Pro"
-              data-submit-form="{{ connect_as.form_name }}">
-        Accéder PC Pro
-        <i class="bi bi-briefcase"></i>
-      </button>
-    </div>
-  {% endif %}
+  {% call build_connect_as(connect_as) %}
+    <button type="button"
+            class="btn btn-outline-primary-subtle-bg"
+            href="{{ connect_as.href }}"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            data-bs-title="Accéder à l'offre sur PC Pro"
+            data-submit-form="{{ connect_as.formName }}">
+      Accéder PC Pro
+      <i class="bi bi-briefcase"></i>
+    </button>
+  {% endcall %}
   <div>
     {% call description_detail_vertical("CollectiveOffer ID") %}
-      {{ collective_offer.id }}
+      {{ collective_offer.id }}
       {{ clipboard.copy_to_clipboard(collective_offer.id, "Copier l'ID de l'offre") }}
     {% endcall %}
     {% call description_detail_vertical("Statut") %}

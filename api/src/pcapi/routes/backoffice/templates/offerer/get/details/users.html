@@ -2,6 +2,7 @@
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% import "components/clipboard.html" as clipboard %}
+{% from "components/connect_as.html" import build_connect_as_link %}
 <turbo-frame id="offerer_users_frame">
 {% if has_permission("VALIDATE_OFFERER") %}
   {% if add_user_form %}
@@ -98,7 +99,7 @@
         {% if has_permission("CONNECT_AS_PRO") %}
           <td class="fw-bolder">
             {% if row.isActive and (admin_role not in row.roles) and (anonymized_role not in row.roles) %}
-              {{ links.build_connect_as_pseudo_link(row.id, "user", "/", "", "") }}
+              {{ build_connect_as_link(connect_as[row.id], "") }}
             {% endif %}
           </td>
         {% endif %}

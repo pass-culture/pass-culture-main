@@ -39,8 +39,10 @@ from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.routes.backoffice.pro import forms as pro_forms
+from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
+from pcapi.utils import urls
 
 from . import forms as offerer_forms
 from . import serialization
@@ -208,6 +210,23 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         and utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
     )
 
+    connect_as_offerer = get_connect_as(
+        object_type="offerer",
+        object_id=offerer_id,
+        pc_pro_path=urls.build_pc_pro_offerer_link(offerer),
+    )
+
+    connect_as_offer = get_connect_as(
+        object_type="offerer",
+        object_id=offerer_id,
+        pc_pro_path=urls.build_pc_pro_offers_for_offerer_path(offerer),
+    )
+    connect_as_collective_offer = get_connect_as(
+        object_type="offerer",
+        object_id=offerer_id,
+        pc_pro_path=urls.build_pc_pro_collective_offers_for_offerer_path(offerer),
+    )
+
     return render_template(
         "offerer/get.html",
         search_form=search_form,
@@ -225,6 +244,9 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         show_subscription_tab=show_subscription_tab,
         has_offerer_address=row.has_offerer_address,
         active_tab=request.args.get("active_tab", "history"),
+        connect_as_offerer=connect_as_offerer,
+        connect_as_offer=connect_as_offer,
+        connect_as_collective_offer=connect_as_collective_offer,
         zendesk_sell_synchronisation_form=(
             empty_forms.EmptyForm()
             if row.has_non_virtual_venues
@@ -716,6 +738,18 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
 
     users_pro = [row for row in rows if row.UserOfferer is not None]
 
+    user_pro = []
+    connect_as = {}
+    for user in rows:
+        if not user.UserOfferer:
+            continue
+        user_pro.append(user)
+        connect_as[user.id] = get_connect_as(
+            object_type="user",
+            object_id=user.id,
+            pc_pro_path="/",
+        )
+
     users_invited_formatted = [
         {
             "id": None,
@@ -733,6 +767,7 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
     return render_template(
         "offerer/get/details/users.html",
         rows=users_pro + users_invited_formatted,
+        connect_as=connect_as,
         admin_role=users_models.UserRole.ADMIN,
         anonymized_role=users_models.UserRole.ANONYMIZED,
         **kwargs,
@@ -932,9 +967,18 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
         .all()
     )
 
+    connect_as = {}
+    for venue in venues:
+        connect_as[venue.id] = get_connect_as(
+            object_type="venue",
+            object_id=venue.id,
+            pc_pro_path=urls.build_pc_pro_venue_path(venue),
+        )
+
     return render_template(
         "offerer/get/details/managed_venues.html",
         venues=venues,
+        connect_as=connect_as,
     )
 
 
@@ -1030,10 +1074,17 @@ def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
         .order_by(finance_models.BankAccount.label)
         .all()
     )
-
+    connect_as = {}
+    for bank_account in bank_accounts:
+        connect_as[bank_account.id] = get_connect_as(
+            object_id=bank_account.id,
+            object_type="bank_account",
+            pc_pro_path=urls.build_pc_pro_bank_account_path(bank_account),
+        )
     return render_template(
         "offerer/get/details/bank_accounts.html",
         bank_accounts=bank_accounts,
+        connect_as=connect_as,
     )
 
 
