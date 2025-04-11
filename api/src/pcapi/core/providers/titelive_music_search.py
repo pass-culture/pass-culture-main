@@ -151,7 +151,6 @@ def build_music_extra_data(
         date_parution=article.dateparution.isoformat() if article.dateparution else None,
         dispo=article.dispo,
         distributeur=article.distributeur,
-        ean=article.gencod,
         editeur=article.editeur,
         gtl_id=gtl_id,
         musicSubType=str(music_subtype.code),

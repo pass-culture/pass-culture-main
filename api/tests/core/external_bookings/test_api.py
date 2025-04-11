@@ -610,7 +610,7 @@ class SendBookingNotificationToExternalServiceTest:
             idAtProvider="une_offre_de_grand_malade",
             id=42,
             name="Moins 50 pour cent sur tous les Marc Lévy !",
-            extraData={"ean": "1234567890123"},
+            ean="1234567890123",
         )
         stock = offers_factories.StockFactory(
             offer=offer, idAtProviders="bro_si_ty_vas_pas_direct_ça_va_te_passer_sous_nez_c_marc_lévy_qd_meme"

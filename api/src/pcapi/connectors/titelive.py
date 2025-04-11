@@ -209,7 +209,6 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
         thumbCount=article.get("image", 0),  # 0 or 1
         extraData=offers_models.OfferExtraData(
             author=oeuvre.get("auteurs", ""),
-            ean=ean,
             prix_livre=article["prix"],
             collection=article.get("collection"),
             comic_series=article.get("serie"),

@@ -249,7 +249,6 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
             dc = updates.get("accessibility", {})
             extra_data = copy.deepcopy(offer.extraData)
             is_active = get_field(offer, updates, "isActive")
-
             offer_body = offers_schemas.UpdateOffer(
                 audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
                 mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
@@ -259,6 +258,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 bookingEmail=get_field(offer, updates, "bookingEmail"),
                 description=get_field(offer, updates, "description"),
                 durationMinutes=get_field(offer, updates, "eventDuration", col="durationMinutes"),
+                ean=get_field(offer, updates, "ean"),
                 extraData=(
                     serialization.deserialize_extra_data(
                         body.category_related_fields, extra_data, venue_id=offer.venueId

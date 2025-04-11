@@ -309,6 +309,7 @@ class BaseOfferResponseGetterDict(GetterDict):
             return [OfferStockResponse.from_orm(stock) for stock in offer.activeStocks]
 
         if key == "extraData":
+
             raw_extra_data = (product.extraData if product else offer.extraData) or {}
             extra_data = OfferExtraDataResponse.parse_obj(raw_extra_data)
 
@@ -317,6 +318,8 @@ class BaseOfferResponseGetterDict(GetterDict):
             gtl_id = raw_extra_data.get("gtl_id")
             if gtl_id is not None:
                 extra_data.gtlLabels = get_gtl_labels(gtl_id)
+            if self._obj.ean:
+                extra_data.ean = self._obj.ean
 
             return extra_data
 
@@ -452,6 +455,16 @@ class OfferResponseV2(BaseOfferResponse):
     images: dict[str, OfferImageResponse] | None
 
 
+class OfferPreviewResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        if key == "extraData" and self._obj.ean:
+            extra_data_copy = self._obj.extraData.copy() if self._obj.extraData else {}
+            extra_data_copy["ean"] = self._obj.ean
+            return extra_data_copy
+
+        return super().get(key, default)
+
+
 class OfferPreviewResponse(BaseModel):
     @classmethod
     def from_orm(cls, offer: Offer) -> "OfferPreviewResponse":
@@ -471,6 +484,7 @@ class OfferPreviewResponse(BaseModel):
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
+        getter_dict = OfferPreviewResponseGetterDict
 
 
 class OffersStocksResponse(BaseModel):

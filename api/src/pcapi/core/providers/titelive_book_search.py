@@ -255,7 +255,6 @@ def build_book_extra_data(article: TiteLiveBookArticle, authors: list) -> offers
         dispo_label=article.libelledispo,
         dispo=article.dispo,
         distributeur=article.distributeur,
-        ean=article.gencod,
         editeur=article.editeur,
         gtl_id=gtl_id,
         langue=article.langue,
