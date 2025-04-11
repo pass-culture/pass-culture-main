@@ -72,6 +72,29 @@ def test_user_cant_create_same_offerer_twice(client):
     assert "This user already belongs to this offerer" in str(second_response.data)
 
 
+def test_user_can_create_rejected_offerer_again(client):
+    pro = users_factories.ProFactory()
+    rejected_offerer = offerers_factories.RejectedOffererFactory(siren="418166096")
+    user_offerer = offerers_factories.RejectedUserOffererFactory(user=pro, offerer=rejected_offerer)
+
+    body = {
+        "name": "MINISTERE DE LA CULTURE",
+        "siren": "418166096",
+        "address": "123 rue de Paris",
+        "postalCode": "93100",
+        "city": "Montreuil",
+        "latitude": 48,
+        "longitude": 2,
+    }
+
+    client = client.with_session_auth(pro.email)
+    response = client.post("/offerers", json=body)
+
+    assert response.status_code == 201
+    assert rejected_offerer.isNew
+    assert user_offerer.isValidated
+
+
 @pytest.mark.features(WIP_2025_SIGN_UP=True)
 def test_user_can_create_offerer_with_phone_number(client):
     pro = users_factories.ProFactory(phoneNumber=None)
