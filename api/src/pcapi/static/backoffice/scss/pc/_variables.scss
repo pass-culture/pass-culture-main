@@ -12,6 +12,7 @@ $purple: #25026c;
 // scss-docs-start theme-color-variables
 $primary:   $purple;
 $secondary: $gray-900;
+$old-secondary: #320096;
 $success:   $green-700;
 $info:      $blue-700;
 $warning:   $yellow-800;
@@ -66,6 +67,7 @@ $dark-border-subtle:      $gray-500;
 $theme-colors: map-merge($theme-colors, (
   "primary": $primary,
   "secondary": $secondary,
+  "old-secondary": $old-secondary,
   "success": $success,
   "info": $info,
   "warning": $warning,
@@ -92,6 +94,8 @@ $pagination-bg: $white;
 $dropdown-bg: $white;
 $progress-bar-bg: $primary;
 $component-active-bg: $primary;
+$table-hover-bg: $gray-100;
+$table-border-color: $gray-200;
 
 // form shadow redefinition
 $focus-ring-blur:                   0;

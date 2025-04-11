@@ -81,7 +81,7 @@
         <td class="text-muted">
           {% if row.id %}
             {{ user_offerer | format_user_offerer_status_badge }}
-            {% if not row.isActive %}{{ row.isActive | format_state | format_badge("danger")   }}{% endif %}
+            {% if not row.isActive %}{{ row.isActive | format_state | format_badge("danger") }}{% endif %}
           {% else %}
             {{ "Invité" | format_badge("secondary") }}
           {% endif %}

@@ -8,3 +8,8 @@
     --#{$prefix}btn-active-bg: #{map-get($theme-colors-bg-subtle, $color)};
   }
 }
+
+.btn-primary:hover {
+  background-color: $old-secondary;
+  border-color: $old-secondary;
+}
