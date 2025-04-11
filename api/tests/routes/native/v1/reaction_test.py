@@ -15,10 +15,13 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class PostReactionTest:
-    num_queries_success = 1  # select user
-    num_queries_success += 1  # select offer
-    num_queries_success += 1  # select reaction
+    num_queries_base = 1  # select user
+    num_queries_base += 1  # select booking, stock, offer
+
+    num_queries_success = num_queries_base + 1  # select reaction
     num_queries_success += 1  # Insert reaction
+
+    num_queries_failure = num_queries_base + 1  # rollback
 
     def test_should_be_logged_in_to_post_reaction(self, client):
         with assert_num_queries(0):
@@ -29,16 +32,16 @@ class PostReactionTest:
         user = users_factories.BeneficiaryFactory()
         client.with_token(user.email)
 
-        num_queries = 1  # select user
-        num_queries += 1  # select offer
-        num_queries += 1  # rollback
-        with assert_num_queries(num_queries):
+        with assert_num_queries(self.num_queries_failure):
             response = client.post("/native/v1/reaction", json={"offerId": 1, "reactionType": "LIKE"})
-            assert response.status_code == 404
+            assert response.status_code == 400
 
     def test_post_new_like_reaction(self, client):
         user = users_factories.BeneficiaryFactory()
-        offer = offers_factories.OfferFactory()
+        offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
+        bookings_factories.UsedBookingFactory(
+            user=user, stock__offer=offer, dateUsed=datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+        )
         client.with_token(user.email)
 
         offer_id = offer.id
@@ -52,7 +55,10 @@ class PostReactionTest:
 
     def test_post_new_dislike_reaction(self, client):
         user = users_factories.BeneficiaryFactory()
-        offer = offers_factories.OfferFactory()
+        offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
+        bookings_factories.UsedBookingFactory(
+            user=user, stock__offer=offer, dateUsed=datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+        )
         client.with_token(user.email)
 
         offer_id = offer.id
@@ -62,7 +68,10 @@ class PostReactionTest:
 
     def test_edit_reaction(self, client):
         user = users_factories.BeneficiaryFactory()
-        offer = offers_factories.OfferFactory()
+        offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        bookings_factories.UsedBookingFactory(
+            user=user, stock__offer=offer, dateUsed=datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+        )
         client.with_token(user.email)
 
         offer_id = offer.id
@@ -85,6 +94,9 @@ class PostReactionTest:
         user = users_factories.BeneficiaryFactory()
         product = offers_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
+        bookings_factories.UsedBookingFactory(
+            user=user, stock__offer=offer, dateUsed=datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+        )
         client.with_token(user.email)
 
         offer_id = offer.id
@@ -99,19 +111,20 @@ class PostReactionTest:
 
     def test_post_bulk_reaction(self, client):
         user = users_factories.BeneficiaryFactory()
-        offer = offers_factories.OfferFactory()
-        other_offer = offers_factories.OfferFactory()
+        offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        other_offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
+        bookings_factories.UsedBookingFactory(
+            user=user, stock__offer=offer, dateUsed=datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+        )
+        bookings_factories.UsedBookingFactory(
+            user=user, stock__offer=other_offer, dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=25)
+        )
         client.with_token(user.email)
 
         offer_id = offer.id
         other_offer_id = other_offer.id
 
-        num_queries = 1  # select user
-        num_queries += 1  # select reactions
-        num_queries += 1  # select offer
-        num_queries += 1  # select offer
-        num_queries += 1  # Insert reactions
-        with assert_num_queries(num_queries):
+        with assert_num_queries(self.num_queries_success):
             response = client.post(
                 "/native/v1/reaction",
                 json={
@@ -128,6 +141,66 @@ class PostReactionTest:
 
         reaction = user.reactions[1]
         assert reaction.reactionType == ReactionTypeEnum.LIKE
+
+    def test_user_did_not_booked(self, client):
+        user = users_factories.BeneficiaryFactory()
+        offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        bookings_factories.UsedBookingFactory(
+            # booking from someone else
+            stock__offer=offer,
+            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(hours=25),
+        )
+        client.with_token(user.email)
+
+        offer_id = offer.id
+        with assert_num_queries(self.num_queries_failure):
+            response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "LIKE"})
+            assert response.status_code == 400
+            assert response.json["code"] == "OFFER_NOT_BOOKED"
+
+        assert not user.reactions
+
+    def test_user_canceled_booking(self, client):
+        user = users_factories.BeneficiaryFactory()
+        offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        bookings_factories.CancelledBookingFactory(user=user, stock__offer=offer)
+        client.with_token(user.email)
+
+        offer_id = offer.id
+        with assert_num_queries(self.num_queries_failure):
+            response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "LIKE"})
+            assert response.status_code == 400
+            assert response.json["code"] == "OFFER_NOT_BOOKED"
+
+        assert not user.reactions
+
+    def test_booking_not_used(self, client):
+        user = users_factories.BeneficiaryFactory()
+        offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        bookings_factories.BookingFactory(user=user, stock__offer=offer)
+        client.with_token(user.email)
+
+        offer_id = offer.id
+        with assert_num_queries(self.num_queries_failure):
+            response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "LIKE"})
+            assert response.status_code == 400
+            assert response.json["code"] == "CAN_NOT_REACT"
+
+        assert not user.reactions
+
+    def test_booking_not_eligible(self, client):
+        user = users_factories.BeneficiaryFactory()
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id)
+        bookings_factories.BookingFactory(user=user, stock__offer=offer)
+        client.with_token(user.email)
+
+        offer_id = offer.id
+        with assert_num_queries(self.num_queries_failure):
+            response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "LIKE"})
+            assert response.status_code == 400
+            assert response.json["code"] == "CAN_NOT_REACT"
+
+        assert not user.reactions
 
 
 class GetAvailableReactionTest:
