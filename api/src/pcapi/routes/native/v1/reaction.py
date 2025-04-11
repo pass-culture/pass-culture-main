@@ -1,7 +1,9 @@
 import logging
 
+from pcapi.core.reactions import exceptions as reactions_exceptions
 import pcapi.core.reactions.api as reactions_api
 import pcapi.core.users.models as users_models
+from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 import pcapi.routes.native.v1.serialization.reaction as serialization
@@ -18,7 +20,12 @@ logger = logging.getLogger(__name__)
 @authenticated_and_active_user_required
 @atomic()
 def post_reaction(user: users_models.User, body: serialization.PostReactionRequest) -> None:
-    reactions_api.bulk_update_or_create_reaction(user, body.reactions)
+    try:
+        reactions_api.bulk_update_or_create_reaction(user, body.reactions)
+    except reactions_exceptions.OfferNotBooked:
+        raise ApiErrors({"code": "OFFER_NOT_BOOKED"})
+    except reactions_exceptions.CanNotReact:
+        raise ApiErrors({"code": "CAN_NOT_REACT"})
 
 
 @blueprint.native_route("/reaction/available", methods=["GET"])
