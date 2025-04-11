@@ -124,12 +124,12 @@ def update_contact_email(user: users_models.User, old_email: str, new_email: str
     )
 
     if asynchronous:
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS.is_active():
+        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
             update_contact_attributes_task_celery.delay(contact_request.dict())
         else:
             update_contact_attributes_task_cloud_tasks.delay(contact_request)
     else:
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS.is_active():
+        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
             update_contact_attributes_task_celery(contact_request.dict())
         else:
             update_contact_attributes_task_cloud_tasks(contact_request)
@@ -160,7 +160,7 @@ def update_contact_attributes(
     )
 
     if asynchronous:
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS.is_active():
+        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
             update_contact_attributes_task_celery.delay(contact_request.dict())
         else:
             update_contact_attributes_task_cloud_tasks.delay(contact_request)

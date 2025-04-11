@@ -22,7 +22,7 @@ from . import utils
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_EAN_OFFERS=False)
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_EAN_OFFERS=True)
 class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/products/ean"
     endpoint_method = "post"
