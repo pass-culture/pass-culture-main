@@ -35,7 +35,7 @@
         </div>
         <ul class="nav nav-pills flex-column gap-1">
           {% for menu_section in menu %}
-            <li class="navbar-text">{{ menu_section.label }}</li>
+            <li class="navbar-text">{{ menu_section.label }}</li>
             {% for menu_item in menu_section.items %}
               <li class="nav-item">
                 <a class="nav-link{% if menu_item.is_active %} active{% endif %}"
@@ -46,7 +46,7 @@
           {% endfor %}
           <li class="nav-item">
             <form action="{{ url_for('backoffice_web.logout') }}"
-                  name="{{ url_for('backoffice_web.logout') | action_to_name  }}"
+                  name="{{ url_for('backoffice_web.logout') | action_to_name }}"
                   method="post">
               {{ csrf_token }}
               <button type="submit"

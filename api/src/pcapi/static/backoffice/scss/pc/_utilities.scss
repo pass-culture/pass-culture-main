@@ -47,13 +47,13 @@
     color: $white;
     padding: 10px 8px;
     &:hover {
-      background-color: $purple-500;
+      background-color: $old-secondary;
     }
   }
 }
 
 tr:has([type="checkbox"]:checked) {
-  background-color: rgba(0,0,0, 0.075);
+  background-color: $gray-100;
 }
 
 .pc-offer-table-image-container {
@@ -84,4 +84,8 @@ tr:has([type="checkbox"]:checked) {
 
 .rounded-xs {
   border-radius: 0.25rem;
+}
+
+.alert {
+    max-width: 680px;
 }

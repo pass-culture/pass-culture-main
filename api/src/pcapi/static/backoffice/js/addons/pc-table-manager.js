@@ -128,7 +128,9 @@ class PcTableManager extends PcAddOn {
           <span>
             Affichez et ordonnez les<br/>colonnes de votre choix.
           </span>
-          <i class="bi bi-x-lg pc-table-manager-close-menu" data-pc-target-table-id="${configuration.id}"></i>
+          <button type="button" class="btn btn-outline-primary-subtle-bg border-0 p-2 pc-table-manager-close-menu" data-pc-target-table-id="${configuration.id}" aria-label="Close">
+            <i class="bi bi-x-lg fs-5"></i>
+          </button>
         </div>
         <div class="pc-table-manager-buttons">
           <a class="link-primary pc-table-manager-display-all" href="" data-pc-target-table-id="${configuration.id}">Tout afficher</a>
@@ -165,7 +167,7 @@ class PcTableManager extends PcAddOn {
   }
 
   #onCloseMenuClick = (event) => {
-    const configurationId = event.target.dataset.pcTargetTableId
+    const configurationId = event.target.closest('.pc-table-manager-close-menu').dataset.pcTargetTableId
     const $menu = document.querySelector(`#pc-table-manager-menu-container-${configurationId}`).closest('.show')
     $menu.classList.remove('show')
   }

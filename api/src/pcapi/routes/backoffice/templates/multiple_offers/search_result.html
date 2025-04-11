@@ -40,7 +40,7 @@
               </p>
               <p>
                 <b>Compatible avec les CGU :</b>
-                {{ (product_compatibility == "COMPATIBLE") | format_bool_badge }}
+                {{ (product_compatibility == "COMPATIBLE") | format_bool_badge }}
                 {% if product_compatibility == "FRAUD_INCOMPATIBLE" %}
                   (sur décision de l'équipe Fraude & Conformité)
                 {% elif product_compatibility != "COMPATIBLE" %}
