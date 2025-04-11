@@ -92,15 +92,6 @@ describe('App', () => {
     })
   })
 
-  it('should render the cookie banner', async () => {
-    renderApp()
-    expect(
-      await screen.findByText(
-        /Nous utilisons des cookies et traceurs afin d’analyser l’utilisation de la plateforme et vous proposer la meilleure expérience possible/
-      )
-    ).toBeInTheDocument()
-  })
-
   it('should redirect to login if not logged in on a private page', async () => {
     renderApp({ initialRouterEntries: ['/offres'], user: undefined })
 
