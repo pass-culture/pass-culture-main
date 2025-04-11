@@ -34,7 +34,7 @@ export function StocksCalendarFormMultipleDays({
 
   useEffect(() => {
     //  When the selected dates change, update the checked weekdays
-    const subscription = form.watch(async (value, { name }) => {
+    const subscription = form.watch((value, { name }) => {
       if (name === 'multipleDaysStartDate' || name === 'multipleDaysEndDate') {
         const start = value.multipleDaysStartDate
           ? new Date(value.multipleDaysStartDate)

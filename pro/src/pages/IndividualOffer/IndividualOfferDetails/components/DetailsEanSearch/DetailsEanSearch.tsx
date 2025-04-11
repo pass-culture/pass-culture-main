@@ -59,9 +59,11 @@ export const DetailsEanSearch = ({
     setError,
     setFocus,
     formState: { errors, isValid, isLoading },
-  } = useForm<EanSearchForm>({
+  } = useForm<EanSearchForm, any, EanSearchForm>({
     defaultValues: { eanSearch: initialEan || '' },
-    resolver: yupResolver(eanSearchValidationSchema),
+    resolver: yupResolver<EanSearchForm, any, EanSearchForm>(
+      eanSearchValidationSchema
+    ),
     mode: 'onChange',
   })
 
