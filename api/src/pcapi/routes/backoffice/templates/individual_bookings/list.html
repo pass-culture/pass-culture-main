@@ -1,10 +1,11 @@
+{% extends "layouts/connected.html" %}
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
 {% from "components/bookings/extra_row.html" import build_individual_booking_extra_row with context %}
 {% import "components/forms.html" as forms with context %}
 {% import "components/links.html" as links with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{% extends "layouts/connected.html" %}
+{% from "components/connect_as.html" import build_connect_as_link %}
 {% set validate_booking_aria_described_by_id = random_hash() %}
 {% set cancel_booking_aria_described_by_id = random_hash() %}
 {% block page %}
@@ -201,7 +202,7 @@
                 <td>{{ booking.id }}</td>
                 <td>{{ booking.token }}</td>
                 <td>{{ links.build_public_user_name_to_details_link(booking.user) }}</td>
-                <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
+                <td>{{ build_connect_as_link(connect_as[booking.id], offer.name, "link-primary") }}</td>
                 <td>{{ links.build_offer_name_to_details_link(offer, text_attr="id") }}</td>
                 <td>{{ (booking.quantity == 2) | format_bool }}</td>
                 <td>{{ booking.stock.quantity }}</td>

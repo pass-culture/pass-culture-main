@@ -9,6 +9,7 @@
 {% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% from "components/turbo/spinner.html" import build_loading_spinner with context %}
+{% from "components/connect_as.html" import build_connect_as_link %}
 {% import "components/clipboard.html" as clipboard %}
 {% extends "layouts/pro.html" %}
 {% set edit_offerer_aria_described_by_id = random_hash() %}
@@ -20,7 +21,7 @@
       <div class="card shadow">
         <div class="card-body">
           <div class="d-flex flex-fill align-items-center">
-            <h2 class="card-title text-primary">{{ links.build_offerer_name_to_pc_pro_link(offerer) }}</h2>
+            <h2 class="card-title text-primary">{{ build_connect_as_link(connect_as_offerer, offerer.name, "link-primary") }}</h2>
             <span class="fs-5 ps-4">{{ build_offerer_badges(offerer) }}</span>
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if has_permission("MANAGE_PRO_ENTITY") %}
@@ -154,9 +155,9 @@
             <div class="col-4">
               {% if has_permission("CONNECT_AS_PRO") %}
                 <p class="mb-1">
-                  {{ links.build_connect_as_pseudo_link(offerer.id, "offerer", "/offres?structure="~offerer.id~"&from-bo=true", "Offres individuelles ", "fw-bold link-primary") }}
+                  {{ build_connect_as_link(connect_as_offer, "Offres individuelles", class="fw-bold link-primary") }}
                   <br />
-                  {{ links.build_connect_as_pseudo_link(offerer.id, "offerer", "/offres/collectives?structure="~offerer.id~"&from-bo=true", "Offres collectives ", "fw-bold link-primary") }}
+                  {{ build_connect_as_link(connect_as_collective_offer, "Offres collectives", class="fw-bold link-primary") }}
                 </p>
               {% endif %}
               {% set search_params = {

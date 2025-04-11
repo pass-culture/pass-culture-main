@@ -1,5 +1,6 @@
 {% import "components/links.html" as links with context %}
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
+{% from "components/connect_as.html" import build_connect_as_link %}
 {% if incident.booking_finance_incidents %}
   <table class="table mb-4 get-details-bookings-view">
     <thead>
@@ -24,48 +25,49 @@
           <td>{{ booking_finance_incident.collectiveBooking.educationalInstitution.name }}</td>
           <td>{{ booking_finance_incident.collectiveBooking.userName }}</td>
           <td>{{ booking_finance_incident.collectiveBooking | format_booking_status(with_badge=True) }}</td>
-          <td>{{ links.build_offer_name_to_pc_pro_link(booking_finance_incident.collectiveBooking.collectiveStock.collectiveOffer) }}</td>
-          <td>{{ booking_finance_incident.collectiveBooking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
-        </tr>
-        <tr class="collapse accordion-collapse pc-booking-{{ booking_finance_incident.collectiveBooking.id }}"
-            data-bs-parent=".table">
-          <td colspan="7">
-            <div class="card shadow-sm p-3">
-              {% if booking_finance_incident.collectiveBooking.collectiveStock.startDatetime %}
+          <td>
+            {{ build_connect_as_link(connect_as[booking_finance_incident.collectiveBooking.id], booking_finance_incident.collectiveBooking.collectiveStock.collectiveOffer.name, "link-primary") }}
+            <td>{{ booking_finance_incident.collectiveBooking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
+          </tr>
+          <tr class="collapse accordion-collapse pc-booking-{{ booking_finance_incident.collectiveBooking.id }}"
+              data-bs-parent=".table">
+            <td colspan="7">
+              <div class="card shadow-sm p-3">
+                {% if booking_finance_incident.collectiveBooking.collectiveStock.startDatetime %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Date de l'évènement :</span>
+                    {{ booking_finance_incident.collectiveBooking.collectiveStock.startDatetime | format_date_time }}
+                  </p>
+                {% endif %}
+                {% if booking_finance_incident.collectiveBooking.is_used_or_reimbursed %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Utilisée le :</span>
+                    {{ booking_finance_incident.collectiveBooking.dateUsed | format_date_time }}
+                  </p>
+                {% elif booking_finance_incident.collectiveBooking.isCancelled %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Annulée le :</span>
+                    {{ booking_finance_incident.collectiveBooking.cancellationDate | format_date_time }}
+                  </p>
+                  <p class="mb-1">
+                    <span class="fw-bold">Motif d'annulation :</span>
+                    {{ booking_finance_incident.collectiveBooking.cancellationReason | format_booking_cancellation }}
+                  </p>
+                {% endif %}
                 <p class="mb-1">
-                  <span class="fw-bold">Date de l'évènement :</span>
-                  {{ booking_finance_incident.collectiveBooking.collectiveStock.startDatetime | format_date_time }}
-                </p>
-              {% endif %}
-              {% if booking_finance_incident.collectiveBooking.is_used_or_reimbursed %}
-                <p class="mb-1">
-                  <span class="fw-bold">Utilisée le :</span>
-                  {{ booking_finance_incident.collectiveBooking.dateUsed | format_date_time }}
-                </p>
-              {% elif booking_finance_incident.collectiveBooking.isCancelled %}
-                <p class="mb-1">
-                  <span class="fw-bold">Annulée le :</span>
-                  {{ booking_finance_incident.collectiveBooking.cancellationDate | format_date_time }}
+                  <span class="fw-bold">Formats :</span>
+                  {{ booking_finance_incident.collectiveBooking.collectiveStock.collectiveOffer.formats | format_collective_offer_formats }}
                 </p>
                 <p class="mb-1">
-                  <span class="fw-bold">Motif d'annulation :</span>
-                  {{ booking_finance_incident.collectiveBooking.cancellationReason | format_booking_cancellation }}
+                  <span class="fw-bold">Montant de la réservation :</span>
+                  {{ booking_finance_incident.collectiveBooking.total_amount | format_amount }}
                 </p>
-              {% endif %}
-              <p class="mb-1">
-                <span class="fw-bold">Formats :</span>
-                {{ booking_finance_incident.collectiveBooking.collectiveStock.collectiveOffer.formats | format_collective_offer_formats }}
-              </p>
-              <p class="mb-1">
-                <span class="fw-bold">Montant de la réservation :</span>
-                {{ booking_finance_incident.collectiveBooking.total_amount | format_amount }}
-              </p>
-            </div>
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-{% else %}
-  <p class="m-5">Aucune réservation à ce jour</p>
-{% endif %}
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="m-5">Aucune réservation à ce jour</p>
+  {% endif %}

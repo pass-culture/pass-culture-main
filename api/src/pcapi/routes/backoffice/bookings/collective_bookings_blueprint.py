@@ -28,6 +28,8 @@ from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.bookings import forms as booking_forms
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.utils import urls
 
 
 collective_bookings_blueprint = utils.child_backoffice_blueprint(
@@ -145,6 +147,16 @@ def list_collective_bookings() -> utils.BackofficeResponse:
     autocomplete.prefill_institutions_choices(form.institution)
     autocomplete.prefill_cashflow_batch_choices(form.cashflow_batches)
 
+    connect_as = {}
+
+    for booking in bookings:
+        offer = booking.collectiveStock.collectiveOffer
+        connect_as[offer.id] = get_connect_as(
+            object_type="collective_offer",
+            object_id=offer.id,
+            pc_pro_path=urls.build_pc_pro_offer_path(offer),
+        )
+
     return render_template(
         "collective_bookings/list.html",
         rows=bookings,
@@ -152,6 +164,7 @@ def list_collective_bookings() -> utils.BackofficeResponse:
         mark_as_used_booking_form=empty_forms.EmptyForm(),
         cancel_booking_form=booking_forms.CancelCollectiveBookingForm(),
         pro_visualisation_link=pro_visualisation_link,
+        connect_as=connect_as,
     )
 
 

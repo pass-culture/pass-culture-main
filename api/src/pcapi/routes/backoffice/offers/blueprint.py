@@ -50,12 +50,13 @@ from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.routes.backoffice import utils
-from pcapi.routes.backoffice.connect_as import generate_connect_as_link
 from pcapi.routes.backoffice.filters import format_amount
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
+from pcapi.utils import urls
 
 from . import forms
 
@@ -636,6 +637,15 @@ def _render_offer_list(
             ),
         )
 
+    connect_as = {}
+    for row in rows or []:
+        offer = row.Offer
+        connect_as[offer.id] = get_connect_as(
+            object_type="offer",
+            object_id=offer.id,
+            pc_pro_path=urls.build_pc_pro_offer_path(offer),
+        )
+
     return (
         render_template(
             "offer/list.html",
@@ -645,6 +655,7 @@ def _render_offer_list(
             algolia_form=algolia_form or forms.GetOfferAlgoliaSearchForm(),
             algolia_dst=url_for(".list_algolia_offers"),
             date_created_sort_url=date_created_sort_url,
+            connect_as=connect_as,
             page=page,
         ),
         code,
@@ -1178,6 +1189,12 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         except offers_exceptions.MoveOfferBaseException:
             pass
 
+    connect_as = get_connect_as(
+        object_id=offer.id,
+        object_type="offer",
+        pc_pro_path=urls.build_pc_pro_offer_path(offer),
+    )
+
     return render_template(
         "offer/details_v2.html" if FeatureToggle.WIP_ENABLE_BO_OFFER_DETAILS_V2 else "offer/details.html",
         offer=offer,
@@ -1186,7 +1203,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         reindex_offer_form=empty_forms.EmptyForm() if is_advanced_pro_support else None,
         edit_offer_venue_form=edit_offer_venue_form,
         move_offer_form=move_offer_form,
-        connect_as=generate_connect_as_link(offer),
+        connect_as=connect_as,
         allowed_actions=allowed_actions,
         action=OfferDetailsActionType,
     )
