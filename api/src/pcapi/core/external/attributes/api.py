@@ -436,6 +436,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     last_recredit = finance_api.get_latest_age_related_user_recredit(user)
 
     has_remaining_credit = user.has_active_deposit and domains_credit is not None and bool(domains_credit.all.remaining)
+    # A user becomes a former beneficiary only after the last credit is expired or spent or can no longer be claimed
     is_former_beneficiary = (user.has_beneficiary_role and not has_remaining_credit) or (
         user.has_underage_beneficiary_role and user.eligibility is None
     )
