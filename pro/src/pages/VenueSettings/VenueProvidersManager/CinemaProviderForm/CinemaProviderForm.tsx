@@ -1,16 +1,17 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { Form, FormikProvider, useFormik } from 'formik'
-import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 
 import { PostVenueProviderBody } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { SynchronizationEvents } from 'commons/core/FirebaseEvents/constants'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import strokeDuoIcon from 'icons/stroke-duo.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-
-import { DuoCheckbox } from '../DuoCheckbox/DuoCheckbox'
+import { CheckboxVariant } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+import { Checkbox } from 'ui-kit/formV2/Checkbox/Checkbox'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CinemaProviderForm.module.scss'
 import { DEFAULT_CINEMA_PROVIDER_FORM_VALUES } from './constants'
@@ -35,43 +36,60 @@ export const CinemaProviderForm = ({
   initialValues,
   onCancel,
 }: CinemaProviderFormProps): JSX.Element => {
-  const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
 
-  const handleFormSubmit = async (values: CinemaProviderFormValues) => {
+  const hookForm = useForm<CinemaProviderFormValues>({
+    defaultValues: initialValues ?? DEFAULT_CINEMA_PROVIDER_FORM_VALUES,
+    mode: 'onBlur',
+  })
+
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+    getValues,
+  } = hookForm
+
+  // Submit form handler
+  const onsubmit = async () => {
     const payload = {
       providerId,
       venueId,
-      isDuo: values.isDuo,
-      isActive: values.isActive,
+      isDuo: getValues('isDuo'),
+      isActive: getValues('isActive'),
     }
 
-    setIsLoading(true)
-
     const isSuccess = await saveVenueProvider(payload)
+
     logEvent(SynchronizationEvents.CLICKED_IMPORT, {
-      offererId: offererId,
-      venueId: venueId,
-      providerId: providerId,
+      offererId,
+      venueId,
+      providerId,
       saved: isSuccess,
     })
   }
-  const formik = useFormik({
-    initialValues: initialValues
-      ? initialValues
-      : DEFAULT_CINEMA_PROVIDER_FORM_VALUES,
-    onSubmit: handleFormSubmit,
-  })
 
   return (
-    <FormikProvider value={formik}>
-      {!isLoading && (
-        <Form
-          className={styles['cinema-provider-form']}
-          data-testid="cinema-provider-form"
-        >
+    <form
+      className={styles['cinema-provider-form']}
+      data-testid="cinema-provider-form"
+      onSubmit={handleSubmit(onsubmit)}
+    >
+      {!isSubmitting && (
+        <>
           <FormLayout.Row className={styles['cinema-provider-form-content']}>
-            <DuoCheckbox isChecked={formik.values.isDuo} />
+            <Checkbox
+              label="Accepter les réservations “Duo“"
+              description="Cette option permet au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur."
+              variant={CheckboxVariant.BOX}
+              {...register('isDuo')}
+            />
+            <SvgIcon
+              className={styles['duo-checkbox-icon']}
+              src={strokeDuoIcon}
+              alt="Duo"
+              width="40"
+            />
           </FormLayout.Row>
 
           <DialogBuilder.Footer>
@@ -79,8 +97,8 @@ export const CinemaProviderForm = ({
               <Button
                 type="button"
                 variant={ButtonVariant.PRIMARY}
-                isLoading={formik.isSubmitting}
-                onClick={() => handleFormSubmit(formik.values)}
+                isLoading={isSubmitting}
+                onClick={onsubmit}
               >
                 Lancer la synchronisation
               </Button>
@@ -99,7 +117,8 @@ export const CinemaProviderForm = ({
                   <Button
                     type="submit"
                     variant={ButtonVariant.PRIMARY}
-                    isLoading={formik.isSubmitting}
+                    isLoading={isSubmitting}
+                    onClick={onsubmit}
                   >
                     Modifier
                   </Button>
@@ -107,8 +126,8 @@ export const CinemaProviderForm = ({
               </div>
             )}
           </DialogBuilder.Footer>
-        </Form>
+        </>
       )}
-    </FormikProvider>
+    </form>
   )
 }
