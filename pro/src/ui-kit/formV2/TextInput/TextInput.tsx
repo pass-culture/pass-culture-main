@@ -17,7 +17,7 @@ import styles from './TextInput.module.scss'
  * @extends FieldLayoutBaseProps
  * @extends BaseInputProps
  */
-type TextInputProps = FieldLayoutBaseProps &
+export type TextInputProps = FieldLayoutBaseProps &
   BaseInputProps & {
     readOnly?: boolean
     /**
@@ -42,6 +42,12 @@ type TextInputProps = FieldLayoutBaseProps &
      * If this prop is provided, the asterisk will not be displayed
      */
     asterisk?: boolean
+    /**
+     * A custom component to be displayed next to the input.
+     * It can be used to display additional information or related actions like
+     * a checkbox to reset the input value.
+     */
+    InputExtension?: React.ReactNode
   }
 
 /**
@@ -92,6 +98,7 @@ export const TextInput = React.forwardRef(
       description,
       error,
       count,
+      InputExtension,
       ...props
     }: TextInputProps,
     ref: ForwardedRef<HTMLInputElement>
@@ -155,8 +162,15 @@ export const TextInput = React.forwardRef(
           <span className={styles['text-input-readonly']}>{props.value}</span>
         ) : (
           <>
-            <div className={styles['text-input']}>
+            <div
+              className={styles[`text-input${InputExtension ? '-group' : ''}`]}
+            >
               {input}
+              {InputExtension && (
+                <div className={styles['text-input-group-extension']}>
+                  {InputExtension}
+                </div>
+              )}
               <div className={styles['input-layout-footer']}>
                 <div role="alert" id={errorId}>
                   {error && (
