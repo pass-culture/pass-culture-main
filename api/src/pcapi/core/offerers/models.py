@@ -1124,6 +1124,8 @@ class ApiKey(PcObject, Base, Model):
     secret: bytes = sa.Column(LargeBinary, nullable=True)
 
     def check_secret(self, clear_text: str) -> bool:
+        if settings.USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM and crypto.check_password(clear_text, self.secret):
+            return True
         if self.secret.decode("utf-8").startswith("$sha3_512$"):
             return crypto.check_public_api_key(clear_text, self.secret)
         if crypto.check_password(clear_text, self.secret):
