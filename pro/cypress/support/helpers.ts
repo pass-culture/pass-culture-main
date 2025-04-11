@@ -11,7 +11,7 @@ import {
  *
  * @export
  * @param {Array<Array<string>>} expectedResults
- * @example 
+ * @example
  * const expectedResults = [
       ['Réservation', "Nom de l'offre", 'Établissement', 'Places et prix', 'Statut'],
       ['1', 'Mon offre', 'COLLEGE DE LA TOUR', '25 places', 'confirmée'],
@@ -55,6 +55,26 @@ export function expectOffersOrBookingsAreFound(
   }
 }
 
+function loginUser(login: string, setDefaultCookieOrejime: boolean) {
+  const password = 'user@AZERTY123'
+  cy.stepLog({ message: `I am logged in with account ${login}` })
+  cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
+  cy.intercept({ method: 'GET', url: '/offerers/names' }).as('offererNames')
+
+  cy.visit('/connexion')
+  if (setDefaultCookieOrejime) {
+    cy.setCookie(
+      'orejime',
+      '{"firebase":false,"hotjar":false,"beamer":false,"sentry":true}'
+    )
+  }
+
+  cy.get('#email').type(login)
+  cy.get('#password').type(password)
+  cy.get('button[type=submit]').click()
+  cy.wait(['@signinUser', '@offererNames'])
+}
+
 /**
  * Login then go to a page. This function does not use `session()` so browser
  * session will not be restored when reused in a test unlike the
@@ -70,23 +90,7 @@ export function logInAndGoToPage(
   path: string,
   setDefaultCookieOrejime: boolean = true
 ) {
-  const password = 'user@AZERTY123'
-  cy.stepLog({ message: `I am logged in with account ${login}` })
-  cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
-  cy.intercept({ method: 'GET', url: '/offerers/names' }).as('offererNames')
-
-  cy.visit('/connexion')
-  if (setDefaultCookieOrejime) {
-    cy.setCookie(
-      'orejime',
-      '{"firebase":true,"hotjar":true,"beamer":true,"sentry":true}'
-    )
-  }
-
-  cy.get('#email').type(login)
-  cy.get('#password').type(password)
-  cy.get('button[type=submit]').click()
-  cy.wait(['@signinUser', '@offererNames'])
+  loginUser(login, setDefaultCookieOrejime)
 
   cy.stepLog({ message: `I open the "${path}" page` })
   cy.visit(path)
@@ -109,23 +113,7 @@ export function logInAndSeeDidacticOnboarding(
   login: string,
   setDefaultCookieOrejime = true
 ) {
-  const password = 'user@AZERTY123'
-  cy.stepLog({ message: `I am logged in with account ${login}` })
-  cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
-  cy.intercept({ method: 'GET', url: '/offerers/names' }).as('offererNames')
-
-  cy.visit('/connexion')
-  if (setDefaultCookieOrejime) {
-    cy.setCookie(
-      'orejime',
-      '{"firebase":true,"hotjar":true,"beamer":true,"sentry":true}'
-    )
-  }
-
-  cy.get('#email').type(login)
-  cy.get('#password').type(password)
-  cy.get('button[type=submit]').click()
-  cy.wait(['@signinUser', '@offererNames'])
+  loginUser(login, setDefaultCookieOrejime)
 
   cy.stepLog({ message: `I open the /onboarding page` })
   cy.visit('/onboarding')
