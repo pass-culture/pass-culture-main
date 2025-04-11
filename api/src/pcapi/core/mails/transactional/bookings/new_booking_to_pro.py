@@ -57,7 +57,7 @@ def get_new_booking_to_pro_email_data(
         event_hour = ""
 
     if offer.subcategoryId in subcategories.BOOK_WITH_EAN:
-        ean = offer.ean if offer.ean else ""
+        ean = offer.ean or ""
         offer_subcategory = "book"
     else:
         ean = ""
