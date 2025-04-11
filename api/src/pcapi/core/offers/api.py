@@ -2116,3 +2116,19 @@ def _update_product_extra_data(product: offers_models.Product, movie: offers_mod
         extra_data["visa"] = movie.visa
 
     product.extraData.update((key, value) for key, value in extra_data.items() if value is not None)  # type: ignore[typeddict-item]
+
+
+def update_event_opening_hours(
+    event: offers_models.EventOpeningHours, update_body: offers_schemas.UpdateEventOpeningHoursModel
+) -> None:
+    if update_body.startDatetime:
+        event.startDatetime = update_body.startDatetime
+
+    if update_body.endDatetime:
+        event.endDatetime = update_body.endDatetime
+
+    if update_body.openingHours:
+        new_opening_hours = update_body.openingHours.dict()
+
+        for opening_hours in event.weekDayOpeningHours:
+            opening_hours.timeSpans = new_opening_hours[opening_hours.weekday.value]

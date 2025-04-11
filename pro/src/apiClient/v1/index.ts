@@ -241,6 +241,7 @@ export type { TemplateDatesModel } from './models/TemplateDatesModel';
 export type { TimeSpan } from './models/TimeSpan';
 export type { TopOffersResponseData } from './models/TopOffersResponseData';
 export type { TotalRevenue } from './models/TotalRevenue';
+export type { UpdateEventOpeningHoursModel } from './models/UpdateEventOpeningHoursModel';
 export type { UserEmailValidationResponseModel } from './models/UserEmailValidationResponseModel';
 export type { UserHasBookingResponse } from './models/UserHasBookingResponse';
 export type { UserIdentityBodyModel } from './models/UserIdentityBodyModel';
