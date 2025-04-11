@@ -640,14 +640,13 @@ def test_serialize_future_offer():
 def test_serialize_collective_offer_template():
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
-    offer_venue_offerer_address = offerers_factories.OffererAddressFactory(
-        address__latitude=serialization.DEFAULT_LATITUDE,
-        address__longitude=serialization.DEFAULT_LONGITUDE,
-    )
+    offer_venue_offerer_address = offerers_factories.OffererAddressFactory()
     offer_venue = offerers_factories.VenueFactory(offererAddress=offer_venue_offerer_address)
     venue_offerer_address = offerers_factories.OffererAddressFactory(
         address__postalCode="86140",
         address__departmentCode="86",
+        address__latitude=serialization.DEFAULT_LATITUDE,
+        address__longitude=serialization.DEFAULT_LONGITUDE,
     )
 
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
@@ -707,13 +706,37 @@ def test_serialize_collective_offer_template():
     }
 
 
+def test_serialize_collective_offer_template_venue_without_department_code():
+    venue_offerer_address = offerers_factories.OffererAddressFactory(
+        address__postalCode="33000", address__departmentCode=None
+    )
+    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+        venue__offererAddress=venue_offerer_address
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
+    assert serialized["venue"]["departmentCode"] == "33"  # extracted from postalCode
+
+
+def test_serialize_collective_offer_template_virtual_venue(caplog):
+    # this should not happen
+    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+        venue__offererAddress=None, venue__isVirtual=True, venue__siret=None, venue__comment=None
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
+    assert serialized["venue"]["departmentCode"] is None
+    assert serialized["_geoloc"] == {"lat": serialization.DEFAULT_LATITUDE, "lng": serialization.DEFAULT_LONGITUDE}
+
+    [log] = caplog.records
+    assert log.message == f"Found venue with id {collective_offer_template.venue.id} without offererAddress"
+
+
 def test_serialize_collective_offer_template_legacy():
     # Same as test_serialize_collective_offer_template
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
-    venue = offerers_factories.VenueFactory(
-        latitude=serialization.DEFAULT_LATITUDE, longitude=serialization.DEFAULT_LONGITUDE
-    )
+    venue = offerers_factories.VenueFactory()
 
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
@@ -766,8 +789,8 @@ def test_serialize_collective_offer_template_legacy():
             "adageId": collective_offer_template.venue.adageId,
         },
         "_geoloc": {
-            "lat": float(venue.latitude),
-            "lng": float(venue.longitude),
+            "lat": float(collective_offer_template.venue.offererAddress.address.latitude),
+            "lng": float(collective_offer_template.venue.offererAddress.address.longitude),
         },
         "isTemplate": True,
         "formats": [format.value for format in collective_offer_template.formats],
