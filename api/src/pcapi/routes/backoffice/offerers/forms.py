@@ -57,6 +57,7 @@ class EditOffererForm(FlaskForm):
         street="street",
         city="city",
         ban_id="ban_id",
+        insee_code="insee_code",
         postal_code="postal_code",
         latitude=None,
         longitude=None,
