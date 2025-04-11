@@ -1,4 +1,5 @@
 import datetime
+import logging
 from unittest import mock
 
 import pytest
@@ -16,7 +17,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Returns200Test:
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_make_offer_headline(self, mocked_async_index_offer_ids, client):
+    def test_make_offer_headline(self, mocked_async_index_offer_ids, client, caplog):
         pro_user = users_factories.ProFactory()
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
@@ -30,7 +31,8 @@ class Returns200Test:
         client = client.with_session_auth(pro_user.email)
         response = client.post("/offers/upsert_headline", json=data)
 
-        assert response.status_code == 201
+        with caplog.at_level(logging.INFO):
+            assert response.status_code == 201
         assert offer.is_headline_offer
         headline_offer = offers_models.HeadlineOffer.query.one()
         assert headline_offer
@@ -44,6 +46,7 @@ class Returns200Test:
             "name": headline_offer.offer.name,
             "venueId": headline_offer.venue.id,
         }
+        assert len([log for log in caplog.records if log.message == "Headline Offer Deactivation"]) == 0
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer.id},
@@ -51,7 +54,7 @@ class Returns200Test:
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_make_new_offer_headline(self, mocked_async_index_offer_ids, client):
+    def test_make_new_offer_headline(self, mocked_async_index_offer_ids, client, caplog):
         pro_user = users_factories.ProFactory()
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
@@ -69,10 +72,13 @@ class Returns200Test:
             "offerId": offer.id,
         }
         client = client.with_session_auth(pro_user.email)
-        response = client.post("/offers/upsert_headline", json=data)
+        with caplog.at_level(logging.INFO):
+            response = client.post("/offers/upsert_headline", json=data)
+
         assert response.status_code == 201
         assert offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.count() == 2
+        assert len([log for log in caplog.records if log.message == "Headline Offer Deactivation"]) == 0
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer.id},
@@ -80,7 +86,7 @@ class Returns200Test:
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_make_another_offer_headline(self, mocked_async_index_offer_ids, client):
+    def test_make_another_offer_headline(self, mocked_async_index_offer_ids, client, caplog):
         pro_user = users_factories.ProFactory()
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
@@ -88,19 +94,28 @@ class Returns200Test:
         another_offer = offers_factories.OfferFactory(venue=venue)
         offers_factories.MediationFactory(offer=another_offer)
         offers_factories.StockFactory(offer=another_offer)
-        offers_factories.HeadlineOfferFactory(offer=offer)
+        headline_offer = offers_factories.HeadlineOfferFactory(offer=offer)
 
         data = {
             "offerId": another_offer.id,
         }
         client = client.with_session_auth(pro_user.email)
-        response = client.post("/offers/upsert_headline", json=data)
+        with caplog.at_level(logging.INFO):
+            response = client.post("/offers/upsert_headline", json=data)
 
         assert response.status_code == 201
 
         assert not offer.is_headline_offer
         assert another_offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.count() == 2
+        assert len([log for log in caplog.records if log.message == "Headline Offer Deactivation"]) == 1
+        log = next(log for log in caplog.records if log.message == "Headline Offer Deactivation")
+        assert log.extra == {
+            "analyticsSource": "app-pro",
+            "HeadlineOfferId": headline_offer.id,
+            "Reason": "User chose to replace this headline offer by another offer",
+        }
+        assert log.technical_message_id == "headline_offer_deactivation"
 
         expected_reindexation_calls = [
             mock.call({offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
@@ -110,7 +125,7 @@ class Returns200Test:
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_make_another_offer_headline_when_first_offer_is_not_active_anymore(
-        self, mocked_async_index_offer_ids, client
+        self, mocked_async_index_offer_ids, client, caplog
     ):
         pro_user = users_factories.ProFactory()
         venue = offerers_factories.VenueFactory(isPermanent=True)
@@ -119,13 +134,14 @@ class Returns200Test:
         another_offer = offers_factories.OfferFactory(venue=venue)
         offers_factories.MediationFactory(offer=another_offer)
         offers_factories.StockFactory(offer=another_offer)
-        offers_factories.HeadlineOfferFactory(offer=offer)
+        headline_offer = offers_factories.HeadlineOfferFactory(offer=offer)
 
         data = {
             "offerId": another_offer.id,
         }
         client = client.with_session_auth(pro_user.email)
-        response = client.post("/offers/upsert_headline", json=data)
+        with caplog.at_level(logging.INFO):
+            response = client.post("/offers/upsert_headline", json=data)
 
         assert response.status_code == 201
         assert response.json["id"] == another_offer.id
@@ -133,6 +149,14 @@ class Returns200Test:
         assert not offer.is_headline_offer
         assert another_offer.is_headline_offer
         assert offers_models.HeadlineOffer.query.count() == 2
+        assert len([log for log in caplog.records if log.message == "Headline Offer Deactivation"]) == 1
+        log = next(log for log in caplog.records if log.message == "Headline Offer Deactivation")
+        assert log.extra == {
+            "analyticsSource": "app-pro",
+            "HeadlineOfferId": headline_offer.id,
+            "Reason": "User chose to replace this headline offer by another offer",
+        }
+        assert log.technical_message_id == "headline_offer_deactivation"
 
         expected_reindexation_calls = [
             mock.call({offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
