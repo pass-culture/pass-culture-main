@@ -109,6 +109,24 @@ class Returns200Test:
         assert response.json["offererName"] is None
         assert response.json["offererSiren"] is None
 
+    def test_get_venues_of_rejected_offerer(self, client):
+        # New offerer subscription should not ask to join an existing offerer
+        rejected_offerer = offerers_factories.RejectedOffererFactory()
+        offerers_factories.VenueFactory(managingOfferer=rejected_offerer)
+        user_offerer = offerers_factories.RejectedUserOffererFactory(offerer=rejected_offerer)
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select offerer
+        with assert_num_queries(num_queries):
+            response = auth_request.get("/venues/siret/%s" % "12312312312332")
+            assert response.status_code == 200
+
+        assert len(response.json["venues"]) == 0
+        assert response.json["offererName"] is None
+        assert response.json["offererSiren"] is None
+
 
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
