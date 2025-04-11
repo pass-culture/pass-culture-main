@@ -1067,7 +1067,11 @@ def grant_user_offerer_access(offerer: models.Offerer, user: users_models.User) 
 def is_user_offerer_already_exist(user: users_models.User, siren: str) -> bool:
     return db.session.query(
         models.UserOfferer.query.join(models.UserOfferer.offerer)
-        .filter(models.UserOfferer.user == user, models.Offerer.siren == siren)
+        .filter(
+            models.UserOfferer.user == user,
+            models.Offerer.siren == siren,
+            models.UserOfferer.validationStatus.not_in((ValidationStatus.REJECTED, ValidationStatus.DELETED)),
+        )
         .exists()
     ).scalar()
 
