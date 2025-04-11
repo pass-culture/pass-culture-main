@@ -29,11 +29,13 @@ class DevEnvironmentPasswordHasherTest:
 
 
 class ProdEnvironmentPasswordHasherTest:
+    @pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=False)
     def test_hash_password_uses_bcrypt(self):
         hashed = crypto.hash_password("secret")
         assert hashed != "secret"
         assert hashed.startswith(b"$2b$")  # bcrypt prefix
 
+    @pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=False)
     def test_hash_public_api_key_uses_sha3_512(self):
         hashed = crypto.hash_public_api_key("secret")
         assert hashed != "secret"

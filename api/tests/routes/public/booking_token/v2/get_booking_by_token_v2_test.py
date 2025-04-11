@@ -91,7 +91,7 @@ class Returns200Test:
         offerers_factories.ApiKeyFactory(offerer=booking.offerer, prefix="test_prefix")
 
         url = f"/v2/bookings/token/{booking_token}"
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries - 1):  # With an api token, we skip user checks
             response = client.get(url, headers={"Authorization": "Bearer test_prefix_clearSecret"})
             assert response.status_code == 200
 
@@ -109,11 +109,9 @@ class Returns200Test:
             assert response.status_code == 200
 
 
-@pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=True)
 class NonStandardGetTest:
-    num_queries = 1  # select user
+    num_queries = 1  # select api_key
     num_queries += 1  # select booking
-    num_queries += 1  # check user has rights on offerer
     num_queries += 1  # check if a pricing processed or invoiced exists for this booking
     num_queries += 1  # select stock
     num_queries += 1  # select offer
