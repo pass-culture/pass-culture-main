@@ -17,6 +17,7 @@ import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
+import { SAVED_PARTNER_PAGE_VENUE_ID_KEYS } from 'commons/utils/savedPartnerPageVenueId'
 
 import { SideNavLinks } from '../SideNavLinks'
 
@@ -33,6 +34,7 @@ describe('SideNavLinks', () => {
     const { container } = renderSideNavLinks()
     expect(await axe(container)).toHaveNoViolations()
   })
+
   it('should toggle individual section on individual section button click', async () => {
     renderSideNavLinks()
 
@@ -85,41 +87,127 @@ describe('SideNavLinks', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display partner link if user as partner page to display 1st venue partner page as default', async () => {
-    const mockedManagedVenues = [
-      { ...defaultGetOffererVenueResponseModel, isPermanent: true, id: 17 },
-      { ...defaultGetOffererVenueResponseModel, isPermanent: false, id: 18 },
-      { ...defaultGetOffererVenueResponseModel, isPermanent: false, id: 19 },
-    ]
+  describe('when the user has a partner page', () => {
+    const linkLabel = 'Page sur l’application'
+
+    const mockedPartnerPageVenue = {
+      ...defaultGetOffererVenueResponseModel,
+      hasCreatedOffer: true,
+      isPermanent: true,
+      hasPartnerPage: true,
+    }
+
+    // We assume that the first venue is the one that has no partner page.
+    const mockedNotAPartnerPageVenueId = 0
+    const mockedManagedVenuesLength = 10
+    const mockedManagedVenues = new Array(mockedManagedVenuesLength)
+      .fill(mockedPartnerPageVenue)
+      .map((_, index) => ({
+        ...mockedPartnerPageVenue,
+        id: index,
+        // Normally, hasPartnerPage is false if either hasCreatedOffer or isPermanent is false.
+        // We dont need those values here.
+        hasPartnerPage: index !== mockedNotAPartnerPageVenueId,
+      }))
 
     const offerer = currentOffererFactory()
 
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      hasPartnerPage: true,
-      managedVenues: mockedManagedVenues,
+    beforeEach(() => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        hasPartnerPage: true,
+        managedVenues: mockedManagedVenues,
+      })
     })
 
-    renderSideNavLinks({
-      storeOverrides: {
-        user: {
-          currentUser: sharedCurrentUserFactory(),
+    afterEach(() => {
+      localStorage.clear()
+    })
+
+    it('should always display a "Page sur l’application" link', async () => {
+      renderSideNavLinks({ storeOverrides: { offerer } })
+
+      const link = await screen.findByRole('link', { name: linkLabel })
+      expect(link).toBeInTheDocument()
+    })
+
+    it('should display a partner link with redux store selected venue if available', async () => {
+      // We assume that the last venue is the one that is stored.
+      // This should be overtaken by the redux store selected venue id.
+      const locallyStoredVenueId = mockedManagedVenuesLength - 1
+      const reduxStoreSelectedVenueId = mockedManagedVenuesLength - 2
+
+      localStorage.setItem(
+        SAVED_PARTNER_PAGE_VENUE_ID_KEYS,
+        JSON.stringify({
+          [offerer.selectedOffererId as number]:
+            locallyStoredVenueId.toString(),
+        })
+      )
+
+      renderSideNavLinks({
+        storeOverrides: {
+          nav: {
+            isIndividualSectionOpen: true,
+            isCollectiveSectionOpen: true,
+            selectedPartnerPageId: reduxStoreSelectedVenueId.toString(),
+          },
+          offerer,
         },
-        offerer,
-      },
+      })
+
+      const link = await screen.findByRole('link', { name: linkLabel })
+      expect(link).toHaveAttribute(
+        'href',
+        `/structures/${offerer.selectedOffererId}/lieux/${reduxStoreSelectedVenueId.toString()}/page-partenaire`
+      )
     })
 
-    const link = await screen.findByRole('link', {
-      name: 'Page sur l’application',
+    it('should display a partner link with previously selected / locally stored venue if available & still relevant', async () => {
+      // We assume that the last venue is the one that is stored.
+      const locallyStoredVenueId = mockedManagedVenuesLength - 1
+
+      localStorage.setItem(
+        SAVED_PARTNER_PAGE_VENUE_ID_KEYS,
+        JSON.stringify({
+          [offerer.selectedOffererId as number]:
+            locallyStoredVenueId.toString(),
+        })
+      )
+
+      renderSideNavLinks({ storeOverrides: { offerer } })
+
+      const link = await screen.findByRole('link', { name: linkLabel })
+      expect(link).toHaveAttribute(
+        'href',
+        `/structures/${offerer.selectedOffererId}/lieux/${locallyStoredVenueId.toString()}/page-partenaire`
+      )
     })
-    expect(link).toBeInTheDocument()
-    const defaultVenueId = mockedManagedVenues.find(
-      (venue) => venue.isPermanent
-    )?.id
-    expect(link).toHaveAttribute(
-      'href',
-      `/structures/${offerer.selectedOffererId}/lieux/${defaultVenueId}/page-partenaire`
-    )
+
+    it('should display a partner link with 1st venue selected as default otherwise', async () => {
+      // We assume that the locally stored venue is the venue that has no partner page,
+      // to test a case where the stored venue was a partner page but is not anymore.
+      const locallyStoredVenueId = mockedNotAPartnerPageVenueId
+      const fallbackVenueId = mockedManagedVenues.find(
+        (v) => v.hasPartnerPage
+      )?.id
+
+      localStorage.setItem(
+        SAVED_PARTNER_PAGE_VENUE_ID_KEYS,
+        JSON.stringify({
+          [offerer.selectedOffererId as number]:
+            locallyStoredVenueId.toString(),
+        })
+      )
+
+      renderSideNavLinks({ storeOverrides: { offerer } })
+
+      const link = await screen.findByRole('link', { name: linkLabel })
+      expect(link).toHaveAttribute(
+        'href',
+        `/structures/${offerer.selectedOffererId}/lieux/${fallbackVenueId}/page-partenaire`
+      )
+    })
   })
 
   it('should not display partner link if user as no partner page', () => {

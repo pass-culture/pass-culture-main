@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useEffect, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   generatePath,
   useLocation,
@@ -16,7 +16,9 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { SelectOption } from 'commons/custom_types/form'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
+import { setSelectedPartnerPageId } from 'commons/store/nav/reducer'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { setSavedPartnerPageVenueId } from 'commons/utils/savedPartnerPageVenueId'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
@@ -34,6 +36,7 @@ export const VenueEdition = (): JSX.Element | null => {
     offererId: string
     venueId: string
   }>()
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
   const selectedOffererId = useSelector(selectCurrentOffererId)
@@ -51,11 +54,56 @@ export const VenueEdition = (): JSX.Element | null => {
   )
   const venueTypes = venueTypesQuery.data
 
+  const context = location.pathname.includes('collectif')
+    ? 'collective'
+    : location.pathname.includes('page-partenaire')
+      ? 'partnerPage'
+      : 'address'
+
+  const filteredVenues = useMemo(() => {
+    if (context === 'partnerPage') {
+      return (
+        offerer?.managedVenues?.filter((venue) => venue.hasPartnerPage) ?? []
+      )
+    }
+
+    return offerer?.managedVenues?.filter((venue) => venue.isPermanent) ?? []
+  }, [context, offerer?.managedVenues])
+
+  const venuesOptions: SelectOption[] = filteredVenues.map((venue) => ({
+    label: venue.publicName || venue.name,
+    value: venue.id.toString(),
+  }))
+
   useEffect(() => {
     if (selectedOffererId?.toString() !== offererId) {
       navigate('/accueil')
     }
   }, [selectedOffererId, offererId])
+
+  useEffect(() => {
+    if (context === 'partnerPage' && offerer) {
+      // Selected venue is no longer in the list of hasPartnerPage venues.
+      // On browser tab return, data is revalidated, and offerer.managedVenues
+      // is updated - but venueId is not. In SelectInput, there is a
+      // natural fallback to the first element of the list - but the rest
+      // of the page still needs to be updated, just like the side nav link.
+      const selectedVenue = filteredVenues.find(
+        (venue) => venue.id === Number(venueId)
+      )
+
+      if (!selectedVenue) {
+        if (filteredVenues.length > 0) {
+          const fallbackVenueId = filteredVenues[0]?.id.toString()
+
+          navigate(getPathToNavigateTo(offerer.id, fallbackVenueId))
+          dispatch(setSelectedPartnerPageId(fallbackVenueId))
+        } else {
+          navigate('/accueil')
+        }
+      }
+    }
+  }, [context, venueId, filteredVenues, offerer, navigate, dispatch])
 
   if (
     venueQuery.isLoading ||
@@ -91,22 +139,6 @@ export const VenueEdition = (): JSX.Element | null => {
     },
   ]
 
-  const context = location.pathname.includes('collectif')
-    ? 'collective'
-    : location.pathname.includes('page-partenaire')
-      ? 'partnerPage'
-      : 'address'
-
-  const filteredVenues =
-    offerer.managedVenues?.filter((venue) =>
-      context === 'partnerPage' ? venue.hasPartnerPage : venue.isPermanent
-    ) ?? []
-
-  const venuesOptions: SelectOption[] = filteredVenues.map((venue) => ({
-    label: venue.publicName || venue.name,
-    value: venue.id.toString(),
-  }))
-
   const titleText =
     context === 'collective'
       ? 'Page dans ADAGE'
@@ -133,6 +165,17 @@ export const VenueEdition = (): JSX.Element | null => {
                     value={venueId ?? ''}
                     onChange={(e) => {
                       const venueId = e.target.value
+
+                      if (context === 'partnerPage') {
+                        setSavedPartnerPageVenueId(
+                          'partnerPage',
+                          offererId,
+                          venueId
+                        )
+
+                        dispatch(setSelectedPartnerPageId(venueId))
+                      }
+
                       const path = getPathToNavigateTo(
                         offererId as string,
                         venueId

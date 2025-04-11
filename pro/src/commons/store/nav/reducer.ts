@@ -3,11 +3,13 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 interface NavState {
   isIndividualSectionOpen: boolean
   isCollectiveSectionOpen: boolean
+  selectedPartnerPageId?: string
 }
 
 const initialState: NavState = {
   isIndividualSectionOpen: true,
   isCollectiveSectionOpen: true,
+  selectedPartnerPageId: undefined,
 }
 
 const navSlice = createSlice({
@@ -26,10 +28,19 @@ const navSlice = createSlice({
     ) => {
       state.isCollectiveSectionOpen = action.payload
     },
+    setSelectedPartnerPageId: (
+      state: NavState,
+      action: PayloadAction<string | undefined>
+    ) => {
+      state.selectedPartnerPageId = action.payload
+    },
   },
 })
 
 export const navReducer = navSlice.reducer
 
-export const { setIsCollectiveSectionOpen, setIsIndividualSectionOpen } =
-  navSlice.actions
+export const {
+  setIsCollectiveSectionOpen,
+  setIsIndividualSectionOpen,
+  setSelectedPartnerPageId,
+} = navSlice.actions

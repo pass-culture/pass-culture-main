@@ -16,8 +16,10 @@ import {
 import {
   selectIsCollectiveSectionOpen,
   selectIsIndividualSectionOpen,
+  selectSelectedPartnerPageId,
 } from 'commons/store/nav/selector'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { getSavedPartnerPageVenueId } from 'commons/utils/savedPartnerPageVenueId'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import strokeCollaboratorIcon from 'icons/stroke-collaborator.svg'
@@ -66,7 +68,24 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     selectedOfferer?.managedVenues?.filter((venue) => venue.hasPartnerPage) ??
     []
   const venueId = permanentVenues[0]?.id
-  const firstPartnerPageVenueId = hasPartnerPageVenues[0]?.id
+
+  const reduxStoredPartnerPageId = useSelector(selectSelectedPartnerPageId)
+  const savedPartnerPageVenueId = getSavedPartnerPageVenueId(
+    'partnerPage',
+    selectedOffererId
+  )
+  const stillRelevantSavedPartnerPageVenueId = hasPartnerPageVenues
+    .find((venue) => venue.id.toString() === savedPartnerPageVenueId)
+    ?.id.toString()
+
+  // At first, redux store is empty. We check local storage and use
+  // first partner page venue as defautl if local storage is empty too.
+  // If local storage changes from VenueEdition, we update redux store
+  // as well - and use the new selectedPartnerPageVenueId here.
+  const selectedPartnerPageVenueId =
+    reduxStoredPartnerPageId ||
+    stillRelevantSavedPartnerPageVenueId ||
+    hasPartnerPageVenues[0]?.id
 
   useEffect(() => {
     if (sideNavCollapseSize) {
@@ -199,10 +218,10 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   </span>
                 </NavLink>
               </li>
-              {firstPartnerPageVenueId && (
+              {selectedPartnerPageVenueId && (
                 <li>
                   <NavLink
-                    to={`/structures/${offererId}/lieux/${firstPartnerPageVenueId}/page-partenaire`}
+                    to={`/structures/${offererId}/lieux/${selectedPartnerPageVenueId}/page-partenaire`}
                     className={({ isActive }) =>
                       classnames(styles['nav-links-item'], {
                         [styles['nav-links-item-active']]: isActive,
