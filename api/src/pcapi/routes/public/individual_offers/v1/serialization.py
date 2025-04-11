@@ -274,6 +274,9 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
     category_fields_model = (product_category_reading_models | event_category_reading_models)[offer.subcategoryId]
     serialized_data = copy.deepcopy(offer.extraData or {})
 
+    if offer.ean:
+        serialized_data["ean"] = offer.ean
+
     # Convert musicSubType (resp showSubType) code to musicType slug (resp showType slug)
     music_sub_type = serialized_data.pop(subcategories.ExtraDataFieldEnum.MUSIC_SUB_TYPE.value, None)
 
@@ -318,7 +321,7 @@ def deserialize_extra_data(
     if not category_related_fields:
         return extra_data
     for field_name, field_value in category_related_fields.dict(exclude_unset=True).items():
-        if field_name == "subcategory_id":
+        if field_name in ("subcategory_id", "ean"):
             continue
         if field_name == subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value:
             # Convert musicType slug to musicType and musicSubType codes

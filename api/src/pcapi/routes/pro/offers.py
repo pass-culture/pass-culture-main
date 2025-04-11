@@ -474,6 +474,8 @@ def patch_offer(
     try:
         updates = body.dict(by_alias=True, exclude_unset=True)
         if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
+            if "ean" in body_extra_data:
+                updates["ean"] = body_extra_data.pop("ean")
             updates["extraData"] = body_extra_data
 
         offer_body = offers_schemas.UpdateOffer(**updates)
