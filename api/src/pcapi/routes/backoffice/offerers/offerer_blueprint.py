@@ -19,6 +19,7 @@ from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
@@ -117,7 +118,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
     has_non_virtual_venues_query = (
         sa.exists()
         .where(offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
-        .where(~offerers_models.Venue.isVirtual)
+        .where(sa.not_(offerers_models.Venue.isVirtual))
     )
 
     has_offerer_address_query = (
@@ -127,6 +128,17 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .correlate(offerers_models.Offerer)
         .exists()
     )
+    if utils.has_current_user_permission(perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO):
+        has_fraudulent_booking_query: sa.sql.selectable.Exists | sa.sql.elements.Null = (
+            sa.select(1)
+            .select_from(bookings_models.Booking)
+            .join(bookings_models.FraudulentBookingTag)
+            .where(bookings_models.Booking.offererId == offerers_models.Offerer.id)
+            .correlate(offerers_models.Offerer)
+            .exists()
+        )
+    else:
+        has_fraudulent_booking_query = sa.null()
 
     offerer_query = (
         db.session.query(
@@ -134,6 +146,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             bank_information_query.scalar_subquery().label("bank_information"),
             has_non_virtual_venues_query.label("has_non_virtual_venues"),
             has_offerer_address_query.label("has_offerer_address"),
+            has_fraudulent_booking_query.label("has_fraudulent_booking"),
             adage_query.label("adage_information"),
             users_models.User.phoneNumber.label("creator_phone_number"),  # type: ignore[attr-defined]
         )
@@ -243,6 +256,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         fraud_form=fraud_form,
         show_subscription_tab=show_subscription_tab,
         has_offerer_address=row.has_offerer_address,
+        has_fraudulent_booking=row.has_fraudulent_booking,
         active_tab=request.args.get("active_tab", "history"),
         connect_as_offerer=connect_as_offerer,
         connect_as_offer=connect_as_offer,
@@ -928,8 +942,24 @@ def invite_user(offerer_id: int) -> utils.BackofficeResponse:
 
 @offerer_blueprint.route("/venues", methods=["GET"])
 def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
-    venues = (
-        offerers_models.Venue.query.filter_by(managingOffererId=offerer_id)
+    if utils.has_current_user_permission(perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO):
+        has_fraudulent_booking_query: sa.sql.selectable.Exists | sa.sql.elements.Null = (
+            sa.select(1)
+            .select_from(bookings_models.Booking)
+            .join(bookings_models.FraudulentBookingTag)
+            .where(bookings_models.Booking.venueId == offerers_models.Venue.id)
+            .correlate(offerers_models.Venue)
+            .exists()
+        )
+    else:
+        has_fraudulent_booking_query = sa.null()
+
+    rows = (
+        db.session.query(
+            offerers_models.Venue,
+            has_fraudulent_booking_query.label("has_fraudulent_booking"),
+        )
+        .filter_by(managingOffererId=offerer_id)
         .outerjoin(
             offerers_models.VenueBankAccountLink,
             sa.and_(
@@ -968,16 +998,16 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
     )
 
     connect_as = {}
-    for venue in venues:
-        connect_as[venue.id] = get_connect_as(
+    for row in rows:
+        connect_as[row.Venue.id] = get_connect_as(
             object_type="venue",
-            object_id=venue.id,
-            pc_pro_path=urls.build_pc_pro_venue_path(venue),
+            object_id=row.Venue.id,
+            pc_pro_path=urls.build_pc_pro_venue_path(row.Venue),
         )
 
     return render_template(
         "offerer/get/details/managed_venues.html",
-        venues=venues,
+        rows=rows,
         connect_as=connect_as,
     )
 

@@ -1,5 +1,5 @@
 {% import "components/clipboard.html" as clipboard %}
-{% from "components/badges.html" import build_offerer_badges %}
+{% from "components/badges.html" import build_offerer_badges with context %}
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% import "components/links.html" as links with context %}
@@ -22,7 +22,7 @@
         <div class="card-body">
           <div class="d-flex flex-fill align-items-center">
             <h2 class="card-title text-primary">{{ build_connect_as_link(connect_as_offerer, offerer.name, "link-primary") }}</h2>
-            <span class="fs-5 ps-4">{{ build_offerer_badges(offerer) }}</span>
+            <span class="fs-5 ps-4">{{ build_offerer_badges(offerer, has_fraudulent_booking) }}</span>
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if has_permission("MANAGE_PRO_ENTITY") %}
                 {{ build_modal_form("edit-offerer", url_for("backoffice_web.offerer.update_offerer", offerer_id=offerer.id) ,

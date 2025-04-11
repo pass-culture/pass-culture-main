@@ -21,6 +21,7 @@ from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.connectors.entreprise import sirene
 from pcapi.core import search
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -140,38 +141,50 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
     return base_query.limit(form.limit.data + 1).all()
 
 
-def get_venue(venue_id: int) -> offerers_models.Venue:
-
-    venue_query = offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id).options(
-        sa_orm.joinedload(offerers_models.Venue.managingOfferer)
-        .joinedload(offerers_models.Offerer.confidenceRule)
-        .load_only(offerers_models.OffererConfidenceRule.confidenceLevel)
-    )
-
-    venue_query = venue_query.options(
-        sa_orm.joinedload(offerers_models.Venue.contact),
-        sa_orm.joinedload(offerers_models.Venue.venueLabel),
-        sa_orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
-        sa_orm.joinedload(offerers_models.Venue.venueProviders)
-        .load_only(
-            providers_models.VenueProvider.id,
-            providers_models.VenueProvider.lastSyncDate,
-            providers_models.VenueProvider.isActive,
+def get_venue(venue_id: int) -> sa.engine.Row:
+    if utils.has_current_user_permission(perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO):
+        has_fraudulent_booking_query: sa.sql.selectable.Exists | sa.sql.elements.Null = (
+            sa.select(1)
+            .select_from(bookings_models.Booking)
+            .join(bookings_models.FraudulentBookingTag)
+            .where(bookings_models.Booking.venueId == offerers_models.Venue.id)
+            .correlate(offerers_models.Venue)
+            .exists()
         )
-        .joinedload(providers_models.VenueProvider.provider)
-        .load_only(
-            providers_models.Provider.id,
-            providers_models.Provider.name,
-            providers_models.Provider.localClass,
-            providers_models.Provider.isActive,
-        ),
-        sa_orm.joinedload(offerers_models.Venue.accessibilityProvider).load_only(
-            offerers_models.AccessibilityProvider.externalAccessibilityId
-        ),
-        sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
-            offerers_models.OffererConfidenceRule.confidenceLevel
-        ),
-        sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
+    else:
+        has_fraudulent_booking_query = sa.null()
+
+    venue_query = (
+        db.session.query(offerers_models.Venue, has_fraudulent_booking_query.label("has_fraudulent_booking"))
+        .filter(offerers_models.Venue.id == venue_id)
+        .options(
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer)
+            .joinedload(offerers_models.Offerer.confidenceRule)
+            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+            sa_orm.joinedload(offerers_models.Venue.contact),
+            sa_orm.joinedload(offerers_models.Venue.venueLabel),
+            sa_orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
+            sa_orm.joinedload(offerers_models.Venue.venueProviders)
+            .load_only(
+                providers_models.VenueProvider.id,
+                providers_models.VenueProvider.lastSyncDate,
+                providers_models.VenueProvider.isActive,
+            )
+            .joinedload(providers_models.VenueProvider.provider)
+            .load_only(
+                providers_models.Provider.id,
+                providers_models.Provider.name,
+                providers_models.Provider.localClass,
+                providers_models.Provider.isActive,
+            ),
+            sa_orm.joinedload(offerers_models.Venue.accessibilityProvider).load_only(
+                offerers_models.AccessibilityProvider.externalAccessibilityId
+            ),
+            sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+                offerers_models.OffererConfidenceRule.confidenceLevel
+            ),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
+        )
     )
 
     venue = venue_query.one_or_none()
@@ -182,9 +195,8 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
     return venue
 
 
-def render_venue_details(
-    venue: offerers_models.Venue, edit_venue_form: forms.EditVirtualVenueForm | None = None
-) -> str:
+def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVirtualVenueForm | None = None) -> str:
+    venue = venue_row.Venue
     region = ""
     if venue.offererAddress:
         region = (
@@ -257,6 +269,7 @@ def render_venue_details(
         search_form=search_form,
         search_dst=url_for("backoffice_web.pro.search_pro"),
         venue=venue,
+        has_fraudulent_booking=venue_row.has_fraudulent_booking,
         address=venue.offererAddress.address if venue.offererAddress else None,
         edit_venue_form=edit_venue_form,
         region=region,
@@ -301,7 +314,7 @@ def list_venues() -> utils.BackofficeResponse:
 
 @venue_blueprint.route("/<int:venue_id>", methods=["GET"])
 def get(venue_id: int) -> utils.BackofficeResponse:
-    venue = get_venue(venue_id)
+    venue_row = get_venue(venue_id)
 
     if request.args.get("q") and request.args.get("search_rank"):
         utils.log_backoffice_tracking_data(
@@ -316,7 +329,7 @@ def get(venue_id: int) -> utils.BackofficeResponse:
             },
         )
 
-    return render_venue_details(venue)
+    return render_venue_details(venue_row)
 
 
 # mypy doesn't like nested dict
@@ -668,7 +681,8 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
 @venue_blueprint.route("/<int:venue_id>", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_venue(venue_id: int) -> utils.BackofficeResponse:
-    venue = get_venue(venue_id)
+    venue_row = get_venue(venue_id)
+    venue: offerers_models.Venue = venue_row.Venue
 
     if venue.isVirtual:
         form = forms.EditVirtualVenueForm()
@@ -688,7 +702,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             """
         ).format()
         flash(msg, "warning")
-        return render_venue_details(venue, form), 400
+        return render_venue_details(venue_row, form), 400
 
     attrs = {
         to_camelcase(field.name): field.data
@@ -709,13 +723,13 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
                 "warning",
             )
             mark_transaction_as_invalid()
-            return render_venue_details(venue, form), 400
+            return render_venue_details(venue_row, form), 400
 
         if venue.siret:
             if not new_siret:
                 flash("Vous ne pouvez pas retirer le SIRET d'un partenaire culturel.", "warning")
                 mark_transaction_as_invalid()
-                return render_venue_details(venue, form), 400
+                return render_venue_details(venue_row, form), 400
         elif new_siret:
             # Remove comment because of constraint check_has_siret_xor_comment_xor_isVirtual
             attrs["comment"] = None
@@ -726,7 +740,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
                 "warning",
             )
             mark_transaction_as_invalid()
-            return render_venue_details(venue, form), 400
+            return render_venue_details(venue_row, form), 400
 
         existing_pricing_point_id = venue.current_pricing_point_id
         if existing_pricing_point_id and venue.id != existing_pricing_point_id:
@@ -738,13 +752,13 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
                 "warning",
             )
             mark_transaction_as_invalid()
-            return render_venue_details(venue, form), 400
+            return render_venue_details(venue_row, form), 400
 
         try:
             if not sirene.siret_is_active(new_siret):
                 flash("Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce partenaire culturel", "warning")
                 mark_transaction_as_invalid()
-                return render_venue_details(venue, form), 400
+                return render_venue_details(venue_row, form), 400
         except entreprise_exceptions.SireneException:
             unavailable_sirene = True
 

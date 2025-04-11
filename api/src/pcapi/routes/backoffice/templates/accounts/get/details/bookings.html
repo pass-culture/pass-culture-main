@@ -1,3 +1,4 @@
+{% from "components/badges.html" import build_fraudulent_booking_badge with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
 {% if bookings %}
@@ -11,6 +12,7 @@
         <th scope="col">Prix</th>
         <th scope="col">Date de résa</th>
         <th scope="col">État</th>
+        {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}<th scope="col">Fraude</th>{% endif %}
         <th scope="col">Contremarque</th>
       </tr>
     </thead>
@@ -27,6 +29,9 @@
           </td>
           <td>{{ booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
           <td>{{ booking | format_booking_status_long }}</td>
+          {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
+            <td>{{ build_fraudulent_booking_badge(booking.fraudulentBookingTag, "Frauduleuse") }}</td>
+          {% endif %}
           <td>
             {% if booking.token %}{{ links.build_booking_token_to_booking_details_link(booking.token) }}{% endif %}
           </td>

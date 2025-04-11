@@ -198,6 +198,10 @@ class Booking(PcObject, Base, Model):
 
     usedRecreditType: BookingRecreditType = sa.Column(MagicEnum(BookingRecreditType), nullable=True)
 
+    fraudulentBookingTag: sa_orm.Mapped["FraudulentBookingTag"] = sa_orm.relationship(
+        "FraudulentBookingTag", back_populates="booking", uselist=False
+    )
+
     def mark_as_used(self, validation_author_type: BookingValidationAuthorType) -> None:
         if self.is_used_or_reimbursed:
             raise exceptions.BookingHasAlreadyBeenUsed()
@@ -582,3 +586,17 @@ Booking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
     """
 
 sa.event.listen(Booking.__table__, "after_create", sa.DDL(Booking.trig_update_cancellationDate_on_isCancelled_ddl))
+
+
+class FraudulentBookingTag(PcObject, Base, Model):
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+
+    bookingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=False, unique=True)
+
+    booking: sa_orm.Mapped["Booking"] = sa_orm.relationship(
+        "Booking", foreign_keys=[bookingId], back_populates="fraudulentBookingTag"
+    )
+
+    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+
+    author: sa_orm.Mapped["users_models.User | None"] = sa_orm.relationship("User", foreign_keys=[authorId])

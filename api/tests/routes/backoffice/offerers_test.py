@@ -305,6 +305,18 @@ class GetOffererTest(GetEndpointHelper):
         assert "Entité juridique Fermée " in response_text
         assert "Générer une clé API" not in response_text
 
+    def test_get_offerer_with_fraudulent_booking(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+        bookings_factories.FraudulentBookingTagFactory(booking__stock__offer__venue__managingOfferer=offerer)
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert "Réservations frauduleuses" in response_text
+
     def test_get_offerer_which_does_not_exist(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, offerer_id=12345))
         assert response.status_code == 404
@@ -1706,6 +1718,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         )
         offerers_factories.VenueRegistrationFactory(venue=venue_2)
         educational_factories.CollectiveDmsApplicationFactory(venue=venue_2, application=35)
+        bookings_factories.FraudulentBookingTagFactory(booking__stock__offer__venue=venue_2)
         offerers_factories.VenueFactory(managingOfferer=other_offerer)
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
@@ -1727,6 +1740,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[0]["Présence web"] == "https://example.com https://pass.culture.fr"
         assert rows[0]["Offres cibles"] == "Indiv. et coll."
         assert rows[0]["Compte bancaire associé"] == ""
+        assert rows[0]["Fraude"] == "Réservations frauduleuses"
 
         assert rows[1]["ID"] == str(venue_1.id)
         assert rows[1]["SIRET"] == venue_1.siret
@@ -1738,6 +1752,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[1]["Présence web"] == ""
         assert rows[1]["Offres cibles"] == ""
         assert rows[1]["Compte bancaire associé"] == "Compte actuel"
+        assert rows[1]["Fraude"] == ""
 
     def test_get_caledonian_managed_venues(self, authenticated_client):
         offerer = offerers_factories.CaledonianOffererFactory()

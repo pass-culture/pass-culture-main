@@ -27,6 +27,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT,
         perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST,
         perm_models.Permissions.CREATE_INCIDENTS,
+        perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
     ],
     "support_n3": [
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
@@ -47,6 +48,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_TECH_PARTNERS,
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
         perm_models.Permissions.CREATE_INCIDENTS,
+        perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
     ],
     "support_pro_n2": [
         perm_models.Permissions.MOVE_SIRET,
@@ -68,6 +70,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
         perm_models.Permissions.CREATE_INCIDENTS,
+        perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
     ],
     "fraude_jeunes": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
@@ -76,6 +79,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
         perm_models.Permissions.MANAGE_BOOKINGS,
         perm_models.Permissions.READ_BOOKINGS,
+        perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
     ],
     "daf": [
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
@@ -140,6 +144,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
         perm_models.Permissions.FEATURE_FLIPPING,
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
+        perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
         perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT,
@@ -181,6 +186,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
         perm_models.Permissions.FEATURE_FLIPPING,
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
+        perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
         perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT,

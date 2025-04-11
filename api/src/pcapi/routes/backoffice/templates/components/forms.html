@@ -24,11 +24,11 @@
         </div>
         <div class="input-group mb-1 ">
           {% for form_field in select_multiple %}
-            <div class="col-{{ [(12/(select_multiple|length))|round|int, 6] | min }} p-1">{{ form_field }}</div>
+            <div class="col-2 p-1">{{ form_field }}</div>
           {% endfor %}
         </div>
         <div class="input-group mb-1">
-          {% for form_field in switches %}<div class="col-{{ (12/(switches|length))|round|int }} p-1">{{ form_field }}</div>{% endfor %}
+          {% for form_field in switches %}<div class="col-2 p-1">{{ form_field }}</div>{% endfor %}
         </div>
       </div>
       <div class="col-1">

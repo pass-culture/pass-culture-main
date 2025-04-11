@@ -274,6 +274,7 @@ def render_public_account_details(
                 .load_only(offerers_models.Venue.bookingEmail)
                 .joinedload(offerers_models.Venue.contact)
                 .load_only(offerers_models.VenueContact.email),
+                sa_orm.joinedload(bookings_models.Booking.fraudulentBookingTag),
             ),
             sa_orm.joinedload(users_models.User.beneficiaryFraudChecks),
             sa_orm.joinedload(users_models.User.beneficiaryFraudReviews),
