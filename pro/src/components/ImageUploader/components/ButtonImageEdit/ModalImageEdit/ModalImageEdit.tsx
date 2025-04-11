@@ -5,7 +5,7 @@ import { getFileFromURL } from 'apiClient/helpers'
 import { useNotification } from 'commons/hooks/useNotification'
 import {
   coordonateToPosition,
-  heightCropPercentToScale,
+  widthCropPercentToScale,
 } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ImageEditor/utils'
 import { ImageUploadBrowserFormValues } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/types'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
@@ -150,8 +150,8 @@ export const ModalImageEdit = ({
       image={image}
       initialPosition={editorInitialPosition}
       initialScale={
-        initalHeightCropPercent
-          ? heightCropPercentToScale(initalHeightCropPercent)
+        initalWidthCropPercent
+          ? widthCropPercentToScale(initalWidthCropPercent)
           : 1
       }
       onEditedImageSave={onEditedImageSave}
