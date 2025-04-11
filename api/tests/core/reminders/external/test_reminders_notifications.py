@@ -70,7 +70,7 @@ class NotifyUsersFutureOfferActivatedTest:
         }
         expected_payload = [
             {
-                "user_id": user_1.id,
+                "id": user_1.id,
                 "events": [
                     {
                         "name": "ue.Future_offer_activated",
@@ -79,7 +79,7 @@ class NotifyUsersFutureOfferActivatedTest:
                 ],
             },
             {
-                "user_id": user_2.id,
+                "id": user_2.id,
                 "events": [
                     {
                         "name": "ue.Future_offer_activated",

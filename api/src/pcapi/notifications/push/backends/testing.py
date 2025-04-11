@@ -70,7 +70,7 @@ class TestingBackend(LoggerBackend):
 
         payload = [
             {
-                "user_id": track_event.user_id,
+                "id": track_event.user_id,
                 "events": [
                     {
                         "name": f"ue.{track_event.event_name.value}",
@@ -83,7 +83,6 @@ class TestingBackend(LoggerBackend):
 
         testing.requests.append(
             {
-                "user_ids": [track_event.user_id for track_event in track_event_data],
                 "payload": payload,
                 "can_be_asynchronously_retried": can_be_asynchronously_retried,
             }
