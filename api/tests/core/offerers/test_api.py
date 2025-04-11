@@ -482,6 +482,35 @@ class DeleteVenueTest:
         assert offerers_models.Venue.query.count() == 0
         assert educational_models.CollectivePlaylist.query.count() == 0
 
+    @pytest.mark.parametrize(
+        "timespan",
+        [
+            [
+                datetime.datetime.utcnow() - datetime.timedelta(days=150),
+                datetime.datetime.utcnow() - datetime.timedelta(days=50),
+            ],
+            [
+                datetime.datetime.utcnow() - datetime.timedelta(days=100),
+                None,
+            ],
+            [
+                datetime.datetime.utcnow() + datetime.timedelta(days=10),
+                datetime.datetime.utcnow() + datetime.timedelta(days=30),
+            ],
+        ],
+    )
+    def test_delete_cascade_venue_should_abort_when_venue_has_active_or_future_custom_reimbursement_rule(
+        self, timespan
+    ):
+        venue = offerers_factories.VenueFactory()
+        finance_factories.CustomReimbursementRuleFactory(venue=venue, offer=None, timespan=timespan)
+
+        with pytest.raises(offerers_exceptions.CannotDeleteVenueWithActiveOrFutureCustomReimbursementRule):
+            offerers_api.delete_venue(venue.id)
+
+        assert offerers_models.Venue.query.count() == 1
+        assert finance_models.CustomReimbursementRule.query.count() == 1
+
 
 class EditVenueContactTest:
     def test_create_venue_contact(self, app):
@@ -1229,6 +1258,66 @@ class DeleteOffererTest:
         assert offerers_models.Offerer.query.count() == 0
         assert educational_models.CollectiveOfferTemplate.query.count() == 0
         assert educational_models.CollectivePlaylist.query.count() == 0
+
+    @pytest.mark.parametrize(
+        "timespan",
+        [
+            [
+                datetime.datetime.utcnow() - datetime.timedelta(days=100),
+                datetime.datetime.utcnow() - datetime.timedelta(days=50),
+            ],
+            [
+                datetime.datetime.utcnow() - datetime.timedelta(days=100),
+                None,
+            ],
+            [
+                datetime.datetime.utcnow() + datetime.timedelta(days=10),
+                datetime.datetime.utcnow() + datetime.timedelta(days=30),
+            ],
+        ],
+    )
+    def test_delete_cascade_offerer_should_abort_when_offerer_has_active_or_future_custom_reimbursement_rule(
+        self, timespan
+    ):
+        offerer = offerers_factories.OffererFactory()
+        finance_factories.CustomReimbursementRuleFactory(offerer=offerer, offer=None, timespan=timespan)
+
+        with pytest.raises(offerers_exceptions.CannotDeleteOffererWithActiveOrFutureCustomReimbursementRule):
+            offerers_api.delete_offerer(offerer.id)
+
+        assert offerers_models.Offerer.query.count() == 1
+        assert finance_models.CustomReimbursementRule.query.count() == 1
+
+    @pytest.mark.parametrize(
+        "timespan",
+        [
+            [
+                datetime.datetime.utcnow() - datetime.timedelta(days=100),
+                datetime.datetime.utcnow() - datetime.timedelta(days=50),
+            ],
+            [
+                datetime.datetime.utcnow() - datetime.timedelta(days=100),
+                datetime.datetime.utcnow() + datetime.timedelta(days=30),
+            ],
+            [
+                datetime.datetime.utcnow() + datetime.timedelta(days=10),
+                datetime.datetime.utcnow() + datetime.timedelta(days=30),
+            ],
+        ],
+    )
+    def test_delete_cascade_offerer_should_abort_when_venue_has_active_or_future_custom_reimbursement_rule(
+        self, timespan
+    ):
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        finance_factories.CustomReimbursementRuleFactory(venue=venue, offer=None, timespan=timespan)
+
+        with pytest.raises(offerers_exceptions.CannotDeleteOffererWithActiveOrFutureCustomReimbursementRule):
+            offerers_api.delete_offerer(offerer.id)
+
+        assert offerers_models.Offerer.query.count() == 1
+        assert offerers_models.Venue.query.count() == 1
+        assert finance_models.CustomReimbursementRule.query.count() == 1
 
 
 class SearchOffererTest:

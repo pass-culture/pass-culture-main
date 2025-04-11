@@ -573,6 +573,14 @@ def delete_venue(venue_id: int) -> None:
             offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
         ).delete(synchronize_session=False)
 
+    venue_associated_with_reimbursement_rule = db.session.query(
+        finance_models.CustomReimbursementRule.query.filter(
+            finance_models.CustomReimbursementRule.venueId == venue_id
+        ).exists()
+    ).scalar()
+    if venue_associated_with_reimbursement_rule:
+        raise exceptions.CannotDeleteVenueWithActiveOrFutureCustomReimbursementRule()
+
     offer_ids_to_delete = _delete_objects_linked_to_venue(venue_id)
 
     # Warning: we should only delete rows where the "venueId" is the
@@ -2271,6 +2279,19 @@ def delete_offerer(offerer_id: int) -> None:
     if offerer_has_bookings or offerer_has_collective_bookings:
         raise exceptions.CannotDeleteOffererWithBookingsException()
 
+    offerer_associated_with_reimbursement_rule = db.session.query(
+        finance_models.CustomReimbursementRule.query.outerjoin(finance_models.CustomReimbursementRule.venue)
+        .filter(
+            sa.or_(
+                finance_models.CustomReimbursementRule.offererId == offerer_id,
+                offerers_models.Venue.managingOffererId == offerer_id,
+            )
+        )
+        .exists()
+    ).scalar()
+    if offerer_associated_with_reimbursement_rule:
+        raise exceptions.CannotDeleteOffererWithActiveOrFutureCustomReimbursementRule()
+
     venue_ids_query = offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).with_entities(
         offerers_models.Venue.id
     )
@@ -2294,6 +2315,7 @@ def delete_offerer(offerer_id: int) -> None:
         offerers_models.VenuePricingPointLink.venueId.in_(venue_ids)
         | offerers_models.VenuePricingPointLink.pricingPointId.in_(venue_ids),
     ).delete(synchronize_session=False)
+
     offerers_models.Venue.query.filter(offerers_models.Venue.managingOffererId == offerer_id).delete(
         synchronize_session=False
     )

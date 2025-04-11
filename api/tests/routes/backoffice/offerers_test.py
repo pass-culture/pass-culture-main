@@ -543,6 +543,20 @@ class DeleteOffererTest(PostEndpointHelper):
             == "Impossible de supprimer une entité juridique pour laquelle il existe des réservations"
         )
 
+    def test_cant_delete_offerer_with_custom_reimbursement_rule(self, legit_user, authenticated_client):
+        offerer_to_delete = offerers_factories.OffererFactory()
+        finance_factories.CustomReimbursementRuleFactory(offer=None, offerer=offerer_to_delete)
+        offerer_to_delete_id = offerer_to_delete.id
+
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer_to_delete.id, follow_redirects=True)
+        assert response.status_code == 200  # after redirect
+        assert offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_to_delete_id).count() == 1
+
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Impossible de supprimer une entité juridique ayant un tarif dérogatoire (passé, actif ou futur)"
+        )
+
     def test_no_script_injection_in_offerer_name(self, legit_user, authenticated_client):
         offerer_id = offerers_factories.NotValidatedOffererFactory(name="<script>alert('coucou')</script>").id
 

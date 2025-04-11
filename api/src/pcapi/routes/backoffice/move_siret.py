@@ -107,7 +107,7 @@ def _render_confirmation_page(
     target_venue: offerers_models.Venue,
     code: int = 200,
 ) -> utils.BackofficeResponse:
-    active_custom_reimbursement_rule_exists = db.session.query(
+    has_active_or_future_custom_reimbursement_rule = db.session.query(
         finance_models.CustomReimbursementRule.query.filter(
             finance_models.CustomReimbursementRule.venueId == source_venue.id,
             sa.or_(
@@ -116,11 +116,6 @@ def _render_confirmation_page(
             ),
         ).exists()
     ).scalar()
-    if active_custom_reimbursement_rule_exists:
-        flash(
-            "Ce partenaire culturel a au moins un tarif dérogatoire qui se termine dans le futur. Si vous validez l'action il sera clôturé",
-            "info",
-        )
 
     return (
         render_template(
@@ -130,6 +125,7 @@ def _render_confirmation_page(
             source_venue=source_venue,
             target_venue=target_venue,
             target_yearly_revenue=siret_api.get_yearly_revenue(target_venue.id),
+            has_active_or_future_custom_reimbursement_rule=has_active_or_future_custom_reimbursement_rule,
         ),
         code,
     )
