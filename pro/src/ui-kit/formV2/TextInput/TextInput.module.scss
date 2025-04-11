@@ -12,6 +12,16 @@
   &-readonly {
     min-height: rem.torem(40px);
   }
+
+  &-group {
+    display: flex;
+    align-items: center;
+
+    &-extension {
+      display: flex;
+      margin-left: 1rem;
+    }
+  }
 }
 
 .input-layout {
