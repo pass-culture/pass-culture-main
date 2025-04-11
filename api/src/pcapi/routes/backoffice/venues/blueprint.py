@@ -1223,7 +1223,7 @@ def _render_remove_siret_content(
         ).exists()
     ).scalar()
     if active_custom_reimbursement_rule_exists:
-        info = "Ce partenaire culturel a au moins un tarif dérogatoire qui se termine dans le futur. Si vous validez l'action il sera clôturé"
+        info = "Ce partenaire culturel est associé à au moins un tarif dérogatoire actif ou futur. Confirmer l'action mettra automatiquement fin à ce tarif dérogatoire."
 
     return (
         render_template(

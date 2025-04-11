@@ -1,7 +1,7 @@
 {% extends "layouts/connected.html" %}
 {% from "components/badges.html" import build_venue_badges with context %}
 {% macro build_venue_card(venue, yearly_revenue) %}
-  <div class="card">
+  <div class="card shadow">
     <div class="card-body">
       <h5 class="mb-3">{{ build_venue_badges(venue) }}</h5>
       <h5 class="card-title">{{ venue.name | upper }}</h5>
@@ -27,8 +27,8 @@
       </div>
       <a href="{{ url_for('backoffice_web.venue.get', venue_id=venue.id) }}"
          target="_blank"
-         class="card-link">
-        <button class="btn lead px-0 fw-bold mt-1">CONSULTER LE PROFIL</button>
+         class="btn btn-md btn-outline-primary fw-bold mt-1">
+        CONSULTER LE PROFIL <i class="bi bi-arrow-up-right"></i>
       </a>
     </div>
   </div>
@@ -46,6 +46,23 @@
         {{ build_venue_card(target_venue, target_yearly_revenue) }}
       </div>
     </div>
+    {% if has_active_or_future_custom_reimbursement_rule %}
+      <div class="alert alert-warning mt-3 py-3 text-center fs-3"
+           role="alert">
+        <div class="d-flex flex-row justify-content-around align-items-center w-100">
+          <i class="bi bi-exclamation-triangle-fill fs-1 align-middle"></i>
+          <div>
+            Le partenaire culturel source est associé à au moins un
+            <a href="{{ url_for('backoffice_web.reimbursement_rules.list_custom_reimbursement_rules', venue=source_venue.id) }}"
+               target="_blank">tarif dérogatoire</a>
+            actif ou futur.
+            <br />
+            <span class="fw-bold">Confirmer l'action mettra automatiquement fin à ce tarif dérogatoire.</span>
+          </div>
+          <i class="bi bi-exclamation-triangle-fill fs-1 "></i>
+        </div>
+      </div>
+    {% endif %}
     <div class="d-flex justify-content-end py-4">
       <a href="{{ url_for('.move_siret') }}"
          class="btn btn-outline-primary mx-4"
@@ -64,5 +81,4 @@
         </form>
       </div>
     </div>
-  </div>
-{% endblock page %}
+  {% endblock page %}
