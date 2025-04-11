@@ -38,6 +38,7 @@ interface ImageEditorProps extends ImageEditorConfig {
   initialPosition?: Position
   initialScale?: number
   children?: never
+  onChangeDone?: () => void
 }
 
 export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
@@ -52,6 +53,7 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       initialPosition = { x: 0.5, y: 0.5 },
       maxScale = 4,
       initialScale = 1,
+      onChangeDone,
     },
     ref
   ) => {
@@ -105,10 +107,10 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
     const drawCropBorder = () => {
       const canvas = document.querySelector('canvas')
       const ctx = canvas?.getContext('2d')
-
       if (!ctx) {
         return
       }
+
       const canvasTools = new CanvasTools(ctx)
       canvasTools.drawArea({
         width: 0,
@@ -131,14 +133,14 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       <div className={style['image-editor']}>
         <AvatarEditor
           border={[responsiveCropBorderWidth, responsiveCropBorderHeight]}
-          color={[0, 0, 0, 0.4]}
+          color={[0, 0, 0, 0.2]}
           crossOrigin="anonymous"
           height={responsiveCanvasHeight}
           image={image}
           onImageChange={drawCropBorder}
           onImageReady={drawCropBorder}
           onMouseMove={drawCropBorder}
-          onMouseUp={drawCropBorder}
+          onMouseUp={onChangeDone}
           onPositionChange={onPositionChange}
           position={position}
           ref={ref}

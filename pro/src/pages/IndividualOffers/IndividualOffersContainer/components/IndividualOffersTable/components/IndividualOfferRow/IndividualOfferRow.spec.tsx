@@ -402,8 +402,9 @@ describe('IndividualOfferRow', () => {
         )
         await userEvent.upload(inputField, mockFile)
 
-        // dialog: crop img
-        expect(screen.getByText('Modifier une image')).toBeInTheDocument()
+        await waitFor(() => {
+          expect(screen.getByText(/Modifier une image/)).toBeInTheDocument()
+        })
 
         await userEvent.click(screen.getByText('Enregistrer'))
         expect(api.createThumbnail).toHaveBeenCalled()

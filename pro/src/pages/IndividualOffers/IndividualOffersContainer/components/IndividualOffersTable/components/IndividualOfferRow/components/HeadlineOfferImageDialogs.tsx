@@ -13,8 +13,8 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import {
-  OnImageUploadArgs,
   ModalImageEdit,
+  OnImageUploadArgs,
 } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
@@ -120,6 +120,7 @@ export const HeadlineOfferImageDialogs = ({
       <DialogBuilder
         open={isImageUploaderOpen}
         onOpenChange={() => setIsImageUploaderOpen(false)}
+        variant="drawer"
       >
         <ModalImageEdit
           mode={UploaderModeEnum.OFFER}
