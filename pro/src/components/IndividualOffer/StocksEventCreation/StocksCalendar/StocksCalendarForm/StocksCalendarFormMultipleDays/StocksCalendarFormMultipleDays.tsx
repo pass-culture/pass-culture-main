@@ -34,7 +34,7 @@ export function StocksCalendarFormMultipleDays({
 
   useEffect(() => {
     //  When the selected dates change, update the checked weekdays
-    const subscription = form.watch(async (value, { name }) => {
+    const subscription = form.watch((value, { name }) => {
       if (name === 'multipleDaysStartDate' || name === 'multipleDaysEndDate') {
         const start = value.multipleDaysStartDate
           ? new Date(value.multipleDaysStartDate)
@@ -44,17 +44,18 @@ export function StocksCalendarFormMultipleDays({
           : null
         const weekDaysInBetween =
           start && end ? getWeekDaysInBetweenDates(start, end) : []
-
-        form.setValue(
-          'multipleDaysWeekDays',
-          weekDays.map((d) => ({
-            ...d,
-            checked: weekDaysInBetween.some(
-              (dInBetween) => dInBetween.value === d.value
-            ),
-          }))
-        )
-        await form.trigger('multipleDaysWeekDays')
+        setTimeout(async () => {
+          form.setValue(
+            'multipleDaysWeekDays',
+            weekDays.map((d) => ({
+              ...d,
+              checked: weekDaysInBetween.some(
+                (dInBetween) => dInBetween.value === d.value
+              ),
+            }))
+          )
+          await form.trigger('multipleDaysWeekDays')
+        })
       }
     })
     return () => subscription.unsubscribe()
