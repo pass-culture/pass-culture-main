@@ -15,7 +15,7 @@
          {% if field.flags.maxlength %}maxlength="{{ field.flags.maxlength }}"{% endif %}
          {% if field.flags.disabled %}disabled{% endif %}
          {% if field.flags.max is not none %}max="{{ field.flags.max }}"{% endif %}
-         {% if field.flags.min is not none %}min="{{ field.flags.min }}"{% endif %} />
+         {% if field.flags.min is not none %}min="{{ field.flags.min }}"{% endif %} />
   <label class="label-element-form"
          data-original-name="{{ field.name }}"
          for="{{ string_field_id }}">{{ field.label.text }}</label>
