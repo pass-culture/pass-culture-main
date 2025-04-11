@@ -139,6 +139,7 @@ export const handleAddressSelect = (
   }
   setFieldValue('postalCode', selectedItem?.extraData?.postalCode ?? '')
   setFieldValue('city', selectedItem?.extraData?.city ?? '')
+  setFieldValue('cityCode', selectedItem?.extraData?.cityCode ?? '')
   setFieldValue('latitude', selectedItem?.extraData?.latitude ?? '')
   setFieldValue('longitude', selectedItem?.extraData?.longitude ?? '')
   setFieldValue('banId', selectedItem?.value ?? '')

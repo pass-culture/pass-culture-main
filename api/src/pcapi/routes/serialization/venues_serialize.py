@@ -282,6 +282,8 @@ class GetCollectiveVenueResponseModel(BaseModel):
 
 
 class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
+    #bulle Lucie suggerer mettre champs liés a l adresse dans adresse? / enlever et mettre modele addresse?
+    # en fait obligatoire cf notes
     name: offerers_schemas.VenueName | None
     street: offerers_schemas.VenueAddress | None
     banId: offerers_schemas.VenueBanId | None
@@ -290,6 +292,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     longitude: float | str | None
     bookingEmail: offerers_schemas.VenueBookingEmail | None
     postalCode: offerers_schemas.VenuePostalCode | None
+    # inseeCode: str | None
     city: offerers_schemas.VenueCity | None
     publicName: offerers_schemas.VenuePublicName | None
     comment: offerers_schemas.VenueComment | None

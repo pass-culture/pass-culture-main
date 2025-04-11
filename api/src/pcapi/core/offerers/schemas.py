@@ -121,6 +121,7 @@ class AddressBodyModel(BaseModel):
     isManualEdition: bool = False
     banId: str | None
     city: VenueCity
+    citycode: str | None
     label: str | None
     latitude: float | str
     longitude: float | str

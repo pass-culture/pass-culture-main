@@ -13,6 +13,7 @@ export interface FeatureAdresseApi {
   properties: {
     name: string
     city: string
+    citycode: string
     id: string
     label: string
     postcode: string
@@ -38,6 +39,7 @@ export interface AdresseApiJson {
 export interface AdresseData {
   address: string
   city: string
+  cityCode: string
   id: string
   latitude: number
   longitude: number

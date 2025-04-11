@@ -98,6 +98,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         "contact",
         "openingHours",
     }
+    # NOTEBULLE has inseecode but not in model for body? so never changed?
     location_fields = {"street", "banId", "latitude", "longitude", "postalCode", "city", "inseeCode", "isManualEdition"}
     update_venue_attrs = body.dict(exclude=not_venue_fields, exclude_unset=True)
     accessibility_fields = [
