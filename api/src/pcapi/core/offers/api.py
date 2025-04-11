@@ -212,18 +212,16 @@ def create_draft_offer(
 
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
     body_ean = body.extra_data.pop("ean", None)
-
     validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api, ean=body_ean)
 
     if feature.FeatureToggle.WIP_EAN_CREATION.is_active():
         validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
 
     fields = {key: value for key, value in body.dict(by_alias=True).items() if key not in ("venueId", "callId")}
+    fields.update({"ean": body_ean})
     fields.update(_get_accessibility_compliance_fields(venue))
     fields.update({"withdrawalDetails": venue.withdrawalDetails})
-
     fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
-    fields.update({"ean": body_ean})
 
     offer = models.Offer(
         **fields,
@@ -244,7 +242,7 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
     fields = body.dict(by_alias=True, exclude_unset=True)
     body_ean = body.extra_data.get("ean", None) if body.extra_data else None
     if body_ean:
-        fields["ean"] = fields.get("extraData", {}).pop("ean", None)
+        fields["ean"] = fields["extraData"].pop("ean")
 
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     if not updates:
