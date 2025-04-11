@@ -342,6 +342,10 @@ export const StocksEventEdition = ({
       priceCategoriesOptions,
       departmentCode,
     })
+
+    // Always reload the offer to get the updated status.
+    await mutate([GET_OFFER_QUERY_KEY, offer.id])
+
     setIsRecurrenceModalOpen(false)
   }
 
@@ -379,6 +383,8 @@ export const StocksEventEdition = ({
         }
       }
 
+      // Always reload the offer to get the updated status.
+      await mutate([GET_OFFER_QUERY_KEY, offer.id])
       notify.success('Le stock a été supprimé.')
     } catch (error) {
       if (
