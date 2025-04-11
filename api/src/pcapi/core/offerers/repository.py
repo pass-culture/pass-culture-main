@@ -418,7 +418,10 @@ def get_emails_by_offerer(offerer: models.Offerer) -> set[str]:
 
 def find_venues_of_offerer_from_siret(siret: str) -> tuple[models.Offerer | None, list[models.Venue]]:
     siren = siret[:9]
-    offerer = models.Offerer.query.filter(models.Offerer.siren == siren).one_or_none()
+    offerer = models.Offerer.query.filter(
+        models.Offerer.siren == siren,
+        sa.not_(models.Offerer.isRejected),
+    ).one_or_none()
     if not offerer:
         return None, []
     venues = (

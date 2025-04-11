@@ -909,14 +909,7 @@ def delete_api_key_by_user(user: users_models.User, api_key_prefix: str) -> None
     db.session.delete(api_key)
 
 
-def _fill_in_offerer(
-    offerer: offerers_models.Offerer, offerer_informations: offerers_serialize.CreateOffererQueryModel
-) -> None:
-    offerer.street = offerer_informations.street  # type: ignore[method-assign]
-    offerer.city = offerer_informations.city
-    offerer.name = offerer_informations.name
-    offerer.postalCode = offerer_informations.postalCode
-    offerer.siren = offerer_informations.siren
+def _initialize_offerer(offerer: offerers_models.Offerer) -> None:
     if settings.IS_INTEGRATION:
         offerer.validationStatus = ValidationStatus.VALIDATED
     else:
@@ -995,13 +988,10 @@ def create_offerer(
         # in this case it is passed to NEW if the offerer is not rejected
         user_offerer = offerers_models.UserOfferer.query.filter_by(userId=user.id, offererId=offerer.id).one_or_none()
         if not user_offerer:
-            ape_code = sirene.get_siren(offerer_informations.siren, raise_if_non_public=False).ape_code
-            if (
-                FeatureToggle.WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY
-                and ape_code
-                and not APE_TAG_MAPPING.get(ape_code, False)
-            ):
-                raise offerers_exceptions.NotACollectivity()
+            if not offerer.isRejected and FeatureToggle.WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY:
+                ape_code = sirene.get_siren(offerer_informations.siren, raise_if_non_public=False).ape_code
+                if ape_code and not APE_TAG_MAPPING.get(ape_code, False):
+                    raise offerers_exceptions.NotACollectivity()
             user_offerer = models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
             db.session.add(user_offerer)
             db.session.flush()
@@ -1010,9 +1000,22 @@ def create_offerer(
             # When offerer was rejected, it is considered as a new offerer in validation process;
             # history is kept with same id and siren
             is_new = True
-            _fill_in_offerer(offerer, offerer_informations)
+            update_offerer(
+                offerer,
+                author,
+                name=offerer_informations.name,
+                city=offerer_informations.city,
+                postal_code=offerer_informations.postalCode,
+                street=offerer_informations.street,
+            )
+            _initialize_offerer(offerer)
             comment = (comment + "\n" if comment else "") + "Nouvelle demande sur un SIREN précédemment rejeté"
             user_offerer.validationStatus = ValidationStatus.VALIDATED
+            venue_ids = offerers_repository.get_venue_ids_by_offerer_ids((offerer.id,))
+            # Delete venues of rejected offerer so that a new one is created from onboarding data.
+            # Rejected venue should not have any booking, pricing, reimbursement rule, so it should not raise exception.
+            for venue_id in venue_ids:
+                delete_venue(venue_id)
         elif not user_offerer.isValidated:
             user_offerer.validationStatus = ValidationStatus.NEW
             user_offerer.dateCreated = datetime.utcnow()
@@ -1029,7 +1032,12 @@ def create_offerer(
     else:
         is_new = True
         offerer = models.Offerer()
-        _fill_in_offerer(offerer, offerer_informations)
+        offerer.street = offerer_informations.street  # type: ignore[method-assign]
+        offerer.city = offerer_informations.city
+        offerer.name = offerer_informations.name
+        offerer.postalCode = offerer_informations.postalCode
+        offerer.siren = offerer_informations.siren
+        _initialize_offerer(offerer)
         user_offerer = grant_user_offerer_access(offerer, user)
         db.session.add_all([offerer, user_offerer])
         db.session.flush()
@@ -1083,7 +1091,11 @@ def grant_user_offerer_access(offerer: models.Offerer, user: users_models.User) 
 def is_user_offerer_already_exist(user: users_models.User, siren: str) -> bool:
     return db.session.query(
         models.UserOfferer.query.join(models.UserOfferer.offerer)
-        .filter(models.UserOfferer.user == user, models.Offerer.siren == siren)
+        .filter(
+            models.UserOfferer.user == user,
+            models.Offerer.siren == siren,
+            models.UserOfferer.validationStatus.not_in((ValidationStatus.REJECTED, ValidationStatus.DELETED)),
+        )
         .exists()
     ).scalar()
 
@@ -1099,7 +1111,7 @@ def update_offerer(
     name: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     city: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     postal_code: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
-    street: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
+    street: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     tags: list[models.OffererTag] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
 ) -> None:
     modified_info: dict[str, dict[str, str | None]] = {}
