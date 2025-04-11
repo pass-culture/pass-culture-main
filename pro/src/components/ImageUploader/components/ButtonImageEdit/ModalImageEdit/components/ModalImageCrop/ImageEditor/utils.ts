@@ -3,7 +3,6 @@
 export const coordonateToPosition = (coordonate: number, size: number) =>
   coordonate + size / 2
 
-// height_crop_percent of croppingRect is the ratio of the cropped image height
-// compare to the original image height which corresponds to the inverse of the zoom scale
-export const heightCropPercentToScale = (heightCropPercent: number) =>
-  1 / heightCropPercent
+// width_crop_percent of croppingRect is the ratio of the cropped image width
+export const widthCropPercentToScale = (widthCropPercent: number) =>
+  100 / (widthCropPercent * 100)
