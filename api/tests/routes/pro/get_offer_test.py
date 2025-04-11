@@ -162,6 +162,7 @@ class Returns200Test:
             "publicationDate": None,
             "description": "Tatort, but slower",
             "durationMinutes": 60,
+            "eventOpeningHours": [],
             "extraData": None,
             "externalTicketOfficeUrl": "http://example.net",
             "hasBookingLimitDatetimesPassed": False,
@@ -228,6 +229,41 @@ class Returns200Test:
             "withdrawalType": "on_site",
             "withdrawalDelay": 60 * 30,
         }
+
+    def test_returns_an_event_stock_with_opening_hours(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        start = datetime.utcnow() + timedelta(hours=10)
+        end = datetime.utcnow() + timedelta(hours=100)
+        offers_factories.EventWithOpeningHoursStockFactory(
+            offer=offer,
+            eventOpeningHours__startDatetime=start,
+            eventOpeningHours__endDatetime=end,
+        )
+
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
+
+        assert response.json["id"] == offer_id
+        assert response.json["eventOpeningHours"] == [
+            {
+                "id": offer.eventOpeningHours[0].id,
+                "openingHours": {
+                    "MONDAY": [{"open": "10:00:00", "close": "13:00:00"}, {"open": "14:00:00", "close": "19:30:00"}],
+                    "TUESDAY": [{"open": "10:00:00", "close": "13:00:00"}, {"open": "14:00:00", "close": "19:30:00"}],
+                    "WEDNESDAY": [{"open": "10:00:00", "close": "13:00:00"}, {"open": "14:00:00", "close": "19:30:00"}],
+                    "THURSDAY": [{"open": "10:00:00", "close": "13:00:00"}, {"open": "14:00:00", "close": "19:30:00"}],
+                    "FRIDAY": [],
+                    "SATURDAY": [],
+                    "SUNDAY": [],
+                },
+                "startDatetime": datetime.strftime(start, "%Y-%m-%dT%H:%M:%S.%fZ"),
+                "endDatetime": datetime.strftime(end, "%Y-%m-%dT%H:%M:%S.%fZ"),
+            }
+        ]
 
     @time_machine.travel("2019-10-15 00:00:00")
     def test_returns_a_thing_stock(self, client):
