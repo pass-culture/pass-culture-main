@@ -34,20 +34,24 @@ export function StocksCalendarForm({
   onAfterValidate,
 }: StocksCalendarFormProps) {
   const notify = useNotification()
-  const form = useForm<StocksCalendarFormValues>({
-    defaultValues: {
-      durationType: DurationTypeOption.ONE_DAY,
-      timeSlotType: TimeSlotTypeOption.SPECIFIC_TIME,
-      specificTimeSlots: [{ slot: '' }],
-      pricingCategoriesQuantities: [{ isUnlimited: true, priceCategory: '' }],
-      oneDayDate: '',
-      multipleDaysStartDate: '',
-      multipleDaysHasNoEndDate: false,
-      multipleDaysWeekDays: [],
-    },
-    mode: 'onTouched',
-    resolver: yupResolver(validationSchema),
-  })
+  const form = useForm<StocksCalendarFormValues, any, StocksCalendarFormValues>(
+    {
+      defaultValues: {
+        durationType: DurationTypeOption.ONE_DAY,
+        timeSlotType: TimeSlotTypeOption.SPECIFIC_TIME,
+        specificTimeSlots: [{ slot: '' }],
+        pricingCategoriesQuantities: [{ isUnlimited: true, priceCategory: '' }],
+        oneDayDate: '',
+        multipleDaysStartDate: '',
+        multipleDaysHasNoEndDate: false,
+        multipleDaysWeekDays: [],
+      },
+      mode: 'onTouched',
+      resolver: yupResolver<StocksCalendarFormValues, any, any>(
+        validationSchema
+      ),
+    }
+  )
 
   const onSubmit = async () => {
     const departmentCode = getDepartmentCode(offer)

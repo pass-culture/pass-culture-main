@@ -38,6 +38,7 @@ describe('LostPassword', () => {
         screen.getByLabelText(/Adresse email */),
         'coucou@example.com'
       )
+      await userEvent.tab()
       await userEvent.click(screen.getByText(/Valider/))
 
       // he has been redirected to next step
@@ -69,6 +70,7 @@ describe('LostPassword', () => {
           screen.getByLabelText(/Adresse email */),
           'coucou@example.com'
         )
+        await userEvent.tab()
         await userEvent.click(screen.getByText(/Valider/))
         expect(screen.getByText(/Merci/)).toBeInTheDocument()
       })
@@ -88,6 +90,7 @@ describe('LostPassword', () => {
           screen.getByLabelText(/Adresse email */),
           'coucou@example.com'
         )
+        await userEvent.tab()
         await userEvent.click(screen.getByText(/Réinitialiser/))
         expect(
           screen.getByText(/Vous allez recevoir un email !/)
