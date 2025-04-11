@@ -715,6 +715,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
     sa.Index("offer_idAtProvider", idAtProvider)
+    sa.Index("offer_ean_idx", extraData["ean"].astext)
     sa.Index("offer_visa_idx", extraData["visa"].astext)
     sa.Index("offer_authorId_idx", authorId, postgresql_using="btree")
     sa.Index("ix_offer_lastProviderId", lastProviderId, postgresql_where=lastProviderId.is_not(None))

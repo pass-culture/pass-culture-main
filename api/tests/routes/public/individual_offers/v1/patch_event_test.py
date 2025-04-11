@@ -170,7 +170,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
             subcategoryId="FESTIVAL_ART_VISUEL",
             extraData={
                 "author": "Maurice",
-                "stageDirector": "",
+                "stageDirector": "",  # faulty stageDirector
                 "performer": "Pink Pâtisserie",
             },
             lastProvider=venue_provider.provider,
