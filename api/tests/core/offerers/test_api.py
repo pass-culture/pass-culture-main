@@ -587,14 +587,14 @@ class ApiKeyTest:
 
 
 class CreateOffererTest:
-    def test_create_new_offerer_with_validation_token_if_siren_is_not_already_registered(self):
+    def test_create_offerer_if_siren_is_not_already_registered(self):
         # Given
         gen_offerer_tags()
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer",
             siren="777084112",
-            address="123 rue de Paris",
+            street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
         )
@@ -626,13 +626,13 @@ class CreateOffererTest:
         assert actions_list[0].user == user
         assert actions_list[0].offerer == created_offerer
 
-    def test_create_new_offerer_attachment_with_validation_token_if_siren_is_already_registered(self):
+    def test_create_new_offerer_attachment_if_siren_is_already_registered(self):
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
-            address="123 rue de Paris",
+            street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
         )
@@ -661,14 +661,14 @@ class CreateOffererTest:
         assert actions_list[0].offerer == offerer
 
     @pytest.mark.features(WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY=True)
-    def test_create_new_offerer_attachment_with_validation_token_if_siren_is_already_registered_is_not_a_collectivity(
+    def test_create_new_offerer_attachment_if_already_registered_siren_is_not_a_collectivity(
         self,
     ):
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer NOT A Collectivity",
             siren="418166096",
-            address="123 rue de Paris",
+            street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
         )
@@ -678,12 +678,12 @@ class CreateOffererTest:
             offerers_api.create_offerer(user, offerer_informations)
 
     @pytest.mark.features(WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY=True)
-    def test_create_new_offerer_attachment_with_validation_token_if_siren_is_already_registered_is_a_collectivity(self):
+    def test_create_new_offerer_attachment_if_already_registered_siren_is_a_collectivity(self):
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer Collectivity",
             siren="777084112",
-            address="123 rue de Paris",
+            street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
         )
@@ -715,7 +715,7 @@ class CreateOffererTest:
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
-            address="123 rue de Paris",
+            street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
         )
@@ -736,21 +736,21 @@ class CreateOffererTest:
         assert created_user_offerer.validationStatus == ValidationStatus.NEW
         assert created_user_offerer.dateCreated is not None
 
-    def test_create_new_offerer_with_validation_token_if_siren_was_previously_rejected(self):
+    def test_create_offerer_if_siren_was_previously_rejected(self):
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
-            address="123 rue de Paris",
+            street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
         )
         offerer = offerers_factories.RejectedOffererFactory(
-            name="Rejected Offerer",
-            siren=offerer_informations.siren,
+            **{key: value for key, value in offerer_informations.dict().items() if value}
         )
         first_creation_date = offerer.dateCreated
+        offerers_factories.VenueFactory(managingOfferer=offerer)
 
         # When
         created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
@@ -781,19 +781,24 @@ class CreateOffererTest:
         assert actions_list[0].offerer == created_offerer
         assert actions_list[0].comment == "Nouvelle demande sur un SIREN précédemment rejeté"
 
-    def test_create_new_offerer_with_validation_token_if_siren_was_previously_rejected_on_user_rejected(self):
+        assert not offerer.managedVenues
+
+    @pytest.mark.features(WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY=True)
+    def test_create_offerer_if_siren_was_previously_rejected_ff_on(self):
+        self.test_create_offerer_if_siren_was_previously_rejected()
+
+    def test_create_offerer_if_siren_was_previously_rejected_on_user_rejected(self):
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
-            address="123 rue de Paris",
+            street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
         )
         offerer = offerers_factories.RejectedOffererFactory(
-            name="Rejected Offerer",
-            siren=offerer_informations.siren,
+            **{key: value for key, value in offerer_informations.dict().items() if value}
         )
         offerers_factories.RejectedUserOffererFactory(user=user, offerer=offerer)
 
@@ -816,21 +821,24 @@ class CreateOffererTest:
         assert actions_list[0].offerer == created_offerer
         assert actions_list[0].comment == "Nouvelle demande sur un SIREN précédemment rejeté"
 
-    def test_create_new_offerer_with_validation_token_if_siren_was_previously_rejected_on_user_deleted(self):
+    def test_create_offerer_if_siren_was_previously_rejected_on_user_deleted(self):
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
-            address="123 rue de Paris",
+            street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
             latitude=48,
             longitude=2,
         )
         offerer = offerers_factories.RejectedOffererFactory(
-            name="Rejected Offerer",
+            name=offerer_informations.name,
             siren=offerer_informations.siren,
+            street=offerer_informations.street,
+            postalCode=offerer_informations.postalCode,
+            city=offerer_informations.city,
         )
         offerers_factories.DeletedUserOffererFactory(user=user, offerer=offerer)
 
@@ -859,7 +867,7 @@ class CreateOffererTest:
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
-            address="123 rue de Paris",
+            street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
         )
@@ -890,7 +898,7 @@ class CreateOffererTest:
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
-            address="123 rue de Paris",
+            street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
         )
@@ -926,7 +934,7 @@ class CreateOffererTest:
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
-            address="123 rue de Paris",
+            street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
         )
@@ -957,7 +965,7 @@ class CreateOffererTest:
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
-            address="123 rue de Paris",
+            street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
         )
@@ -988,7 +996,7 @@ class CreateOffererTest:
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer",
             siren="777084112",
-            address="123 rue de Paris",
+            street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
         )
@@ -1009,14 +1017,14 @@ class CreateOffererTest:
         not_a_partner_offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer Not Partner",
             siren="777084112",
-            address="123 rue de Paris",
+            street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
         )
         partner_offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer Partner",
             siren="777084121",
-            address="123 rue de Paname",
+            street="123 rue de Paname",
             postalCode="93100",
             city="Montreuil",
         )
@@ -2738,6 +2746,98 @@ class CreateFromOnboardingDataTest:
         assert len(mails_testing.outbox) == 0
         # Venue Registration
         assert offerers_models.VenueRegistration.query.count() == 0
+
+    def test_previously_rejected_siren_same_user(self):
+        offerer = offerers_factories.RejectedOffererFactory(siren="853318459")
+        rejected_venue_id = offerers_factories.VenueFactory(managingOfferer=offerer, siret="85331845900031").id
+        user = users_factories.NonAttachedProFactory()
+        rejected_user_offerer = offerers_factories.RejectedUserOffererFactory(user=user, offerer=offerer)
+
+        onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
+        created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
+
+        assert offerers_models.Offerer.query.one() == offerer
+        assert offerer.isNew
+
+        assert created_user_offerer == rejected_user_offerer
+        assert created_user_offerer.offerer == offerer
+        assert created_user_offerer.user == user
+        assert created_user_offerer.isValidated
+        assert user.has_non_attached_pro_role
+
+        assert len(offerer.managedVenues) == 1
+        venue = offerer.managedVenues[0]
+        assert venue.id != rejected_venue_id
+        assert venue.publicName == onboarding_data.publicName
+
+        actions = history_models.ActionHistory.query.all()
+        assert len(actions) == 3
+
+        assert actions[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert actions[0].offerer == offerer
+        assert actions[0].authorUser == user
+        assert set(actions[0].extraData["modified_info"].keys()) == {"name", "street", "postalCode"}
+
+        assert actions[1].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions[1].offerer == offerer
+        assert actions[1].user == user
+        assert actions[1].authorUser == user
+        self.assert_common_action_history_extra_data(actions[1])
+
+        assert actions[2].actionType == history_models.ActionType.VENUE_CREATED
+        assert actions[2].venue == venue
+        assert actions[2].authorUser == user
+
+    @pytest.mark.features(WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY=True)
+    def test_previously_rejected_siren_same_user_ff_on(self):
+        self.test_previously_rejected_siren_same_user()
+
+    def test_previously_rejected_siren_other_user(self):
+        offerer = offerers_factories.RejectedOffererFactory(siren="853318459")
+        rejected_venue_id = offerers_factories.VenueFactory(managingOfferer=offerer, siret="85331845900031").id
+        rejected_user = users_factories.NonAttachedProFactory()
+        rejected_user_offerer = offerers_factories.RejectedUserOffererFactory(user=rejected_user, offerer=offerer)
+        new_user = users_factories.NonAttachedProFactory()
+
+        onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
+        created_user_offerer = offerers_api.create_from_onboarding_data(new_user, onboarding_data)
+
+        assert offerers_models.Offerer.query.one() == offerer
+        assert offerer.isNew
+
+        assert created_user_offerer != rejected_user_offerer
+        assert created_user_offerer.offerer == offerer
+        assert created_user_offerer.user == new_user
+        assert created_user_offerer.isValidated
+        assert new_user.has_non_attached_pro_role
+        assert rejected_user_offerer.isRejected
+
+        assert len(offerer.managedVenues) == 1
+        venue = offerer.managedVenues[0]
+        assert venue.id != rejected_venue_id
+        assert venue.publicName == onboarding_data.publicName
+
+        actions = history_models.ActionHistory.query.all()
+        assert len(actions) == 3
+
+        assert actions[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert actions[0].offerer == offerer
+        assert actions[0].authorUser == new_user
+        assert set(actions[0].extraData["modified_info"].keys()) == {"name", "street", "postalCode"}
+
+        assert actions[1].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions[1].offerer == offerer
+        assert actions[1].user == new_user
+        assert actions[1].authorUser == new_user
+        self.assert_common_action_history_extra_data(actions[1])
+
+        assert actions[2].actionType == history_models.ActionType.VENUE_CREATED
+        assert actions[2].venue == venue
+        assert actions[2].authorUser == new_user
+
+    @pytest.mark.features(WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY=True)
+    def test_previously_rejected_siren_other_user_ff_on(self):
+        self.test_previously_rejected_siren_other_user()
 
     def test_missing_address(self):
         user = users_factories.UserFactory(email="pro@example.com")
