@@ -1,4 +1,5 @@
 {% extends "layouts/connected.html" %}
+{% from "components/badges.html" import build_fraudulent_booking_badge with context %}
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
 {% from "components/bookings/extra_row.html" import build_individual_booking_extra_row with context %}
 {% import "components/forms.html" as forms with context %}
@@ -94,6 +95,7 @@
               <th scope="col">Stock</th>
               <th scope="col">Montant</th>
               <th scope="col">Statut</th>
+              {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}<th scope="col">Fraude</th>{% endif %}
               <th scope="col">Crédit actif</th>
               <th scope="col">Auteur de la validation</th>
               <th scope="col">Évènement comptable</th>
@@ -208,6 +210,9 @@
                 <td>{{ booking.stock.quantity }}</td>
                 <td>{{ booking.total_amount | format_amount(target=booking.user) }}</td>
                 <td>{{ booking | format_booking_status(with_badge=True) }}</td>
+                {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
+                  <td>{{ build_fraudulent_booking_badge(booking.fraudulentBookingTag, "Frauduleuse") }}</td>
+                {% endif %}
                 <td>{{ booking.deposit | format_active_deposit }}</td>
                 <td>{{ booking.validationAuthorType | format_booking_validation_author_type }}</td>
                 <td class="text-center">

@@ -192,6 +192,10 @@ class GetIndividualBookingListForm(BaseBookingListForm):
         choices=((1, "solo"), (2, "duo")),
         coerce=int,
     )
+    is_fraudulent = fields.PCSelectMultipleField(
+        "Réservation frauduleuse",
+        choices=(("true", "Frauduleuse"), ("false", "Non frauduleuse")),
+    )
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
@@ -204,6 +208,7 @@ class GetIndividualBookingListForm(BaseBookingListForm):
         self._fields.move_to_end("venue")
         self._fields.move_to_end("category")
         self._fields.move_to_end("status")
+        self._fields.move_to_end("is_fraudulent")
         self._fields.move_to_end("cancellation_reason")
         self._fields.move_to_end("cashflow_batches")
         self._fields.move_to_end("has_incident")
@@ -216,6 +221,7 @@ class GetIndividualBookingListForm(BaseBookingListForm):
             and not self.cancellation_reason.data
             and (not self.deposit.data or self.deposit.data == DEPOSIT_DEFAULT_VALUE)
             and len(self.is_duo.data) != 1
+            and len(self.is_fraudulent.data) != 1
         )
 
     @property

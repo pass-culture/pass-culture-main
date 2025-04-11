@@ -113,3 +113,11 @@ class ExternalBookingFactory(BaseFactory):
         model = models.ExternalBooking
 
     barcode = uuid.uuid4()
+
+
+class FraudulentBookingTagFactory(BaseFactory):
+    class Meta:
+        model = models.FraudulentBookingTag
+
+    booking = factory.SubFactory(BookingFactory)
+    author = factory.SubFactory(users_factories.AdminFactory)

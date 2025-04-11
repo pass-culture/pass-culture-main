@@ -1,3 +1,4 @@
+{% from "components/badges.html" import build_fraudulent_booking_badge %}
 {% import "components/links.html" as links with context %}
 {% from "components/connect_as.html" import build_connect_as_link %}
 <turbo-frame id="offerer_venues_frame">
@@ -8,7 +9,7 @@
       <th scope="col">ID</th>
       <th scope="col">Nom</th>
       <th scope="col">
-        {%+ if venues | map(attribute="ridet") | any +%}
+        {%+ if rows | map(attribute="Venue.ridet") | any +%}
         RIDET
         {%+ else +%}
         SIRET
@@ -20,10 +21,12 @@
       <th scope="col">Présence web</th>
       <th scope="col">Offres cibles</th>
       <th scope="col">Compte bancaire associé</th>
+      {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}<th scope="col">Fraude</th>{% endif %}
     </tr>
   </thead>
   <tbody>
-    {% for venue in venues %}
+    {% for row in rows %}
+      {% set venue = row.Venue %}
       <tr>
         <th scope="row"></th>
         <td class="fw-bolder">{{ links.build_venue_name_to_details_link(venue, text_attr="id") }}</td>
@@ -59,6 +62,9 @@
           {% set bank_account_link = venue.current_bank_account_link %}
           {% if bank_account_link %}{{ links.build_bank_account_name_to_details_link(bank_account_link.bankAccount) }}{% endif %}
         </td>
+        {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
+          <td>{{ build_fraudulent_booking_badge(row.has_fraudulent_booking, "Réservations frauduleuses") }}</td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>

@@ -70,6 +70,7 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     educational_models.CollectiveOfferRequest,
     educational_models.CollectiveOfferTemplateEducationalRedactor,
     bookings_models.ExternalBooking,
+    bookings_models.FraudulentBookingTag,
     bookings_models.Booking,
     educational_models.CollectiveStock,
     offers_models.Stock,

@@ -4,11 +4,12 @@ from decimal import Decimal
 import logging
 from random import choice
 
-from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.finance import api as finance_api
 import pcapi.core.finance.factories as finance_factories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
@@ -102,7 +103,7 @@ def _create_bookings_for_other_beneficiaries(
             else:
                 booking_amount = None
 
-            booking = BookingFactory(
+            booking = bookings_factories.BookingFactory(
                 user=user,
                 status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
                 stock=stock,
@@ -147,7 +148,7 @@ def _create_has_booked_some_bookings(
             stock.bookingLimitDatetime = datetime.utcnow() - timedelta(days=5)
             repository.save(stock)
 
-        booking = BookingFactory(
+        booking = bookings_factories.BookingFactory(
             user=user,
             status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
             stock=stock,
@@ -157,3 +158,20 @@ def _create_has_booked_some_bookings(
             finance_factories.UsedBookingFinanceEventFactory(booking=booking)
         booking_name = "{} / {} / {}".format(offer_name, user_name, booking.token)
         bookings_by_name[booking_name] = booking
+
+
+def create_fraudulent_bookings() -> None:
+    logger.info("create_fraudulent_bookings")
+    offerer = offerers_factories.OffererFactory(name="Entité avec des réservations frauduleuses")
+    good_venue = offerers_factories.VenueFactory(
+        name="Structure sans réservations frauduleuses", managingOfferer=offerer
+    )
+    bad_venue = offerers_factories.VenueFactory(
+        name="Structure avec des réservations frauduleuses", managingOfferer=offerer
+    )
+    bookings_factories.BookingFactory(stock__offer__venue=good_venue)
+    bookings_factories.BookingFactory(stock__offer__venue=good_venue)
+    bookings_factories.FraudulentBookingTagFactory(
+        booking__stock__offer__venue=bad_venue, booking__stock__offer__name="Offre avec réservation frauduleuse"
+    )
+    bookings_factories.BookingFactory(stock__offer__venue=bad_venue)

@@ -20,7 +20,7 @@
         <div class="card-body">
           <div class="d-flex flex-fill align-items-center">
             <h2 class="card-title text-primary">{{ build_connect_as_link(connect_as, venue.name, "link-primary") }}</h2>
-            <span class="fs-5 ps-4">{{ build_venue_badges(venue) }}</span>
+            <span class="fs-5 ps-4">{{ build_venue_badges(venue, has_fraudulent_booking) }}</span>
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if has_permission("MANAGE_PRO_ENTITY") %}
                 {{ build_modal_form("edit-venue", url_for("backoffice_web.venue.update_venue", venue_id=venue.id) , edit_venue_form, "Modifier les informations", "Modifier les informations du partenaire culturel", "Enregistrer") }}

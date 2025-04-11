@@ -110,6 +110,13 @@ def _get_individual_bookings(
             .joinedload(finance_models.BookingFinanceIncident.incident)
             .load_only(finance_models.FinanceIncident.id, finance_models.FinanceIncident.status),
             sa_orm.joinedload(bookings_models.Booking.deposit).load_only(finance_models.Deposit.expirationDate),
+            sa_orm.joinedload(bookings_models.Booking.fraudulentBookingTag)
+            .joinedload(bookings_models.FraudulentBookingTag.author)
+            .load_only(
+                users_models.User.id,
+                users_models.User.firstName,
+                users_models.User.lastName,
+            ),
         )
     )
 
@@ -122,6 +129,12 @@ def _get_individual_bookings(
 
     if len(form.is_duo.data) == 1:
         base_query = base_query.filter(bookings_models.Booking.quantity == form.is_duo.data[0])
+
+    if form.is_fraudulent.data and len(form.is_fraudulent.data) == 1:
+        if form.is_fraudulent.data[0] == "true":
+            base_query = base_query.filter(bookings_models.Booking.fraudulentBookingTag != None)
+        else:
+            base_query = base_query.filter(bookings_models.Booking.fraudulentBookingTag == None)
 
     if form.has_incident.data and len(form.has_incident.data) == 1:
         if form.has_incident.data[0] == "true":

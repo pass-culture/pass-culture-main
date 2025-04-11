@@ -1,4 +1,4 @@
-{% macro build_venue_badges(venue) %}
+{% macro build_venue_badges(venue, has_fraudulent_booking) %}
   {% call badges_container() %}
     {% if venue.isPermanent %}
       {{ "Partenaire culturel permanent" | format_badge("primary") }}
@@ -7,13 +7,19 @@
     {% endif %}
     {% if venue.managingOfferer.isClosed %}{{ "Fermé" | format_badge("danger") }}{% endif %}
     {% if not venue.managingOfferer.isActive %}{{ "Suspendu" | format_badge("danger") }}{% endif %}
+    {% if has_fraudulent_booking and has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
+      {{ build_fraudulent_booking_badge(has_fraudulent_booking, "Réservations frauduleuses") }}
+    {% endif %}
   {% endcall %}
 {% endmacro %}
-{% macro build_offerer_badges(offerer) %}
+{% macro build_offerer_badges(offerer, has_fraudulent_booking) %}
   {% call badges_container() %}
     {{ "Entité juridique" | format_badge("primary") }}
     {{ offerer | format_offerer_status_badge }}
     {% if not offerer.isActive %}{{ "Suspendue" | format_badge("danger") }}{% endif %}
+    {% if has_fraudulent_booking and has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
+      {{ build_fraudulent_booking_badge(has_fraudulent_booking, "Réservations frauduleuses") }}
+    {% endif %}
   {% endcall %}
 {% endmacro %}
 {% macro build_pro_user_status_badge(pro_user) %}
@@ -29,6 +35,11 @@
   {% if has_permission("PRO_FRAUD_ACTIONS") %}
     {{ offerer.confidenceLevel | format_confidence_level_badge }}
     {% if offerer.isTopActeur %}{{ "Top Acteur" | format_badge("secondary") }}{% endif %}
+  {% endif %}
+{% endmacro %}
+{% macro build_fraudulent_booking_badge(has_fraudulent_booking, content) %}
+  {% if has_fraudulent_booking %}
+    <span class="badge text-danger bg-danger-subtle d-inline-flex gap-1"><i class="bi bi-exclamation-triangle"></i>{{ content }}</span>
   {% endif %}
 {% endmacro %}
 {% macro build_offer_venue_fraud_badges(venue) %}

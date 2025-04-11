@@ -142,6 +142,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert rows[0]["Montant"] == "30,40 €"
         assert rows[0]["Statut"] == "Validée"
         assert rows[0]["Crédit actif"] == "Oui"
+        assert rows[0]["Fraude"] == ""
         assert rows[0]["Auteur de la validation"] == "Backoffice"
         assert rows[0]["Date de réservation"].startswith(
             (datetime.date.today() - datetime.timedelta(days=4)).strftime("%d/%m/%Y")
@@ -177,6 +178,22 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Crédit actif"] == "Non"
+
+    def test_list_fraudulent_booking(self, authenticated_client):
+        fraudulent_booking_tag = bookings_factories.FraudulentBookingTagFactory(booking__token="WTRL00")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="WTRL00"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Contremarque"] == "WTRL00"
+        assert rows[0]["Fraude"] == "Frauduleuse"
+
+        extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
+        assert f"Date de marquage frauduleux : {datetime.date.today().strftime('%d/%m/%Y')} à " in extra_data
+        assert f"Auteur du tag frauduleux : {fraudulent_booking_tag.author.full_name}" in extra_data
 
     def test_list_bookings_by_list_of_tokens(self, authenticated_client, bookings):
         with assert_num_queries(self.expected_num_queries):
@@ -671,6 +688,24 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, has_incident=has_incident))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(row["Contremarque"] for row in rows) == set(expected_results)
+
+    @pytest.mark.parametrize(
+        "is_fraudulent, expected_results",
+        [
+            ("true", ["XXXXXX"]),
+            ("false", ["YYYYYY"]),
+        ],
+    )
+    def test_list_fraudulent_bookings(self, authenticated_client, is_fraudulent, expected_results):
+        bookings_factories.FraudulentBookingTagFactory(booking__token="XXXXXX")
+        bookings_factories.BookingFactory(token="YYYYYY")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, is_fraudulent=is_fraudulent))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)

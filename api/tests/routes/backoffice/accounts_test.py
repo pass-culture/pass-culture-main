@@ -959,6 +959,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             stock__offer__bookingEmail="booking.offer@example.com",
         )
         b2 = bookings_factories.UsedBookingFactory(user=user, amount=20)
+        bookings_factories.FraudulentBookingTagFactory(booking=b2)
         bookings_factories.UsedBookingFactory()
 
         user_id = user.id
@@ -975,6 +976,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert bookings[0]["Date de résa"].startswith(datetime.date.today().strftime("Le %d/%m/%Y"))
         assert bookings[0]["État"] == "Le jeune a consommé l'offre"
         assert bookings[0]["Contremarque"] == b2.token
+        assert bookings[0]["Fraude"] == "Frauduleuse"
 
         assert bookings[1]["Offreur"] == b1.offerer.name
         assert bookings[1]["Nom de l'offre"] == b1.stock.offer.name
@@ -984,6 +986,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
         assert bookings[1]["État"] == "L'offre n'a pas eu lieu"
         assert bookings[1]["Contremarque"] == b1.token
+        assert bookings[1]["Fraude"] == ""
 
         extra_rows = html_parser.extract(response.data, "tr", class_="accordion-collapse")
         assert len(extra_rows) == 2
