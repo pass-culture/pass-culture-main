@@ -3213,8 +3213,8 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
 
         assert response.status_code == 200
         assert (
-            "Ce partenaire culturel a au moins un tarif dérogatoire qui se termine dans le futur. Si vous validez l'action il sera clôturé"
-            == html_parser.extract_alert(response.data)
+            html_parser.extract_alert(response.data)
+            == "Ce partenaire culturel est associé à au moins un tarif dérogatoire actif ou futur. Confirmer l'action mettra automatiquement fin à ce tarif dérogatoire."
         )
 
 
