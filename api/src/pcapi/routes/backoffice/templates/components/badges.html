@@ -18,7 +18,7 @@
 {% endmacro %}
 {% macro build_pro_user_status_badge(pro_user) %}
   {% if pro_user.proValidationStatus.value == "VALIDATED" %}
-    {{ "Validé" | format_badge("success")  }}
+    {{ "Validé" | format_badge("success") }}
   {% elif pro_user.proValidationStatus.value == "PENDING" %}
     {{ "En attente" | format_badge("warning") }}
   {% elif pro_user.proValidationStatus.value == "NEW" %}
@@ -28,7 +28,7 @@
 {% macro build_offer_offerer_fraud_badges(offerer) %}
   {% if has_permission("PRO_FRAUD_ACTIONS") %}
     {{ offerer.confidenceLevel | format_confidence_level_badge }}
-    {% if offerer.isTopActeur %}{{ "Top Acteur" | format_badge("secondary")  }}{% endif %}
+    {% if offerer.isTopActeur %}{{ "Top Acteur" | format_badge("secondary") }}{% endif %}
   {% endif %}
 {% endmacro %}
 {% macro build_offer_venue_fraud_badges(venue) %}

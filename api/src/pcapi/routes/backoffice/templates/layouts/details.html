@@ -2,20 +2,20 @@
 {% import "components/badges.html" as badges with context %}
 {% macro action_bar_button(icon, title, modal_id=none, submit_form=none) %}
   <button class="btn btn-outline-primary-subtle-bg d-flex align-items-center gap-2"
-          {% if modal_id %}data-bs-toggle="modal" data-bs-target="{{ modal_id }}"{% endif %}
-          {% if submit_form %}href="#" data-submit-form="{{ submit_form  }}"{% endif %}
+          {% if modal_id %}data-bs-toggle="modal" data-bs-target="{{ modal_id }}"{% endif %}
+          {% if submit_form %}href="#" data-submit-form="{{ submit_form }}"{% endif %}
           type="button">
-    {{ title }}
-    <i class="bi bi-{{ icon }}"></i>
+    {{ title }}
+    <i class="bi bi-{{ icon }}"></i>
   </button>
 {% endmacro %}
 {% macro action_bar_additional_button(icon, title, modal_id=none, submit_form=none) %}
   <button class="dropdown-item d-flex align-items-center gap-2"
-          {% if modal_id %}data-bs-toggle="modal" data-bs-target="{{ modal_id }}"{% endif %}
-          {% if submit_form %}href="#" data-submit-form="{{ submit_form  }}"{% endif %}
+          {% if modal_id %}data-bs-toggle="modal" data-bs-target="{{ modal_id }}"{% endif %}
+          {% if submit_form %}href="#" data-submit-form="{{ submit_form }}"{% endif %}
           type="button">
-    <i class="bi bi-{{ icon }}"></i>
-    {{ title }}
+    <i class="bi bi-{{ icon }}"></i>
+    {{ title }}
   </button>
 {% endmacro %}
 {% macro description_detail_vertical(title) %}
@@ -28,14 +28,14 @@
 {% endmacro %}
 {% macro description_detail_horizontal(title) %}
   <dl class="row">
-    <dt class="col-sm-3">{{ title }}</dt>
+    <dt class="col-sm-3">{{ title }}</dt>
     <dd class="col-sm-9">
       {{ caller() }}
     </dd>
   </dl>
 {% endmacro %}
 {% macro content_navbar(navbar_name) %}
-  <nav id="{{ navbar_name }}-navbar"
+  <nav id="{{ navbar_name }}-navbar"
        class="navbar p-0">
     <ul class="nav nav-underline w-100">
       {{ caller() }}
@@ -46,7 +46,7 @@
 {% macro content_navbar_element(section_name, section_title) %}
   <li class="nav-item">
     <a class="nav-link px-3 py-2"
-       href="#{{ section_name }}-section">{{ section_title }}</a>
+       href="#{{ section_name }}-section">{{ section_title }}</a>
   </li>
 {% endmacro %}
 {% macro details_content_wrapper(navbar_name) %}
@@ -55,7 +55,7 @@
        data-bs-smooth-scroll="true"
        tabindex="0"
        class="py-3 vh-100 overflow-y-scroll"
-       id="{{ navbar_name }}-container">
+       id="{{ navbar_name }}-container">
     <div class="vstack gap-1">
       {# wrap sections in divs to separate them with gaps #}
       {{ caller() }}
@@ -64,8 +64,8 @@
 {% endmacro %}
 {% macro nav_section(section_name, title) %}
   <div>
-    <h4 class="pb-2{{ ' focus' if (active_tab == section_name) else ''}}"
-        id="{{ section_name }}-section">{{ title }}</h4>
+    <h4 class="pb-2{{ ' focus' if (active_tab == section_name) else ''}}"
+        id="{{ section_name }}-section">{{ title }}</h4>
     {{ caller() }}
   </div>
 {% endmacro %}
