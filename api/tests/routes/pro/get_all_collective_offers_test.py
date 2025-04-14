@@ -13,9 +13,6 @@ from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
-random.seed(12)
-
-
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     # 1. session
