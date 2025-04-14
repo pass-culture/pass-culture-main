@@ -534,7 +534,6 @@ def create_offer_and_stocks_for_cinemas(
                 product=product,
                 subcategoryId=subcategories.SEANCE_CINE.id,
                 venue=venue,
-                extraData=product.extraData,
             )
             mediation = offers_factories.MediationFactory.create(offer=movie_offer)
             store_public_object_from_sandbox_assets("thumbs", mediation, movie_offer.subcategoryId)

@@ -64,7 +64,7 @@ def _get_base_booking_query() -> sa_orm.Query:
                 offers_models.Offer.id,
                 offers_models.Offer.name,
                 offers_models.Offer.ean,
-                offers_models.Offer.extraData,
+                offers_models.Offer._extraData,
                 offers_models.Offer.subcategoryId,
             )
         )

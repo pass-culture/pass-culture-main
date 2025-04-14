@@ -152,7 +152,8 @@ class BoostStocksTest:
         assert created_offers[0].durationMinutes == 333
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[0].extraData == {"visa": "159673", "allocineId": 270935}
+        assert created_offers[0].extraData == {"allocineId": 270935}
+        assert created_offers[0]._extraData == None
 
         assert created_stocks[0].quantity == 147
         assert created_stocks[0].price == decimal.Decimal("12.00")
@@ -171,7 +172,8 @@ class BoostStocksTest:
         assert created_offers[1].durationMinutes == 444
         assert created_offers[1].isDuo
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[1].extraData == {"visa": "159570", "allocineId": 269975}
+        assert created_offers[1].extraData == {"allocineId": 269975}
+        assert created_offers[1]._extraData == None
 
         assert created_stocks[1].quantity == 452
         assert created_stocks[1].price == decimal.Decimal("6.00")
@@ -239,7 +241,8 @@ class BoostStocksTest:
         assert created_offer.durationMinutes == 111
         assert created_offer.isDuo
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offer.extraData == {"visa": "158026", "allocineId": 263242}
+        assert created_offer.extraData == {"allocineId": 263242}
+        assert created_offer._extraData == None
 
         assert created_stocks[0].quantity == 96
         assert created_stocks[0].price == decimal.Decimal("6.9")

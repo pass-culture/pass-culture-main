@@ -163,9 +163,6 @@ class EMSStocks:
         offer.isDuo = self.is_duo
         if product:
             offer.name = product.name
-            if product.extraData:
-                offer.extraData = offer.extraData or offers_models.OfferExtraData()
-                offer.extraData.update(product.extraData)
             offer.product = product
         else:
             if event.title:

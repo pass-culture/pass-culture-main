@@ -48,6 +48,7 @@ def retrieve_offer_relations_query(query: sa_orm.Query) -> sa_orm.Query:
                 offers_models.Product.thumbCount,
                 offers_models.Product.description,
                 offers_models.Product.durationMinutes,
+                offers_models.Product.extraData,
             )
             .selectinload(offers_models.Product.productMediations)
         )

@@ -119,7 +119,7 @@ def get_individual_bookings(user: users_models.User) -> list[models.Booking]:
                     offers_models.Offer.withdrawalDetails,
                     offers_models.Offer.withdrawalType,
                     offers_models.Offer.withdrawalDelay,
-                    offers_models.Offer.extraData,
+                    offers_models.Offer._extraData,
                 )
                 .options(
                     sa_orm.joinedload(offers_models.Offer.product)

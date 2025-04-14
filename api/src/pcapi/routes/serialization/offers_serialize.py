@@ -452,7 +452,6 @@ class GetEventOpeningHoursResponseModel(BaseModel):
 class IndividualOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "extraData" and self._obj.product:
-            self._obj.extraData = self._obj.product.extraData
             self._obj.ean = self._obj.product.ean
         if key == "extraData" and self._obj.ean:
             extra_data_copy = self._obj.extraData.copy() if self._obj.extraData else {}
