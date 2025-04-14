@@ -1,10 +1,12 @@
 import { screen, waitFor } from '@testing-library/react'
+import * as reactRedux from 'react-redux'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import * as thunks from 'commons/store/user/thunks'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
@@ -14,6 +16,8 @@ import {
 import { SignupValidation } from '../SignUpValidation'
 
 vi.mock('repository/pcapi/pcapi')
+vi.mock('commons/store/user/thunks')
+vi.mock('react-redux', { spy: true })
 
 const renderSignupValidation = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
@@ -56,15 +60,6 @@ describe('src | components | pages | Signup | validation', () => {
     })
   })
 
-  it('should verify validity of passwordless login token and redirect to pro home page', async () => {
-    const validateUser = vi.spyOn(api, 'validateUser').mockResolvedValue()
-    renderSignupValidation({features: ['WIP_2025_SIGN_UP']})
-    expect(validateUser).toHaveBeenNthCalledWith(1, 'AAA')
-    await waitFor(() => {
-      expect(window.location.pathname.includes("acceuil"))
-    })
-  })
-
   it('should verify user link is not valid and redirect to connexion', async () => {
     vi.spyOn(api, 'validateUser').mockRejectedValue(
       new ApiError(
@@ -92,6 +87,40 @@ describe('src | components | pages | Signup | validation', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Connexion')).toBeInTheDocument()
+    })
+  })
+
+  describe('Signup with auto-login feature (under WIP_2025_SIGN_UP)', () => {
+    it('should verify validity of passwordless login token and redirect to pro home page', async () => {
+      const validateUser = vi.spyOn(api, 'validateUser').mockResolvedValue()
+      const user = sharedCurrentUserFactory()
+      const getProfile = vi.spyOn(api, 'getProfile').mockResolvedValue(user)
+      const initializeUserThunk = vi.spyOn(thunks, 'initializeUserThunk')
+      const mockDispatch = vi.fn().mockImplementation(() => ({
+        unwrap: () => Promise.resolve({ success: true }),
+      }))
+      vi.spyOn(reactRedux, 'useDispatch').mockReturnValue(mockDispatch)
+
+      renderSignupValidation({ features: ['WIP_2025_SIGN_UP'] })
+
+      // The validity of the token is verified
+      await waitFor(() =>
+        expect(validateUser).toHaveBeenCalledExactlyOnceWith('AAA')
+      )
+
+      // The user profile is fetched …
+      await waitFor(() => expect(getProfile).toHaveBeenCalledOnce())
+
+      // … and the user is initialized
+      await waitFor(() =>
+        expect(initializeUserThunk).toHaveBeenCalledExactlyOnceWith(user)
+      )
+
+      // The dispatch is called …
+      await waitFor(() => expect(mockDispatch).toHaveBeenCalledOnce())
+
+      // … and we should be redirected to the homepage
+      await screen.findByText('Accueil')
     })
   })
 })
