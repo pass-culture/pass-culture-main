@@ -39,7 +39,7 @@
                     <a class=" px-3"
                        data-bs-toggle="modal"
                        data-bs-target="#move-collective-offer-modal-{{ collective_offer.id }}">
-                      <button class="btn btn-outline-primary lead fw-bold mt-2">Changer le partenaire culturel</button>
+                      <button class="btn btn-outline-primary lead fw-bold mt-2">Déplacer l'offre</button>
                     </a>
                     {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_move_collective_offer_form', collective_offer_id=collective_offer.id) , "move-collective-offer-modal-" + collective_offer.id|string) }}
                   {% endif %}
