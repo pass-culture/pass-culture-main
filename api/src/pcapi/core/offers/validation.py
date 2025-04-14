@@ -407,14 +407,11 @@ def check_contact_request(offer: AnyCollectiveOffer, in_data: dict) -> None:
         raise exceptions.UrlandFormBothSetError()
 
 
-def check_offer_is_digital(offer: models.Offer) -> None:
-    if not offer.isDigital:
-        errors = api_errors.ApiErrors()
-        errors.add_error(
-            "global",
-            "Impossible de créer des codes d'activation sur une offre non-numérique",
+def check_offer_can_have_activation_codes(offer: models.Offer) -> None:
+    if not offer.isDigital or not offer.isThing:
+        raise api_errors.ApiErrors(
+            {"global": ["Impossible de créer des codes d'activation sur une offre qui n'est pas un bien numérique"]}
         )
-        raise errors
 
 
 def check_url_is_coherent_with_subcategory(subcategory: subcategories.Subcategory, url: HttpUrl | str | None) -> None:

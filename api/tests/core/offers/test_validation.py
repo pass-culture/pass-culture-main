@@ -1074,3 +1074,28 @@ class ValidateEventOpeningHoursCanBeUpdatedTest:
         self.assert_is_not_valid(
             endDatetime=new_end_date, err=exceptions.EventOpeningHoursException, field="event.endDatetime"
         )
+
+
+class CheckOfferCanHaveActivationCodesTest:
+    def test_check_offer_can_have_activation_codes_should_not_raise(self):
+        digital_offer = offers_factories.DigitalOfferFactory()
+        validation.check_offer_can_have_activation_codes(digital_offer)
+
+    def test_check_offer_can_have_activation_codes_should_raise(self):
+        physical_offer = offers_factories.OfferFactory()
+
+        with pytest.raises(ApiErrors) as exc:
+            validation.check_offer_can_have_activation_codes(physical_offer)
+
+        assert exc.value.errors == {
+            "global": ["Impossible de créer des codes d'activation sur une offre qui n'est pas un bien numérique"]
+        }
+
+        digital_event_offer = offers_factories.DigitalOfferFactory(subcategoryId=subcategories.RENCONTRE_EN_LIGNE.id)
+
+        with pytest.raises(ApiErrors) as exc:
+            validation.check_offer_can_have_activation_codes(digital_event_offer)
+
+        assert exc.value.errors == {
+            "global": ["Impossible de créer des codes d'activation sur une offre qui n'est pas un bien numérique"]
+        }
