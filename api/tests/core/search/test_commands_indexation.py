@@ -222,18 +222,20 @@ class StagingIndexationTest:
             offers_factories.StockFactory.create_batch(
                 size=3,
                 offer__isActive=True,
-                offer__extraData={
-                    "gtl_id": random.choice(
-                        list(
-                            filter(
-                                lambda gtl_id, gtl_id_prefix=gtl_id_prefix: gtl_id.startswith(
-                                    str(gtl_id_prefix).zfill(2)
-                                ),
-                                GTLS.keys(),
+                offer__product=ProductFactory(
+                    extraData={
+                        "gtl_id": random.choice(
+                            list(
+                                filter(
+                                    lambda gtl_id, gtl_id_prefix=gtl_id_prefix: gtl_id.startswith(
+                                        str(gtl_id_prefix).zfill(2)
+                                    ),
+                                    GTLS.keys(),
+                                )
                             )
                         )
-                    )
-                },
+                    }
+                ),
             )
         offers_factories.StockFactory.create_batch(size=20, offer__isActive=True)
 

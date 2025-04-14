@@ -67,8 +67,9 @@ def get_offers_for_each_gtl_level_1(size_per_gtl: int) -> set[int]:
         query = (
             offers_models.Offer.query.outerjoin(offers_models.Stock)
             .outerjoin(offers_models.FutureOffer)
+            .outerjoin(offers_models.Product)
             .filter(
-                offers_models.Offer.extraData["gtl_id"].astext.startswith(str(i).zfill(2)),
+                offers_models.Product.extraData["gtl_id"].astext.startswith(str(i).zfill(2)),
                 offers_models.Offer.is_eligible_for_search,
             )
             .with_entities(offers_models.Offer.id)
