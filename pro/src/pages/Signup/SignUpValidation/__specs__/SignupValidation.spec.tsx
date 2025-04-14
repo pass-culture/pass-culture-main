@@ -5,8 +5,6 @@ import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import * as useCurrentUser from 'commons/hooks/useCurrentUser'
-import * as useNotification from 'commons/hooks/useNotification'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
@@ -16,8 +14,6 @@ import {
 import { SignupValidation } from '../SignUpValidation'
 
 vi.mock('repository/pcapi/pcapi')
-vi.mock('commons/hooks/useCurrentUser')
-vi.mock('commons/hooks/useNotification')
 
 const renderSignupValidation = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
@@ -33,24 +29,6 @@ const renderSignupValidation = (options?: RenderWithProvidersOptions) =>
   )
 
 describe('src | components | pages | Signup | validation', () => {
-  const mockUseNotification = {
-    close: vi.fn(),
-    error: vi.fn(),
-    pending: vi.fn(),
-    information: vi.fn(),
-    success: vi.fn(),
-  }
-
-  beforeEach(() => {
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...mockUseNotification,
-    }))
-    vi.spyOn(useCurrentUser, 'useCurrentUser').mockReturnValue({
-      currentUser: sharedCurrentUserFactory(),
-      selectedOffererId: null,
-    })
-  })
-
   it('should redirect to home page if the user is logged in', () => {
     const validateUser = vi.spyOn(api, 'validateUser')
 

@@ -4,7 +4,7 @@ import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 
-export interface UseCurrentUserReturn {
+interface UseCurrentUserReturn {
   currentUser: SharedCurrentUserResponseModel
   selectedOffererId: number | null
 }
