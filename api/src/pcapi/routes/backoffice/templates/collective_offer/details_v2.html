@@ -13,7 +13,7 @@
     {{ action_bar_button("hand-thumbs-up", "Valider", modal_id="#validate-collective-offer-modal-" + collective_offer.id|string) }}
     {{ action_bar_button("hand-thumbs-down", "Rejeter", modal_id="#reject-collective-offer-modal-" + collective_offer.id|string) }}
     {% if move_offer_form %}
-      {{ action_bar_button("hand-thumbs-down", "Rejeter", modal_id="#move-collective-offer-modal-" + collective_offer.id|string) }}
+      {{ action_bar_button("arrow-left-right", "Déplacer l'offre", modal_id="#move-collective-offer-modal-" + collective_offer.id|string) }}
     {% endif %}
   {% endif %}
 {% endblock action_buttons %}
