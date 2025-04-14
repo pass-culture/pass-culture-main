@@ -7,6 +7,7 @@ from pydantic.v1 import validator
 from pcapi.core.offers import models
 import pcapi.core.offers.validation as offers_validation
 from pcapi.routes.serialization import BaseModel
+import pcapi.serialization.utils as serialization_utils
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
@@ -23,6 +24,12 @@ class StockCreationBodyModel(BaseModel):
     price_category_id: int | None
     quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
 
+    _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
+    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
+    _validate_activation_codes_expiration_datetime = serialization_utils.validate_datetime(
+        "activation_codes_expiration_datetime"
+    )
+
     class Config:
         alias_generator = to_camel
         json_encoders = {datetime: format_into_utc_date}
@@ -36,6 +43,9 @@ class StockEditionBodyModel(BaseModel):
     price: decimal.Decimal | None
     price_category_id: int | None
     quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
+
+    _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
+    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
 
     class Config:
         alias_generator = to_camel

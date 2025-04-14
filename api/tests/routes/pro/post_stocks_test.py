@@ -223,7 +223,7 @@ class Returns201Test:
 
     def test_do_not_edit_one_stock_when_duplicated(self, client):
         offer = offers_factories.EventOfferFactory()
-        beginning = datetime.datetime.utcnow()
+        beginning = datetime.datetime.utcnow() + datetime.timedelta(hours=13)
         tomorrow = beginning + relativedelta(days=1)
         price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_category = offers_factories.PriceCategoryFactory(
@@ -408,6 +408,10 @@ class Returns201Test:
         )
         activation_codes = ["AZ3", "3ZE"]
 
+        now = datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+        beginning = now + datetime.timedelta(days=1)
+        expiration = beginning + datetime.timedelta(days=60)
+
         # When
         stock_data = {
             "offerId": offer.id,
@@ -416,8 +420,8 @@ class Returns201Test:
                     "price": 20,
                     "quantity": 30,
                     "activationCodes": activation_codes,
-                    "bookingLimitDatetime": "2021-06-15T23:59:59Z",
-                    "activationCodesExpirationDatetime": "2021-06-22T23:59:59Z",
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
+                    "activationCodesExpirationDatetime": format_into_utc_date(expiration),
                 }
             ],
         }
@@ -435,7 +439,7 @@ class Returns201Test:
         assert created_stock.quantity == 2  # Same as the activation codes length
         assert [activation_code.code for activation_code in created_stock.activationCodes] == activation_codes
         for activation_code in created_stock.activationCodes:
-            assert activation_code.expirationDate == datetime.datetime(2021, 6, 22, 23, 59, 59)
+            assert activation_code.expirationDate == expiration.replace(tzinfo=None)
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_upsert_multiple_stocks(self, mocked_async_index_offer_ids, client):
@@ -446,7 +450,7 @@ class Returns201Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        booking_limit_datetime = datetime.datetime(2019, 2, 14)
+        booking_limit_datetime = datetime.datetime.now() + datetime.timedelta(days=10)  # pylint: disable=datetime-now
 
         # When
         stock_data = {
@@ -613,8 +617,8 @@ class Returns201Test:
 
     def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self, client):
         # Given
-        now = datetime.datetime.utcnow()
-        date_used_in_48_hours = now + relativedelta(days=2)
+        now = datetime.datetime.now() + datetime.timedelta(minutes=1)  # pylint: disable=datetime-now
+        date_used_in_48_hours = now + datetime.timedelta(hours=48)
         event_in_3_days = now + relativedelta(days=3)
         event_reported_in_less_48_hours = now + relativedelta(days=1)
         offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
@@ -704,7 +708,7 @@ class Returns201Test:
         assert not response.json["ended_bookings"]
 
     def test_update_event_stock_quantity(self, client):
-        beginning = datetime.datetime.utcnow()
+        beginning = datetime.datetime.now() + datetime.timedelta(minutes=1)  # pylint: disable=datetime-now
         offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         price_category_1 = offers_factories.PriceCategoryFactory(offer=offer, price=10)
         existing_stock = offers_factories.EventStockFactory(
@@ -742,7 +746,7 @@ class Returns201Test:
     def should_not_create_duplicated_stock(self, client):
         # Given
         offer = offers_factories.EventOfferFactory()
-        beginning = datetime.datetime.utcnow()
+        beginning = datetime.datetime.now() + datetime.timedelta(minutes=1)  # pylint: disable=datetime-now
         beginning_later = beginning + relativedelta(days=10)
         price_cat_label_1 = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_cat_label_2 = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 2")
@@ -817,7 +821,7 @@ class Returns400Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        booking_limit_datetime = datetime.datetime(2019, 2, 14)
+        booking_limit_datetime = datetime.datetime.now() + datetime.timedelta(days=30)  # pylint: disable=datetime-now
 
         # When
         stock_data = {
@@ -951,6 +955,10 @@ class Returns400Test:
             offerer=offer.venue.managingOfferer,
         )
 
+        now = datetime.datetime.now()  # pylint: disable=datetime-now
+        booking_limit_datetime = now + datetime.timedelta(days=30)
+        activation_codes_expiration_datetime = now + datetime.timedelta(days=31)
+
         # When
         stock_data = {
             "offerId": offer.id,
@@ -958,8 +966,8 @@ class Returns400Test:
                 {
                     "price": 20,
                     "activationCodes": ["AZ3"],
-                    "bookingLimitDatetime": "2021-06-15T02:59:59Z",
-                    "activationCodesExpirationDatetime": "2021-06-16T02:59:59Z",
+                    "bookingLimitDatetime": format_into_utc_date(booking_limit_datetime),
+                    "activationCodesExpirationDatetime": format_into_utc_date(activation_codes_expiration_datetime),
                 }
             ],
         }
@@ -982,15 +990,20 @@ class Returns400Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        existing_stock = offers_factories.StockFactory(offer=offer)
+
+        existing_stock = offers_factories.EventStockFactory(offer=offer)
+        existing_booking_limit = existing_stock.bookingLimitDatetime
+
         offers_factories.ActivationCodeFactory(
-            expirationDate=datetime.datetime(2020, 5, 2, 23, 59, 59),
+            expirationDate=existing_booking_limit + datetime.timedelta(days=10),
             stock=existing_stock,
         )
         offers_factories.ActivationCodeFactory(
-            expirationDate=datetime.datetime(2020, 5, 2, 23, 59, 59),
+            expirationDate=existing_booking_limit + datetime.timedelta(days=10),
             stock=existing_stock,
         )
+
+        new_booking_limit = existing_booking_limit + datetime.timedelta(days=5)
 
         # When
         stock_data = {
@@ -998,7 +1011,7 @@ class Returns400Test:
             "stocks": [
                 {
                     "id": existing_stock.id,
-                    "bookingLimitDatetime": "2020-05-2T23:59:59Z",
+                    "bookingLimitDatetime": format_into_utc_date(new_booking_limit),
                     "price": 20.0,
                 }
             ],
@@ -1015,6 +1028,22 @@ class Returns400Test:
             )
         ]
 
+    def test_booking_limit_datetime_update_in_the_past_is_not_valid(self, client):
+        offer = offers_factories.DigitalOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        existing_stock = offers_factories.StockFactory(offer=offer)
+
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [{"id": existing_stock.id, "bookingLimitDatetime": "1970-01-01T23:59:59Z"}],
+        }
+
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        assert response.status_code == 400
+
     def test_when_offer_is_not_digital(self, client):
         # Given
         offer = offers_factories.ThingOfferFactory(url=None)
@@ -1023,6 +1052,9 @@ class Returns400Test:
             offerer=offer.venue.managingOfferer,
         )
 
+        booking_limit_datetime = datetime.datetime.now() + datetime.timedelta(minutes=1)  # pylint: disable=datetime-now
+        activation_codes_expiration_datetime = booking_limit_datetime + datetime.timedelta(days=10)
+
         # When
         stock_data = {
             "offerId": offer.id,
@@ -1030,8 +1062,8 @@ class Returns400Test:
                 {
                     "price": 20,
                     "activationCodes": ["AZ3"],
-                    "bookingLimitDatetime": "2021-06-15T02:59:59Z",
-                    "activationCodesExpirationDatetime": "2021-07-15T02:59:59Z",
+                    "bookingLimitDatetime": format_into_utc_date(booking_limit_datetime),
+                    "activationCodesExpirationDatetime": format_into_utc_date(activation_codes_expiration_datetime),
                 }
             ],
         }
@@ -1096,12 +1128,15 @@ class Returns400Test:
         price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
 
+        beginning = datetime.datetime.now() + datetime.timedelta(days=20)  # pylint: disable=datetime-now
+        booking_limit = beginning + datetime.timedelta(days=10)
+
         stock_data = {
             "offerId": offer.id,
             "stocks": [
                 {
-                    "beginningDatetime": "2022-06-11T08:00:00Z",
-                    "bookingLimitDatetime": "2022-06-12T21:59:59Z",
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(booking_limit),
                     "priceCategoryId": price_cat.id,
                     "quantity": 1000,
                 },
@@ -1272,7 +1307,7 @@ class Returns403Test:
         user = users_factories.ProFactory(email="wrong@example.com")
         offer = offers_factories.ThingOfferFactory()
         offerers_factories.UserOffererFactory(user__email="right@example.com", offerer=offer.venue.managingOfferer)
-        booking_datetime = datetime.datetime.utcnow()
+        booking_datetime = datetime.datetime.now() + datetime.timedelta(minutes=1)  # pylint: disable=datetime-now
 
         # When
         stock_data = {

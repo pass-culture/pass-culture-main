@@ -458,6 +458,8 @@ class BaseStockEdition(serialization.ConfiguredBaseModel):
     booking_limit_datetime: datetime.datetime | None = fields.BOOKING_LIMIT_DATETIME
     quantity: pydantic_v1.StrictInt | UNLIMITED_LITERAL | None = fields.QUANTITY
 
+    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
+
     @pydantic_v1.validator("quantity")
     def quantity_must_be_in_range(cls, quantity: int | str | None) -> int | str | None:
         if isinstance(quantity, int):
@@ -660,11 +662,7 @@ class EventStockEdition(BaseStockEdition):
     price_category_id: int | None = fields.PRICE_CATEGORY_ID
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
-    @pydantic_v1.validator("beginning_datetime")
-    def format_beginning_datetime(cls, value: datetime.datetime | None) -> datetime.datetime | None:
-        if not value:
-            return None
-        return serialization_utils.as_utc_without_timezone(value)
+    _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
 
 
 class EventOfferEdition(OfferEditionBase):

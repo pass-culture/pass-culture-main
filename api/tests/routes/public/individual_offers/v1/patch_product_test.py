@@ -14,6 +14,7 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.utils import human_ids
+from pcapi.utils.date import format_into_utc_date
 
 from tests.routes import image_data
 from tests.routes.public.helpers import ProductEndpointHelper
@@ -268,16 +269,18 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime=None)
 
+        new_limit = datetime.datetime.now() + datetime.timedelta(minutes=1)  # pylint: disable=datetime-now
+
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             self.endpoint_url,
-            json={"offerId": product_offer.id, "stock": {"bookingLimitDatetime": "2021-01-15T00:00:00Z"}},
+            json={"offerId": product_offer.id, "stock": {"bookingLimitDatetime": format_into_utc_date(new_limit)}},
         )
         assert response.status_code == 200
-        assert response.json["stock"]["bookingLimitDatetime"] == "2021-01-15T00:00:00Z"
+        assert response.json["stock"]["bookingLimitDatetime"] == format_into_utc_date(new_limit)
 
         assert len(product_offer.activeStocks) == 1
         assert product_offer.activeStocks[0] == stock
-        assert product_offer.activeStocks[0].bookingLimitDatetime == datetime.datetime(2021, 1, 15, 0, 0, 0)
+        assert product_offer.activeStocks[0].bookingLimitDatetime == new_limit
 
     def test_delete_stock(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()

@@ -19,7 +19,6 @@ from pcapi.models.api_errors import ResourceGoneError
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import stock_serialize
-from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 
@@ -134,16 +133,8 @@ def upsert_stocks(body: stock_serialize.StocksUpsertBodyModel) -> stock_serializ
                         existing_stocks[stock_to_edit.id],
                         price=stock_to_edit.price,
                         quantity=stock_to_edit.quantity,
-                        beginning_datetime=(
-                            serialization_utils.as_utc_without_timezone(stock_to_edit.beginning_datetime)
-                            if stock_to_edit.beginning_datetime
-                            else None
-                        ),
-                        booking_limit_datetime=(
-                            serialization_utils.as_utc_without_timezone(stock_to_edit.booking_limit_datetime)
-                            if stock_to_edit.booking_limit_datetime
-                            else None
-                        ),
+                        beginning_datetime=stock_to_edit.beginning_datetime,
+                        booking_limit_datetime=stock_to_edit.booking_limit_datetime,
                         price_category=price_categories.get(stock_to_edit.price_category_id, None),
                     )
                     if edited_stock:

@@ -364,6 +364,24 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
             ],
         }
 
+    @pytest.mark.parametrize("date_field", ["bookingLimitDatetime", "beginningDatetime"])
+    def test_should_return_400_because_new_date_is_in_the_past(self, client, date_field):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        now = datetime.datetime.now()  # pylint: disable=datetime-now
+        new_date = now - datetime.timedelta(days=2)
+
+        stock = offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue, offer__lastProvider=venue_provider.provider
+        )
+
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
+            json={date_field: date_utils.format_into_utc_date(new_date)},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {date_field: ["The datetime must be in the future."]}
+
     def test_should_raise_400_because_stock_idAtProvider_already_taken(self, client: TestClient):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
@@ -388,9 +406,11 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
             venue=venue_provider.venue,
             lastProvider=venue_provider.provider,
         )
+
+        new_beginning = datetime.datetime.now() + datetime.timedelta(minutes=1)  # pylint: disable=datetime-now
         response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url.format(event_id=event.id, stock_id="12"),
-            json={"beginningDatetime": "2022-02-01T12:00:00+02:00"},
+            json={"beginningDatetime": date_utils.format_into_utc_date(new_beginning)},
         )
         assert response.status_code == 404
         assert response.json == {"stock_id": ["No stock could be found"]}
