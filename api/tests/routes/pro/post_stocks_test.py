@@ -1073,7 +1073,9 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json["global"] == ["Impossible de créer des codes d'activation sur une offre non-numérique"]
+        assert response.json["global"] == [
+            "Impossible de créer des codes d'activation sur une offre qui n'est pas un bien numérique"
+        ]
 
     def test_when_stock_does_not_belong_to_offer(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)

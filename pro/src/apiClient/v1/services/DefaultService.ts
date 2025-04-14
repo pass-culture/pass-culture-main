@@ -94,6 +94,8 @@ import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
 import type { PostOffererResponseModel } from '../models/PostOffererResponseModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
 import type { PriceCategoryBody } from '../models/PriceCategoryBody';
+import type { ProductStockCreateBodyModel } from '../models/ProductStockCreateBodyModel';
+import type { ProductStockUpdateBodyModel } from '../models/ProductStockUpdateBodyModel';
 import type { ProUserCreationBodyV2Model } from '../models/ProUserCreationBodyV2Model';
 import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel';
 import type { SaveNewOnboardingDataQueryModel } from '../models/SaveNewOnboardingDataQueryModel';
@@ -2286,6 +2288,26 @@ export class DefaultService {
     });
   }
   /**
+   * create_product_stock <POST>
+   * @param requestBody
+   * @returns StockIdResponseModel Created
+   * @throws ApiError
+   */
+  public createProductStock(
+    requestBody?: ProductStockCreateBodyModel,
+  ): CancelablePromise<StockIdResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/stocks',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * upsert_stocks <POST>
    * @param requestBody
    * @returns StocksResponseModel Created
@@ -2320,6 +2342,31 @@ export class DefaultService {
       path: {
         'stock_id': stockId,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * update_product_stock <PATCH>
+   * @param stockId
+   * @param requestBody
+   * @returns StockIdResponseModel OK
+   * @throws ApiError
+   */
+  public updateProductStock(
+    stockId: number,
+    requestBody?: ProductStockUpdateBodyModel,
+  ): CancelablePromise<StockIdResponseModel> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/stocks/{stock_id}',
+      path: {
+        'stock_id': stockId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

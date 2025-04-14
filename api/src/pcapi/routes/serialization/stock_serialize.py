@@ -15,6 +15,32 @@ from pcapi.utils.date import format_into_utc_date
 ######################
 
 
+class ProductStockCreateBodyModel(BaseModel):
+    offer_id: int
+    price: decimal.Decimal
+
+    activation_codes: list[str] | None
+    activation_codes_expiration_datetime: datetime | None
+    booking_limit_datetime: datetime | None
+    quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
+
+    class Config:
+        alias_generator = to_camel
+        json_encoders = {datetime: format_into_utc_date}
+        extra = "forbid"
+
+
+class ProductStockUpdateBodyModel(BaseModel):
+    price: decimal.Decimal
+    booking_limit_datetime: datetime | None
+    quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
+
+    class Config:
+        alias_generator = to_camel
+        json_encoders = {datetime: format_into_utc_date}
+        extra = "forbid"
+
+
 class StockCreationBodyModel(BaseModel):
     activation_codes: list[str] | None
     activation_codes_expiration_datetime: datetime | None

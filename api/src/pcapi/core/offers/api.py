@@ -700,7 +700,7 @@ def create_stock(
 
     activation_codes = activation_codes or []
     if activation_codes:
-        validation.check_offer_is_digital(offer)
+        validation.check_offer_can_have_activation_codes(offer)
         validation.check_activation_codes_expiration_datetime(
             activation_codes_expiration_datetime,
             booking_limit_datetime,
