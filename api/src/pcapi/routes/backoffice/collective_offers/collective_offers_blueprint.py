@@ -27,7 +27,6 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
-from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
@@ -728,20 +727,6 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
         flash("Cette offre collective n'existe pas", "warning")
         return redirect(url_for("backoffice_web.collective_offer.list_collective_offers"), code=303)
 
-    move_offer_form = None
-    if feature.FeatureToggle.MOVE_OFFER_TEST.is_active():
-        try:
-            venue_choices = offerers_repository.get_offerers_venues_with_pricing_point(
-                collective_offer.venue,
-                include_without_pricing_points=True,
-                only_similar_pricing_points=True,
-                filter_same_bank_account=True,
-            )
-            move_offer_form = forms.MoveCollectiveOfferForm()
-            move_offer_form.set_venue_choices(venue_choices)
-        except offers_exceptions.NoDestinationVenue:
-            pass
-
     is_collective_offer_price_editable = _is_collective_offer_price_editable(collective_offer)
 
     connect_as = get_connect_as(
@@ -758,7 +743,6 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
         ),
         collective_offer=collective_offer,
         is_collective_offer_price_editable=is_collective_offer_price_editable,
-        move_offer_form=move_offer_form,
         connect_as=connect_as,
     )
 
