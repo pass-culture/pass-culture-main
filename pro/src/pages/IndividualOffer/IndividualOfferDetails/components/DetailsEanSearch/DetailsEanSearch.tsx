@@ -144,9 +144,25 @@ export const DetailsEanSearch = ({
               required={shouldInputBeRequired}
               maxLength={13}
               description="Format : EAN à 13 chiffres"
-              {...(!displayClearButton && {
-                rightIcon: strokeBarcodeIcon,
-              })}
+              {...(!displayClearButton
+                ? {
+                    rightIcon: strokeBarcodeIcon,
+                  }
+                : {
+                    rightButton: () => {
+                      return (
+                        <Button
+                          onClick={onEanClear}
+                          aria-describedby={tooltipId}
+                          className={styles['clear-button']}
+                          type="button"
+                          icon={fullCloseIcon}
+                          variant={ButtonVariant.TERNARY}
+                          tooltipContent={<>Effacer</>}
+                        />
+                      )
+                    },
+                  })}
               {...register('eanSearch')}
               count={ean?.length}
             />
@@ -159,19 +175,6 @@ export const DetailsEanSearch = ({
             Rechercher
           </Button>
         </div>
-        {displayClearButton && (
-          <div className={styles['clear-button-container']}>
-            <Button
-              onClick={onEanClear}
-              aria-describedby={tooltipId}
-              className={styles['clear-button']}
-              type="button"
-              icon={fullCloseIcon}
-              variant={ButtonVariant.TERNARY}
-              tooltipContent={<>Effacer</>}
-            />
-          </div>
-        )}
         <div role="status" className={styles['details-ean-search-callout']}>
           {isProductBased && (
             <EanSearchCallout

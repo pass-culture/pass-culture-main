@@ -55,12 +55,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: rem.torem(8px);
 
     button {
       background: none;
       border: none;
       height: 100%;
-      padding-left: rem.torem(8px);
       display: flex;
       align-items: center;
     }
