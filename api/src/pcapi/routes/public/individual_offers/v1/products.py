@@ -484,13 +484,24 @@ def _create_or_update_ean_offers(
                 # FIXME (mageoffray, 2023-05-26): stock upserting optimisation
                 # Stocks are edited one by one for now, we need to improve edit_stock to remove the repository.session.add()
                 # It will be done before the release of this API
+
+                # TODO(jbaudet-pass): remove call to .replace(): it should not
+                # be needed.
+                # Why? Because input checks remove the timezone information as
+                # it is not expected after... but StockEdition needs a
+                # timezone-aware datetime object.
+                # -> datetimes are not always handleded the same way.
+                # -> it can be messy.
+                booking_limit = stock_data["booking_limit_datetime"]
+                booking_limit = booking_limit.replace(tzinfo=datetime.timezone.utc) if booking_limit else None
+
                 _upsert_product_stock(
                     offer_to_update_by_ean[ean],
                     serialization.StockEdition(
                         **{
                             "price": stock_data["price"],
                             "quantity": stock_data["quantity"],
-                            "booking_limit_datetime": stock_data["booking_limit_datetime"],
+                            "booking_limit_datetime": booking_limit,
                         }
                     ),
                     provider,
