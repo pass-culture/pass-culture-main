@@ -574,7 +574,7 @@ def get_user_bookings(user: users_models.User) -> list[bookings_models.Booking]:
                 offers_models.Offer.productId,
                 offers_models.Offer.subcategoryId,
                 offers_models.Offer.name,
-                offers_models.Offer.extraData,
+                offers_models.Offer._extraData,
             ),
             joinedload(bookings_models.Booking.incidents).joinedload(finance_models.BookingFinanceIncident.incident),
         )

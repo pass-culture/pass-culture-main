@@ -120,22 +120,20 @@ class CDSStocks(LocalProvider):
             self.fill_stock_attributes(pc_object)
 
     def update_from_movie_information(self, offer: offers_models.Offer) -> None:
-        offer.extraData = offer.extraData or offers_models.OfferExtraData()
         if self.product:
             offer.name = self.product.name
-            if self.product.extraData:
-                offer.extraData.update(self.product.extraData)
+            offer.description = None
+            offer.durationMinutes = None
+            offer.extraData = None
         else:
             offer.name = self.movie_information.title
             if self.movie_information.storyline:
                 offer.description = self.movie_information.storyline
             if self.movie_information.duration:
                 offer.durationMinutes = self.movie_information.duration
+            offer.extraData = offer._extraData or offers_models.OfferExtraData()
+            offer.extraData["visa"] = offer.extraData.get("visa") or self.movie_information.visanumber
 
-        if self.movie_information.allocineid:
-            offer.extraData["allocineId"] = offer.extraData.get("allocineId") or int(self.movie_information.allocineid)
-
-        offer.extraData["visa"] = offer.extraData.get("visa") or self.movie_information.visanumber
         offer.product = self.product
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:

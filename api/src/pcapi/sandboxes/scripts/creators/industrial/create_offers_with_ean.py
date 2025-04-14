@@ -51,7 +51,6 @@ def create_offers_with_ean() -> None:
                 venue=venue,
                 product=product,
                 subcategoryId=product.subcategoryId,
-                extraData=product.extraData,
                 isActive=(i % 3 > 0),
                 validation=OfferValidationStatus.PENDING if i % 6 == 0 else OfferValidationStatus.APPROVED,
                 criteria=[ean_criteria, even_criteria] if i % 2 == 0 else [ean_criteria, odd_criteria],

@@ -568,7 +568,7 @@ def _get_offers_by_ids(
                 offers_models.Offer.lastValidationDate,
                 offers_models.Offer.lastValidationType,
                 offers_models.Offer.isActive,
-                offers_models.Offer.extraData,
+                offers_models.Offer._extraData,
             ),
             sa_orm.contains_eager(offers_models.Offer.venue).options(
                 sa_orm.load_only(

@@ -224,7 +224,8 @@ class CDSStocksTest:
         assert created_offers[0].durationMinutes == 111
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[0].extraData == {"allocineId": 291483, "visa": "123456"}
+        assert created_offers[0].extraData == {"allocineId": 291483}
+        assert created_offers[0]._extraData == None
 
         assert created_stocks[0].quantity == 77
         assert created_stocks[0].price == 5.0
@@ -244,6 +245,7 @@ class CDSStocksTest:
         assert created_offers[1].isDuo
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].extraData == {"allocineId": 2133, "visa": "333333"}
+        assert created_offers[1]._extraData == None
 
         assert created_stocks[1].quantity == 78
         assert created_stocks[1].price == 6.5
@@ -311,7 +313,8 @@ class CDSStocksTest:
         assert created_offers[0].durationMinutes == 111
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[0].extraData == {"allocineId": 291483, "visa": "123456"}
+        assert created_offers[0].extraData == {"allocineId": 291483}
+        assert created_offers[0]._extraData == None
 
         assert created_stocks[0].quantity == 77
         assert created_stocks[0].price == 5.0
@@ -329,7 +332,8 @@ class CDSStocksTest:
         assert created_offers[1].durationMinutes == 222
         assert created_offers[1].isDuo
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[1].extraData == {"allocineId": 2133, "visa": "333333"}
+        assert created_offers[1].extraData == {"allocineId": 2133}
+        assert created_offers[1]._extraData == None
 
         assert created_stocks[1].quantity == 78
         assert created_stocks[1].price == 6.5
@@ -513,7 +517,8 @@ class CDSStocksTest:
         assert created_offer.durationMinutes == 111
         assert created_offer.isDuo
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offer.extraData == {"allocineId": 291483, "visa": "123456"}
+        assert created_offer.extraData == {"allocineId": 291483}
+        assert created_offer._extraData == None
 
         assert created_stocks[0].quantity == 77
         assert created_stocks[0].price == 5.0

@@ -662,7 +662,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     _durationMinutes = sa.Column("durationMinutes", sa.Integer, nullable=True)
     ean = sa.Column(sa.Text, nullable=True, index=True)
     externalTicketOfficeUrl = sa.Column(sa.String, nullable=True)
-    extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
+    _extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     fieldsUpdated: list[str] = sa.Column(
         postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
     )
@@ -715,7 +715,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
     sa.Index("offer_idAtProvider", idAtProvider)
-    sa.Index("offer_visa_idx", extraData["visa"].astext)
+    sa.Index("offer_visa_idx", _extraData["visa"].astext)
     sa.Index("offer_authorId_idx", authorId, postgresql_using="btree")
     sa.Index("ix_offer_lastProviderId", lastProviderId, postgresql_where=lastProviderId.is_not(None))
 
@@ -724,6 +724,23 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     bookingsCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
     hasPendingBookings: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     likesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
+
+    @property
+    def extraData(self) -> OfferExtraData | None:
+        if self.product:
+            return self.product.extraData
+        return self._extraData
+
+    @extraData.setter
+    def extraData(self, value: dict) -> None:
+        if not value:
+            self._extraData = value
+            return
+        if self.product:
+            logger.error("No extraData should be set on an offer with a product")
+            self._extraData = None
+        else:
+            self._extraData = value
 
     @property
     def description(self) -> str | None:

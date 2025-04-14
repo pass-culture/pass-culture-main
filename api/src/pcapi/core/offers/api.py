@@ -127,7 +127,6 @@ def build_new_offer_from_product(
     return models.Offer(
         bookingEmail=venue.bookingEmail,
         ean=product.ean,
-        extraData=product.extraData,
         idAtProvider=id_at_provider,
         lastProviderId=provider_id,
         name=product.name,
@@ -221,6 +220,8 @@ def create_draft_offer(
     fields.update(_get_accessibility_compliance_fields(venue))
     fields.update({"withdrawalDetails": venue.withdrawalDetails})
     fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
+    if product:
+        fields.pop("extraData", None)
 
     offer = models.Offer(
         **fields,
@@ -257,6 +258,9 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
         )
 
     for key, value in updates.items():
+        if key == "extraData":
+            if offer.product:
+                continue
         setattr(offer, key, value)
     db.session.add(offer)
 
@@ -423,6 +427,9 @@ def update_offer(
 
     changes = {}
     for key, value in updates.items():
+        if key == "extraData":
+            if offer.product:
+                continue
         changes[key] = {"oldValue": getattr(offer, key), "newValue": value}
         setattr(offer, key, value)
     with db.session.no_autoflush:

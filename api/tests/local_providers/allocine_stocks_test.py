@@ -132,7 +132,6 @@ class UpdateObjectsTest:
             "genres": ["DOCUMENTARY"],
             "credits": [{"person": {"lastName": "Guitry", "firstName": "Sacha"}, "position": {"name": "DIRECTOR"}}],
             "runtime": 21,
-            "theater": {"allocine_room_id": "PXXXXX", "allocine_movie_id": 131136},
             "backlink": "https://www.allocine.fr/film/fichefilm_gen_cfilm=131136.html",
             "synopsis": "Alors que la Premi\u00e8re Guerre Mondiale a \u00e9clat\u00e9, et en r\u00e9ponse aux propos des intellectuels allemands de l'\u00e9poque, Sacha Guitry filme les grands artistes de l'\u00e9poque qui contribuent au rayonnement culturel de la France.",
             "companies": [
