@@ -6,24 +6,29 @@ Proxy rapide pour exposer des resources privées sans appels à la base de donn�
 
 Se mettre dans le dossier `proxy` puis:
 
-créer un environement virtuel 
+Créer un environement virtuel 
 
 ```shell
-python3 -m venv pc_env
+python3.13 -m venv pcproxy_env
 ```
 
-activer l'environnement virtuel 
+Activer l'environnement virtuel 
 ```shell
-source pc_env/bin/activate
+source pcproxy_env/bin/activate
 ```
 
-installer le proxy avec les dépendances de developpement:
+Installer le proxy avec les dépendances de developpement:
 
 ```shell
-pip install .[dev]
+pip install ".[dev]"
 ```
 
-lancer le proxy
+Lancer le proxy
 ```shell
 fastapi dev src/pcproxy/main.py
+```
+
+Lancer les tests
+```shell
+
 ```
