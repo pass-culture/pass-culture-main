@@ -622,7 +622,6 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
 def remove_headline_offer(headline_offer: offers_models.HeadlineOffer) -> None:
     try:
         headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
-        db.session.flush()
         on_commit(
             partial(
                 search.async_index_offer_ids,
