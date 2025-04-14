@@ -1,6 +1,3 @@
-import logging
-import time
-
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -19,8 +16,6 @@ from pcapi.models import offer_mixin
 from . import blueprint
 from . import utils
 
-
-logger = logging.getLogger(__name__)
 
 REDIRECT_AFTER_LOGIN_COOKIE_NAME = "redirect_after_login"
 
@@ -150,45 +145,3 @@ def home() -> utils.BackofficeResponse:
         data.update(stats._mapping)
 
     return render_template("home/home.html", **data)
-
-
-@blueprint.backoffice_web.route("/test/python", methods=["GET"])
-def python_timeout() -> utils.BackofficeResponse:
-    timeout = int(request.args.get("timeout", 60))
-    logger.info(
-        "starting python timeout",
-        extra={
-            "timeout": timeout,
-            "route": request.path,
-        },
-    )
-    time.sleep(timeout)
-    logger.info(
-        "python timeout done",
-        extra={
-            "timeout": timeout,
-            "route": request.path,
-        },
-    )
-    return f"executed python timeout {timeout}"
-
-
-@blueprint.backoffice_web.route("/test/sql", methods=["GET"])
-def sql_timeout() -> utils.BackofficeResponse:
-    timeout = int(request.args.get("timeout", 60))
-    logger.info(
-        "starting python timeout",
-        extra={
-            "timeout": timeout,
-            "route": request.path,
-        },
-    )
-    db.session.execute(f"SELECT pg_sleep({timeout})")
-    logger.info(
-        "python timeout done",
-        extra={
-            "timeout": timeout,
-            "route": request.path,
-        },
-    )
-    return f"executed sql timeout {timeout}"

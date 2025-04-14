@@ -82,7 +82,6 @@ class SafeRedirectTest:
         mock_check_url_is_safe.assert_called_once_with(url)
         mock_request_url_scan.assert_not_called()
 
-    @pytest.mark.skip(reason="not compatible with experimentation")
     @pytest.mark.parametrize(
         "exception,reason",
         [
