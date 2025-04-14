@@ -1537,6 +1537,7 @@ def fetch_or_update_product_with_titelive_data(titelive_product: models.Product)
 
     if titelive_product.extraData:
         product.extraData = {**old_extra_data, **titelive_product.extraData}
+        product.extraData.pop("ean", None)
 
     return product
 
