@@ -38,17 +38,17 @@ dependencies = [
 
 [project.optional-dependencies]
 dev=[
-    "black==24.10.0",
+    "black==25.1.0",
     "fastapi[standard]==0.115.6",
-    "commitizen==4.1.0",
-    "isort==5.13.2",
-    "mypy==1.13.0",
+    "commitizen==4.6.0",
+    "isort==6.0.1",
+    "mypy==1.15.0",
     "mypy-extensions==1.0.0",
-    "pylint==3.3.3",
+    "pylint==3.3.6",
     "pylint-plugin-utils==0.8.2",
     "pylint-pydantic==0.3.5",
-    "pytest==8.3.4",
-    "pytest-asyncio==0.25.2",
+    "pytest==8.3.5",
+    "pytest-asyncio==0.26.0",
     "pytest-dotenv==0.5.2",
     "pytest-mock==3.14.0",
 ]
