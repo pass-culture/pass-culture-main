@@ -13,11 +13,18 @@ $icon-size: rem.torem(20px);
   margin-top: rem.torem(16px);
 }
 
+.details-ean-search-button {
+  width: 100%;
+  margin-top: rem.torem(24px);
+}
+
 @media screen and (min-width: size.$tablet) {
   .details-ean-search-button {
+    margin-top: 0;
+    width: auto;
     position: absolute;
     right: 0;
-    top: rem.torem(57px);
+    top: rem.torem(48px);
   }
 
   .details-ean-search-container {
@@ -26,11 +33,10 @@ $icon-size: rem.torem(20px);
 }
 
 .clear-button {
+  justify-content: center;
   width: calc(#{$icon-size} + #{rem.torem(2px)});
   height: calc(#{$icon-size} + #{rem.torem(2px)});
   border-radius: 50%;
-  display: flex;
-  align-items: center;
 
   &-container {
     position: absolute;
