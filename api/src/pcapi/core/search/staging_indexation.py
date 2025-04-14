@@ -48,8 +48,9 @@ def get_offers_with_gtl(size: int) -> set[int]:
     query = (
         offers_models.Offer.query.outerjoin(offers_models.Stock)
         .outerjoin(offers_models.FutureOffer)
+        .outerjoin(offers_models.Product)
         .filter(
-            offers_models.Offer.extraData["gtl_id"].is_not(None),
+            offers_models.Product.extraData["gtl_id"].is_not(None),
             offers_models.Offer.is_eligible_for_search,
         )
         .with_entities(offers_models.Offer.id)

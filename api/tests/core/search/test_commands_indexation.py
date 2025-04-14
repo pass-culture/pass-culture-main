@@ -10,6 +10,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.search import testing as search_testing
 from pcapi.repository import repository
@@ -204,7 +205,9 @@ class StagingIndexationTest:
 
     def test_get_offers_with_gtl(self):
         stock_with_gtl = offers_factories.StockFactory.create_batch(
-            size=20, offer__isActive=True, offer__extraData={"gtl_id": random.choice(list(GTLS.keys()))}
+            size=20,
+            offer__isActive=True,
+            offer__product=ProductFactory(extraData={"gtl_id": random.choice(list(GTLS.keys()))}),
         )
         offers_factories.StockFactory.create_batch(size=20, offer__isActive=True)
 
