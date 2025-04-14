@@ -250,6 +250,12 @@ def mark_4xx_as_invalid(response: flask.Response) -> flask.Response:
 
 @app.teardown_request
 def remove_db_session(exc: BaseException | None = None) -> None:
+    logger.info(
+        "remove db session",
+        extra={
+            "route": request.path,
+        },
+    )
     try:
         db.session.remove()
     except Exception as exception:  # pylint: disable=broad-exception-caught
@@ -265,6 +271,12 @@ def remove_db_session(exc: BaseException | None = None) -> None:
 @app.teardown_request
 def teardown_atomic(exc: BaseException | None = None) -> None:
     if app.config.get("USE_GLOBAL_ATOMIC", False):
+        logger.info(
+            "teardown atomic",
+            extra={
+                "route": request.path,
+            },
+        )
         try:
             if exc:
                 repository.mark_transaction_as_invalid()
