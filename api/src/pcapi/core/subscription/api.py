@@ -16,6 +16,7 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
 import pcapi.core.fraud.ubble.constants as ubble_constants
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.subscription import machines as subscription_machines
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
@@ -332,173 +333,182 @@ def get_honor_statement_subscription_item(
 
 
 def get_user_subscription_state(user: users_models.User) -> subscription_models.UserSubscriptionState:
-    # Step 1: email validation
-    if not user.isEmailValidated:
-        return subscription_models.UserSubscriptionState(
-            fraud_status=models.SubscriptionItemStatus.TODO,
-            next_step=models.SubscriptionStep.EMAIL_VALIDATION,
-            young_status=young_status_module.Eligible(
-                subscription_status=young_status_module.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
-            ),
-        )
-
-    # Early return if user is beneficiary
-    if user.is_beneficiary and not eligibility_api.is_eligible_for_next_recredit_activation_steps(user):
-        if user.has_active_deposit:
+    subscription_state_machine = subscription_machines.create_state_machine_to_current_state(user)
+    subscription_state = subscription_state_machine.state
+    match subscription_state:
+        case subscription_machines.SubscriptionStates.EMAIL_VALIDATION:
+            return subscription_models.UserSubscriptionState(
+                fraud_status=models.SubscriptionItemStatus.TODO,
+                next_step=models.SubscriptionStep.EMAIL_VALIDATION,
+                young_status=young_status_module.Eligible(
+                    subscription_status=young_status_module.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
+                ),
+            )
+        case subscription_machines.SubscriptionStates.BENEFICIARY:
             return subscription_models.UserSubscriptionState(
                 fraud_status=models.SubscriptionItemStatus.OK,
                 next_step=None,
                 young_status=young_status_module.Beneficiary(),
             )
-        return subscription_models.UserSubscriptionState(
-            fraud_status=models.SubscriptionItemStatus.OK,
-            next_step=None,
-            young_status=young_status_module.ExBeneficiary(),
-        )
+        case subscription_machines.SubscriptionStates.EX_BENEFICIARY:
+            return subscription_models.UserSubscriptionState(
+                fraud_status=models.SubscriptionItemStatus.OK,
+                next_step=None,
+                young_status=young_status_module.ExBeneficiary(),
+            )
+        case subscription_machines.SubscriptionStates.ADMIN_KO_REVIEW:
+            return subscription_models.UserSubscriptionState(
+                fraud_status=models.SubscriptionItemStatus.KO,
+                next_step=None,
+                young_status=young_status_module.NonEligible(),
+                subscription_message=subscription_messages.get_generic_ko_message(user.id),
+            )
+        case subscription_machines.SubscriptionStates.NOT_ELIGIBLE:
+            return subscription_models.UserSubscriptionState(
+                fraud_status=models.SubscriptionItemStatus.VOID,
+                next_step=None,
+                young_status=young_status_module.NonEligible(),
+            )
+        case subscription_machines.SubscriptionStates.FAILED_PHONE_VALIDATION:
+            return subscription_models.UserSubscriptionState(
+                fraud_status=models.SubscriptionItemStatus.KO,
+                next_step=models.SubscriptionStep.PHONE_VALIDATION,
+                young_status=young_status_module.Eligible(
+                    subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
+                ),
+            )
+        case subscription_machines.SubscriptionStates.PHONE_VALIDATION:
+            return subscription_models.UserSubscriptionState(
+                fraud_status=models.SubscriptionItemStatus.TODO,
+                next_step=models.SubscriptionStep.PHONE_VALIDATION,
+                young_status=young_status_module.Eligible(
+                    subscription_status=young_status_module.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
+                ),
+            )
+        case subscription_machines.SubscriptionStates.PROFILE_COMPLETION:
+            return subscription_models.UserSubscriptionState(
+                fraud_status=models.SubscriptionItemStatus.TODO,
+                next_step=models.SubscriptionStep.PROFILE_COMPLETION,
+                young_status=young_status_module.Eligible(
+                    subscription_status=young_status_module.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
+                ),
+            )
+        case subscription_machines.SubscriptionStates.FAILED_IDENTITY_CHECK:
+            identity_check_fraud_status, _, subscription_message = _get_identity_check_status(
+                subscription_state_machine.identity_fraud_check, user
+            )
+            return subscription_models.UserSubscriptionState(
+                identity_fraud_check=subscription_state_machine.identity_fraud_check,
+                fraud_status=identity_check_fraud_status,
+                subscription_message=subscription_message,
+                next_step=None,
+                young_status=young_status_module.Eligible(
+                    subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
+                ),
+            )
+        case subscription_machines.SubscriptionStates.IDENTITY_CHECK_RETRY:
+            _, next_step, subscription_message = _get_identity_check_status(
+                subscription_state_machine.identity_fraud_check, user
+            )
+            return subscription_models.UserSubscriptionState(
+                identity_fraud_check=subscription_state_machine.identity_fraud_check,
+                fraud_status=models.SubscriptionItemStatus.TODO,
+                subscription_message=subscription_message,
+                next_step=next_step,
+                young_status=young_status_module.Eligible(
+                    subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
+                ),
+            )
+        case subscription_machines.SubscriptionStates.IDENTITY_CHECK:
+            _, next_step, subscription_message = _get_identity_check_status(
+                subscription_state_machine.identity_fraud_check, user
+            )
+            return subscription_models.UserSubscriptionState(
+                identity_fraud_check=subscription_state_machine.identity_fraud_check,
+                fraud_status=models.SubscriptionItemStatus.TODO,
+                subscription_message=subscription_message,
+                next_step=next_step,
+                young_status=young_status_module.Eligible(
+                    subscription_status=young_status_module.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
+                ),
+            )
+        case subscription_machines.SubscriptionStates.HONOR_STATEMENT:
+            if not subscription_state_machine.identity_fraud_check_status:
+                raise ValueError(
+                    f"Identity fraud check status should not be None for {user = } at {subscription_state = }"
+                )
+            return subscription_models.UserSubscriptionState(
+                identity_fraud_check=subscription_state_machine.identity_fraud_check,
+                next_step=models.SubscriptionStep.HONOR_STATEMENT,
+                fraud_status=subscription_state_machine.identity_fraud_check_status,
+                subscription_message=None,  # The user needs no message to complete honor statement
+                young_status=young_status_module.Eligible(
+                    subscription_status=young_status_module.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
+                ),
+            )
+        case subscription_machines.SubscriptionStates.WAITING_FOR_IDENTITY_CHECK:
+            _, _, subscription_message = _get_identity_check_status(
+                subscription_state_machine.identity_fraud_check, user
+            )
+            return subscription_models.UserSubscriptionState(
+                identity_fraud_check=subscription_state_machine.identity_fraud_check,
+                fraud_status=models.SubscriptionItemStatus.PENDING,
+                subscription_message=subscription_message,
+                next_step=None,
+                young_status=young_status_module.Eligible(
+                    subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
+                ),
+            )
+        case subscription_machines.SubscriptionStates.WAITING_FOR_MANUAL_REVIEW:
+            if not subscription_state_machine.identity_fraud_check_status:
+                raise ValueError(
+                    f"Identity fraud check status should not be None for {user = } at {subscription_state = }"
+                )
+            return subscription_models.UserSubscriptionState(
+                identity_fraud_check=subscription_state_machine.identity_fraud_check,
+                is_activable=False,
+                fraud_status=subscription_state_machine.identity_fraud_check_status,
+                subscription_message=None,
+                next_step=None,
+                young_status=young_status_module.Eligible(
+                    subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
+                ),
+            )
+        case subscription_machines.SubscriptionStates.SUBSCRIPTION_COMPLETED_BUT_NOT_BENEFICIARY_YET:
+            if not subscription_state_machine.identity_fraud_check_status:
+                raise ValueError(
+                    f"Identity fraud check status should not be None for {user = } at {subscription_state = }"
+                )
+            return subscription_models.UserSubscriptionState(
+                identity_fraud_check=subscription_state_machine.identity_fraud_check,
+                is_activable=True,
+                fraud_status=subscription_state_machine.identity_fraud_check_status,
+                subscription_message=None,
+                next_step=None,
+                young_status=young_status_module.Eligible(
+                    subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
+                ),
+            )
+        case _:
+            raise ValueError(f"{user = } has an unhandled {subscription_state_machine.state = }")
 
-    # Early return if there is an admin manual review
-    if fraud_repository.has_admin_ko_review(user):
-        return subscription_models.UserSubscriptionState(
-            fraud_status=models.SubscriptionItemStatus.KO,
-            next_step=None,
-            young_status=young_status_module.NonEligible(),
-            subscription_message=subscription_messages.get_generic_ko_message(user.id),
-        )
 
-    # Early return if user is not eligible
-    if user.eligibility is None:
-        return subscription_models.UserSubscriptionState(
-            fraud_status=models.SubscriptionItemStatus.VOID,
-            next_step=None,
-            young_status=young_status_module.NonEligible(),
-        )
-
-    # Step 2: phone validation
-    phone_subscription_item = get_phone_validation_subscription_item(user, user.eligibility)
-    if phone_subscription_item.status == models.SubscriptionItemStatus.KO:
-        return subscription_models.UserSubscriptionState(
-            fraud_status=models.SubscriptionItemStatus.KO,
-            next_step=models.SubscriptionStep.PHONE_VALIDATION,
-            young_status=young_status_module.Eligible(
-                subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
-            ),
-        )
-    if phone_subscription_item.status == models.SubscriptionItemStatus.TODO:
-        return subscription_models.UserSubscriptionState(
-            fraud_status=models.SubscriptionItemStatus.TODO,
-            next_step=models.SubscriptionStep.PHONE_VALIDATION,
-            young_status=young_status_module.Eligible(
-                subscription_status=young_status_module.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
-            ),
-        )
-
-    # Step 4: profile completion
-    if not has_completed_profile_for_given_eligibility(user, user.eligibility):
-        return subscription_models.UserSubscriptionState(
-            fraud_status=models.SubscriptionItemStatus.TODO,
-            next_step=models.SubscriptionStep.PROFILE_COMPLETION,
-            young_status=young_status_module.Eligible(
-                subscription_status=young_status_module.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
-            ),
-        )
-
-    # Step 5: identity check
-    relevant_identity_fraud_check = fraud_repository.get_relevant_identity_fraud_check(user, user.eligibility)
-    identity_check_fraud_status = get_identity_check_fraud_status(user, user.eligibility, relevant_identity_fraud_check)
+def _get_identity_check_status(
+    identity_fraud_check: fraud_models.BeneficiaryFraudCheck | None, user: users_models.User
+) -> tuple[models.SubscriptionItemStatus, models.SubscriptionStep, models.SubscriptionMessage | None]:
+    identity_check_fraud_status = get_identity_check_fraud_status(user, user.eligibility, identity_fraud_check)
     allowed_identity_check_methods = get_allowed_identity_check_methods(user)
-    next_step: models.SubscriptionStep | None = (
+    next_step = (
         models.SubscriptionStep.IDENTITY_CHECK
         if len(allowed_identity_check_methods) > 0
         else models.SubscriptionStep.MAINTENANCE
     )
     subscription_message = (
-        _get_subscription_message(relevant_identity_fraud_check)
+        _get_subscription_message(identity_fraud_check)
         if len(allowed_identity_check_methods) > 0
         else subscription_messages.MAINTENANCE_PAGE_MESSAGE
     )
-
-    if identity_check_fraud_status in [models.SubscriptionItemStatus.KO, models.SubscriptionItemStatus.SUSPICIOUS]:
-        assert (
-            relevant_identity_fraud_check is not None
-        )  # mypy. This is not None if identity_check_fraud_status is KO or SUSPICIOUS (see get_identity_check_fraud_status)
-        if can_retry_identity_fraud_check(relevant_identity_fraud_check):
-            identity_check_fraud_status = models.SubscriptionItemStatus.TODO
-        else:
-            next_step = None
-
-        return subscription_models.UserSubscriptionState(
-            identity_fraud_check=relevant_identity_fraud_check,
-            fraud_status=identity_check_fraud_status,
-            subscription_message=subscription_message,
-            next_step=next_step,
-            young_status=young_status_module.Eligible(
-                subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
-            ),
-        )
-
-    if identity_check_fraud_status == models.SubscriptionItemStatus.TODO:
-        return subscription_models.UserSubscriptionState(
-            identity_fraud_check=relevant_identity_fraud_check,
-            fraud_status=identity_check_fraud_status,
-            subscription_message=subscription_message,
-            next_step=next_step,
-            young_status=young_status_module.Eligible(
-                subscription_status=young_status_module.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
-            ),
-        )
-
-    if identity_check_fraud_status in [models.SubscriptionItemStatus.OK, models.SubscriptionItemStatus.PENDING]:
-        pass  # Continue to honor statement
-
-    else:
-        logger.error("Unknown fraud status %s", identity_check_fraud_status)
-        return subscription_models.UserSubscriptionState(
-            identity_fraud_check=relevant_identity_fraud_check,
-            fraud_status=identity_check_fraud_status,
-            next_step=None,
-            young_status=young_status_module.Eligible(
-                subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
-            ),
-            subscription_message=subscription_messages.get_generic_ko_message(user.id),
-        )
-
-    # Step 6: honor statement
-    if not fraud_repository.get_completed_honor_statement(user, user.eligibility):
-        return subscription_models.UserSubscriptionState(
-            identity_fraud_check=relevant_identity_fraud_check,
-            next_step=models.SubscriptionStep.HONOR_STATEMENT,
-            fraud_status=identity_check_fraud_status,
-            subscription_message=None,  # The user needs no message to complete honor statement
-            young_status=young_status_module.Eligible(
-                subscription_status=young_status_module.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
-            ),
-        )
-
-    if identity_check_fraud_status == models.SubscriptionItemStatus.OK:
-        is_activable = True
-        assert relevant_identity_fraud_check  # mypy
-        if requires_manual_review_before_activation(user, relevant_identity_fraud_check):
-            is_activable = False
-        return subscription_models.UserSubscriptionState(
-            identity_fraud_check=relevant_identity_fraud_check,
-            is_activable=is_activable,
-            fraud_status=identity_check_fraud_status,
-            subscription_message=None,
-            next_step=None,
-            young_status=young_status_module.Eligible(
-                subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
-            ),
-        )
-
-    return subscription_models.UserSubscriptionState(
-        identity_fraud_check=relevant_identity_fraud_check,
-        fraud_status=identity_check_fraud_status,
-        subscription_message=subscription_message,
-        next_step=None,
-        young_status=young_status_module.Eligible(
-            subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
-        ),
-    )
+    return identity_check_fraud_status, next_step, subscription_message
 
 
 def requires_manual_review_before_activation(

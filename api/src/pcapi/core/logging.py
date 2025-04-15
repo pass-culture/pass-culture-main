@@ -279,6 +279,8 @@ def _silence_noisy_loggers() -> None:
     logging.getLogger("gql.transport.requests").setLevel(logging.WARNING)
     # fontTools is used by weasyprint
     logging.getLogger("fontTools.subset").setLevel(logging.WARNING)
+    # model overriding skips a lot of bindings
+    logging.getLogger("transitions").setLevel(logging.ERROR)
 
     # FIXME (mgeoffray, 2024-06-26): environment variables can be
     # quickly set and redeployed if we get a deluge of warnings. If
