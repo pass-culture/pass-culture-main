@@ -11,7 +11,7 @@ class BatchEvent(enum.Enum):
     HAS_UBBLE_KO_STATUS = "has_ubble_ko_status"
     HAS_BOOKED_OFFER = "has_booked_offer"
     RECREDIT_ACCOUNT_CANCELLATION = "recredit_account_cancellation"
-    FUTURE_OFFER_ACTIVATED = "Future_offer_activated"
+    FUTURE_OFFER_ACTIVATED = "future_offer_activated"
 
 
 class TrackBatchEventRequest(BaseModel):
