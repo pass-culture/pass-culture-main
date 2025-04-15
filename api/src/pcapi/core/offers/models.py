@@ -725,7 +725,6 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     bookingsCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
     hasPendingBookings: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     chroniclesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
-    headlineCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
     likesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
 
     @property

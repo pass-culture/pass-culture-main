@@ -509,51 +509,6 @@ def test_serialize_offer_chronicles_count_from_product_has_priority():
     assert serialized["offer"]["chroniclesCount"] == 2
 
 
-def test_serialize_offer_headline_count_with_product():
-    product = offers_factories.ProductFactory()
-    offer_1 = offers_factories.OfferFactory(product=product)
-    offer_2 = offers_factories.OfferFactory(product=product)
-    offers_factories.OfferFactory(product=product)
-    offers_factories.HeadlineOfferFactory(offer=offer_1)
-    offers_factories.HeadlineOfferFactory(offer=offer_2)
-
-    offer = get_base_query_for_offer_indexation().filter(offers_models.Offer.id == offer_1.id).one()
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
-    assert serialized["offer"]["headlineCount"] == 2
-
-
-def test_serialize_offer_headline_count_without_product():
-    offer_1 = offers_factories.OfferFactory()
-    offer_2 = offers_factories.OfferFactory()
-    offers_factories.HeadlineOfferFactory(offer=offer_1)
-    offers_factories.HeadlineOfferFactory(offer=offer_2)
-
-    offer = get_base_query_for_offer_indexation().filter(offers_models.Offer.id == offer_1.id).one()
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
-    assert serialized["offer"]["headlineCount"] == 1
-
-
-def test_serialize_offer_headline_count_without_headline_offer():
-    product = offers_factories.ProductFactory()
-    offer_1 = offers_factories.OfferFactory(product=product)
-    offer_2 = offers_factories.OfferFactory(product=product)
-    offers_factories.HeadlineOfferFactory(offer=offer_2)
-
-    offer = get_base_query_for_offer_indexation().filter(offers_models.Offer.id == offer_1.id).one()
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
-    assert serialized["offer"]["headlineCount"] == 1
-
-
-def test_serialize_offer_headline_count_without_headline_offer_nor_product():
-    offer_1 = offers_factories.OfferFactory()
-    offer_2 = offers_factories.OfferFactory()
-    offers_factories.HeadlineOfferFactory(offer=offer_2)
-
-    offer = get_base_query_for_offer_indexation().filter(offers_models.Offer.id == offer_1.id).one()
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
-    assert serialized["offer"]["headlineCount"] == 0
-
-
 def test_serialize_venue():
     venue = offerers_factories.VenueFactory(
         venueTypeCode=offerers_models.VenueTypeCode.VISUAL_ARTS,
