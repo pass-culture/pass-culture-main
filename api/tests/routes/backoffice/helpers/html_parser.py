@@ -4,6 +4,9 @@ import typing
 from bs4 import BeautifulSoup
 
 
+sentinel = ...
+
+
 def _filter_whitespaces(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip())
 
@@ -143,12 +146,14 @@ def extract_alert(html_content: str, raise_if_not_found: bool = True) -> str | N
     return _filter_whitespaces(alert.text)
 
 
-def get_tag(html_content: str, class_: str, tag: str = "div", **attrs: typing.Any) -> str:
+def get_tag(html_content: str, class_: str = sentinel, tag: str = "div", **attrs: typing.Any) -> str:
     """
     Find a tag given its class
     """
     soup = get_soup(html_content)
-    found_tag = soup.find(tag, class_=class_, **attrs)
+    if class_ is not sentinel:
+        attrs["class_"] = class_
+    found_tag = soup.find(tag, **attrs)
     assert found_tag is not None
 
     return found_tag.encode("utf-8")

@@ -441,3 +441,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
 
         buttons = html_parser.extract(response.data, "button")
         assert "Déplacer l'offre" in buttons
+        assert (
+            html_parser.get_tag(response.data, tag="div", id=f"move-collective-offer-modal-{collective_offer.id}")
+            is not None
+        )
