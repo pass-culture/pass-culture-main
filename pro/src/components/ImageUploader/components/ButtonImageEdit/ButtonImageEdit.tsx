@@ -9,12 +9,12 @@ import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { UploaderModeEnum } from '../../types'
-
-import style from './ButtonImageEdit.module.scss'
 import {
   ModalImageEdit,
   OnImageUploadArgs,
-} from './ModalImageEdit/ModalImageEdit'
+} from '../ModalImageEdit/ModalImageEdit'
+
+import style from './ButtonImageEdit.module.scss'
 import { UploadImageValues } from './types'
 
 export type ButtonImageEditProps = {

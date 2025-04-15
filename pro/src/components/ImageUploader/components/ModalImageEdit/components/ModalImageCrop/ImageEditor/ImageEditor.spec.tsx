@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
 
-import { ImageEditor } from './ImageEditor'
+import { ImageEditor, map } from './ImageEditor'
 
 // Mocking the dependencies
 vi.mock('ui-kit/form/Slider/Slider', () => ({
@@ -14,7 +14,7 @@ vi.mock('./canvas', () => ({
   })),
 }))
 
-describe('ImageEditor Component', () => {
+describe('ImageEditor', () => {
   const mockImage = new File(['image'], 'image.jpg', { type: 'image/jpeg' })
 
   const defaultProps = {
@@ -55,5 +55,17 @@ describe('ImageEditor Component', () => {
     fireEvent.change(slider, { target: { value: 2 } })
 
     expect(slider).toHaveValue('2')
+  })
+})
+
+describe('ImageEditor:map', () => {
+  it('maps values correctly', () => {
+    const result = map(5, 0, 10, 0, 100)
+    expect(result).toBe(50)
+  })
+
+  it('clamps values correctly', () => {
+    const result = map(15, 0, 10, 0, 100)
+    expect(result).toBe(100)
   })
 })

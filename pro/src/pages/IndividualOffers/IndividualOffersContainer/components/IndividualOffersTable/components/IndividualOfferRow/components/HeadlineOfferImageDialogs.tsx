@@ -15,7 +15,7 @@ import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import {
   ModalImageEdit,
   OnImageUploadArgs,
-} from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+} from 'components/ImageUploader/components/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import strokeVisualArtIcon from 'icons/stroke-visual-art.svg'

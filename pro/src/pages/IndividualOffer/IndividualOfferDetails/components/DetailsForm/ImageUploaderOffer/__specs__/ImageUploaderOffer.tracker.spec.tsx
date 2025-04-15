@@ -77,9 +77,7 @@ describe('ImageUploaderOffer::tracker', () => {
   it('should log add image event on click', async () => {
     renderImageUploaderOffer(props)
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Ajouter une image' })
-    )
+    await userEvent.click(screen.getByLabelText('Importez une image'))
 
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_ADD_IMAGE, {
       offererId: '1',

@@ -8,10 +8,9 @@ import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { ImageUploader } from 'components/ImageUploader/ImageUploader'
+import { OnImageUploadArgs } from 'components/ImageUploader/components/ModalImageEdit/ModalImageEdit'
+import { ImageDragAndDropUploader } from 'components/ImageUploader/ImageDragAndDropUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import { buildInitialValues } from './buildInitialValues'
 import styles from './ImageUploaderOffer.module.scss'
@@ -31,9 +30,7 @@ export const ImageUploaderOffer = ({
 }: ImageUploaderOfferProps) => {
   const { offer } = useIndividualOfferContext()
   const selectedOffererId = useSelector(selectCurrentOffererId)
-
   const mode = useOfferWizardMode()
-
   const { logEvent } = useAnalytics()
 
   const logButtonAddClick = () => {
@@ -48,16 +45,13 @@ export const ImageUploaderOffer = ({
   }
 
   return (
-    <FormLayout.Section title="Image de l’offre">
-      <FormLayout.Row
-        sideComponent={
-          <InfoBox>
-            Les offres avec une image ont 4 fois plus de chance d’être
-            consultées que celles qui n’en ont pas.
-          </InfoBox>
-        }
-      >
-        <ImageUploader
+    <FormLayout.Section title="Illustrez votre offre">
+      <FormLayout.Row>
+        <p>
+          Ajoutez une image pour que votre offre ait 2 fois plus de chances
+          d’être consultée !
+        </p>
+        <ImageDragAndDropUploader
           className={styles['image-uploader']}
           onImageUpload={onImageUpload}
           onImageDelete={onImageDelete}

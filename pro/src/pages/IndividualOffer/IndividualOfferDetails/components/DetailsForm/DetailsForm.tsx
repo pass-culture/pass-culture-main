@@ -2,10 +2,14 @@ import { useFormikContext } from 'formik'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
+import {
+  CATEGORY_STATUS,
+  INDIVIDUAL_OFFER_SUBTYPE,
+} from 'commons/core/Offers/constants'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OnImageUploadArgs } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { HeadlineOfferVideoBanner } from 'components/HeadlineOfferVideoBanner/HeadlineOfferVideoBanner'
+import { OnImageUploadArgs } from 'components/ImageUploader/components/ModalImageEdit/ModalImageEdit'
 import { MarkdownInfoBox } from 'components/MarkdownInfoBox/MarkdownInfoBox'
 import fullMoreIcon from 'icons/full-more.svg'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
@@ -19,6 +23,7 @@ import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'
+import { ImageUploaderOffer } from './ImageUploaderOffer/ImageUploaderOffer'
 import { Subcategories } from './Subcategories/Subcategories'
 
 type DetailsFormProps = {
@@ -54,6 +59,12 @@ export const DetailsForm = ({
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
 
   const showAddVenueBanner = venuesOptions.length === 0
+
+  const queryParams = new URLSearchParams(location.search)
+  const queryOfferType = queryParams.get('offer-type')
+  const shouldDisplayVideoBanner =
+    queryOfferType === INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT ||
+    queryOfferType === INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
 
   return (
     <>
@@ -113,7 +124,7 @@ export const DetailsForm = ({
                 disabled={readOnlyFields.includes('name')}
               />
             </FormLayout.Row>
-            <FormLayout.Row sideComponent={<MarkdownInfoBox />} >
+            <FormLayout.Row sideComponent={<MarkdownInfoBox />}>
               <TextArea
                 isOptional
                 label="Description"
@@ -145,6 +156,13 @@ export const DetailsForm = ({
           </>
         )}
       </FormLayout.Section>
+      <ImageUploaderOffer
+        onImageUpload={onImageUpload}
+        onImageDelete={onImageDelete}
+        imageOffer={imageOffer}
+        hideActionButtons={isProductBased}
+      />
+      {shouldDisplayVideoBanner && <HeadlineOfferVideoBanner />}
       {!showAddVenueBanner && (
         <Subcategories
           readOnlyFields={readOnlyFields}
@@ -152,16 +170,12 @@ export const DetailsForm = ({
           filteredSubcategories={filteredSubcategories}
         />
       )}
-
       {isSubCategorySelected && (
         <DetailsSubForm
           isEanSearchDisplayed={isEanSearchDisplayed}
           isProductBased={isProductBased}
           isOfferCD={isSubCategoryCD(subcategoryId)}
           readOnlyFields={readOnlyFields}
-          onImageUpload={onImageUpload}
-          onImageDelete={onImageDelete}
-          imageOffer={imageOffer}
         />
       )}
     </>

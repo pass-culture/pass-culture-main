@@ -8,11 +8,11 @@ import {
   Constraint,
   imageConstraints,
 } from 'components/ConstraintCheck/imageConstraints'
-import { ImagePreferredOrientation } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/ImagePreferredOrientation/ImagePreferredOrientation'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { BaseFileInput } from 'ui-kit/form/shared/BaseFileInput/BaseFileInput'
 
 import { modeValidationConstraints } from './constants'
+import { ImagePreferredOrientation } from './ImagePreferredOrientation/ImagePreferredOrientation'
 import { ImageUploadBrowserFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
 

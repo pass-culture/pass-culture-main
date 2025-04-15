@@ -6,12 +6,6 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useGetImageBitmap } from 'commons/hooks/useGetBitmap'
 import { useNotification } from 'commons/hooks/useNotification'
-import {
-  ImageEditor,
-  ImageEditorConfig,
-} from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ImageEditor/ImageEditor'
-import { coordonateToPosition } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ImageEditor/utils'
-import { modeValidationConstraints } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/constants'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import fullDownloadIcon from 'icons/full-download.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -21,7 +15,10 @@ import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
 import { getCropMaxDimension } from '../../utils/getCropMaxDimension'
+import { modeValidationConstraints } from '../ModalImageUploadBrowser/ImageUploadBrowserForm/constants'
 
+import { ImageEditor, ImageEditorConfig } from './ImageEditor/ImageEditor'
+import { coordonateToPosition } from './ImageEditor/utils'
 import style from './ModalImageCrop.module.scss'
 
 export type ModalImageCropProps = {

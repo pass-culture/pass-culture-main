@@ -49,8 +49,6 @@ const DetailsSubFormWrappedWithFormik = ({
         isProductBased={isProductBased}
         isOfferCD={isOfferCD}
         readOnlyFields={[]}
-        onImageUpload={vi.fn()}
-        onImageDelete={vi.fn()}
       />
     </FormikProvider>
   )

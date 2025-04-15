@@ -662,8 +662,6 @@ describe('VenueEditionFormScreen', () => {
               )
             ).toBeInTheDocument()
           })
-
-          screen.debug(undefined, 30_000)
         })
 
         it('should display an acceslibre accessibility subsection when externally defined', () => {

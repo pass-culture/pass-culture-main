@@ -2,6 +2,12 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_a11y.scss" as a11y;
 
+.image-drag-and-drop-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .image-drag-and-drop {
   display: flex;
   height: rem.torem(240px);

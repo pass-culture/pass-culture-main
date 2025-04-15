@@ -15,7 +15,7 @@ vi.mock('../buildInitialValues', () => ({
 const renderImageUploaderOffer = (props: ImageUploaderOfferProps) =>
   renderWithProviders(<ImageUploaderOffer {...props} />)
 
-describe('test ImageUploaderOffer', () => {
+describe('ImageUploaderOffer', () => {
   let props: ImageUploaderOfferProps
   beforeEach(() => {
     props = {
@@ -29,11 +29,11 @@ describe('test ImageUploaderOffer', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /Image de l’offre/,
+        name: /Illustrez votre offre/,
       })
     ).toBeInTheDocument()
     const infoBox = screen.getByText(
-      'Les offres avec une image ont 4 fois plus de chance d’être consultées que celles qui n’en ont pas.'
+      'Ajoutez une image pour que votre offre ait 2 fois plus de chances d’être consultée !'
     )
     expect(infoBox).toBeInTheDocument()
     expect(imageUploaderOfferUtils.buildInitialValues).toHaveBeenCalledWith(
@@ -50,7 +50,7 @@ describe('test ImageUploaderOffer', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /Image de l’offre/,
+        name: /Illustrez votre offre/,
       })
     ).toBeInTheDocument()
     expect(imageUploaderOfferUtils.buildInitialValues).toHaveBeenCalledWith(

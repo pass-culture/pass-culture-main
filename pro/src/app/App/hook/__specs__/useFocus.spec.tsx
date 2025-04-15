@@ -63,8 +63,6 @@ describe('useFocus', () => {
       screen.getByRole('link', { name: 'Page With "Back to Nav" link' })
     )
 
-    screen.debug()
-
     expect(document.activeElement?.id).toEqual('back-to-nav-link')
     await userEvent.tab()
     expect(document.activeElement?.id).not.toEqual('back-to-nav-link')

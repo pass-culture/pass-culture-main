@@ -1,6 +1,7 @@
+/* istanbul ignore file: DEBT, TO FIX */
+
 type Coordinates = [number, number, number, number]
 
-/* istanbul ignore next: DEBT, TO FIX */
 function getScaledCoordinates(coordinates: Coordinates): Coordinates {
   const dpr = window.devicePixelRatio
   return [
@@ -10,8 +11,6 @@ function getScaledCoordinates(coordinates: Coordinates): Coordinates {
     dpr * coordinates[3],
   ]
 }
-
-/* istanbul ignore next: DEBT, TO FIX */
 export class CanvasTools {
   context: CanvasRenderingContext2D
 
