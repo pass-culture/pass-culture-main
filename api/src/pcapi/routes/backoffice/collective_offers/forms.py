@@ -311,7 +311,9 @@ class GetCollectiveOfferTemplatesListForm(forms.GetOffersBaseFields):
     q = fields.PCOptSearchField("ID, nom de l'offre")
     from_date = fields.PCDateField("Créées à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Jusqu'au", validators=(wtforms.validators.Optional(),))
-    only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les offres des entités juridiques validées")
+    only_validated_offerers = fields.PCSwitchBooleanField(
+        "Uniquement les offres des entités juridiques validées", full_row=True
+    )
     formats = fields.PCSelectMultipleField("Formats", choices=forms_utils.choices_from_enum(EacFormat))
     offerer = fields.PCTomSelectField(
         "Entités juridiques",
