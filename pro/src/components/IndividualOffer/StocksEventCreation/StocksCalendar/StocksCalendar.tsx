@@ -7,39 +7,30 @@ import {
   StocksOrderedBy,
 } from 'apiClient/v1'
 import { GET_STOCKS_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 import { pluralize } from 'commons/utils/pluralize'
 import { convertTimeFromVenueTimezoneToUtc } from 'commons/utils/timezone'
-import fullMoreIcon from 'icons/full-more.svg'
-import strokeAddCalendarIcon from 'icons/stroke-add-calendar.svg'
-import { Button } from 'ui-kit/Button/Button'
-import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
+import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { StocksTableFilters, StocksTableSort } from '../form/types'
 
 import styles from './StocksCalendar.module.scss'
 import { StocksCalendarActionsBar } from './StocksCalendarActionsBar/StocksCalendarActionsBar'
 import { StocksCalendarFilters } from './StocksCalendarFilters/StocksCalendarFilters'
-import { StocksCalendarForm } from './StocksCalendarForm/StocksCalendarForm'
+import { StocksCalendarLayout } from './StocksCalendarLayout/StocksCalendarLayout'
 import { StocksCalendarTable } from './StocksCalendarTable/StocksCalendarTable'
 
 const STOCKS_PER_PAGE = 20
 
 export function StocksCalendar({
   offer,
-  handlePreviousStep,
-  handleNextStep,
-  departmentCode,
+  mode,
 }: {
   offer: GetIndividualOfferWithAddressResponseModel
-  handlePreviousStep: () => void
-  handleNextStep: () => void
-  departmentCode: string
+  mode: OFFER_WIZARD_MODE
 }) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [checkedStocks, setCheckedStocks] = useState(new Set<number>())
   const [appliedFilters, setAppliedFilters] = useState<StocksTableFilters>({})
@@ -47,6 +38,8 @@ export function StocksCalendar({
     sort: StocksOrderedBy.DATE,
   })
   const notify = useNotification()
+
+  const departmentCode = getDepartmentCode(offer)
 
   const queryKeys: [
     string,
@@ -103,108 +96,73 @@ export function StocksCalendar({
 
   const stocks = data?.stocks || []
 
-  const getDialogBuilderButton = (buttonLabel: string) => (
-    <DialogBuilder
-      trigger={
-        <Button className={styles['button']} icon={fullMoreIcon}>
-          {buttonLabel}
-        </Button>
-      }
-      open={isDialogOpen}
-      onOpenChange={setIsDialogOpen}
-      variant="drawer"
-      title="Définir le calendrier de votre offre"
-    >
-      <StocksCalendarForm
-        offer={offer}
-        onAfterValidate={async () => {
-          await mutate(queryKeys, data, {
-            revalidate: true,
-          })
-
-          setIsDialogOpen(false)
-        }}
-      />
-    </DialogBuilder>
-  )
-
   return (
-    <div className={styles['container']}>
-      <div className={styles['header']}>
-        <h2 className={styles['title']}>Calendrier</h2>
-        {data?.hasStocks &&
-          getDialogBuilderButton('Ajouter une ou plusieurs dates')}
-      </div>
-
-      {isLoading && !data?.hasStocks && (
-        <Spinner className={styles['spinner']} />
-      )}
-
-      {data?.hasStocks && (
-        <div className={styles['content']}>
-          <div className={styles['filters']}>
-            <StocksCalendarFilters
-              priceCategories={offer.priceCategories}
-              filters={appliedFilters}
-              sortType={appliedSort}
-              onUpdateFilters={setAppliedFilters}
-              onUpdateSort={(sort, desc) => {
-                setAppliedSort({
-                  sort: sort ? sort : undefined,
-                  orderByDesc: Boolean(desc),
-                })
-              }}
-            />
-          </div>
-          {data.stockCount > 0 && (
-            <div className={styles['count']}>
-              {pluralize(data.stockCount, 'date')}
+    <StocksCalendarLayout
+      offer={offer}
+      isLoading={isLoading}
+      mode={mode}
+      hasStocks={Boolean(data?.hasStocks)}
+      onAfterCloseDialog={async () => {
+        await mutate(queryKeys, data, {
+          revalidate: true,
+        })
+      }}
+    >
+      <div className={styles['container']}>
+        {data?.hasStocks && (
+          <div className={styles['content']}>
+            <div className={styles['filters']}>
+              <StocksCalendarFilters
+                priceCategories={offer.priceCategories}
+                filters={appliedFilters}
+                sortType={appliedSort}
+                onUpdateFilters={setAppliedFilters}
+                onUpdateSort={(sort, desc) => {
+                  setAppliedSort({
+                    sort: sort ? sort : undefined,
+                    orderByDesc: Boolean(desc),
+                  })
+                }}
+              />
             </div>
-          )}
-          <StocksCalendarTable
-            stocks={stocks}
-            offer={offer}
-            onDeleteStocks={deleteStocks}
-            checkedStocks={checkedStocks}
-            updateCheckedStocks={setCheckedStocks}
-            departmentCode={departmentCode}
-          />
-          <div className={styles['pagination']}>
-            <Pagination
-              currentPage={page}
-              onNextPageClick={() => setPage((p) => p + 1)}
-              onPreviousPageClick={() => setPage((p) => p - 1)}
-              pageCount={
-                data.stockCount % STOCKS_PER_PAGE === 0
-                  ? data.stockCount / STOCKS_PER_PAGE
-                  : Math.trunc(data.stockCount / STOCKS_PER_PAGE) + 1
-              }
+            {data.stockCount > 0 && (
+              <div className={styles['count']}>
+                {pluralize(data.stockCount, 'date')}
+              </div>
+            )}
+            <StocksCalendarTable
+              stocks={stocks}
+              offer={offer}
+              onDeleteStocks={deleteStocks}
+              checkedStocks={checkedStocks}
+              updateCheckedStocks={setCheckedStocks}
+              departmentCode={departmentCode}
+              mode={mode}
             />
+            <div className={styles['pagination']}>
+              <Pagination
+                currentPage={page}
+                onNextPageClick={() => setPage((p) => p + 1)}
+                onPreviousPageClick={() => setPage((p) => p - 1)}
+                pageCount={
+                  data.stockCount % STOCKS_PER_PAGE === 0
+                    ? data.stockCount / STOCKS_PER_PAGE
+                    : Math.trunc(data.stockCount / STOCKS_PER_PAGE) + 1
+                }
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {!data?.hasStocks && !isLoading && (
-        <div className={styles['no-stocks-content']}>
-          <div className={styles['icon-container']}>
-            <SvgIcon
-              alt=""
-              className={styles['icon']}
-              src={strokeAddCalendarIcon}
-            />
-          </div>
-          {getDialogBuilderButton('Définir le calendrier')}
-        </div>
-      )}
-
-      <StocksCalendarActionsBar
-        handlePreviousStep={handlePreviousStep}
-        handleNextStep={handleNextStep}
-        checkedStocks={checkedStocks}
-        hasStocks={Boolean(data?.hasStocks)}
-        deleteStocks={deleteStocks}
-        updateCheckedStocks={setCheckedStocks}
-      />
-    </div>
+        <StocksCalendarActionsBar
+          checkedStocks={checkedStocks}
+          hasStocks={Boolean(data?.hasStocks)}
+          deleteStocks={deleteStocks}
+          updateCheckedStocks={setCheckedStocks}
+          mode={mode}
+          offerId={offer.id}
+        />
+      </div>
+    </StocksCalendarLayout>
   )
 }

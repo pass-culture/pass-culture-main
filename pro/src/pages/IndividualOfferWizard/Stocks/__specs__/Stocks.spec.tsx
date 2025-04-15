@@ -9,7 +9,8 @@ import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { RootState } from 'commons/store/rootReducer'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import * as useOfferWizardMode from 'commons/hooks/useOfferWizardMode'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
@@ -20,9 +21,19 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { Stocks } from '../Stocks'
 
+vi.mock('apiClient/api', () => ({
+  api: {
+    getStocks: vi.fn(),
+  },
+}))
+
+vi.mock('commons/hooks/useOfferWizardMode', () => ({
+  useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.EDITION),
+}))
+
 const renderStocksScreen = (
-  storeOverrides: Partial<RootState> = {},
-  contextOverride: Partial<IndividualOfferContextValues>
+  contextOverride: Partial<IndividualOfferContextValues>,
+  features: string[] = []
 ) => {
   const contextValue = individualOfferContextValuesFactory(contextOverride)
 
@@ -30,12 +41,11 @@ const renderStocksScreen = (
     <IndividualOfferContext.Provider value={contextValue}>
       <Stocks />
     </IndividualOfferContext.Provider>,
-    { storeOverrides }
+    { features: features }
   )
 }
 
 describe('screens:Stocks', () => {
-  let storeOverrides: Partial<RootState>
   let contextOverride: IndividualOfferContextValues
   let offer: GetIndividualOfferWithAddressResponseModel
   const offerId = 12
@@ -47,7 +57,6 @@ describe('screens:Stocks', () => {
         departementCode: '75',
       }),
     })
-    storeOverrides = {}
     contextOverride = individualOfferContextValuesFactory({
       offer,
     })
@@ -65,7 +74,7 @@ describe('screens:Stocks', () => {
       isEvent: false,
       isDigital: false,
     })
-    renderStocksScreen(storeOverrides, contextOverride)
+    renderStocksScreen(contextOverride)
 
     expect(
       await screen.findByText(
@@ -79,7 +88,7 @@ describe('screens:Stocks', () => {
       ...contextOverride.offer,
       isEvent: true,
     })
-    renderStocksScreen(storeOverrides, contextOverride)
+    renderStocksScreen(contextOverride)
 
     await waitFor(() => {
       expect(
@@ -99,7 +108,7 @@ describe('screens:Stocks', () => {
         isEvent: true,
         status: offerStatus,
       })
-      renderStocksScreen(storeOverrides, contextOverride)
+      renderStocksScreen(contextOverride)
 
       await waitFor(() => {
         expect(
@@ -126,7 +135,7 @@ describe('screens:Stocks', () => {
         isEvent: true,
         status: offerStatus,
       })
-      renderStocksScreen(storeOverrides, contextOverride)
+      renderStocksScreen(contextOverride)
 
       await waitFor(() => {
         expect(
@@ -137,4 +146,29 @@ describe('screens:Stocks', () => {
       })
     }
   )
+
+  it('should show the calendar form if the FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR is enabled for an event creation', async () => {
+    vi.spyOn(useOfferWizardMode, 'useOfferWizardMode').mockReturnValue(
+      OFFER_WIZARD_MODE.CREATION
+    )
+
+    contextOverride.offer = getIndividualOfferFactory({
+      ...contextOverride.offer,
+      isEvent: true,
+    })
+
+    renderStocksScreen(contextOverride, ['WIP_ENABLE_EVENT_WITH_OPENING_HOUR'])
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    expect(
+      screen.getByRole('heading', { name: 'Calendrier' })
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('button', { name: 'Enregistrer et continuer' })
+    ).toBeInTheDocument()
+  })
 })

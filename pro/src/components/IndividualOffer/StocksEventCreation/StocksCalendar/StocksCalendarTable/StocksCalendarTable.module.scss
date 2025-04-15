@@ -64,6 +64,10 @@
 
     &:first-of-type {
       padding-left: rem.torem(16px);
+
+      .tbody-td-date {
+        margin-left: 0;
+      }
     }
 
     &:last-of-type {

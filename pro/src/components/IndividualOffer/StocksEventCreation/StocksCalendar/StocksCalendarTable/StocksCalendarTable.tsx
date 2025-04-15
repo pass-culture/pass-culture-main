@@ -2,6 +2,7 @@ import {
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
 } from 'apiClient/v1'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { getPriceCategoryName } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -12,6 +13,16 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './StocksCalendarTable.module.scss'
 
+export type StocksCalendarTableProps = {
+  stocks: GetOfferStockResponseModel[]
+  offer: GetIndividualOfferResponseModel
+  onDeleteStocks: (id: number[]) => void
+  checkedStocks: Set<number>
+  updateCheckedStocks: (newStocks: Set<number>) => void
+  departmentCode: string
+  mode: OFFER_WIZARD_MODE
+}
+
 export function StocksCalendarTable({
   stocks,
   offer,
@@ -19,14 +30,8 @@ export function StocksCalendarTable({
   checkedStocks,
   updateCheckedStocks,
   departmentCode,
-}: {
-  stocks: GetOfferStockResponseModel[]
-  offer: GetIndividualOfferResponseModel
-  onDeleteStocks: (id: number[]) => void
-  checkedStocks: Set<number>
-  updateCheckedStocks: (newStocks: Set<number>) => void
-  departmentCode: string
-}) {
+  mode,
+}: StocksCalendarTableProps) {
   function handleStockCheckboxClicked(stockId: number) {
     const newChecked = new Set(Array.from(checkedStocks))
     if (checkedStocks.has(stockId)) {
@@ -60,25 +65,28 @@ export function StocksCalendarTable({
           <tr>
             <th className={styles['thead-th']}>
               <div className={styles['thead-th-date']}>
-                <Checkbox
-                  label={
-                    <span className={styles['visually-hidden']}>
-                      Sélectionner tous les stocks
-                    </span>
-                  }
-                  partialCheck={
-                    checkedStocks.size < stocks.length && checkedStocks.size > 0
-                  }
-                  checked={checkedStocks.size === stocks.length}
-                  onChange={() => {
-                    if (checkedStocks.size < stocks.length) {
-                      updateCheckedStocks(new Set(stocks.map((s) => s.id)))
-                    } else {
-                      updateCheckedStocks(new Set())
+                {mode === OFFER_WIZARD_MODE.CREATION && (
+                  <Checkbox
+                    label={
+                      <span className={styles['visually-hidden']}>
+                        Sélectionner tous les stocks
+                      </span>
                     }
-                  }}
-                  name="select-all"
-                />
+                    partialCheck={
+                      checkedStocks.size < stocks.length &&
+                      checkedStocks.size > 0
+                    }
+                    checked={checkedStocks.size === stocks.length}
+                    onChange={() => {
+                      if (checkedStocks.size < stocks.length) {
+                        updateCheckedStocks(new Set(stocks.map((s) => s.id)))
+                      } else {
+                        updateCheckedStocks(new Set())
+                      }
+                    }}
+                    name="select-all"
+                  />
+                )}
                 Date
               </div>
             </th>
@@ -86,7 +94,12 @@ export function StocksCalendarTable({
             <th className={styles['thead-th']}>Tarif</th>
             <th className={styles['thead-th']}>Place</th>
             <th className={styles['thead-th']}>Date limite de réservation</th>
-            <th className={styles['thead-th']}>Actions</th>
+            {mode !== OFFER_WIZARD_MODE.CREATION && (
+              <th className={styles['thead-th']}>Réservations</th>
+            )}
+            {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
+              <th className={styles['thead-th']}>Actions</th>
+            )}
           </tr>
         </thead>
         <tbody className={styles['tbody']}>
@@ -106,12 +119,16 @@ export function StocksCalendarTable({
             return (
               <tr key={stock.id} className={styles['tr']}>
                 <td className={styles['tbody-td']}>
-                  <Checkbox
-                    label={checkboxDateLabel}
-                    checked={checkedStocks.has(stock.id)}
-                    onChange={() => handleStockCheckboxClicked(stock.id)}
-                    name="select-stock"
-                  />
+                  {mode === OFFER_WIZARD_MODE.CREATION ? (
+                    <Checkbox
+                      label={checkboxDateLabel}
+                      checked={checkedStocks.has(stock.id)}
+                      onChange={() => handleStockCheckboxClicked(stock.id)}
+                      name="select-stock"
+                    />
+                  ) : (
+                    checkboxDateLabel
+                  )}
                 </td>
                 <td className={styles['tbody-td']}>
                   {stock.beginningDatetime
@@ -135,13 +152,20 @@ export function StocksCalendarTable({
                     ? new Date(stock.bookingLimitDatetime).toLocaleDateString()
                     : 'Date invalide'}
                 </td>
-                <td className={styles['tbody-td']}>
-                  <ListIconButton
-                    icon={fullTrashIcon}
-                    tooltipContent="Supprimer le stock"
-                    onClick={() => onDeleteStocks([stock.id])}
-                  />
-                </td>
+                {mode !== OFFER_WIZARD_MODE.CREATION && (
+                  <td className={styles['tbody-td']}>
+                    {stock.bookingsQuantity}
+                  </td>
+                )}
+                {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
+                  <td className={styles['tbody-td']}>
+                    <ListIconButton
+                      icon={fullTrashIcon}
+                      tooltipContent="Supprimer le stock"
+                      onClick={() => onDeleteStocks([stock.id])}
+                    />
+                  </td>
+                )}
               </tr>
             )
           })}
