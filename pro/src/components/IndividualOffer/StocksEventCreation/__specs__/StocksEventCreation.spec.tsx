@@ -190,24 +190,4 @@ describe('StocksEventCreation', () => {
     ).toBeInTheDocument()
     expect(api.upsertStocks).not.toHaveBeenCalled()
   })
-
-  it('should show the calendar form if the FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR is enabled', async () => {
-    await renderStockEventCreation([], { offer: getIndividualOfferFactory() }, [
-      'WIP_ENABLE_EVENT_WITH_OPENING_HOUR',
-    ])
-
-    expect(
-      screen.getByRole('heading', { name: 'Calendrier' })
-    ).toBeInTheDocument()
-  })
-
-  it('should not show the action bar here when the FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR is enabled', async () => {
-    await renderStockEventCreation([], { offer: getIndividualOfferFactory() }, [
-      'WIP_ENABLE_EVENT_WITH_OPENING_HOUR',
-    ])
-
-    expect(
-      screen.queryByRole('link', { name: 'Enregistrer et continuer' })
-    ).not.toBeInTheDocument()
-  })
 })

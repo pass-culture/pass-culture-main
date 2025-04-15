@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 
@@ -9,16 +10,26 @@ import {
   StocksCalendarActionsBarProps,
 } from './StocksCalendarActionsBar'
 
+const mockNavigate = vi.fn()
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom')
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  }
+})
+
 function renderStocksCalendarActionsBar(
   props?: Partial<StocksCalendarActionsBarProps>
 ) {
   return renderWithProviders(
     <>
       <StocksCalendarActionsBar
+        mode={OFFER_WIZARD_MODE.CREATION}
+        offerId={1}
         checkedStocks={new Set([])}
         deleteStocks={() => {}}
-        handleNextStep={() => {}}
-        handlePreviousStep={() => {}}
         hasStocks={false}
         updateCheckedStocks={() => {}}
         {...props}
@@ -40,25 +51,43 @@ describe('StocksCalendarActionsBar', () => {
     ).toBeInTheDocument()
   })
 
-  it('should trigger the navigation to the form previous and next steps', async () => {
-    const nextStepMock = vi.fn()
-    const previousStepMock = vi.fn()
-
+  it('should trigger the navigation to the form previous and next steps when creating the offer', async () => {
     renderStocksCalendarActionsBar({
-      handleNextStep: nextStepMock,
-      handlePreviousStep: previousStepMock,
       hasStocks: true,
     })
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Annuler et quitter' })
     )
-    expect(previousStepMock).toHaveBeenCalled()
+    expect(mockNavigate).toHaveBeenLastCalledWith(
+      '/offre/individuelle/1/creation/tarifs'
+    )
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
-    expect(nextStepMock).toHaveBeenCalled()
+    expect(mockNavigate).toHaveBeenLastCalledWith(
+      '/offre/individuelle/1/creation/recapitulatif'
+    )
+  })
+
+  it('should trigger the navigation to the form previous and next steps when editing the offer', async () => {
+    renderStocksCalendarActionsBar({
+      hasStocks: true,
+      mode: OFFER_WIZARD_MODE.EDITION,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Annuler et quitter' })
+    )
+    expect(mockNavigate).toHaveBeenLastCalledWith(
+      '/offre/individuelle/1/stocks'
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+    )
+    expect(mockNavigate).toHaveBeenLastCalledWith('')
   })
 
   it('should show an error message when going to the next step without having added any stock', async () => {
@@ -106,5 +135,17 @@ describe('StocksCalendarActionsBar', () => {
     )
 
     expect(updateCheckedStocks).toHaveBeenCalled()
+  })
+
+  it('should show an error message if there is no stocks when clicking on the next step', async () => {
+    renderStocksCalendarActionsBar({
+      hasStocks: false,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+    )
+
+    expect(screen.getByText('Veuillez renseigner au moins une date'))
   })
 })

@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 
 import { api } from 'apiClient/api'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
@@ -37,9 +38,7 @@ function renderStocksCalendar(stocks = defaultStocks) {
     <>
       <StocksCalendar
         offer={getIndividualOfferFactory()}
-        handleNextStep={() => {}}
-        handlePreviousStep={() => {}}
-        departmentCode="56"
+        mode={OFFER_WIZARD_MODE.CREATION}
       />
       <Notification />
     </>
