@@ -10,22 +10,6 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#000000" />
     <meta name="version" content="%VITE_APP_VERSION%" />
-    <% if (mode==='development' ) { %>
-    <!--
-        Do not use hashes to define CSP: we had a bug where Beamer was not loaded
-        because the hash was invalid in some instances of Firefox
-        It is probably a Firefox bug where the hash is not computed correctly/is not reliable
-      -->
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com https://*.getbeamer.com/; connect-src 'self' data: https: http: ws://*:3001 wss://*:3001; style-src 'self' https://app.getbeamer.com/styles/beamer-embed.css https://fonts.googleapis.com/css 'unsafe-inline'"
-    />
-    <% } else { %>
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com https://*.getbeamer.com/; style-src 'self' https://app.getbeamer.com/styles/beamer-embed.css https://fonts.googleapis.com/css 'unsafe-inline'"
-    />
-    <% } %>
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="shortcut icon" href="/icon/app-icon-iphone.png" />
