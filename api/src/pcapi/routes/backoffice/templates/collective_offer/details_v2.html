@@ -135,7 +135,7 @@
   {% if has_permission("PRO_FRAUD_ACTIONS") %}
     {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_validate_collective_offer_form', collective_offer_id=collective_offer.id) , "validate-collective-offer-modal-" + collective_offer.id|string) }}
     {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_reject_collective_offer_form', collective_offer_id=collective_offer.id) , "reject-collective-offer-modal-" + collective_offer.id|string) }}
-    {% if move_offer_form %}
+    {% if is_feature_active("MOVE_OFFER_TEST") %}
       {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_move_collective_offer_form', collective_offer_id=collective_offer.id) , "move-collective-offer-modal-" + collective_offer.id|string) }}
     {% endif %}
   {% endif %}
