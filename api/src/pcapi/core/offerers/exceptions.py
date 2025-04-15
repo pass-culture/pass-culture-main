@@ -73,6 +73,10 @@ class InactiveSirenException(Exception):
     pass
 
 
+class NotACollectivity(Exception):
+    pass
+
+
 class OffererAddressLabelAlreadyUsed(Exception):
     pass
 
