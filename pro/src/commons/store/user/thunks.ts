@@ -16,17 +16,9 @@ export const initializeUserThunk = createAsyncThunk(
   'user/initialize',
   async (
     user: SharedCurrentUserResponseModel,
-    { dispatch, signal, rejectWithValue }
+    { dispatch, rejectWithValue }
   ) => {
     try {
-      // Create an AbortController to cancel requests if needed
-      const controller = new AbortController()
-
-      // If the thunk is cancelled, abort all ongoing requests
-      signal.addEventListener('abort', () => {
-        controller.abort()
-      })
-
       const initializeOffererIsOnboarded = async (offererId: number) => {
         try {
           const response = await api.getOfferer(offererId)
@@ -79,7 +71,7 @@ export const initializeUserThunk = createAsyncThunk(
         return rejectWithValue({
           error: 'API_ERROR',
           status: error.status,
-          body: error.body,
+          body: error.message,
         })
       }
 
