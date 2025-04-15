@@ -50,7 +50,7 @@ dependencies = [
 "markupsafe==3.0.2",
 "openpyxl>=3.1.5",
 "phonenumberslite==9.0.2",
-"pillow==11.2.0",
+"pillow==11.2.1",
 "prometheus-flask-exporter>=0.23.2",
 "psycopg2>=2.9.10",
 "py7zr>=0.22.0",
