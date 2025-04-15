@@ -22,7 +22,7 @@ from . import utils
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_EAN_OFFERS=False)
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_EAN_OFFERS=True)
 class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/products/ean"
     endpoint_method = "post"
@@ -139,8 +139,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert created_offer.bookingEmail == venue.bookingEmail
         assert created_offer._description is None
         assert created_offer.description == product.description
-        assert created_offer.ean == product.ean
-        assert created_offer.extraData == product.extraData
+        assert created_offer.extraData == {**product.extraData, "ean": product.ean}
         assert created_offer.lastProvider.name == "Technical provider"
         assert created_offer.name == product.name
         assert created_offer.product.__dict__ == product.__dict__
@@ -276,9 +275,11 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert offer.lastProvider == api_key.provider
         assert offer.isActive == True
 
-    def test_no_new_offer_created_if_ean_exists(self, client):
+    # TODO: remove when migration is done and no more ean are stored inside extraData
+    @pytest.mark.parametrize("offer_ean, offer_extra_data", [(None, {"ean": "1234567890123"}), ("1234567890123", {})])
+    def test_no_new_offer_created_if_ean_exists(self, client, offer_ean, offer_extra_data):
         """Test that no new offer is created if the ean exists either
-        inside offer.ean
+        inside offer.ean or offer.extraData["ean"]
         """
         venue_data = {
             "audioDisabilityCompliant": True,
@@ -299,7 +300,8 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             productId=product.id,
             venue=venue,
             lastProvider=api_key.provider,
-            ean=ean,
+            extraData=offer_extra_data,
+            ean=offer_ean,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -724,11 +726,11 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         )
 
         [updated_offer, created_offer] = offers_models.Offer.query.order_by(offers_models.Offer.id).all()
-        assert updated_offer.ean == ean_to_update
+        assert updated_offer.extraData["ean"] == ean_to_update
         assert updated_offer.activeStocks[0].price == decimal.Decimal("12.34")
         assert updated_offer.activeStocks[0].quantity == 3
 
-        assert created_offer.ean == ean_to_create
+        assert created_offer.extraData["ean"] == ean_to_create
         assert created_offer.activeStocks[0].price == decimal.Decimal("98.76")
         assert created_offer.activeStocks[0].quantity == 22
 

@@ -9,6 +9,7 @@ import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 
 from pcapi import repository
+from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
@@ -20,18 +21,22 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import schemas as offers_schemas
+from pcapi.core.offers import tasks as offers_tasks
 from pcapi.core.offers import validation as offers_validation
+from pcapi.core.offers.schemas import CreateOrUpdateEANOffersRequest
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.public.services import authorization
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import image_conversion
@@ -47,6 +52,19 @@ from . import utils
 
 
 logger = logging.getLogger(__name__)
+
+
+def _serialize_products_from_body(
+    products: list[serialization.ProductOfferByEanCreation],
+) -> dict:
+    stock_details = {}
+    for product in products:
+        stock_details[product.ean] = {
+            "quantity": product.stock.quantity,
+            "price": product.stock.price,
+            "booking_limit_datetime": product.stock.booking_limit_datetime,
+        }
+    return stock_details
 
 
 @blueprints.public_api.route("/public/offers/v1/show_types", methods=["GET"])
@@ -363,16 +381,58 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
         address_label = body.location.address_label
 
     serialized_products_stocks = _serialize_products_from_body(body.products)
-    _create_or_update_ean_offers.delay(
+    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EAN_OFFERS.is_active():
+        payload = CreateOrUpdateEANOffersRequest(
+            serialized_products_stocks=serialized_products_stocks,
+            venue_id=venue.id,
+            provider_id=current_api_key.provider.id,
+            address_id=address_id,
+            address_label=address_label,
+        )
+        offers_tasks.create_or_update_ean_offers_celery.delay(payload.dict())
+    else:
+        offers_tasks.create_or_update_ean_offers_rq.delay(
+            serialized_products_stocks=serialized_products_stocks,
+            venue_id=venue.id,
+            provider_id=current_api_key.provider.id,
+            address_id=address_id,
+            address_label=address_label,
+        )
+
+
+@job(worker.low_queue)
+def create_or_update_ean_offers_rq(
+    *,
+    serialized_products_stocks: dict,
+    venue_id: int,
+    provider_id: int,
+    address_id: int | None = None,
+    address_label: str | None = None,
+) -> None:
+    _create_or_update_ean_offers(
         serialized_products_stocks=serialized_products_stocks,
-        venue_id=venue.id,
-        provider_id=current_api_key.provider.id,
+        venue_id=venue_id,
+        provider_id=provider_id,
         address_id=address_id,
         address_label=address_label,
     )
 
 
-@job(worker.low_queue)
+@celery_async_task(
+    name="tasks.offers.default.create_or_update_ean_offers",
+    autoretry_for=(),
+    model=CreateOrUpdateEANOffersRequest,
+)
+def create_or_update_ean_offers_celery(payload: CreateOrUpdateEANOffersRequest) -> None:
+    _create_or_update_ean_offers(
+        serialized_products_stocks=payload.serialized_products_stocks,
+        venue_id=payload.venue_id,
+        provider_id=payload.provider_id,
+        address_id=payload.address_id,
+        address_label=payload.address_label,
+    )
+
+
 def _create_or_update_ean_offers(
     *,
     serialized_products_stocks: dict,
@@ -509,18 +569,11 @@ def _create_or_update_ean_offers(
     )
 
 
-ALLOWED_PRODUCT_SUBCATEGORIES = [
-    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
-    subcategories.LIVRE_PAPIER.id,
-]
-
-
 def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:
     return offers_models.Product.query.filter(
         offers_models.Product.ean.in_(ean_to_create),
         offers_models.Product.can_be_synchronized == True,
-        offers_models.Product.subcategoryId.in_(ALLOWED_PRODUCT_SUBCATEGORIES),
+        offers_models.Product.subcategoryId.in_(offers_tasks.ALLOWED_PRODUCT_SUBCATEGORIES),
         # FIXME (cepehang, 2023-09-21) remove these condition when the product table is cleaned up
         offers_models.Product.lastProviderId.is_not(None),
         offers_models.Product.idAtProviders.is_not(None),
