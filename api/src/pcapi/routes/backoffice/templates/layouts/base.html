@@ -10,7 +10,13 @@
           content="noindex,nofollow" />
     <meta name="csrf-token"
           content="{{ csrf_token.current_token }}">
-    <title>Backoffice</title>
+    <title>
+      {% if self.title and self.title() %}
+        {{ self.title() }} - Backoffice
+      {% else %}
+        Backoffice
+      {% endif %}
+    </title>
     {% set icon_path = get_setting("BACKOFFICE_FAVICON_PATH") if get_setting else "favicon_default.ico" %}
     <link rel="icon"
           type="image/x-icon"
