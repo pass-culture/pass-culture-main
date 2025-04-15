@@ -201,6 +201,8 @@ def save_new_onboarding_data(
         user_offerer = api.create_from_onboarding_data(current_user, body)
     except offerers_exceptions.InactiveSirenException:
         raise ApiErrors({"siret": "SIRET is no longer active"})
+    except offerers_exceptions.NotACollectivity:
+        raise ApiErrors({"siret": "SIRET doesn't belong to a collectivity"})
     return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
 
 

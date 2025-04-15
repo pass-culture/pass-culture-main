@@ -2170,6 +2170,14 @@ def create_from_onboarding_data(
 
     # Create Venue with siret if it's not in DB yet, or Venue without siret if requested
     venue = offerers_repository.find_venue_by_siret(onboarding_data.siret)
+    if (
+        venue
+        and onboarding_data.createVenueWithoutSiret
+        and siret_info.ape_code
+        and not APE_TAG_MAPPING.get(siret_info.ape_code, False)
+        and FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY.is_active()
+    ):
+        raise exceptions.NotACollectivity()
     if not venue or onboarding_data.createVenueWithoutSiret:
         address = onboarding_data.address
         if not address.street:
