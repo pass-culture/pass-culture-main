@@ -52,12 +52,11 @@
           {% if has_permission("VALIDATE_OFFERER") %}
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if offerer.validationStatus != offerer.validationStatus.VALIDATED %}
-                <form action="{{ url_for('backoffice_web.validation.validate_offerer', offerer_id=offerer.id) }}"
-                      name="{{ url_for('backoffice_web.validation.validate_offerer', offerer_id=offerer.id) | action_to_name }}"
-                      method="post">
-                  {{ csrf_token }}
+                <a data-bs-toggle="modal"
+                   data-bs-target="#validate-modal-{{ offerer.id }}">
                   <button class="btn btn-outline-primary">Valider</button>
-                </form>
+                </a>
+                {{ build_lazy_modal(url_for('backoffice_web.validation.get_validate_offerer_form', offerer_id=offerer.id) , "validate-modal-" + offerer.id|string) }}
               {% endif %}
               {% if offerer.validationStatus != offerer.validationStatus.PENDING %}
                 <a data-bs-toggle="modal"

@@ -27,7 +27,6 @@ from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
-from pcapi.routes.backoffice.forms.empty import BatchForm
 from pcapi.utils import date as date_utils
 
 from . import forms as offerer_forms
@@ -108,6 +107,23 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
     )
 
 
+@validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def get_validate_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    form = offerer_forms.OffererValidationForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.validation.validate_offerer", offerer_id=offerer.id),
+        div_id=f"validate-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
+        title=f"Valider l'entité juridique {offerer.name.upper()}",
+        button_text="Valider l'entité juridique",
+    )
+
+
 @validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
@@ -120,8 +136,16 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
     if not offerer:
         raise NotFound()
 
+    form = offerer_forms.OffererValidationForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return _redirect_after_offerer_validation_action()
+
     try:
-        offerers_api.validate_offerer(offerer, current_user)
+        offerers_api.validate_offerer(
+            offerer, current_user, review_all_offers=bool(form.review_all_offers.data), comment=form.comment.data
+        )
     except offerers_exceptions.OffererAlreadyValidatedException:
         mark_transaction_as_invalid()
         flash(Markup("L'entité juridique <b>{name}</b> est déjà validée").format(name=offerer.name), "warning")
@@ -134,14 +158,7 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
-        .populate_existing()
-        .with_for_update(key_share=True)
-        .one_or_none()
-    )
-    if not offerer:
-        raise NotFound()
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
     form = offerer_forms.OffererRejectionForm()
 
@@ -322,6 +339,8 @@ def _offerer_batch_action(
             kwargs["tags_to_remove"] = deleted_tags
         if hasattr(form, "comment"):
             kwargs["comment"] = form.comment.data
+        if hasattr(form, "review_all_offers"):
+            kwargs["review_all_offers"] = bool(form.review_all_offers.data)
         if hasattr(form, "rejection_reason"):
             kwargs["rejection_reason"] = offerers_models.OffererRejectionReason(form.rejection_reason.data)
 
@@ -332,6 +351,20 @@ def _offerer_batch_action(
     return _redirect_after_offerer_validation_action()
 
 
+@validation_blueprint.route("/offerer/batch-validate-form", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def get_batch_validate_offerer_form() -> utils.BackofficeResponse:
+    form = offerer_forms.BatchOffererValidationForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.validation.batch_validate_offerer"),
+        div_id="batch-validate-modal",
+        title="Valider les entités juridiques",
+        button_text="Valider les entités juridiques",
+    )
+
+
 @validation_blueprint.route("/offerer/batch-validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def batch_validate_offerer() -> utils.BackofficeResponse:
@@ -339,7 +372,7 @@ def batch_validate_offerer() -> utils.BackofficeResponse:
         return _offerer_batch_action(
             offerers_api.validate_offerer,
             "Les entités juridiques sélectionnées ont été validées",
-            BatchForm,
+            offerer_forms.BatchOffererValidationForm,
         )
     except offerers_exceptions.OffererAlreadyValidatedException:
         mark_transaction_as_invalid()

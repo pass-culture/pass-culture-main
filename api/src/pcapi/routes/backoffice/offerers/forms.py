@@ -246,10 +246,18 @@ class CommentForm(FlaskForm):
 
 
 class OptionalCommentForm(FlaskForm):
-    comment = fields.PCOptCommentField("Commentaire interne")
+    comment = fields.PCOptCommentField("Commentaire interne (optionnel)")
 
 
 class BatchOptionalCommentForm(empty_forms.BatchForm, OptionalCommentForm):
+    pass
+
+
+class OffererValidationForm(OptionalCommentForm):
+    review_all_offers = fields.PCSwitchBooleanField("Revue manuelle de toutes les offres")
+
+
+class BatchOffererValidationForm(empty_forms.BatchForm, OffererValidationForm):
     pass
 
 

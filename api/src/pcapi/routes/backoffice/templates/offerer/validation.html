@@ -55,14 +55,12 @@
               <button disabled
                       type="button"
                       class="btn btn-outline-primary"
-                      data-url="{{ url_for('backoffice_web.validation.batch_validate_offerer') }}"
-                      data-use-confirmation-modal="false">Valider</button>
+                      data-use-confirmation-modal="true"
+                      data-modal-selector="#batch-validate-modal">Valider</button>
               <button disabled
                       type="button"
                       class="btn btn-outline-primary"
                       data-use-confirmation-modal="true"
-                      data-mode="fetch"
-                      data-fetch-url="{{ url_for('backoffice_web.validation.get_batch_offerer_pending_form') }}"
                       data-modal-selector="#batch-pending-modal">Mettre en attente</button>
               <button disabled
                       type="button"
@@ -130,13 +128,9 @@
                         </button>
                         <ul class="dropdown-menu">
                           <li class="dropdown-item p-0">
-                            <form action="{{ url_for('backoffice_web.validation.validate_offerer', offerer_id=offerer.id) }}"
-                                  name="{{ url_for('backoffice_web.validation.validate_offerer', offerer_id=offerer.id) | action_to_name }}"
-                                  method="post">
-                              {{ csrf_token }}
-                              <button type="submit"
-                                      class="btn btn-sm d-block w-100 text-start px-3">Valider</button>
-                            </form>
+                            <a class="btn btn-sm d-block w-100 text-start px-3"
+                               data-bs-toggle="modal"
+                               data-bs-target="#validate-modal-{{ offerer.id }}">Valider</a>
                           </li>
                           <li class="dropdown-item p-0">
                             <a class="btn btn-sm d-block w-100 text-start px-3"
@@ -202,11 +196,14 @@
         {% if has_validate_permission %}
           {% for item in rows.items %}
             {% set offerer = item.Offerer %}
+            {{ build_lazy_modal(url_for("backoffice_web.validation.get_validate_offerer_form", offerer_id=offerer.id) ,
+            "validate-modal-" + offerer.id|string) }}
             {{ build_lazy_modal(url_for("backoffice_web.validation.get_reject_offerer_form", offerer_id=offerer.id) ,
             "reject-modal-" + offerer.id|string) }}
             {{ build_lazy_modal(url_for("backoffice_web.validation.get_offerer_pending_form", offerer_id=offerer.id) ,
             "pending-modal-" + offerer.id|string) }}
           {% endfor %}
+          {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_validate_offerer_form") , "batch-validate-modal", "true") }}
           {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_offerer_form") , "batch-reject-modal", "true") }}
           {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_offerer_pending_form") , "batch-pending-modal", "true") }}
         {% endif %}
