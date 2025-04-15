@@ -157,6 +157,8 @@ export function sessionLogInAndGoToPage(
     logInAndGoToPage(login, path)
   })
   cy.visit(path)
+
+  cy.injectAxe({ axeCorePath: './node_modules/axe-core/axe.min.js' })
 }
 
 /**

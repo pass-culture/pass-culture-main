@@ -172,6 +172,7 @@ Cypress.Commands.add(
           message: JSON.stringify(response),
         })
         // We try to wait before doing the call again
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(4000)
         cy.sandboxCall(method, url, onRequest, false)
       }
