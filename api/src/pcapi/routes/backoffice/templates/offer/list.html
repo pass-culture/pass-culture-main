@@ -1,7 +1,7 @@
 {% extends "layouts/list.html" %}
 {% import "components/badges.html" as badges with context %}
 {% from "components/display_selector.html" import display_selector %}
-{% from "components/forms.html" import build_advanced_filters_form_ng with context %}
+{% from "components/forms.html" import build_advanced_filters_form with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% from "components/connect_as.html" import build_connect_as_link %}
@@ -9,8 +9,8 @@
 {% block title %}Offres individuelles{% endblock %}
 {% block search_block %}
   {{ display_selector("form-selector-individual-offer", (("Recherche exhaustive des offres", "Accédez à l’ensemble des offres, qu’elles soient réservables ou non, disponibles en\n database.","advanced-search", page=="offer") , ("Recherche des offres réservables sur l’app jeune", "Remonte toutes les offres réservables sur l’app Jeune, en affichant une seule offre par\n produit. Si plusieurs acteurs proposent la même, une seule sera affichée.", "algolia-search", page=="algolia")), "px-1 mb-4") }}
-  {{ build_advanced_filters_form_ng(advanced_form, advanced_dst, "advanced-search") }}
-  {{ build_advanced_filters_form_ng(algolia_form, algolia_dst, "algolia-search") }}
+  {{ build_advanced_filters_form(advanced_form, advanced_dst, "advanced-search") }}
+  {{ build_advanced_filters_form(algolia_form, algolia_dst, "algolia-search") }}
 {% endblock %}
 {% block table_header %}
   <th scope="col"

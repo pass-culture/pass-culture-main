@@ -1,14 +1,14 @@
 {% extends "layouts/list.html" %}
 {% import "components/badges.html" as badges with context %}
 {% from "components/display_selector.html" import display_selector %}
-{% from "components/forms.html" import build_advanced_filters_form_ng with context %}
+{% from "components/forms.html" import build_advanced_filters_form with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% from "components/connect_as.html" import build_connect_as_link %}
 {{ build_connect_as_link(connect_as[venue.id], (public_name or venue.name) , "link-primary") }}
 {% set rows_count = rows|length %}
 {% block title %}Offres collectives{% endblock %}
-{% block search_block %}{{ build_advanced_filters_form_ng(form, dst) }}{% endblock %}
+{% block search_block %}{{ build_advanced_filters_form(form, dst) }}{% endblock %}
 {% block table_header %}
   <th scope="col"
       data-pc-column-name="Checkbox">
