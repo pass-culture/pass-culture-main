@@ -535,19 +535,7 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
             .joinedload(offers_models.Product.artists)
             .load_only(artist_models.Artist.id, artist_models.Artist.name, artist_models.Artist.image)
         )
-        .options(
-            sa_orm.with_expression(
-                offers_models.Offer.chroniclesCount, offers_repository.get_offer_chronicles_count_subquery()
-            )
-        )
-        .options(
-            sa_orm.joinedload(offers_models.Offer.product).options(
-                sa_orm.with_expression(
-                    offers_models.Product.chroniclesCount, offers_repository.get_product_chronicles_count_subquery()
-                )
-            )
-        )
-        .options(sa_orm.joinedload(offers_models.Offer.headlineOffers))
+        .options(sa.orm.joinedload(offers_models.Offer.headlineOffers))
         .options(
             sa_orm.joinedload(offers_models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address)
         )
