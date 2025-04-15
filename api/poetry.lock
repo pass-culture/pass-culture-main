@@ -6036,6 +6036,25 @@ docs = ["myst-parser", "pydata-sphinx-theme", "sphinx"]
 test = ["argcomplete (>=3.0.3)", "mypy (>=1.7.0)", "pre-commit", "pytest (>=7.0,<8.2)", "pytest-mock", "pytest-mypy-testing"]
 
 [[package]]
+name = "transitions"
+version = "0.9.2"
+description = "A lightweight, object-oriented Python state machine implementation with many extensions."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "transitions-0.9.2-py2.py3-none-any.whl", hash = "sha256:f7b40c9b4a93869f36c4d1c33809aeb18cdeeb065fd1adba018ee39c3db216f3"},
+    {file = "transitions-0.9.2.tar.gz", hash = "sha256:2f8490dbdbd419366cef1516032ab06d07ccb5839ef54905e842a472692d4204"},
+]
+
+[package.dependencies]
+six = "*"
+
+[package.extras]
+diagrams = ["pygraphviz"]
+test = ["pytest"]
+
+[[package]]
 name = "types-cffi"
 version = "1.16.0.20240331"
 description = "Typing stubs for cffi"
@@ -6751,4 +6770,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "941e304e14094d1279fbc1d2304c7f8262551cdff611dffc9ca156b76a6aac2c"
+content-hash = "00d05ac304fa3ad4851fca6d5cb5b92f549604b72a3eb9a187d3ad38dce11238"

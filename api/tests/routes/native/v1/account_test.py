@@ -182,7 +182,7 @@ class AccountTest:
     def test_get_user_not_beneficiary(self, client, app):
         users_factories.UserFactory(email=self.identifier)
 
-        expected_num_queries = 7  # user + achievement + booking + deposit + ff + fraud_review + fraud check
+        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud check
 
         client.with_token(email=self.identifier)
 
@@ -195,7 +195,7 @@ class AccountTest:
     def test_get_user_profile_empty_first_name(self, client, app):
         users_factories.UserFactory(email=self.identifier, firstName="")
 
-        expected_num_queries = 7  # user + achievement + booking + deposit + ff + fraud_review + fraud check
+        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud check
 
         client.with_token(email=self.identifier)
         with assert_num_queries(expected_num_queries):
@@ -210,7 +210,7 @@ class AccountTest:
     def test_get_user_profile_legacy_activity(self, client):
         users_factories.UserFactory(email=self.identifier, activity="activity not in enum")
 
-        expected_num_queries = 7  # user + achievement + booking + deposit + ff + fraud_review + fraud check
+        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud check
         with assert_num_queries(expected_num_queries):
             response = client.with_token(email=self.identifier).get("/native/v1/me")
 
@@ -325,7 +325,7 @@ class AccountTest:
     def test_not_eligible_user_should_not_need_to_fill_cultural_survey(self, client):
         user = users_factories.UserFactory(age=4)
 
-        expected_num_queries = 7  # user + achievement + booking + deposit + ff + beneficiary_fraud_review + fraud check
+        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud check
 
         client.with_token(user.email)
         with assert_num_queries(expected_num_queries):
@@ -405,9 +405,7 @@ class AccountTest:
         user = sso.user
         user.password = None
 
-        expected_num_queries = (
-            8  # user(update) + user + achievements + bookings + deposit + ff + fraud review + fraud check
-        )
+        expected_num_queries = 7  # user(update) + user + achievements + bookings + deposit + ff + fraud check
         with assert_num_queries(expected_num_queries):
             response = client.with_token(user.email).get("/native/v1/me")
             assert response.status_code == 200, response.json
@@ -417,7 +415,7 @@ class AccountTest:
     def test_currency_pacific_franc(self, client):
         user = users_factories.UserFactory(departementCode="988", postalCode="98818")
 
-        expected_num_queries = 8  # user*2 + achievements + bookings + deposit + ff + fraud reviews + fraud check
+        expected_num_queries = 7  # user*2 + achievements + bookings + deposit + ff + fraud check
         with assert_num_queries(expected_num_queries):
             response = client.with_token(user.email).get("/native/v1/me")
 
@@ -1421,7 +1419,7 @@ class UpdateUserEmailTest:
         # Ensure the access token is valid
         access_token = response.json["accessToken"]
 
-        expected_num_queries = 7  # user + achievement + booking + deposit + ff + beneficiary_fraud_review + fraud check
+        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud check
 
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
         with assert_num_queries(expected_num_queries):

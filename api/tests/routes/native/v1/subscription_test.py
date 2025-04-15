@@ -620,7 +620,7 @@ class StepperTest:
         )
 
         client.with_token(user.email)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries + 1):  # deposit
             response = client.get("/native/v2/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
@@ -641,7 +641,7 @@ class StepperTest:
         )
 
         client.with_token(user.email)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries + 1):  # deposit
             response = client.get("/native/v2/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
@@ -767,7 +767,7 @@ class StepperTest:
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
 
         client.with_token(user.email)
-        with assert_num_queries(self.expected_num_queries + 1):  # +1 for the action_history query
+        with assert_num_queries(self.expected_num_queries + 2):  # action history and deposit
             response = client.get("/native/v2/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
@@ -795,7 +795,7 @@ class StepperTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         client.with_token(user.email)
-        with assert_num_queries(self.expected_num_queries + 1):  # +1 for the action_history query
+        with assert_num_queries(self.expected_num_queries + 2):  # action_history and deposit
             response = client.get("/native/v2/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
