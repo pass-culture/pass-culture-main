@@ -70,24 +70,25 @@ class NotifyUsersFutureOfferActivatedTest:
         }
         expected_payload = [
             {
-                "id": user_1.id,
+                "id": str(user_1.id),
                 "events": [
                     {
-                        "name": "ue.Future_offer_activated",
+                        "name": "ue.future_offer_activated",
                         "attributes": offer_attributes,
                     }
                 ],
             },
             {
-                "id": user_2.id,
+                "id": str(user_2.id),
                 "events": [
                     {
-                        "name": "ue.Future_offer_activated",
+                        "name": "ue.future_offer_activated",
                         "attributes": offer_attributes,
                     }
                 ],
             },
         ]
+
         future_offer_activated_event = next(event for event in push_testing.requests)
         event_payload = future_offer_activated_event["payload"]
         assert event_payload == expected_payload

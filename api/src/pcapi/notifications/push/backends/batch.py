@@ -173,7 +173,7 @@ class BatchBackend:
 
         payload = [
             {
-                "id": track_event.user_id,
+                "id": str(track_event.user_id),
                 "events": [
                     {
                         "name": f"ue.{track_event.event_name.value}",
