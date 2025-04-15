@@ -15,9 +15,7 @@ $checkbox-size: rem.torem(40px);
 
   &:hover:not(&.disabled) {
     .checkbox-input {
-      border-color: var(--color-grey-dark);
       box-shadow: forms.$input-hover-shadow;
-      background-color: var(--color-background-default);
     }
   }
 
