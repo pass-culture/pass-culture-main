@@ -302,15 +302,17 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        content_as_text = html_parser.content_as_text(response.data)
-        assert "Statut : Publiée" in content_as_text
-        assert "Statut PC Pro : Publiée" in content_as_text
-        assert "État : • Validée" in content_as_text
-        assert f"Date de création : {collectiveOfferTemplate.dateCreated.strftime('%d/%m/%Y')}" in content_as_text
-        assert f"Description : {collectiveOfferTemplate.description}" in content_as_text
-        assert f"Entité juridique : {collectiveOfferTemplate.venue.managingOfferer.name}" in content_as_text
-        assert f"Partenaire culturel : {collectiveOfferTemplate.venue.name}" in content_as_text
-        assert f"Formats : {EacFormat.PROJECTION_AUDIOVISUELLE.value}" in content_as_text
+        badges = html_parser.extract_badges(response.data)
+        assert "• Validée" in badges
+
+        descriptions = html_parser.extract_descriptions(response.data)
+        assert descriptions["Statut"] == "Publiée"
+        assert descriptions["Statut PC Pro"] == "Publiée"
+        assert descriptions["Date de création"] == f"{collectiveOfferTemplate.dateCreated:%d/%m/%Y}"
+        assert descriptions["Description"] == collectiveOfferTemplate.description
+        assert descriptions["Entité juridique"] == collectiveOfferTemplate.venue.managingOfferer.name
+        assert descriptions["Partenaire culturel"] == collectiveOfferTemplate.venue.name
+        assert descriptions["Formats"] == EacFormat.PROJECTION_AUDIOVISUELLE.value
 
     def test_collective_offer_template_not_found(self, authenticated_client):
         url = url_for(self.endpoint, collective_offer_template_id=1)
@@ -330,9 +332,11 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        content_as_text = html_parser.content_as_text(response.data)
-        assert "État : • Rejetée" in content_as_text
-        assert "Raison de rejet : Description manquante" in content_as_text
+        badges = html_parser.extract_badges(response.data)
+        assert "• Rejetée" in badges
+
+        descriptions = html_parser.extract_descriptions(response.data)
+        assert descriptions["Raison de rejet"] == "Description manquante"
 
     def test_collective_offer_template_with_offerer_confidence_rule(self, authenticated_client):
         rule = offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer__name="Offerer")
@@ -345,8 +349,8 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        text = html_parser.extract_cards_text(response.data)[0]
-        assert "Entité juridique : Offerer Revue manuelle" in text
+        descriptions = html_parser.extract_descriptions(response.data)
+        assert descriptions["Entité juridique"] == "Offerer Revue manuelle"
 
     def test_collective_offer_template_with_venue_confidence_rule(self, authenticated_client):
         rule = offerers_factories.ManualReviewVenueConfidenceRuleFactory(venue__name="Venue")
@@ -357,8 +361,8 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        text = html_parser.extract_cards_text(response.data)[0]
-        assert "Partenaire culturel : Venue Revue manuelle" in text
+        descriptions = html_parser.extract_descriptions(response.data)
+        assert descriptions["Partenaire culturel"] == "Venue Revue manuelle"
 
     def test_collective_offer_template_with_top_acteur_offerer(self, authenticated_client):
         collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
@@ -374,13 +378,13 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        text = html_parser.extract_cards_text(response.data)[0]
-        assert "Entité juridique : Offerer Top Acteur" in text
+        descriptions = html_parser.extract_descriptions(response.data)
+        assert descriptions["Entité juridique"] == "Offerer Top Acteur"
 
 
 class ValidateCollectiveOfferTemplateFromDetailsButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
-    button_label = "Valider l'offre"
+    button_label = "Valider"
     endpoint = "backoffice_web.collective_offer_template.get_collective_offer_template_details"
 
     @property
@@ -391,7 +395,7 @@ class ValidateCollectiveOfferTemplateFromDetailsButtonTest(button_helpers.Button
 
 class RejectCollectiveOfferTemplateFromDetailsButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
-    button_label = "Rejeter l'offre"
+    button_label = "Rejeter"
     endpoint = "backoffice_web.collective_offer_template.get_collective_offer_template_details"
 
     @property
