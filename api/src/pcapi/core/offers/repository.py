@@ -1109,18 +1109,6 @@ def get_pending_bookings_subquery(offer_id: int) -> sa.sql.selectable.Exists:
     )
 
 
-def get_offer_headline_count_subquery() -> sa.sql.selectable.ScalarSelect:
-    OtherOffer = sa_orm.aliased(models.Offer)
-    return (
-        sa.select(sa.func.count(OtherOffer.id))
-        .select_from(OtherOffer)
-        .join(models.HeadlineOffer, OtherOffer.id == models.HeadlineOffer.offerId)
-        .where(sa.or_(OtherOffer.productId == models.Offer.productId, OtherOffer.id == models.Offer.id))
-        .correlate(models.Offer)
-        .scalar_subquery()
-    )
-
-
 def get_offer_chronicles_count_subquery() -> sa.sql.selectable.ScalarSelect:
     return (
         sa.select(sa.func.count(chronicles_models.OfferChronicle.id))
