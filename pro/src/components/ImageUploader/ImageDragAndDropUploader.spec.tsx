@@ -4,7 +4,10 @@ import { forwardRef } from 'react'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { ImageUploader, ImageUploaderProps } from './ImageUploader'
+import {
+  ImageDragAndDropUploader,
+  ImageDragAndDropUploaderProps,
+} from './ImageDragAndDropUploader'
 import { UploaderModeEnum } from './types'
 
 vi.mock('react-avatar-editor', () => {
@@ -36,11 +39,11 @@ vi.mock(
   () => ({ getValidationSchema: () => ({ validate: vi.fn() }) })
 )
 
-const renderImageUploader = (props: ImageUploaderProps) =>
-  renderWithProviders(<ImageUploader {...props} />)
+const renderImageUploader = (props: ImageDragAndDropUploaderProps) =>
+  renderWithProviders(<ImageDragAndDropUploader {...props} />)
 
-describe('ImageUploader', () => {
-  let props: ImageUploaderProps
+describe('ImageDragAndDropUploader', () => {
+  let props: ImageDragAndDropUploaderProps
 
   beforeEach(() => {
     props = {
@@ -97,10 +100,7 @@ describe('ImageUploader', () => {
     expect(
       screen.queryByRole('button', { name: /Supprimer/i })
     ).not.toBeInTheDocument()
-
-    expect(
-      screen.getByRole('button', { name: /Ajouter une image/i })
-    ).toBeInTheDocument()
+    expect(screen.getByLabelText('Importez une image')).toBeInTheDocument()
   })
 
   it('should upload a new image', async () => {
@@ -117,12 +117,7 @@ describe('ImageUploader', () => {
 
     renderImageUploader(props)
 
-    await userEvent.click(screen.getByText('Ajouter une image'))
-
-    // dialog: import img
-    const inputField = screen.getByLabelText(
-      'Importer une image depuis l’ordinateur'
-    )
+    const inputField = screen.getByLabelText('Importez une image')
     await userEvent.upload(inputField, mockFile)
 
     // dialog: crop img

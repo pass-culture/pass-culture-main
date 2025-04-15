@@ -2,8 +2,8 @@ import cn from 'classnames'
 
 import { ButtonImageDelete } from './components/ButtonImageDelete/ButtonImageDelete'
 import { ButtonImageEdit } from './components/ButtonImageEdit/ButtonImageEdit'
-import { OnImageUploadArgs } from './components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploadImageValues } from './components/ButtonImageEdit/types'
+import { OnImageUploadArgs } from './components/ModalImageEdit/ModalImageEdit'
 import styles from './ImageUploader.module.scss'
 import { UploaderModeEnum } from './types'
 

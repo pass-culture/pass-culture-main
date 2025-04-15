@@ -3,16 +3,16 @@ import { CroppedRect } from 'react-avatar-editor'
 
 import { getFileFromURL } from 'apiClient/helpers'
 import { useNotification } from 'commons/hooks/useNotification'
+import { UploaderModeEnum } from 'components/ImageUploader/types'
+
+import { UploadImageValues } from '../ButtonImageEdit/types'
+
 import {
   coordonateToPosition,
   widthCropPercentToScale,
-} from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ImageEditor/utils'
-import { ImageUploadBrowserFormValues } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/types'
-import { UploaderModeEnum } from 'components/ImageUploader/types'
-
-import { UploadImageValues } from '../types'
-
+} from './components/ModalImageCrop/ImageEditor/utils'
 import { ModalImageCrop } from './components/ModalImageCrop/ModalImageCrop'
+import { ImageUploadBrowserFormValues } from './components/ModalImageUploadBrowser/ImageUploadBrowserForm/types'
 import { ModalImageUploadBrowser } from './components/ModalImageUploadBrowser/ModalImageUploadBrowser'
 
 export interface OnImageUploadArgs {
@@ -41,13 +41,14 @@ export const ModalImageEdit = ({
   const [isReady, setIsReady] = useState<boolean>(false)
 
   const {
+    draftImage,
     imageUrl: initialImageUrl,
     originalImageUrl: initialOriginalImageUrl,
     credit: initialCredit,
     cropParams: initialCropParams,
   } = initialValues
 
-  const [image, setImage] = useState<File | undefined>()
+  const [image, setImage] = useState<File | undefined>(draftImage)
 
   const imageUrl = initialOriginalImageUrl
     ? initialOriginalImageUrl

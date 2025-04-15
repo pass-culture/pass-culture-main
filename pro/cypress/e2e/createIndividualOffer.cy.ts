@@ -225,10 +225,12 @@ describe('Create individual offers', () => {
     cy.findByLabelText('Sous-catégorie *').select('Livre papier')
     cy.findByLabelText('Auteur').type('Douglas Adams')
     cy.findByLabelText('EAN-13 (European Article Numbering)').type(ean)
-    cy.findByText('Ajouter une image').click()
-    cy.get('input[type=file]').selectFile('cypress/data/librairie.jpeg', {
-      force: true,
-    })
+    cy.findByLabelText('Importez une image').selectFile(
+      'cypress/data/librairie.jpeg',
+      {
+        force: true,
+      }
+    )
     cy.findByLabelText('Crédit de l’image').type(
       'Les êtres les plus intelligents de l’univers'
     )

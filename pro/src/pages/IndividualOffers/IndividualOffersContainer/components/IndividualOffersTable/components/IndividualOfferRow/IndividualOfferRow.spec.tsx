@@ -69,7 +69,7 @@ vi.mock('react-avatar-editor', () => {
 })
 
 vi.mock(
-  'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/validationSchema',
+  'components/ImageUploader/components/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/validationSchema',
   () => ({ getValidationSchema: () => ({ validate: vi.fn() }) })
 )
 

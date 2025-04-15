@@ -40,6 +40,10 @@ const ImageConstraintCheck = ({
 
 interface ImageDragAndDropProps {
   /**
+   * Callback triggered when the user clicks on the drag and drop area.
+   */
+  onClick?: () => void
+  /**
    * Callback triggered when a file is dropped or selected.
    */
   onDropOrSelected?: (file: File) => void
@@ -50,35 +54,39 @@ interface ImageDragAndDropProps {
 }
 
 export const ImageDragAndDrop = ({
+  onClick,
   onDropOrSelected,
   onError,
 }: ImageDragAndDropProps) => {
   const [isDraggedOver, setIsDraggedOver] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
-  const { getRootProps, getInputProps, fileRejections } = useDropzone({
-    accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.mpo', '.webp'],
-    },
-    maxFiles: 1,
-    maxSize: 10 * 1024 * 1024,
-    onDrop: (acceptedFiles, fileRejections) => {
-      const file = acceptedFiles[0]
-
-      // Disabled because untrue : file can be undefined at this point.
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      if (file) {
-        onDropOrSelected?.(file)
-      } else {
-        const error = fileRejections[0]?.errors[0].code
+  const { inputRef, getRootProps, getInputProps, fileRejections } = useDropzone(
+    {
+      accept: {
+        'image/*': ['.jpeg', '.jpg', '.png', '.mpo', '.webp'],
+      },
+      maxFiles: 1,
+      maxSize: 10 * 1024 * 1024,
+      onDragEnter: () => setIsDraggedOver(true),
+      onDragLeave: () => setIsDraggedOver(false),
+      onDropAccepted: (files) => {
+        const file = files[0]
+        // Disabled because untrue : file can be undefined at this point.
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (file) {
+          onDropOrSelected?.(file)
+        }
+        setIsDraggedOver(false)
+      },
+      onDropRejected: (files) => {
+        const file = files[0]
+        const error = file.errors[0].code
         onError?.(error)
-      }
-    },
-    onDragEnter: () => setIsDraggedOver(true),
-    onDragLeave: () => setIsDraggedOver(false),
-    onDropAccepted: () => setIsDraggedOver(false),
-    onDropRejected: () => setIsDraggedOver(false),
-  })
+        setIsDraggedOver(false)
+      },
+    }
+  )
 
   const rootProps = getRootProps()
   // role="presentation" on <div> is redundant,
@@ -109,7 +117,7 @@ export const ImageDragAndDrop = ({
   const hasError = errors.hasWrongSize || errors.hasWrongType
 
   return (
-    <>
+    <div className={styles['image-drag-and-drop-container']}>
       <div
         data-testid="image-drag-and-drop"
         {...rootProps}
@@ -151,6 +159,19 @@ export const ImageDragAndDrop = ({
                   onMouseLeave={() => setIsHovered(false)}
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+
+                    // Clear the input value to allow re-uploading the same file.
+                    if (inputRef.current) {
+                      inputRef.current.value = ''
+                      inputRef.current.dispatchEvent(
+                        new Event('input', { bubbles: true })
+                      )
+                    }
+
+                    onClick?.()
+                  }}
                 />
               </span>
             </>
@@ -176,6 +197,6 @@ export const ImageDragAndDrop = ({
           errorMessage="Le poids du fichier est trop lourd"
         />
       </div>
-    </>
+    </div>
   )
 }

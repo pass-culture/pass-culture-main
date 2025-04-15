@@ -285,6 +285,9 @@ describe('IndividualOfferDetails', () => {
     expect(
       await screen.findByRole('heading', { name: 'Type d’offre' })
     ).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: 'Illustrez votre offre' })
+    ).toBeInTheDocument()
     expect(screen.getByText(DEFAULTS.submitButtonLabel)).toBeInTheDocument()
   })
 
@@ -298,9 +301,6 @@ describe('IndividualOfferDetails', () => {
     expect(subcategoriesInput).toBeEnabled()
     await userEvent.selectOptions(subcategoriesInput, 'physical')
 
-    expect(
-      await screen.findByRole('heading', { name: 'Image de l’offre' })
-    ).toBeInTheDocument()
     expect(
       await screen.findByRole('heading', { name: 'Informations artistiques' })
     ).toBeInTheDocument()
@@ -574,6 +574,7 @@ describe('IndividualOfferDetails', () => {
         })
         expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
       })
+
       it('should not render EAN search for other venues', () => {
         const context = individualOfferContextValuesFactory({
           categories: MOCK_DATA.categories,
@@ -598,6 +599,7 @@ describe('IndividualOfferDetails', () => {
         })
         expect(screen.queryByText(eanSearchTitle)).not.toBeInTheDocument()
       })
+
       describe('when a local draft offer is being created', () => {
         it('should prefill the form with EAN search result', async () => {
           const ean = '9781234567897'
@@ -657,6 +659,7 @@ describe('IndividualOfferDetails', () => {
           })
           expect(imageEditButton).not.toBeInTheDocument()
         })
+
         it('should reset the prefilled form when EAN search is cleared', async () => {
           const ean = '9781234567897'
           const productData = {
@@ -712,6 +715,7 @@ describe('IndividualOfferDetails', () => {
           expect(inputName).toHaveValue('')
           expect(image).not.toBeInTheDocument()
         })
+
         it('should disabled all fields if another offer with the same EAN is already published', async () => {
           vi.spyOn(api, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
             id: 1,
@@ -758,6 +762,7 @@ describe('IndividualOfferDetails', () => {
           })
         })
       })
+
       describe('when the draft offer being created is no longer local but posted', () => {
         it('should render EAN search when the draft offer is product-based', async () => {
           const context = individualOfferContextValuesFactory({
@@ -790,6 +795,7 @@ describe('IndividualOfferDetails', () => {
             expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
           })
         })
+
         it('should not render EAN search when the draft offer is non product-based', () => {
           const context = individualOfferContextValuesFactory({
             categories: MOCK_DATA.categories,
@@ -908,6 +914,7 @@ describe('IndividualOfferDetails', () => {
     beforeEach(() => {
       vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     })
+
     it('should display with the lateral bar', async () => {
       renderDetailsScreen({
         props: {
@@ -920,6 +927,7 @@ describe('IndividualOfferDetails', () => {
         expect(mockNavigate).toHaveBeenCalledWith('/offre/creation')
       })
     })
+
     it('should not render when the offer is not set', async () => {
       renderDetailsScreen({
         props: {
