@@ -70,7 +70,7 @@
   </div>
 {% endmacro %}
 {% block page %}
-  <div class="d-flex container-fluid h-100 p-0 overflow-y-hidden">
+  <div class="d-flex container-fluid h-100 p-0 overflow-y-auto">
     <!-- MAIN COLUMN -->
     <div class="col-9 px-5 py-3">
       <div class="vstack gap-3">
@@ -98,7 +98,7 @@
     <!-- SIDE COLUMN -->
     <div class="col-3 shadow-sm">
       {% block side_column_container %}
-        <div class="vstack gap-4 py-4 px-3 overflow-y-scroll vh-100">
+        <div class="vstack gap-4 py-4 px-3 overflow-y-auto vh-100">
           {% block side_column %}
           {% endblock side_column %}
         </div>
