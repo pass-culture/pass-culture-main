@@ -1,96 +1,98 @@
-{% extends "layouts/standard.html" %}
-{% import "components/badges.html" as badges with context %}
-{% import "components/links.html" as links with context %}
+{% extends "layouts/details.html" %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{% from "components/connect_as.html" import build_connect_as_link %}
-{% block main_content %}
-  <div class="row row-cols-1 g-4 py-3">
-    <div class="col">
-      <div class="card shadow">
-        <div class="card-body">
-          <div class="row justify-content-start align-items-center">
-            <div class="col d-flex align-items-center justify-content-start">
-              <h2 class="card-title mb-3 text-primary">{{ build_connect_as_link(connect_as, collective_offer_template.name, "link-primary") }}</h2>
-              {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                <div class="d-flex row-reverse justify-content-start">
-                  <a class=" px-3"
-                     data-bs-toggle="modal"
-                     data-bs-target="#validate-collective-offer-template-modal-{{ collective_offer_template.id }}">
-                    <button class="btn btn-outline-primary lead fw-bold mt-2">Valider l'offre</button>
-                  </a>
-                  {{ build_lazy_modal(url_for('backoffice_web.collective_offer_template.get_validate_collective_offer_template_form', collective_offer_template_id=collective_offer_template.id) , "validate-collective-offer-template-modal-" + collective_offer_template.id|string) }}
-                  <a class=" px-3"
-                     data-bs-toggle="modal"
-                     data-bs-target="#reject-collective-offer-template-modal-{{ collective_offer_template.id }}">
-                    <button class="btn btn-outline-primary lead fw-bold mt-2">Rejeter l'offre</button>
-                  </a>
-                  {{ build_lazy_modal(url_for('backoffice_web.collective_offer_template.get_reject_collective_offer_template_form', collective_offer_template_id=collective_offer_template.id) , "reject-collective-offer-template-modal-" + collective_offer_template.id|string) }}
-                </div>
-              {% endif %}
-            </div>
-            <div class="col-2"></div>
-          </div>
-          <p class="card-subtitle text-muted mb-3 h5">CollectiveOfferTemplate ID : {{ collective_offer_template.id }}</p>
-          <div class="row pt-3">
-            <div class="col-4">
-              <div class="fs-6">
-                <p class="mb-1">
-                  <span class="fw-bold">Formats :</span> {{ collective_offer_template.formats | format_collective_offer_formats }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Description :</span> {{ collective_offer_template.description | empty_string_if_null | nl2br }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Date de création :</span> {{ collective_offer_template.dateCreated | format_date }}
-                </p>
-                <p class="mb-1"></p>
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="fs-6">
-                <p class="mb-1">
-                  <span class="fw-bold">Statut :</span> {{ collective_offer_template.status | format_offer_status }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Statut PC Pro :</span> {{ collective_offer_template.displayedStatus | format_collective_offer_displayed_status }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">État :</span> {{ collective_offer_template.validation | format_offer_validation_status(with_badge=True) }}
-                </p>
-                {% if collective_offer_template.rejectionReason %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Raison de rejet :</span> {{ collective_offer_template.rejectionReason | format_collective_offer_rejection_reason }}
-                  </p>
-                {% endif %}
-                {% if collective_offer_template.lastValidationAuthor %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Utilisateur de la dernière validation :</span> {{ collective_offer_template.lastValidationAuthor.full_name }}
-                  </p>
-                {% endif %}
-                <p class="mb-1"></p>
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="fs-6">
-                <p class="mb-1">
-                  <span class="fw-bold">Entité juridique :</span> {{ links.build_offerer_name_to_details_link(collective_offer_template.venue.managingOfferer) }}
-                  {% call badges.badges_container() %}
-                    {{ badges.build_offer_offerer_fraud_badges(collective_offer_template.venue.managingOfferer) }}
-                  {% endcall %}
-                </p>
-              </div>
-              <div class="fs-6">
-                <p class="mb-1">
-                  <span class="fw-bold">Partenaire culturel :</span> {{ links.build_venue_name_to_details_link(collective_offer_template.venue) }}
-                  {% call badges.badges_container() %}
-                    {{ badges.build_offer_venue_fraud_badges(collective_offer_template.venue) }}
-                  {% endcall %}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+{% import "components/badges.html" as badges with context %}
+{% import "components/clipboard.html" as clipboard %}
+{% import "components/links.html" as links with context %}
+{% from "components/connect_as.html" import build_connect_as %}
+{% block title %}
+  {{ collective_offer_template.name }}
+{% endblock title %}
+{% block header_extra %}
+  <div>{{ collective_offer_template.validation | format_offer_validation_status(with_badge=True) }}</div>
+{% endblock header_extra %}
+{% block action_buttons %}
+  {% if has_permission("PRO_FRAUD_ACTIONS") %}
+    {{ action_bar_button("hand-thumbs-up", "Valider", modal_id="#validate-collective-offer-template-modal-" + collective_offer_template.id|string) }}
+    {{ action_bar_button("hand-thumbs-down", "Rejeter", modal_id="#reject-collective-offer-template-modal-" + collective_offer_template.id|string) }}
+  {% endif %}
+{% endblock action_buttons %}
+{% block extra_title_bar %}
+  {% call content_navbar("offer-details") %}
+    {{ content_navbar_element('info', 'Détails') }}
+  {% endcall %}
+{% endblock extra_title_bar %}
+{% block details_container %}
+  {% call details_content_wrapper("offer-details") %}
+    <!-- INFO -->
+    {% call nav_section("info", "Détails de l'offre") %}
+      {% call description_detail_horizontal("Formats") %}
+        {{ collective_offer_template.formats | format_collective_offer_formats }}
+      {% endcall %}
+      {% call description_detail_horizontal("Description") %}
+        {{ collective_offer_template.description | empty_string_if_null | nl2br }}
+      {% endcall %}
+      {% call description_detail_horizontal("Date de création") %}
+        {{ collective_offer_template.dateCreated | format_date }}
+      {% endcall %}
+    {% endcall %}
+  {% endcall %}
+{% endblock details_container %}
+{% block side_column %}
+  {% call build_connect_as(connect_as) %}
+    <button type="button"
+            class="btn btn-outline-primary-subtle-bg"
+            href="{{ connect_as.href }}"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            data-bs-title="Accéder à l'offre sur PC Pro"
+            data-submit-form="{{ connect_as.formName }}">
+      Accéder PC Pro
+      <i class="bi bi-briefcase"></i>
+    </button>
+  {% endcall %}
+  <div>
+    {% call description_detail_vertical("CollectiveOfferTemplate ID") %}
+      {{ collective_offer_template.id }}
+      {{ clipboard.copy_to_clipboard(collective_offer_template.id, "Copier l'ID de l'offre") }}
+    {% endcall %}
+    {% call description_detail_vertical("Statut") %}
+      {{ collective_offer_template.status | format_offer_status }}
+    {% endcall %}
+    {% call description_detail_vertical("Statut PC Pro") %}
+      {{ collective_offer_template.displayedStatus | format_collective_offer_displayed_status }}
+    {% endcall %}
+    <hr />
+    {% call description_detail_vertical("Entité juridique") %}
+      <div class="vstack gap-1">
+        <div>{{ links.build_offerer_name_to_details_link(collective_offer_template.venue.managingOfferer) }}</div>
+        {% call badges.badges_container() %}
+          {{ badges.build_offer_offerer_fraud_badges(collective_offer_template.venue.managingOfferer) }}
+        {% endcall %}
       </div>
-    </div>
+    {% endcall %}
+    {% call description_detail_vertical("Partenaire culturel") %}
+      <div class="vstack gap-1">
+        <div>{{ links.build_venue_name_to_details_link(collective_offer_template.venue) }}</div>
+        {% call badges.badges_container() %}
+          {{ badges.build_offer_venue_fraud_badges(collective_offer_template.venue) }}
+        {% endcall %}
+      </div>
+    {% endcall %}
+    {% if collective_offer_template.rejectionReason %}
+      {% call description_detail_vertical("Raison de rejet") %}
+        {{ collective_offer_template.rejectionReason | format_collective_offer_rejection_reason }}
+      {% endcall %}
+    {% endif %}
+    {% if collective_offer_template.lastValidationAuthor %}
+      {% call description_detail_vertical("Utilisateur de la dernière validation") %}
+        {{ collective_offer_template.lastValidationAuthor.full_name }}
+      {% endcall %}
+    {% endif %}
   </div>
-{% endblock main_content %}
+{% endblock side_column %}
+{% block extra_main_content %}
+  {% if has_permission("PRO_FRAUD_ACTIONS") %}
+    {{ build_lazy_modal(url_for('backoffice_web.collective_offer_template.get_validate_collective_offer_template_form', collective_offer_template_id=collective_offer_template.id) , "validate-collective-offer-template-modal-" + collective_offer_template.id|string) }}
+    {{ build_lazy_modal(url_for('backoffice_web.collective_offer_template.get_reject_collective_offer_template_form', collective_offer_template_id=collective_offer_template.id) , "reject-collective-offer-template-modal-" + collective_offer_template.id|string) }}
+  {% endif %}
+{% endblock extra_main_content %}

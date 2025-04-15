@@ -1165,7 +1165,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
 
     is_advanced_pro_support = utils.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
     # if the actions count is above this threshold then display the action buttons in a dropdown menu
-    allowed_actions = _get_offer_details_actions(offer, threshold=5)
+    allowed_actions = _get_offer_details_actions(offer, threshold=4)
 
     edit_offer_venue_form = None
     if is_advanced_pro_support:
