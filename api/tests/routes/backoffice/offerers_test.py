@@ -2713,6 +2713,21 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert html_parser.count_table_rows(response.data) == 0
 
 
+class GetValidateOffererFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.validation.get_validate_offerer_form"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+    def test_get_validate_offerer_form(self, legit_user, authenticated_client):
+        offerer = offerers_factories.NotValidatedOffererFactory()
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+        with assert_num_queries(3):  # session + current user + offerer
+            response = authenticated_client.get(url)
+            # Rendering is not checked, but at least the fetched frame does not crash
+            assert response.status_code == 200
+
+
 class ValidateOffererTest(ActivateOffererHelper):
     endpoint = "backoffice_web.validation.validate_offerer"
     endpoint_kwargs = {"offerer_id": 1}
@@ -2720,16 +2735,24 @@ class ValidateOffererTest(ActivateOffererHelper):
     offerer_initial_status = ValidationStatus.NEW
     indexation_reason = search.IndexationReason.OFFERER_VALIDATION
 
-    def test_validate_offerer(self, legit_user, authenticated_client):
+    @pytest.mark.parametrize(
+        "review_all_offers,confidence_level", [("", None), ("on", offerers_models.OffererConfidenceLevel.MANUAL_REVIEW)]
+    )
+    def test_validate_offerer(self, legit_user, authenticated_client, review_all_offers, confidence_level):
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+        offerer = user_offerer.offerer
 
-        response = self.post_to_endpoint(authenticated_client, offerer_id=user_offerer.offererId)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=offerer.id,
+            form={"comment": "Test", "review_all_offers": review_all_offers},
+        )
 
         assert response.status_code == 303
 
         db.session.refresh(user_offerer)
-        assert user_offerer.offerer.isValidated
-        assert user_offerer.offerer.isActive
+        assert offerer.isValidated
+        assert offerer.isActive
         assert user_offerer.user.has_pro_role
         assert not user_offerer.user.has_non_attached_pro_role
 
@@ -2738,8 +2761,16 @@ class ValidateOffererTest(ActivateOffererHelper):
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId == user_offerer.user.id
-        assert action.offererId == user_offerer.offerer.id
+        assert action.offererId == offerer.id
         assert action.venueId is None
+        assert action.comment == "Test"
+
+        assert offerer.confidenceLevel == confidence_level
+
+        if confidence_level:
+            assert action.extraData["modified_info"] == {
+                "confidenceRule.confidenceLevel": {"old_info": None, "new_info": confidence_level.name}
+            }
 
     def test_validate_rejected_offerer(self, legit_user, authenticated_client):
         offerer = offerers_factories.RejectedOffererFactory()
@@ -3751,16 +3782,35 @@ class InviteUserTest(PostEndpointHelper):
         assert offerers_models.OffererInvitation.query.count() == 0
 
 
+class GetBatchOffererValidateFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.validation.get_batch_validate_offerer_form"
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+    def test_get_validate_offerer_form(self, legit_user, authenticated_client):
+        offerers_factories.NotValidatedOffererFactory()
+
+        url = url_for(self.endpoint)
+        with assert_num_queries(2):  # session + current user
+            response = authenticated_client.get(url)
+            # Rendering is not checked, but at least the fetched frame does not crash
+            assert response.status_code == 200
+
+
 class BatchOffererValidateTest(PostEndpointHelper):
     endpoint = "backoffice_web.validation.batch_validate_offerer"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-    def test_batch_set_offerer_validate(self, legit_user, authenticated_client):
-        _offerers = offerers_factories.NotValidatedOffererFactory.create_batch(10)
+    @pytest.mark.parametrize(
+        "review_all_offers,confidence_level", [("", None), ("on", offerers_models.OffererConfidenceLevel.MANUAL_REVIEW)]
+    )
+    def test_batch_set_offerer_validate(self, legit_user, authenticated_client, review_all_offers, confidence_level):
+        _offerers = offerers_factories.NotValidatedOffererFactory.create_batch(3)
         parameter_ids = ",".join(str(offerer.id) for offerer in _offerers)
 
         response = self.post_to_endpoint(
-            authenticated_client, offerer_id=_offerers[0].id, form={"object_ids": parameter_ids}
+            authenticated_client,
+            offerer_id=_offerers[0].id,
+            form={"object_ids": parameter_ids, "comment": "Test", "review_all_offers": review_all_offers},
         )
 
         assert response.status_code == 303
@@ -3776,7 +3826,14 @@ class BatchOffererValidateTest(PostEndpointHelper):
             assert action.userId is None
             assert action.offererId == offerer.id
             assert action.venueId is None
-            assert action.comment is None
+            assert action.comment == "Test"
+
+            assert offerer.confidenceLevel == confidence_level
+
+            if confidence_level:
+                assert action.extraData["modified_info"] == {
+                    "confidenceRule.confidenceLevel": {"old_info": None, "new_info": confidence_level.name}
+                }
 
 
 class GetBatchOffererPendingFormTest(GetEndpointHelper):
@@ -3803,7 +3860,7 @@ class SetBatchOffererPendingTest(PostEndpointHelper):
 
     def test_batch_set_offerer_pending(self, legit_user, authenticated_client, offerer_tags):
         _offerers = offerers_factories.NotValidatedOffererFactory.create_batch(
-            10, tags=[offerer_tags[0], offerer_tags[1]]
+            3, tags=[offerer_tags[0], offerer_tags[1]]
         )
         parameter_ids = ",".join(str(offerer.id) for offerer in _offerers)
         comment = "test pending comment"
@@ -3844,7 +3901,7 @@ class GetBatchOffererRejectFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.validation.get_batch_reject_offerer_form"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-    def test_get_offerer_attachment_pending_form(self, legit_user, authenticated_client):
+    def test_get_reject_offerer_form(self, legit_user, authenticated_client):
         offerers_factories.NotValidatedOffererFactory()
 
         url = url_for(self.endpoint)
@@ -3870,7 +3927,7 @@ class BatchOffererRejectTest(PostEndpointHelper):
         ),
     )
     def test_batch_set_offerer_reject(self, legit_user, authenticated_client, rejection_reason):
-        _offerers = offerers_factories.NotValidatedOffererFactory.create_batch(10)
+        _offerers = offerers_factories.NotValidatedOffererFactory.create_batch(3)
         parameter_ids = ",".join(str(offerer.id) for offerer in _offerers)
         comment = "test comment"
 

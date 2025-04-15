@@ -834,11 +834,12 @@ def update_for_fraud(venue_id: int) -> utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
     elif offerers_api.update_fraud_info(
-        None,
-        venue,
-        current_user,
-        offerers_models.OffererConfidenceLevel(form.confidence_level.data) if form.confidence_level.data else None,
-        form.comment.data,
+        venue=venue,
+        author_user=current_user,
+        confidence_level=(
+            offerers_models.OffererConfidenceLevel(form.confidence_level.data) if form.confidence_level.data else None
+        ),
+        comment=form.comment.data,
     ):
         flash("Les informations ont été mises à jour", "success")
 

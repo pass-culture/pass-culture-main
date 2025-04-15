@@ -1249,7 +1249,9 @@ def delete_offerer_attachment(
     db.session.flush()
 
 
-def validate_offerer(offerer: models.Offerer, author_user: users_models.User) -> None:
+def validate_offerer(
+    offerer: models.Offerer, author_user: users_models.User, review_all_offers: bool = False, **action_args: typing.Any
+) -> None:
     if offerer.isValidated:
         raise exceptions.OffererAlreadyValidatedException()
 
@@ -1263,11 +1265,17 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
         applicant.add_pro_role()
     db.session.add_all(applicants)
 
+    if review_all_offers:
+        action_args |= _internal_update_fraud_info(
+            offerer=offerer, confidence_level=offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
+        )
+
     history_api.add_action(
         history_models.ActionType.OFFERER_VALIDATED,
         author=author_user,
         offerer=offerer,
         user=applicants[0] if applicants else None,  # before validation we should have only one applicant
+        **action_args,
     )
 
     db.session.flush()
@@ -3041,26 +3049,21 @@ def get_offerer_address_from_address(
     )
 
 
-def update_fraud_info(
-    offerer: offerers_models.Offerer | None,
-    venue: offerers_models.Venue | None,
-    author_user: users_models.User,
-    confidence_level: offerers_models.OffererConfidenceLevel | None,
-    comment: str | None = None,
-) -> bool:
+def _internal_update_fraud_info(
+    *,
+    offerer: offerers_models.Offerer | None = None,
+    venue: offerers_models.Venue | None = None,
+    confidence_level: offerers_models.OffererConfidenceLevel | None = None,
+) -> dict[str, typing.Any]:
     offerer_or_venue = offerer or venue
     assert offerer_or_venue  # helps mypy
 
     current_confidence_level = offerer_or_venue.confidenceLevel
     is_confidence_level_changed = current_confidence_level != confidence_level
-
-    if not (is_confidence_level_changed or comment):
-        return False
-
-    kwargs: dict[str, typing.Any] = {}
+    action_kwargs: dict[str, typing.Any] = {}
 
     if is_confidence_level_changed:
-        kwargs["modified_info"] = {
+        action_kwargs["modified_info"] = {
             "confidenceRule.confidenceLevel": {"old_info": current_confidence_level, "new_info": confidence_level}
         }
 
@@ -3076,11 +3079,27 @@ def update_fraud_info(
             else:
                 query.update({"confidenceLevel": confidence_level})
 
+    return action_kwargs
+
+
+def update_fraud_info(
+    *,
+    offerer: offerers_models.Offerer | None = None,
+    venue: offerers_models.Venue | None = None,
+    author_user: users_models.User | None = None,
+    confidence_level: offerers_models.OffererConfidenceLevel | None = None,
+    comment: str | None = None,
+) -> bool:
+    action_kwargs = _internal_update_fraud_info(offerer=offerer, venue=venue, confidence_level=confidence_level)
+
+    if not (action_kwargs or comment):
+        return False
+
     if comment:
-        kwargs["comment"] = comment
+        action_kwargs["comment"] = comment
 
     history_api.add_action(
-        history_models.ActionType.FRAUD_INFO_MODIFIED, author=author_user, offerer=offerer, venue=venue, **kwargs
+        history_models.ActionType.FRAUD_INFO_MODIFIED, author=author_user, offerer=offerer, venue=venue, **action_kwargs
     )
 
     return True
