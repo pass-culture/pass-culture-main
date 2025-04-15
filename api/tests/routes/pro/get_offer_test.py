@@ -232,6 +232,7 @@ class Returns200Test:
             "withdrawalDelay": 60 * 30,
         }
 
+    @time_machine.travel("2025-04-14 12:00:00", tick=False)
     def test_returns_an_event_stock_with_opening_hours(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
@@ -269,8 +270,8 @@ class Returns200Test:
                 "SATURDAY": [{"open": "10:00:00", "close": "13:00:00"}, {"open": "14:00:00", "close": "19:30:00"}],
                 "SUNDAY": [{"open": "10:00:00", "close": "13:00:00"}, {"open": "14:00:00", "close": "19:30:00"}],
             },
-            "startDatetime": datetime.strftime(start, "%Y-%m-%dT%H:%M:%S.%fZ"),
-            "endDatetime": datetime.strftime(end, "%Y-%m-%dT%H:%M:%S.%fZ"),
+            "startDatetime": datetime.strftime(start, "%Y-%m-%dT%H:%M:%SZ"),
+            "endDatetime": datetime.strftime(end, "%Y-%m-%dT%H:%M:%SZ"),
         }
 
     @time_machine.travel("2019-10-15 00:00:00")
