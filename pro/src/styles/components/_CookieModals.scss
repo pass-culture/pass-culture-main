@@ -27,15 +27,14 @@ $action-gap: rem.torem(10px);
 
   text-align: center;
   border-radius: rem.torem(30px);
-  border: rem.torem(2px) solid var(--color-primary);
+  border: rem.torem(2px) solid var(--color-border-brand-primary);
   padding: rem.torem(10px) rem.torem(24px);
-  line-height: var(--typography-body-line-height);
-  background: var(--color-primary);
+  background: var(--color-background-brand-primary);
   cursor: pointer;
 
   &:hover {
-    background-color: var(--color-primary-dark);
-    border-color: var(--color-primary-dark);
+    background-color: var(--color-background-brand-primary-hover);
+    border-color: var(--color-border-brand-primary-hover);
   }
 
   &:focus-visible {
@@ -56,7 +55,6 @@ $action-gap: rem.torem(10px);
     @include fonts.body-accent;
 
     color: var(--color-text-default);
-    line-height: var(--typography-body-line-height);
     margin-bottom: rem.torem(8px);
   }
 
@@ -92,12 +90,12 @@ $action-gap: rem.torem(10px);
 
       button {
         background: var(--color-background-default);
-        color: var(--color-primary);
+        color: var(--color-text-brand-primary);
 
         &:hover {
-          color: var(--color-white);
-          background-color: var(--color-primary-dark);
-          border-color: var(--color-primary-dark);
+          color: var(--color-text-inverted);
+          background-color: var(--color-background-brand-primary-hover);
+          border-color: var(--color-border-brand-primary-hover);
         }
       }
     }
@@ -154,9 +152,9 @@ $action-gap: rem.torem(10px);
     }
 
     &:hover {
-      color: var(--color-white);
-      background-color: var(--color-primary-dark);
-      border-color: var(--color-primary-dark);
+      color: var(--color-text-inverted);
+      background-color: var(--color-background-brand-primary-hover);
+      border-color: var(--color-border-brand-primary-hover);
     }
   }
 }

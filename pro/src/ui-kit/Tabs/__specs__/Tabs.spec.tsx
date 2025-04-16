@@ -2,8 +2,6 @@ import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router-dom'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import strokeLibraryIcon from 'icons/stroke-library.svg'
-import strokeUserIcon from 'icons/stroke-user.svg'
 
 import { Tabs } from '../Tabs'
 
@@ -20,13 +18,11 @@ const renderTabs = (nav?: string) => {
                 label: 'Offres individuelles',
                 url: '/offres',
                 key: 'individual',
-                icon: strokeUserIcon,
               },
               {
                 label: 'Offres collectives',
                 url: '/offres/collectives',
                 key: 'collective',
-                icon: strokeLibraryIcon,
               },
             ]}
             nav={nav}

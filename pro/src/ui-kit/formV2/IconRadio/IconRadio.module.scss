@@ -48,7 +48,7 @@
   &-checked {
     @include fonts.button;
 
-    border: rem.torem(2px) solid var(--color-secondary);
+    border: rem.torem(2px) solid var(--color-border-brand-primary);
   }
 }
 

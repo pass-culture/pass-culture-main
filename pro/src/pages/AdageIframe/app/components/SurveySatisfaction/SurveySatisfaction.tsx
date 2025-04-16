@@ -70,10 +70,7 @@ export const SurveySatisfaction = ({
         </div>
 
         <div className={styles['survey-actions']}>
-          <Button
-            className={styles['survey-button-secondary']}
-            onClick={onCloseSurvey}
-          >
+          <Button onClick={onCloseSurvey} variant={ButtonVariant.SECONDARY}>
             J’ai déjà répondu
           </Button>
 
@@ -83,7 +80,6 @@ export const SurveySatisfaction = ({
             isExternal
             opensInNewTab
             icon={fullLinkIcon}
-            className={styles['survey-button']}
             onClick={logOpenSatisfactionSurvey}
           >
             Je donne mon avis

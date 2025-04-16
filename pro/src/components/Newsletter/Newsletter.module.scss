@@ -5,7 +5,7 @@
   position: relative;
   display: flex;
   min-height: rem.torem(53px);
-  background: linear-gradient(var(--color-primary), var(--color-secondary));
+  background: var(--color-border-brand-primary);
   border-radius: 6px;
   width: 100%;
   padding: rem.torem(1px);

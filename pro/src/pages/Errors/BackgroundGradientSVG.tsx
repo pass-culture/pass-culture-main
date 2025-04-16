@@ -14,7 +14,7 @@ export function BackgroundGradientSVG() {
           id="background-gradient-1"
           gradientTransform="rotate(90)"
         >
-          <stop offset="0%" stopColor="var(--color-secondary-light)" />
+          <stop offset="0%" stopColor="var(--color-background-brand-primary)" />
           <stop offset="100%" stopColor="var(--color-secondary)" />
         </linearGradient>
 
@@ -22,7 +22,10 @@ export function BackgroundGradientSVG() {
           id="background-gradient-2"
           gradientTransform="rotate(90)"
         >
-          <stop offset="30%" stopColor="var(--color-secondary-light)" />
+          <stop
+            offset="30%"
+            stopColor="var(--color-background-brand-primary)"
+          />
           <stop offset="70%" stopColor="var(--color-secondary)" />
         </linearGradient>
       </defs>

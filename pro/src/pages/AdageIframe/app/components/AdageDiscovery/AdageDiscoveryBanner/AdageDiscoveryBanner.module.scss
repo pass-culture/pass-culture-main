@@ -13,13 +13,13 @@
     @include fonts.title1;
 
     margin: 0;
-    color: var(--color-white);
+    color: var(--color-text-inverted);
     text-align: center;
     position: relative;
     z-index: 1;
 
     &-highlight {
-      color: var(--color-adage-purple);
+      color: var(--color-text-brand-primary);
       padding: rem.torem(2px);
       background-color: var(--color-background-default);
       border-radius: rem.torem(8px);
@@ -37,17 +37,17 @@
     background-color: var(--color-adage-purple);
     background-image: linear-gradient(
       to right,
-      var(--color-secondary),
-      var(--color-secondary-light) 80%
+      var(--color-background-brand-primary-hover),
+      var(--color-background-brand-primary) 80%
     );
 
     .discovery-banner-svg-oval {
-      fill: var(--color-secondary-light);
+      fill: var(--color-icon-brand-primary);
     }
 
     .discovery-banner-svg-cross,
     .discovery-banner-svg-circle {
-      fill: rgb(from var(--color-grey-light) r g b / 40%);
+      fill: rgb(from var(--color-icon-inverted) r g b / 40%);
     }
   }
 }

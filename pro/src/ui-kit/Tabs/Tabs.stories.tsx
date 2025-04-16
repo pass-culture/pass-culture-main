@@ -1,9 +1,6 @@
 import { StoryObj } from '@storybook/react'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
-import strokeLibraryIcon from 'icons/stroke-library.svg'
-import strokeUserIcon from 'icons/stroke-user.svg'
-
 import { Tabs } from './Tabs'
 
 export default {
@@ -20,13 +17,11 @@ export const Default: StoryObj<typeof Tabs> = {
         label: 'Offres individuelles',
         url: '#',
         key: 'individual',
-        icon: strokeUserIcon,
       },
       {
         label: 'Offres collectives',
         url: '#',
         key: 'collective',
-        icon: strokeLibraryIcon,
       },
     ],
   },

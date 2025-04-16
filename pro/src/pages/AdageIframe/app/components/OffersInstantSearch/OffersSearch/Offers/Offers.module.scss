@@ -107,15 +107,8 @@
   right: 15%;
 }
 
-.highlight-banner-button {
-  background-color: var(--color-secondary-light);
-  border-color: var(--color-border-brand-primary);
-
-  &:hover,
-  &:focus {
-    background-color: var(--color-secondary-light);
-    border-color: var(--color-border-brand-primary);
-  }
+.highlight-banner-icon {
+  color: var(--color-icon-brand-primary);
 }
 
 .offer-type-vue {
