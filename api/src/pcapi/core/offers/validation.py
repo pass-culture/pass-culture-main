@@ -121,7 +121,12 @@ def check_stock_quantity(quantity: int | None, bookingQuantity: int = 0) -> None
 
 
 def check_stocks_price(
-    stocks: list[serialization.StockCreationBodyModel] | list[serialization.StockEditionBodyModel],
+    stocks: (
+        list[serialization.StockCreationBodyModel]
+        | list[serialization.StockEditionBodyModel]
+        | list[serialization.EventStockCreateBodyModel]
+        | list[serialization.EventStockUpdateBodyModel]
+    ),
     offer: models.Offer,
 ) -> None:
     price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
@@ -131,11 +136,13 @@ def check_stocks_price(
             error_key = "priceCategoryId"
             price = price_categories[stock.price_category_id].price
         else:
+            assert hasattr(stock, "price")  # temporary fix to make mypy happy
             error_key = "price"
             assert (
                 stock.price is not None
             )  # helps mypy, not sure but it would crash in check_stock_price if None - TODO: check
             price = stock.price
+
         check_stock_price(price, offer, error_key=error_key)
 
 
@@ -235,22 +242,25 @@ def _get_number_of_existing_stocks(offer_id: int) -> int:
     )
 
 
-def check_stocks_quantity(quantity: int) -> None:
+def check_stocks_count(quantity: int) -> None:
     if quantity > models.Offer.MAX_STOCKS_PER_OFFER:
         raise api_errors.ApiErrors(
-            {"stocks": [f"Le nombre maximum de stocks par offre est de {models.Offer.MAX_STOCKS_PER_OFFER}"]},
-            status_code=400,
+            {"stocks": [f"Le nombre maximum de stocks par offre est de {models.Offer.MAX_STOCKS_PER_OFFER}"]}
         )
 
 
-def check_stocks_quantity_with_previous_offer_stock(
-    stocks_to_create: list[serialization.StockCreationBodyModel] | list[serialization.StockEditionBodyModel],
+def check_stocks_count_with_previous_offer_stock(
+    stocks_to_create: (
+        list[serialization.StockCreationBodyModel]
+        | list[serialization.StockEditionBodyModel]
+        | list[serialization.EventStockCreateBodyModel]
+    ),
     offer: models.Offer,
 ) -> None:
     if stocks_to_create:
         number_of_existing_stocks = _get_number_of_existing_stocks(offer.id)
-        quantity = number_of_existing_stocks + len(stocks_to_create)
-        check_stocks_quantity(quantity)
+        stocks_count = number_of_existing_stocks + len(stocks_to_create)
+        check_stocks_count(stocks_count)
 
 
 def check_required_dates_for_stock(
@@ -809,25 +819,35 @@ def check_price_categories_deletable(offer: models.Offer) -> None:
 
 def check_stock_has_price_or_price_category(
     offer: models.Offer,
-    stock: serialization.StockCreationBodyModel | serialization.StockEditionBodyModel,
+    stock: (
+        serialization.StockCreationBodyModel
+        | serialization.StockEditionBodyModel
+        | serialization.EventStockCreateBodyModel
+    ),
     existing_price_categories: dict,
 ) -> None:
     if offer.isThing:
+        assert hasattr(stock, "price")  # temporary fix to make mypy happy
         if stock.price is None:
-            raise api_errors.ApiErrors(
-                {"price": ["Le prix est obligatoire pour les offres produit"]},
-                status_code=400,
-            )
+            raise api_errors.ApiErrors({"price": ["Le prix est obligatoire pour les offres produit"]})
         return
+
     if not stock.price_category_id:
-        raise api_errors.ApiErrors(
-            {"price_category_id": ["Le tarif est obligatoire pour les offres évènement"]},
-            status_code=400,
-        )
+        raise api_errors.ApiErrors({"price_category_id": ["Le tarif est obligatoire pour les offres évènement"]})
     if stock.price_category_id not in existing_price_categories:
         raise api_errors.ApiErrors(
-            {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % stock.price_category_id]},
-            status_code=400,
+            {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % stock.price_category_id]}
+        )
+
+
+def check_stock_price_category_exists(
+    offer: models.Offer,
+    stock: serialization.EventStockCreateBodyModel,
+    existing_price_categories: dict,
+) -> None:
+    if stock.price_category_id not in existing_price_categories:
+        raise api_errors.ApiErrors(
+            {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % stock.price_category_id]}
         )
 
 

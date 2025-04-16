@@ -25,6 +25,7 @@ from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.connectors.titelive import get_new_product_from_ean13
 from pcapi.core import search
+from pcapi.core.bookings import exceptions as booking_exceptions
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.bookings.models as bookings_models
@@ -865,9 +866,13 @@ def edit_stock(
 def handle_stocks_edition(edited_stocks: list[tuple[models.Stock, bool]]) -> None:
     for stock, is_beginning_datetime_updated in edited_stocks:
         if is_beginning_datetime_updated:
-            bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
-            _notify_pro_upon_stock_edit_for_event_offer(stock, bookings)
-            _notify_beneficiaries_upon_stock_edit(stock, bookings)
+            handle_event_stock_beginning_datetime_update(stock)
+
+
+def handle_event_stock_beginning_datetime_update(stock: models.Stock) -> None:
+    bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
+    _notify_pro_upon_stock_edit_for_event_offer(stock, bookings)
+    _notify_beneficiaries_upon_stock_edit(stock, bookings)  # TODO: (tcoudray-pass, 16/04/2025) rename this function
 
 
 def _format_publication_date(publication_date: datetime.datetime | None, timezone: str) -> datetime.datetime | None:
@@ -950,7 +955,10 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
 def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookings_models.Booking]:
     for booking in bookings:
         if booking.status is bookings_models.BookingStatus.USED:
-            bookings_api.mark_as_unused(booking)
+            try:
+                bookings_api.mark_as_unused(booking)
+            except booking_exceptions.BookingIsAlreadyRefunded:  # should not happen
+                logger.exception("Unexpected error when invalidating booking", extra={"bookingId": booking.id})
     return bookings
 
 

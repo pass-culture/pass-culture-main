@@ -35,6 +35,8 @@ import type { EducationalDomainsResponseModel } from '../models/EducationalDomai
 import type { EducationalInstitutionsResponseModel } from '../models/EducationalInstitutionsResponseModel';
 import type { EducationalRedactors } from '../models/EducationalRedactors';
 import type { EventDatesInfos } from '../models/EventDatesInfos';
+import type { EventStocksBulkCreateBodyModel } from '../models/EventStocksBulkCreateBodyModel';
+import type { EventStocksBulkUpdateBodyModel } from '../models/EventStocksBulkUpdateBodyModel';
 import type { FinanceBankAccountListResponseModel } from '../models/FinanceBankAccountListResponseModel';
 import type { GetActiveEANOfferResponseModel } from '../models/GetActiveEANOfferResponseModel';
 import type { GetCollectiveOfferRequestResponseModel } from '../models/GetCollectiveOfferRequestResponseModel';
@@ -2308,6 +2310,26 @@ export class DefaultService {
     });
   }
   /**
+   * bulk_update_event_stocks <PATCH>
+   * @param requestBody
+   * @returns StocksResponseModel OK
+   * @throws ApiError
+   */
+  public bulkUpdateEventStocks(
+    requestBody?: EventStocksBulkUpdateBodyModel,
+  ): CancelablePromise<StocksResponseModel> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/stocks/bulk',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * upsert_stocks <POST>
    * @param requestBody
    * @returns StocksResponseModel Created
@@ -2319,6 +2341,26 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/stocks/bulk',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * bulk_create_event_stocks <POST>
+   * @param requestBody
+   * @returns StocksResponseModel Created
+   * @throws ApiError
+   */
+  public bulkCreateEventStocks(
+    requestBody?: EventStocksBulkCreateBodyModel,
+  ): CancelablePromise<StocksResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/stocks/bulk_create',
       body: requestBody,
       mediaType: 'application/json',
       errors: {

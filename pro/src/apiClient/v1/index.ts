@@ -95,6 +95,10 @@ export type { EducationalRedactorResponseModel } from './models/EducationalRedac
 export type { EducationalRedactors } from './models/EducationalRedactors';
 export type { EventDateScheduleAndPriceCategoriesCountModel } from './models/EventDateScheduleAndPriceCategoriesCountModel';
 export type { EventDatesInfos } from './models/EventDatesInfos';
+export type { EventStockCreateBodyModel } from './models/EventStockCreateBodyModel';
+export type { EventStocksBulkCreateBodyModel } from './models/EventStocksBulkCreateBodyModel';
+export type { EventStocksBulkUpdateBodyModel } from './models/EventStocksBulkUpdateBodyModel';
+export type { EventStockUpdateBodyModel } from './models/EventStockUpdateBodyModel';
 export type { ExternalAccessibilityDataModel } from './models/ExternalAccessibilityDataModel';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export type { FinanceBankAccountListResponseModel } from './models/FinanceBankAccountListResponseModel';
