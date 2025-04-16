@@ -46,14 +46,15 @@ export const ImageDragAndDropUploader = ({
   const hasImage = imageUrl || originalImageUrl
   const shouldDisplayActions = imageUrl && !hideActionButtons
 
-  const handleImageDelete = () => {
-    notify.success('L’image a bien été supprimée')
+  const onImageDeleteHandler = () => {
     onImageDelete()
+    notify.success('L’image a bien été supprimée')
   }
 
   const onImageUploadHandler = (values: OnImageUploadArgs) => {
-    onImageUpload(values)
     setIsModalImageOpen(false)
+    onImageUpload(values)
+    notify.success('Votre image a bien été enregistrée')
   }
 
   return (
@@ -91,7 +92,7 @@ export const ImageDragAndDropUploader = ({
           <ModalImageEdit
             mode={mode}
             onImageUpload={onImageUploadHandler}
-            onImageDelete={handleImageDelete}
+            onImageDelete={onImageDeleteHandler}
             initialValues={{
               draftImage,
               ...initialValues,
@@ -99,7 +100,10 @@ export const ImageDragAndDropUploader = ({
           />
         </DialogBuilder>
         {shouldDisplayActions && (
-          <Button onClick={handleImageDelete} variant={ButtonVariant.TERNARY}>
+          <Button
+            onClick={onImageDeleteHandler}
+            variant={ButtonVariant.TERNARY}
+          >
             <SvgIcon
               alt=""
               className={styles['button-image-delete-icon']}
