@@ -1,7 +1,7 @@
-import { ImagePreview } from 'components/ImagePreview/ImagePreview'
-import { ImagePreviewsWrapper } from 'components/ImagePreview/ImagePreviewsWrapper'
 import homeShell from 'components/ImageUploader/assets/offer-home-shell.png'
 import offerShell from 'components/ImageUploader/assets/offer-shell.png'
+import { ImagePreview } from 'components/ImageUploader/components/ImagePreview/ImagePreview'
+import { ImagePreviewsWrapper } from 'components/ImageUploader/components/ImagePreview/ImagePreviewsWrapper'
 
 import homeStyle from './HomeScreenPreview.module.scss'
 import offerStyle from './OfferScreenPreview.module.scss'

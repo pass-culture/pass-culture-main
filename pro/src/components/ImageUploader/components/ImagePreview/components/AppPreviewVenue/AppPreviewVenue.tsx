@@ -1,10 +1,10 @@
 import { useCallback } from 'react'
 
 import { useNotification } from 'commons/hooks/useNotification'
-import { ImagePreview } from 'components/ImagePreview/ImagePreview'
-import { ImagePreviewsWrapper } from 'components/ImagePreview/ImagePreviewsWrapper'
 import homeShell from 'components/ImageUploader/assets/venue-home-shell.png'
 import venueShell from 'components/ImageUploader/assets/venue-shell.png'
+import { ImagePreview } from 'components/ImageUploader/components/ImagePreview/ImagePreview'
+import { ImagePreviewsWrapper } from 'components/ImageUploader/components/ImagePreview/ImagePreviewsWrapper'
 
 import homeStyle from './HomeScreenPreview.module.scss'
 import venueStyle from './VenueScreenPreview.module.scss'
