@@ -71,6 +71,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_INVOICE_SYNC = (
         "Active la synchronisation des justificatifs de remboursement avec l'outil finance externe (Cegid XRP Flex)"
     )
+    ENABLE_MARSEILLE = "Activer Marseille en grand dans le front"
     ENABLE_NATIVE_APP_RECAPTCHA = "Active le reCaptacha sur l'API native"
     ENABLE_NATIVE_CULTURAL_SURVEY = (
         "Active le Questionnaire des pratiques initiales natif (non TypeForm) sur l'app native et décli web"
@@ -117,7 +118,6 @@ class FeatureToggle(enum.Enum):
     WIP_ASYNCHRONOUS_CELERY_TASKS = "Activer le backend de tâches asynchrone Celery pour les tâches qui le supporte"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
     WIP_ENABLE_NEW_FINANCE_WORKFLOW = "Active le nouveau workflow finance"
-    WIP_ENABLE_MARSEILLE = "Activer Marseille en grand"
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )

@@ -25,7 +25,7 @@ const renderFormParticipants = (
 }
 
 const featureOverrides = {
-  features: ['WIP_ENABLE_MARSEILLE'],
+  features: ['ENABLE_MARSEILLE'],
 }
 
 describe('FormParticipants', () => {

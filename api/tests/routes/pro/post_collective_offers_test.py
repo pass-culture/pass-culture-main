@@ -156,7 +156,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 201
 
-    @pytest.mark.features(WIP_ENABLE_MARSEILLE=True)
+    @pytest.mark.features(ENABLE_MARSEILLE=True)
     def test_create_collective_offer_primary_level(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -171,7 +171,7 @@ class Returns200Test:
         offer = models.CollectiveOffer.query.get(response.json["id"])
         assert offer.students == [models.StudentLevels.ECOLES_MARSEILLE_MATERNELLE]
 
-    @pytest.mark.features(WIP_ENABLE_MARSEILLE=False)
+    @pytest.mark.features(ENABLE_MARSEILLE=False)
     def test_create_collective_offer_primary_level_FF_disabled(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer

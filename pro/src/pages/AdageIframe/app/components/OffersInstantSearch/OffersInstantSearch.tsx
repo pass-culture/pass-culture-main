@@ -64,7 +64,7 @@ export const OffersInstantSearch = (): JSX.Element | null => {
   const relativeOffersIncludedParam = params.get('all') === 'true'
   const programParam = params.get('program')
 
-  const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
     (prog) => prog.name === MARSEILLE_EN_GRAND
   )

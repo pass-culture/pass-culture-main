@@ -80,7 +80,7 @@ export const OffersSearch = ({
     }
   }, [mainOffersSearchResults?.queryID])
 
-  const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
     (prog) => prog.name === MARSEILLE_EN_GRAND
   )

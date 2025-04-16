@@ -40,7 +40,7 @@ export const FormParticipants = ({
 }: {
   disableForm: boolean
 }): JSX.Element => {
-  const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
   const { setFieldValue, values } =
     useFormikContext<OfferEducationalFormValues>()
   const [checkboxesState, setCheckboxesState] = useState({
