@@ -1,6 +1,5 @@
 import cn from 'classnames'
 
-import { ButtonAppPreview } from './components/ButtonAppPreview/ButtonAppPreview'
 import { ButtonImageDelete } from './components/ButtonImageDelete/ButtonImageDelete'
 import { ButtonImageEdit } from './components/ButtonImageEdit/ButtonImageEdit'
 import { OnImageUploadArgs } from './components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
@@ -62,9 +61,7 @@ export const ImageUploader = ({
                   onClickButtonImage={onClickButtonImageAdd}
                   disableForm={disableForm}
                 />
-                {mode !== UploaderModeEnum.OFFER_COLLECTIVE && (
-                  <ButtonAppPreview imageUrl={imageUrl} mode={mode} />
-                )}
+
                 <ButtonImageDelete onImageDelete={onImageDelete} />
               </div>
             </div>
