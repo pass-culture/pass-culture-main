@@ -2112,7 +2112,7 @@ def update_event_opening_hours(
 
     Warning: no update nor insert will be committed by this function.
     """
-    offers_validation.check_event_opening_hours_can_be_updated(offer, opening_hours, body)
+    offers_validation.check_event_opening_hours_can_be_updated(event.offer, event, update_body)
 
     if update_body.startDatetime:
         event.startDatetime = update_body.startDatetime
