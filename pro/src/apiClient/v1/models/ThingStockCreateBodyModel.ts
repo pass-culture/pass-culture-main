@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ProductStockCreateBodyModel = {
+export type ThingStockCreateBodyModel = {
   activationCodes?: Array<string> | null;
   activationCodesExpirationDatetime?: string | null;
   bookingLimitDatetime?: string | null;

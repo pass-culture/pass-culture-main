@@ -201,7 +201,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should submit stock form when click on "Enregistrer et continuer"', async () => {
-    vi.spyOn(api, 'createProductStock').mockResolvedValue({
+    vi.spyOn(api, 'createThingStock').mockResolvedValue({
       id: 12,
     })
     await renderStockThingScreen([], props, contextValue)
@@ -212,7 +212,7 @@ describe('screens:StocksThing', () => {
     await userEvent.click(nextButton)
 
     await waitFor(() => {
-      expect(api.createProductStock).toHaveBeenCalledWith({
+      expect(api.createThingStock).toHaveBeenCalledWith({
           offerId: offer.id,
           bookingLimitDatetime: null,
           price: 20,
@@ -224,7 +224,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should submit stock form with duo informations when clicking on on "Enregistrer et continuer"', async () => {
-    vi.spyOn(api, 'createProductStock').mockResolvedValue({
+    vi.spyOn(api, 'createThingStock').mockResolvedValue({
       id: 12,
     })
     await renderStockThingScreen([], props, contextValue)
@@ -248,18 +248,18 @@ describe('screens:StocksThing', () => {
   })
 
   it('should not submit stock form when click on "Retour"', async () => {
-    vi.spyOn(api, 'createProductStock').mockResolvedValue({
+    vi.spyOn(api, 'createThingStock').mockResolvedValue({
       id: 12,
     })
-    vi.spyOn(api, 'updateProductStock').mockResolvedValue({
+    vi.spyOn(api, 'updateThingStock').mockResolvedValue({
       id: 12,
     })
 
     await renderStockThingScreen([], props, contextValue)
 
     await userEvent.click(screen.getByRole('button', { name: 'Retour' }))
-    expect(api.createProductStock).not.toHaveBeenCalled()
-    expect(api.updateProductStock).not.toHaveBeenCalled()
+    expect(api.createThingStock).not.toHaveBeenCalled()
+    expect(api.updateThingStock).not.toHaveBeenCalled()
     expect(
       screen.queryByText('Brouillon sauvegardé dans la liste des offres')
     ).not.toBeInTheDocument()
@@ -267,7 +267,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should display api errors', async () => {
-    vi.spyOn(api, 'createProductStock').mockRejectedValue(
+    vi.spyOn(api, 'createThingStock').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -299,7 +299,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should display error for virtual offer without url', async () => {
-    vi.spyOn(api, 'createProductStock').mockRejectedValue({
+    vi.spyOn(api, 'createThingStock').mockRejectedValue({
       message: 'oups',
       name: 'ApiError',
       body: { url: 'broken virtual offer !' },
@@ -321,7 +321,7 @@ describe('screens:StocksThing', () => {
 
   describe('activation codes', () => {
     it('should submit activation codes and freeze quantity when a csv is provided', async () => {
-      vi.spyOn(api, 'createProductStock').mockResolvedValue({
+      vi.spyOn(api, 'createThingStock').mockResolvedValue({
         id: 12,
       })
       props.offer = {
@@ -376,7 +376,7 @@ describe('screens:StocksThing', () => {
       date.setUTCHours(22, 59, 59, 999)
       expect(expirationInput).toHaveValue(today)
       await userEvent.click(screen.getByText('Enregistrer et continuer'))
-      expect(api.createProductStock).toHaveBeenCalledWith({
+      expect(api.createThingStock).toHaveBeenCalledWith({
         offerId: offer.id,
   
         bookingLimitDatetime: null,
@@ -390,7 +390,7 @@ describe('screens:StocksThing', () => {
     })
 
     it('should display an error when activation code file is incorrect', async () => {
-      vi.spyOn(api, 'createProductStock').mockResolvedValue({
+      vi.spyOn(api, 'createThingStock').mockResolvedValue({
         id: 12,
       })
       props.offer = {
@@ -500,7 +500,7 @@ describe('screens:StocksThing', () => {
   )
 
   it('should not block when going outside and form is not touched', async () => {
-    vi.spyOn(api, 'createProductStock').mockResolvedValue({
+    vi.spyOn(api, 'createThingStock').mockResolvedValue({
       id: 12,
     })
 
@@ -512,7 +512,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should be able to stay on stock form after click on "Rester sur la page"', async () => {
-    vi.spyOn(api, 'createProductStock').mockResolvedValue({
+    vi.spyOn(api, 'createThingStock').mockResolvedValue({
       id: 12,
     })
 
@@ -532,7 +532,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should be able to quit without submitting from RouteLeavingGuard', async () => {
-    vi.spyOn(api, 'createProductStock').mockResolvedValue({
+    vi.spyOn(api, 'createThingStock').mockResolvedValue({
       id: 12,
     })
 
@@ -550,7 +550,7 @@ describe('screens:StocksThing', () => {
     ).toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Quitter la page'))
-    expect(api.createProductStock).not.toHaveBeenCalled()
+    expect(api.createThingStock).not.toHaveBeenCalled()
 
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
   })

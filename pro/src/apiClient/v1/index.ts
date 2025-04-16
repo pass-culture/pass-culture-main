@@ -211,8 +211,6 @@ export type { PostOffererResponseModel } from './models/PostOffererResponseModel
 export type { PostVenueProviderBody } from './models/PostVenueProviderBody';
 export type { PriceCategoryBody } from './models/PriceCategoryBody';
 export type { PriceCategoryResponseModel } from './models/PriceCategoryResponseModel';
-export type { ProductStockCreateBodyModel } from './models/ProductStockCreateBodyModel';
-export type { ProductStockUpdateBodyModel } from './models/ProductStockUpdateBodyModel';
 export type { ProUserCreationBodyV2Model } from './models/ProUserCreationBodyV2Model';
 export type { ProviderResponse } from './models/ProviderResponse';
 export type { ReimbursementCsvByInvoicesModel } from './models/ReimbursementCsvByInvoicesModel';
@@ -239,6 +237,8 @@ export type { SubcategoryResponseModel } from './models/SubcategoryResponseModel
 export type { SubmitReviewRequestModel } from './models/SubmitReviewRequestModel';
 export { Target } from './models/Target';
 export type { TemplateDatesModel } from './models/TemplateDatesModel';
+export type { ThingStockCreateBodyModel } from './models/ThingStockCreateBodyModel';
+export type { ThingStockUpdateBodyModel } from './models/ThingStockUpdateBodyModel';
 export type { TimeSpan } from './models/TimeSpan';
 export type { TopOffersResponseData } from './models/TopOffersResponseData';
 export type { TotalRevenue } from './models/TotalRevenue';

@@ -15,7 +15,7 @@ from pcapi.utils.date import format_into_utc_date
 ######################
 
 
-class ProductStockCreateBodyModel(BaseModel):
+class ThingStockCreateBodyModel(BaseModel):
     offer_id: int
     price: decimal.Decimal
 
@@ -30,7 +30,7 @@ class ProductStockCreateBodyModel(BaseModel):
         extra = "forbid"
 
 
-class ProductStockUpdateBodyModel(BaseModel):
+class ThingStockUpdateBodyModel(BaseModel):
     price: decimal.Decimal
     booking_limit_datetime: datetime | None
     quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)

@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ProductStockUpdateBodyModel = {
+export type ThingStockUpdateBodyModel = {
   bookingLimitDatetime?: string | null;
   price: number;
   quantity?: number | null;
