@@ -53,7 +53,7 @@ export const CollectiveDataForm = ({
 
   const initialValues = extractInitialValuesFromVenue(venue)
 
-  const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
   const studentOptions = isMarseilleEnabled
     ? studentLevels
     : studentLevels.filter(

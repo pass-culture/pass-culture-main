@@ -6,7 +6,7 @@ declare namespace Cypress {
      * @param {Feature[]} features - An array of `Feature` objects to be updated.
      * Each `Feature` object contains a name and an activation state (`isActive`).
      * @example
-     * cy.setFeatureFlags([ { name: 'WIP_ENABLE_MARSEILLE', isActive: true }])
+     * cy.setFeatureFlags([ { name: 'ENABLE_MARSEILLE', isActive: true }])
      */
     setFeatureFlags(features: Feature[]): Chainable
 

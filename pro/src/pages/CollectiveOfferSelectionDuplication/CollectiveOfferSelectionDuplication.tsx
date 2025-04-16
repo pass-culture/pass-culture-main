@@ -39,7 +39,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const [showAll, setShowAll] = useState(true)
   const notify = useNotification()
   const navigate = useNavigate()
-  const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
   const isCollectiveOaActive = useActiveFeature(
     'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
   )

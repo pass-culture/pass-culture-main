@@ -34,9 +34,9 @@ function renderCollectiveDataForm(options?: RenderWithProvidersOptions) {
 }
 
 describe('CollectiveDataForm', () => {
-  it('should show all student levels when WIP_ENABLE_MARSEILLE is on', async () => {
+  it('should show all student levels when ENABLE_MARSEILLE is on', async () => {
     const featureOverrides = {
-      features: ['WIP_ENABLE_MARSEILLE'],
+      features: ['ENABLE_MARSEILLE'],
     }
     renderCollectiveDataForm(featureOverrides)
     await userEvent.click(screen.getByLabelText('Public cible'))
@@ -45,7 +45,7 @@ describe('CollectiveDataForm', () => {
     ).toBeInTheDocument()
   })
 
-  it('should show student levels without Marseille options when WIP_ENABLE_MARSEILLE is off', async () => {
+  it('should show student levels without Marseille options when ENABLE_MARSEILLE is off', async () => {
     renderCollectiveDataForm()
     await userEvent.click(screen.getByLabelText('Public cible'))
     expect(

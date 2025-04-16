@@ -17,7 +17,7 @@ def validate_students(student_levels: list[str] | None) -> list[StudentLevels]:
             msg = f'Value is not a valid enumeration member; permitted: ["{permitted}"]'
             raise ValueError(msg)
 
-        if not FeatureToggle.WIP_ENABLE_MARSEILLE.is_active() and student_level in StudentLevels.primary_levels():
+        if not FeatureToggle.ENABLE_MARSEILLE.is_active() and student_level in StudentLevels.primary_levels():
             raise ValueError(f"Ce niveau ('{level}') n'est pas encore autorisé")
 
         output.append(level)
@@ -25,7 +25,7 @@ def validate_students(student_levels: list[str] | None) -> list[StudentLevels]:
 
 
 def _permitted_levels() -> str:
-    if FeatureToggle.WIP_ENABLE_MARSEILLE.is_active():
+    if FeatureToggle.ENABLE_MARSEILLE.is_active():
         return '", "'.join(StudentLevels.__members__.keys())
 
     restricted_levels = [level.name for level in StudentLevels if level not in StudentLevels.primary_levels()]

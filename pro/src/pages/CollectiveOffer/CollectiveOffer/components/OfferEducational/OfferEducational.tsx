@@ -84,7 +84,7 @@ export const OfferEducational = ({
     'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
   )
 
-  const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
   const { mutate } = useSWRConfig()
 
   const { lieu: venueId, requete: requestId } = queryParamsFromOfferer(location)

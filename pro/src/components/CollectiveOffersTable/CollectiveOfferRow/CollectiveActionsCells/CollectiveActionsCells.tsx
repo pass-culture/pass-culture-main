@@ -117,7 +117,7 @@ export const CollectiveActionsCells = ({
 
   const { mutate } = useSWRConfig()
 
-  const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
   const isCollectiveOaActive = useActiveFeature(
     'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
   )
