@@ -463,3 +463,22 @@ class PasswordLessLoginTokenTest:
             caplog.records[0].message
             == f"Mismatch between the payload of an authentic passwordless login token and the corresponding redis value. Token: {token}"
         )
+
+    @pytest.mark.settings(
+        PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file, PASSWORDLESS_LOGIN_PUBLIC_KEY=public_pem_file
+    )
+    @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
+    def test_send_passwordless_login_token_twice(self, mocked_uuid):
+        expected_jti = str(mocked_uuid())
+        expected_ttl = timedelta(hours=8)
+        expected_user_id = 1
+        token = token_tools.create_passwordless_login_token(expected_user_id, expected_ttl)
+
+        payload = token_tools.validate_passwordless_token(token)
+
+        assert payload["jti"] == expected_jti
+        assert payload["exp"] - payload["iat"] == 8 * 3600
+        assert payload["sub"] == str(expected_user_id)
+
+        with pytest.raises(InvalidToken):
+            payload = token_tools.validate_passwordless_token(token)

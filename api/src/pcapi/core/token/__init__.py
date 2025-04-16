@@ -475,8 +475,14 @@ def validate_passwordless_token(token: str) -> dict:
         pipeline.get(redis_key)
         pipeline.delete(redis_key)
         results = pipeline.execute()
-    redis_value = json.loads(results[0])
 
+    if not results[0]:
+        logger.error(
+            "Token doesn’t exist or was already used. Token: %s",
+            token,
+        )
+        raise users_exceptions.InvalidToken
+    redis_value = json.loads(results[0])
     # The below statement are purely defensive code.
     # We should ALWAYS have a perfect match between
     # the payload of the token and what has been stored in the redis queue
