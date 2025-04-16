@@ -513,7 +513,7 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
 
     paginated_users_offerers = sorted_users_offerers.paginate(
         page=int(form.data["page"]),
-        per_page=int(form.data["per_page"]),
+        per_page=int(form.data["limit"]),
     )
 
     form_url = partial(url_for, ".list_offerers_attachments_to_validate", **form.raw_data)

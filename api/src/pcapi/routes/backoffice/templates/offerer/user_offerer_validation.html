@@ -1,158 +1,131 @@
-{% from "components/forms.html" import build_filters_form with context %}
+{% extends "layouts/list.html" %}
+{% from "components/forms.html" import build_filters_form_ng with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{% extends "layouts/connected.html" %}
-{% block page %}
-  <div class="pt-3 px-5 table-container-user-offerer-validation"
-       data-toggle="filters"
-       data-toggle-id="user-offerer-validation">
-    <div class="d-flex justify-content-between">
-      <h1>Rattachements à valider</h1>
-    </div>
-    <div class="col-2">
-      <div class="py-2">
-        <button type="button"
-                class="btn btn-primary filters-toggle-button"
-                disabled>
-          <span class="spinner-border spinner-border-sm"
-                role="status"
-                aria-hidden="true"></span>
-          <span class="visually-hidden">Chargement...</span>
-        </button>
-      </div>
-    </div>
-    <div class="filters-container d-none">{{ build_filters_form(form, dst) }}</div>
-    <div>
-      {% if rows and rows.total > 0 %}
-        {% set has_validate_permission = has_permission("VALIDATE_OFFERER") %}
-        <div class="d-flex justify-content-between">
-          <p class="lead num-results">{{ rows.total }} résultat{{ rows.total | pluralize }}</p>
-          {% if has_validate_permission %}
-            <div class="btn-group btn-group-sm"
-                 data-toggle="pc-batch-confirm-btn-group"
-                 data-toggle-id="table-container-user-offerer-validation-btn-group"
-                 data-pc-table-multi-select-id="table-container-user-offerer-validation"
-                 data-input-ids-name="object_ids">
-              <button disabled
-                      type="button"
-                      class="btn btn-outline-primary"
-                      data-url="{{ url_for('backoffice_web.validation.batch_validate_user_offerer') }}"
-                      data-use-confirmation-modal="false">Valider</button>
-              <button disabled
-                      type="button"
-                      class="btn btn-outline-primary"
-                      data-use-confirmation-modal="true"
-                      data-modal-selector="#batch-pending-modal">Mettre en attente</button>
-              <button disabled
-                      type="button"
-                      class="btn btn-outline-primary"
-                      data-use-confirmation-modal="true"
-                      data-modal-selector="#batch-reject-modal">Rejeter</button>
-            </div>
-          {% endif %}
-          <div>{% include "components/search/pagination.html" %}</div>
-        </div>
-        <table class="table mb-4"
-               {% if has_validate_permission %}data-table-multi-select-id="table-container-user-offerer-validation"{% endif %}>
-          <thead>
-            <tr>
-              {% if has_validate_permission %}
-                <th scope="col">
-                  <input class="form-check-input"
-                         type="checkbox"
-                         name="pc-table-multi-select-check-all" />
-                </th>
-                <th scope="col"></th>
-              {% endif %}
-              <th scope="col">ID Compte pro</th>
-              <th scope="col">Email Compte pro</th>
-              <th scope="col">Nom Compte pro</th>
-              <th scope="col">État</th>
-              <th scope="col">Tags Entité juridique</th>
-              <th scope="col">
-                <a href="{{ date_created_sort_url }}"
-                   class="text-decoration-none"
-                   title="Changer pour un tri {{ 'décroissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'croissant' }}">
-                  Date de la demande
-                  <i class="bi bi-sort-{{ 'up' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'down' }}-alt"></i>
-                </a>
-              </th>
-              <th scope="col">Nom Entité juridique</th>
-              <th scope="col">Email Responsable</th>
-              <th scope="col">Dernier commentaire</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in rows.items %}
-              {% set user_offerer = item.UserOfferer %}
-              {% set offerer = user_offerer.offerer %}
-              <tr>
-                {% if has_validate_permission %}
-                  <td>
-                    <input type="checkbox"
-                           class="form-check-input"
-                           name="pc-table-multi-select-check-{{ offerer.id }}-{{ user_offerer.user.id }}"
-                           data-id="{{ user_offerer.id }}" />
-                  </td>
-                  <td>
-                    <div class="dropdown">
-                      <button type="button"
-                              data-bs-toggle="dropdown"
-                              aria-expanded="false"
-                              class="btn p-0">
-                        <i class="bi bi-three-dots-vertical"></i>
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li class="dropdown-item p-0">
-                          <form action="{{ url_for('backoffice_web.validation.validate_user_offerer', offerer_id=offerer.id, user_offerer_id=user_offerer.id) }}"
-                                name="{{ url_for('backoffice_web.validation.validate_user_offerer', offerer_id=offerer.id, user_offerer_id=user_offerer.id) | action_to_name }}"
-                                method="post">
-                            <button type="submit"
-                                    class="btn btn-sm d-block w-100 text-start px-3">Valider</button>
-                            {{ csrf_token }}
-                          </form>
-                        </li>
-                        <li class="dropdown-item p-0">
-                          <a class="btn btn-sm d-block w-100 text-start px-3"
-                             data-bs-toggle="modal"
-                             data-bs-target="#reject-modal-{{ user_offerer.id }}">Rejeter</a>
-                        </li>
-                        <li class="dropdown-item p-0">
-                          <a class="btn btn-sm d-block w-100 text-start px-3"
-                             data-bs-toggle="modal"
-                             data-bs-target="#pending-modal-{{ user_offerer.id }}">Mettre en attente</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                {% endif %}
-                <td>{{ user_offerer.user.id }}</td>
-                <td>{{ user_offerer.user.email | empty_string_if_null }}</td>
-                <td>{{ links.build_pro_user_name_to_details_link(user_offerer.user.id, user_offerer.user.full_name) }}</td>
-                <td>{{ user_offerer | format_user_offerer_status_badge }}</td>
-                <td>{{ item.tags | map(attribute="label") | format_as_badges }}</td>
-                <td>{{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
-                <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
-                <td>{{ item.creator_email | empty_string_if_null }}</td>
-                <td>{{ item.last_comment | empty_string_if_null | nl2br }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% if has_validate_permission %}
-          {% for item in rows.items %}
-            {% set user_offerer_id = item.UserOfferer.id %}
-            {{ build_lazy_modal(url_for("backoffice_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer_id) ,
-            "reject-modal-" + user_offerer_id|string) }}
-            {{ build_lazy_modal(url_for("backoffice_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer_id) ,
-            "pending-modal-" + user_offerer_id|string) }}
-          {% endfor %}
-          {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_user_offerer_form") , "batch-reject-modal", "true") }}
-          {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_user_offerer_pending_form") , "batch-pending-modal", "true") }}
-        {% endif %}
-      {% else %}
-        Aucun rattachement ne correspond à la requête
+{% set rows_count = rows.total %}
+{% set pagination = True %}
+{% set has_validate_permission = has_permission("VALIDATE_OFFERER") %}
+{% block title %}Rattachements à valider{% endblock %}
+{% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
+{% block table_header %}
+  {% if has_validate_permission %}
+    <th data-pc-column-name="Checkbox">
+      <input class="form-check-input fs-6"
+             type="checkbox"
+             name="pc-table-multi-select-check-all" />
+    </th>
+    <th>Actions</th>
+  {% endif %}
+  <th>ID Compte pro</th>
+  <th>Email Compte pro</th>
+  <th>Nom Compte pro</th>
+  <th>État</th>
+  <th>Tags Entité juridique</th>
+  <th>
+    <a href="{{ date_created_sort_url }}"
+       class="text-decoration-none"
+       title="Changer pour un tri {{ 'décroissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'croissant' }}">
+      Date de la demande
+      <i class="bi bi-sort-{{ 'up' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'down' }}-alt"></i>
+    </a>
+  </th>
+  <th>Nom Entité juridique</th>
+  <th>Email Responsable</th>
+  <th>Dernier commentaire</th>
+{% endblock %}
+{% block table_body %}
+  {% for item in rows.items %}
+    {% set user_offerer = item.UserOfferer %}
+    {% set offerer = user_offerer.offerer %}
+    <tr>
+      {% if has_validate_permission %}
+        <td>
+          <input type="checkbox"
+                 class="form-check-input"
+                 name="pc-table-multi-select-check-{{ offerer.id }}-{{ user_offerer.user.id }}"
+                 data-id="{{ user_offerer.id }}" />
+        </td>
+        <td class="text-center">
+          <div class="dropdown">
+            <button type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    class="btn p-0 btn-outline-primary-subtle-bg border-0 px-2 py-1">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <div class="btn btn-sm ms-3 px-3 fs-7 text-secondary">Actions</div>
+              <li class="dropdown-item p-0">
+                <form action="{{ url_for('backoffice_web.validation.validate_user_offerer', offerer_id=offerer.id, user_offerer_id=user_offerer.id) }}"
+                      name="{{ url_for('backoffice_web.validation.validate_user_offerer', offerer_id=offerer.id, user_offerer_id=user_offerer.id) | action_to_name }}"
+                      method="post">
+                  <button type="submit"
+                          class="btn btn-sm d-block w-100 text-start px-3">Valider</button>
+                  {{ csrf_token }}
+                </form>
+              </li>
+              <li class="dropdown-item p-0">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#reject-modal-{{ user_offerer.id }}">Rejeter</a>
+              </li>
+              <li class="dropdown-item p-0">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#pending-modal-{{ user_offerer.id }}">Mettre en attente</a>
+              </li>
+            </ul>
+          </div>
+        </td>
       {% endif %}
-    </div>
+      <td>{{ user_offerer.user.id }}</td>
+      <td>{{ user_offerer.user.email | empty_string_if_null }}</td>
+      <td>{{ links.build_pro_user_name_to_details_link(user_offerer.user.id, user_offerer.user.full_name) }}</td>
+      <td>{{ user_offerer | format_user_offerer_status_badge }}</td>
+      <td>{{ item.tags | map(attribute="label") | format_as_badges }}</td>
+      <td>{{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
+      <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
+      <td>{{ item.creator_email | empty_string_if_null }}</td>
+      <td>{{ item.last_comment | empty_string_if_null | nl2br }}</td>
+    </tr>
+  {% endfor %}
+{% endblock %}
+{% block multi_select_menu %}
+  <div class="counter-container text-nowrap">
+    <span class="counter">0</span> offre(s) collective(s) sélectionnée(s)
   </div>
-{% endblock page %}
+  <div data-toggle="pc-batch-confirm-btn-group"
+       data-toggle-id="table-container-user-offerer-validation-btn-group"
+       data-pc-table-multi-select-id="{{ table_name }}"
+       data-input-ids-name="object_ids"
+       class="d-flex">
+    <button disabled
+            type="button"
+            class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
+            data-url="{{ url_for('backoffice_web.validation.batch_validate_user_offerer') }}"
+            data-use-confirmation-modal="false">Valider</button>
+    <button disabled
+            type="button"
+            class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
+            data-use-confirmation-modal="true"
+            data-modal-selector="#batch-pending-modal">Mettre en attente</button>
+    <button disabled
+            type="button"
+            class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap"
+            data-use-confirmation-modal="true"
+            data-modal-selector="#batch-reject-modal">Rejeter</button>
+  </div>
+{% endblock %}
+{% block after_table %}
+  {% if has_validate_permission %}
+    {% for item in rows.items %}
+      {% set user_offerer_id = item.UserOfferer.id %}
+      {{ build_lazy_modal(url_for("backoffice_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer_id) ,
+      "reject-modal-" + user_offerer_id|string) }}
+      {{ build_lazy_modal(url_for("backoffice_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer_id) ,
+      "pending-modal-" + user_offerer_id|string) }}
+    {% endfor %}
+    {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_user_offerer_form") , "batch-reject-modal", "true") }}
+    {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_user_offerer_pending_form") , "batch-pending-modal", "true") }}
+  {% endif %}
+{% endblock %}
