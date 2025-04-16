@@ -18,7 +18,6 @@ import {
 } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
-import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeVisualArtIcon from 'icons/stroke-visual-art.svg'
 import { computeIndividualApiFilters } from 'pages/IndividualOffers/utils/computeIndividualApiFilters'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
@@ -41,7 +40,6 @@ export const HeadlineOfferImageDialogs = ({
   const isReplacingHeadlineOffer = !!headlineOffer?.id
 
   const [isImageUploaderOpen, setIsImageUploaderOpen] = useState(false)
-  const [isLastDialogOpen, setIsLastDialogOpen] = useState(false)
   const notify = useNotification()
   const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
     'WIP_COLLAPSED_MEMORIZED_FILTERS'
@@ -93,7 +91,14 @@ export const HeadlineOfferImageDialogs = ({
           revalidate: false,
         }
       )
-      setIsLastDialogOpen(true)
+
+      await upsertHeadlineOffer({
+        offerId: offer.id,
+        context: {
+          actionType: isReplacingHeadlineOffer ? 'replace' : 'add',
+          requiredImageUpload: true,
+        },
+      })
     } catch {
       notify.error(
         'Une erreur est survenue lors de la sauvegarde de votre image'
@@ -127,26 +132,6 @@ export const HeadlineOfferImageDialogs = ({
           onImageUpload={onImageUpload}
         />
       </DialogBuilder>
-      <ConfirmDialog
-        icon={strokeStarIcon}
-        cancelText="Annuler"
-        confirmText="Confirmer"
-        onCancel={() => {
-          setIsLastDialogOpen(false)
-        }}
-        onConfirm={async () => {
-          await upsertHeadlineOffer({
-            offerId: offer.id,
-            context: {
-              actionType: isReplacingHeadlineOffer ? 'replace' : 'add',
-              requiredImageUpload: true,
-            },
-          })
-          setIsLastDialogOpen(false)
-        }}
-        title="Votre offre va être mise à la une !"
-        open={isLastDialogOpen}
-      />
     </>
   )
 }
