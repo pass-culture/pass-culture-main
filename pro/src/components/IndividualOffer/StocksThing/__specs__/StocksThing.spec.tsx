@@ -201,8 +201,8 @@ describe('screens:StocksThing', () => {
   })
 
   it('should submit stock form when click on "Enregistrer et continuer"', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks_count: 0,
+    vi.spyOn(api, 'createProductStock').mockResolvedValue({
+      id: 12,
     })
     await renderStockThingScreen([], props, contextValue)
     const nextButton = screen.getByRole('button', {
@@ -212,15 +212,11 @@ describe('screens:StocksThing', () => {
     await userEvent.click(nextButton)
 
     await waitFor(() => {
-      expect(api.upsertStocks).toHaveBeenCalledWith({
-        offerId: offer.id,
-        stocks: [
-          {
-            bookingLimitDatetime: null,
-            price: 20,
-            quantity: null,
-          },
-        ],
+      expect(api.createProductStock).toHaveBeenCalledWith({
+          offerId: offer.id,
+          bookingLimitDatetime: null,
+          price: 20,
+          quantity: null,
       })
     })
     expect(screen.getByText('Next page')).toBeInTheDocument()
@@ -228,8 +224,8 @@ describe('screens:StocksThing', () => {
   })
 
   it('should submit stock form with duo informations when clicking on on "Enregistrer et continuer"', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks_count: 0,
+    vi.spyOn(api, 'createProductStock').mockResolvedValue({
+      id: 12,
     })
     await renderStockThingScreen([], props, contextValue)
     const nextButton = screen.getByRole('button', {
@@ -252,14 +248,18 @@ describe('screens:StocksThing', () => {
   })
 
   it('should not submit stock form when click on "Retour"', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks_count: 0,
+    vi.spyOn(api, 'createProductStock').mockResolvedValue({
+      id: 12,
+    })
+    vi.spyOn(api, 'updateProductStock').mockResolvedValue({
+      id: 12,
     })
 
     await renderStockThingScreen([], props, contextValue)
 
     await userEvent.click(screen.getByRole('button', { name: 'Retour' }))
-    expect(api.upsertStocks).not.toHaveBeenCalled()
+    expect(api.createProductStock).not.toHaveBeenCalled()
+    expect(api.updateProductStock).not.toHaveBeenCalled()
     expect(
       screen.queryByText('Brouillon sauvegardé dans la liste des offres')
     ).not.toBeInTheDocument()
@@ -267,7 +267,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should display api errors', async () => {
-    vi.spyOn(api, 'upsertStocks').mockRejectedValue(
+    vi.spyOn(api, 'createProductStock').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -299,7 +299,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should display error for virtual offer without url', async () => {
-    vi.spyOn(api, 'upsertStocks').mockRejectedValue({
+    vi.spyOn(api, 'createProductStock').mockRejectedValue({
       message: 'oups',
       name: 'ApiError',
       body: { url: 'broken virtual offer !' },
@@ -321,8 +321,8 @@ describe('screens:StocksThing', () => {
 
   describe('activation codes', () => {
     it('should submit activation codes and freeze quantity when a csv is provided', async () => {
-      vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-        stocks_count: 0,
+      vi.spyOn(api, 'createProductStock').mockResolvedValue({
+        id: 12,
       })
       props.offer = {
         ...offer,
@@ -376,24 +376,22 @@ describe('screens:StocksThing', () => {
       date.setUTCHours(22, 59, 59, 999)
       expect(expirationInput).toHaveValue(today)
       await userEvent.click(screen.getByText('Enregistrer et continuer'))
-      expect(api.upsertStocks).toHaveBeenCalledWith({
+      expect(api.createProductStock).toHaveBeenCalledWith({
         offerId: offer.id,
-        stocks: [
-          {
-            bookingLimitDatetime: null,
-            price: 14.01,
-            quantity: 5,
-            activationCodes: ['ABH', 'JHB', 'IOP', 'KLM', 'MLK'],
-            activationCodesExpirationDatetime:
-              serializeThingBookingLimitDatetime(date, '75'),
-          },
-        ],
+  
+        bookingLimitDatetime: null,
+        price: 14.01,
+        quantity: 5,
+        activationCodes: ['ABH', 'JHB', 'IOP', 'KLM', 'MLK'],
+        activationCodesExpirationDatetime:
+          serializeThingBookingLimitDatetime(date, '75'),
+
       })
     })
 
     it('should display an error when activation code file is incorrect', async () => {
-      vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-        stocks_count: 0,
+      vi.spyOn(api, 'createProductStock').mockResolvedValue({
+        id: 12,
       })
       props.offer = {
         ...offer,
@@ -502,8 +500,8 @@ describe('screens:StocksThing', () => {
   )
 
   it('should not block when going outside and form is not touched', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks_count: 0,
+    vi.spyOn(api, 'createProductStock').mockResolvedValue({
+      id: 12,
     })
 
     await renderStockThingScreen([], props, contextValue)
@@ -514,8 +512,8 @@ describe('screens:StocksThing', () => {
   })
 
   it('should be able to stay on stock form after click on "Rester sur la page"', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks_count: 0,
+    vi.spyOn(api, 'createProductStock').mockResolvedValue({
+      id: 12,
     })
 
     await renderStockThingScreen([], props, contextValue)
@@ -534,8 +532,8 @@ describe('screens:StocksThing', () => {
   })
 
   it('should be able to quit without submitting from RouteLeavingGuard', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks_count: 0,
+    vi.spyOn(api, 'createProductStock').mockResolvedValue({
+      id: 12,
     })
 
     await renderStockThingScreen([], props, contextValue)
@@ -552,7 +550,7 @@ describe('screens:StocksThing', () => {
     ).toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Quitter la page'))
-    expect(api.upsertStocks).toHaveBeenCalledTimes(0)
+    expect(api.createProductStock).not.toHaveBeenCalled()
 
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
   })
