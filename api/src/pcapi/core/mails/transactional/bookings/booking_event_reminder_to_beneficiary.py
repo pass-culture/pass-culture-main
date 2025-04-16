@@ -4,7 +4,6 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.bookings import common as bookings_common
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -36,11 +35,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
     formatted_event_beginning_date = get_date_formatted_for_email(event_beginning_date_in_tz)
     formatted_event_beginning_time = get_time_formatted_for_email(event_beginning_date_in_tz)
 
-    emailTemplate = (
-        TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY_WITH_METADATA
-        if FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY.is_active()
-        else TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY
-    )
+    emailTemplate = TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY
 
     return models.TransactionalEmailData(
         template=emailTemplate.value,
