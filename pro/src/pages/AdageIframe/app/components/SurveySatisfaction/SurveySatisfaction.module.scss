@@ -27,39 +27,11 @@
 .survey-title {
   @include fonts.title3;
 
-  color: var(--color-secondary-light);
+  color: var(--color-text-brand-primary);
 }
 
 .survey-description {
   @include fonts.body;
-}
-
-.survey-button {
-  background-color: var(--color-secondary-light);
-  border-color: var(--color-border-brand-primary);
-
-  &:hover,
-  &:focus {
-    background-color: var(--color-secondary-light);
-    border-color: var(--color-border-brand-primary);
-  }
-
-  &-secondary {
-    color: var(--color-secondary-light);
-    background-color: var(--color-background-default);
-    border-color: var(--color-border-brand-primary);
-
-    &:hover,
-    &:focus {
-      color: var(--color-white);
-      background-color: var(--color-secondary-light);
-      border-color: var(--color-border-brand-primary);
-
-      .button-icon {
-        fill: var(--color-white);
-      }
-    }
-  }
 }
 
 .survey-actions {

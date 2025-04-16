@@ -31,12 +31,12 @@
         cursor: pointer;
         padding: rem.torem(10px);
         color: var(--color-text-default);
-        border: solid rem.torem(1px) var(--color-grey-dark);
+        border: solid rem.torem(1px) var(--color-border-default);
         border-radius: rem.torem(10px);
 
         &:hover,
         &:focus {
-          outline: rem.torem(1px) solid var(--color-primary);
+          outline: rem.torem(1px) solid var(--color-border-brand-primary);
         }
 
         &-active {
@@ -49,7 +49,7 @@
             display: block;
             width: rem.torem(8px);
             height: rem.torem(8px);
-            background-color: var(--color-secondary-light);
+            background-color: var(--color-icon-brand-primary);
             border-radius: 50%;
             margin-right: rem.torem(8px);
           }

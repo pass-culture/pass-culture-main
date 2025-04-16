@@ -47,14 +47,9 @@
     }
 
     &.is-selected {
-      border-bottom: rem.torem(2px) solid var(--color-primary);
-      color: var(--color-primary);
+      border-bottom: rem.torem(2px) solid var(--color-border-brand-primary);
+      color: var(--color-text-brand-primary);
       text-decoration: none;
-
-      .tabs-tab-icon {
-        fill: var(--color-primary);
-        color: var(--color-primary);
-      }
     }
   }
 }

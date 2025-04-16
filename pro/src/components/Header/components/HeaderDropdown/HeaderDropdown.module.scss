@@ -166,7 +166,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
 .dropdown-button {
   $button-width: rem.torem(200px);
 
-  color: var(--color-secondary-light);
+  color: var(--color-text-brand-primary);
   background-color: var(--color-background-subtle);
   outline: none;
   border: none;
@@ -196,8 +196,8 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   }
 
   &[data-state="open"] {
-    background-color: var(--color-secondary-light);
-    color: var(--color-white);
+    background-color: var(--color-background-brand-primary);
+    color: var(--color-text-inverted);
   }
 
   &:hover {

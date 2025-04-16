@@ -14,7 +14,7 @@
     width: 100%;
     height: rem.torem(2px);
     border-radius: rem.torem(10px);
-    background: var(--color-secondary-light);
+    background: var(--color-border-brand-primary);
 
     &:first-of-type {
       width: rem.torem(24px);
@@ -29,7 +29,7 @@
   &-title {
     @include fonts.body-accent-xs;
 
-    color: var(--color-secondary-light);
+    color: var(--color-text-brand-primary);
     display: flex;
     align-items: center;
     padding: 0 rem.torem(8px);
@@ -40,6 +40,7 @@
       margin-right: rem.torem(8px);
       width: rem.torem(22px);
       height: rem.torem(26px);
+      color: var(--color-icon-brand-primary);
     }
   }
 

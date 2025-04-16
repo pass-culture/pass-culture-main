@@ -60,11 +60,7 @@ $connect-as-header-height: rem.torem(52px);
       justify-content: center;
       width: 100%;
       min-height: rem.torem(120px);
-      background-image: linear-gradient(
-        97deg,
-        var(--color-primary),
-        var(--color-secondary)
-      );
+      background: var(--color-background-locked-brand-primary);
 
       @media screen and (min-width: size.$tablet) {
         min-width: rem.torem(202px);

@@ -1,12 +1,8 @@
 @use "styles/mixins/_rem.scss" as rem;
 
-.button {
-  display: inline-block;
-  width: fit-content;
-}
-
-.spinner {
-  margin-top: rem.torem(16px);
+.container {
+  width: 100%;
+  padding: rem.torem(32px) 0;
 }
 
 .pagination {

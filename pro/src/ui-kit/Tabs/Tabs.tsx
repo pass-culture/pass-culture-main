@@ -2,7 +2,6 @@ import * as TabsPrimitive from '@radix-ui/react-tabs'
 import cn from 'classnames'
 import { Link } from 'react-router-dom'
 
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import styles from './Tabs.module.scss'
@@ -23,10 +22,6 @@ export interface Tab {
    * The URL for the tab, if applicable. Used for navigation.
    */
   url?: string
-  /**
-   * The icon to display alongside the tab label.
-   */
-  icon?: string
   /**
    * A flag to display a "new" tag next to the tab.
    */
@@ -55,8 +50,6 @@ interface TabsProps {
   className?: string
 }
 
-const NAV_ITEM_ICON_SIZE = '24'
-
 /**
  * The Tabs component is used to render a series of tabbed navigation links.
  * It supports icons, "new" indicators, and custom navigation URLs.
@@ -74,7 +67,6 @@ const NAV_ITEM_ICON_SIZE = '24'
  *     key: 'home',
  *     label: 'Home',
  *     url: '/home',
- *     icon: '/icons/home.svg',
  *     isNew: true,
  *   }, {
  *     key: 'profile',
@@ -100,7 +92,7 @@ export const Tabs = ({
       value={selectedKey}
     >
       <TabsPrimitive.List className={styles['tabs']}>
-        {tabs.map(({ key, label, url, icon, isNew = false }) => (
+        {tabs.map(({ key, label, url, isNew = false }) => (
           <TabsPrimitive.Trigger
             className={cn(styles['tabs-tab'], {
               [styles['is-selected']]: selectedKey === key,
@@ -110,14 +102,6 @@ export const Tabs = ({
             asChild
           >
             <Link to={url ?? '#'} className={styles['tabs-tab-link']}>
-              {icon && (
-                <SvgIcon
-                  src={icon}
-                  alt=""
-                  className={styles['tabs-tab-icon']}
-                  width={NAV_ITEM_ICON_SIZE}
-                />
-              )}
               <span className={styles['tabs-tab-label']}>{label}</span>
               {isNew && (
                 <Tag

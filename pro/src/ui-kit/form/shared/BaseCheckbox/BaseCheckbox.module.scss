@@ -57,7 +57,7 @@
 
     &:checked,
     &:indeterminate {
-      background-color: var(--color-secondary-light);
+      background-color: var(--color-background-brand-primary);
       border-color: var(--color-border-brand-primary);
 
       &::after {
@@ -145,7 +145,7 @@
 
   &.is-checked {
     background-color: var(--color-background-info);
-    border-color: var(--color-secondary);
+    border-color: var(--color-border-brand-primary);
   }
 
   &.is-disabled .base-checkbox-input:checked {

@@ -57,7 +57,7 @@ $number-size: rem.torem(30px);
         .number {
           .inner {
             border-color: var(--color-border-brand-primary);
-            color: var(--color-secondary-light);
+            color: var(--color-text-brand-primary);
           }
         }
       }
@@ -80,7 +80,7 @@ $number-size: rem.torem(30px);
 
     &.active {
       .step {
-        color: var(--color-secondary-light);
+        color: var(--color-text-brand-primary);
 
         .label {
           text-decoration: underline;
@@ -89,8 +89,8 @@ $number-size: rem.torem(30px);
         .number {
           .inner {
             border-color: var(--color-border-brand-primary);
-            background-color: var(--color-secondary-light);
-            color: var(--color-white);
+            background-color: var(--color-background-brand-primary);
+            color: var(--color-text-inverted);
             box-shadow: none;
           }
         }
@@ -151,7 +151,7 @@ $number-size: rem.torem(30px);
 
         &.active {
           &::after {
-            background-color: var(--color-secondary-light);
+            background-color: var(--color-border-brand-primary);
           }
         }
       }

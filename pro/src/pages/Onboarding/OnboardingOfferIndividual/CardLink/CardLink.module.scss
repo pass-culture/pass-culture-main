@@ -1,11 +1,12 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_outline.scss" as outline;
 
 $cardlink-max-width: rem.torem(565px);
 
 .cardlink {
-  border: rem.torem(1px) solid var(--color-grey-dark);
+  border: rem.torem(1px) solid var(--color-border-default);
   border-radius: rem.torem(8px);
   position: relative;
   max-width: $cardlink-max-width;
@@ -27,7 +28,7 @@ $cardlink-max-width: rem.torem(565px);
   &-icon {
     width: rem.torem(24px);
     height: rem.torem(24px);
-    color: var(--color-secondary-light);
+    color: var(--color-icon-brand-primary);
     margin-right: rem.torem(18px);
   }
 
@@ -59,25 +60,23 @@ $cardlink-max-width: rem.torem(565px);
 
   // Other states
   &:hover {
-    border-color: var(--color-secondary-lighter);
+    border-color: var(--color-border-brand-primary);
     background-color: var(--color-background-info);
     cursor: pointer;
   }
 
   &:focus-within {
-    border-color: var(--color-grey-dark);
-    outline: rem.torem(2px) solid var(--color-grey-dark);
+    @include outline.focus-outline;
   }
 
   &:active {
-    border-color: var(--color-secondary-lighter);
     outline: none;
     background-color: var(--color-background-info);
 
     .cardlink-icon,
     .cardlink-link,
     .cardlink-description {
-      color: var(--color-secondary-light);
+      color: var(--color-text-brand-primary);
     }
   }
 

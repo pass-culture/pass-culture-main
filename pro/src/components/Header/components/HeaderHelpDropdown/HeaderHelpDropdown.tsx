@@ -16,7 +16,6 @@ export const HeaderHelpDropdown = () => {
       <DropdownMenu.Trigger asChild>
         <Button
           variant={ButtonVariant.QUATERNARY}
-          className={styles['dropdown-button']}
           icon={fullDownIcon}
           iconPosition={IconPositionEnum.RIGHT}
         >

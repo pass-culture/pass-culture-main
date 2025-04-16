@@ -95,7 +95,7 @@
     margin-left: rem.torem(16px);
 
     &-icon {
-      color: var(--color-secondary-light);
+      color: var(--color-icon-brand-primary);
       vertical-align: middle;
     }
   }
@@ -200,23 +200,6 @@
     width: rem.torem(270px);
     margin-left: 0;
     margin-top: 0;
-  }
-}
-
-.dropdown-button {
-  cursor: pointer;
-  outline: none;
-  border: none;
-  background-color: var(--color-background-default);
-  color: var(--color-text-default);
-  height: rem.torem(32px);
-
-  &[data-state="open"] {
-    color: var(--color-secondary-light);
-  }
-
-  &-hide {
-    display: none;
   }
 }
 
