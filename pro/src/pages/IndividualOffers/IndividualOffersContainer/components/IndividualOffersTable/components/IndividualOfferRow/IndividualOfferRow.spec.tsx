@@ -350,16 +350,13 @@ describe('IndividualOfferRow', () => {
 
         await userEvent.click(screen.getByText('Enregistrer'))
         expect(api.createThumbnail).toHaveBeenCalled()
-
-        // dialog: last step
-        expect(
-          screen.getByText('Votre offre va être mise à la une !')
-        ).toBeInTheDocument()
-
-        await userEvent.click(screen.getByText('Confirmer'))
         expect(api.upsertHeadlineOffer).toHaveBeenCalledWith({
           offerId: offer.id,
         })
+
+        expect(
+          screen.getByText('Votre offre a été mise à la une !')
+        ).toBeInTheDocument()
       })
 
       it('should notify when img upload fails', async () => {
