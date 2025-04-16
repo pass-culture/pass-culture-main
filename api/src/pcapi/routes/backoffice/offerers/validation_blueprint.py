@@ -60,7 +60,6 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         return render_template("offerer/validation.html", rows=[], form=form, stats=stats), 400
-
     # new and pending attachments by default
     if not form.status.data:
         form.status.data = [ValidationStatus.NEW.value]
@@ -83,7 +82,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
 
     paginated_offerers = sorted_offerers.paginate(
         page=int(form.data["page"]),
-        per_page=int(form.data["per_page"]),
+        per_page=int(form.data["limit"]),
     )
 
     form_url = partial(url_for, ".list_offerers_to_validate", **form.raw_data)
@@ -96,7 +95,6 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
     form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
 
     autocomplete.prefill_bo_users_choices(form.instructors)
-
     return render_template(
         "offerer/validation.html",
         rows=paginated_offerers,

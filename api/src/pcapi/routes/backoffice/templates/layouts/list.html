@@ -13,16 +13,22 @@
       {% block search_block %}{% endblock %}
     </div>
     <div class="vstack gap-4">
+      {% block before_table %}{% endblock %}
       {% if rows_count %}
         <div class="d-flex justify-content-between mt-5">
           <p class="num-results hstack text-secondary my-auto gap-2">
             {{ rows_count }}
-            résultat{{ rows_count | pluralize }} affiché{{ rows_count | pluralize }}<i class="bi bi-info-circle"
+            résultat{{ rows_count | pluralize }}
+            {% if not pagination %}
+              affiché{{ rows_count | pluralize }}<i class="bi bi-info-circle"
    data-bs-toggle="tooltip"
    data-bs-placement="top"
    data-bs-title="Pour afficher davantage de résultats, changer le filtre de résultats maximum dans la barre de recherche."></i>
+            {% endif %}
           </p>
-          {% block before_table %}{% endblock %}
+          {% if pagination %}
+            {% include "components/search/pagination.html" %}
+          {% endif %}
           <div id="{{ table_name }}-menu"
                class="me-4"></div>
         </div>
@@ -39,6 +45,9 @@
             {% block table_body %}{% endblock %}
           </tbody>
         </table>
+        {% if pagination %}
+          <div class="w-100 d-flex justify-content-center">{% include "components/search/pagination.html" %}</div>
+        {% endif %}
       {% endif %}
       <div>
         <div data-table-multiselect-menu-for="{{ table_name }}"

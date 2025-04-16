@@ -1,11 +1,12 @@
+{% extends "layouts/list.html" %}
 {% from "components/offerer_validation/extra_row.html" import build_offerer_validation_toggle_extra_row_button with context %}
 {% from "components/offerer_validation/extra_row.html" import build_offerer_validation_extra_row with context %}
-{% from "components/forms.html" import build_filters_form with context %}
+{% from "components/forms.html" import build_filters_form_ng with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% macro stats_card(value, text_one, text_many) %}
   <div class="col-3 p-2">
-    <div class="card shadow">
+    <div class="card">
       <div class="card-body">
         <div class="fs-2">{{ value }}</div>
         <div class="text-muted">{{ value | pluralize(text_one, text_many) }}</div>
@@ -13,203 +14,177 @@
     </div>
   </div>
 {% endmacro %}
-{% extends "layouts/connected.html" %}
-{% block page %}
-  <div class="pt-3 px-5 table-container-offerer-validation"
-       data-toggle="filters"
-       data-toggle-id="offerer-validation">
-    <h1>Entités juridiques à valider</h1>
-    <div class="col-2">
-      <div class="py-2">
-        <button type="submit"
-                class="btn btn-primary filters-toggle-button"
-                disabled>
-          <span class="spinner-border spinner-border-sm"
-                role="status"
-                aria-hidden="true"></span>
-          <span class="visually-hidden">Chargement...</span>
-        </button>
-      </div>
-    </div>
-    <div class="d-none filters-container">
-      <div class="row px-1">
-        {{ stats_card(stats["NEW"], "nouvelle entité juridique", "nouvelles entités juridiques") }}
-        {{ stats_card(stats["PENDING"], "entité juridique en attente", "entités juridiques en attente") }}
-        {{ stats_card(stats["VALIDATED"], "entité juridique validée", "entités juridiques validées") }}
-        {{ stats_card(stats["REJECTED"], "entité juridique rejetée", "entités juridiques rejetées") }}
-      </div>
-      {{ build_filters_form(form, dst) }}
-    </div>
-    <div>
-      {% if rows and rows.total > 0 %}
-        {% set has_validate_permission = has_permission("VALIDATE_OFFERER") %}
-        {% set has_read_ae_permission = has_validate_permission or has_permission("READ_PRO_AE_INFO") %}
-        <div class="d-flex justify-content-between">
-          <p class="lead num-results">{{ rows.total }} résultat{{ rows.total | pluralize }}</p>
+{% set rows_count = rows.total %}
+{% set pagination = True %}
+{% set has_validate_permission = has_permission("VALIDATE_OFFERER") %}
+{% set has_read_ae_permission = has_validate_permission or has_permission("READ_PRO_AE_INFO") %}
+{% block title %}Entités juridiques à valider{% endblock %}
+{% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
+{% block before_table %}
+  <div class="row px-1 pt-4">
+    {{ stats_card(stats["NEW"], "nouvelle entité juridique", "nouvelles entités juridiques") }}
+    {{ stats_card(stats["PENDING"], "entité juridique en attente", "entités juridiques en attente") }}
+    {{ stats_card(stats["VALIDATED"], "entité juridique validée", "entités juridiques validées") }}
+    {{ stats_card(stats["REJECTED"], "entité juridique rejetée", "entités juridiques rejetées") }}
+  </div>
+{% endblock %}
+{% block table_header %}
+  {% if has_validate_permission %}
+    <th data-pc-column-name="Checkbox">
+      <input class="form-check-input fs-6"
+             type="checkbox"
+             name="pc-table-multi-select-check-all" />
+    </th>
+  {% endif %}
+  <th>Actions</th>
+  <th>ID</th>
+  <th>Nom</th>
+  <th>État</th>
+  {% if has_validate_permission %}<th>Top Acteur</th>{% endif %}
+  <th>Tags</th>
+  <th>
+    <a href="{{ date_created_sort_url }}"
+       class="text-decoration-none"
+       title="Changer pour un tri {{ 'décroissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'croissant' }}">
+      Date de la demande
+      <i class="bi bi-sort-{{ 'up' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'down' }}-alt"></i>
+    </a>
+  </th>
+  <th>Documents reçus</th>
+  <th>Dernier commentaire</th>
+  <th>SIREN</th>
+  <th>Email</th>
+  <th>Responsable</th>
+  <th>Ville</th>
+{% endblock table_header %}
+{% block table_body %}
+  {% for item in rows.items %}
+    {% set offerer = item.Offerer %}
+    <tr>
+      {% if has_validate_permission %}
+        <td>
+          <input type="checkbox"
+                 class="form-check-input"
+                 name="pc-table-multi-select-check-{{ offerer.id }}"
+                 data-id="{{ offerer.id }}" />
+        </td>
+      {% endif %}
+      <td>
+        <div class="d-flex">
           {% if has_validate_permission %}
-            <div class="btn-group btn-group-sm"
-                 data-toggle="pc-batch-confirm-btn-group"
-                 data-toggle-id="table-container-offerer-validation-btn-group"
-                 data-pc-table-multi-select-id="table-container-offerer-validation"
-                 data-input-ids-name="object_ids">
-              <button disabled
-                      type="button"
-                      class="btn btn-outline-primary"
-                      data-use-confirmation-modal="true"
-                      data-modal-selector="#batch-validate-modal">Valider</button>
-              <button disabled
-                      type="button"
-                      class="btn btn-outline-primary"
-                      data-use-confirmation-modal="true"
-                      data-modal-selector="#batch-pending-modal">Mettre en attente</button>
-              <button disabled
-                      type="button"
-                      class="btn btn-outline-primary"
-                      data-use-confirmation-modal="true"
-                      data-modal-selector="#batch-reject-modal">Rejeter</button>
+            <div class="dropdown">
+              <button type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      class="btn p-0 btn-outline-primary-subtle-bg border-0 px-2 py-1">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <div class="btn btn-sm ms-3 px-3 fs-7 text-secondary">Actions</div>
+                <li class="dropdown-item p-0">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-bs-target="#validate-modal-{{ offerer.id }}">Valider</a>
+                </li>
+                <li class="dropdown-item p-0">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-bs-target="#reject-modal-{{ offerer.id }}">Rejeter</a>
+                </li>
+                <li class="dropdown-item p-0">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-bs-target="#pending-modal-{{ offerer.id }}">Mettre en attente</a>
+                </li>
+              </ul>
             </div>
           {% endif %}
-          <div>{% include "components/search/pagination.html" %}</div>
+          {{ build_offerer_validation_toggle_extra_row_button(offerer.id, item.dms_venues) }}
         </div>
-        <table class="table mb-4"
-               {% if has_validate_permission %}data-table-multi-select-id="table-container-offerer-validation"{% endif %}>
-          <thead>
-            <tr>
-              {% if has_validate_permission %}
-                <th scope="col">
-                  <input class="form-check-input"
-                         type="checkbox"
-                         name="pc-table-multi-select-check-all" />
-                </th>
-              {% endif %}
-              <th scope="col"></th>
-              <th scope="col">ID</th>
-              <th scope="col">Nom</th>
-              <th scope="col">État</th>
-              {% if has_validate_permission %}<th scope="col">Top Acteur</th>{% endif %}
-              <th scope="col">Tags</th>
-              <th scope="col">
-                <a href="{{ date_created_sort_url }}"
-                   class="text-decoration-none"
-                   title="Changer pour un tri {{ 'décroissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'croissant' }}">
-                  Date de la demande
-                  <i class="bi bi-sort-{{ 'up' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'down' }}-alt"></i>
-                </a>
-              </th>
-              <th scope="col">Documents reçus</th>
-              <th scope="col">Dernier commentaire</th>
-              <th scope="col">SIREN</th>
-              <th scope="col">Email</th>
-              <th scope="col">Responsable</th>
-              <th scope="col">Ville</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in rows.items %}
-              {% set offerer = item.Offerer %}
-              <tr>
-                {% if has_validate_permission %}
-                  <td>
-                    <input type="checkbox"
-                           class="form-check-input"
-                           name="pc-table-multi-select-check-{{ offerer.id }}"
-                           data-id="{{ offerer.id }}" />
-                  </td>
-                {% endif %}
-                <td>
-                  <div class="d-flex">
-                    {% if has_validate_permission %}
-                      <div class="dropdown">
-                        <button type="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                                class="btn p-0">
-                          <i class="bi bi-three-dots-vertical"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li class="dropdown-item p-0">
-                            <a class="btn btn-sm d-block w-100 text-start px-3"
-                               data-bs-toggle="modal"
-                               data-bs-target="#validate-modal-{{ offerer.id }}">Valider</a>
-                          </li>
-                          <li class="dropdown-item p-0">
-                            <a class="btn btn-sm d-block w-100 text-start px-3"
-                               data-bs-toggle="modal"
-                               data-bs-target="#reject-modal-{{ offerer.id }}">Rejeter</a>
-                          </li>
-                          <li class="dropdown-item p-0">
-                            <a class="btn btn-sm d-block w-100 text-start px-3"
-                               data-bs-toggle="modal"
-                               data-bs-target="#pending-modal-{{ offerer.id }}">Mettre en attente</a>
-                          </li>
-                        </ul>
-                      </div>
-                    {% endif %}
-                    {{ build_offerer_validation_toggle_extra_row_button(offerer.id, item.dms_venues) }}
-                  </div>
-                </td>
-                <td>{{ offerer.id }}</td>
-                <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
-                <td>{{ offerer | format_offerer_status_badge }}</td>
-                {% if has_validate_permission %}
-                  <td>
-                    {% set top_actor_checked = "top-acteur" in item.tags | map(attribute="name") %}
-                    <div class="form-check form-switch">
-                      <form action="{{ url_for('backoffice_web.validation.toggle_top_actor', offerer_id=offerer.id) }}"
-                            name="{{ url_for('backoffice_web.validation.toggle_top_actor', offerer_id=offerer.id) | action_to_name }}"
-                            method="post">
-                        {{ csrf_token }}
-                        <input class="form-check-input"
-                               type="checkbox"
-                               role="switch"
-                               name="is_top_actor"
-                               id="top-switch-{{ offerer.id }}"
-                               aria-label="{{ top_actor_checked | format_bool }}"
-                               onChange="this.form.submit()"
-                               {{ "checked" if top_actor_checked else "" }} />
-                      </form>
-                    </div>
-                  </td>
-                {% endif %}
-                <td>{{ item.tags | map(attribute="label") | format_as_badges }}</td>
-                <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
-                <td>
-                  {% if offerer.individualSubscription and offerer.individualSubscription.isEmailSent %}
-                    {% if has_read_ae_permission %}
-                      <a href="{{ url_for('backoffice_web.offerer.get', offerer_id=offerer.id, active_tab='subscription') }}"
-                         title="Parcours auto-entrepreneur">
-                      {% endif %}
-                      {{ (offerer.individualSubscription.isCriminalRecordReceived and offerer.individualSubscription.isExperienceReceived) | format_bool_badge }}
-                      {% if has_read_ae_permission %}</a>{% endif %}
-                  {% endif %}
-                </td>
-                <td>{{ item.last_comment | empty_string_if_null | nl2br }}</td>
-                <td>{{ links.build_siren_to_external_link(offerer) }}</td>
-                <td>{{ (item.creator_email) | empty_string_if_null }}</td>
-                <td>{{ links.build_pro_user_name_to_details_link(item.creator_id, item.creator_name) }}</td>
-                <td>{{ offerer.city | empty_string_if_null }}</td>
-              </tr>
-              {{ build_offerer_validation_extra_row(offerer.id, item.dms_venues) }}
-            {% endfor %}
-          </tbody>
-        </table>
-        {% if has_validate_permission %}
-          {% for item in rows.items %}
-            {% set offerer = item.Offerer %}
-            {{ build_lazy_modal(url_for("backoffice_web.validation.get_validate_offerer_form", offerer_id=offerer.id) ,
-            "validate-modal-" + offerer.id|string) }}
-            {{ build_lazy_modal(url_for("backoffice_web.validation.get_reject_offerer_form", offerer_id=offerer.id) ,
-            "reject-modal-" + offerer.id|string) }}
-            {{ build_lazy_modal(url_for("backoffice_web.validation.get_offerer_pending_form", offerer_id=offerer.id) ,
-            "pending-modal-" + offerer.id|string) }}
-          {% endfor %}
-          {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_validate_offerer_form") , "batch-validate-modal", "true") }}
-          {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_offerer_form") , "batch-reject-modal", "true") }}
-          {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_offerer_pending_form") , "batch-pending-modal", "true") }}
-        {% endif %}
-      {% else %}
-        Aucune entité juridique ne correspond à la requête
+      </td>
+      <td>{{ offerer.id }}</td>
+      <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
+      <td>{{ offerer | format_offerer_status_badge }}</td>
+      {% if has_validate_permission %}
+        <td>
+          {% set top_actor_checked = "top-acteur" in item.tags | map(attribute="name") %}
+          <div class="form-check form-switch">
+            <form action="{{ url_for('backoffice_web.validation.toggle_top_actor', offerer_id=offerer.id) }}"
+                  name="{{ url_for('backoffice_web.validation.toggle_top_actor', offerer_id=offerer.id) | action_to_name }}"
+                  method="post">
+              {{ csrf_token }}
+              <input class="form-check-input"
+                     type="checkbox"
+                     role="switch"
+                     name="is_top_actor"
+                     id="top-switch-{{ offerer.id }}"
+                     aria-label="{{ top_actor_checked | format_bool }}"
+                     onChange="this.form.submit()"
+                     {{ "checked" if top_actor_checked else "" }} />
+            </form>
+          </div>
+        </td>
       {% endif %}
-    </div>
+      <td>{{ item.tags | map(attribute="label") | format_as_badges }}</td>
+      <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
+      <td>
+        {% if offerer.individualSubscription and offerer.individualSubscription.isEmailSent %}
+          {% if has_read_ae_permission %}
+            <a href="{{ url_for('backoffice_web.offerer.get', offerer_id=offerer.id, active_tab='subscription') }}"
+               title="Parcours auto-entrepreneur">
+            {% endif %}
+            {{ (offerer.individualSubscription.isCriminalRecordReceived and offerer.individualSubscription.isExperienceReceived) | format_bool_badge }}
+            {% if has_read_ae_permission %}</a>{% endif %}
+        {% endif %}
+      </td>
+      <td>{{ item.last_comment | empty_string_if_null | nl2br }}</td>
+      <td>{{ links.build_siren_to_external_link(offerer) }}</td>
+      <td>{{ (item.creator_email) | empty_string_if_null }}</td>
+      <td>{{ links.build_pro_user_name_to_details_link(item.creator_id, item.creator_name) }}</td>
+      <td>{{ offerer.city | empty_string_if_null }}</td>
+    </tr>
+    {{ build_offerer_validation_extra_row(offerer.id, item.dms_venues) }}
+  {% endfor %}
+{% endblock %}
+{% block multi_select_menu %}
+  <div class="counter-container text-nowrap">
+    <span class="counter">0</span> entité(s) juridique(s) à valider sélectionnée(s)
   </div>
-{% endblock page %}
+  <div data-toggle="pc-batch-confirm-btn-group"
+       data-toggle-id="table-container-offerer-validation-btn-group"
+       data-pc-table-multi-select-id="{{ table_name }}"
+       data-input-ids-name="object_ids"
+       class="d-flex">
+    <button disabled
+            type="button"
+            class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
+            data-modal-selector="#batch-validate-modal"
+            data-use-confirmation-modal="true">Valider</button>
+    <button disabled
+            type="button"
+            class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
+            data-use-confirmation-modal="true"
+            data-modal-selector="#batch-pending-modal">Mettre en attente</button>
+    <button disabled
+            type="button"
+            class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap"
+            data-use-confirmation-modal="true"
+            data-modal-selector="#batch-reject-modal">Rejeter</button>
+  </div>
+{% endblock %}
+{% block after_table %}
+  {% if has_validate_permission %}
+    {% for item in rows.items %}
+      {% set offerer = item.Offerer %}
+      {{ build_lazy_modal(url_for("backoffice_web.validation.get_validate_offerer_form", offerer_id=offerer.id) ,
+      "validate-modal-" + offerer.id|string) }}
+      {{ build_lazy_modal(url_for("backoffice_web.validation.get_reject_offerer_form", offerer_id=offerer.id) ,
+      "reject-modal-" + offerer.id|string) }}
+      {{ build_lazy_modal(url_for("backoffice_web.validation.get_offerer_pending_form", offerer_id=offerer.id) ,
+      "pending-modal-" + offerer.id|string) }}
+    {% endfor %}
+    {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_validate_offerer_form") , "batch-validate-modal", "true") }}
+    {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_offerer_form") , "batch-reject-modal", "true") }}
+    {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_offerer_pending_form") , "batch-pending-modal", "true") }}
+  {% endif %}
+{% endblock %}

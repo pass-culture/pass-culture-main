@@ -59,6 +59,9 @@ class PcTableMultiSelect extends PcAddOn {
     this.$tables.forEach(($table) => {
       const rowsIds = new Set([])
       const { tableMultiSelectId } = $table.dataset
+      if(!$table.querySelector(PcTableMultiSelect.CHECKBOX_ALL_SELECTOR)){
+        return
+      }
       $table.querySelector(PcTableMultiSelect.CHECKBOX_ALL_SELECTOR).dataset.tableMultiSelectId = tableMultiSelectId
       $table.querySelectorAll(PcTableMultiSelect.CHECKBOXES_SELECTOR).forEach(($checkbox) => {
         $checkbox.dataset.tableMultiSelectId = tableMultiSelectId

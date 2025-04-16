@@ -4,7 +4,6 @@
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% from "components/connect_as.html" import build_connect_as_link %}
-{{ build_connect_as_link(connect_as[venue.id], (public_name or venue.name) , "link-primary") }}
 {% set rows_count = rows|length %}
 {% block title %}Offres collectives vitrine{% endblock %}
 {% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
@@ -52,7 +51,7 @@
             <button type="button"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
-                    class="btn p-0">
+                    class="btn p-0 btn-outline-primary-subtle-bg border-0 px-2 py-1">
               <i class="bi bi-three-dots-vertical"></i>
             </button>
             <ul class="dropdown-menu">

@@ -186,3 +186,9 @@ $border-color:                #cbcdd2;
 $modal-content-border-radius:       var(--#{$prefix}border-radius-sm);
 $modal-footer-border-width:         0;
 // scss-docs-end modal-variables
+
+// scss-doc-start pagination
+$pagination-active-color:           var(--#{$prefix}link-color);
+$pagination-active-bg:              $primary-bg-subtle;
+$pagination-active-border-color:    var(--#{$prefix}pagination-border-color);
+// scss-doc-start pagination
