@@ -155,6 +155,7 @@ class FeatureToggle(enum.Enum):
     WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY = (
         "Autoriser l'ajout de nouvelle structure seulement pour les collectivités"
     )
+    WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY = "Autoriser le rattachement seulement pour les collectivités"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -229,6 +230,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
     FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST,
     FeatureToggle.WIP_IS_OPEN_TO_PUBLIC,
+    FeatureToggle.WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
     FeatureToggle.WIP_UBBLE_V2,
     # Please keep alphabetic order

@@ -51,6 +51,7 @@ import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import constants as offerers_constants
+from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
@@ -994,6 +995,13 @@ def create_offerer(
         # in this case it is passed to NEW if the offerer is not rejected
         user_offerer = offerers_models.UserOfferer.query.filter_by(userId=user.id, offererId=offerer.id).one_or_none()
         if not user_offerer:
+            ape_code = sirene.get_siren(offerer_informations.siren, raise_if_non_public=False).ape_code
+            if (
+                FeatureToggle.WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY
+                and ape_code
+                and not APE_TAG_MAPPING.get(ape_code, False)
+            ):
+                raise offerers_exceptions.NotACollectivity()
             user_offerer = models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
             db.session.add(user_offerer)
             db.session.flush()
