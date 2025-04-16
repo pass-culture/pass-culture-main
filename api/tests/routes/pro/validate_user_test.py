@@ -239,3 +239,44 @@ class Returns400Test:
         user = db.session.query(users_models.User).filter_by(email="pro@example.com").one()
         assert user.email == "pro@example.com"
         assert user.isEmailValidated is False
+
+    @pytest.mark.usefixtures("db_session")
+    @pytest.mark.usefixtures("rsa_keys")
+    @pytest.mark.features(WIP_2025_SIGN_UP=True)
+    @mock.patch("pcapi.core.mails.transactional.send_signup_email_confirmation_to_pro")
+    @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
+    def test_already_used_token(
+        self,
+        mocked_uuid,
+        mocked_send_signup_email,
+        client,
+        rsa_keys,
+        settings,
+    ):
+        private_key_pem_file, public_key_pem_file = rsa_keys
+        settings.PASSWORDLESS_LOGIN_PRIVATE_KEY = private_key_pem_file
+        settings.PASSWORDLESS_LOGIN_PUBLIC_KEY = public_key_pem_file
+        user_data = {
+            "email": "pro@example.com",
+            "firstName": "Toto",
+            "lastName": "Pro",
+            "password": "__v4l1d_P455sw0rd__",
+            "contactOk": False,
+            "token": "token",
+            "phoneNumber": "0102030405",
+        }
+        response = client.post("/users/signup", json=user_data)
+        assert response.status_code == 204
+
+        mocked_send_signup_email.assert_called_once()
+        args, _ = mocked_send_signup_email.call_args
+        passwordless_login_token = args[1]
+
+        user = users_models.User.query.filter_by(email="pro@example.com").one()
+        assert user.email == "pro@example.com"
+        assert user.isEmailValidated is False
+        response = client.patch(f"/users/validate_signup/{passwordless_login_token}")
+        assert response.status_code == 204
+        assert "Set-Cookie" in response.headers
+        response = client.patch(f"/users/validate_signup/{passwordless_login_token}")
+        assert response.status_code == 404
