@@ -28,7 +28,7 @@ class Returns201Test:
             {"price": 0},
         ],
     )
-    def test_create_one_product_stock(self, mocked_async_index_offer_ids, input_json: dict, client):
+    def test_create_one_thing_stock(self, mocked_async_index_offer_ids, input_json: dict, client):
         email = "user@example.com"
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(user__email=email, offerer=offer.venue.managingOfferer)

@@ -83,7 +83,7 @@ def _get_existing_stocks_by_id(
     api=blueprint.pro_private_schema,
 )
 @atomic()
-def create_product_stock(body: stock_serialize.ProductStockCreateBodyModel) -> stock_serialize.StockIdResponseModel:
+def create_thing_stock(body: stock_serialize.ThingStockCreateBodyModel) -> stock_serialize.StockIdResponseModel:
     offer: offers_models.Offer = offers_models.Offer.query.get_or_404(body.offer_id)
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     input_data = body.dict()
@@ -100,9 +100,9 @@ def create_product_stock(body: stock_serialize.ProductStockCreateBodyModel) -> s
     api=blueprint.pro_private_schema,
 )
 @atomic()
-def update_product_stock(
+def update_thing_stock(
     stock_id: int,
-    body: stock_serialize.ProductStockUpdateBodyModel,
+    body: stock_serialize.ThingStockUpdateBodyModel,
 ) -> stock_serialize.StockIdResponseModel:
     stock: offers_models.Stock = offers_models.Stock.query.get_or_404(stock_id)
     check_user_has_access_to_offerer(current_user, stock.offer.venue.managingOffererId)

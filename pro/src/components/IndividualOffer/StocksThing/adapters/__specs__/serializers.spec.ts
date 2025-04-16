@@ -1,4 +1,4 @@
-import { ProductStockCreateBodyModel, ProductStockUpdateBodyModel } from 'apiClient/v1'
+import { ThingStockCreateBodyModel, ThingStockUpdateBodyModel } from 'apiClient/v1'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
 import { StockThingFormValues } from '../../types'
@@ -25,7 +25,7 @@ describe('serializeCreateThingStock', () => {
   })
 
   it('should serialize data for stock thing creation', () => {
-    const expectedCreateThingStock: ProductStockCreateBodyModel  = {
+    const expectedCreateThingStock: ThingStockCreateBodyModel  = {
       bookingLimitDatetime: '2022-10-26T21:59:59Z',
       price: 10,
       quantity: 12,
@@ -37,7 +37,7 @@ describe('serializeCreateThingStock', () => {
   })
 
   it('should fill bookingLimitDatetime with beginningDatetime when not provided', () => {
-    const expectedApiStockThing: ProductStockCreateBodyModel = {
+    const expectedApiStockThing: ThingStockCreateBodyModel = {
       bookingLimitDatetime: null,
       price: 10,
       quantity: 12,
@@ -117,7 +117,7 @@ describe('serializeUpdateThingStock', () => {
   })
 
   it('should serialize data for stock thing creation', () => {
-    const expectedUpdateThingStock: ProductStockUpdateBodyModel  = {
+    const expectedUpdateThingStock: ThingStockUpdateBodyModel  = {
       bookingLimitDatetime: '2022-10-26T21:59:59Z',
       price: 10,
       quantity: 12,
@@ -128,7 +128,7 @@ describe('serializeUpdateThingStock', () => {
   })
 
   it('should fill bookingLimitDatetime with beginningDatetime when not provided', () => {
-    const expectedApiStockThing: ProductStockUpdateBodyModel = {
+    const expectedApiStockThing: ThingStockUpdateBodyModel = {
       bookingLimitDatetime: null,
       price: 10,
       quantity: 12,

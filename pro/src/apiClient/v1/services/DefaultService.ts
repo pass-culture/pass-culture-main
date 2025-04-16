@@ -94,8 +94,6 @@ import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
 import type { PostOffererResponseModel } from '../models/PostOffererResponseModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
 import type { PriceCategoryBody } from '../models/PriceCategoryBody';
-import type { ProductStockCreateBodyModel } from '../models/ProductStockCreateBodyModel';
-import type { ProductStockUpdateBodyModel } from '../models/ProductStockUpdateBodyModel';
 import type { ProUserCreationBodyV2Model } from '../models/ProUserCreationBodyV2Model';
 import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel';
 import type { SaveNewOnboardingDataQueryModel } from '../models/SaveNewOnboardingDataQueryModel';
@@ -110,6 +108,8 @@ import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
 import type { SubmitReviewRequestModel } from '../models/SubmitReviewRequestModel';
+import type { ThingStockCreateBodyModel } from '../models/ThingStockCreateBodyModel';
+import type { ThingStockUpdateBodyModel } from '../models/ThingStockUpdateBodyModel';
 import type { UpdateEventOpeningHoursModel } from '../models/UpdateEventOpeningHoursModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
 import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
@@ -2288,13 +2288,13 @@ export class DefaultService {
     });
   }
   /**
-   * create_product_stock <POST>
+   * create_thing_stock <POST>
    * @param requestBody
    * @returns StockIdResponseModel Created
    * @throws ApiError
    */
-  public createProductStock(
-    requestBody?: ProductStockCreateBodyModel,
+  public createThingStock(
+    requestBody?: ThingStockCreateBodyModel,
   ): CancelablePromise<StockIdResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2349,15 +2349,15 @@ export class DefaultService {
     });
   }
   /**
-   * update_product_stock <PATCH>
+   * update_thing_stock <PATCH>
    * @param stockId
    * @param requestBody
    * @returns StockIdResponseModel OK
    * @throws ApiError
    */
-  public updateProductStock(
+  public updateThingStock(
     stockId: number,
-    requestBody?: ProductStockUpdateBodyModel,
+    requestBody?: ThingStockUpdateBodyModel,
   ): CancelablePromise<StockIdResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',

@@ -1,8 +1,8 @@
 import { endOfDay } from 'date-fns'
 
 import {
-  ProductStockCreateBodyModel,
-  ProductStockUpdateBodyModel,
+  ThingStockCreateBodyModel,
+  ThingStockUpdateBodyModel,
 } from 'apiClient/v1'
 import {
   getYearMonthDay,
@@ -27,7 +27,7 @@ export const serializeThingBookingLimitDatetime = (
 export const serializeUpdateThingStock = (
   formValues: StockThingFormValues,
   departementCode?: string | null
-): ProductStockUpdateBodyModel => {
+): ThingStockUpdateBodyModel => {
   const [
     yearBookingLimitDatetime,
     monthBookingLimitDatetime,
@@ -56,10 +56,10 @@ export const serializeCreateThingStock = (
   formValues: StockThingFormValues,
   offerId: number,
   departementCode?: string | null
-): ProductStockCreateBodyModel => {
+): ThingStockCreateBodyModel => {
   const baseStock = serializeUpdateThingStock(formValues, departementCode)
 
-  const apiStock: ProductStockCreateBodyModel = {...baseStock,offerId }
+  const apiStock: ThingStockCreateBodyModel = {...baseStock,offerId }
   
   if (formValues.activationCodes.length > 0) {
     apiStock.activationCodes = formValues.activationCodes

@@ -29,9 +29,9 @@ export const submitToApi = async (
   try {
     const departementCode = getDepartmentCode(offer)
     if (values.stockId) {
-      await api.updateProductStock(values.stockId, serializeUpdateThingStock(values, departementCode))
+      await api.updateThingStock(values.stockId, serializeUpdateThingStock(values, departementCode))
     } else {
-      await api.createProductStock(serializeCreateThingStock(values, offer.id, departementCode))
+      await api.createThingStock(serializeCreateThingStock(values, offer.id, departementCode))
     }
   } catch (error) {
     if (isErrorAPIError(error)) {
