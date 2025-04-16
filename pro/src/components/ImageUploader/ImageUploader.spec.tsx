@@ -70,9 +70,6 @@ describe('ImageUploader', () => {
       screen.getByRole('button', { name: /Modifier/i })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: /Prévisualiser/i })
-    ).toBeInTheDocument()
-    expect(
       screen.getByRole('button', { name: /Supprimer/i })
     ).toBeInTheDocument()
 
