@@ -101,9 +101,18 @@ describe('ImageDragAndDropUploader', () => {
 
   it('should upload a new image', async () => {
     const mockUpload = vi.fn()
+    const mockNotifySuccess = vi.fn()
     const mockFile = new File(['fake img'], 'fake_img.jpg', {
       type: 'image/jpeg',
     })
+
+    const notifsImport = (await vi.importActual(
+      'commons/hooks/useNotification'
+    )) as ReturnType<typeof useNotification.useNotification>
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+      ...notifsImport,
+      success: mockNotifySuccess,
+    }))
 
     renderImageUploader({
       onImageUpload: mockUpload,
@@ -125,6 +134,9 @@ describe('ImageDragAndDropUploader', () => {
     await userEvent.click(screen.getByText('Enregistrer'))
 
     expect(mockUpload).toHaveBeenCalled()
+    expect(mockNotifySuccess).toHaveBeenCalledWith(
+      'Votre image a bien été enregistrée'
+    )
   })
 
   it('should delete an image', async () => {
