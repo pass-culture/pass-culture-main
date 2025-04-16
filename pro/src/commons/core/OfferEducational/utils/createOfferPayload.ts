@@ -56,6 +56,9 @@ function getCommonOfferPayload(
   offer: OfferEducationalFormValues,
   isCollectiveOaActive: boolean
 ): PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel {
+  // remove id_oa key from location object as it useful only on a form matter
+  delete offer.location.id_oa
+
   return {
     venueId: Number(offer.venueId),
     name: offer.title,

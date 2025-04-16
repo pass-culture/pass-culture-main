@@ -1,4 +1,4 @@
-import { OfferAddressType } from 'apiClient/v1'
+import { CollectiveLocationType, OfferAddressType } from 'apiClient/v1'
 import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 
 import {
@@ -178,6 +178,86 @@ describe('createOfferPayload', () => {
 
     expect(offerPayload).toEqual(
       expect.objectContaining({ interventionArea: [] })
+    )
+  })
+
+  it('should create a template offer payload with location infos when OA FF is active', () => {
+    const offerPayload = createCollectiveOfferTemplatePayload(
+      {
+        ...DEFAULT_EAC_FORM_VALUES,
+        location: {
+          locationType: CollectiveLocationType.ADDRESS,
+          address: {
+            city: 'Paris',
+            latitude: 3,
+            longitude: 2,
+            postalCode: '75018',
+            street: 'rue de la paix',
+            isVenueAddress: true,
+          },
+          id_oa: '123',
+        },
+        eventAddress: {
+          addressType: OfferAddressType.OFFERER_VENUE,
+          otherAddress: '',
+          venueId: 4,
+        },
+        interventionArea: ['44'],
+      },
+      true
+    )
+
+    expect(offerPayload).toEqual(
+      expect.objectContaining({
+        location: {
+          locationType: CollectiveLocationType.ADDRESS,
+          address: {
+            city: 'Paris',
+            latitude: 3,
+            longitude: 2,
+            postalCode: '75018',
+            street: 'rue de la paix',
+            isVenueAddress: true,
+          },
+        },
+      })
+    )
+  })
+
+  it('should create a template offer payload with offerVenue infos when OA FF is active', () => {
+    const offerPayload = createCollectiveOfferTemplatePayload(
+      {
+        ...DEFAULT_EAC_FORM_VALUES,
+        location: {
+          locationType: CollectiveLocationType.ADDRESS,
+          address: {
+            city: 'Paris',
+            latitude: 3,
+            longitude: 2,
+            postalCode: '75018',
+            street: 'rue de la paix',
+            isVenueAddress: true,
+          },
+          id_oa: '123',
+        },
+        eventAddress: {
+          addressType: OfferAddressType.OFFERER_VENUE,
+          otherAddress: '',
+          venueId: 4,
+        },
+        interventionArea: ['44'],
+      },
+      false
+    )
+
+    expect(offerPayload).toEqual(
+      expect.objectContaining({
+        offerVenue: {
+          addressType: 'offererVenue',
+          otherAddress: '',
+          venueId: 4,
+        },
+      })
     )
   })
 })

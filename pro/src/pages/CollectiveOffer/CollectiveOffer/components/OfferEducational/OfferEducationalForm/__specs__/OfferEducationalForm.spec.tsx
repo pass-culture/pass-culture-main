@@ -173,4 +173,20 @@ describe('OfferEducationalForm', () => {
       await screen.findByRole('button', { name: 'Enregistrer et continuer' })
     ).toBeInTheDocument()
   })
+
+  it('should render FormLocation when OA FF is active', async () => {
+    renderOfferEducationalForm(defaultProps, {
+      features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'],
+    })
+    expect(
+      await screen.findByRole('radio', { name: 'À une adresse précise' })
+    ).toBeInTheDocument()
+  })
+
+  it('should render FormPracticalInformation when OA FF is inactive', async () => {
+    renderOfferEducationalForm(defaultProps)
+    expect(
+      await screen.findByRole('radio', { name: 'Dans votre structure' })
+    ).toBeInTheDocument()
+  })
 })
