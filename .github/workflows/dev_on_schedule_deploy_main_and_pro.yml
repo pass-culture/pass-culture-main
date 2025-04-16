@@ -12,7 +12,6 @@ on:
     # Cron jobs might be delayed or even completely skipped.
     - cron: "28 6-17 * * 1-5"
 
-permissions: write-all
 
 env:
   docker_registry: "europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry"
@@ -21,6 +20,9 @@ env:
 
 jobs:
   pcapi-init-job:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     runs-on: ubuntu-latest
     outputs: 
         checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
@@ -41,6 +43,7 @@ jobs:
             echo "API_TAG=$API_TAG"
             echo $PUSH_TAGS >> "$GITHUB_OUTPUT"
             echo $API_TAG >> "$GITHUB_OUTPUT"
+        # Check checksum tag is not working well, we have a 401 during api call
         - name: "pcapi"
           id: check-checksum-tag
           run: ./.github/workflows/scripts/check-image-tag-exists.sh

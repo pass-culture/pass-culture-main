@@ -3,10 +3,6 @@ name: "0 [on_dispatch] Deploy preview environment"
 on:
   workflow_dispatch:
     inputs:
-      api_version:
-        type: string
-        description: "SHA1 of the backend image built during your CI"
-        required: true
       sandbox:
         description: 'Sandbox installed'
         required: true
@@ -16,19 +12,69 @@ on:
           - empty
           - industrial
 
+permissions: write-all
+
+env:
+  docker_registry: "europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry"
+
 jobs:
   deploy-preview-env-init:
     name: 'Init'
     runs-on: ubuntu-latest
     outputs: 
+      checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
       resource_label: ${{ steps.set_resource_label.outputs.resource_label }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: false
+          ref: ${{ github.ref_name }}
       - name: "Set resources label name"
         id: "set_resource_label"
         run: |
           BRANCH_NAME=${{ github.ref_name }}
           BRANCH_SHA1=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
           echo "resource_label=$BRANCH_SHA1" >> $GITHUB_OUTPUT
+      - name: "Define pcapi image tags."
+        id: pcapi-tags
+        run: |
+          DOCKER_IMAGE="${{ env.docker_registry }}/pcapi"
+          API_CHECKSUM=`tar --sort=name --owner=0 --group=0 --mtime='UTC 2019-01-01' -cf - api | sha1sum | awk '{ print $1 }'`
+          PUSH_TAGS="push-tags=$DOCKER_IMAGE:${{ github.sha }},$DOCKER_IMAGE:$API_CHECKSUM,$DOCKER_IMAGE:latest"
+          API_TAG="checksum-tag=$API_CHECKSUM"
+          echo "PUSH_TAGS=$PUSH_TAGS"
+          echo "API_TAG=$API_TAG"
+          echo $PUSH_TAGS >> "$GITHUB_OUTPUT"
+          echo $API_TAG >> "$GITHUB_OUTPUT"
+      - name: "pcapi"
+        id: check-checksum-tag
+        run: ./.github/workflows/scripts/check-image-tag-exists.sh
+        env:
+          image: pcapi
+          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+          token: ${{ steps.openid-auth.outputs.access_token }}
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secret"
+        id: secrets
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        with:
+          secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      - name: "OpenID Connect Authentication"
+        id: "openid-auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+          create_credentials_file: false
+          token_format: "access_token"
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
 
   deploy-pro-on-firebase-preview-env:
     name: "[PRO] Deploy PR version for validation pr preview backend"
@@ -47,10 +93,36 @@ jobs:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
       resource_label: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
 
+  build-pcapi:
+    name: "[pcapi] build docker image."
+    needs: [deploy-preview-env-init]
+    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
+    with:
+      ref: ${{ github.sha }}
+      image: pcapi
+      tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  push-pcapi:
+    name: "Push pcapi docker image to registry"
+    needs: [deploy-preview-env-init, build-pcapi]
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
+    with:
+      image: pcapi
+      commit-hash: ${{ github.sha }}
+      checksum-tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
+      tag-latest: true
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+
   deploy-api:
     name: "Deploy pullrequest"
     runs-on: ubuntu-latest
-    needs: [deploy-preview-env-init, deploy-pro-on-firebase-preview-env]
+    needs: [deploy-preview-env-init, push-pcapi, deploy-pro-on-firebase-preview-env]
     environment: pullrequest
     permissions:
       id-token: write
@@ -60,6 +132,8 @@ jobs:
         run: echo "${{ needs.deploy-preview-env-init.outputs.resource_label }}"
 
       - uses: actions/checkout@v4.2.1
+        with:
+          ref: ${{github.ref}}
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
         with:
@@ -124,7 +198,7 @@ jobs:
         with:
           environment: pullrequest
           app_name: pcapi
-          app_version: ${{ inputs.api_version }}
+          app_version: ${{ github.sha }}
           additional_args: ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
           registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
           registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
@@ -209,7 +283,7 @@ jobs:
       - name: "Init local database"
         run: |
           set -e
-          VERSION="${{ inputs.api_version }}"
+          VERSION="${{ github.sha }}"
           export ENVIRONMENT="pullrequest"
           IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
           export IMAGE="${IMAGE}:${VERSION}"
@@ -244,7 +318,7 @@ jobs:
         if: inputs.sandbox != 'empty'
         run: |
           set -e
-          VERSION="${{ inputs.api_version }}"
+          VERSION="${{ github.sha }}"
           export ENVIRONMENT="pullrequest"
           IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
           export IMAGE="${IMAGE}:${VERSION}"
