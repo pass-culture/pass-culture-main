@@ -115,7 +115,6 @@ class FeatureToggle(enum.Enum):
     MOVE_OFFER_TEST = "Test le déplacement de n'importe quelle offre vers une autre venue"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_ASYNCHRONOUS_CELERY_TASKS = "Activer le backend de tâches asynchrone Celery pour les tâches qui le supporte"
-    WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
     WIP_ENABLE_NEW_FINANCE_WORKFLOW = "Active le nouveau workflow finance"
     WIP_ENABLE_MARSEILLE = "Activer Marseille en grand"
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
@@ -225,7 +224,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
     FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST,
-    FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_IS_OPEN_TO_PUBLIC,
     FeatureToggle.WIP_UBBLE_V2,
     # Please keep alphabetic order

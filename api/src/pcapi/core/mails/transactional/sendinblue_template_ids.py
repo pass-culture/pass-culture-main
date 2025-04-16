@@ -25,7 +25,6 @@ class TransactionalEmail(Enum):
         id_prod=725, id_not_prod=96, tags=["jeunes_reservation_confirmee_v3"]
     )
     BOOKING_EVENT_REMINDER_TO_BENEFICIARY = models.Template(id_prod=665, id_not_prod=82)
-    BOOKING_EVENT_REMINDER_TO_BENEFICIARY_WITH_METADATA = models.Template(id_prod=1127, id_not_prod=124)
     BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY = models.Template(
         id_prod=224, id_not_prod=36, tags=["jeunes_offre_reportee_pro"], send_to_ehp=False
     )
