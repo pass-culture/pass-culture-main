@@ -8,7 +8,7 @@ import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 
 import { getDepartmentCode } from '../utils/getDepartmentCode'
 
-import { serializeStockThingList } from './adapters/serializers'
+import { serializeUpdateThingStock, serializeCreateThingStock } from './adapters/serializers'
 import { StockThingFormValues, StockThingFormik } from './types'
 import { buildInitialValues } from './utils/buildInitialValues'
 
@@ -27,10 +27,12 @@ export const submitToApi = async (
   }
 
   try {
-    await api.upsertStocks({
-      offerId: offer.id,
-      stocks: serializeStockThingList(values, getDepartmentCode(offer)),
-    })
+    const departementCode = getDepartmentCode(offer)
+    if (values.stockId) {
+      await api.updateProductStock(values.stockId, serializeUpdateThingStock(values, departementCode))
+    } else {
+      await api.createProductStock(serializeCreateThingStock(values, offer.id, departementCode))
+    }
   } catch (error) {
     if (isErrorAPIError(error)) {
       const serializedApiErrors = serializeApiErrors(error.body)
