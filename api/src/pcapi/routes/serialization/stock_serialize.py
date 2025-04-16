@@ -1,5 +1,6 @@
 from datetime import datetime
 import decimal
+import typing
 
 from pydantic.v1 import Field
 from pydantic.v1 import validator
@@ -38,6 +39,37 @@ class ThingStockUpdateBodyModel(BaseModel):
     class Config:
         alias_generator = to_camel
         json_encoders = {datetime: format_into_utc_date}
+        extra = "forbid"
+
+
+class EventStockCreateBodyModel(BaseModel):
+    beginning_datetime: datetime
+    price_category_id: int
+    quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
+    booking_limit_datetime: datetime | None
+
+    @validator("beginning_datetime")
+    def format_beginning_datetime(cls, value: datetime) -> datetime:
+        return serialization_utils.as_utc_without_timezone(value)
+
+    @validator("booking_limit_datetime")
+    def format_booking_limit_datetime(cls, value: datetime | None) -> datetime | None:
+        if not value:
+            return None
+
+        return serialization_utils.as_utc_without_timezone(value)
+
+    class Config:
+        alias_generator = to_camel
+        json_encoders = {datetime: format_into_utc_date}
+        extra = "forbid"
+
+
+class EventStockUpdateBodyModel(EventStockCreateBodyModel):
+    id: int
+
+    class Config:
+        alias_generator = to_camel
         extra = "forbid"
 
 
@@ -88,6 +120,24 @@ class StocksResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
+class EventStocksBulkCreateBodyModel(BaseModel):
+    offer_id: int
+    stocks: list[EventStockCreateBodyModel]
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class EventStocksBulkUpdateBodyModel(BaseModel):
+    offer_id: int
+    stocks: list[EventStockUpdateBodyModel]
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
 class StocksUpsertBodyModel(BaseModel):
     offer_id: int
     stocks: list[StockCreationBodyModel | StockEditionBodyModel]
@@ -96,7 +146,7 @@ class StocksUpsertBodyModel(BaseModel):
     def check_max_stocks_per_offer_limit(
         cls, value: list[StockCreationBodyModel] | list[StockEditionBodyModel]
     ) -> list[StockCreationBodyModel] | list[StockEditionBodyModel]:
-        offers_validation.check_stocks_quantity(len(value))
+        offers_validation.check_stocks_count(len(value))
         return value
 
     class Config:
@@ -110,3 +160,6 @@ class StockIdResponseModel(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
+
+
+EventStocksList = typing.TypeVar("EventStocksList", list[EventStockCreateBodyModel], list[EventStockUpdateBodyModel])
