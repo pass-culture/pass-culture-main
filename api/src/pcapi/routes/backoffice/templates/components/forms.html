@@ -78,11 +78,11 @@
         <div class="input-group">
           {% for form_field in row1_fields %}{{ form_field }}{% endfor %}
         </div>
-        <div class="input-group hstack gap-2">
-          {% for form_field in select_multiple %}<div class="col-2 pt-2">{{ form_field }}</div>{% endfor %}
+        <div class="input-group hstack gap-2 pt-2">
+          {% for form_field in select_multiple %}<div class="col-2">{{ form_field }}</div>{% endfor %}
         </div>
-        <div class="input-group hstack gap-2">
-          {% for form_field in switches %}<div class="pt-2">{{ form_field }}</div>{% endfor %}
+        <div class="input-group hstack gap-2 pt-2">
+          {% for form_field in switches %}<div>{{ form_field }}</div>{% endfor %}
         </div>
       </div>
       <div class="text-center d-flex justify-content-between">

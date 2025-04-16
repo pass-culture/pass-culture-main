@@ -88,8 +88,8 @@ def extract_pagination_info(html_content: str) -> tuple[int, int, int]:
     if num_results is None:
         total_results = 0
     else:
-        m = re.match(r"(\d+) résultat", num_results.text)
-        assert m
+        m = re.search(r"(\d+)\s+résultat", num_results.text)
+        assert m, "no result count found"
         total_results = int(m.group(1))
 
     ul = soup.find("ul", class_="pagination")

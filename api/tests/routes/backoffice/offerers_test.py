@@ -2252,15 +2252,15 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         @pytest.mark.parametrize(
             "total_items, pagination_config, expected_total_pages, expected_page, expected_items",
             (
-                (31, {"per_page": 10}, 4, 1, 10),
-                (31, {"per_page": 10, "page": 1}, 4, 1, 10),
-                (31, {"per_page": 10, "page": 3}, 4, 3, 10),
-                (31, {"per_page": 10, "page": 4}, 4, 4, 1),
-                (20, {"per_page": 10, "page": 1}, 2, 1, 10),
+                (31, {"limit": 10}, 4, 1, 10),
+                (31, {"limit": 10, "page": 1}, 4, 1, 10),
+                (31, {"limit": 10, "page": 3}, 4, 3, 10),
+                (31, {"limit": 10, "page": 4}, 4, 4, 1),
+                (20, {"limit": 10, "page": 1}, 2, 1, 10),
                 (27, {"page": 1}, 1, 1, 27),
-                (10, {"per_page": 25, "page": 1}, 1, 1, 10),
-                (1, {"per_page": None, "page": 1}, 1, 1, 1),
-                (1, {"per_page": "", "page": 1}, 1, 1, 1),  # ensure that it does not crash (fallbacks to default)
+                (10, {"limit": 25, "page": 1}, 1, 1, 10),
+                (1, {"limit": None, "page": 1}, 1, 1, 1),
+                (1, {"limit": "", "page": 1}, 1, 1, 1),  # ensure that it does not crash (fallbacks to default)
             ),
         )
         def test_list_pagination(
