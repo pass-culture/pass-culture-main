@@ -6,13 +6,13 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useGetImageBitmap } from 'commons/hooks/useGetBitmap'
 import { useNotification } from 'commons/hooks/useNotification'
-import { AppPreviewOffer } from 'components/ImageUploader/components/ButtonAppPreview/components/AppPreviewOffer/AppPreviewOffer'
 import {
   ImageEditor,
   ImageEditorConfig,
 } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ImageEditor/ImageEditor'
 import { coordonateToPosition } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ImageEditor/utils'
 import { modeValidationConstraints } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/constants'
+import { AppPreviewOffer } from 'components/ImageUploader/components/ImagePreview/components/AppPreviewOffer/AppPreviewOffer'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import fullDownloadIcon from 'icons/full-download.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
