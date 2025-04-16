@@ -50,6 +50,8 @@ const defaultValues: OfferEducationalFormValues = {
     phone: false,
   },
   interventionArea: ['45'],
+  'search-addressAutocomplete': '',
+  addressAutocomplete: '',
 }
 
 describe('validationSchema OfferEducational', () => {
@@ -58,6 +60,7 @@ describe('validationSchema OfferEducational', () => {
       description: string
       formValues: Partial<OfferEducationalFormValues>
       expectedErrors: string[]
+      isCollectiveOaActive?: boolean
     }[] = [
       {
         description: 'valid form',
@@ -143,16 +146,39 @@ describe('validationSchema OfferEducational', () => {
         },
         expectedErrors: ['Veuillez renseigner une adresse email'],
       },
+      {
+        description:
+          'invalid form with specific address without address selection when OA FF is active',
+        formValues: {
+          ...defaultValues,
+          location: {
+            locationType: CollectiveLocationType.ADDRESS,
+            id_oa: 'SPECIFIC_ADDRESS',
+          },
+          addressAutocomplete: '',
+        },
+        expectedErrors: [
+          'Veuillez sélectionner une adresse parmi les suggestions',
+        ],
+        isCollectiveOaActive: true,
+      },
     ]
 
-    cases.forEach(({ description, formValues, expectedErrors }) => {
-      it(`should validate the form for case: ${description}`, async () => {
-        const errors = await getYupValidationSchemaErrors(
-          getOfferEducationalValidationSchema(false),
-          formValues
-        )
-        expect(errors).toEqual(expectedErrors)
-      })
-    })
+    cases.forEach(
+      ({
+        description,
+        formValues,
+        expectedErrors,
+        isCollectiveOaActive = false,
+      }) => {
+        it(`should validate the form for case: ${description}`, async () => {
+          const errors = await getYupValidationSchemaErrors(
+            getOfferEducationalValidationSchema(isCollectiveOaActive),
+            formValues
+          )
+          expect(errors).toEqual(expectedErrors)
+        })
+      }
+    )
   })
 })

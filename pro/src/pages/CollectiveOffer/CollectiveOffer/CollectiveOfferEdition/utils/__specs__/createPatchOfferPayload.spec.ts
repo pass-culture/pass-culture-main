@@ -15,6 +15,7 @@ import {
 describe('createPatchOfferPayload', () => {
   const offerId = '17'
   const venueId = 12
+
   const initialValues: OfferEducationalFormValues = {
     title: 'Test Offer',
     description: 'Test Description',
@@ -36,6 +37,15 @@ describe('createPatchOfferPayload', () => {
     },
     location: {
       locationType: CollectiveLocationType.ADDRESS,
+      address: {
+        city: 'Paris',
+        latitude: 3,
+        longitude: 2,
+        postalCode: '75018',
+        street: 'rue de la paix',
+        isVenueAddress: true,
+      },
+      id_oa: '123',
     },
     participants: {
       ...buildStudentLevelsMapWithDefaultValue(true),
@@ -53,7 +63,10 @@ describe('createPatchOfferPayload', () => {
     hour: '10:00',
     isTemplate: false,
     formats: [EacFormat.CONCERT],
+    'search-addressAutocomplete': '',
+    addressAutocomplete: '',
   }
+
   const offer: OfferEducationalFormValues = {
     title: 'Test Offer update',
     description: 'Test Description update',
@@ -73,9 +86,6 @@ describe('createPatchOfferPayload', () => {
       otherAddress: 'TestOtherAddress update',
       venueId: 12,
     },
-    location: {
-      locationType: CollectiveLocationType.ADDRESS,
-    },
     participants: {
       ...buildStudentLevelsMapWithDefaultValue(false),
       college: false,
@@ -93,6 +103,20 @@ describe('createPatchOfferPayload', () => {
     hour: '10:00',
     isTemplate: false,
     formats: [EacFormat.ATELIER_DE_PRATIQUE],
+    'search-addressAutocomplete': '',
+    addressAutocomplete: '',
+    location: {
+      locationType: CollectiveLocationType.ADDRESS,
+      address: {
+        city: 'Marseille',
+        latitude: 3,
+        longitude: 2,
+        postalCode: '13007',
+        street: 'rue de la paix',
+        isVenueAddress: false,
+      },
+      id_oa: 'SPECIFIC_ADDRESS',
+    },
   }
 
   const patchOfferPayload: PatchCollectiveOfferBodyModel = {
@@ -104,11 +128,11 @@ describe('createPatchOfferPayload', () => {
     audioDisabilityCompliant: false,
     visualDisabilityCompliant: true,
     bookingEmails: ['test3@email.com', 'test4@email.com'],
-    venueId: venueId,
+    venueId,
     offerVenue: {
       addressType: OfferAddressType.SCHOOL,
       otherAddress: 'TestOtherAddress update',
-      venueId: venueId,
+      venueId,
     },
     students: [],
     contactPhone: '0123456788',
@@ -124,21 +148,23 @@ describe('createPatchOfferPayload', () => {
 
     expect(payload).toMatchObject({
       ...patchOfferPayload,
-      venueId: venueId,
+      venueId,
     })
   })
 
   it('should return the correct patch offer payload for a template offer', () => {
     const payload = createPatchOfferTemplatePayload(
       { ...offer, priceDetail: '123', isTemplate: true },
-      initialValues, false
+      initialValues,
+      false
     )
 
     expect(payload).toMatchObject({
-      venueId: venueId,
+      venueId,
       priceDetail: '123',
     })
   })
+
   it('should return the correct patch offer payload for a template offer when dates are empty', () => {
     const payload = createPatchOfferTemplatePayload(
       {
@@ -153,9 +179,43 @@ describe('createPatchOfferPayload', () => {
     )
 
     expect(payload).toMatchObject({
-      venueId: venueId,
+      venueId,
       priceDetail: '123',
       dates: null,
     })
+  })
+
+  it('should return patch offer payload with location key when OA FF is active', () => {
+    const payload = createPatchOfferPayload(offer, initialValues, true)
+
+    expect(payload).toEqual(
+      expect.objectContaining({
+        location: {
+          locationType: CollectiveLocationType.ADDRESS,
+          address: {
+            city: 'Marseille',
+            latitude: 3,
+            longitude: 2,
+            postalCode: '13007',
+            street: 'rue de la paix',
+            isVenueAddress: false,
+          },
+        },
+      })
+    )
+  })
+
+  it('should return patch offer payload with offerVenue key when OA FF is inactive', () => {
+    const payload = createPatchOfferPayload(offer, initialValues, false)
+
+    expect(payload).toEqual(
+      expect.objectContaining({
+        offerVenue: {
+          addressType: 'school',
+          otherAddress: 'TestOtherAddress update',
+          venueId: 12,
+        },
+      })
+    )
   })
 })

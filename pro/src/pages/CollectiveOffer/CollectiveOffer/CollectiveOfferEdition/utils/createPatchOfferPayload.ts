@@ -54,10 +54,15 @@ const serializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
       offerVenue: eventAddressPayload,
     }
   },
-  location: (payload, offer) => ({
-    ...payload,
-    location: offer.location,
-  }),
+  location: (payload, offer) => {
+    const newLocationPayload = {
+      ...payload,
+      location: offer.location,
+    }
+    // remove id_oa key from location object as it useful only on a form matter
+    delete newLocationPayload.location.id_oa
+    return newLocationPayload
+  },
   participants: (payload, offer) => ({
     ...payload,
     students: serializeParticipants(offer.participants),
@@ -108,7 +113,12 @@ export const createPatchOfferPayload = (
 
   const offerKeys = Object.keys(offer) as (keyof OfferEducationalFormValues)[]
 
-  const keysToOmmit = ['imageUrl', 'imageCredit', 'isTemplate']
+  const keysToOmmit = [
+    'imageUrl',
+    'imageCredit',
+    'isTemplate',
+    'addressAutocomplete',
+  ]
   isCollectiveOaActive
     ? keysToOmmit.push('eventAddress')
     : keysToOmmit.push('location')
@@ -122,7 +132,6 @@ export const createPatchOfferPayload = (
       changedValues = serializer[key]?.(changedValues, offer) ?? {}
     }
   })
-
   return changedValues
 }
 
@@ -141,11 +150,13 @@ export const createPatchOfferTemplatePayload = (
     'isTemplate',
     'contactFormType',
     'contactOptions',
+    'addressAutocomplete',
   ]
 
   isCollectiveOaActive
     ? keysToOmmit.push('eventAddress')
     : keysToOmmit.push('location')
+
   let changedValues: PatchCollectiveOfferTemplateBodyModel = {}
 
   const offerKeys = Object.keys(offer) as (keyof OfferEducationalFormValues)[]
@@ -179,5 +190,6 @@ export const createPatchOfferTemplatePayload = (
     offer.endingDate
       ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
       : null
+
   return changedValues
 }

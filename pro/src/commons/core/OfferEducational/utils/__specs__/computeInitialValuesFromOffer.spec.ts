@@ -1,3 +1,4 @@
+import { CollectiveLocationType } from 'apiClient/adage'
 import { OfferContactFormEnum } from 'apiClient/v1'
 import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import { formatShortDateForInput } from 'commons/utils/date'
@@ -6,13 +7,60 @@ import { venueListItemFactory } from 'commons/utils/factories/individualApiFacto
 
 import { computeInitialValuesFromOffer } from '../computeInitialValuesFromOffer'
 
-const venues = [venueListItemFactory()]
+const venueAddress = {
+  city: 'Paris',
+  id: 1,
+  id_oa: 1994,
+  latitude: 3,
+  longitude: 2,
+  isManualEdition: false,
+  postalCode: '75018',
+  street: 'rue de la paix',
+}
+
+const venues = [
+  venueListItemFactory({
+    address: venueAddress,
+    id: 2,
+  }),
+]
+
+const offerer = {
+  allowedOnAdage: true,
+  id: 1,
+  managedVenues: venues,
+  name: 'toto',
+}
+
+const offerVenue = {
+  id: 2,
+  managingOfferer: offerer,
+  managedVenues: venues,
+  name: 'opéra de paris',
+}
 
 describe('computeInitialValuesFromOffer', () => {
   it('should return default values when no offer is provided', () => {
-    expect(computeInitialValuesFromOffer(null, false, venues)).toEqual(
-      DEFAULT_EAC_FORM_VALUES
-    )
+    const venue = venues[0]
+
+    expect(computeInitialValuesFromOffer(offerer, false, venues)).toEqual({
+      ...DEFAULT_EAC_FORM_VALUES,
+      offererId: '1',
+      venueId: '2',
+      location: {
+        locationType: CollectiveLocationType.ADDRESS,
+        address: {
+          city: 'Paris',
+          latitude: 3,
+          longitude: 2,
+          postalCode: '75018',
+          street: 'rue de la paix',
+          isVenueAddress: true,
+        },
+        id_oa: venue.address?.id_oa.toString(),
+      },
+      contactUrl: undefined,
+    })
   })
 
   it('should pre-set todays dates for a template offer creation initial values', () => {
@@ -140,5 +188,76 @@ describe('computeInitialValuesFromOffer', () => {
         contactOptions: { email: false, phone: false, form: true },
       })
     )
+  })
+
+  it('should set location to specific address when offer is located on another address than its venue', () => {
+    expect(
+      computeInitialValuesFromOffer(
+        offerer,
+        true,
+        venues,
+        getCollectiveOfferTemplateFactory({
+          location: {
+            locationType: CollectiveLocationType.ADDRESS,
+            address: {
+              label: 'théâtre de savoie',
+              id_oa: 1995,
+              city: 'Chambéry',
+              street: "rue de l'espoir",
+              id: 14,
+              isManualEdition: false,
+              latitude: 12,
+              longitude: 3,
+              postalCode: '31000',
+            },
+          },
+          venue: offerVenue,
+        }),
+        undefined,
+        false
+      ).location
+    ).toEqual({
+      address: {
+        city: 'Chambéry',
+        isVenueAddress: false,
+        latitude: 12,
+        longitude: 3,
+        postalCode: '31000',
+        street: "rue de l'espoir",
+        label: 'théâtre de savoie',
+      },
+      id_oa: 'SPECIFIC_ADDRESS',
+      locationType: 'ADDRESS',
+    })
+  })
+
+  it('should set location to venue address when offer is located in its venue', () => {
+    expect(
+      computeInitialValuesFromOffer(
+        offerer,
+        true,
+        venues,
+        getCollectiveOfferTemplateFactory({
+          location: {
+            locationType: CollectiveLocationType.ADDRESS,
+            address: venueAddress,
+          },
+          venue: offerVenue,
+        }),
+        undefined,
+        false
+      ).location
+    ).toEqual({
+      address: {
+        city: 'Paris',
+        isVenueAddress: true,
+        latitude: 3,
+        longitude: 2,
+        postalCode: '75018',
+        street: 'rue de la paix',
+      },
+      id_oa: '1994',
+      locationType: 'ADDRESS',
+    })
   })
 })

@@ -193,7 +193,10 @@ export const OfferEducationalForm = ({
                 )}
 
                 {isCollectiveOaActive ? (
-                  <FormLocation venues={venues} disableForm={!canEditDetails} />
+                  <FormLocation
+                    venues={venues ?? []}
+                    disableForm={!canEditDetails}
+                  />
                 ) : (
                   <FormPracticalInformation
                     currentOfferer={userOfferer}

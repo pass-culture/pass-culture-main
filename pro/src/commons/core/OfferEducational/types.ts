@@ -25,6 +25,8 @@ export type OfferEducationalFormValues = {
     venueId: number | null
   }
   location: CollectiveOfferLocationModel & { id_oa?: string }
+  'search-addressAutocomplete': string
+  addressAutocomplete: string
   interventionArea: string[]
   participants: {
     college: boolean

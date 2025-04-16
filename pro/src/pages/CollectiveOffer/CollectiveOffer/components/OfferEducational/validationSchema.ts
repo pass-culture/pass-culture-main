@@ -64,15 +64,21 @@ export function getOfferEducationalValidationSchema(
               CollectiveLocationType.SCHOOL,
               CollectiveLocationType.TO_BE_DEFINED,
             ]),
-          id_oa: yup
-            .string()
-            .when('locationType', {
-              is: CollectiveLocationType.ADDRESS,
-              then: (schema) =>
-                schema.required('Veuillez sélectionner un lieu'),
-            })
-            .nullable(),
         })
+      : yup.mixed(),
+    addressAutocomplete: isCollectiveOaActive
+      ? yup
+          .string()
+          .trim()
+          .when(['location.locationType', 'location.id_oa'], {
+            is: (locationType: string, id_oa: string) =>
+              locationType === CollectiveLocationType.ADDRESS &&
+              id_oa === 'SPECIFIC_ADDRESS',
+            then: (schema) =>
+              schema.required(
+                'Veuillez sélectionner une adresse parmi les suggestions'
+              ),
+          })
       : yup.mixed(),
     eventAddress: yup.object().shape({
       addressType: yup
@@ -190,26 +196,28 @@ export function getOfferEducationalValidationSchema(
         test: () => format.length > 0,
       })
     ),
-    interventionArea: yup.array().when('eventAddress', {
-      is: (eventAddress: { addressType: OfferAddressType }) =>
-        eventAddress.addressType !== OfferAddressType.OFFERER_VENUE,
-      then: (schema) =>
-        schema.min(1, 'Veuillez renseigner une zone de mobilité'),
-    }),
-    'search-interventionArea': yup
-      .string()
-      .when(['interventionArea', 'eventAddress'], {
-        is: (
-          interventionArea: string[],
-          eventAddress: { addressType: OfferAddressType }
-        ) => {
-          return (
-            eventAddress.addressType !== OfferAddressType.OFFERER_VENUE &&
-            interventionArea.length === 0
-          )
-        },
-        then: (schema) => schema.required(),
-      }),
+    interventionArea: isCollectiveOaActive
+      ? yup.mixed()
+      : yup.array().when('eventAddress', {
+          is: (eventAddress: { addressType: OfferAddressType }) =>
+            eventAddress.addressType !== OfferAddressType.OFFERER_VENUE,
+          then: (schema) =>
+            schema.min(1, 'Veuillez renseigner une zone de mobilité'),
+        }),
+    'search-interventionArea': isCollectiveOaActive
+      ? yup.mixed()
+      : yup.string().when(['interventionArea', 'eventAddress'], {
+          is: (
+            interventionArea: string[],
+            eventAddress: { addressType: OfferAddressType }
+          ) => {
+            return (
+              eventAddress.addressType !== OfferAddressType.OFFERER_VENUE &&
+              interventionArea.length === 0
+            )
+          },
+          then: (schema) => schema.required(),
+        }),
     priceDetail: yup.string().max(MAX_PRICE_DETAILS_LENGTH),
     beginningDate: yup.string().when(['isTemplate', 'datesType'], {
       is: (isTemplate: boolean, datesType: OfferDatesType) =>
