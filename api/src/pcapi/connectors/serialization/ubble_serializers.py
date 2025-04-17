@@ -77,7 +77,6 @@ class UbbleV2IdentificationResponse(pydantic_v1.BaseModel):
     external_applicant_id: str | None
     user_journey_id: str
     status: UbbleIdentificationStatus
-    declared_data: UbbleDeclaredData
     links: UbbleLinks = pydantic_v1.Field(alias="_links")
     documents: list[UbbleDocument]
     response_codes: list[UbbleResponseCode]
