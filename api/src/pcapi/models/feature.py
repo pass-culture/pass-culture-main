@@ -150,6 +150,9 @@ class FeatureToggle(enum.Enum):
     WIP_2025_SIGN_UP = "Activer le nouveau parcours d’inscription au portail pro"
     WIP_ENABLE_BO_COLLECTIVE_OFFER_DETAILS_V2 = "Afficher le nouveau design de la page `details de l'offre collective`"
     WIP_ENABLE_EVENT_WITH_OPENING_HOUR = "Activer la nouvelle création d'un événement sur horaires d'ouverture"
+    WIP_FREE_ELIGIBILITY = (
+        "Activer la nouvelle éligibilité qui permet aux jeunes de 15 à 16 ans de réserver des offres gratuites"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -229,7 +232,10 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
-    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API,)
+    FEATURES_DISABLED_BY_DEFAULT += (
+        FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API,
+        FeatureToggle.WIP_FREE_ELIGIBILITY,
+    )
 
 
 def add_feature_to_database(feature: Feature) -> None:
