@@ -764,3 +764,34 @@ def update_event_opening_hours(
         raise api_errors.ApiErrors(errors={error.field: [error.msg]}, status_code=400)
     except exceptions.OfferEditionBaseException as error:
         raise api_errors.ApiErrors(errors=error.errors)
+
+
+@private_api.route("/offers/<int:offer_id>/event_opening_hours/<int:event_opening_hours_id>", methods=["DELETE"])
+@login_required
+@spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
+@atomic()
+def delete_event_opening_hours(offer_id: int, event_opening_hours_id: int) -> None:
+    offer = _get_offer_and_venue(offer_id, with_bookings=True)
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    opening_hours = (
+        models.EventOpeningHours.query.filter(models.EventOpeningHours.offerId == offer_id)
+        .options(sa_orm.joinedload(models.EventOpeningHours.weekDayOpeningHours))
+        .get_or_404(event_opening_hours_id)
+    )
+
+    try:
+        offers_api.delete_event_opening_hours(opening_hours)
+    except exceptions.EventOpeningHoursException as error:
+        raise api_errors.ApiErrors(errors={error.field: [error.msg]}, status_code=400)
+
+
+def _get_offer_and_venue(offer_id: int, with_bookings: bool = False) -> models.Offer:
+    query = models.Offer.query.options(
+        sa_orm.joinedload(models.Offer.venue).load_only(offerers_models.Venue.managingOffererId)
+    )
+
+    if with_bookings:
+        query = query.options(sa_orm.selectinload(models.Offer.stocks).selectinload(models.Stock.bookings))
+
+    return query.get_or_404(offer_id)
