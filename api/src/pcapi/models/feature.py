@@ -149,7 +149,6 @@ class FeatureToggle(enum.Enum):
     WIP_IS_OPEN_TO_PUBLIC = "Activer l'utilisation du critère 'ouvert au public' pour les synchro"
     WIP_2025_SIGN_UP = "Activer le nouveau parcours d’inscription au portail pro"
     WIP_ENABLE_BO_COLLECTIVE_OFFER_DETAILS_V2 = "Afficher le nouveau design de la page `details de l'offre collective`"
-    WIP_ENABLE_BO_OFFER_DETAILS_V2 = "Afficher le nouveau design de la page `details de l'offre`"
     WIP_ENABLE_EVENT_WITH_OPENING_HOUR = "Activer la nouvelle création d'un événement sur horaires d'ouverture"
 
     def is_active(self) -> bool:
