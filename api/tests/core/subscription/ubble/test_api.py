@@ -611,6 +611,7 @@ IDENTIFICATION_STATE_PARAMETERS = [
 
 
 @pytest.mark.usefixtures("db_session")
+@pytest.mark.features(WIP_UBBLE_V2=False)
 class UbbleWorkflowV1Test:
     def test_start_ubble_workflow(self, ubble_mock):
         user = users_factories.UserFactory()

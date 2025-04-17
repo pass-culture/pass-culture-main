@@ -2364,6 +2364,7 @@ def build_user_at_id_check(age):
 
 
 class IdentificationSessionTest:
+    @pytest.mark.features(WIP_UBBLE_V2=False)
     def test_request(self, client, ubble_mock):
         user = build_user_at_id_check(18)
 
@@ -2405,6 +2406,7 @@ class IdentificationSessionTest:
         assert len(user.beneficiaryFraudChecks) == 0
         assert ubble_mock.call_count == 0
 
+    @pytest.mark.features(WIP_UBBLE_V2=False)
     def test_request_connection_error(self, client, ubble_mock_connection_error):
         user = build_user_at_id_check(18)
 
@@ -2422,6 +2424,7 @@ class IdentificationSessionTest:
         )
         assert ubble_mock_connection_error.call_count == 1
 
+    @pytest.mark.features(WIP_UBBLE_V2=False)
     def test_request_ubble_http_error_status(self, client, ubble_mock_http_error_status):
         user = build_user_at_id_check(18)
 
@@ -2470,6 +2473,7 @@ class IdentificationSessionTest:
         assert response.json["code"] == "IDCHECK_ALREADY_PROCESSED"
         assert len(user.beneficiaryFraudChecks) == 1
 
+    @pytest.mark.features(WIP_UBBLE_V2=False)
     def test_request_ubble_second_check_after_first_aborted(self, client, ubble_mock):
         user = build_user_at_id_check(18)
         client.with_token(user.email)
@@ -2497,6 +2501,7 @@ class IdentificationSessionTest:
         assert check.type == fraud_models.FraudCheckType.UBBLE
         assert response.json["identificationUrl"] == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
 
+    @pytest.mark.features(WIP_UBBLE_V2=False)
     @pytest.mark.parametrize(
         "retry_number,expected_status",
         [(1, 200), (2, 200), (3, 400), (4, 400)],

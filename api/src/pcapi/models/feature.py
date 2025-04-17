@@ -228,7 +228,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
     FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST,
     FeatureToggle.WIP_IS_OPEN_TO_PUBLIC,
-    FeatureToggle.WIP_UBBLE_V2,
     # Please keep alphabetic order
 )
 
