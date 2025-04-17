@@ -203,6 +203,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
         force: true,
       }
     )
+    cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
     cy.findByLabelText('Crédit de l’image').type(
       'Les êtres les plus intelligents de l’univers'
     )

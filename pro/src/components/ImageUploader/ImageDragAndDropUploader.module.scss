@@ -3,12 +3,22 @@
 
 .image-uploader-image-container {
   display: flex;
-  margin-bottom: rem.torem(16px);
+  flex-direction: column;
+
+  @media screen and (min-width: size.$tablet) {
+    flex-direction: row;
+  }
 }
 
 .image-uploader-actions {
   &-visible {
-    margin-left: rem.torem(32px);
+    margin-top: rem.torem(32px);
+    margin-left: 0;
+
+    @media screen and (min-width: size.$tablet) {
+      margin-top: 0;
+      margin-left: rem.torem(32px);
+    }
   }
 
   &-container {

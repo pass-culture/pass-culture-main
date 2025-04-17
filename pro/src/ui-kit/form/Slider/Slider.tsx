@@ -97,6 +97,7 @@ export const Slider = ({
         )}
       </div>
       <input
+        data-testid="slider"
         type="range"
         id={labelId}
         className={styles.slider}

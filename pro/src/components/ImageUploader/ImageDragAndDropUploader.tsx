@@ -13,8 +13,8 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { UploadImageValues } from './components/ButtonImageEdit/types'
 import {
   OnImageUploadArgs,
-  ModalImageEdit,
-} from './components/ModalImageEdit/ModalImageEdit'
+  ModalImageUpsertOrEdit,
+} from './components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import styles from './ImageDragAndDropUploader.module.scss'
 import { UploaderModeEnum } from './types'
 
@@ -53,6 +53,7 @@ export const ImageDragAndDropUploader = ({
 
   const onImageUploadHandler = (values: OnImageUploadArgs) => {
     setIsModalImageOpen(false)
+    setDraftImage(values.imageFile)
     onImageUpload(values)
     notify.success('Votre image a bien été enregistrée')
   }
@@ -89,7 +90,7 @@ export const ImageDragAndDropUploader = ({
             )
           }
         >
-          <ModalImageEdit
+          <ModalImageUpsertOrEdit
             mode={mode}
             onImageUpload={onImageUploadHandler}
             onImageDelete={onImageDeleteHandler}

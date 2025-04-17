@@ -4,7 +4,7 @@ import { useGetImageBitmap } from 'commons/hooks/useGetBitmap'
 import * as imageUtils from 'commons/utils/image'
 
 describe('useGetImageBitmap', () => {
-  it('should return width and height', async () => {
+  it('should return width and height of provided file', async () => {
     const mockedWidth = 600
     const mockedHeight = 800
 
@@ -37,5 +37,13 @@ describe('useGetImageBitmap', () => {
       expect(result.current.width).toEqual(mockedWidth)
       expect(result.current.height).toEqual(mockedHeight)
     })
+  })
+
+  it('should return 0 width and height if no file is provided', () => {
+    const { result } = renderHook(() => useGetImageBitmap())
+    const image = result.current
+
+    expect(image.width).toEqual(0)
+    expect(image.height).toEqual(0)
   })
 })
