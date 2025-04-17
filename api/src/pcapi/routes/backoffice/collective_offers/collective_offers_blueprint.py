@@ -736,11 +736,7 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
     )
 
     return render_template(
-        (
-            "collective_offer/details_v2.html"
-            if feature.FeatureToggle.WIP_ENABLE_BO_COLLECTIVE_OFFER_DETAILS_V2
-            else "collective_offer/details.html"
-        ),
+        "collective_offer/details.html",
         collective_offer=collective_offer,
         is_collective_offer_price_editable=is_collective_offer_price_editable,
         connect_as=connect_as,

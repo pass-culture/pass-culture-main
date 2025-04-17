@@ -148,7 +148,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_CLICKHOUSE_IN_BO = "Utiliser Clickhouse pour les statistiques des acteurs culturels dans le BO"
     WIP_IS_OPEN_TO_PUBLIC = "Activer l'utilisation du critère 'ouvert au public' pour les synchro"
     WIP_2025_SIGN_UP = "Activer le nouveau parcours d’inscription au portail pro"
-    WIP_ENABLE_BO_COLLECTIVE_OFFER_DETAILS_V2 = "Afficher le nouveau design de la page `details de l'offre collective`"
     WIP_ENABLE_EVENT_WITH_OPENING_HOUR = "Activer la nouvelle création d'un événement sur horaires d'ouverture"
     WIP_FREE_ELIGIBILITY = (
         "Activer la nouvelle éligibilité qui permet aux jeunes de 15 à 16 ans de réserver des offres gratuites"
