@@ -44,7 +44,7 @@ const renderImageUploader = (props: ImageDragAndDropUploaderProps) =>
   renderWithProviders(<ImageDragAndDropUploader {...props} />)
 
 describe('ImageDragAndDropUploader', () => {
-  it('should render image uploader for existing file', () => {
+  it('should render an image preview, and options for an existing / prev. uploaded img file', () => {
     renderImageUploader({
       onImageUpload: async () => {},
       onImageDelete: async () => {},
@@ -77,7 +77,7 @@ describe('ImageDragAndDropUploader', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should render image uploader without file', () => {
+  it('should render a drag and drop input when there is no existing / prev. uploaded img file', () => {
     renderImageUploader({
       onImageUpload: async () => {},
       onImageDelete: async () => {},
@@ -99,7 +99,44 @@ describe('ImageDragAndDropUploader', () => {
     expect(screen.getByLabelText('Importez une image')).toBeInTheDocument()
   })
 
-  it('should upload a new image', async () => {
+  it('should hide options alongside the image preview when hideActionButtons is true', () => {
+    renderImageUploader({
+      hideActionButtons: true,
+      onImageUpload: async () => {},
+      onImageDelete: async () => {},
+      mode: UploaderModeEnum.OFFER,
+      initialValues: {
+        imageUrl: 'noimage.jpg',
+        originalImageUrl: 'noimage.jpg',
+        credit: 'John Do',
+        cropParams: {
+          xCropPercent: 100,
+          yCropPercent: 100,
+          heightCropPercent: 1,
+          widthCropPercent: 1,
+        },
+      },
+    })
+
+    expect(
+      screen.getByAltText('Prévisualisation de l’image')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /Modifier/i })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /Supprimer/i })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /Ajouter une image/i })
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByLabelText('Importez une image')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should display a success toaster and call onImageUpload, as soon as a file is saved successfully', async () => {
     const mockUpload = vi.fn()
     const mockNotifySuccess = vi.fn()
     const mockFile = new File(['fake img'], 'fake_img.jpg', {
@@ -139,7 +176,7 @@ describe('ImageDragAndDropUploader', () => {
     )
   })
 
-  it('should delete an image', async () => {
+  it('should display a toaster and call onImageDelete, as soon as a file is delete successfully', async () => {
     const mockDelete = vi.fn()
     const mockNotifySuccess = vi.fn()
 
