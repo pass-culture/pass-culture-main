@@ -1,13 +1,15 @@
 import cn from 'classnames'
 import { useState, useRef } from 'react'
 
+import { useNotification } from 'commons/hooks/useNotification'
 import { ImageDragAndDrop } from 'components/ImageDragAndDrop/ImageDragAndDrop'
 import fullEditIcon from 'icons/full-edit.svg'
+import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { ButtonImageDelete } from './components/ButtonImageDelete/ButtonImageDelete'
 import { UploadImageValues } from './components/ButtonImageEdit/types'
 import {
   OnImageUploadArgs,
@@ -39,11 +41,13 @@ export const ImageDragAndDropUploader = ({
   const { imageUrl, originalImageUrl } = initialValues
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
   const [draftImage, setDraftImage] = useState<File | undefined>(undefined)
+  const notify = useNotification()
 
   const hasImage = imageUrl || originalImageUrl
   const shouldDisplayActions = imageUrl && !hideActionButtons
 
   const handleImageDelete = () => {
+    notify.success('L’image a bien été supprimée')
     onImageDelete()
   }
 
@@ -95,7 +99,14 @@ export const ImageDragAndDropUploader = ({
           />
         </DialogBuilder>
         {shouldDisplayActions && (
-          <ButtonImageDelete onImageDelete={onImageDelete} />
+          <Button onClick={handleImageDelete} variant={ButtonVariant.TERNARY}>
+            <SvgIcon
+              alt=""
+              className={styles['button-image-delete-icon']}
+              src={fullTrashIcon}
+            />
+            Supprimer
+          </Button>
         )}
       </div>
       {!hasImage && (
