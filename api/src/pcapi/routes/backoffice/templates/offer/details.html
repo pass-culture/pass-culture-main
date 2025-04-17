@@ -1,417 +1,490 @@
-{% extends "layouts/standard.html" %}
+{% extends "layouts/details.html" %}
 {% import "components/badges.html" as badges with context %}
-{% import "components/clipboard.html" as clipboard %}
 {% import "components/links.html" as links with context %}
-{% from "components/forms.html" import build_form_fields_group with context %}
-{% from "components/generic_modal.html" import build_modal_form with context %}
-{% from "components/presentation/details/tabs.html" import build_details_tab %}
-{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
-{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
-{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
-{% from "components/turbo/spinner.html" import build_loading_spinner with context %}
+{% import "components/clipboard.html" as clipboard %}
+{% import "components/logo.html" as logo %}
+{% from "components/connect_as.html" import build_connect_as %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{% from "components/connect_as.html" import build_connect_as_link %}
-{% block main_content %}
-  {% set extra_data = offer.product.extraData if offer.product else offer.extraData %}
-  <div class="row row-cols-1 g-4 py-3">
-    <div class="col">
-      <div class="card shadow">
-        <div class="card-body">
-          <div class="row justify-content-start align-items-center">
-            <div class="col d-flex align-items-center justify-content-start">
-              <h2 class="card-title mb-3 text-primary">{{ build_connect_as_link(connect_as, offer.name, "link-primary") }}</h2>
-              <span class="fs-5 ps-4">
-                {% if offer.lastProviderId %}
-                  <span class="me-2 badge rounded-pill text-bg-secondary align-middle">
-                    <i class="bi bi-gear-fill"></i> {{ offer.lastProvider.name }}
-                  </span>
-                {% endif %}
-              </span>
-              {% if reindex_offer_form %}
-                <div class="d-flex row-reverse justify-content-end flex-grow-1 px-3">
-                  <form action="{{ url_for('.reindex', offer_id=offer.id) }}"
-                        name="{{ url_for('.reindex', offer_id=offer.id) | action_to_name }}"
-                        method="post">
-                    {{ reindex_offer_form.csrf_token }}
-                    <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end">Resynchroniser l'offre dans Algolia</button>
-                  </form>
-                </div>
-              {% endif %}
-              {% if has_permission("MANAGE_OFFERS") %}
-                <div class="d-flex row-reverse justify-content-start">
-                  <a class=" px-3"
-                     data-bs-toggle="modal"
-                     data-bs-target="#edit-offer-modal-{{ offer.id }}">
-                    <button class="btn btn-outline-primary lead fw-bold mt-2">Modifier l'offre</button>
-                  </a>
-                  {{ build_lazy_modal(url_for('backoffice_web.offer.get_edit_offer_form', offer_id=offer.id) , "edit-offer-modal-" + offer.id|string) }}
-                </div>
-              {% endif %}
-              {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                <div class="d-flex row-reverse justify-content-start">
-                  <a class=" px-3"
-                     data-bs-toggle="modal"
-                     data-bs-target="#validate-offer-modal-{{ offer.id }}">
-                    <button class="btn btn-outline-primary lead fw-bold mt-2">Valider l'offre</button>
-                  </a>
-                  {{ build_lazy_modal(url_for('backoffice_web.offer.get_validate_offer_form', offer_id=offer.id) , "validate-offer-modal-" + offer.id|string) }}
-                  <a class=" px-3"
-                     data-bs-toggle="modal"
-                     data-bs-target="#reject-offer-modal-{{ offer.id }}">
-                    <button class="btn btn-outline-primary lead fw-bold mt-2">Rejeter l'offre</button>
-                  </a>
-                  {{ build_lazy_modal(url_for('backoffice_web.offer.get_reject_offer_form', offer_id=offer.id) , "reject-offer-modal-" + offer.id|string) }}
-                </div>
-              {% endif %}
-              {% if has_permission("ADVANCED_PRO_SUPPORT") %}
-                <div class="d-flex row-reverse justify-content-start">
-                  {% if offer.isActive %}
-                    <a class=" px-3"
-                       data-bs-toggle="modal"
-                       data-bs-target="#deactivate-offer-modal-{{ offer.id }}">
-                      <button class="btn btn-outline-primary lead fw-bold mt-2">Désactiver l'offre</button>
-                    </a>
-                    {{ build_lazy_modal(url_for('backoffice_web.offer.get_deactivate_offer_form', offer_id=offer.id) , "deactivate-offer-modal-" + offer.id|string) }}
-                  {% else %}
-                    <a class=" px-3"
-                       data-bs-toggle="modal"
-                       data-bs-target="#activate-offer-modal-{{ offer.id }}">
-                      <button class="btn btn-outline-primary lead fw-bold mt-2">Activer l'offre</button>
-                    </a>
-                    {{ build_lazy_modal(url_for('backoffice_web.offer.get_activate_offer_form', offer_id=offer.id) , "activate-offer-modal-" + offer.id|string) }}
-                  {% endif %}
-                </div>
-              {% endif %}
-              {% if edit_offer_venue_form %}
-                {% set edit_offer_venue_aria_described_by_id = random_hash() %}
-                {{ build_modal_form("edit-offer-venue", url_for("backoffice_web.offer.edit_offer_venue", offer_id=offer.id) , edit_offer_venue_form, "Modifier le partenaire culturel", "Modifier le partenaire culturel", "Enregistrer") }}
-              {% endif %}
-              {% if move_offer_form %}
-                {% set edit_offer_venue_aria_described_by_id = random_hash() %}
-                {{ build_modal_form("move-offer", url_for("backoffice_web.offer.move_offer", offer_id=offer.id) , move_offer_form, "Déplacer l'offre", "Déplacer l'offre", "Enregistrer") }}
-              {% endif %}
-            </div>
-            <div class="col-2"></div>
-          </div>
-          <p class="card-subtitle text-muted mb-3 h5">
-            Offer ID : {{ offer.id }} {{ clipboard.copy_to_clipboard(offer.id, "Copier l'ID de l'offre") }}
-          </p>
-          <div class="row pt-3">
-            <div class="col-4">
-              <div class="fs-6">
-                <p class="mb-1">
-                  <span class="fw-bold">Catégorie :</span> {{ offer.subcategoryId | format_offer_category }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Sous-catégorie :</span> {{ offer.subcategoryId | format_offer_subcategory }}
-                </p>
-                {% if extra_data.gtl_id %}
-                  <span class="fw-bold">Type de musique :</span>
-                  {{ extra_data.gtl_id | format_music_gtl_id }}
-                {% endif %}
-                {% if extra_data.showType or extra_data.showSubType %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Type de spectacle :</span>
-                    {% if extra_data.showType %}
-                      {{ extra_data.showType | format_show_type }}
-                    {% else %}
-                      [Non renseigné]
-                    {% endif %}
-                    -
-                    {% if extra_data.showSubType %}
-                      {{ extra_data.showSubType | format_show_subtype }}
-                    {% else %}
-                      [Non renseigné]
-                    {% endif %}
-                  </p>
-                {% endif %}
-                {% if extra_data.genres %}<span class="fw-bold">Genres :</span> {{ extra_data.genres | format_string_list }}{% endif %}
-                {% if offer.product %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Produit :</span> {{ offer.product.name }} ({{ offer.productId }})
-                  </p>
-                {% endif %}
-                <p class="mb-1 mt-4">
-                  <span class="fw-bold">Voir dans l'app :</span>
-                  {{ links.build_offer_webapp_link(offer) }}
-                </p>
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="fs-6">
-                <p class="mb-1">
-                  <span class="fw-bold">Statut :</span> {{ offer.status | format_offer_status }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">État :</span> {{ offer.validation | format_offer_validation_status(with_badge=True) }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Date de création :</span> {{ offer.dateCreated | format_date }}
-                </p>
-                {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                  {% set compliance_score = offer.compliance.compliance_score if offer.compliance else "" %}
-                  {% if compliance_score %}
-                    <p class="mb-1">
-                      <span class="fw-bold">Score data :</span> {{ compliance_score }}
-                    </p>
-                    {% set compliance_reasons = offer.compliance.compliance_reasons if offer.compliance else none %}
-                    {% if compliance_reasons %}
-                      <p class="mb-1">
-                        <span class="fw-bold">Raison de score faible :</span> {{ compliance_reasons | format_compliance_reasons }}
-                      </p>
-                    {% endif %}
-                  {% endif %}
-                {% endif %}
-                {% if offer.lastValidationDate %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Date de dernière validation :</span> {{ offer.lastValidationDate | format_date_time }}
-                  </p>
-                {% endif %}
-                {% if offer.lastValidationAuthor %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Utilisateur de la dernière validation :</span> {{ offer.lastValidationAuthor.full_name }}
-                  </p>
-                {% endif %}
-                <p class="mb-1">
-                  <span class="fw-bold">Tags :</span>
-                  {{ offer.criteria | sort(attribute="name") | format_tag_object_list }}
-                </p>
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="fs-6">
-                <p class="mb-1">
-                  <span class="fw-bold">Entité juridique :</span> {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
-                  {{ badges.build_offer_offerer_fraud_badges(offer.venue.managingOfferer) }}
-                </p>
-              </div>
-              <div class="fs-6">
-                <p class="mb-1">
-                  <span class="fw-bold">Partenaire culturel :</span> {{ links.build_venue_name_to_details_link(offer.venue) }}
-                  {{ badges.build_offer_venue_fraud_badges(offer.venue) }}
-                </p>
-              </div>
-              {% if offer.offererAddress %}
-                <div class="fs-6">
-                  <p class="mb-1">
-                    <span class="fw-bold">Localisation :</span>
-                    <span class="fst-italic">{{ offer.offererAddress.label | empty_string_if_null }}</span>
-                    {% if offer.offererAddress.address.street %}
-                      <br />
-                      {{ offer.offererAddress.address.street }}
-                    {% endif %}
-                    <br />
-                    {{ offer.offererAddress.address.postalCode }} {{ offer.offererAddress.address.city }}
-                    <br />
-                    {{ links.build_external_address_link(offer.offererAddress.address) }}
-                  </p>
-                </div>
-              {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="mt-4">
-        {% call build_details_tabs_wrapper() %}
-          {{ build_details_tab("info", "Détails", active_tab == 'info') }}
-          {{ build_details_tab("stock", "Stocks", active_tab == 'stock') }}
-          {{ build_details_tab("bookings", "Réservations", active_tab == 'bookings') }}
-        {% endcall %}
-        {% call build_details_tabs_content_wrapper() %}
-          {% call build_details_tab_content("stock", active_tab == 'stock') %}
-            <table class="table mb-4 my-4">
-              {% set show_price_category = offer.stocks | map(attribute="priceCategory") | any %}
-              <thead>
-                <tr>
-                  <th scope="col"></th>
-                  <th scope="col">Stock ID</th>
-                  <th scope="col" class="col-2">Stock réservé</th>
-                  <th scope="col" class="col-2">Stock restant</th>
-                  {% if show_price_category %}<th scope="col" class="col-2">Tarif</th>{% endif %}
-                  <th scope="col" class="col-2">Prix</th>
-                  {% if offer.isEvent %}
-                    <th scope="col" class="col-2">Date / Heure</th>
-                    <th scope="col" class="col-4">Fin des réservations</th>
-                  {% endif %}
-                </tr>
-              </thead>
-              <tbody>
-                {% for stock in offer.stocks | sort(attribute='id', reverse=True) | sort(attribute='isSoftDeleted') | sort(attribute='beginningDatetime', reverse=True) %}
-                  <tr>
-                    <td>
-                      {% if stock.id in editable_stock_ids and has_permission("MANAGE_OFFERS") %}
-                        <div class="dropdown">
-                          <button type="button"
-                                  data-bs-toggle="dropdown"
-                                  aria-expanded="false"
-                                  class="btn p-0">
-                            <i class="bi bi-three-dots-vertical"></i>
-                          </button>
-                          <ul class="dropdown-menu">
-                            <li class="dropdown-item">
-                              <a class="btn btn-sm d-block w-100 text-start px-3"
-                                 data-bs-toggle="modal"
-                                 data-bs-target="#edit-offer-stock-modal-{{ stock.id }}">Modifier</a>
-                            </li>
-                          </ul>
-                        </div>
-                      {% endif %}
-                    </td>
-                    <td>{{ stock.id }}</td>
-                    <td>{{ stock.dnBookedQuantity }}</td>
-                    <td>
-                      {% if stock.isSoftDeleted %}
-                        <span class="badge text-bg-light shadow-sm">supprimé</span>
-                      {% elif stock.remainingStock is none %}
-                        Illimité
-                      {% else %}
-                        {{ stock.remainingStock }}
-                      {% endif %}
-                    </td>
-                    {% if show_price_category %}
-                      <td>
-                        {% if stock.priceCategory %}{{ stock.priceCategory.label }}{% endif %}
-                      </td>
-                    {% endif %}
-                    <td>
-                      {% if stock.priceCategory %}
-                        {{ stock.priceCategory.price | format_amount(target=offer.venue) }}{# same as PC Pro which shows priceCategory.price #}
-                      {% else %}
-                        {{ stock.price | format_amount(target=offer.venue) }}
-                      {% endif %}
-                    </td>
-                    {% if offer.isEvent %}
-                      <td>{{ stock.beginningDatetime | format_date_time }}</td>
-                      <td>{{ stock.bookingLimitDatetime | format_date_time }}</td>
-                    {% endif %}
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          {% endcall %}
-          {% call build_details_tab_content("bookings", active_tab == 'bookings') %}
-            <div class="my-2 lead text-center">Exporter les réservations (choisir le format) :</div>
-            <div class="d-flex justify-content-center align-items-center my-2">
-              <div class="mx-2 fs-1">
-                <a href="{{ url_for('backoffice_web.offer.download_bookings_csv', offer_id=offer.id) }}"
-                   class="mx-2"><i class="bi bi-filetype-csv"
-   data-bs-toggle="tooltip"
-   data-bs-placement="top"
-   data-bs-title="Télécharger au format CSV"></i></a>
-              </div>
-              <div class="mx-2 fs-1">
-                <a href="{{ url_for('backoffice_web.offer.download_bookings_xlsx', offer_id=offer.id) }}"
-                   class="mx-2"><i class="bi bi-filetype-xlsx"
-   data-bs-toggle="tooltip"
-   data-bs-placement="top"
-   data-bs-title="Télécharger au format Excel"></i></a>
-              </div>
-            </div>
-          {% endcall %}
-          {% call build_details_tab_content("info", active_tab == 'info') %}
-            <div class="container">
-              <div class="d-flex justify-content-between">
-                <div class="p-2 flex-shrink-1">
-                  {% if offer.idAtProvider or offer.ean %}
-                    <h3 class="mt-4">Informations techniques</h3>
-                    <div class="fs-6">
-                      {% if offer.idAtProvider %}
-                        <p class="mb-1">
-                          <span class="fw-bold">Identifiant chez le fournisseur :</span> {{ offer.idAtProvider }}
-                        </p>
-                      {% endif %}
-                      {% if offer.ean %}
-                        <p class="mb-1">
-                          <span class="fw-bold">EAN :</span> {{ offer.ean }}
-                        </p>
-                      {% endif %}
-                    </div>
-                  {% endif %}
-                  <h3 class="mt-4">Informations artistiques</h3>
-                  <div class="fs-6">
-                    {% if offer.extraData.author %}
-                      <p class="mb-1">
-                        <span class="fw-bold">Auteur :</span> {{ offer.extraData.author }}
-                      </p>
-                    {% endif %}
-                    {% if offer.extraData.editeur %}
-                      <p class="mb-1">
-                        <span class="fw-bold">Éditeur :</span> {{ offer.extraData.editeur }}
-                      </p>
-                    {% endif %}
-                    {% if offer.extraData.performer %}
-                      <p class="mb-1">
-                        <span class="fw-bold">Interprète :</span> {{ offer.extraData.performer }}
-                      </p>
-                    {% endif %}
-                    {% if offer.durationMinutes %}
-                      <p class="mb-1">
-                        <span class="fw-bold">Durée :</span> {{ offer.durationMinutes }} minutes
-                      </p>
-                    {% endif %}
-                    {% if offer.extraData.diffusionVersion %}
-                      <p class="mb-1">
-                        <span class="fw-bold">Langue :</span> {{ offer.extraData.diffusionVersion }}
-                      </p>
-                    {% endif %}
-                    <p class="mb-1">
-                      <span class="fw-bold">Description :</span> {{ offer.description | empty_string_if_null | nl2br }}
-                    </p>
-                  </div>
-                  <h3 class="mt-4">Retrait de l'offre</h3>
-                  <div class="fs-6">
-                    <p class="mb-1">
-                      <span class="fw-bold">Informations de retrait :</span> {{ offer.withdrawalDetails | empty_string_if_null | nl2br }}
-                    </p>
-                  </div>
-                  <div class="fs-6">
-                    <p class="mb-1">
-                      <span class="fw-bold">Email de contact :</span> {{ offer.bookingContact | empty_string_if_null | nl2br }}
-                    </p>
-                  </div>
-                  <h3 class="mt-4">Accessibilité</h3>
-                  <div class="fs-6">
-                    <p class="mb-1">
-                      <span class="fw-bold">Accessible aux handicaps auditifs :</span> {{ offer.audioDisabilityCompliant | format_bool("Non renseigné") }}
-                    </p>
-                    <p class="mb-1">
-                      <span class="fw-bold">Accessible aux handicaps mentaux :</span> {{ offer.mentalDisabilityCompliant | format_bool("Non renseigné") }}
-                    </p>
-                    <p class="mb-1">
-                      <span class="fw-bold">Accessible aux handicaps moteurs :</span> {{ offer.motorDisabilityCompliant | format_bool("Non renseigné") }}
-                    </p>
-                    <p class="mb-1">
-                      <span class="fw-bold">Accessible aux handicaps visuels :</span> {{ offer.visualDisabilityCompliant | format_bool("Non renseigné") }}
-                    </p>
-                  </div>
-                  <h3 class="mt-4">Notification des réservations</h3>
-                  <div class="fs-6">
-                    <p class="mb-1">
-                      <span class="fw-bold">Email auquel envoyer les notifications :</span> {{ offer.bookingEmail | empty_string_if_null }}
-                    </p>
-                  </div>
-                </div>
-                <div class="p-2">
-                  {% if offer.image %}
-                    <img class="d-block pc-app-image-size"
-                         src="{{ offer.image.url }}" />
-                    {% if offer.image.credit %}Crédits: {{ offer.image.credit }}{% endif %}
-                  {% else %}
-                    <div class="empty-offer-image">
-                      <p>Pas d’image</p>
-                    </div>
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-          {% endcall %}
-        {% endcall %}
+{% from "components/generic_modal.html" import build_simple_modal_form with context %}
+{% macro accessibility_indicator(icon, value, title) %}
+  <figure class="figure p-2 accessibility-logo-container d-flex flex-column align-items-center gap-3">
+    <div class="accessibility-logo d-flex justify-content-center align-items-center position-relative border rounded-xs">
+      {{ icon }}
+      <div class="position-absolute top-100 start-50 translate-middle">
+        {% if value is true %}
+          <i class="bi bi-check-circle-fill small text-success"></i>
+        {% else %}
+          <i class="bi bi-x-circle-fill small text-body-secondary"></i>
+        {% endif %}
       </div>
     </div>
-    {% if has_permission("MANAGE_OFFERS") %}
-      {% for stock_id in editable_stock_ids %}
-        {{ build_lazy_modal(url_for('backoffice_web.offer.get_offer_stock_edit_form', offer_id=offer.id, stock_id=stock_id) , "edit-offer-stock-modal-" + stock_id|string) }}
-      {% endfor %}
+    <figcaption class="figure-caption text-center fw-semibold">{{ title }}</figcaption>
+  </figure>
+{% endmacro %}
+{% block title %}{{ offer.name }}{% endblock %}
+{% block header_extra %}
+  <div>
+    {% call badges.badges_container() %}
+      {% if offer.lastProviderId %}{{ offer.lastProvider.name | format_badge("primary") }}{% endif %}
+      {{ offer.validation | format_offer_validation_status(with_badge=True) }}
+    {% endcall %}
+  </div>
+{% endblock %}
+{% block action_buttons %}
+  {% if action.DEACTIVATE in allowed_actions.inline_actions %}
+    {{ action_bar_button("x-circle", "Désactiver", modal_id="#deactivate-offer-modal-" + offer.id|string) }}
+  {% endif %}
+  {% if action.ACTIVATE in allowed_actions.inline_actions %}
+    {{ action_bar_button("check-circle", "Activer", modal_id="#activate-offer-modal-" + offer.id|string) }}
+  {% endif %}
+  {% if action.VALIDATE in allowed_actions.inline_actions %}
+    {{ action_bar_button("hand-thumbs-up", "Valider", modal_id="#validate-offer-modal-" + offer.id|string) }}
+  {% endif %}
+  {% if action.REJECT in allowed_actions.inline_actions %}
+    {{ action_bar_button("hand-thumbs-down", "Rejeter", modal_id="#reject-offer-modal-" + offer.id|string) }}
+  {% endif %}
+  {% if action.TAG_WEIGHT in allowed_actions.inline_actions %}
+    {{ action_bar_button("tag", "Taguer/Pondérer", modal_id="#edit-offer-modal-" + offer.id|string) }}
+  {% endif %}
+  {% if action.RESYNC in allowed_actions.inline_actions %}
+    {{ action_bar_button("arrow-repeat", "Resync. Algolia", submit_form=url_for('.reindex', offer_id=offer.id) | action_to_name) }}
+  {% endif %}
+  {% if action.EDIT_VENUE in allowed_actions.inline_actions %}
+    {{ action_bar_button("pencil-square", "Modifier le partenaire culturel", modal_id="#edit-offer-venue-modal") }}
+  {% endif %}
+  {% if action.MOVE in allowed_actions.inline_actions %}
+    {{ action_bar_button("arrow-left-right", "Déplacer l'offre", modal_id="#edit-offer-venue-modal") }}
+  {% endif %}
+  <!-- ADDITIONAL BUTTONS TO PUT IN DROPDOWN MENU -->
+  {% if allowed_actions.additional_actions %}
+    <ul class="dropdown-menu">
+      {% if action.DEACTIVATE in allowed_actions.additional_actions %}
+        <li>{{ action_bar_additional_button("x-circle", "Désactiver", modal_id="#deactivate-offer-modal-" + offer.id|string) }}</li>
+      {% endif %}
+      {% if action.ACTIVATE in allowed_actions.additional_actions %}
+        <li>{{ action_bar_additional_button("check-circle", "Activer", modal_id="#activate-offer-modal-" + offer.id|string) }}</li>
+      {% endif %}
+      {% if action.VALIDATE in allowed_actions.additional_actions %}
+        <li>{{ action_bar_additional_button("hand-thumbs-up", "Valider", modal_id="#validate-offer-modal-" + offer.id|string) }}</li>
+      {% endif %}
+      {% if action.REJECT in allowed_actions.additional_actions %}
+        <li>{{ action_bar_additional_button("hand-thumbs-down", "Rejeter", modal_id="#reject-offer-modal-" + offer.id|string) }}</li>
+      {% endif %}
+      {% if action.TAG_WEIGHT in allowed_actions.additional_actions %}
+        <li>{{ action_bar_additional_button("tag", "Taguer/Pondérer", modal_id="#edit-offer-modal-" + offer.id|string) }}</li>
+      {% endif %}
+      {% if action.RESYNC in allowed_actions.additional_actions %}
+        <li>
+          {{ action_bar_additional_button("arrow-repeat", "Resync. Algolia", submit_form=url_for('.reindex', offer_id=offer.id) | action_to_name) }}
+        </li>
+      {% endif %}
+      {% if action.EDIT_VENUE in allowed_actions.additional_actions %}
+        <li>{{ action_bar_additional_button("pencil-square", "Modifier le partenaire culturel", modal_id="#edit-offer-venue-modal") }}</li>
+      {% endif %}
+      {% if action.MOVE in allowed_actions.additional_actions %}
+        <li>{{ action_bar_additional_button("arrow-left-right", "Déplacer l'offre", modal_id="#move-offer-modal") }}</li>
+      {% endif %}
+    </ul>
+    <button type="button"
+            class="btn btn-outline-primary-subtle-bg d-flex gap-2"
+            data-bs-toggle="dropdown">
+      Plus d'actions
+      <i class="bi bi-three-dots-vertical"></i>
+    </button>
+  {% endif %}
+{% endblock action_buttons %}
+{% block extra_title_bar %}
+  {% call content_navbar("offer-details") %}
+    {{ content_navbar_element('info', 'Détails') }}
+    {{ content_navbar_element('stocks', 'Stocks') }}
+    {{ content_navbar_element('bookings', 'Réservations') }}
+  {% endcall %}
+{% endblock extra_title_bar %}
+{% block details_container %}
+  {% call details_content_wrapper("offer-details") %}
+    <!-- INFO -->
+    {% call nav_section("info", "Détails de l'offre") %}
+      <div class="d-flex gap-1">
+        <div class="flex-grow-1">
+          {% if offer.idAtProvider or offer.ean %}
+            <h5>Informations techniques</h5>
+            {% if offer.idAtProvider %}
+              {% call description_detail_horizontal("Identifiant chez le fournisseur") %}
+                {{ offer.idAtProvider }}
+                {{ clipboard.copy_to_clipboard(offer.idAtProvider, "Copier") }}
+              {% endcall %}
+            {% endif %}
+            {% if offer.ean %}
+              {% call description_detail_horizontal("EAN") %}
+                {{ offer.ean }}
+                {{ clipboard.copy_to_clipboard(offer.ean, "Copier") }}
+              {% endcall %}
+            {% endif %}
+          {% endif %}
+          <h5>Informations artistiques</h5>
+          {% if offer.extraData.author %}
+            {% call description_detail_horizontal("Auteur") %}
+              {{ offer.extraData.author }}
+            {% endcall %}
+          {% endif %}
+          {% if offer.extraData.editeur %}
+            {% call description_detail_horizontal("Éditeur") %}
+              {{ offer.extraData.editeur }}
+            {% endcall %}
+          {% endif %}
+          {% if offer.extraData.performer %}
+            {% call description_detail_horizontal("Interprète") %}
+              {{ offer.extraData.performer }}
+            {% endcall %}
+          {% endif %}
+          {% if offer.durationMinutes %}
+            {% call description_detail_horizontal("Durée") %}
+              {{ offer.durationMinutes }} minutes
+            {% endcall %}
+          {% endif %}
+          {% if offer.extraData.diffusionVersion %}
+            {% call description_detail_horizontal("Langue") %}
+              {{ offer.extraData.diffusionVersion }}
+            {% endcall %}
+          {% endif %}
+          {% call description_detail_horizontal("Description") %}
+            {{ offer.description | empty_string_if_null | nl2br }}
+          {% endcall %}
+          <h5>Retrait de l'offre</h5>
+          {% call description_detail_horizontal("Informations de retrait") %}
+            {{ offer.withdrawalDetails | empty_string_if_null | nl2br }}
+          {% endcall %}
+          {% call description_detail_horizontal("Email de contact") %}
+            {{ offer.bookingContact | empty_string_if_null | nl2br }}
+            {% if offer.bookingContact %}{{ clipboard.copy_to_clipboard(offer.bookingContact, "Copier") }}{% endif %}
+          {% endcall %}
+          <h5>Accessibilité</h5>
+          <div class="hstack gap-5">
+            {{ accessibility_indicator(logo.handicap_visual() , offer.visualDisabilityCompliant, "Handicap visuel") }}
+            {{ accessibility_indicator(logo.handicap_mental() , offer.mentalDisabilityCompliant, "Handicap mental") }}
+            {{ accessibility_indicator(logo.handicap_motor() , offer.motorDisabilityCompliant, "Handicap moteur") }}
+            {{ accessibility_indicator(logo.handicap_audio() , offer.audioDisabilityCompliant, "Handicap auditif") }}
+          </div>
+          <h5>Notification des réservations</h5>
+          {% call description_detail_horizontal("Email auquel envoyer les notifications") %}
+            {{ offer.bookingEmail | empty_string_if_null }}
+            {% if offer.bookingEmail %}{{ clipboard.copy_to_clipboard(offer.bookingEmail, "Copier") }}{% endif %}
+          {% endcall %}
+        </div>
+        <div class="flex-shrink-1">
+          {% if offer.image %}
+            <figure class="figure">
+              <div class="d-flex justify-content-center align-items-center">
+                <object class="d-block offer-image"
+                        data="{{ offer.image.url }}"
+                        type="image/jpeg">
+                  <div class="d-flex bg-secondary-subtle justify-content-center align-items-center offer-no-image">
+                    <i class="bi bi-file-image fs-2"
+                       data-bs-toggle="tooltip"
+                       data-bs-placement="top"
+                       data-bs-title="Image invalide"></i>
+                  </div>
+                </object>
+              </div>
+              <figcaption class="figure-caption">
+                Crédits&nbsp;:
+                {% if offer.image.credit %}
+                  {{ offer.image.credit }}
+                {% else %}
+                  Non renseigné
+                {% endif %}
+              </figcaption>
+            </figure>
+          {% else %}
+            <div class="d-flex bg-secondary-subtle justify-content-center align-items-center offer-no-image">
+              <i class="bi bi-file-image fs-2"
+                 data-bs-toggle="tooltip"
+                 data-bs-placement="top"
+                 data-bs-title="Pas d'image"></i>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endcall %}
+    {# section info #}
+    <!-- STOCKS Table -->
+    {% call nav_section("stocks", "Stocks") %}
+      <table class="table table-borderless table-hover">
+        {% set show_price_category = offer.stocks | map(attribute="priceCategory") | any %}
+        <thead class="table-light">
+          <tr class="table-secondary fs-7">
+            <th></th>
+            <th>ID</th>
+            <th>Stock réservé</th>
+            <th>Stock restant</th>
+            {% if show_price_category %}<th>Tarif</th>{% endif %}
+            <th>Prix</th>
+            {% if offer.isEvent %}
+              <th>Date / Heure</th>
+              <th>Fin des réservations</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for stock in offer.stocks | sort(attribute="id", reverse=True) | sort(attribute="isSoftDeleted") | sort(attribute="beginningDatetime", reverse=True) %}
+            <tr>
+              <td>
+                {% if stock.id in editable_stock_ids and has_permission("MANAGE_OFFERS") %}
+                  <div class="dropdown">
+                    <button type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            class="btn p-0">
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li class="dropdown-item">
+                        <a class="btn btn-sm d-block w-100 text-start px-3"
+                           data-bs-toggle="modal"
+                           data-bs-target="#edit-offer-stock-modal-{{ stock.id }}">Modifier</a>
+                      </li>
+                    </ul>
+                  </div>
+                {% endif %}
+              </td>
+              <td>{{ stock.id }}</td>
+              <td>{{ stock.dnBookedQuantity }}</td>
+              <td>
+                {% if stock.isSoftDeleted %}
+                  {{ "supprimé" | format_badge("secondary") }}
+                {% elif stock.remainingStock is none %}
+                  Illimité
+                {% else %}
+                  {{ stock.remainingStock }}
+                {% endif %}
+              </td>
+              {% if show_price_category %}
+                <td>
+                  {% if stock.priceCategory %}{{ stock.priceCategory.label }}{% endif %}
+                </td>
+              {% endif %}
+              <td>
+                {% if stock.priceCategory %}
+                  {{ stock.priceCategory.price | format_amount(target=offer.venue) }}{# same as PC Pro which shows priceCategory.price #}
+                {% else %}
+                  {{ stock.price | format_amount(target=offer.venue) }}
+                {% endif %}
+              </td>
+              {% if offer.isEvent %}
+                <td>{{ stock.beginningDatetime | format_date_time }}</td>
+                <td>{{ stock.bookingLimitDatetime | format_date_time }}</td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endcall %}
+    {# section stocks #}
+    <!-- DOWNLOAD BOOKINGS CSV -->
+    {% call nav_section("bookings", "Réservations") %}
+      <span>Choisissez le format pour exporter les réservations&nbsp;:</span>
+      <div class="hstack gap-4 py-2">
+        <a href="{{ url_for('backoffice_web.offer.download_bookings_csv', offer_id=offer.id) }}"
+           data-bs-toggle="tooltip"
+           data-bs-placement="top"
+           data-bs-title="Télécharger au format CSV"
+           class="btn btn-outline-primary-subtle-bg border rounded-xs">
+          <i class="bi bi-filetype-csv fs-2 text-body"></i>
+        </a>
+        <a href="{{ url_for('backoffice_web.offer.download_bookings_xlsx', offer_id=offer.id) }}"
+           class="btn btn-outline-primary-subtle-bg border rounded-xs"
+           data-bs-toggle="tooltip"
+           data-bs-placement="top"
+           data-bs-title="Télécharger au format Excel">
+          <i class="bi bi-filetype-xlsx fs-2 text-body"></i>
+        </a>
+      </div>
+    {% endcall %}
+    {# section bookings #}
+  {% endcall %}
+  {# details_content_container #}
+{% endblock details_container %}
+{% block side_column %}
+  <!-- BUTTONS -->
+  <div class="btn-group align-self-start">
+    <a type="button"
+       class="btn btn-outline-primary-subtle-bg"
+       href="{{ offer | webapp_offer_link }}"
+       data-bs-toggle="tooltip"
+       data-bs-placement="top"
+       data-bs-title="Prévisualiser l’offre sur l’app jeune"
+       target="_blank">
+      Voir app Jeune
+      <i class="bi bi-phone"></i>
+    </a>
+    {% call build_connect_as(connect_as) %}
+      <button type="button"
+              class="btn btn-outline-primary-subtle-bg"
+              href="{{ connect_as.href }}"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              data-bs-title="Accéder à l'offre sur PC Pro"
+              data-submit-form="{{ connect_as.formName }}">
+        Accéder PC Pro
+        <i class="bi bi-briefcase"></i>
+      </button>
+    {% endcall %}
+  </div>
+  <div>
+    {% call description_detail_vertical("Offer ID") %}
+      {{ offer.id }}
+      {{ clipboard.copy_to_clipboard(offer.id, "Copier") }}
+    {% endcall %}
+    {% call description_detail_vertical("Catégorie") %}
+      {{ offer.subcategoryId | format_offer_category }}
+    {% endcall %}
+    {% call description_detail_vertical("Sous-catégorie") %}
+      {{ offer.subcategoryId | format_offer_subcategory }}
+    {% endcall %}
+    {% set extra_data = offer.product.extraData if offer.product else offer.extraData %}
+    {% if extra_data.gtl_id %}
+      {% call description_detail_vertical("Type de musique") %}
+        {{ extra_data.gtl_id | format_music_gtl_id }}
+      {% endcall %}
+    {% endif %}
+    {% if extra_data.showType or extra_data.showSubType %}
+      {% call description_detail_vertical("Type de spectacle") %}
+        {{ extra_data.showType | format_show_type }} - {{ extra_data.showSubType | format_show_subtype }}
+      {% endcall %}
+    {% endif %}
+    {% if extra_data.genres %}
+      {% call description_detail_vertical("Genres") %}
+        {{ extra_data.genres | format_string_list }}
+      {% endcall %}
+    {% endif %}
+    {% if offer.product %}
+      {% call description_detail_vertical("Produit") %}
+        {{ offer.product.name }} ({{ offer.productId }})
+      {% endcall %}
+    {% endif %}
+    {% call description_detail_vertical("Statut") %}
+      {{ offer.status | format_offer_status }}
+    {% endcall %}
+    <hr />
+    {% call description_detail_vertical("Entité juridique") %}
+      <div class="vstack gap-1">
+        <div>{{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}</div>
+        {% call badges.badges_container() %}
+          {{ badges.build_offer_offerer_fraud_badges(offer.venue.managingOfferer) }}
+        {% endcall %}
+      </div>
+    {% endcall %}
+    {% call description_detail_vertical("Partenaire culturel") %}
+      <div class="vstack gap-1">
+        <div>{{ links.build_venue_name_to_details_link(offer.venue) }}</div>
+        {% call badges.badges_container() %}
+          {{ badges.build_offer_venue_fraud_badges(offer.venue) }}
+        {% endcall %}
+      </div>
+    {% endcall %}
+    {% if offer.offererAddress %}
+      {% call description_detail_vertical("Localisation") %}
+        {{ offer.offererAddress.label | empty_string_if_null }}
+        {% if offer.offererAddress.address.street %}
+          {% if offer.offererAddress.label %}<br />{% endif %}
+          {{ offer.offererAddress.address.street }}
+        {% endif %}
+        <br />
+        {{ offer.offererAddress.address.postalCode }} {{ offer.offererAddress.address.city }}
+        <br />
+        {{ links.build_external_address_link(offer.offererAddress.address) }}
+      {% endcall %}
+    {% endif %}
+    <hr />
+    {% set tags_title %}
+      Tags
+      {% if has_permission("MANAGE_OFFERS") %}
+        <button type="button"
+                class="btn p-0"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                data-bs-title="Taguer l'offre">
+          <span data-bs-toggle="modal"
+                data-bs-target="#edit-offer-modal-{{ offer.id }}">
+            <i class="bi bi-pencil-square"></i>
+          </span>
+        </button>
+      {% endif %}
+    {% endset %}
+    {% call description_detail_vertical(tags_title) %}
+      {% if offer.criteria %}
+        {% call badges.badges_container() %}
+          {{ offer.criteria | sort(attribute="name") | format_tag_object_list }}
+        {% endcall %}
+      {% else %}
+        Aucun tag
+      {% endif %}
+    {% endcall %}
+    {% if has_permission("PRO_FRAUD_ACTIONS") %}
+      {% set compliance_score = offer.compliance.compliance_score if offer.compliance else "" %}
+      {% set compliance_reasons = offer.compliance.compliance_reasons if offer.compliance else none %}
+      {% if compliance_score or compliance_reasons %}<hr />{% endif %}
+      {% if compliance_score %}
+        {% call description_detail_vertical("Score data") %}
+          {{ compliance_score }}
+        {% endcall %}
+        {% if compliance_reasons %}
+          {% call description_detail_vertical("Raison de score faible") %}
+            {% call badges.badges_container() %}
+              {{ compliance_reasons | format_compliance_reasons }}
+            {% endcall %}
+          {% endcall %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+    {% if offer.lastValidationDate or offer.lastValidationAuthor %}<hr />{% endif %}
+    {% if offer.lastValidationDate %}
+      {% call description_detail_vertical("Date de la dernière validation") %}
+        {{ offer.lastValidationDate | format_date_time }}
+      {% endcall %}
+    {% endif %}
+    {% if offer.lastValidationAuthor %}
+      {% call description_detail_vertical("Utilisateur de la dernière validation") %}
+        {{ offer.lastValidationAuthor.full_name }}
+      {% endcall %}
     {% endif %}
   </div>
-{% endblock main_content %}
+{% endblock side_column %}
+{% block extra_main_content %}
+  <!-- HIDDEN FORMS/AND MODALS -->
+  {% if has_permission("MANAGE_OFFERS") %}
+    {% for stock_id in editable_stock_ids %}
+      {{ build_lazy_modal(url_for('backoffice_web.offer.get_offer_stock_edit_form', offer_id=offer.id, stock_id=stock_id) , "edit-offer-stock-modal-" + stock_id|string) }}
+    {% endfor %}
+  {% endif %}
+  {% if action.DEACTIVATE in allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice_web.offer.get_deactivate_offer_form', offer_id=offer.id) , "deactivate-offer-modal-" + offer.id|string) }}
+  {% endif %}
+  {% if action.ACTIVATE in allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice_web.offer.get_activate_offer_form', offer_id=offer.id) , "activate-offer-modal-" + offer.id|string) }}
+  {% endif %}
+  {% if action.VALIDATE in allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice_web.offer.get_validate_offer_form', offer_id=offer.id) , "validate-offer-modal-" + offer.id|string) }}
+  {% endif %}
+  {% if action.REJECT in allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice_web.offer.get_reject_offer_form', offer_id=offer.id) , "reject-offer-modal-" + offer.id|string) }}
+  {% endif %}
+  {% if action.TAG_WEIGHT in allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice_web.offer.get_edit_offer_form', offer_id=offer.id) , "edit-offer-modal-" + offer.id|string) }}
+  {% endif %}
+  {% if action.RESYNC in allowed_actions %}
+    <form type="button"
+          action="{{ url_for('.reindex', offer_id=offer.id) }}"
+          name="{{ url_for('.reindex', offer_id=offer.id) | action_to_name }}"
+          method="post"
+          class="d-none">
+      {{ reindex_offer_form.csrf_token }}
+    </form>
+  {% endif %}
+  {% if action.EDIT_VENUE in allowed_actions %}
+    {{ build_simple_modal_form("edit-offer-venue", url_for("backoffice_web.offer.edit_offer_venue", offer_id=offer.id) , edit_offer_venue_form, "Modifier le partenaire culturel", "Enregistrer") }}
+  {% endif %}
+  {% if action.MOVE in allowed_actions %}
+    {{ build_simple_modal_form("move-offer", url_for("backoffice_web.offer.move_offer", offer_id=offer.id) , move_offer_form, "Déplacer l'offre", "Enregistrer") }}
+  {% endif %}
+{% endblock extra_main_content %}

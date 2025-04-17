@@ -1196,7 +1196,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
     )
 
     return render_template(
-        "offer/details_v2.html" if FeatureToggle.WIP_ENABLE_BO_OFFER_DETAILS_V2 else "offer/details.html",
+        "offer/details.html",
         offer=offer,
         active_tab=request.args.get("active_tab", "stock"),
         editable_stock_ids=editable_stock_ids,
