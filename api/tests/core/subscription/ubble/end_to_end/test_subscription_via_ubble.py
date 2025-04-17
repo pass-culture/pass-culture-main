@@ -215,6 +215,7 @@ class UbbleDummyWebhookTest:
 
 
 @pytest.mark.usefixtures("db_session")
+@pytest.mark.features(WIP_UBBLE_V2=False)
 class UbbleEndToEndTest:
     def _get_ubble_webhook_signature(self, payload):
         timestamp = str(int(time.time()))
