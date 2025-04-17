@@ -45,19 +45,21 @@ export function StocksCalendarFormMultipleDays({
         const weekDaysInBetween =
           start && end ? getWeekDaysInBetweenDates(start, end) : []
 
-        form.setValue(
-          'multipleDaysWeekDays',
-          weekDays.map((d) => ({
-            ...d,
-            //  If there is no end date, all week days are intially checked
-            checked: end
-              ? weekDaysInBetween.some(
-                  (dInBetween) => dInBetween.value === d.value
-                )
-              : true,
-          }))
-        )
-        await form.trigger('multipleDaysWeekDays')
+        setTimeout(async () => {
+          form.setValue(
+            'multipleDaysWeekDays',
+            weekDays.map((d) => ({
+              ...d,
+              //  If there is no end date, all week days are intially checked
+              checked: end
+                ? weekDaysInBetween.some(
+                    (dInBetween) => dInBetween.value === d.value
+                  )
+                : true,
+            }))
+          )
+          await form.trigger('multipleDaysWeekDays')
+        })
       }
     })
     return () => subscription.unsubscribe()

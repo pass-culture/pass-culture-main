@@ -34,7 +34,7 @@ export function StocksCalendarForm({
   onAfterValidate,
 }: StocksCalendarFormProps) {
   const notify = useNotification()
-  const form = useForm<StocksCalendarFormValues>({
+  const form = useForm<StocksCalendarFormValues, any, any>({
     defaultValues: {
       durationType: DurationTypeOption.ONE_DAY,
       timeSlotType: TimeSlotTypeOption.SPECIFIC_TIME,
@@ -55,7 +55,7 @@ export function StocksCalendarForm({
       multipleDaysWeekDays: [],
     },
     mode: 'onTouched',
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver<StocksCalendarFormValues, any, any>(validationSchema),
   })
 
   const onSubmit = async () => {
