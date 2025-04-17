@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { forwardRef } from 'react'
 
+import * as useNotification from 'commons/hooks/useNotification'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
@@ -43,10 +44,8 @@ const renderImageUploader = (props: ImageDragAndDropUploaderProps) =>
   renderWithProviders(<ImageDragAndDropUploader {...props} />)
 
 describe('ImageDragAndDropUploader', () => {
-  let props: ImageDragAndDropUploaderProps
-
-  beforeEach(() => {
-    props = {
+  it('should render image uploader for existing file', () => {
+    renderImageUploader({
       onImageUpload: async () => {},
       onImageDelete: async () => {},
       mode: UploaderModeEnum.OFFER,
@@ -61,11 +60,8 @@ describe('ImageDragAndDropUploader', () => {
           widthCropPercent: 1,
         },
       },
-    }
-  })
+    })
 
-  it('should render image uploader for existing file', () => {
-    renderImageUploader(props)
     expect(
       screen.getByAltText('Prévisualisation de l’image')
     ).toBeInTheDocument()
@@ -82,12 +78,12 @@ describe('ImageDragAndDropUploader', () => {
   })
 
   it('should render image uploader without file', () => {
-    props = {
+    renderImageUploader({
       onImageUpload: async () => {},
       onImageDelete: async () => {},
       mode: UploaderModeEnum.OFFER,
-    }
-    renderImageUploader(props)
+    })
+
     expect(
       screen.queryByAltText('Prévisualisation de l’image')
     ).not.toBeInTheDocument()
@@ -109,13 +105,11 @@ describe('ImageDragAndDropUploader', () => {
       type: 'image/jpeg',
     })
 
-    props = {
+    renderImageUploader({
       onImageUpload: mockUpload,
       onImageDelete: async () => {},
       mode: UploaderModeEnum.OFFER,
-    }
-
-    renderImageUploader(props)
+    })
 
     const inputField = screen.getByLabelText('Importez une image')
     await userEvent.upload(inputField, mockFile)
@@ -131,5 +125,41 @@ describe('ImageDragAndDropUploader', () => {
     await userEvent.click(screen.getByText('Enregistrer'))
 
     expect(mockUpload).toHaveBeenCalled()
+  })
+
+  it('should delete an image', async () => {
+    const mockDelete = vi.fn()
+    const mockNotifySuccess = vi.fn()
+
+    const notifsImport = (await vi.importActual(
+      'commons/hooks/useNotification'
+    )) as ReturnType<typeof useNotification.useNotification>
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+      ...notifsImport,
+      success: mockNotifySuccess,
+    }))
+
+    renderImageUploader({
+      onImageUpload: async () => {},
+      onImageDelete: mockDelete,
+      mode: UploaderModeEnum.OFFER,
+      initialValues: {
+        imageUrl: 'noimage.jpg',
+        originalImageUrl: 'noimage.jpg',
+        credit: 'John Do',
+        cropParams: {
+          xCropPercent: 100,
+          yCropPercent: 100,
+          heightCropPercent: 1,
+          widthCropPercent: 1,
+        },
+      },
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: /Supprimer/i }))
+    expect(mockDelete).toHaveBeenCalled()
+    expect(mockNotifySuccess).toHaveBeenCalledWith(
+      'L’image a bien été supprimée'
+    )
   })
 })

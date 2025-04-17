@@ -32,3 +32,10 @@
     aspect-ratio: 2 / 3;
   }
 }
+
+.button-image-delete {
+  &-icon {
+    margin-right: rem.torem(8px);
+    width: rem.torem(20px);
+  }
+}
