@@ -1899,11 +1899,13 @@
   resolved "https://registry.yarnpkg.com/@radix-ui/rect/-/rect-1.1.1.tgz#78244efe12930c56fd255d7923865857c41ac8cb"
   integrity sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==
 
-"@reduxjs/toolkit@^2.6.1":
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-2.6.1.tgz#532ef3d3f1656461b421f0ba0a4fa1628163a0c5"
-  integrity sha512-SSlIqZNYhqm/oMkXbtofwZSt9lrncblzo6YcZ9zoX+zLngRBrCOjK4lNLdkNucJF58RHOWrD9txT3bT3piH7Zw==
+"@reduxjs/toolkit@^2.7.0":
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-2.7.0.tgz#6a8823aa741a5aab2a2ce58e6326243f36fe31f2"
+  integrity sha512-XVwolG6eTqwV0N8z/oDlN93ITCIGIop6leXlGJI/4EKy+0POYkR+ABHRSdGXY+0MQvJBP8yAzh+EYFxTuvmBiQ==
   dependencies:
+    "@standard-schema/spec" "^1.0.0"
+    "@standard-schema/utils" "^0.3.0"
     immer "^10.0.3"
     redux "^5.0.1"
     redux-thunk "^3.1.0"
@@ -2085,6 +2087,16 @@
     "@sentry/browser" "9.12.0"
     "@sentry/core" "9.12.0"
     hoist-non-react-statics "^3.3.2"
+
+"@standard-schema/spec@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@standard-schema/spec/-/spec-1.0.0.tgz#f193b73dc316c4170f2e82a881da0f550d551b9c"
+  integrity sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==
+
+"@standard-schema/utils@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@standard-schema/utils/-/utils-0.3.0.tgz#3d5e608f16c2390c10528e98e59aef6bf73cae7b"
+  integrity sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==
 
 "@storybook/addon-a11y@^8.6.12":
   version "8.6.12"
