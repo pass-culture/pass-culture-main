@@ -12,7 +12,6 @@ import {
 } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ImageEditor/ImageEditor'
 import { coordonateToPosition } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageCrop/ImageEditor/utils'
 import { modeValidationConstraints } from 'components/ImageUploader/components/ButtonImageEdit/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/constants'
-import { AppPreviewOffer } from 'components/ImageUploader/components/ImagePreview/components/AppPreviewOffer/AppPreviewOffer'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import fullDownloadIcon from 'icons/full-download.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -53,14 +52,12 @@ export const ModalImageCrop = ({
   initialPosition,
   initialScale,
   mode,
-  imageUrl,
 }: ModalImageCropProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const { width, height } = useGetImageBitmap(image)
   const editorRef = useRef<AvatarEditor>(null)
   const notification = useNotification()
   const [credit, setCredit] = useState(initialCredit || '')
-  const [dataUrl, setDataUrl] = useState<string>(imageUrl || '')
 
   const minWidth = modeValidationConstraints[mode].minWidth
 
@@ -71,7 +68,7 @@ export const ModalImageCrop = ({
 
   const AppPreview = {
     [UploaderModeEnum.VENUE]: () => <></>,
-    [UploaderModeEnum.OFFER]: AppPreviewOffer,
+    [UploaderModeEnum.OFFER]: () => <></>,
     [UploaderModeEnum.OFFER_COLLECTIVE]: () => <></>,
   }[mode]
 
@@ -126,7 +123,6 @@ export const ModalImageCrop = ({
     try {
       if (editorRef.current) {
         const canvas = editorRef.current.getImage()
-        setDataUrl(canvas.toDataURL())
 
         const croppingRect = editorRef.current.getCroppingRect()
 
@@ -199,7 +195,7 @@ export const ModalImageCrop = ({
               </Dialog.Close>
             </div>
           </div>
-          <AppPreview imageUrl={dataUrl} />
+          <AppPreview />
         </div>
 
         <TextInput

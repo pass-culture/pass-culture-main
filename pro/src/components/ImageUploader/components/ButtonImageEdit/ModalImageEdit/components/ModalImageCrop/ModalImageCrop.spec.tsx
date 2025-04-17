@@ -78,11 +78,11 @@ describe('ModalImageCrop', () => {
     })
   })
 
-  it('should display preview when it is offer mode', async () => {
+  it('should not display preview when it is offer mode', async () => {
     const { queryByText } = renderModalImageCrop()
 
     await waitFor(() => {
-      expect(queryByText(previewDescription)).toBeInTheDocument()
+      expect(queryByText(previewDescription)).not.toBeInTheDocument()
     })
   })
 
