@@ -25,6 +25,7 @@ from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.connectors.titelive import get_new_product_from_ean13
 from pcapi.core import search
 import pcapi.core.bookings.api as bookings_api
+import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.bookings.repository as bookings_repository
@@ -2189,3 +2190,27 @@ def update_event_opening_hours(
                     eventOpeningHours=event, weekday=models.Weekday[weekday], timeSpans=time_spans
                 )
             )
+
+
+def delete_event_opening_hours(event_opening_hours: offers_models.EventOpeningHours) -> None:
+    """Delete an offer's opening hours and cancel its related bookings.
+
+    No database row in really deleted, it is marked as soft deleted instead.
+    Same for any of its offer's stocks.
+    """
+    event_opening_hours.isSoftDeleted = True
+    for stock in event_opening_hours.offer.stocks:
+        stock.isSoftDeleted = True
+
+        for booking in stock.bookings:
+            try:
+                bookings_api.cancel_booking_by_offerer(booking)
+            except (bookings_exceptions.BookingIsAlreadyCancelled, bookings_exceptions.BookingIsAlreadyRefunded):
+                # this should not happen but it can safely be ignored since
+                # the main goal here is to block the user from using its
+                # booking.
+                continue
+            except bookings_exceptions.BookingIsAlreadyUsed:
+                raise exceptions.EventOpeningHoursException(
+                    field="booking", msg=f"booking #{booking.id} is already used, it cannot be cancelled"
+                )

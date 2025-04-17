@@ -1949,6 +1949,30 @@ export class DefaultService {
     });
   }
   /**
+   * delete_event_opening_hours <DELETE>
+   * @param offerId
+   * @param eventOpeningHoursId
+   * @returns void
+   * @throws ApiError
+   */
+  public deleteEventOpeningHours(
+    offerId: number,
+    eventOpeningHoursId: number,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'DELETE',
+      url: '/offers/{offer_id}/event_opening_hours/{event_opening_hours_id}',
+      path: {
+        'offer_id': offerId,
+        'event_opening_hours_id': eventOpeningHoursId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * update_event_opening_hours <PATCH>
    * @param offerId
    * @param eventOpeningHoursId
