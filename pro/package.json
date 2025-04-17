@@ -46,7 +46,7 @@
     "@radix-ui/react-tabs": "^1.1.4",
     "@reduxjs/toolkit": "^2.6.1",
     "@sentry/browser": "^9.12.0",
-    "@sentry/react": "^9.12.0",
+    "@sentry/react": "^9.13.0",
     "@zootools/email-spell-checker": "^1.12.0",
     "chart.js": "^4.4.9",
     "chartjs-adapter-date-fns": "^3.0.0",
