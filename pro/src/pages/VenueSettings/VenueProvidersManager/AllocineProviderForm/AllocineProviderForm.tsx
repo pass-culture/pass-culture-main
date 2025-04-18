@@ -1,6 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 
 import { PostVenueProviderBody } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -50,7 +50,33 @@ export const AllocineProviderForm = ({
   const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
 
-  const handleSubmit = async (formValues: FormValuesProps) => {
+  // React Hook Form setup
+  const form = useForm<FormValuesProps>({
+    defaultValues: initialValues,
+    resolver: async (data) => {
+      // Using validation schema here
+      try {
+        await validationSchema.validate(data, { abortEarly: false })
+        return { values: data, errors: {} }
+      } catch (err) {
+        return {
+          values: {},
+          errors: err.inner.reduce((acc: any, curr: any) => {
+            acc[curr.path] = { message: curr.message }
+            return acc
+          }, {}),
+        }
+      }
+    },
+  })
+
+  const {
+    handleSubmit,
+    control,
+    formState: { isSubmitting, isValid, errors },
+  } = form
+
+  const handleFormSubmit = async (formValues: FormValuesProps) => {
     const { isDuo = true } = formValues
     const quantity =
       formValues.quantity !== '' ? Number(formValues.quantity) : undefined
@@ -67,6 +93,9 @@ export const AllocineProviderForm = ({
     setIsLoading(true)
 
     const isSuccess = await saveVenueProvider(payload)
+
+    setIsLoading(false)
+
     logEvent(SynchronizationEvents.CLICKED_IMPORT, {
       offererId: offererId,
       venueId: venueId,
@@ -75,23 +104,19 @@ export const AllocineProviderForm = ({
     })
   }
 
-  const formik = useFormik({
-    initialValues,
-    onSubmit: handleSubmit,
-    validationSchema,
-  })
-
   return (
-    <FormikProvider value={formik}>
-      {!isLoading && (
-        <>
-          <div
-            className={styles['form-content']}
-            data-testid="allocine-provider-form"
-          >
-            <FormLayout.Row className={styles['form-layout-row']}>
+    <form onSubmit={handleSubmit(handleFormSubmit)}>
+      <div
+        className={styles['form-content']}
+        data-testid="allocine-provider-form"
+      >
+        <FormLayout.Row className={styles['form-layout-row']}>
+          <Controller
+            name="price"
+            control={control}
+            render={({ field }) => (
               <TextInput
-                name="price"
+                {...field}
                 type="number"
                 label="Prix de vente/place"
                 min="0"
@@ -100,51 +125,60 @@ export const AllocineProviderForm = ({
                 className={styles['price-input']}
                 required
               />
+            )}
+          />
+          <Controller
+            name="quantity"
+            control={control}
+            render={({ field }) => (
               <QuantityInput
+                {...field}
                 label="Nombre de places/séance"
                 className={styles['nb-places-input']}
                 isOptional
                 min={1}
               />
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <DuoCheckbox isChecked={formik.values.isDuo} />
-            </FormLayout.Row>
-            <Callout className={styles['allocine-provider-form-banner']}>
-              Pour le moment, seules les séances "classiques" peuvent être
-              importées. Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne
-              génèreront pas d’offres. Nous travaillons actuellement à l’ajout
-              de séances spécifiques.
-            </Callout>
-          </div>
-          <DialogBuilder.Footer>
-            <div className={styles['allocine-provider-form-actions']}>
-              {!isCreatedEntity ? (
-                <Dialog.Close asChild>
-                  <Button variant={ButtonVariant.SECONDARY} type="button">
-                    Annuler
-                  </Button>
-                </Dialog.Close>
-              ) : (
-                <></>
-              )}
+            )}
+          />
+        </FormLayout.Row>
+        <FormLayout.Row>
+          <Controller
+            name="isDuo"
+            control={control}
+            render={({ field }) => <DuoCheckbox {...field} />}
+          />
+        </FormLayout.Row>
+        <Callout className={styles['allocine-provider-form-banner']}>
+          Pour le moment, seules les séances "classiques" peuvent être
+          importées. Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne
+          génèreront pas d’offres. Nous travaillons actuellement à l’ajout de
+          séances spécifiques.
+        </Callout>
+      </div>
+      <DialogBuilder.Footer>
+        <div className={styles['allocine-provider-form-actions']}>
+          {!isCreatedEntity ? (
+            <Dialog.Close asChild>
+              <Button variant={ButtonVariant.SECONDARY} type="button">
+                Annuler
+              </Button>
+            </Dialog.Close>
+          ) : (
+            <></>
+          )}
 
-              <Dialog.Close asChild>
-                <Button
-                  onClick={() => handleSubmit(formik.values)}
-                  type="button"
-                  isLoading={isLoading}
-                  disabled={
-                    !formik.isValid || typeof formik.values.price !== 'number'
-                  }
-                >
-                  {isCreatedEntity ? 'Lancer la synchronisation' : 'Modifier'}
-                </Button>
-              </Dialog.Close>
-            </div>
-          </DialogBuilder.Footer>
-        </>
-      )}
-    </FormikProvider>
+          <Dialog.Close asChild>
+            <Button
+              type="button"
+              isLoading={isSubmitting}
+              disabled={!isValid || !errors}
+              onClick={() => handleFormSubmit(form.getValues())}
+            >
+              {isCreatedEntity ? 'Lancer la synchronisation' : 'Modifier'}
+            </Button>
+          </Dialog.Close>
+        </div>
+      </DialogBuilder.Footer>
+    </form>
   )
 }

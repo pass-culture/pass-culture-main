@@ -1,6 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { Form, FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 
 import { PostVenueProviderBody } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -38,40 +38,52 @@ export const CinemaProviderForm = ({
   const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
 
+  // React Hook Form setup
+  const form = useForm<CinemaProviderFormValues>({
+    defaultValues: initialValues
+      ? initialValues
+      : DEFAULT_CINEMA_PROVIDER_FORM_VALUES,
+  })
+
+  const {
+    handleSubmit,
+    control,
+    formState: { isSubmitting },
+  } = form
+
   const handleFormSubmit = async (values: CinemaProviderFormValues) => {
     const payload = {
       providerId,
       venueId,
       isDuo: values.isDuo,
-      isActive: values.isActive,
+      isActive: initialValues?.isActive,
     }
 
     setIsLoading(true)
 
     const isSuccess = await saveVenueProvider(payload)
     logEvent(SynchronizationEvents.CLICKED_IMPORT, {
-      offererId: offererId,
-      venueId: venueId,
-      providerId: providerId,
+      offererId,
+      venueId,
+      providerId,
       saved: isSuccess,
     })
   }
-  const formik = useFormik({
-    initialValues: initialValues
-      ? initialValues
-      : DEFAULT_CINEMA_PROVIDER_FORM_VALUES,
-    onSubmit: handleFormSubmit,
-  })
 
   return (
-    <FormikProvider value={formik}>
+    <>
       {!isLoading && (
-        <Form
+        <form
           className={styles['cinema-provider-form']}
           data-testid="cinema-provider-form"
         >
           <FormLayout.Row className={styles['cinema-provider-form-content']}>
-            <DuoCheckbox isChecked={formik.values.isDuo} />
+            {/* Using Controller to manage custom inputs */}
+            <Controller
+              name="isDuo"
+              control={control}
+              render={({ field }) => <DuoCheckbox {...field} />}
+            />
           </FormLayout.Row>
 
           <DialogBuilder.Footer>
@@ -79,8 +91,8 @@ export const CinemaProviderForm = ({
               <Button
                 type="button"
                 variant={ButtonVariant.PRIMARY}
-                isLoading={formik.isSubmitting}
-                onClick={() => handleFormSubmit(formik.values)}
+                isLoading={isSubmitting}
+                onClick={() => handleFormSubmit(form.getValues())}
               >
                 Lancer la synchronisation
               </Button>
@@ -99,7 +111,8 @@ export const CinemaProviderForm = ({
                   <Button
                     type="submit"
                     variant={ButtonVariant.PRIMARY}
-                    isLoading={formik.isSubmitting}
+                    isLoading={isSubmitting}
+                    onClick={() => handleFormSubmit(form.getValues())}
                   >
                     Modifier
                   </Button>
@@ -107,8 +120,8 @@ export const CinemaProviderForm = ({
               </div>
             )}
           </DialogBuilder.Footer>
-        </Form>
+        </form>
       )}
-    </FormikProvider>
+    </>
   )
 }
