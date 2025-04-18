@@ -149,7 +149,6 @@ describe('RequestFormDialog', () => {
       success: notifySuccess,
       error: vi.fn(),
       information: vi.fn(),
-      pending: vi.fn(),
       close: vi.fn(),
     }))
 
@@ -188,7 +187,6 @@ describe('RequestFormDialog', () => {
       success: vi.fn(),
       error: notifyError,
       information: vi.fn(),
-      pending: vi.fn(),
       close: vi.fn(),
     }))
 

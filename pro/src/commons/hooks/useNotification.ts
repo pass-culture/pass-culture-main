@@ -11,7 +11,6 @@ import {
 export enum NotificationTypeEnum {
   SUCCESS = 'success',
   ERROR = 'error',
-  PENDING = 'pending',
   INFORMATION = 'information',
 }
 
@@ -45,8 +44,6 @@ export const useNotification = () => {
         notify(msg, NotificationTypeEnum.SUCCESS, options),
       error: (msg: string | null, options: Options = {}) =>
         notify(msg, NotificationTypeEnum.ERROR, options),
-      pending: (msg: string | null, options: Options = {}) =>
-        notify(msg, NotificationTypeEnum.PENDING, options),
       information: (msg: string | null, options: Options = {}) =>
         notify(msg, NotificationTypeEnum.INFORMATION, options),
       close: () => dispatch(closeNotification()),

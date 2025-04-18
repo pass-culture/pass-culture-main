@@ -24,7 +24,6 @@ vi.mock('apiClient/api', () => ({
 const mockUseNotification = {
   close: vi.fn(),
   error: vi.fn(),
-  pending: vi.fn(),
   information: vi.fn(),
   success: vi.fn(),
 }

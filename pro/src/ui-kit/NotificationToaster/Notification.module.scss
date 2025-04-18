@@ -14,6 +14,7 @@
   visibility: hidden;
   white-space: pre-line;
   z-index: 1000;
+  color: var(--color-text-default);
 
   &.show {
     animation-duration: 0.8s;
@@ -69,30 +70,34 @@
     }
   }
 
-  &.is-success {
-    background-color: var(--color-valid);
-    color: var(--color-white);
-  }
-
-  &.is-error {
-    background-color: var(--color-error-light);
-    color: var(--color-white);
-  }
-
-  &.is-pending {
-    background-color: var(--color-accent);
-    color: var(--color-white);
-  }
-
-  &.is-information {
-    background-color: var(--color-accent);
-    color: var(--color-white);
-  }
-
   .icon {
     flex: 0 0 rem.torem(40px);
     padding-right: rem.torem(8px);
     width: rem.torem(40px);
-    color: var(--color-white);
+    color: var(--color-icon-default);
+  }
+
+  &.is-success {
+    background-color: var(--color-background-success);
+
+    .icon {
+      color: var(--color-icon-success);
+    }
+  }
+
+  &.is-error {
+    background-color: var(--color-background-error);
+
+    .icon {
+      color: var(--color-icon-error);
+    }
+  }
+
+  &.is-information {
+    background-color: var(--color-background-info);
+
+    .icon {
+      color: var(--color-icon-info);
+    }
   }
 }

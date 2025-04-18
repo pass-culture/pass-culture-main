@@ -225,7 +225,6 @@ describe('HeadlineOfferContext', () => {
           success: notifySuccess,
           error: vi.fn(),
           information: vi.fn(),
-          pending: vi.fn(),
           close: vi.fn(),
         }))
 
@@ -245,7 +244,6 @@ describe('HeadlineOfferContext', () => {
           success: vi.fn(),
           error: notifyError,
           information: vi.fn(),
-          pending: vi.fn(),
           close: vi.fn(),
         }))
 
@@ -333,7 +331,6 @@ describe('HeadlineOfferContext', () => {
           success: notifySuccess,
           error: vi.fn(),
           information: vi.fn(),
-          pending: vi.fn(),
           close: vi.fn(),
         }))
 
@@ -353,7 +350,6 @@ describe('HeadlineOfferContext', () => {
           success: vi.fn(),
           error: notifyError,
           information: vi.fn(),
-          pending: vi.fn(),
           close: vi.fn(),
         }))
 

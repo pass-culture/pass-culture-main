@@ -46,7 +46,6 @@ describe('StatusToggleButton', () => {
       success: notifySuccess,
       error: vi.fn(),
       information: vi.fn(),
-      pending: vi.fn(),
       close: vi.fn(),
     }))
 
@@ -82,7 +81,6 @@ describe('StatusToggleButton', () => {
       success: notifySuccess,
       error: vi.fn(),
       information: vi.fn(),
-      pending: vi.fn(),
       close: vi.fn(),
     }))
 
@@ -119,7 +117,6 @@ describe('StatusToggleButton', () => {
       error: notifyError,
       success: vi.fn(),
       information: vi.fn(),
-      pending: vi.fn(),
       close: vi.fn(),
     }))
 

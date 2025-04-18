@@ -44,7 +44,6 @@ const renderOffers = (
   })
 }
 
-
 const proVenues = [
   {
     id: 'JI',
@@ -86,7 +85,6 @@ describe('TemplateCollectiveOffersScreen', () => {
   let offersRecap: CollectiveOfferResponseModel[]
 
   const mockNotifyError = vi.fn()
-  const mockNotifyPending = vi.fn()
   const mockNotifySuccess = vi.fn()
   beforeEach(async () => {
     currentUser = sharedCurrentUserFactory({
@@ -111,7 +109,6 @@ describe('TemplateCollectiveOffersScreen', () => {
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,
       error: mockNotifyError,
-      pending: mockNotifyPending,
       success: mockNotifySuccess,
     }))
   })

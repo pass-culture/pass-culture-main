@@ -33,18 +33,6 @@ export const Success: StoryObj<typeof NotificationToaster> = {
   },
 }
 
-export const Pending: StoryObj<typeof NotificationToaster> = {
-  args: {
-    notification: {
-      text: 'Vos modifications ont bien été prises en compte, cette opération peut durer plusieurs minutes',
-      type: NotificationTypeEnum.PENDING,
-      duration: 2000,
-    },
-    isVisible: true,
-    isStickyBarOpen: false,
-  },
-}
-
 export const Information: StoryObj<typeof NotificationToaster> = {
   args: {
     notification: {

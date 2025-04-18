@@ -62,7 +62,6 @@ describe('CollectiveOfferConfirmation', () => {
       success: vi.fn(),
       error: notifyError,
       information: vi.fn(),
-      pending: vi.fn(),
       close: vi.fn(),
     }))
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offers)

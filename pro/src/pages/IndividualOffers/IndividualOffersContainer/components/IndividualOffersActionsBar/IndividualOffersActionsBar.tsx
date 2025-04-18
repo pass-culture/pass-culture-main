@@ -89,7 +89,7 @@ const updateIndividualOffersStatus = async (
         ...payload,
         isActive,
       })
-      notify.pending(
+      notify.information(
         isActive
           ? computeAllActivationSuccessMessage(selectedOfferIds.length)
           : computeAllDeactivationSuccessMessage(selectedOfferIds.length)

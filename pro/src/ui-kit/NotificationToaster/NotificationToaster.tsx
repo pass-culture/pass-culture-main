@@ -4,7 +4,6 @@ import { NotificationTypeEnum } from 'commons/hooks/useNotification'
 import fullErrorIcon from 'icons/full-error.svg'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
-import strokeClockIcon from 'icons/stroke-clock.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Notification.module.scss'
@@ -53,7 +52,6 @@ export const notificationAdditionalAttributes: {
 } = {
   [NotificationTypeEnum.ERROR]: { role: 'alert' },
   [NotificationTypeEnum.SUCCESS]: { role: 'status' },
-  [NotificationTypeEnum.PENDING]: { ['aria-live']: 'polite' },
   [NotificationTypeEnum.INFORMATION]: { role: 'status' },
 }
 
@@ -70,8 +68,6 @@ function getNotificationContent(notification: Notification): JSX.Element {
   /* istanbul ignore next: DEBT, TO FIX */
   if (type === 'error') {
     icon = fullErrorIcon
-  } else if (type === 'pending') {
-    icon = strokeClockIcon
   } else if (type === 'information') {
     icon = fullInfoIcon
   }
