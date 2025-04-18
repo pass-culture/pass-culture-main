@@ -82,10 +82,16 @@ class AccountUpdateRequestSearchForm(utils.PCForm):
         reset_to_blank=True,
     )
     page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
-    per_page = fields.PCSelectField(
-        "Par page",
-        choices=(("10", "10"), ("25", "25"), ("50", "50"), ("100", "100")),
+    limit = fields.PCLimitField(
+        "Nombre maximum de résultats",
+        choices=(
+            (10, "Afficher 10 résultats maximum"),
+            (25, "Afficher 25 résultats maximum"),
+            (50, "Afficher 50 résultats maximum"),
+            (100, "Afficher 100 résultats maximum"),
+        ),
         default="100",
+        coerce=int,
         validators=(wtforms.validators.Optional(),),
     )
     has_found_user = fields.PCSelectMultipleField(
@@ -119,7 +125,10 @@ class AccountUpdateRequestSearchForm(utils.PCForm):
         endpoint="backoffice_web.autocomplete_bo_users",
     )
 
-    only_unassigned = fields.PCSwitchBooleanField("Uniquement les dossiers non affectés")
+    only_unassigned = fields.PCSwitchBooleanField(
+        "Uniquement les dossiers non affectés",
+        full_row=True,
+    )
 
 
 class AccountUpdateRequestAcceptForm(utils.PCForm):
