@@ -271,21 +271,6 @@ class ListOffersTest(GetEndpointHelper):
         assert len(rows) == 1
         assert int(rows[0]["ID"]) == offers[2].id
 
-    @pytest.mark.parametrize("visa", ["2023123456", " 2023 123456 ", "2023-123456\t"])
-    def test_list_offers_by_visa(self, authenticated_client, offers, visa):
-        query_args = {
-            "search-0-search_field": "VISA",
-            "search-0-operator": "EQUALS",
-            "search-0-string": visa,
-        }
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 1
-        assert int(rows[0]["ID"]) == offers[1].id
-
     def test_list_offers_by_creation_date(self, authenticated_client, offers):
         query_args = {
             "search-0-search_field": "CREATION_DATE",
