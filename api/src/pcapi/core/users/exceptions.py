@@ -115,7 +115,7 @@ class UserNotABeneficiary(DiscordException):
     pass
 
 
-class UserUnderage(DiscordException):
+class UserNotEligible(DiscordException):
     pass
 
 

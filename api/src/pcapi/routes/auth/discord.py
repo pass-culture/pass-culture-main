@@ -72,8 +72,10 @@ def discord_success() -> Response | str:
         update_discord_user(user_id, user_discord_id)
     except users_exceptions.DiscordUserAlreadyLinked:
         return redirect_with_error("Ce compte Discord est déjà lié à un autre compte pass Culture.")
-    except users_exceptions.UserUnderage:
-        return redirect_with_error("Accès refusé au serveur Discord. Tu dois être majeur pour accéder à ce serveur.")
+    except users_exceptions.UserNotEligible:
+        return redirect_with_error(
+            "Accès refusé au serveur Discord. Tu dois avoir au moins 17 ans et bénéficier du crédit pass Culture pour accéder à ce serveur."
+        )
     except users_exceptions.UserNotABeneficiary:
         return redirect_with_error(
             "Accès refusé au serveur Discord. Tu dois être bénéficiaire du pass Culture pour accéder à ce serveur."
@@ -127,7 +129,8 @@ def update_discord_user(user_id: str, discord_id: str) -> None:
     if discord_user is None:
         discord_user = user_models.DiscordUser(userId=user.id, discordId=discord_id, hasAccess=False)
 
-    discord_user.hasAccess = user.has_beneficiary_role
+    discord_user.hasAccess = user.is_beneficiary and user.age and user.age >= 17
+    logger.info("Discord user %s has access: %s", discord_user.discordId, discord_user.hasAccess)
     db.session.add(discord_user)
     db.session.flush()
 
@@ -135,8 +138,9 @@ def update_discord_user(user_id: str, discord_id: str) -> None:
         if not user.is_beneficiary:
             raise users_exceptions.UserNotABeneficiary()
 
-        if user.age and user.age < 18:
-            raise users_exceptions.UserUnderage()
+        if user.age and user.age < 17:
+            logger.info("User %s is underage and not allowed to access Discord", user.id)
+            raise users_exceptions.UserNotEligible()
         raise users_exceptions.UserNotAllowed()
 
     discord_user.discordId = discord_id

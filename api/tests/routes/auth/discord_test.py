@@ -296,17 +296,17 @@ class DiscordSigninTest:
     @unittest.mock.patch(
         "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
     )
-    def test_discord_user_has_not_access_if_underage_beneficiary(
+    def test_discord_user_has_not_access_if_beneficiary_under_17(
         self, _mock_discord_getter, _mock_add_to_server, client, db_session
     ):
-        underage_user = users_factories.BeneficiaryFactory(roles=[UserRole.UNDERAGE_BENEFICIARY])
+        not_eligible_user = users_factories.BeneficiaryFactory(age=16)
 
         response = client.get(
-            url_for("auth.discord_success", user_id=str(underage_user.id), access_token="access_token")
+            url_for("auth.discord_success", user_id=str(not_eligible_user.id), access_token="access_token")
         )
         assert response.status_code == 303
 
-        created_discord_link = DiscordUser.query.filter_by(userId=underage_user.id).first()
+        created_discord_link = DiscordUser.query.filter_by(userId=not_eligible_user.id).first()
         assert not created_discord_link.hasAccess
 
     @pytest.mark.features(DISCORD_ENABLE_NEW_ACCESS=False)
