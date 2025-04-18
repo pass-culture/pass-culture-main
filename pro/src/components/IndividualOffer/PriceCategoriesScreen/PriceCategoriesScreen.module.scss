@@ -49,14 +49,12 @@
   .label-input {
     width: rem.torem(424px);
 
-    & > div {
-      & > label {
-        @include fonts.body-accent-xs;
+    &-label {
+      @include fonts.body-accent-xs;
 
-        display: block;
-        min-height: forms.$input-label-min-height;
-        margin-bottom: forms.$label-small-space-before-input !important;
-      }
+      display: block;
+      min-height: forms.$input-label-min-height;
+      margin-bottom: forms.$label-small-space-before-input !important;
     }
   }
 
@@ -64,14 +62,6 @@
     margin-top: calc(
       forms.$label-space-before-input + forms.$input-description-min-height
     );
-
-    & > div > label {
-      @include fonts.body-accent-xs;
-
-      display: block;
-      min-height: forms.$input-label-min-height;
-      margin-bottom: forms.$label-small-space-before-input;
-    }
   }
 
   .delete-icon {

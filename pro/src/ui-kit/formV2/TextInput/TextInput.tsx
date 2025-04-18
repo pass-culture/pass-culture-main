@@ -48,6 +48,11 @@ export type TextInputProps = FieldLayoutBaseProps &
      * a checkbox to reset the input value.
      */
     InputExtension?: React.ReactNode
+    /**
+     * An extra class name to be applied to the label element.
+     * This can be used to customize the label's appearance.
+     */
+    labelClassName?: string
   }
 
 /**
@@ -87,6 +92,7 @@ export const TextInput = React.forwardRef(
       readOnly,
       label,
       className,
+      labelClassName,
       isLabelHidden = false,
       maxLength = 255,
       required = false,
@@ -145,7 +151,10 @@ export const TextInput = React.forwardRef(
             [styles['visually-hidden']]: isLabelHidden,
           })}
         >
-          <label className={styles['input-layout-label']} htmlFor={name}>
+          <label
+            className={cn(styles['input-layout-label'], labelClassName)}
+            htmlFor={name}
+          >
             {label} {required && asterisk && '*'}
           </label>
           {description && (

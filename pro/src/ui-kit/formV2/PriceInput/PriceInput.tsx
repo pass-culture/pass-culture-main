@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import React, {
   useState,
   useEffect,
@@ -129,9 +128,8 @@ export const PriceInput = React.forwardRef(
       <div ref={ref}>
         <TextInput
           ref={priceRef}
-          className={classnames(className, {
-            [styles['input-layout-small-label']]: smallLabel,
-          })}
+          className={className}
+          labelClassName={smallLabel ? styles['input-layout-small-label'] : ''}
           required={!hideAsterisk}
           name={name}
           label={label}
