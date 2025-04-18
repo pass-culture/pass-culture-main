@@ -28,7 +28,7 @@ import {
 vi.mock('apiClient/api', () => ({
   api: {
     getStocks: vi.fn(),
-    upsertStocks: vi.fn(),
+    bulkCreateEventStocks: vi.fn(),
   },
 }))
 
@@ -98,7 +98,7 @@ const renderStockEventCreation = async (
 const tomorrow = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
 describe('StocksEventCreation', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks_count: 0 })
+    vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValue({ stocks_count: 0 })
   })
 
   it('should notify when clicking on Enregistrer et continuer without stock', async () => {
@@ -140,7 +140,7 @@ describe('StocksEventCreation', () => {
     await userEvent.click(screen.getByText('Ajouter un créneau'))
     await userEvent.type(screen.getByLabelText('Horaire 2 *'), '12:30')
 
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks_count: 2 })
+    vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValue({ stocks_count: 2 })
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [getOfferStockFactory(), getOfferStockFactory()],
       stockCount: 2,
@@ -175,7 +175,7 @@ describe('StocksEventCreation', () => {
   })
 
   it('should notify when there is not yet stocks', async () => {
-    vi.spyOn(api, 'upsertStocks').mockRejectedValueOnce({})
+    vi.spyOn(api, 'bulkCreateEventStocks').mockRejectedValueOnce({})
 
     await renderStockEventCreation([], { offer: getIndividualOfferFactory() })
 
@@ -188,6 +188,6 @@ describe('StocksEventCreation', () => {
     expect(
       screen.getByText('Ajouter une ou plusieurs dates')
     ).toBeInTheDocument()
-    expect(api.upsertStocks).not.toHaveBeenCalled()
+    expect(api.bulkCreateEventStocks).not.toHaveBeenCalled()
   })
 })

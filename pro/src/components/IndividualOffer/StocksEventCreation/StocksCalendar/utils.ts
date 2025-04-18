@@ -8,12 +8,12 @@ import {
   sub,
 } from 'date-fns'
 
+import { EventStockCreateBodyModel } from 'apiClient/v1'
 import {
   FORMAT_ISO_DATE_ONLY,
   toISOStringWithoutMilliseconds,
 } from 'commons/utils/date'
 import { serializeDateTimeToUTCFromLocalDepartment } from 'components/IndividualOffer/StocksEventEdition/serializers'
-import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 
 import { weekDays } from '../form/constants'
 import { StocksCalendarFormValues } from '../form/types'
@@ -31,7 +31,7 @@ export class GetStocksCustomError extends Error {
 export function getStocksForMultipleDays(
   formValues: StocksCalendarFormValues,
   departmentCode: string
-): Partial<StocksEvent>[] {
+): EventStockCreateBodyModel[] {
   const startDate = formValues.multipleDaysStartDate
   const endDate = formValues.multipleDaysEndDate
 
@@ -55,7 +55,7 @@ export function getStocksForOneDay(
   date: Date,
   formValues: StocksCalendarFormValues,
   departmentCode: string
-): Partial<StocksEvent>[] {
+): EventStockCreateBodyModel[] {
   const times = formValues.specificTimeSlots.map((s) => s.slot)
 
   if (times.length === 0) {

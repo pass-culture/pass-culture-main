@@ -50,7 +50,7 @@ export const onSubmit = async (
   // Upsert stocks if there are stocks to upsert
   if (serializedStocksToAdd.length > 0) {
     try {
-      const { stocks_count } = await api.upsertStocks({
+      const { stocks_count } = await api.bulkCreateEventStocks({
         offerId,
         stocks: serializedStocksToAdd,
       })

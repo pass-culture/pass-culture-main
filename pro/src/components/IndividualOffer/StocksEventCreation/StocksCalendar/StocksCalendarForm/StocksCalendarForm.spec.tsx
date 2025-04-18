@@ -20,8 +20,8 @@ import {
 
 vi.mock('apiClient/api', () => ({
   api: {
-    upsertStocks: vi.fn(),
     getCategories: vi.fn(),
+    bulkCreateEventStocks: vi.fn(),
   },
 }))
 
@@ -62,8 +62,8 @@ describe('StocksCalendarForm', () => {
 
   it('should sumbit the form when clicking on "Valider" and close the dialog', async () => {
     const afterValidate = vi.fn()
-    const upsertStocksSpy = vi
-      .spyOn(api, 'upsertStocks')
+    const bulkCreateEventStocksSpy = vi
+      .spyOn(api, 'bulkCreateEventStocks')
       .mockResolvedValueOnce({ stocks_count: 0 })
 
     renderStocksCalendarForm({
@@ -89,15 +89,15 @@ describe('StocksCalendarForm', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
 
-    expect(upsertStocksSpy).toHaveBeenCalled()
+    expect(bulkCreateEventStocksSpy).toHaveBeenCalled()
     expect(notifySuccess).toHaveBeenCalled()
     expect(afterValidate).toHaveBeenCalled()
   })
 
   it('should sumbit the form whith multiple dates when clicking on "Valider"', async () => {
     const afterValidate = vi.fn()
-    const upsertStocksSpy = vi
-      .spyOn(api, 'upsertStocks')
+    const bulkCreateEventStocksSpy = vi
+      .spyOn(api, 'bulkCreateEventStocks')
       .mockResolvedValueOnce({ stocks_count: 0 })
 
     renderStocksCalendarForm({
@@ -130,13 +130,13 @@ describe('StocksCalendarForm', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
 
-    expect(upsertStocksSpy).toHaveBeenCalled()
+    expect(bulkCreateEventStocksSpy).toHaveBeenCalled()
   })
 
   it('should show an error messages if the stocks cound not be created', async () => {
     const afterValidate = vi.fn()
-    const upsertStocksSpy = vi
-      .spyOn(api, 'upsertStocks')
+    const bulkCreateEventStocksSpy = vi
+      .spyOn(api, 'bulkCreateEventStocks')
       .mockRejectedValueOnce(null)
 
     renderStocksCalendarForm({
@@ -162,7 +162,7 @@ describe('StocksCalendarForm', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
 
-    expect(upsertStocksSpy).toHaveBeenCalled()
+    expect(bulkCreateEventStocksSpy).toHaveBeenCalled()
     expect(notifySuccess).not.toHaveBeenCalled()
     expect(notifyError).toHaveBeenCalled()
     expect(afterValidate).toHaveBeenCalled()
