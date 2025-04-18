@@ -15,7 +15,7 @@ export type DetailsFormValues = {
   stageDirector?: string
   visa?: string
   durationMinutes?: string | null
-  subcategoryConditionalFields: string[]
+  subcategoryConditionalFields: (keyof DetailsFormValues)[]
   productId: string
   callId?: string
   url?: string | null

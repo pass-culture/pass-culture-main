@@ -1,4 +1,4 @@
-import { useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
@@ -22,15 +22,15 @@ import {
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { Select } from 'ui-kit/form/Select/Select'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
+import { Select } from 'ui-kit/formV2/Select/Select'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { TimePicker } from 'ui-kit/formV2/TimePicker/TimePicker'
 
 import { ImageUploaderOffer } from '../ImageUploaderOffer/ImageUploaderOffer'
 
 import styles from './DetailsSubForm.module.scss'
 
-export const ARTISTIC_INFORMATION_FIELDS = [
+export const ARTISTIC_INFORMATION_FIELDS: (keyof DetailsFormValues)[] = [
   'speaker',
   'author',
   'visa',
@@ -69,9 +69,14 @@ export const DetailsSubForm = ({
     queryOfferType === INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
 
   const mode = useOfferWizardMode()
-  const {
-    values: { categoryId, showType, subcategoryConditionalFields },
-  } = useFormikContext<DetailsFormValues>()
+
+  const form = useFormContext()
+  const categoryId = form.watch('categoryId')
+  const showType = form.watch('showType')
+  const subcategoryConditionalFields = form.watch(
+    'subcategoryConditionalFields'
+  )
+
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
     () => api.getMusicTypes(),
@@ -143,13 +148,13 @@ export const DetailsSubForm = ({
                 <FormLayout.Row>
                   <Select
                     label="Genre musical"
-                    name="gtl_id"
                     options={musicTypesOptions}
                     defaultOption={{
                       label: 'Choisir un genre musical',
                       value: DEFAULT_DETAILS_FORM_VALUES.gtl_id,
                     }}
                     disabled={readOnlyFields.includes('gtl_id')}
+                    {...form.register('gtl_id')}
                   />
                 </FormLayout.Row>
               )}
@@ -158,25 +163,27 @@ export const DetailsSubForm = ({
                   <FormLayout.Row>
                     <Select
                       label="Type de spectacle"
-                      name="showType"
                       options={showTypesOptions}
                       defaultOption={{
                         label: 'Choisir un type de spectacle',
                         value: DEFAULT_DETAILS_FORM_VALUES.showType,
                       }}
                       disabled={readOnlyFields.includes('showType')}
+                      {...form.register('showType')}
+                      required
                     />
                   </FormLayout.Row>
                   <FormLayout.Row>
                     <Select
                       label="Sous-type"
-                      name="showSubType"
                       options={showSubTypeOptions}
                       defaultOption={{
                         label: 'Choisir un sous-type',
                         value: DEFAULT_DETAILS_FORM_VALUES.showSubType,
                       }}
                       disabled={readOnlyFields.includes('showSubType')}
+                      {...form.register('showSubType')}
+                      required
                     />
                   </FormLayout.Row>
                 </>
@@ -184,81 +191,74 @@ export const DetailsSubForm = ({
               {subcategoryConditionalFields.includes('speaker') && (
                 <FormLayout.Row>
                   <TextInput
-                    isOptional
                     label="Intervenant"
                     maxLength={1000}
-                    name="speaker"
                     disabled={readOnlyFields.includes('speaker')}
+                    {...form.register('speaker')}
                   />
                 </FormLayout.Row>
               )}
               {subcategoryConditionalFields.includes('author') && (
                 <FormLayout.Row>
                   <TextInput
-                    isOptional
                     label="Auteur"
                     maxLength={1000}
-                    name="author"
                     disabled={readOnlyFields.includes('author')}
+                    {...form.register('author')}
                   />
                 </FormLayout.Row>
               )}
               {subcategoryConditionalFields.includes('visa') && (
                 <FormLayout.Row>
                   <TextInput
-                    isOptional
                     label="Visa d’exploitation"
                     maxLength={1000}
-                    name="visa"
                     disabled={readOnlyFields.includes('visa')}
+                    {...form.register('visa')}
                   />
                 </FormLayout.Row>
               )}
               {subcategoryConditionalFields.includes('stageDirector') && (
                 <FormLayout.Row>
                   <TextInput
-                    isOptional
                     label="Metteur en scène"
                     maxLength={1000}
-                    name="stageDirector"
                     disabled={readOnlyFields.includes('stageDirector')}
+                    {...form.register('stageDirector')}
                   />
                 </FormLayout.Row>
               )}
               {subcategoryConditionalFields.includes('performer') && (
                 <FormLayout.Row>
                   <TextInput
-                    isOptional
                     label="Interprète"
                     maxLength={1000}
-                    name="performer"
                     disabled={readOnlyFields.includes('performer')}
+                    {...form.register('performer')}
                   />
                 </FormLayout.Row>
               )}
               {displayEanField && (
                 <FormLayout.Row>
                   <TextInput
-                    isOptional
                     label="EAN-13 (European Article Numbering)"
-                    countCharacters
-                    name="ean"
+                    count={form.watch('ean').length}
                     maxLength={13}
                     disabled={readOnlyFields.includes('ean')}
+                    {...form.register('ean')}
                   />
                 </FormLayout.Row>
               )}
               {subcategoryConditionalFields.includes('durationMinutes') && (
                 <FormLayout.Row>
                   <TimePicker
-                    isOptional
                     label="Durée"
-                    name="durationMinutes"
                     disabled={readOnlyFields.includes('durationMinutes')}
                     suggestedTimeList={{
                       min: '00:00',
                       max: '04:00',
                     }}
+                    {...form.register('durationMinutes')}
                   />
                 </FormLayout.Row>
               )}

@@ -1,6 +1,7 @@
 import * as yup from 'yup'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
+import { DetailsFormValues } from './types'
 
 const eanValidation = yup
   .string()
@@ -23,15 +24,19 @@ export const getValidationSchema = ({
 }: {
   isDigitalOffer: boolean
 }) => {
-  return yup.object().shape({
+  return yup.object<DetailsFormValues>().shape({
     name: yup.string().trim().max(90).required('Veuillez renseigner un titre'),
-    description: yup.string(),
+    description: yup.string().required(),
     author: yup.string(),
     performer: yup.string(),
     ean: eanValidation,
     speaker: yup.string(),
     stageDirector: yup.string(),
     visa: yup.string(),
+    eanSearch: yup.string(),
+    productId: yup.string().required(),
+    callId: yup.string(),
+    subcategoryConditionalFields: yup.array().required(),
     durationMinutes: yup.string().when('subcategoryConditionalFields', {
       is: (subcategoryConditionalFields: string[]) =>
         subcategoryConditionalFields.includes('durationMinutes'),
@@ -42,19 +47,26 @@ export const getValidationSchema = ({
         ),
     }),
     categoryId: yup.string().required('Veuillez sélectionner une catégorie'),
-    subcategoryId: yup.string().when('categoryId', {
-      is: (categoryId: string) => categoryId,
-      then: (schema) =>
-        schema.required('Veuillez sélectionner une sous-catégorie'),
-    }),
-    showType: yup.string().when('subcategoryConditionalFields', {
-      is: (subcategoryConditionalFields: string[]) =>
-        subcategoryConditionalFields.includes('showType'),
-      then: (schema) =>
-        schema.required('Veuillez sélectionner un type de spectacle'),
-    }),
+    subcategoryId: yup
+      .string()
+      .required()
+      .when('categoryId', {
+        is: (categoryId: string) => categoryId,
+        then: (schema) =>
+          schema.required('Veuillez sélectionner une sous-catégorie'),
+      }),
+    showType: yup
+      .string()
+      .required()
+      .when('subcategoryConditionalFields', {
+        is: (subcategoryConditionalFields: string[]) =>
+          subcategoryConditionalFields.includes('showType'),
+        then: (schema) =>
+          schema.required('Veuillez sélectionner un type de spectacle'),
+      }),
     showSubType: yup
       .string()
+      .required()
       .when(['subcategoryConditionalFields', 'showType'], {
         is: (subcategoryConditionalFields: string[], showType: string) =>
           subcategoryConditionalFields.includes('showType') &&

@@ -1,4 +1,4 @@
-import { useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -10,7 +10,7 @@ import {
   buildCategoryOptions,
   buildSubcategoryOptions,
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
-import { Select } from 'ui-kit/form/Select/Select'
+import { Select } from 'ui-kit/formV2/Select/Select'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from './Subcategories.module.scss'
@@ -26,11 +26,12 @@ export function Subcategories({
   filteredCategories,
   filteredSubcategories,
 }: SubcategoriesProps) {
-  const {
-    values: { categoryId, subcategoryConditionalFields },
-    handleChange,
-    setFieldValue,
-  } = useFormikContext<DetailsFormValues>()
+  const form = useFormContext<DetailsFormValues>()
+
+  const categoryId = form.watch('categoryId')
+  const subcategoryConditionalFields = form.watch(
+    'subcategoryConditionalFields'
+  )
 
   const categoryOptions = buildCategoryOptions(filteredCategories)
   const subcategoryOptions = buildSubcategoryOptions(
@@ -61,23 +62,24 @@ export function Subcategories({
       >
         <Select
           label="Catégorie"
-          name="categoryId"
+          required
           options={categoryOptions}
           defaultOption={{
             label: 'Choisir une catégorie',
             value: DEFAULT_DETAILS_FORM_VALUES.categoryId,
           }}
           disabled={readOnlyFields.includes('categoryId')}
-          onChange={async (event: React.ChangeEvent<HTMLSelectElement>) => {
-            await onCategoryChange({
+          {...form.register('categoryId')}
+          onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+            onCategoryChange({
               categoryId: event.target.value,
               readOnlyFields,
               subcategories: filteredSubcategories,
-              setFieldValue,
+              setFieldValue: form.setValue,
               onSubcategoryChange,
               subcategoryConditionalFields,
             })
-            handleChange(event)
+            form.setValue('categoryId', event.target.value)
           }}
         />
       </FormLayout.Row>
@@ -85,20 +87,21 @@ export function Subcategories({
         <FormLayout.Row>
           <Select
             label="Sous-catégorie"
-            name="subcategoryId"
+            required
             options={subcategoryOptions}
             defaultOption={{
               label: 'Choisir une sous-catégorie',
               value: DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
             }}
-            onChange={async (event: React.ChangeEvent<HTMLSelectElement>) => {
-              await onSubcategoryChange({
+            {...form.register('subcategoryId')}
+            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+              onSubcategoryChange({
                 newSubCategoryId: event.target.value,
                 subcategories: filteredSubcategories,
-                setFieldValue,
+                setFieldValue: form.setValue,
                 subcategoryConditionalFields,
               })
-              handleChange(event)
+              form.setValue('subcategoryId', event.target.value)
             }}
             disabled={
               readOnlyFields.includes('subcategoryId') ||
