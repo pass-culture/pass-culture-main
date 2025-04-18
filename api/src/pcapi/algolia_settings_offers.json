@@ -30,6 +30,7 @@
     ],
     "attributesForFaceting": [
         "filterOnly(artists.id)",
+        "searchable(artists.name)",
         "filterOnly(offer.allocineId)",
         "searchable(offer.artist)",
         "offer.bookMacroSection",
