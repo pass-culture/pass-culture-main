@@ -222,10 +222,18 @@ class GetVenuesListForm(utils.PCForm):
     )
     regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
     department = fields.PCSelectMultipleField("Départements", choices=area_choices)
-    only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les entités juridiques validées")
-    limit = fields.PCSelectField(
-        "Nombre maximum",
-        choices=((100, "100"), (500, "500"), (1000, "1000"), (3000, "3000")),
+    only_validated_offerers = fields.PCSwitchBooleanField(
+        "Uniquement les entités juridiques validées",
+        full_row=True,
+    )
+    limit = fields.PCLimitField(
+        "Nombre maximum de résultats",
+        choices=(
+            (100, "Afficher 100 résultats maximum"),
+            (500, "Afficher 500 résultats maximum"),
+            (1000, "Afficher 1000 résultats maximum"),
+            (3000, "Afficher 3000 résultats maximum"),
+        ),
         default="100",
         coerce=int,
         validators=(wtforms.validators.Optional(),),
