@@ -48,7 +48,6 @@ class IndividualOffersSearchAttributes(enum.Enum):
     STATUS = "Statut"
     OFFERER = "Entité juridique"
     TAG = "Tag"
-    VISA = "Visa d'exploitation"
     HEADLINE = "Offres à la une"
     VALIDATED_OFFERER = "Entité juridique validée"
 
@@ -340,10 +339,6 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
             if search_field == "EAN":
                 if not string_utils.is_ean_valid(string.data):
                     raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un EAN-13")
-                string.data = string_utils.format_ean_or_visa(string.data)
-            elif search_field == "VISA":
-                if not string_utils.is_visa_valid(string.data):
-                    raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un VISA")
                 string.data = string_utils.format_ean_or_visa(string.data)
 
         return string

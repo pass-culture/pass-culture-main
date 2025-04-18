@@ -206,11 +206,6 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "field": "validation",
         "column": offers_models.Offer.validation,
     },
-    "VISA": {
-        "field": "string",
-        "column": offers_models.Offer.extraData["visa"].astext,
-        "special": string_utils.format_ean_or_visa,
-    },
     "PRICE": {
         "field": "price",
         "column": offers_models.Stock.price,
