@@ -1019,6 +1019,8 @@ RESPONSE_CLOSED_SIREN_PAGE1 = {
         "total": 5,
         "debut": 0,
         "nombre": 3,
+        "curseur": "*",
+        "curseurSuivant": "AoEpODg5Mjg4Mzc5",
     },
     "unitesLegales": [
         {
@@ -1055,6 +1057,8 @@ RESPONSE_CLOSED_SIREN_PAGE2 = {
         "total": 5,
         "debut": 3,
         "nombre": 2,
+        "curseur": "AoEpODg5Mjg4Mzc5",
+        "curseurSuivant": "AoEpODg5Mjg4Mzc5",
     },
     "unitesLegales": [
         {

@@ -314,12 +314,12 @@ def test_error_handling_on_non_json_response():
 def test_get_siren_closed_at_date():
     with requests_mock.Mocker() as mock:
         mock.get(
-            "https://api.insee.fr/entreprises/sirene/V3.11/siren?q=dateDernierTraitementUniteLegale:2025-01-21+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true)&champs=siren,dateDebut,dateFin,etatAdministratifUniteLegale&debut=0&nombre=1000",
+            "https://api.insee.fr/entreprises/sirene/V3.11/siren?q=dateDernierTraitementUniteLegale:2025-01-21+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true)&champs=siren,dateDebut,dateFin,etatAdministratifUniteLegale&curseur=*&nombre=1000",
             status_code=200,
             json=sirene_test_data.RESPONSE_CLOSED_SIREN_PAGE1,
         )
         mock.get(
-            "https://api.insee.fr/entreprises/sirene/V3.11/siren?q=dateDernierTraitementUniteLegale:2025-01-21+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true)&champs=siren,dateDebut,dateFin,etatAdministratifUniteLegale&debut=3&nombre=1000",
+            "https://api.insee.fr/entreprises/sirene/V3.11/siren?q=dateDernierTraitementUniteLegale:2025-01-21+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true)&champs=siren,dateDebut,dateFin,etatAdministratifUniteLegale&curseur=AoEpODg5Mjg4Mzc5&nombre=1000",
             status_code=200,
             json=sirene_test_data.RESPONSE_CLOSED_SIREN_PAGE2,
         )
